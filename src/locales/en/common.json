@@ -111,6 +111,7 @@
   "accountsTitle": "Balance accounts",
   "accountsSubtitle": "Your balance from all accounts.",
     "account": "Account",
+  "requestWithdraw": "Request withdraw",
     "withdrawals": "Withdrawals",
   "newAddress": "New Address",
     "col": {
@@ -163,6 +164,8 @@
   "listSubtitle": "Manage your wallet addresses",
   "createButton": "Withdraw wallet",
   "copy": "Copy",
+  "requiredWithdrawTitle": "Withdrawal address required",
+  "requiredWithdrawDesc": "To withdraw, please add a withdrawal wallet address first.",
   "editTitle": "Edit wallet",
   "confirmDelete": "Delete this wallet?",
   "colCurrency": "Currency",

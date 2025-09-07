@@ -4,7 +4,7 @@ import { createInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { listCoins, getCoinNetworks, getCoinNetworksBySymbol } from "../../api/coins";
-import { listWallets } from "../../api/wallets";
+// Removed wallet pre-check requirement; invoices can be created without existing wallets
 
 // Try multiple sources for coin logos under public/assets/img/coins
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -93,8 +93,9 @@ export default function InvoiceCreate() {
   const { t } = useTranslation();
   const { token } = useAuth();
   const navigate = useNavigate();
-  const [hasWallet, setHasWallet] = useState(null); // null = loading, boolean when loaded
-  const [walletError, setWalletError] = useState("");
+  // No longer require wallet before creating invoice
+  const [hasWallet] = useState(true);
+  const [walletError] = useState("");
   const [coinNetworkId, setCoinNetworkId] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -108,28 +109,9 @@ export default function InvoiceCreate() {
   const [selectedCoin, setSelectedCoin] = useState("");
   const [networks, setNetworks] = useState([]);
 
-  // Check if user has any wallet; if not, gate invoice creation
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        setWalletError("");
-        setHasWallet(null);
-        const wallets = await listWallets(token);
-        if (!mounted) return;
-        setHasWallet(Array.isArray(wallets) && wallets.length > 0);
-      } catch (e) {
-        if (!mounted) return;
-        setWalletError(typeof e?.message === 'string' ? e.message : 'Failed to load wallets');
-        // If call fails, default to allow form to avoid blocking; but show warning
-        setHasWallet(true);
-      }
-    })();
-    return () => { mounted = false };
-  }, [token]);
+  // Wallet presence is not required anymore, so skip any pre-check
 
   useEffect(() => {
-    if (hasWallet !== true) return; // only load coins when wallet exists
     let mounted = true;
     (async () => {
       try {
@@ -141,7 +123,7 @@ export default function InvoiceCreate() {
       } finally { setLoadingCoins(false); }
     })();
     return () => { mounted = false };
-  }, [token, hasWallet]);
+  }, [token]);
 
   const grouped = useMemo(() => {
     const bySymbol = {};
@@ -175,9 +157,8 @@ export default function InvoiceCreate() {
 
   useEffect(() => {
     // Fetch networks for selected coin using symbol-based API
-    async function fetchNetworks() {
+  async function fetchNetworks() {
       try {
-        if (hasWallet !== true) { setNetworks([]); return }
         if (!selectedCoin) {
           setNetworks([]);
           return;
@@ -239,20 +220,9 @@ export default function InvoiceCreate() {
           </div>
         )}
 
-        {hasWallet === false && (
-          <div className="card">
-            <div className="card-body d-flex flex-column align-items-center text-center">
-              <h5 className="mb-2">{t('wallet.requiredTitle', { defaultValue: 'Wallet required' })}</h5>
-              <p className="text-muted mb-3">{t('wallet.requiredDesc', { defaultValue: 'To create an invoice, please create a wallet first.' })}</p>
-              <button type="button" className="btn btn-primary align-self-center" onClick={() => navigate('/app/wallets/create')}>
-                {t('wallet.goCreate', { defaultValue: 'Withdraw wallet' })}
-              </button>
-            </div>
-          </div>
-        )}
+  {/* Wallet not required anymore; removed gating card */}
 
-        {hasWallet === true && (
-          <>
+  <>
             {/* Step 1: Select Coin */}
             <div className="card mb-4">
               <div className="card-header d-flex align-items-center">
@@ -333,9 +303,7 @@ export default function InvoiceCreate() {
               </div>
             </div>
           </>
-        )}
 
-  {hasWallet === true && (
   <form onSubmit={onSubmit} className="card">
           <div className="card-body">
             <input type="hidden" name="coinNetworkId" value={coinNetworkId} />
@@ -391,8 +359,7 @@ export default function InvoiceCreate() {
               {loading ? t("common.saving") || "Saving..." : t("invoice.createTitle")}
             </button>
           </div>
-        </form>
-  )}
+  </form>
       </div>
     </div>
   );

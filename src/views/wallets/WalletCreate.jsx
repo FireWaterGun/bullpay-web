@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { listCoins, getCoinNetworksBySymbol } from '../../api/coins'
 import { createWallet } from '../../api/wallets'
@@ -43,6 +43,8 @@ export default function WalletCreate() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = location?.state?.returnTo
 
   const [coins, setCoins] = useState([])
   const [loadingCoins, setLoadingCoins] = useState(false)
@@ -118,7 +120,8 @@ export default function WalletCreate() {
     try {
       setSaving(true)
   await createWallet({ coinNetworkId: Number(coinNetworkId), address: address.trim() }, token)
-  navigate('/app/balance/withdrawals')
+  if (returnTo && typeof returnTo === 'string') navigate(returnTo, { replace: true })
+  else navigate('/app/balance/withdrawals')
     } catch (e) {
       setError(typeof e?.message === 'string' ? e.message : 'Failed to save')
     } finally {

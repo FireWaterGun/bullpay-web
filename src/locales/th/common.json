@@ -111,6 +111,7 @@
   "accountsTitle": "บัญชียอดคงเหลือ",
   "accountsSubtitle": "ยอดรวมจากทุกบัญชีของคุณ",
     "account": "บัญชี",
+  "requestWithdraw": "คำขอถอน",
     "withdrawals": "การถอนเงิน",
   "newAddress": "เพิ่มที่อยู่ใหม่",
     "col": {
@@ -163,6 +164,8 @@
   "listSubtitle": "จัดการที่อยู่กระเป๋าเงินของคุณ",
   "createButton": "ถอนกระเป๋า",
   "copy": "คัดลอก",
+  "requiredWithdrawTitle": "จำเป็นต้องมีที่อยู่สำหรับถอน",
+  "requiredWithdrawDesc": "หากต้องการถอน โปรดเพิ่มที่อยู่กระเป๋าสำหรับการถอนก่อน",
   "editTitle": "แก้ไขกระเป๋า",
   "confirmDelete": "ต้องการลบกระเป๋านี้หรือไม่?",
   "colCurrency": "สกุลเงิน",

@@ -169,57 +169,79 @@ export default function WithdrawRequest() {
         ) : (
           <div className="card mx-auto" style={{ maxWidth: 520 }}>
             <div className="card-header">
-              <h5 className="mb-0">{t('balance.requestPayout', { defaultValue: 'Request payout' })}</h5>
+              <h5 className="mb-0">{t('balance.requestWithdraw', { defaultValue: 'Request withdraw' })}</h5>
             </div>
             <div className="card-body">
-              <div className="mb-3">
-                <div className="text-muted small mb-1">{t('balance.from', { defaultValue: 'From' })}</div>
-                <div className="d-flex align-items-center justify-content-between border rounded-3 p-3">
-                  <div className="d-flex align-items-center">
-                    <CoinImg coin={coin} symbol={sym} />
-                    <div className="ms-3">
-                      <div className="fw-semibold">{sym}</div>
-                      <div className="text-muted small">{coin?.name || sym}</div>
+              {wallets.length === 0 || matchingWallets.length === 0 ? (
+                <div className="text-center py-3">
+                  <h6 className="mb-2">{t('wallet.requiredWithdrawTitle', { defaultValue: 'Withdrawal address required' })}</h6>
+                  <p className="text-muted mb-3">{t('wallet.requiredWithdrawDesc', { defaultValue: 'To withdraw, please add a withdrawal wallet address first.' })}</p>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() =>
+                      navigate('/app/balance/new-address', {
+                        state: { returnTo: `/app/balance/withdraw/${encodeURIComponent(coinNetworkId)}` }
+                      })
+                    }
+                  >
+                    {t('wallet.goCreate', { defaultValue: 'Withdraw wallet' })}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-3">
+                    <div className="text-muted small mb-1">{t('balance.from', { defaultValue: 'From' })}</div>
+                    <div className="d-flex align-items-center justify-content-between border rounded-3 p-3">
+                      <div className="d-flex align-items-center">
+                        <CoinImg coin={coin} symbol={sym} />
+                        <div className="ms-3">
+                          <div className="fw-semibold">{sym}</div>
+                          <div className="text-muted small">{coin?.name || sym}</div>
+                        </div>
+                      </div>
+                      <span className="badge bg-label-danger text-uppercase">{networkLabel}</span>
                     </div>
                   </div>
-                  <span className="badge bg-label-danger text-uppercase">{networkLabel}</span>
-                </div>
-              </div>
 
-              <div className="mb-3">
-                <div className="d-flex justify-content-between align-items-end">
-                  <label className="form-label mb-1">{t('balance.amountToWithdraw', { defaultValue: 'Amount to withdraw' })}</label>
-                </div>
-                <div className="input-group">
-                  <input type="number" min="0" step={1/Math.pow(10, Math.min(decimals, 8))} className="form-control" value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder={`0.0`} />
-                  <span className="input-group-text">{sym}</span>
-                </div>
-              </div>
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-end">
+                      <label className="form-label mb-1">{t('balance.amountToWithdraw', { defaultValue: 'Amount to withdraw' })}</label>
+                    </div>
+                    <div className="input-group">
+                      <input type="number" min="0" step={1/Math.pow(10, Math.min(decimals, 8))} className="form-control" value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder={`0.0`} />
+                      <span className="input-group-text">{sym}</span>
+                    </div>
+                  </div>
 
-              <div className="mb-3">
-                <label className="form-label">{t('balance.payoutAddress', { defaultValue: 'Payout address' })}</label>
-                <input className="form-control" value={address} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
-              </div>
+                  <div className="mb-3">
+                    <label className="form-label">{t('balance.payoutAddress', { defaultValue: 'Payout address' })}</label>
+                    <input className="form-control" value={address} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
+                  </div>
 
-              {/* Address list removed per request; auto-filled from first matching wallet */}
+                  {/* Address list removed per request; auto-filled from first matching wallet */}
 
-              <div className="d-flex justify-content-between small">
-                <div>
-                  <span className="text-primary">{t('balance.currentBalance', { defaultValue: 'Current balance' })}</span>
-                  <div className="fw-medium">{fmtAmount(available, decimals)} {sym}</div>
-                </div>
-                <div className="text-end">
-                  <span className="text-primary">{t('balance.outcomeBalance', { defaultValue: 'Outcome balance' })}</span>
-                  <div className="fw-medium">{fmtAmount(outcome, decimals)} {sym}</div>
-                </div>
-              </div>
+                  <div className="d-flex justify-content-between small">
+                    <div>
+                      <span className="text-primary">{t('balance.currentBalance', { defaultValue: 'Current balance' })}</span>
+                      <div className="fw-medium">{fmtAmount(available, decimals)} {sym}</div>
+                    </div>
+                    <div className="text-end">
+                      <span className="text-primary">{t('balance.outcomeBalance', { defaultValue: 'Outcome balance' })}</span>
+                      <div className="fw-medium">{fmtAmount(outcome, decimals)} {sym}</div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-            <div className="card-footer">
-              <button className="btn btn-primary w-100" onClick={onConfirm} disabled={!canSubmit || submitting}>
-                {submitting ? (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>) : null}
-                {t('actions.confirm', { defaultValue: 'Confirm' })}
-              </button>
-            </div>
+            {wallets.length > 0 && matchingWallets.length > 0 && (
+              <div className="card-footer">
+                <button className="btn btn-primary w-100" onClick={onConfirm} disabled={!canSubmit || submitting}>
+                  {submitting ? (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>) : null}
+                  {t('actions.confirm', { defaultValue: 'Confirm' })}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
