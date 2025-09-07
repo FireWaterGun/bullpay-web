@@ -552,7 +552,7 @@ export default function InvoicePayment() {
       </div>
       <footer className="mt-auto border-top">
         <div className="container-xxl text-center pt-3">
-      <div className="small text-muted">Powered by Bull Pay</div>
+      <div className="small text-muted">Powered by BULL PAY</div>
       <div className="small text-muted">{(t("common.copyright", { year }) ||
         `© ${year} · All rights reserved`)}</div>
         </div>

@@ -300,7 +300,7 @@ export default function DashboardLayout() {
                   </svg>
                 </span>
               </span>
-              <span className="app-brand-text demo menu-text fw-bold ms-2">Bull Pay</span>
+              <span className="app-brand-text demo menu-text fw-bold ms-2">BULL PAY</span>
             </a>
             <a href="#" onClick={toggleMenu} className="layout-menu-toggle menu-link text-large ms-auto">
               <i className="icon-base bx bx-chevron-left"></i>

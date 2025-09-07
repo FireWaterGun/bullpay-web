@@ -11,7 +11,7 @@ export default function RegisterCompletePage() {
           <div className="card px-sm-6 px-0">
             <div className="card-body">
               <div className="app-brand justify-content-center">
-                <a href="#" className="app-brand-link gap-2"><span className="app-brand-text demo text-heading fw-bold">Bull Pay</span></a>
+                <a href="#" className="app-brand-link gap-2"><span className="app-brand-text demo text-heading fw-bold">BULL PAY</span></a>
               </div>
               <h4 className="mb-1">Verify your email 📧</h4>
               <p className="mb-6">

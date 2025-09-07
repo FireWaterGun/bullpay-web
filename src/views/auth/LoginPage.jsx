@@ -62,7 +62,7 @@ export default function LoginPage() {
             <div className="card-body">
               <div className="app-brand justify-content-center">
                 <a href="#" className="app-brand-link gap-2">
-                  <span className="app-brand-text demo text-heading fw-bold">Bull Pay</span>
+                  <span className="app-brand-text demo text-heading fw-bold">BULL PAY</span>
                 </a>
               </div>
               {/* Removed welcome heading and subtitle per requirement */}

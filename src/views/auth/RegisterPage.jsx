@@ -76,7 +76,7 @@ export default function RegisterPage() {
           <div className="card px-sm-6 px-0">
             <div className="card-body">
               <div className="app-brand justify-content-center mb-6">
-                <a href="#" className="app-brand-link gap-2"><span className="app-brand-text demo text-heading fw-bold">Bull Pay</span></a>
+                <a href="#" className="app-brand-link gap-2"><span className="app-brand-text demo text-heading fw-bold">BULL PAY</span></a>
               </div>
               <h4 className="mb-1">Adventure starts here 🚀</h4>
               <p className="mb-6">Make your app management easy and fun!</p>
