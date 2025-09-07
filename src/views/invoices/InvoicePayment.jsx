@@ -183,6 +183,14 @@ export default function InvoicePayment() {
     return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
   }
 
+  // Badge emphasis for countdown visibility
+  const countdownBadgeClass = useMemo(() => {
+    if (remainingMs == null) return 'bg-label-secondary';
+    if (remainingMs <= 60_000) return 'bg-label-danger'; // < 1 min
+    if (remainingMs <= 5 * 60_000) return 'bg-label-warning'; // < 5 min
+    return 'bg-label-info';
+  }, [remainingMs]);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(invoice?.paymentAddress || '')
@@ -344,12 +352,14 @@ export default function InvoicePayment() {
                             {t("payment.timeRemaining")}
                           </div>
                           {expiryMs ? (
-                            <div
-                              className={`fw-medium ${
-                                isExpired ? "text-danger" : ""
-                              }`}
-                            >
-                              {formatDuration(remainingMs)}
+                            <div className="d-flex align-items-center gap-2">
+                              <span
+                                className={`badge rounded-pill ${countdownBadgeClass} px-3 py-2 fs-5`}
+                                aria-live="polite"
+                              >
+                                <i className="bx bx-timer me-1"></i>
+                                {formatDuration(remainingMs)}
+                              </span>
                             </div>
                           ) : (
                             <div className="text-muted">-</div>
