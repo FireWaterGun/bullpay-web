@@ -19,8 +19,8 @@ export default function LoginPage() {
 
   // Use only real site key from env; if missing, show warning (no test fallback)
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
-  // Force light to match Sneat light theme (can be made dynamic later)
-  const theme = 'light'
+  // Use dark to match default dark theme
+  const theme = 'dark'
 
   const onSubmit = async (e) => {
     e.preventDefault()

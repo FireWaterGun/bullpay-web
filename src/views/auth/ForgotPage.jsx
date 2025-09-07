@@ -15,7 +15,7 @@ export default function ForgotPage() {
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
-  const theme = 'light'
+  const theme = 'dark'
 
   const onSubmit = async (e) => {
     e.preventDefault()
