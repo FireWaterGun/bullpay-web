@@ -53,7 +53,7 @@ function getNetworkLabel(n, coin) {
   return `Network #${n?.networkId ?? id ?? '-'}`
 }
 
-export default function WalletList({ titleKey, titleDefault, showCreate = true, createLabelKey = 'wallet.createButton', createLabelDefault = 'Create wallet', createPath = '/app/wallets/create', showActions = true }) {
+export default function WalletList({ titleKey, titleDefault, showCreate = true, createLabelKey = 'wallet.createButton', createLabelDefault = 'Withdraw wallet', createPath = '/app/wallets/create', showActions = true }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { token } = useAuth()

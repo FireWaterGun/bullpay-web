@@ -245,7 +245,7 @@ export default function InvoiceCreate() {
               <h5 className="mb-2">{t('wallet.requiredTitle', { defaultValue: 'Wallet required' })}</h5>
               <p className="text-muted mb-3">{t('wallet.requiredDesc', { defaultValue: 'To create an invoice, please create a wallet first.' })}</p>
               <button type="button" className="btn btn-primary align-self-center" onClick={() => navigate('/app/wallets/create')}>
-                {t('wallet.goCreate', { defaultValue: 'Create wallet' })}
+                {t('wallet.goCreate', { defaultValue: 'Withdraw wallet' })}
               </button>
             </div>
           </div>
