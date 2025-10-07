@@ -1,7 +1,7 @@
 /* Landing Page Styles */
 .landing-page {
   overflow-x: hidden;
-  background: #fff;
+  background: #f5f5f9;
 }
 
 /* Smooth scroll behavior */
@@ -213,7 +213,7 @@ footer a {
 }
 
 footer a:hover {
-  color: #fff !important;
+  color: #696cff !important;
 }
 
 /* Responsive adjustments */

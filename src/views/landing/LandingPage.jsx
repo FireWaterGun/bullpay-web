@@ -10,7 +10,7 @@ export default function LandingPage() {
   useEffect(() => {
     // Set light theme for landing page
     document.documentElement.setAttribute('data-bs-theme', 'light')
-    document.body.style.backgroundColor = '#fff'
+    document.body.style.backgroundColor = '#f5f5f9'
     
     return () => {
       document.body.style.backgroundColor = ''
@@ -54,11 +54,11 @@ export default function LandingPage() {
         <div className="container-xxl">
           <a className="navbar-brand d-flex align-items-center" href="/">
             <div className="brand-icon me-2">
-              <i className="bx bxs-wallet-alt fs-2 text-warning"></i>
+              <i className="bx bxs-wallet-alt fs-2 text-primary"></i>
             </div>
             <span className="fw-bold fs-3">
               <span className="text-dark">BULL</span>
-              <span className="text-warning">PAY</span>
+              <span className="text-primary">PAY</span>
             </span>
           </a>
           <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -78,7 +78,7 @@ export default function LandingPage() {
                 </button>
               </li>
               <li className="nav-item ms-2">
-                <button className="btn btn-warning btn-sm px-4 fw-semibold" onClick={() => navigate('/register')}>
+                <button className="btn btn-primary btn-sm px-4 fw-semibold" onClick={() => navigate('/register')}>
                   Get Started
                 </button>
               </li>
@@ -89,34 +89,34 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="hero-section position-relative overflow-hidden" style={{ 
-        background: '#ffffff',
+        background: '#f5f5f9',
         paddingTop: '8rem',
         paddingBottom: '8rem'
       }}>
         {/* Decorative Background Elements */}
         <div className="position-absolute w-100 h-100" style={{ opacity: 0.4 }}>
-          <div className="position-absolute" style={{ top: '20%', left: '10%', width: '200px', height: '200px', background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)', filter: 'blur(60px)' }}></div>
-          <div className="position-absolute" style={{ bottom: '20%', right: '10%', width: '250px', height: '250px', background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
+          <div className="position-absolute" style={{ top: '20%', left: '10%', width: '200px', height: '200px', background: 'radial-gradient(circle, #696cff 0%, transparent 70%)', filter: 'blur(60px)' }}></div>
+          <div className="position-absolute" style={{ bottom: '20%', right: '10%', width: '250px', height: '250px', background: 'radial-gradient(circle, #696cff 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
         </div>
 
         <div className="container-xxl position-relative">
           <div className="row align-items-center">
             <div className="col-lg-6 mb-5 mb-lg-0">
-              <div className="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 mb-4">
+              <div className="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 mb-4">
                 <i className="bx bx-trending-up me-1"></i>
                 Trusted by 1000+ Businesses
               </div>
               <h1 className="display-2 fw-bold mb-4" style={{ lineHeight: '1.2' }}>
                 Accept Crypto
                 <br />
-                <span className="text-warning">Payments</span> Today
+                <span className="text-primary">Payments</span> Today
               </h1>
               <p className="lead text-muted mb-5" style={{ fontSize: '1.25rem' }}>
                 Professional cryptocurrency payment gateway supporting 50+ digital currencies. 
                 Low fees, instant settlement, and enterprise-grade security.
               </p>
               <div className="d-flex gap-3 flex-wrap mb-5">
-                <button className="btn btn-warning btn-lg px-5 py-3 fw-semibold shadow" onClick={() => navigate('/register')}>
+                <button className="btn btn-primary btn-lg px-5 py-3 fw-semibold shadow" onClick={() => navigate('/register')}>
                   Get Started Free
                   <i className="bx bx-right-arrow-alt ms-2"></i>
                 </button>
@@ -128,15 +128,15 @@ export default function LandingPage() {
               {/* Stats */}
               <div className="row g-4 mt-3">
                 <div className="col-4">
-                  <div className="text-warning fw-bold fs-2">50+</div>
+                  <div className="text-primary fw-bold fs-2">50+</div>
                   <div className="text-muted small">Cryptocurrencies</div>
                 </div>
                 <div className="col-4">
-                  <div className="text-warning fw-bold fs-2">0.5%</div>
+                  <div className="text-primary fw-bold fs-2">0.5%</div>
                   <div className="text-muted small">Transaction Fee</div>
                 </div>
                 <div className="col-4">
-                  <div className="text-warning fw-bold fs-2">24/7</div>
+                  <div className="text-primary fw-bold fs-2">24/7</div>
                   <div className="text-muted small">Support</div>
                 </div>
               </div>
@@ -218,8 +218,8 @@ export default function LandingPage() {
       {/* How It Works Section */}
       <section className="position-relative" style={{ background: '#ffffff', paddingTop: '6rem', paddingBottom: '6rem' }}>
         {/* Decorative elements */}
-        <div className="position-absolute" style={{ top: '10%', right: '5%', width: '100px', height: '100px', background: 'rgba(251, 191, 36, 0.1)', borderRadius: '50%', filter: 'blur(40px)' }}></div>
-        <div className="position-absolute" style={{ bottom: '10%', left: '5%', width: '150px', height: '150px', background: 'rgba(251, 191, 36, 0.1)', borderRadius: '50%', filter: 'blur(60px)' }}></div>
+        <div className="position-absolute" style={{ top: '10%', right: '5%', width: '100px', height: '100px', background: 'rgba(105, 108, 255, 0.1)', borderRadius: '50%', filter: 'blur(40px)' }}></div>
+        <div className="position-absolute" style={{ bottom: '10%', left: '5%', width: '150px', height: '150px', background: 'rgba(105, 108, 255, 0.1)', borderRadius: '50%', filter: 'blur(60px)' }}></div>
         
         <div className="container-xxl py-5 position-relative">
           <div className="row justify-content-center mb-5">
@@ -234,7 +234,7 @@ export default function LandingPage() {
             <div className="col-md-6 col-lg-4">
               <div className="card h-100 border-0 shadow-sm hover-lift">
                 <div className="card-body p-5">
-                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', boxShadow: '0 10px 30px rgba(251, 191, 36, 0.3)' }}>
+                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #696cff 0%, #5f61e6 100%)', boxShadow: '0 10px 30px rgba(105, 108, 255, 0.3)' }}>
                     <span className="fs-3 fw-bold text-white">1</span>
                   </div>
                   <h4 className="card-title text-center fw-bold mb-3">Customer selects crypto</h4>
@@ -247,7 +247,7 @@ export default function LandingPage() {
             <div className="col-md-6 col-lg-4">
               <div className="card h-100 border-0 shadow-sm hover-lift">
                 <div className="card-body p-5">
-                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', boxShadow: '0 10px 30px rgba(251, 191, 36, 0.3)' }}>
+                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #696cff 0%, #5f61e6 100%)', boxShadow: '0 10px 30px rgba(105, 108, 255, 0.3)' }}>
                     <span className="fs-3 fw-bold text-white">2</span>
                   </div>
                   <h4 className="card-title text-center fw-bold mb-3">Payment request is generated</h4>
@@ -260,7 +260,7 @@ export default function LandingPage() {
             <div className="col-md-6 col-lg-4">
               <div className="card h-100 border-0 shadow-sm hover-lift">
                 <div className="card-body p-5">
-                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', boxShadow: '0 10px 30px rgba(251, 191, 36, 0.3)' }}>
+                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #696cff 0%, #5f61e6 100%)', boxShadow: '0 10px 30px rgba(105, 108, 255, 0.3)' }}>
                     <span className="fs-3 fw-bold text-white">3</span>
                   </div>
                   <h4 className="card-title text-center fw-bold mb-3">Transaction is processed via blockchain</h4>
@@ -273,7 +273,7 @@ export default function LandingPage() {
             <div className="col-md-6 col-lg-4">
               <div className="card h-100 border-0 shadow-sm hover-lift">
                 <div className="card-body p-5">
-                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', boxShadow: '0 10px 30px rgba(251, 191, 36, 0.3)' }}>
+                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #696cff 0%, #5f61e6 100%)', boxShadow: '0 10px 30px rgba(105, 108, 255, 0.3)' }}>
                     <span className="fs-3 fw-bold text-white">4</span>
                   </div>
                   <h4 className="card-title text-center fw-bold mb-3">Instant confirmation</h4>
@@ -286,7 +286,7 @@ export default function LandingPage() {
             <div className="col-md-6 col-lg-4">
               <div className="card h-100 border-0 shadow-sm hover-lift">
                 <div className="card-body p-5">
-                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', boxShadow: '0 10px 30px rgba(251, 191, 36, 0.3)' }}>
+                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #696cff 0%, #5f61e6 100%)', boxShadow: '0 10px 30px rgba(105, 108, 255, 0.3)' }}>
                     <span className="fs-3 fw-bold text-white">5</span>
                   </div>
                   <h4 className="card-title text-center fw-bold mb-3">Funds settlement</h4>
@@ -299,7 +299,7 @@ export default function LandingPage() {
             <div className="col-md-6 col-lg-4">
               <div className="card h-100 border-0 shadow-sm hover-lift">
                 <div className="card-body p-5">
-                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', boxShadow: '0 10px 30px rgba(251, 191, 36, 0.3)' }}>
+                  <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #696cff 0%, #5f61e6 100%)', boxShadow: '0 10px 30px rgba(105, 108, 255, 0.3)' }}>
                     <span className="fs-3 fw-bold text-white">6</span>
                   </div>
                   <h4 className="card-title text-center fw-bold mb-3">Track and manage transactions</h4>
@@ -315,8 +315,8 @@ export default function LandingPage() {
       <section id="features" className="position-relative overflow-hidden" style={{ background: '#f8f9fa', paddingTop: '6rem', paddingBottom: '6rem' }}>
         {/* Background decoration */}
         <div className="position-absolute w-100 h-100" style={{ opacity: 0.4 }}>
-          <div className="position-absolute" style={{ top: '10%', right: '5%', width: '200px', height: '200px', background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)', filter: 'blur(60px)' }}></div>
-          <div className="position-absolute" style={{ bottom: '10%', left: '5%', width: '250px', height: '250px', background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
+          <div className="position-absolute" style={{ top: '10%', right: '5%', width: '200px', height: '200px', background: 'radial-gradient(circle, #696cff 0%, transparent 70%)', filter: 'blur(60px)' }}></div>
+          <div className="position-absolute" style={{ bottom: '10%', left: '5%', width: '250px', height: '250px', background: 'radial-gradient(circle, #696cff 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
         </div>
 
         <div className="container-xxl py-5 position-relative">
@@ -444,7 +444,7 @@ export default function LandingPage() {
                   </p>
                   
                   {/* Visual - Fee Comparison */}
-                  <div className="mt-4 p-4 rounded" style={{ background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' }}>
+                  <div className="mt-4 p-4 rounded" style={{ background: 'linear-gradient(135deg, #696cff 0%, #5f61e6 100%)' }}>
                     <div className="row text-white">
                       <div className="col-6 text-center">
                         <div className="display-4 fw-bold">0.5%</div>
@@ -479,12 +479,12 @@ export default function LandingPage() {
                       <div className="badge bg-success">+12.5%</div>
                     </div>
                     <div className="progress mb-3" style={{ height: '8px' }}>
-                      <div className="progress-bar bg-warning" style={{ width: '75%' }}></div>
+                      <div className="progress-bar bg-primary" style={{ width: '75%' }}></div>
                     </div>
                     <div className="row g-2 small">
                       <div className="col-6">
                         <div className="d-flex align-items-center gap-2">
-                          <div className="rounded-circle bg-warning" style={{ width: '8px', height: '8px' }}></div>
+                          <div className="rounded-circle bg-primary" style={{ width: '8px', height: '8px' }}></div>
                           <span className="text-muted">Completed</span>
                         </div>
                       </div>
@@ -571,9 +571,9 @@ export default function LandingPage() {
             <div className="col-md-6 col-lg-4">
               <div className="text-center p-4">
                 <div className="mb-3">
-                  <i className="bx bx-user-circle" style={{ fontSize: '3rem', color: '#ef4444' }}></i>
+                  <i className="bx bx-user-circle" style={{ fontSize: '3rem' }}></i>
                 </div>
-                <h5 className="fw-bold mb-2" style={{ color: '#ef4444' }}>Sign Up</h5>
+                <h5 className="fw-bold mb-2">Sign Up</h5>
               </div>
             </div>
           </div>
@@ -623,10 +623,10 @@ export default function LandingPage() {
           <div className="text-center mt-5">
             <div className="d-inline-flex flex-column align-items-center gap-3">
               <p className="text-muted mb-0">Support for 50+ cryptocurrencies and growing</p>
-              <button className="btn btn-outline-dark btn-lg px-5 py-3 d-inline-flex align-items-center gap-2">
+              {/* <button className="btn btn-outline-dark btn-lg px-5 py-3 d-inline-flex align-items-center gap-2">
                 <span className="fw-semibold">View All Currencies</span>
                 <i className="bx bx-right-arrow-alt fs-5"></i>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -638,10 +638,10 @@ export default function LandingPage() {
           <div className="row g-4 py-4">
             <div className="col-lg-4">
               <div className="d-flex align-items-center mb-3">
-                <i className="bx bxs-wallet-alt fs-2 text-warning me-2"></i>
+                <i className="bx bxs-wallet-alt fs-2 text-primary me-2"></i>
                 <span className="fw-bold fs-4">
                   <span className="text-dark">BULL</span>
-                  <span className="text-warning">PAY</span>
+                  <span className="text-primary">PAY</span>
                 </span>
               </div>
               <p className="text-muted mb-4">
