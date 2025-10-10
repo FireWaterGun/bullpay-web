@@ -181,7 +181,15 @@ export default function InvoiceCreate() {
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
-    if (!coinNetworkId || !amount) {
+    if (!selectedCoin) {
+      setError(t("validation.selectCoin") || "Please select a coin");
+      return;
+    }
+    if (!coinNetworkId) {
+      setError(t("validation.selectNetwork") || "Please select a network");
+      return;
+    }
+    if (!amount) {
       setError(t("validation.requiredFields") || "Please fill required fields");
       return;
     }
@@ -355,7 +363,7 @@ export default function InvoiceCreate() {
             <button type="button" className="btn btn-outline-secondary" onClick={() => navigate(-1)} disabled={loading}>
               {t("actions.back") || "Back"}
             </button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
+            <button type="submit" className="btn btn-primary" disabled={loading || !selectedCoin || !coinNetworkId || !amount}>
               {loading ? t("common.saving") || "Saving..." : t("invoice.createTitle")}
             </button>
           </div>

@@ -126,7 +126,7 @@ export default function DashboardLayout() {
   // Theme & Language state synced with <html> attributes
   const THEME_STORAGE_KEY = 'ui_theme'
   const LANG_STORAGE_KEY = 'ui_lang'
-  const [theme, setTheme] = useState('dark') // 'light' | 'dark' | 'system'
+  const [theme, setTheme] = useState('light') // 'light' | 'dark' | 'system'
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
   const { user, logout } = useAuth()
 
@@ -139,7 +139,7 @@ export default function DashboardLayout() {
     const html = document.documentElement
     const body = document.body
     html.setAttribute('data-template', 'vertical-menu-template')
-  if (!html.getAttribute('data-bs-theme')) html.setAttribute('data-bs-theme', 'dark')
+  if (!html.getAttribute('data-bs-theme')) html.setAttribute('data-bs-theme', 'light')
     html.classList.add('layout-navbar-fixed', 'layout-menu-fixed', 'layout-compact')
     body.classList.add('animation-enabled')
     // Ensure expanded on mount (no collapsed class by default)

@@ -19,8 +19,8 @@ export default function LoginPage() {
 
   // Use only real site key from env; if missing, show warning (no test fallback)
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
-  // Use dark to match default dark theme
-  const theme = 'dark'
+  // Use light theme to match app theme
+  const theme = 'light'
 
   const onSubmit = async (e) => {
     e.preventDefault()
