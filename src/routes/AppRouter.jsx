@@ -8,6 +8,8 @@ import ForgotCompletePage from '../views/auth/ForgotCompletePage'
 import RegisterCompletePage from '../views/auth/RegisterCompletePage'
 import DashboardLayout from '../views/app/DashboardLayout'
 import { AuthProvider, useAuth } from '../context/AuthContext'
+import { PusherProvider } from '../context/PusherContext'
+import { ToastProvider } from '../context/ToastContext'
 import InvoicePayment from '../views/invoices/InvoicePayment'
 import VerifyEmailPage from '../views/auth/VerifyEmailPage'
 
@@ -46,21 +48,25 @@ function RootHandler() {
 export default function AppRouter() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/register-complete" element={<RegisterCompletePage />} />
-          <Route path="/forgot" element={<ForgotPage />} />
-          <Route path="/forgot-complete" element={<ForgotCompletePage />} />
-          {/* Public payment route (no auth required) */}
-          <Route path="/pay/:id" element={<InvoicePayment />} />
-          <Route path="/verify" element={<VerifyEmailPage />} />
-          <Route path="/app/*" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <ToastProvider>
+        <PusherProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/register-complete" element={<RegisterCompletePage />} />
+              <Route path="/forgot" element={<ForgotPage />} />
+              <Route path="/forgot-complete" element={<ForgotCompletePage />} />
+              {/* Public payment route (no auth required) */}
+              <Route path="/pay/:id" element={<InvoicePayment />} />
+              <Route path="/verify" element={<VerifyEmailPage />} />
+              <Route path="/app/*" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </PusherProvider>
+      </ToastProvider>
     </AuthProvider>
   )
 }

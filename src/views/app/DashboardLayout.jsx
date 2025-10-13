@@ -2,6 +2,9 @@ import { Routes, Route, NavLink, Navigate, useNavigate, useMatch, useResolvedPat
 import { useEffect, useState, useRef } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
+import { useToastContext } from '../../context/ToastContext'
+import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
+import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
 
 // Remove inline page components and import split components
 import DashboardHome from './DashboardHome'
@@ -120,6 +123,7 @@ function MenuGroup({ base, icon, label, children }) {
 export default function DashboardLayout() {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
+  const toast = useToastContext()
   // Add collapsed state and Sneat HTML attributes per vertical-menu-template (collapsed variant)
   const [collapsed, setCollapsed] = useState(false)
 
@@ -129,6 +133,72 @@ export default function DashboardLayout() {
   const [theme, setTheme] = useState('light') // 'light' | 'dark' | 'system'
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
   const { user, logout } = useAuth()
+
+  // Get user identifier (try id, userId, or email)
+  const userIdentifier = user?.id || user?.userId || user?.email;
+
+  // Log subscription info
+  useEffect(() => {
+    console.log('[DashboardLayout] 👤 User data:', user);
+    if (userIdentifier) {
+      console.log('[DashboardLayout] 🔔 Subscribing to channel: user.' + userIdentifier + '.invoices');
+    } else {
+      console.warn('[DashboardLayout] ⚠️ No user identifier found, cannot subscribe to Pusher');
+    }
+  }, [user, userIdentifier]);
+
+  // Subscribe to Pusher events for real-time updates (global for all dashboard pages)
+  useUserInvoiceEvents(userIdentifier, {
+    onInvoiceCreated: (data) => {
+      console.log('[DashboardLayout] Event: invoice.created', data);
+      playNotificationSound('info');
+      toast.info({
+        title: 'New Invoice',
+        body: data.body || 'A new invoice has been created'
+      });
+    },
+    onInvoiceUpdated: (data) => {
+      console.log('[DashboardLayout] Event: invoice.updated', data);
+      toast.info({
+        title: 'Invoice Updated',
+        body: data.body || 'An invoice has been updated'
+      });
+    },
+    onStatusChanged: (data) => {
+      console.log('[DashboardLayout] Event: invoice.status.changed', data);
+      // Check if it's a payment completion notification
+      if (data.type === 'invoice_completed' || data.status === 'paid') {
+        const invoiceData = {
+          id: data.invoiceId,
+          invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
+          ...data
+        };
+        toast.success({
+          title: 'Invoice Paid',
+          body: data.body || 'Invoice has been paid successfully'
+        });
+        notifyPaymentReceived(invoiceData);
+      } else {
+        toast.info({
+          title: 'Status Changed',
+          body: data.body || `Invoice status changed to ${data.status}`
+        });
+      }
+    },
+    onPaymentReceived: (data) => {
+      console.log('[DashboardLayout] Event: payment.received', data);
+      const invoiceData = {
+        id: data.invoiceId,
+        invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
+        ...data
+      };
+      toast.success({
+        title: 'Payment Received',
+        body: data.body || 'Payment has been received'
+      });
+      notifyPaymentReceived(invoiceData);
+    }
+  });
 
   // Helper: breakpoint check (matches navbar-expand-xl)
   const isXlUp = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(min-width: 1200px)').matches
@@ -142,6 +212,19 @@ export default function DashboardLayout() {
   if (!html.getAttribute('data-bs-theme')) html.setAttribute('data-bs-theme', 'light')
     html.classList.add('layout-navbar-fixed', 'layout-menu-fixed', 'layout-compact')
     body.classList.add('animation-enabled')
+    
+    // Initialize audio context on first user interaction
+    const initAudio = () => {
+      initAudioContext();
+      // Remove listeners after first interaction
+      document.removeEventListener('click', initAudio);
+      document.removeEventListener('touchstart', initAudio);
+      document.removeEventListener('keydown', initAudio);
+    };
+    
+    document.addEventListener('click', initAudio);
+    document.addEventListener('touchstart', initAudio);
+    document.addEventListener('keydown', initAudio)
     // Ensure expanded on mount (no collapsed class by default)
     // html.classList.add('layout-menu-collapsed')
     // Rehydrate theme & language
@@ -157,6 +240,9 @@ export default function DashboardLayout() {
     return () => {
       html.classList.remove('layout-navbar-fixed', 'layout-menu-fixed', 'layout-compact', 'layout-menu-collapsed', 'layout-menu-hover', 'layout-menu-expanded')
       body.classList.remove('animation-enabled')
+      document.removeEventListener('click', initAudio);
+      document.removeEventListener('touchstart', initAudio);
+      document.removeEventListener('keydown', initAudio);
     }
   }, [])
 

@@ -58,3 +58,114 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Toast animations */
+@keyframes toastSlideIn {
+  0% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+.toast-custom {
+  box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.45);
+  margin-bottom: 0.75rem;
+  min-width: 320px;
+  max-width: 400px;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  transform: translateZ(0);
+  position: relative;
+  border-radius: 0.5rem;
+  background-color: #fff !important;
+  opacity: 1 !important;
+  z-index: 99999 !important;
+  isolation: isolate;
+}
+
+.toast-custom .toast-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.toast-custom .btn-close {
+  padding: 0.25rem;
+  opacity: 0.5;
+}
+
+.toast-custom .btn-close:hover {
+  opacity: 1;
+}
+
+.toast-custom.show {
+  opacity: 1 !important;
+}
+
+.toast-enter {
+  animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast-exit {
+  animation: toastSlideOut 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  pointer-events: none;
+}
+
+.toast-container {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  z-index: 99999 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.toast-container .toast {
+  pointer-events: auto;
+  position: relative;
+  transform: translateZ(0);
+  z-index: 99999 !important;
+}
+
+/* Prevent layout shift */
+body {
+  overflow-x: hidden;
+}
+
+/* Dark mode support for toast */
+[data-bs-theme="dark"] .toast-custom {
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.4);
+  background-color: #2b2c40 !important;
+  opacity: 1 !important;
+}
+
+.dark-style .toast-custom {
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.4);
+  background-color: #2b2c40 !important;
+  opacity: 1 !important;
+}
+
+html[data-style="dark"] .toast-custom {
+  background-color: #2b2c40 !important;
+  opacity: 1 !important;
+}

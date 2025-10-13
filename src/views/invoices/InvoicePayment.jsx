@@ -4,10 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { QRCodeSVG as QRCode } from 'qrcode.react'
 import { getPublicInvoiceQr, getPublicInvoiceStatus } from '../../api/invoices'
 import { formatAmount, formatDateTime } from '../../utils/format'
+import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
+import { playNotificationSound } from '../../utils/notification'
+import { useToastContext } from '../../context/ToastContext'
 
 export default function InvoicePayment() {
   const { t } = useTranslation()
   const { id: publicCode } = useParams() // route param is public invoice code
+  const toast = useToastContext()
   const [invoice, setInvoice] = useState(null)
   const [qr, setQr] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -97,6 +101,51 @@ export default function InvoicePayment() {
       return
     }
   }, [publicCode, invoice])
+
+  // Subscribe to Pusher events for real-time updates
+  useInvoiceEvents(invoice?.invoiceId || invoice?.id, {
+    onPaymentReceived: (data) => {
+      console.log('Payment received via Pusher:', data)
+      playNotificationSound('success')
+      // Show toast notification
+      toast.success({
+        title: 'Payment Received',
+        body: data.body || 'Payment has been received'
+      });
+      // Update invoice status immediately
+      setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+      // Refresh invoice data in background after delay
+      setTimeout(() => refreshStatus(), 1000)
+    },
+    onStatusChanged: (data) => {
+      console.log('Status changed via Pusher:', data)
+      // Check if it's a payment completion notification
+      if (data.type === 'invoice_completed' || data.status === 'paid') {
+        playNotificationSound('success')
+        // Show toast notification
+        toast.success({
+          title: 'Invoice Paid',
+          body: data.body || 'Invoice has been paid successfully'
+        });
+        // Update invoice status immediately
+        setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+      } else if (data.status) {
+        setInvoice(prev => prev ? { ...prev, status: data.status } : prev)
+      }
+      // Then refresh full data in background after delay
+      setTimeout(() => refreshStatus(), 1000)
+    },
+    onUpdated: (data) => {
+      console.log('Invoice updated via Pusher:', data)
+      // Show toast notification
+      toast.info({
+        title: data.title || 'Invoice Updated',
+        body: data.body || 'Invoice has been updated'
+      })
+      // Refresh in background after delay
+      setTimeout(() => refreshStatus(), 1000)
+    }
+  })
 
   // Initial load + polling
   useEffect(() => {
