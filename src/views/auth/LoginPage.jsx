@@ -63,9 +63,15 @@ export default function LoginPage() {
         <div className="authentication-inner">
           <div className="card px-sm-6 px-0">
             <div className="card-body">
-              <div className="app-brand justify-content-center">
-                <a href="#" className="app-brand-link gap-2">
-                  <span className="app-brand-text demo text-heading fw-bold">BULL PAY</span>
+              <div className="app-brand justify-content-center mb-4">
+                <a href="/" className="app-brand-link gap-2 d-flex align-items-center">
+                  <div className="brand-icon">
+                    <i className="bx bxs-wallet-alt text-primary" style={{ fontSize: '40px' }}></i>
+                  </div>
+                  <span className="fw-bold" style={{ fontSize: '24px' }}>
+                    <span className="text-dark">BULL</span>
+                    <span className="text-primary">PAY</span>
+                  </span>
                 </a>
               </div>
               {/* Removed welcome heading and subtitle per requirement */}

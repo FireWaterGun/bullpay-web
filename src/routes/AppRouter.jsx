@@ -19,7 +19,7 @@ function ProtectedRoute({ children, requireAdmin = false }) {
   if (!isReady) return null // or a loader
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
   
   // Check admin requirement
