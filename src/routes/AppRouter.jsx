@@ -13,10 +13,22 @@ import { ToastProvider } from '../context/ToastContext'
 import InvoicePayment from '../views/invoices/InvoicePayment'
 import VerifyEmailPage from '../views/auth/VerifyEmailPage'
 
-function ProtectedRoute({ children }) {
-  const { isAuthenticated, isReady } = useAuth()
+function ProtectedRoute({ children, requireAdmin = false }) {
+  const { isAuthenticated, isReady, isAdmin, user } = useAuth()
+  
   if (!isReady) return null // or a loader
-  return isAuthenticated ? children : <Navigate to="/login" replace />
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+  
+  // Check admin requirement
+  if (requireAdmin && !isAdmin) {
+    console.warn('[ProtectedRoute] Access denied: Admin role required', { user })
+    return <Navigate to="/app" replace />
+  }
+  
+  return children
 }
 
 function RootHandler() {

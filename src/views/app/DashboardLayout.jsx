@@ -20,6 +20,8 @@ import Balance from '../balance/Balance'
 import BalanceAccount from '../balance/BalanceAccount'
 import BalanceWithdrawals from '../balance/BalanceWithdrawals'
 import WithdrawRequest from '../balance/WithdrawRequest'
+import AdminDashboard from '../admin/AdminDashboard'
+import SystemBalance from '../admin/SystemBalance'
 
 function MenuItem({ to, icon, label, end }) {
   const resolved = useResolvedPath(to)
@@ -132,7 +134,7 @@ export default function DashboardLayout() {
   const LANG_STORAGE_KEY = 'ui_lang'
   const [theme, setTheme] = useState('light') // 'light' | 'dark' | 'system'
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
-  const { user, logout } = useAuth()
+  const { user, logout, isAdmin } = useAuth()
 
   // Get user identifier (try id, userId, or email)
   const userIdentifier = user?.id || user?.userId || user?.email;
@@ -314,11 +316,11 @@ export default function DashboardLayout() {
   const themeIcon = theme === 'dark' ? 'bx-moon' : theme === 'system' ? 'bx-desktop' : 'bx-sun'
 
   // Derive user initials for fallback avatar
-  const initials = (user?.name || user?.email || 'U')
+  const initials = (user?.fullName || user?.name || user?.email || 'U')
     .split(/\s+|@/)
     .filter(Boolean)
     .slice(0, 2)
-    .map(s => s[0])
+    .map(s => s[0].toUpperCase())
     .join('')
     .toUpperCase()
 
@@ -394,16 +396,27 @@ export default function DashboardLayout() {
           </div>
           <div className="menu-inner-shadow"></div>
           <ul className="menu-inner py-1">
-            <MenuItem to="/app" end icon="bx-home" label={t('nav.dashboard')} />
-            <MenuGroup base="/app/balance" icon="bx-wallet" label={t('nav.balance', { defaultValue: 'Balance' })}>
-              <SubItem to="/app/balance" end label={t('balance.account', { defaultValue: 'Account' })} />
-              <SubItem to="/app/balance/withdrawals" end={true} label={t('balance.withdrawals', { defaultValue: 'Withdrawals' })} />
-            </MenuGroup>
-            <MenuGroup base="/app/invoices" icon="bx-file" label={t('nav.invoice')}>
-              <SubItem to="/app/invoices" end label={t('nav.history')} />
-              <SubItem to="/app/invoices/create" end={true} label={t('nav.create')} />
-            </MenuGroup>
-            <MenuItem to="/app/settings" icon="bx-cog" label={t('nav.settings')} />
+            {isAdmin ? (
+              <>
+                {/* Admin menu */}
+                <MenuItem to="/app" end icon="bx-home" label="Dashboard" />
+                <MenuItem to="/app/system-balance" icon="bx-wallet" label="System Balance" />
+              </>
+            ) : (
+              <>
+                {/* User menu */}
+                <MenuItem to="/app" end icon="bx-home" label={t('nav.dashboard')} />
+                <MenuGroup base="/app/balance" icon="bx-wallet" label={t('nav.balance', { defaultValue: 'Balance' })}>
+                  <SubItem to="/app/balance" end label={t('balance.account', { defaultValue: 'Account' })} />
+                  <SubItem to="/app/balance/withdrawals" end={true} label={t('balance.withdrawals', { defaultValue: 'Withdrawals' })} />
+                </MenuGroup>
+                <MenuGroup base="/app/invoices" icon="bx-file" label={t('nav.invoice')}>
+                  <SubItem to="/app/invoices" end label={t('nav.history')} />
+                  <SubItem to="/app/invoices/create" end={true} label={t('nav.create')} />
+                </MenuGroup>
+                <MenuItem to="/app/settings" icon="bx-cog" label={t('nav.settings')} />
+              </>
+            )}
           </ul>
         </aside>
         <div className="menu-mobile-toggler d-xl-none rounded-1">
@@ -494,8 +507,14 @@ export default function DashboardLayout() {
                             </div>
                           </div>
                           <div className="flex-grow-1">
-                            <span className="fw-medium d-block">{user?.name || user?.email || 'User'}</span>
-                            <small className="text-muted">{user?.role || 'Member'}</small>
+                            <span className="fw-medium d-block">{user?.fullName || user?.name || user?.email || 'User'}</span>
+                            <small className="text-muted">
+                              {isAdmin ? (
+                                <span className="badge bg-label-danger badge-sm">Admin</span>
+                              ) : (
+                                <span>{user?.role || 'User'}</span>
+                              )}
+                            </small>
                           </div>
                         </div>
                       </a>
@@ -527,6 +546,16 @@ export default function DashboardLayout() {
             <div>
               <Routes>
                 <Route index element={<DashboardHome />} />
+                
+                {/* Admin-only routes */}
+                {isAdmin && (
+                  <>
+                    <Route path="admin" element={<AdminDashboard />} />
+                    <Route path="system-balance" element={<SystemBalance />} />
+                  </>
+                )}
+                
+                {/* User routes */}
                 <Route path="invoices" element={<InvoiceList />} />
                 <Route path="invoices/create" element={<InvoiceCreate />} />
                 <Route path="invoices/:id" element={<InvoiceDetail />} />

@@ -8,6 +8,42 @@ import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
 import { useToastContext } from '../../context/ToastContext'
 
+// Coin image component
+function CoinImg({ symbol, logoUrl, size = 32 }) {
+  const [idx, setIdx] = useState(0)
+  const candidates = useMemo(() => {
+    const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+    const aliases = {
+      btc: ['bitcoin'],
+      eth: ['ethereum'],
+      doge: ['dogecoin'],
+      sol: ['solana'],
+      matic: ['polygon'],
+      ada: ['cardano'],
+      xmr: ['monero'],
+      zec: ['zcash'],
+      usdt: ['usdterc20', 'tether'],
+    }
+    const names = [sym, ...(aliases[sym] || [])]
+    if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+    const exts = ['svg', 'png']
+    const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
+    const arr = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
+    return Array.from(new Set(arr))
+  }, [symbol, logoUrl])
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  return (
+    <img
+      src={src}
+      alt={symbol}
+      width={size}
+      height={size}
+      className="rounded"
+      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+    />
+  )
+}
+
 export default function InvoicePayment() {
   const { t } = useTranslation()
   const { id: publicCode } = useParams() // route param is public invoice code
@@ -310,8 +346,14 @@ export default function InvoicePayment() {
                   >
                     {statusLabel(uiStatus)}
                   </span>
-                  <div className="small text-muted">
-                    {formatAmount(invoice.amount)} {coinSym} {networkName && <>• {networkName}</>}
+                </div>
+                <div className="card-body pt-0 pb-3 border-bottom">
+                  <div className="d-flex align-items-center justify-content-center gap-3">
+                    <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={40} />
+                    <div className="text-start">
+                      <div className="fw-semibold">{coinSym}</div>
+                      <div className="small text-muted">{networkName || 'Network'}</div>
+                    </div>
                   </div>
                 </div>
                 <div className="card-body">
@@ -343,12 +385,12 @@ export default function InvoicePayment() {
                     <div className="col-12">
                       {!isExpired || isPaid ? (
                         <div className="mb-3">
-                          <div className="text-muted small">
+                          <div className="text-muted small mb-1">
                             {t("invoices.amount")}
                           </div>
                           <div className="d-flex align-items-center gap-2 flex-wrap">
-                            <div className="fs-5 fw-medium">
-                              {formatAmount(invoice.amount)} {coinSym}
+                            <div className="fs-4 fw-semibold">
+                              {formatAmount(invoice.amount)} <span >{coinSym}</span>
                             </div>
                             {invoice.amount != null && (
                               <button

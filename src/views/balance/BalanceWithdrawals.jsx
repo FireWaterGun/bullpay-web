@@ -245,6 +245,7 @@ export default function BalanceWithdrawals() {
                   <col />
                   <col style={{ width: '12%' }} />
                   <col style={{ width: '16%' }} />
+                  <col style={{ width: '80px' }} />
                 </colgroup>
                 <thead>
                   <tr>
@@ -254,6 +255,7 @@ export default function BalanceWithdrawals() {
                     <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
                     <th className="text-nowrap cell-fit">{t('common.status', { defaultValue: 'Status' })}</th>
                     <th className="text-nowrap text-end cell-fit">{t('common.createdAt', { defaultValue: 'Created at' })}</th>
+                    <th className="text-center cell-fit">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -283,6 +285,28 @@ export default function BalanceWithdrawals() {
                         <td className="text-nowrap"><span className={statusBadgeClass(it.status)}>{String(it.status || '').toUpperCase()}</span></td>
                         <td className="text-nowrap text-end">
                           <span className="text-muted small">{new Date(it.createdAt).toLocaleString()}</span>
+                        </td>
+                        <td className="text-center">
+                          {it.txHash ? (
+                            <a
+                              href={`${it.coinNetwork?.network?.explorerUrl || cn?.network?.explorerUrl || 'https://etherscan.io'}/tx/${it.txHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn-sm btn-icon btn-outline-primary"
+                              title="View Transaction"
+                            >
+                              <i className="bx bx-link-external"></i>
+                            </a>
+                          ) : (
+                            <a
+                              href={`${it.coinNetwork?.network?.explorerUrl || cn?.network?.explorerUrl || 'https://etherscan.io'}/address/${it.toAddress}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn-sm btn-icon btn-outline-primary"
+                              title="View Address">
+                              <i className="bx bx-link-external"></i>
+                            </a>
+                          )}
                         </td>
                       </tr>
                     )

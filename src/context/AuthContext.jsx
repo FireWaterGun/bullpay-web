@@ -63,6 +63,8 @@ export function AuthProvider({ children }) {
     token,
     isAuthenticated: !!token || !!user,
     isReady,
+    isAdmin: user?.role === 'admin',
+    isUser: user?.role === 'user' || (!user?.role && !!user), // default to user if no role
     setUser,
     login,
     logout,
