@@ -281,6 +281,9 @@ export default function WithdrawRequest() {
                           <div className="text-muted small">{networkLabel}</div>
                         </div>
                       </div>
+                      {networkSym && networkSym !== sym && (
+                        <span className="badge bg-danger-subtle text-danger">{t('wallet.colNetwork', { defaultValue: 'Network' })}</span>
+                      )}
                     </div>
                   </div>
 
