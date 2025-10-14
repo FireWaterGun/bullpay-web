@@ -16,6 +16,23 @@ export default function InvoiceDetail() {
   const [copiedPublic, setCopiedPublic] = useState(false); // still used for fallback share copy
   const [shareError, setShareError] = useState("");
 
+  const loadInvoice = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await getInvoice(id, token);
+      setInvoice(res);
+    } catch (e) {
+      setError(
+        typeof e?.message === "string"
+          ? e.message
+          : "Failed to load invoice"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [id, token]);
+
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -40,6 +57,9 @@ export default function InvoiceDetail() {
       mounted = false;
     };
   }, [id, token]);
+
+  // Note: Pusher subscription is handled globally in DashboardLayout
+  // No need to subscribe here to avoid duplicate notifications
 
   const statusClass = (s) =>
     s === "paid"

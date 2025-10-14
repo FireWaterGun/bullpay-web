@@ -16,7 +16,7 @@ export default function InvoiceList() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const [selected, setSelected] = useState(new Set());
   const selectAllRef = useRef(null);
@@ -68,6 +68,9 @@ export default function InvoiceList() {
   useEffect(() => {
     load();
   }, [page, limit, sortBy, sortOrder]);
+
+  // Note: Pusher subscription is handled globally in DashboardLayout
+  // No need to subscribe here to avoid duplicate notifications
 
   useEffect(() => {
     if (selectAllRef.current) {
