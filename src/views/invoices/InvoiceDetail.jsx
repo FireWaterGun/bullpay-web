@@ -4,16 +4,12 @@ import { useTranslation } from "react-i18next";
 import { getInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
-import { useInvoiceEvents } from "../../hooks/useInvoiceEvents";
-import { notifyPaymentReceived, notifyInvoiceUpdated } from "../../utils/notification";
-import { useToastContext } from "../../context/ToastContext";
 
 export default function InvoiceDetail() {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const toast = useToastContext();
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -62,71 +58,8 @@ export default function InvoiceDetail() {
     };
   }, [id, token]);
 
-  // Subscribe to Pusher events for real-time updates
-  useInvoiceEvents(id, {
-    onPaymentReceived: (data) => {
-      console.log('Payment received via Pusher:', data);
-      // Map notification data to invoice format
-      const invoiceData = {
-        id: data.invoiceId,
-        invoiceNumber: data.title?.replace('Invoice #', '') || data.invoiceId,
-        ...data
-      };
-      // Show toast notification
-      toast.success({
-        title: 'Payment Received',
-        body: data.body || 'Invoice has been paid successfully'
-      });
-      notifyPaymentReceived(invoiceData);
-      // Update invoice state optimistically without full reload
-      setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev);
-      // Reload in background after a delay
-      setTimeout(() => loadInvoice(), 1000);
-    },
-    onStatusChanged: (data) => {
-      console.log('Status changed via Pusher:', data);
-      // Check if it's a payment completion notification
-      if (data.type === 'invoice_completed' || data.status === 'paid') {
-        const invoiceData = {
-          id: data.invoiceId,
-          invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
-          ...data
-        };
-        // Show toast notification
-        toast.success({
-          title: 'Invoice Paid',
-          body: data.body || 'Invoice has been paid successfully'
-        });
-        notifyPaymentReceived(invoiceData);
-        // Update invoice state optimistically
-        setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev);
-        // Reload in background after a delay
-        setTimeout(() => loadInvoice(), 1000);
-      } else {
-        // For other status changes, just update the status
-        if (data.status) {
-          setInvoice(prev => prev ? { ...prev, status: data.status } : prev);
-        }
-        setTimeout(() => loadInvoice(), 1000);
-      }
-    },
-    onUpdated: (data) => {
-      console.log('Invoice updated via Pusher:', data);
-      const invoiceData = {
-        id: data.invoiceId,
-        invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
-        ...data
-      };
-      // Show toast notification
-      toast.info({
-        title: data.title || 'Invoice Updated',
-        body: data.body || 'Invoice has been updated'
-      });
-      notifyInvoiceUpdated(invoiceData);
-      // Reload in background after a delay
-      setTimeout(() => loadInvoice(), 1000);
-    }
-  });
+  // Note: Pusher subscription is handled globally in DashboardLayout
+  // No need to subscribe here to avoid duplicate notifications
 
   const statusClass = (s) =>
     s === "paid"
