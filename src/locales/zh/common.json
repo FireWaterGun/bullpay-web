@@ -51,6 +51,7 @@
     "sortOrder": "排序方式",
   "dateCreated": "创建日期",
     "amount": "金额",
+    "coin": "币种",
     "statusCol": "状态",
     "date": "日期",
     "note": "备注",
@@ -253,5 +254,11 @@
   "txStarbucks": "星巴克",
   "txMastercard": "Mastercard"
   ,"activityTimeline": "活动时间线"
+  },
+  "time": {
+    "days": "天",
+    "hours": "小时",
+    "minutes": "分钟",
+    "seconds": "秒"
   }
 }

@@ -1,9 +1,178 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { NavLink, useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
+import { listCoins } from "../../api/coins";
+import { listNetworks } from "../../api/networks";
+
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    pol: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+    usdc: ['usd-coin'],
+    bnb: ['binance'],
+    bsc: ['binance'],
+    trx: ['tron'],
+    arb: ['arbitrum'],
+    op: ['optimism'],
+    base: ['base'],
+    ln: ['lightning'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
+  const candidates = [
+    ...byAssets,
+    ...(logoUrl ? [logoUrl] : []),
+    '/assets/img/coins/default.svg',
+  ]
+  return Array.from(new Set(candidates))
+}
+
+function CoinImg({ coin, symbol, networkSymbol, size = 40 }) {
+  const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
+    [coin?.logoUrl, symbol]
+  )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  )
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 20
+
+  return (
+    <div className="position-relative me-2" style={{ width: size, height: size }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol &&
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CountdownTimer({ expiryAt }) {
+  const { t } = useTranslation();
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  useEffect(() => {
+    if (!expiryAt) return;
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const expiry = new Date(expiryAt).getTime();
+      const diff = expiry - now;
+
+      if (diff <= 0) {
+        return { expired: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      return { expired: false, days, hours, minutes, seconds };
+    };
+
+    setTimeLeft(calculateTimeLeft());
+
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [expiryAt]);
+
+  if (!timeLeft) return null;
+
+  if (timeLeft.expired) {
+    return (
+      <div className="alert alert-danger mb-0">
+        <div className="d-flex align-items-center mb-2">
+          <i className="bx bx-time-five fs-5 me-2"></i>
+          <div className="fw-medium">{t('payment.expired') || 'Expired'}</div>
+        </div>
+        <small>{t('payment.expiredMessage') || 'This invoice has expired'}</small>
+      </div>
+    );
+  }
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  return (
+    <div className="alert alert-warning mb-0">
+      <div className="d-flex align-items-center mb-2">
+        <i className="bx bx-time-five fs-5 me-2"></i>
+        <div className="fw-medium">{t('payment.timeRemaining') || 'Time Remaining'}</div>
+      </div>
+      <div className="d-flex gap-3 justify-content-center">
+        {timeLeft.days > 0 && (
+          <div className="text-center">
+            <div className="fs-3 fw-bold">{pad(timeLeft.days)}</div>
+            <small className="text-muted">{t('time.days') || 'Days'}</small>
+          </div>
+        )}
+        <div className="text-center">
+          <div className="fs-3 fw-bold">{pad(timeLeft.hours)}</div>
+          <small className="text-muted">{t('time.hours') || 'Hours'}</small>
+        </div>
+        <div className="text-center">
+          <div className="fs-3 fw-bold">{pad(timeLeft.minutes)}</div>
+          <small className="text-muted">{t('time.minutes') || 'Minutes'}</small>
+        </div>
+        <div className="text-center">
+          <div className="fs-3 fw-bold">{pad(timeLeft.seconds)}</div>
+          <small className="text-muted">{t('time.seconds') || 'Seconds'}</small>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function InvoiceDetail() {
   const { t } = useTranslation();
@@ -15,6 +184,8 @@ export default function InvoiceDetail() {
   const [error, setError] = useState("");
   const [copiedPublic, setCopiedPublic] = useState(false); // still used for fallback share copy
   const [shareError, setShareError] = useState("");
+  const [coins, setCoins] = useState([]);
+  const [networks, setNetworks] = useState([]);
 
   const loadInvoice = useCallback(async () => {
     setLoading(true);
@@ -39,8 +210,16 @@ export default function InvoiceDetail() {
       setLoading(true);
       setError("");
       try {
-        const res = await getInvoice(id, token);
-        if (mounted) setInvoice(res);
+        const [invoiceRes, coinsData, networksData] = await Promise.all([
+          getInvoice(id, token),
+          listCoins(token),
+          listNetworks(token)
+        ]);
+        if (mounted) {
+          setInvoice(invoiceRes);
+          setCoins(Array.isArray(coinsData) ? coinsData : []);
+          setNetworks(Array.isArray(networksData) ? networksData : []);
+        }
       } catch (e) {
         if (mounted)
           setError(
@@ -108,8 +287,16 @@ export default function InvoiceDetail() {
     }
   };
 
-  const cn = invoice?.coinNetwork;
-  const coinSym = cn?.coin?.symbol || cn?.symbol || "";
+  const cnWithNetwork = useMemo(() => {
+    if (!invoice?.coinNetwork) return null;
+    const cn = invoice.coinNetwork;
+    const network = networks.find(n => Number(n.id) === Number(cn.networkId));
+    return { ...cn, network: network || cn.network };
+  }, [invoice, networks]);
+
+  const cn = cnWithNetwork || invoice?.coinNetwork;
+  const coinSym = (cn?.coin?.symbol || cn?.symbol || "").toUpperCase();
+  const networkSym = (cn?.network?.symbol || "").toUpperCase();
   const networkName = cn?.network?.name || cn?.network || cn?.name || "";
   const explorer = cn?.network?.explorerUrl || cn?.explorerUrl || "";
 
@@ -164,9 +351,28 @@ export default function InvoiceDetail() {
 
                   <div className="row g-3">
                     <div className="col-md-6">
+                      <label className="form-label">{t("invoices.coin") || "Coin"}</label>
+                      <div className="d-flex align-items-center">
+                        <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} size={32} />
+                        <div>
+                          <div className="fw-medium">{coinSym}</div>
+                          <div className="text-muted small">{networkName}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">{t("invoices.paidAmount") || "Paid"}</label>
+                      <div>
+                        {formatAmount(invoice.paidAmount || 0)} {coinSym}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="row g-3 mt-3">
+                    <div className="col-12">
                       <label className="form-label">{t("invoices.paymentAddress") || "Payment Address"}</label>
                       <div className="d-flex align-items-center">
-                        <code className="me-2 text-wrap" style={{ wordBreak: "break-all" }}>
+                        <code className="me-2 text-wrap flex-grow-1" style={{ wordBreak: "break-all" }}>
                           {invoice.paymentAddress || "-"}
                         </code>
                         {explorer && invoice.paymentAddress && (
@@ -179,12 +385,6 @@ export default function InvoiceDetail() {
                             <i className="bx bx-link-external"></i>
                           </a>
                         )}
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">{t("invoices.paidAmount") || "Paid"}</label>
-                      <div>
-                        {formatAmount(invoice.paidAmount || 0)} {coinSym}
                       </div>
                     </div>
                   </div>
@@ -241,6 +441,13 @@ export default function InvoiceDetail() {
 
             {/* Right: Actions */}
             <div className="col-12 col-lg-3">
+              {invoice.status === 'pending' && invoice.expiryAt && (
+                <div className="card mb-4">
+                  <div className="card-body">
+                    <CountdownTimer expiryAt={invoice.expiryAt} />
+                  </div>
+                </div>
+              )}
               <div className="card mb-4">
                 <div className="card-body">
                   <h6 className="mb-3">{t("invoices.actions") || "Actions"}</h6>

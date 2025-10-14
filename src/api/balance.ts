@@ -4,7 +4,9 @@ import { extractToken } from '../utils/authToken'
 
 export interface BalanceBreakdownItem {
   coinNetworkId: number
+  coinSymbol: string
   networkSymbol: string
+  networkName?: string
   balance: string
   locked: string
   pending: string

@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { listCoins } from "../../api/coins";
 import { getBalancesWithFiat } from "../../api/balance";
+import { MOCK_COINS, MOCK_BALANCE_DATA } from "./mockBalanceData";
 
 // Coin asset helpers (reuse logic similar to wallet list)
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -16,10 +17,19 @@ function getCoinAssetCandidates(symbol, logoUrl) {
     doge: ["dogecoin"],
     sol: ["solana"],
     matic: ["polygon"],
+    pol: ["polygon"],
     ada: ["cardano"],
     xmr: ["monero"],
     zec: ["zcash"],
     usdt: ["usdterc20", "tether"],
+    usdc: ["usd-coin"],
+    bnb: ["binance"],
+    bsc: ["binance"],
+    trx: ["tron"],
+    arb: ["arbitrum"],
+    op: ["optimism"],
+    base: ["base"],
+    ln: ["lightning"],
   };
   const names = [sym, ...(aliases[sym] || [])];
   if (sym.startsWith("usdt") && !names.includes("usdt")) names.push("usdt");
@@ -35,22 +45,58 @@ function getCoinAssetCandidates(symbol, logoUrl) {
   return Array.from(new Set(candidates));
 }
 
-function CoinImg({ coin, symbol, size = 28 }) {
+function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   const [idx, setIdx] = useState(0);
+  const [netIdx, setNetIdx] = useState(0);
   const candidates = useMemo(
     () => getCoinAssetCandidates(symbol, coin?.logoUrl),
     [coin?.logoUrl, symbol]
   );
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  );
   const src = candidates[Math.min(idx, candidates.length - 1)];
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)];
+  // Use fixed size for badge instead of percentage for consistency
+  const badgeSize = 18;
+  
   return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      className="rounded me-3 align-text-bottom"
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-    />
+    <div className="position-relative me-3" style={{ width: size, height: size }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol && 
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div 
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -103,36 +149,53 @@ export default function Balance() {
   const [error, setError] = useState("");
   const [fiat, setFiat] = useState({ amount: "0.0", currency: "USD" });
   const [rates, setRates] = useState({})
+  const [useMockData, setUseMockData] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         setLoading(true);
-        const [coinList, balanceRes] = await Promise.all([
-          listCoins(token),
-          getBalancesWithFiat(token, "USD"),
-        ]);
-        if (!mounted) return;
-        setCoins(Array.isArray(coinList) ? coinList : []);
-        // filter only coins that have value > 0
-        const list = Array.isArray(balanceRes?.breakdown)
-          ? balanceRes.breakdown
-          : [];
-        const filtered = list.filter((b) => {
-          const a = Number(b?.availableBalance || b?.balance || 0);
-          return Number.isFinite(a) && a > 0;
-        });
-        setBalances(filtered);
-        if (balanceRes?.fiat && typeof balanceRes.fiat.amount === "string") {
+        
+        // Use mock data if enabled
+        if (useMockData) {
+          await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading
+          if (!mounted) return;
+          setCoins(MOCK_COINS);
+          setBalances(MOCK_BALANCE_DATA.breakdown);
           setFiat({
-            amount: balanceRes.fiat.amount,
-            currency: balanceRes.fiat.currency || "USD",
+            amount: MOCK_BALANCE_DATA.fiat.amount,
+            currency: MOCK_BALANCE_DATA.fiat.currency,
           });
-          setRates(balanceRes.fiat.rates || {})
+          setRates(MOCK_BALANCE_DATA.fiat.rates);
+          setError("");
         } else {
-          setFiat({ amount: "0.0", currency: "USD" });
-          setRates({})
+          // Use real API
+          const [coinList, balanceRes] = await Promise.all([
+            listCoins(token),
+            getBalancesWithFiat(token, "USD"),
+          ]);
+          if (!mounted) return;
+          setCoins(Array.isArray(coinList) ? coinList : []);
+          // filter only coins that have value > 0
+          const list = Array.isArray(balanceRes?.breakdown)
+            ? balanceRes.breakdown
+            : [];
+          const filtered = list.filter((b) => {
+            const a = Number(b?.availableBalance || b?.balance || 0);
+            return Number.isFinite(a) && a > 0;
+          });
+          setBalances(filtered);
+          if (balanceRes?.fiat && typeof balanceRes.fiat.amount === "string") {
+            setFiat({
+              amount: balanceRes.fiat.amount,
+              currency: balanceRes.fiat.currency || "USD",
+            });
+            setRates(balanceRes.fiat.rates || {})
+          } else {
+            setFiat({ amount: "0.0", currency: "USD" });
+            setRates({})
+          }
         }
       } catch (e) {
         setError(e?.message || "Failed to load balances");
@@ -143,7 +206,7 @@ export default function Balance() {
     return () => {
       mounted = false;
     };
-  }, [token]);
+  }, [token, useMockData]);
 
   // Map by coinNetworkId
   const coinNetById = useMemo(() => {
@@ -224,15 +287,24 @@ export default function Balance() {
               {balances.map((b, idx) => {
                 const cn = coinNetById.get(Number(b.coinNetworkId));
                 const coin = cn?.coin;
-                const sym = (
+                const coinSym = (
+                  b.coinSymbol ||
                   coin?.symbol ||
-                  b.networkSymbol ||
                   ""
                 ).toUpperCase();
-                const networkName = getNetworkLabel(cn, coin);
+                const networkSym = (
+                  b.networkSymbol ||
+                  cn?.network?.symbol ||
+                  ""
+                ).toUpperCase();
+                // Use networkName from API if available, otherwise fallback to network symbol or label
+                const networkName = b.networkName || 
+                  b.networkSymbol || 
+                  cn?.network?.name || 
+                  getNetworkLabel(cn, coin);
                 const amount = fmtAmount(b.availableBalance || b.balance || 0);
                 const amtNum = Number(b.availableBalance || b.balance || 0) || 0;
-                const rate = Number((rates && rates[sym]) || 0) || 0;
+                const rate = Number((rates && rates[coinSym]) || 0) || 0;
                 const usdVal = amtNum * rate;
                 return (
                   <div
@@ -240,9 +312,9 @@ export default function Balance() {
                     className="d-flex align-items-center justify-content-between border rounded-3 py-3 px-4"
                   >
                     <div className="d-flex align-items-center ms-5">
-                      <CoinImg coin={coin} symbol={sym} />
+                      <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} />
                       <div className="ms-2">
-                        <div className="fw-medium">{sym}</div>
+                        <div className="fw-medium">{coinSym}</div>
                         <div className="text-muted small">{networkName}</div>
                       </div>
                     </div>
@@ -255,7 +327,7 @@ export default function Balance() {
                       ) : null}
                       <div className="text-end me-2 me-md-3">
                         <div className="fw-medium">
-                          {amount} {sym}
+                          {amount} {coinSym}
                         </div>
                       </div>
                       <div className="dropdown ms-3">

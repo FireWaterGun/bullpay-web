@@ -6,6 +6,7 @@ import { listCoins } from '../../api/coins'
 import { listAllWallets } from '../../api/wallets'
 import { getBalancesWithFiat } from '../../api/balance'
 import { createWithdrawal } from '../../api/withdrawals'
+import { listNetworks } from '../../api/networks'
 import ConfirmModal from '../../components/ConfirmModal'
 
 function fmtAmount(x, maxFrac = 8) {
@@ -25,20 +26,93 @@ function getNetworkLabel(n, coin) {
   return n?.name || 'Network'
 }
 
-function CoinImg({ coin, symbol, size = 36 }) {
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    pol: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+    usdc: ['usd-coin'],
+    bnb: ['binance'],
+    bsc: ['binance'],
+    trx: ['tron'],
+    arb: ['arbitrum'],
+    op: ['optimism'],
+    base: ['base'],
+    ln: ['lightning'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
+  const candidates = [
+    ...byAssets,
+    ...(logoUrl ? [logoUrl] : []),
+    '/assets/img/coins/default.svg',
+  ]
+  return Array.from(new Set(candidates))
+}
+
+function CoinImg({ coin, symbol, networkSymbol, size = 40 }) {
   const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => {
-    const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-    const aliases = { btc: ['bitcoin'], eth: ['ethereum'], doge: ['dogecoin'], sol: ['solana'], matic: ['polygon'], ada: ['cardano'], xmr: ['monero'], zec: ['zcash'], usdt: ['usdterc20','tether'] }
-    const names = [sym, ...(aliases[sym] || [])]
-    if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-    const exts = ['svg','png']
-    const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
-    const arr = [...byAssets, ...(coin?.logoUrl ? [coin.logoUrl] : []), '/assets/img/coins/default.svg']
-    return Array.from(new Set(arr))
-  }, [coin?.logoUrl, symbol])
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
+    [coin?.logoUrl, symbol]
+  )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  )
   const src = candidates[Math.min(idx, candidates.length - 1)]
-  return <img src={src} alt={symbol} width={size} height={size} className="rounded" onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))} />
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 20
+
+  return (
+    <div className="position-relative" style={{ width: size, height: size, display: 'inline-block' }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        className="rounded"
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol &&
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function WithdrawRequest() {
@@ -48,6 +122,7 @@ export default function WithdrawRequest() {
   const { coinNetworkId } = useParams()
 
   const [coins, setCoins] = useState([])
+  const [networks, setNetworks] = useState([])
   const [balances, setBalances] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -63,13 +138,15 @@ export default function WithdrawRequest() {
     ;(async () => {
       try {
         setLoading(true)
-        const [coinList, balRes, walletList] = await Promise.all([
+        const [coinList, networksData, balRes, walletList] = await Promise.all([
           listCoins(token),
+          listNetworks(token),
           getBalancesWithFiat(token),
           listAllWallets(token, 100),
         ])
         if (!mounted) return
         setCoins(Array.isArray(coinList) ? coinList : [])
+        setNetworks(Array.isArray(networksData) ? networksData : [])
         setBalances(Array.isArray(balRes?.breakdown) ? balRes.breakdown : [])
         setWallets(Array.isArray(walletList) ? walletList : [])
       } catch (e) {
@@ -83,12 +160,16 @@ export default function WithdrawRequest() {
 
   const cn = useMemo(() => {
     const id = Number(coinNetworkId)
-    return coins.find(c => Number(c.id) === id)
-  }, [coins, coinNetworkId])
+    const coinNetwork = coins.find(c => Number(c.id) === id)
+    if (!coinNetwork) return null
+    const network = networks.find(n => Number(n.id) === Number(coinNetwork.networkId))
+    return { ...coinNetwork, network }
+  }, [coins, networks, coinNetworkId])
 
   const coin = cn?.coin
   const sym = (coin?.symbol || 'COIN').toUpperCase()
-  const networkLabel = getNetworkLabel(cn, coin)
+  const networkSym = (cn?.network?.symbol || '').toUpperCase()
+  const networkLabel = cn?.network?.name || getNetworkLabel(cn, coin)
 
   const available = useMemo(() => {
     const id = Number(coinNetworkId)
@@ -194,13 +275,12 @@ export default function WithdrawRequest() {
                     <div className="text-muted small mb-1">{t('balance.from', { defaultValue: 'From' })}</div>
                     <div className="d-flex align-items-center justify-content-between border rounded-3 p-3">
                       <div className="d-flex align-items-center">
-                        <CoinImg coin={coin} symbol={sym} />
+                        <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} />
                         <div className="ms-3">
                           <div className="fw-semibold">{sym}</div>
-                          <div className="text-muted small">{coin?.name || sym}</div>
+                          <div className="text-muted small">{networkLabel}</div>
                         </div>
                       </div>
-                      <span className="badge bg-label-danger text-uppercase">{networkLabel}</span>
                     </div>
                   </div>
 

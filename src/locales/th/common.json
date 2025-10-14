@@ -51,6 +51,7 @@
     "sortOrder": "ลำดับ",
   "dateCreated": "วันที่สร้าง",
     "amount": "จำนวนเงิน",
+    "coin": "เหรียญ",
     "statusCol": "สถานะ",
     "date": "วันที่",
     "note": "หมายเหตุ",
@@ -254,7 +255,13 @@
   "txCreditCard": "บัตรเครดิต",
   "txOrderedFood": "สั่งอาหาร",
   "txStarbucks": "Starbucks",
-  "txMastercard": "Mastercard"
-  ,"activityTimeline": "ไทม์ไลน์กิจกรรม"
+  "txMastercard": "Mastercard",
+  "activityTimeline": "ไทม์ไลน์กิจกรรม"
+  },
+  "time": {
+    "days": "วัน",
+    "hours": "ชั่วโมง",
+    "minutes": "นาที",
+    "seconds": "วินาที"
   }
 }

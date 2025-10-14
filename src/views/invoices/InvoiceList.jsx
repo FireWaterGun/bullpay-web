@@ -4,6 +4,96 @@ import { useTranslation } from "react-i18next";
 import { listInvoices } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
+import { listCoins } from "../../api/coins";
+import { listNetworks } from "../../api/networks";
+
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    pol: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+    usdc: ['usd-coin'],
+    bnb: ['binance'],
+    bsc: ['binance'],
+    trx: ['tron'],
+    arb: ['arbitrum'],
+    op: ['optimism'],
+    base: ['base'],
+    ln: ['lightning'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
+  const candidates = [
+    ...byAssets,
+    ...(logoUrl ? [logoUrl] : []),
+    '/assets/img/coins/default.svg',
+  ]
+  return Array.from(new Set(candidates))
+}
+
+function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
+  const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
+    [coin?.logoUrl, symbol]
+  )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  )
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 18
+
+  return (
+    <div className="position-relative me-3" style={{ width: size, height: size }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol &&
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function InvoiceList() {
   const { t } = useTranslation();
@@ -17,6 +107,8 @@ export default function InvoiceList() {
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
   const { token, user } = useAuth();
+  const [coins, setCoins] = useState([]);
+  const [networks, setNetworks] = useState([]);
 
   const [selected, setSelected] = useState(new Set());
   const selectAllRef = useRef(null);
@@ -39,6 +131,17 @@ export default function InvoiceList() {
     () => visibleIds.length > 0 && visibleIds.every((id) => selected.has(id)),
     [visibleIds, selected]
   );
+
+  const cnById = useMemo(() => {
+    const networkMap = new Map(networks.map(n => [Number(n.id), n]))
+    const m = new Map()
+    for (const cn of coins) {
+      const id = Number(cn.id)
+      const network = networkMap.get(Number(cn.networkId))
+      m.set(id, { ...cn, network })
+    }
+    return m
+  }, [coins, networks]);
 
   async function load() {
     setLoading(true);
@@ -68,6 +171,22 @@ export default function InvoiceList() {
   useEffect(() => {
     load();
   }, [page, limit, sortBy, sortOrder]);
+
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const [coinsData, networksData] = await Promise.all([
+          listCoins(token),
+          listNetworks(token)
+        ])
+        if (!mounted) return
+        setCoins(Array.isArray(coinsData) ? coinsData : [])
+        setNetworks(Array.isArray(networksData) ? networksData : [])
+      } catch {/* ignore */}
+    })()
+    return () => { mounted = false }
+  }, [token])
 
   // Note: Pusher subscription is handled globally in DashboardLayout
   // No need to subscribe here to avoid duplicate notifications
@@ -209,17 +328,17 @@ export default function InvoiceList() {
                       </th>
                       <th className="cell-fit">{t("invoices.number") || "#"}</th>
                       <th>{t("invoices.invoice") || "Invoice"}</th>
-                      <th>{t("invoices.amount")}</th>
+                      <th>{t("invoices.coin") || "Coin"}</th>
+                      <th className="text-end">{t("invoices.amount")}</th>
                       <th>{t("invoices.statusCol")}</th>
                       <th>{t("invoices.date")}</th>
-                      <th>{t("invoices.note")}</th>
                       <th className="text-end">{t("invoices.actions")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {items.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="text-center text-muted">
+                        <td colSpan={7} className="text-center text-muted">
                           {t("invoices.none")}
                         </td>
                       </tr>
@@ -259,10 +378,25 @@ export default function InvoiceList() {
                           </div>
                         </td>
                         <td className="text-nowrap">
-                          {formatAmount(it.amount)} {it.coinNetwork?.coin?.symbol || it.coinNetwork?.symbol || ""}
-                          <div className="text-muted small">
-                            {it.coinNetwork?.network?.name || it.coinNetwork?.network || it.coinNetwork?.name || ""}
-                          </div>
+                          {(() => {
+                            const cnId = Number(it.coinNetworkId)
+                            const cn = cnById.get(cnId) || it.coinNetwork
+                            const coinSym = (cn?.coin?.symbol || it.coinNetwork?.coin?.symbol || "").toUpperCase()
+                            const networkSym = (cn?.network?.symbol || it.coinNetwork?.network?.symbol || "").toUpperCase()
+                            const networkName = cn?.network?.name || it.coinNetwork?.network?.name || ""
+                            return (
+                              <div className="d-flex align-items-center">
+                                <CoinImg coin={cn?.coin || it.coinNetwork?.coin} symbol={coinSym} networkSymbol={networkSym} />
+                                <div>
+                                  <div className="fw-medium">{coinSym}</div>
+                                  <div className="text-muted small">{networkName}</div>
+                                </div>
+                              </div>
+                            )
+                          })()}
+                        </td>
+                        <td className="text-nowrap text-end">
+                          <div className="fw-medium">{formatAmount(it.amount)}</div>
                         </td>
                         <td>
                           <span
@@ -278,11 +412,6 @@ export default function InvoiceList() {
                           </span>
                         </td>
                         <td className="text-nowrap">{formatDateTime(it.createdAt || it.created_at)}</td>
-                        <td>
-                          <div className="text-muted small text-truncate" style={{ maxWidth: 260 }}>
-                            {it.memo || it.description || "N/A"}
-                          </div>
-                        </td>
                         <td className="text-end">
                           <NavLink
                             to={`/app/invoices/${it.id}`}

@@ -51,6 +51,7 @@
     "sortOrder": "Sort Order",
   "dateCreated": "Date Created",
     "amount": "Amount",
+    "coin": "Coin",
     "statusCol": "Status",
     "date": "Date",
     "note": "Note",
@@ -256,5 +257,11 @@
   "txStarbucks": "Starbucks",
   "txMastercard": "Mastercard"
   ,"activityTimeline": "Activity Timeline"
+  },
+  "time": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
   }
 }
