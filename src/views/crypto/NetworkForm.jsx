@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
-import { getCoinById, createCoin, updateCoin, deleteCoin } from '../../api/admin.ts'
+import { getNetworkById, createNetwork, updateNetwork, deleteNetwork } from '../../api/admin.ts'
 
-export default function CoinForm() {
+export default function NetworkForm() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const navigate = useNavigate()
@@ -17,41 +17,49 @@ export default function CoinForm() {
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [formData, setFormData] = useState({
-    symbol: '',
     name: '',
-    decimals: 8,
-    isStableCoin: false,
-    logoUrl: '',
+    symbol: '',
+    chainId: '',
+    rpcUrl: '',
+    explorerUrl: '',
+    apiUrl: '',
+    isTestnet: false,
+    gasPrice: '',
+    confirmationBlocks: 1,
     status: 'active'
   })
 
   useEffect(() => {
     if (isEdit && id) {
-      loadCoin()
+      loadNetwork()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
-  async function loadCoin() {
+  async function loadNetwork() {
     setLoading(true)
     setError('')
     try {
-      const coin = await getCoinById(token, parseInt(id))
+      const network = await getNetworkById(token, parseInt(id))
       
-      if (coin) {
+      if (network) {
         setFormData({
-          symbol: coin.symbol || '',
-          name: coin.name || '',
-          decimals: coin.decimals || 8,
-          isStableCoin: !!coin.isStableCoin,
-          logoUrl: coin.logoUrl || '',
-          status: coin.status || 'active'
+          name: network.name || '',
+          symbol: network.symbol || '',
+          chainId: network.chainId || '',
+          rpcUrl: network.rpcUrl || '',
+          explorerUrl: network.explorerUrl || '',
+          apiUrl: network.apiUrl || '',
+          isTestnet: !!network.isTestnet,
+          gasPrice: network.gasPrice || '',
+          confirmationBlocks: network.confirmationBlocks || 1,
+          status: network.status || 'active'
         })
       } else {
-        setError('Coin not found')
+        setError('Network not found')
       }
     } catch (e) {
-      setError(e?.message || 'Failed to load coin')
+      setError(e?.message || 'Failed to load network')
     } finally {
       setLoading(false)
     }
@@ -80,10 +88,10 @@ export default function CoinForm() {
     setShowDeleteConfirm(false)
 
     try {
-      await deleteCoin(token, parseInt(id))
-      navigate('/admin/crypto/coins')
+      await deleteNetwork(token, parseInt(id))
+      navigate('/admin/crypto/networks')
     } catch (e) {
-      const message = e?.message || 'Failed to delete coin'
+      const message = e?.message || 'Failed to delete network'
       setErrorMessage(message)
       setShowErrorModal(true)
     } finally {
@@ -97,51 +105,100 @@ export default function CoinForm() {
     setError('')
 
     try {
-      // Validation
+      // Validation for Create mode
       if (!isEdit) {
-        // Create mode - validate required fields
-        if (!formData.symbol || formData.symbol.length > 10) {
-          throw new Error('Symbol is required and must be max 10 characters')
+        // Required fields
+        if (!formData.name || formData.name.trim().length === 0) {
+          throw new Error('Name is required')
         }
-        if (!formData.name || formData.name.length > 100) {
-          throw new Error('Name is required and must be max 100 characters')
+        if (formData.name.length > 100) {
+          throw new Error('Name must be max 100 characters')
         }
-        if (formData.decimals < 0 || formData.decimals > 18) {
-          throw new Error('Decimals must be between 0 and 18')
+        if (!formData.symbol || formData.symbol.trim().length === 0) {
+          throw new Error('Symbol is required')
+        }
+        if (formData.symbol.length > 10) {
+          throw new Error('Symbol must be max 10 characters')
         }
       }
 
-      // Validate logoUrl if provided
-      if (formData.logoUrl) {
-        try {
-          new URL(formData.logoUrl)
-        } catch {
-          throw new Error('Logo URL must be a valid URL')
+      // Optional field validations (for both create and update)
+      
+      // Chain ID - must be positive integer if provided
+      if (formData.chainId !== '' && formData.chainId !== null && formData.chainId !== undefined) {
+        const chainIdNum = parseInt(formData.chainId)
+        if (isNaN(chainIdNum) || chainIdNum <= 0) {
+          throw new Error('Chain ID must be a positive integer')
         }
+      }
+
+      // Confirmation Blocks - must be >= 0
+      if (formData.confirmationBlocks !== '' && formData.confirmationBlocks !== null) {
+        const blocks = parseInt(formData.confirmationBlocks)
+        if (isNaN(blocks) || blocks < 0) {
+          throw new Error('Confirmation blocks must be >= 0')
+        }
+      }
+
+      // URL validations
+      if (formData.rpcUrl && formData.rpcUrl.trim()) {
+        try {
+          new URL(formData.rpcUrl)
+        } catch {
+          throw new Error('RPC URL must be a valid URL')
+        }
+      }
+      if (formData.explorerUrl && formData.explorerUrl.trim()) {
+        try {
+          new URL(formData.explorerUrl)
+        } catch {
+          throw new Error('Explorer URL must be a valid URL')
+        }
+      }
+      if (formData.apiUrl && formData.apiUrl.trim()) {
+        try {
+          new URL(formData.apiUrl)
+        } catch {
+          throw new Error('API URL must be a valid URL')
+        }
+      }
+
+      // Gas Price - must be numeric string if provided
+      if (formData.gasPrice && formData.gasPrice.trim()) {
+        if (!/^\d+(\.\d+)?$/.test(formData.gasPrice.trim())) {
+          throw new Error('Gas price must be a valid number')
+        }
+      }
+
+      // Status validation
+      if (formData.status && !['active', 'inactive', 'maintenance'].includes(formData.status)) {
+        throw new Error('Status must be active, inactive, or maintenance')
       }
 
       const payload = {
-        name: formData.name,
-        symbol: formData.symbol.toUpperCase(),
-        decimals: parseInt(formData.decimals),
-        type: 'native',
-        isStableCoin: formData.isStableCoin,
-        logoUrl: formData.logoUrl || undefined,
+        name: formData.name.trim(),
+        symbol: formData.symbol.trim().toUpperCase(),
+        chainId: formData.chainId ? parseInt(formData.chainId) : null,
+        rpcUrl: formData.rpcUrl?.trim() || undefined,
+        explorerUrl: formData.explorerUrl?.trim() || undefined,
+        apiUrl: formData.apiUrl?.trim() || undefined,
+        isTestnet: formData.isTestnet,
+        gasPrice: formData.gasPrice?.trim() || undefined,
+        confirmationBlocks: formData.confirmationBlocks !== '' && formData.confirmationBlocks !== null && formData.confirmationBlocks !== undefined
+          ? parseInt(formData.confirmationBlocks) 
+          : 1,
         status: formData.status || 'active'
       }
 
       if (isEdit) {
-        // Update existing coin
-        await updateCoin(token, parseInt(id), payload)
+        await updateNetwork(token, parseInt(id), payload)
       } else {
-        // Create new coin
-        await createCoin(token, payload)
+        await createNetwork(token, payload)
       }
       
-      // Navigate to coins list after success
-      navigate('/admin/crypto/coins')
+      navigate('/admin/crypto/networks')
     } catch (e) {
-      const message = e?.message || (isEdit ? 'Failed to update coin' : 'Failed to create coin')
+      const message = e?.message || (isEdit ? 'Failed to update network' : 'Failed to create network')
       setErrorMessage(message)
       setShowErrorModal(true)
     } finally {
@@ -154,8 +211,9 @@ export default function CoinForm() {
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-6">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">{t('invoices.loading')}</span>
+            <span className="visually-hidden">Loading...</span>
           </div>
+          <p className="text-muted mt-2">{t('common.loading', { defaultValue: 'Loading...' })}</p>
         </div>
       </div>
     )
@@ -167,17 +225,23 @@ export default function CoinForm() {
       <div className="d-flex align-items-center mb-4">
         <button 
           type="button" 
-          className="btn btn-icon btn-outline-secondary me-3"
-          onClick={() => navigate('/app/crypto/coins')}
+          className="btn btn-icon btn-label-secondary me-3"
+          onClick={() => navigate('/app/crypto/networks')}
         >
           <i className="bx bx-arrow-back"></i>
         </button>
         <div>
           <h4 className="mb-1">
-            {isEdit ? t('crypto.editCoin', { defaultValue: 'Edit Coin' }) : t('crypto.createCoin', { defaultValue: 'Create Coin' })}
+            {isEdit 
+              ? t('crypto.editNetwork', { defaultValue: 'Edit Network' })
+              : t('crypto.createNetwork', { defaultValue: 'Create Network' })
+            }
           </h4>
           <p className="text-muted mb-0">
-            {isEdit ? t('crypto.editCoinDesc', { defaultValue: 'Update coin information' }) : t('crypto.createCoinDesc', { defaultValue: 'Add a new cryptocurrency' })}
+            {isEdit 
+              ? t('crypto.editNetworkDesc', { defaultValue: 'Update network information' })
+              : t('crypto.createNetworkDesc', { defaultValue: 'Add a new blockchain network' })
+            }
           </p>
         </div>
       </div>
@@ -185,7 +249,7 @@ export default function CoinForm() {
       <div className="row">
         <div className="col-12 col-xl-8">
           <div className="card mb-4">
-            <h5 className="card-header">{t('crypto.coinInformation', { defaultValue: 'Coin Information' })}</h5>
+            <h5 className="card-header">{t('crypto.networkInformation', { defaultValue: 'Network Information' })}</h5>
             <div className="card-body">
               {error && (
                 <div className="alert alert-danger mb-4" role="alert">
@@ -196,6 +260,25 @@ export default function CoinForm() {
 
               <form onSubmit={handleSubmit}>
                 <div className="row g-4">
+                  {/* Name */}
+                  <div className="col-md-6">
+                    <label className="form-label" htmlFor="name">
+                      {t('crypto.networkName', { defaultValue: 'Network Name' })} <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Ethereum"
+                      maxLength={100}
+                      required
+                    />
+                    <small className="text-muted">{t('crypto.networkNameHelp', { defaultValue: 'Full network name' })}</small>
+                  </div>
+
                   {/* Symbol */}
                   <div className="col-md-6">
                     <label className="form-label" htmlFor="symbol">
@@ -208,52 +291,121 @@ export default function CoinForm() {
                       name="symbol"
                       value={formData.symbol}
                       onChange={handleChange}
-                      placeholder="BTC"
+                      placeholder="ETH"
                       maxLength={10}
                       pattern="[A-Z0-9]+"
                       required
                       disabled={isEdit}
                       style={{ textTransform: 'uppercase' }}
                     />
-                    <small className="text-muted">{t('crypto.symbolHelp', { defaultValue: 'Coin ticker symbol (e.g., BTC, ETH)' })}</small>
+                    <small className="text-muted">{t('crypto.symbolHelp', { defaultValue: 'Network symbol (e.g., ETH, BSC)' })}</small>
                   </div>
 
-                  {/* Name */}
+                  {/* Chain ID */}
                   <div className="col-md-6">
-                    <label className="form-label" htmlFor="name">
-                      {t('crypto.coinName', { defaultValue: 'Name' })} <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-lg"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Bitcoin"
-                      maxLength={100}
-                      required
-                    />
-                    <small className="text-muted">{t('crypto.nameHelp', { defaultValue: 'Full coin name' })}</small>
-                  </div>
-
-                  {/* Decimals */}
-                  <div className="col-md-6">
-                    <label className="form-label" htmlFor="decimals">
-                      {t('crypto.decimals', { defaultValue: 'Decimals' })} <span className="text-danger">*</span>
+                    <label className="form-label" htmlFor="chainId">
+                      {t('crypto.chainId', { defaultValue: 'Chain ID' })}
                     </label>
                     <input
                       type="number"
                       className="form-control form-control-lg"
-                      id="decimals"
-                      name="decimals"
-                      value={formData.decimals}
+                      id="chainId"
+                      name="chainId"
+                      value={formData.chainId}
+                      onChange={handleChange}
+                      placeholder="1"
+                      min="1"
+                    />
+                    <small className="text-muted">{t('crypto.chainIdHelp', { defaultValue: 'EVM chain ID (leave empty for non-EVM)' })}</small>
+                  </div>
+
+                  {/* Confirmation Blocks */}
+                  <div className="col-md-6">
+                    <label className="form-label" htmlFor="confirmationBlocks">
+                      {t('crypto.confirmationBlocks', { defaultValue: 'Confirmation Blocks' })} <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control form-control-lg"
+                      id="confirmationBlocks"
+                      name="confirmationBlocks"
+                      value={formData.confirmationBlocks}
                       onChange={handleChange}
                       min="0"
-                      max="18"
                       required
                     />
-                    <small className="text-muted">{t('crypto.decimalsHelp', { defaultValue: 'Number of decimal places (0-18)' })}</small>
+                    <small className="text-muted">{t('crypto.confirmationBlocksHelp', { defaultValue: 'Number of blocks for confirmation' })}</small>
+                  </div>
+
+                  {/* RPC URL */}
+                  <div className="col-12">
+                    <label className="form-label" htmlFor="rpcUrl">
+                      {t('crypto.rpcUrl', { defaultValue: 'RPC URL' })}
+                    </label>
+                    <input
+                      type="url"
+                      className="form-control form-control-lg"
+                      id="rpcUrl"
+                      name="rpcUrl"
+                      value={formData.rpcUrl}
+                      onChange={handleChange}
+                      placeholder="https://eth.llamarpc.com"
+                    />
+                    <small className="text-muted">{t('crypto.rpcUrlHelp', { defaultValue: 'Blockchain RPC endpoint' })}</small>
+                  </div>
+
+                  {/* Explorer URL */}
+                  <div className="col-12">
+                    <label className="form-label" htmlFor="explorerUrl">
+                      {t('crypto.explorerUrl', { defaultValue: 'Explorer URL' })}
+                    </label>
+                    <input
+                      type="url"
+                      className="form-control form-control-lg"
+                      id="explorerUrl"
+                      name="explorerUrl"
+                      value={formData.explorerUrl}
+                      onChange={handleChange}
+                      placeholder="https://etherscan.io"
+                    />
+                    <small className="text-muted">{t('crypto.explorerUrlHelp', { defaultValue: 'Block explorer URL' })}</small>
+                  </div>
+
+                  {/* API URL */}
+                  <div className="col-12">
+                    <label className="form-label" htmlFor="apiUrl">
+                      {t('crypto.apiUrl', { defaultValue: 'API URL' })}
+                    </label>
+                    <input
+                      type="url"
+                      className="form-control form-control-lg"
+                      id="apiUrl"
+                      name="apiUrl"
+                      value={formData.apiUrl}
+                      onChange={handleChange}
+                      placeholder="https://api.etherscan.io/api"
+                    />
+                    <small className="text-muted">{t('crypto.apiUrlHelp', { defaultValue: 'External API endpoint (e.g., Etherscan API)' })}</small>
+                  </div>
+
+                  {/* Gas Price */}
+                  <div className="col-md-6">
+                    <label className="form-label" htmlFor="gasPrice">
+                      {t('crypto.gasPrice', { defaultValue: 'Gas Price' })}
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      id="gasPrice"
+                      name="gasPrice"
+                      value={formData.gasPrice}
+                      onChange={handleChange}
+                      placeholder="20000000000"
+                      pattern="^\d+(\.\d+)?$"
+                      maxLength={50}
+                      title="Enter a valid number (e.g., 20000000000 or 20000000000.5)"
+                    />
+                    <small className="text-muted">{t('crypto.gasPriceHelp', { defaultValue: 'Default gas price in wei' })}</small>
                   </div>
 
                   {/* Status */}
@@ -270,42 +422,26 @@ export default function CoinForm() {
                     >
                       <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>
                       <option value="inactive">{t('crypto.inactive', { defaultValue: 'Inactive' })}</option>
+                      <option value="maintenance">{t('crypto.maintenance', { defaultValue: 'Maintenance' })}</option>
                     </select>
                   </div>
 
-                  {/* Logo URL */}
-                  <div className="col-12">
-                    <label className="form-label" htmlFor="logoUrl">
-                      {t('crypto.logoUrl', { defaultValue: 'Logo URL' })}
-                    </label>
-                    <input
-                      type="url"
-                      className="form-control form-control-lg"
-                      id="logoUrl"
-                      name="logoUrl"
-                      value={formData.logoUrl}
-                      onChange={handleChange}
-                      placeholder="https://example.com/logo.png"
-                    />
-                    <small className="text-muted">{t('crypto.logoUrlHelp', { defaultValue: 'External URL to coin logo image' })}</small>
-                  </div>
-
-                  {/* Is Stable Coin */}
+                  {/* Is Testnet */}
                   <div className="col-12">
                     <div className="form-check form-check-lg">
                       <input
                         className="form-check-input"
                         type="checkbox"
-                        id="isStableCoin"
-                        name="isStableCoin"
-                        checked={formData.isStableCoin}
+                        id="isTestnet"
+                        name="isTestnet"
+                        checked={formData.isTestnet}
                         onChange={handleChange}
                       />
-                      <label className="form-check-label" htmlFor="isStableCoin">
-                        {t('crypto.isStableCoin', { defaultValue: 'Stablecoin' })}
+                      <label className="form-check-label" htmlFor="isTestnet">
+                        {t('crypto.isTestnet', { defaultValue: 'Testnet' })}
                       </label>
                     </div>
-                    <small className="text-muted ms-4">{t('crypto.isStableCoinHelp', { defaultValue: 'Check if this is a stablecoin (e.g., USDT, USDC)' })}</small>
+                    <small className="text-muted ms-4">{t('crypto.isTestnetHelp', { defaultValue: 'Check if this is a test network' })}</small>
                   </div>
 
                   {/* Actions */}
@@ -328,7 +464,7 @@ export default function CoinForm() {
                         <button 
                           type="button" 
                           className="btn btn-lg btn-label-secondary"
-                          onClick={() => navigate('/app/crypto/coins')}
+                          onClick={() => navigate('/app/crypto/networks')}
                           disabled={loading}
                         >
                           {t('actions.cancel', { defaultValue: 'Cancel' })}
@@ -379,8 +515,8 @@ export default function CoinForm() {
               </div>
               <div className="modal-body">
                 <p className="mb-2">
-                  {t('crypto.deleteConfirmMessage', { 
-                    defaultValue: 'Are you sure you want to delete this coin?' 
+                  {t('crypto.deleteNetworkConfirmMessage', { 
+                    defaultValue: 'Are you sure you want to delete this network?' 
                   })}
                 </p>
                 <p className="text-muted small mb-0">

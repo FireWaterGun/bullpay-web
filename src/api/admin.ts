@@ -65,10 +65,102 @@ export async function getCoinById(token: string, id: number) {
 /**
  * Get all networks (Admin only)
  * @param token - Auth token
+ * @param page - Page number (default: 1)
+ * @param limit - Items per page (default: 10)
  */
-export async function getNetworks(token: string) {
-  const data = await apiFetch('/admin/networks', {
+export async function getNetworks(token: string, page: number = 1, limit: number = 10) {
+  const queryParams = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  })
+  
+  const data = await apiFetch(`/admin/networks?${queryParams.toString()}`, {
     method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Get a single network by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Network ID
+ */
+export async function getNetworkById(token: string, id: number) {
+  const data = await apiFetch(`/admin/networks/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Create a new network (Admin only)
+ * @param token - Auth token
+ * @param networkData - Network data
+ */
+export async function createNetwork(token: string, networkData: {
+  name: string
+  symbol: string
+  chainId?: number | null
+  rpcUrl?: string
+  explorerUrl?: string
+  apiUrl?: string
+  isTestnet?: boolean
+  gasPrice?: string
+  confirmationBlocks?: number
+  status?: string
+}) {
+  const data = await apiFetch('/admin/networks', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: networkData,
+  })
+  return data.data || data
+}
+
+/**
+ * Update an existing network (Admin only)
+ * @param token - Auth token
+ * @param id - Network ID
+ * @param networkData - Partial network data to update
+ */
+export async function updateNetwork(token: string, id: number, networkData: {
+  name?: string
+  symbol?: string
+  chainId?: number | null
+  rpcUrl?: string
+  explorerUrl?: string
+  apiUrl?: string
+  isTestnet?: boolean
+  gasPrice?: string
+  confirmationBlocks?: number
+  status?: string
+}) {
+  const data = await apiFetch(`/admin/networks/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: networkData,
+  })
+  return data.data || data
+}
+
+/**
+ * Delete a network (Admin only)
+ * @param token - Auth token
+ * @param id - Network ID
+ */
+export async function deleteNetwork(token: string, id: number) {
+  const data = await apiFetch(`/admin/networks/${id}`, {
+    method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -35,7 +35,7 @@ function ProtectedRoute({ children, requireAdmin = false }) {
 function RootHandler() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { isAuthenticated, isReady } = useAuth()
+  const { isAuthenticated, isReady, isAdmin } = useAuth()
 
   useEffect(() => {
     if (!isReady) return
@@ -47,13 +47,17 @@ function RootHandler() {
       // Preserve the entire query string and send to /verify
       navigate({ pathname: '/verify', search: location.search }, { replace: true })
     } else if (isAuthenticated) {
-      // If already logged in, go to dashboard
-      navigate('/app', { replace: true })
+      // Redirect to appropriate dashboard based on role
+      if (isAdmin) {
+        navigate('/admin', { replace: true })
+      } else {
+        navigate('/app', { replace: true })
+      }
     } else {
       // Show landing page for non-authenticated users
       navigate('/landing', { replace: true })
     }
-  }, [location, navigate, isAuthenticated, isReady])
+  }, [location, navigate, isAuthenticated, isReady, isAdmin])
 
   return null
 }
@@ -76,6 +80,7 @@ export default function AppRouter() {
               <Route path="/pay-v2/:id" element={<InvoicePayment />} />
               <Route path="/verify" element={<VerifyEmailPage />} />
               <Route path="/app/*" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} />
+              <Route path="/admin/*" element={<ProtectedRoute requireAdmin><DashboardLayout /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>

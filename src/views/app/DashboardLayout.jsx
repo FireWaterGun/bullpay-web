@@ -25,6 +25,7 @@ import SystemBalance from '../admin/SystemBalance'
 import CoinList from '../crypto/CoinList'
 import CoinForm from '../crypto/CoinForm'
 import NetworkList from '../crypto/NetworkList'
+import NetworkForm from '../crypto/NetworkForm'
 import SupportedCrypto from '../crypto/SupportedCrypto'
 
 function MenuItem({ to, icon, label, end }) {
@@ -358,12 +359,12 @@ export default function DashboardLayout() {
             {isAdmin ? (
               <>
                 {/* Admin menu */}
-                <MenuItem to="/app" end icon="bx-home" label="Dashboard" />
-                <MenuItem to="/app/system-balance" icon="bx-wallet" label="System Balance" />
-                <MenuGroup base="/app/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
-                  <SubItem to="/app/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
-                  <SubItem to="/app/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
-                  <SubItem to="/app/crypto/supported" end={true} label={t('nav.supportedCrypto', { defaultValue: 'Supported Crypto' })} />
+                <MenuItem to="/admin" end icon="bx-home" label="Dashboard" />
+                <MenuItem to="/admin/system-balance" icon="bx-wallet" label="System Balance" />
+                <MenuGroup base="/admin/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
+                  <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
+                  <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
+                  <SubItem to="/admin/crypto/supported" end={true} label={t('nav.supportedCrypto', { defaultValue: 'Supported Crypto' })} />
                 </MenuGroup>
               </>
             ) : (
@@ -485,7 +486,7 @@ export default function DashboardLayout() {
                     </li>
                     <li><div className="dropdown-divider"></div></li>
                     <li>
-                      <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); navigate('/app/settings')}}>
+                      <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); navigate(isAdmin ? '/admin/settings' : '/app/settings')}}>
                         <i className="icon-base bx bx-cog icon-md me-3"></i><span>{t('nav.settings')}</span>
                       </a>
                     </li>
@@ -496,7 +497,7 @@ export default function DashboardLayout() {
                     </li>
                     <li><div className="dropdown-divider"></div></li>
                     <li>
-                      <a className="dropdown-item" href="#" onClick={(e)=>{ e.preventDefault(); logout(); navigate('/login', { replace: true }) }}>
+                      <a className="dropdown-item" href="#" onClick={(e)=>{ e.preventDefault(); logout(); navigate('/', { replace: true }) }}>
                         <i className="icon-base bx bx-log-out icon-md me-3"></i><span>{t('user.logout')}</span>
                       </a>
                     </li>
@@ -519,8 +520,12 @@ export default function DashboardLayout() {
                     <Route path="crypto/coins" element={<CoinList />} />
                     <Route path="crypto/coins/create" element={<CoinForm />} />
                     <Route path="crypto/coins/edit/:id" element={<CoinForm />} />
+                    <Route path="crypto/coins/:id" element={<CoinForm />} />
                     <Route path="crypto/networks" element={<NetworkList />} />
+                    <Route path="crypto/networks/create" element={<NetworkForm />} />
+                    <Route path="crypto/networks/:id" element={<NetworkForm />} />
                     <Route path="crypto/supported" element={<SupportedCrypto />} />
+                    <Route path="settings" element={<Settings />} />
                   </>
                 )}
                 

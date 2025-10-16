@@ -27,7 +27,7 @@ export default function CoinList() {
   const { token } = useAuth()
   const navigate = useNavigate()
   const [coins, setCoins] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [coinImages, setCoinImages] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
@@ -144,18 +144,7 @@ export default function CoinList() {
 
   function handlePageChange(newPage) {
     loadCoins(newPage, pagination.limit)
-  }
-
-  if (loading) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-6">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">{t('invoices.loading')}</span>
-          </div>
-        </div>
-      </div>
-    )
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -170,7 +159,7 @@ export default function CoinList() {
             <button 
               type="button" 
               className="btn btn-primary"
-              onClick={() => navigate('/app/crypto/coins/create')}
+              onClick={() => navigate('/admin/crypto/coins/create')}
             >
               <i className="bx bx-plus me-1"></i>
               {t('actions.create', { defaultValue: 'Create' })}
@@ -241,7 +230,7 @@ export default function CoinList() {
                     <th className="text-center">{t('invoices.actions')}</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
                   {coins.map((coin) => (
                     <tr key={coin.id}>
                       <td style={{ verticalAlign: 'middle' }}>
@@ -294,7 +283,7 @@ export default function CoinList() {
                         <button 
                           className="btn btn-sm btn-icon" 
                           title={t('actions.edit', { defaultValue: 'Edit' })}
-                          onClick={() => navigate(`/app/crypto/coins/edit/${coin.id}`)}
+                          onClick={() => navigate(`/admin/crypto/coins/${coin.id}`)}
                         >
                           <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                         </button>
