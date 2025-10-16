@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "仪表盘",
+    "balance": "余额",
     "invoice": "发票",
     "history": "历史",
     "create": "创建",
@@ -23,6 +24,7 @@
     "print": "打印",
   "view": "查看",
   "copy": "复制",
+  "copyAmount": "复制金额",
   "save": "保存",
   "delete": "删除",
   "copyAddress": "复制地址",
@@ -145,7 +147,8 @@
   "saving": "保存中...",
   "copied": "已复制",
   "noData": "暂无数据",
-  "copyright": "© {{year}} · 版权所有"
+  "copyright": "© {{year}} · 版权所有",
+  "poweredBy": "技术支持"
   }
   ,"wallet": {
     "loading": "正在加载钱包...",

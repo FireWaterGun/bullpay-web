@@ -332,27 +332,27 @@ export default function InvoicePayment() {
           <div className="row justify-content-center">
             <div className="col-12 col-sm-10 col-md-8 col-xl-4">
               <div className="card">
-                <div className="card-header d-flex flex-column align-items-center text-center gap-1">
-                  <h5 className="mb-0">
-                    {t("payment.title") || "Invoice Payment"}
-                  </h5>
-                  <small className="text-muted">
-                    {t('invoices.invoice')} #{invoice.invoiceNumber || invoice.publicCode || invoice.id}
-                  </small>
-                  <span
-                    className={`badge rounded-pill text-capitalize mt-1 ${statusClass(
-                      uiStatus
-                    )}`}
-                  >
-                    {statusLabel(uiStatus)}
-                  </span>
-                </div>
-                <div className="card-body pt-0 pb-3 border-bottom">
-                  <div className="d-flex align-items-center justify-content-center gap-3">
-                    <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={40} />
-                    <div className="text-start">
-                      <div className="fw-semibold">{coinSym}</div>
-                      <div className="small text-muted">{networkName || 'Network'}</div>
+                <div className="card-header">
+                  <div className="d-flex justify-content-between align-items-start">
+                    <div className="d-flex flex-column gap-1">
+                      <small className="text-muted">
+                        {t('invoices.invoice')} #{invoice.invoiceNumber || invoice.publicCode || invoice.id}
+                      </small>
+                      <span
+                        className={`badge rounded-pill text-capitalize ${statusClass(
+                          uiStatus
+                        )}`}
+                        style={{ width: 'fit-content' }}
+                      >
+                        {statusLabel(uiStatus)}
+                      </span>
+                    </div>
+                    <div className="d-flex align-items-center gap-2">
+                      <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={40} />
+                      <div className="text-start">
+                        <div className="fw-semibold">{coinSym}</div>
+                        <div className="small text-muted">{networkName || 'Network'}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -487,7 +487,7 @@ export default function InvoicePayment() {
                             isExpiredUnpaid
                               ? 'border-secondary opacity-75'
                               : isPaid
-                                ? 'border-secondary opacity-75'
+                                ? 'border-success'
                                 : currentStep >= 1
                                   ? 'border-primary'
                                   : 'border-secondary'
@@ -499,7 +499,7 @@ export default function InvoicePayment() {
                               isExpiredUnpaid
                                 ? 'text-secondary'
                                 : isPaid
-                                  ? 'text-secondary'
+                                  ? 'text-success'
                                   : currentStep >= 1
                                     ? 'text-primary'
                                     : 'text-secondary'
@@ -511,7 +511,7 @@ export default function InvoicePayment() {
                             isExpiredUnpaid
                               ? 'opacity-50'
                               : isPaid
-                                ? 'opacity-25'
+                                ? 'opacity-75'
                                 : currentStep >= 2
                                   ? 'opacity-50'
                                   : 'opacity-25'
@@ -525,7 +525,7 @@ export default function InvoicePayment() {
                             isExpiredUnpaid
                               ? 'text-muted'
                               : isPaid
-                                ? 'text-muted'
+                                ? 'text-success'
                                 : currentStep === 1
                                   ? 'text-body'
                                   : 'text-muted'
@@ -544,7 +544,7 @@ export default function InvoicePayment() {
                             isExpiredUnpaid
                               ? 'border-danger'
                               : isPaid
-                                ? 'border-secondary opacity-75'
+                                ? 'border-success'
                                 : currentStep >= 2
                                   ? 'border-primary'
                                   : 'border-secondary'
@@ -556,7 +556,7 @@ export default function InvoicePayment() {
                               isExpiredUnpaid
                                 ? 'bx-calendar-x text-danger'
                                 : isPaid
-                                  ? 'bx-time-five text-secondary'
+                                  ? 'bx-time-five text-success'
                                   : currentStep >= 2
                                     ? 'bx-time-five text-primary'
                                     : 'bx-time-five text-secondary'
@@ -566,7 +566,7 @@ export default function InvoicePayment() {
                         {!isExpiredUnpaid && (
                           <div
                             className={`vr my-2 align-self-center ${
-                              isPaid ? 'opacity-25' : currentStep >= 3 ? 'opacity-50' : 'opacity-25'
+                              isPaid ? 'opacity-75' : currentStep >= 3 ? 'opacity-50' : 'opacity-25'
                             }`}
                             style={{ height: 14 }}
                           ></div>
@@ -578,7 +578,7 @@ export default function InvoicePayment() {
                             isExpiredUnpaid
                               ? 'text-danger'
                               : isPaid
-                                ? 'text-muted'
+                                ? 'text-success'
                                 : currentStep === 2
                                   ? 'text-body'
                                   : 'text-muted'
@@ -629,19 +629,6 @@ export default function InvoicePayment() {
                             {t('payment.completed') || 'Success!'}
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                  {/* Progress bar and status removed per request */}
-                  <div className="mt-3 small text-muted">
-                    <div>
-                      {t("invoices.createdAt")}:{" "}
-                      {formatDateTime(invoice.createdAt || invoice.created_at)}
-                    </div>
-                    {invoice.expiryAt && (
-                      <div>
-                        {t("invoices.expiryAt")}:{" "}
-                        {formatDateTime(invoice.expiryAt)}
                       </div>
                     )}
                   </div>

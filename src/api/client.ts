@@ -77,6 +77,19 @@ export async function apiFetch<T = any>(path: string, { method = 'GET', headers 
   }
 
   if (!res.ok) {
+    // Handle 401 Unauthorized - redirect to login
+    if (res.status === 401) {
+      // Clear auth data
+      localStorage.removeItem('auth_user')
+      localStorage.removeItem('auth_token')
+      // Redirect to login page
+      window.location.href = '/login'
+      // Throw error to stop execution
+      const error: ApiError = new Error('Unauthorized')
+      error.status = 401
+      throw error
+    }
+
     const fallback = res.statusText || 'Request failed'
     const errPayload = (data && (data.error || data)) || null
     const msg = extractMessage(errPayload || data, fallback)

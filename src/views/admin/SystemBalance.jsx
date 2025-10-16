@@ -33,22 +33,57 @@ function getCoinAssetCandidates(symbol, logoUrl) {
   return Array.from(new Set(candidates))
 }
 
-function CoinImg({ coin, symbol, size = 28 }) {
+function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
   const candidates = useMemo(
     () => getCoinAssetCandidates(symbol, coin?.logoUrl),
     [coin?.logoUrl, symbol]
   )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  )
   const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 18
+  
   return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      className="rounded me-2"
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-    />
+    <div className="position-relative me-3" style={{ width: size, height: size }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol && 
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div 
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -225,7 +260,6 @@ export default function SystemBalance() {
                     <thead>
                       <tr>
                         <th>Coin</th>
-                        <th>Network</th>
                         <th>Type</th>
                         <th>Status</th>
                         <th className="text-end">Amount</th>
@@ -237,6 +271,9 @@ export default function SystemBalance() {
                       {stats.balanceDetails.map((wallet) => {
                         const coin = wallet.systemWallet?.coinNetwork?.coin
                         const coinSymbol = coin?.symbol
+                        const network = wallet.systemWallet?.coinNetwork?.network
+                        const networkSymbol = network?.symbol
+                        const networkName = network?.name
                         const rate = stats.fiat?.rates?.[coinSymbol] || 0
                         const usdValue = parseFloat(wallet.totalBalance || 0) * parseFloat(rate)
                         
@@ -244,13 +281,11 @@ export default function SystemBalance() {
                           <tr key={wallet.id}>
                             <td>
                               <div className="d-flex align-items-center">
-                                <CoinImg coin={coin} symbol={coinSymbol} size={32} />
-                              </div>
-                            </td>
-                            <td>
-                              <div>
-                                <div className="fw-medium">{coinSymbol || 'N/A'}</div>
-                                <small className="text-muted">{wallet.systemWallet?.coinNetwork?.network?.name || 'N/A'}</small>
+                                <CoinImg coin={coin} symbol={coinSymbol} networkSymbol={networkSymbol} size={32} />
+                                <div>
+                                  <div className="fw-medium">{coinSymbol || 'N/A'}</div>
+                                  <small className="text-muted">{networkName || 'N/A'}</small>
+                                </div>
                               </div>
                             </td>
                             <td>

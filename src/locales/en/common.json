@@ -1,6 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
+    "balance": "Balance",
     "invoice": "Invoice",
     "history": "History",
     "create": "Create",
@@ -23,6 +24,7 @@
     "print": "Print",
   "view": "View",
   "copy": "Copy",
+  "copyAmount": "Copy Amount",
   "save": "Save",
   "delete": "Delete",
   "copyAddress": "Copy Address",
@@ -146,7 +148,8 @@
   "saving": "Saving...",
   "copied": "Copied",
   "noData": "No data",
-  "copyright": "© {{year}} · All rights reserved"
+  "copyright": "© {{year}} · All rights reserved",
+  "poweredBy": "Powered by"
   }
   ,"wallet": {
     "loading": "Loading wallet...",
