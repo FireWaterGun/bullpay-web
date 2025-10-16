@@ -22,6 +22,10 @@ import BalanceWithdrawals from '../balance/BalanceWithdrawals'
 import WithdrawRequest from '../balance/WithdrawRequest'
 import AdminDashboard from '../admin/AdminDashboard'
 import SystemBalance from '../admin/SystemBalance'
+import CoinList from '../crypto/CoinList'
+import CoinForm from '../crypto/CoinForm'
+import NetworkList from '../crypto/NetworkList'
+import SupportedCrypto from '../crypto/SupportedCrypto'
 
 function MenuItem({ to, icon, label, end }) {
   const resolved = useResolvedPath(to)
@@ -356,6 +360,11 @@ export default function DashboardLayout() {
                 {/* Admin menu */}
                 <MenuItem to="/app" end icon="bx-home" label="Dashboard" />
                 <MenuItem to="/app/system-balance" icon="bx-wallet" label="System Balance" />
+                <MenuGroup base="/app/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
+                  <SubItem to="/app/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
+                  <SubItem to="/app/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
+                  <SubItem to="/app/crypto/supported" end={true} label={t('nav.supportedCrypto', { defaultValue: 'Supported Crypto' })} />
+                </MenuGroup>
               </>
             ) : (
               <>
@@ -507,6 +516,11 @@ export default function DashboardLayout() {
                   <>
                     <Route path="admin" element={<AdminDashboard />} />
                     <Route path="system-balance" element={<SystemBalance />} />
+                    <Route path="crypto/coins" element={<CoinList />} />
+                    <Route path="crypto/coins/create" element={<CoinForm />} />
+                    <Route path="crypto/coins/edit/:id" element={<CoinForm />} />
+                    <Route path="crypto/networks" element={<NetworkList />} />
+                    <Route path="crypto/supported" element={<SupportedCrypto />} />
                   </>
                 )}
                 

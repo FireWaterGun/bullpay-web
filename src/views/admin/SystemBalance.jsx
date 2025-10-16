@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getSystemWalletStats } from '../../api/admin.ts'
 import { formatAmount } from '../../utils/format'
@@ -88,6 +89,7 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
 }
 
 export default function SystemBalance() {
+  const { t } = useTranslation()
   const { token } = useAuth()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -116,7 +118,7 @@ export default function SystemBalance() {
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-6">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t('invoices.loading')}</span>
           </div>
         </div>
       </div>
@@ -148,7 +150,7 @@ export default function SystemBalance() {
                       <i className="bx bxs-wallet bx-lg text-primary"></i>
                     </div>
                     <div>
-                      <small className="text-muted d-block">Total Wallets</small>
+                      <small className="text-muted d-block">{t('admin.totalWallets', { defaultValue: 'Total Wallets' })}</small>
                       <h4 className="mb-0">{stats?.totalWallets || 0}</h4>
                     </div>
                   </div>
@@ -164,7 +166,7 @@ export default function SystemBalance() {
                       <i className="bx bxs-check-circle bx-lg text-success"></i>
                     </div>
                     <div>
-                      <small className="text-muted d-block">Active Wallets</small>
+                      <small className="text-muted d-block">{t('admin.activeWallets', { defaultValue: 'Active Wallets' })}</small>
                       <h4 className="mb-0">{stats?.activeWallets || 0}</h4>
                     </div>
                   </div>
@@ -180,7 +182,7 @@ export default function SystemBalance() {
                       <i className="bx bxs-hot bx-lg text-warning"></i>
                     </div>
                     <div>
-                      <small className="text-muted d-block">Hot Wallets</small>
+                      <small className="text-muted d-block">{t('admin.hotWallets', { defaultValue: 'Hot Wallets' })}</small>
                       <h4 className="mb-0">{stats?.hotWallets || 0}</h4>
                     </div>
                   </div>
@@ -196,7 +198,7 @@ export default function SystemBalance() {
                       <i className="bx bxs-shield bx-lg text-info"></i>
                     </div>
                     <div>
-                      <small className="text-muted d-block">Cold Wallets</small>
+                      <small className="text-muted d-block">{t('admin.coldWallets', { defaultValue: 'Cold Wallets' })}</small>
                       <h4 className="mb-0">{stats?.coldWallets || 0}</h4>
                     </div>
                   </div>
@@ -210,7 +212,7 @@ export default function SystemBalance() {
             <div className="card-header">
               <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
                 <div>
-                  <h4 className="card-title mb-1 fs-3">System Balance</h4>
+                  <h4 className="card-title mb-1 fs-3">{t('admin.systemBalance', { defaultValue: 'System Balance' })}</h4>
                 </div>
               </div>
             </div>
@@ -234,7 +236,7 @@ export default function SystemBalance() {
               <div className="mt-3">
                 <span className="badge bg-label-primary">
                   <i className="bx bx-wallet me-1"></i>
-                  {stats?.walletsWithFunds || 0} wallets with funds
+                  {stats?.walletsWithFunds || 0} {t('admin.walletsWithFunds', { defaultValue: 'wallets with funds' })}
                 </span>
               </div>
             </div>
@@ -243,28 +245,28 @@ export default function SystemBalance() {
           {/* Wallet Details Table */}
           <div className="card">
             <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">Wallet Details</h5>
+              <h5 className="mb-0">{t('admin.walletDetails', { defaultValue: 'Wallet Details' })}</h5>
               <span className="badge bg-label-primary">
-                {stats?.balanceDetails?.length || 0} wallets
+                {stats?.balanceDetails?.length || 0} {t('admin.wallets', { defaultValue: 'wallets' })}
               </span>
             </div>
             <div className="card-body">
               {!stats?.balanceDetails || stats.balanceDetails.length === 0 ? (
                 <div className="text-center py-6">
                   <i className="bx bx-wallet bx-lg text-muted mb-3 d-block"></i>
-                  <p className="text-muted mb-0">No wallets with balance found</p>
+                  <p className="text-muted mb-0">{t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })}</p>
                 </div>
               ) : (
                 <div className="table-responsive">
                   <table className="table table-hover">
                     <thead>
                       <tr>
-                        <th>Coin</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th className="text-end">Amount</th>
-                        <th className="text-end">Price (USD)</th>
-                        <th className="text-center">Action</th>
+                        <th>{t('balance.col.coin')}</th>
+                        <th>{t('admin.type', { defaultValue: 'Type' })}</th>
+                        <th>{t('invoices.statusCol')}</th>
+                        <th className="text-end">{t('invoices.amount')}</th>
+                        <th className="text-end">{t('admin.priceUSD', { defaultValue: 'Price (USD)' })}</th>
+                        <th className="text-center">{t('invoices.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -292,18 +294,18 @@ export default function SystemBalance() {
                               {wallet.systemWallet?.walletType === 'hot' ? (
                                 <span className="badge bg-label-warning">
                                   <i className="bx bx-hot me-1"></i>
-                                  Hot
+                                  {t('admin.hot', { defaultValue: 'Hot' })}
                                 </span>
                               ) : (
                                 <span className="badge bg-label-info">
                                   <i className="bx bx-shield me-1"></i>
-                                  Cold
+                                  {t('admin.cold', { defaultValue: 'Cold' })}
                                 </span>
                               )}
                             </td>
                             <td>
                               {wallet.systemWallet?.status === 'active' ? (
-                                <span className="badge bg-label-success">Active</span>
+                                <span className="badge bg-label-success">{t('admin.active', { defaultValue: 'Active' })}</span>
                               ) : (
                                 <span className="badge bg-label-secondary">
                                   {wallet.systemWallet?.status}
@@ -332,7 +334,7 @@ export default function SystemBalance() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-sm btn-icon btn-outline-primary"
-                                title="View on Explorer"
+                                title={t('invoices.viewOnExplorer')}
                               >
                                 <i className="bx bx-link-external"></i>
                               </a>

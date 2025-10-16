@@ -20,3 +20,139 @@ export async function getSystemWalletStats(token: string, currency: string = '')
   // apiFetch already returns parsed JSON
   return data.data || data
 }
+
+/**
+ * Get all coins (Admin only)
+ * @param token - Auth token
+ * @param page - Page number (default: 1)
+ * @param limit - Items per page (default: 10)
+ * @param search - Search query for name or symbol
+ */
+export async function getCoins(token: string, page: number = 1, limit: number = 10, search: string = '') {
+  const queryParams = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  })
+  
+  if (search && search.trim()) {
+    queryParams.append('search', search.trim())
+  }
+  
+  const data = await apiFetch(`/admin/coins?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Get a single coin by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Coin ID
+ */
+export async function getCoinById(token: string, id: number) {
+  const data = await apiFetch(`/admin/coins/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Get all networks (Admin only)
+ * @param token - Auth token
+ */
+export async function getNetworks(token: string) {
+  const data = await apiFetch('/admin/networks', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Get all coin-networks (Admin only)
+ * @param token - Auth token
+ */
+export async function getCoinNetworks(token: string) {
+  const data = await apiFetch('/admin/coin-networks', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Create a new coin (Admin only)
+ * @param token - Auth token
+ * @param coinData - Coin data
+ */
+export async function createCoin(token: string, coinData: {
+  name: string
+  symbol: string
+  decimals: number
+  type?: string
+  isStableCoin: boolean
+  logoUrl?: string
+  status: string
+}) {
+  const data = await apiFetch('/admin/coins', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: {
+      ...coinData,
+      type: coinData.type || 'native', // Default to 'native' if not provided
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Update an existing coin (Admin only)
+ * @param token - Auth token
+ * @param id - Coin ID
+ * @param coinData - Partial coin data to update
+ */
+export async function updateCoin(token: string, id: number, coinData: {
+  name?: string
+  symbol?: string
+  decimals?: number
+  type?: string
+  isStableCoin?: boolean
+  logoUrl?: string
+  status?: string
+}) {
+  const data = await apiFetch(`/admin/coins/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: coinData,
+  })
+  return data.data || data
+}
+
+/**
+ * Delete a coin (Admin only)
+ * @param token - Auth token
+ * @param id - Coin ID
+ */
+export async function deleteCoin(token: string, id: number) {
+  const data = await apiFetch(`/admin/coins/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
