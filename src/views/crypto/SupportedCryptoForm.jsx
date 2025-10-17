@@ -133,7 +133,8 @@ export default function SupportedCryptoForm() {
     maxWithdrawAmount: '',
     depositFee: '0',
     withdrawFee: '',
-    depositConfirmations: ''
+    depositConfirmations: '',
+    status: 'active'
   })
 
   const selectedCoin = useMemo(() => {
@@ -191,7 +192,8 @@ export default function SupportedCryptoForm() {
           maxWithdrawAmount: cleanNumber(coinNetwork.maxWithdrawAmount),
           depositFee: cleanNumber(coinNetwork.depositFee) || '0',
           withdrawFee: cleanNumber(coinNetwork.withdrawFee),
-          depositConfirmations: coinNetwork.depositConfirmations?.toString() || ''
+          depositConfirmations: coinNetwork.depositConfirmations?.toString() || '',
+          status: coinNetwork.status || 'active'
         })
       } else {
         setError('Supported crypto not found')
@@ -254,7 +256,8 @@ export default function SupportedCryptoForm() {
         maxWithdrawAmount: formData.maxWithdrawAmount,
         depositFee: formData.depositFee || '0',
         withdrawFee: formData.withdrawFee,
-        depositConfirmations: parseInt(formData.depositConfirmations)
+        depositConfirmations: parseInt(formData.depositConfirmations),
+        status: formData.status || 'active'
       }
 
       if (isEdit) {
@@ -331,24 +334,25 @@ export default function SupportedCryptoForm() {
         </div>
       </div>
 
+      {error && (
+        <div className="alert alert-danger mb-4" role="alert">
+          <i className="bx bx-error-circle me-2"></i>
+          {error}
+        </div>
+      )}
+
       <div className="row">
         <div className="col-12">
-          <div className="card mb-4">
-            <h5 className="card-header">{t('crypto.supportedInformation', { defaultValue: 'Supported Crypto Information' })}</h5>
-            <div className="card-body">
-              {error && (
-                <div className="alert alert-danger mb-4" role="alert">
-                  <i className="bx bx-error-circle me-2"></i>
-                  {error}
-                </div>
-              )}
-
-              {/* Coin Selection Cards */}
-              <div className="mb-4">
-                <h6 className="mb-3">
+            {/* Step 1: Select Coin Card */}
+            <div className="card mb-4">
+              <div className="card-header">
+                <h5 className="mb-0">
                   <span className="badge bg-primary rounded-pill me-2">1</span>
-                  {t('crypto.selectCoin', { defaultValue: 'Select a coin' })} <span className="text-danger">*</span>
-                </h6>
+                  {t('crypto.selectCoin', { defaultValue: 'Select a coin' })}
+                  <span className="text-danger ms-1">*</span>
+                </h5>
+              </div>
+              <div className="card-body">
                 <div className="row g-3">
                   {coins.map(coin => {
                     const isActive = formData.coinId === String(coin.id)
@@ -380,13 +384,18 @@ export default function SupportedCryptoForm() {
                   )}
                 </div>
               </div>
+            </div>
 
-              {/* Network Selection Pills */}
-              <div className="mb-4">
-                <h6 className="mb-3">
+            {/* Step 2: Select Network Card */}
+            <div className="card mb-4">
+              <div className="card-header">
+                <h5 className="mb-0">
                   <span className="badge bg-primary rounded-pill me-2">2</span>
-                  {t('crypto.selectNetwork', { defaultValue: 'Select a network' })} <span className="text-danger">*</span>
-                </h6>
+                  {t('crypto.selectNetwork', { defaultValue: 'Select a network' })}
+                  <span className="text-danger ms-1">*</span>
+                </h5>
+              </div>
+              <div className="card-body">
                 {formData.coinId ? (
                   <div className="d-flex flex-wrap gap-2">
                     {networks.map(network => {
@@ -415,11 +424,20 @@ export default function SupportedCryptoForm() {
                   <div className="text-muted">{t('crypto.selectCoinFirst', { defaultValue: 'Please select a coin first' })}</div>
                 )}
               </div>
+            </div>
 
-              <form onSubmit={handleSubmit}>
-                <div className="row g-4">
+            {/* Step 3: Configuration Card */}
+            <div className="card mb-4">
+              <div className="card-header">
+                <h5 className="mb-0">
+                  <span className="badge bg-primary rounded-pill me-2">3</span>
+                  {t('crypto.configuration', { defaultValue: 'Configuration' })}
+                </h5>
+              </div>
+              <div className="card-body">
+                <form onSubmit={handleSubmit}>
+                  <div className="row g-4">
 
-              {/* Contract Address */}
               <div className="col-md-6">
                 <label className="form-label">
                   {t('crypto.contractAddress', { defaultValue: 'Contract Address' })}
@@ -461,43 +479,48 @@ export default function SupportedCryptoForm() {
                 </small>
               </div>
 
-              {/* Deposit Enabled */}
+              {/* Toggles */}
               <div className="col-md-6">
-                <div className="form-check form-switch mt-4">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    name="depositEnabled"
-                    id="depositEnabled"
-                    checked={formData.depositEnabled}
-                    onChange={handleChange}
-                    disabled={loading}
-                  />
-                  <label className="form-check-label" htmlFor="depositEnabled">
-                    {t('crypto.depositEnabled', { defaultValue: 'Deposit Enabled' })}
-                  </label>
+                <div className="d-flex align-items-center justify-content-between p-3 border rounded">
+                  <div>
+                    <h6 className="mb-1">{t('crypto.depositEnabled', { defaultValue: 'Deposit Enabled' })}</h6>
+                    <small className="text-muted">{t('crypto.allowDeposits', { defaultValue: 'Allow users to deposit' })}</small>
+                  </div>
+                  <div className="form-check form-switch form-switch-lg m-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="depositEnabled"
+                      id="depositEnabled"
+                      checked={formData.depositEnabled}
+                      onChange={handleChange}
+                      disabled={loading}
+                    />
+                    <label className="form-check-label" htmlFor="depositEnabled"></label>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="d-flex align-items-center justify-content-between p-3 border rounded">
+                  <div>
+                    <h6 className="mb-1">{t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</h6>
+                    <small className="text-muted">{t('crypto.allowWithdrawals', { defaultValue: 'Allow users to withdraw' })}</small>
+                  </div>
+                  <div className="form-check form-switch form-switch-lg m-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="withdrawEnabled"
+                      id="withdrawEnabled"
+                      checked={formData.withdrawEnabled}
+                      onChange={handleChange}
+                      disabled={loading}
+                    />
+                    <label className="form-check-label" htmlFor="withdrawEnabled"></label>
+                  </div>
                 </div>
               </div>
 
-              {/* Withdraw Enabled */}
-              <div className="col-md-6">
-                <div className="form-check form-switch mt-4">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    name="withdrawEnabled"
-                    id="withdrawEnabled"
-                    checked={formData.withdrawEnabled}
-                    onChange={handleChange}
-                    disabled={loading}
-                  />
-                  <label className="form-check-label" htmlFor="withdrawEnabled">
-                    {t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}
-                  </label>
-                </div>
-              </div>
-
-              {/* Min Deposit Amount */}
               <div className="col-md-6">
                 <label className="form-label">
                   {t('crypto.minDepositAmount', { defaultValue: 'Min Deposit Amount' })} <span className="text-danger">*</span>
@@ -534,7 +557,27 @@ export default function SupportedCryptoForm() {
                 />
               </div>
 
-              {/* Min Withdraw Amount */}
+              <div className="col-md-6">
+                <label className="form-label">
+                  {t('crypto.depositConfirmations', { defaultValue: 'Deposit Confirmations' })} <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="number"
+                  className="form-control form-control-lg"
+                  id="depositConfirmations"
+                  name="depositConfirmations"
+                  value={formData.depositConfirmations}
+                  onChange={handleChange}
+                  required
+                  disabled={loading}
+                  min="1"
+                  placeholder="12"
+                />
+                <small className="text-muted">
+                  {t('crypto.depositConfirmationsHelp', { defaultValue: 'Number of confirmations required' })}
+                </small>
+              </div>
+
               <div className="col-md-6">
                 <label className="form-label">
                   {t('crypto.minWithdrawAmount', { defaultValue: 'Min Withdraw Amount' })} <span className="text-danger">*</span>
@@ -591,30 +634,30 @@ export default function SupportedCryptoForm() {
                 />
               </div>
 
-              {/* Deposit Confirmations */}
-              <div className="col-md-6">
+              <div className="col-md-12">
                 <label className="form-label">
-                  {t('crypto.depositConfirmations', { defaultValue: 'Deposit Confirmations' })} <span className="text-danger">*</span>
+                  {t('crypto.status', { defaultValue: 'Status' })} <span className="text-danger">*</span>
                 </label>
-                <input
-                  type="number"
-                  className="form-control form-control-lg"
-                  id="depositConfirmations"
-                  name="depositConfirmations"
-                  value={formData.depositConfirmations}
+                <select
+                  className="form-select form-select-lg"
+                  id="status"
+                  name="status"
+                  value={formData.status}
                   onChange={handleChange}
                   required
                   disabled={loading}
-                  min="1"
-                  placeholder="12"
-                />
+                >
+                  <option value="active">{t('crypto.statusActive', { defaultValue: 'Active' })}</option>
+                  <option value="inactive">{t('crypto.statusInactive', { defaultValue: 'Inactive' })}</option>
+                  <option value="maintenance">{t('crypto.statusMaintenance', { defaultValue: 'Maintenance' })}</option>
+                </select>
                 <small className="text-muted">
-                  {t('crypto.depositConfirmationsHelp', { defaultValue: 'Number of confirmations required' })}
+                  {t('crypto.statusHelp', { defaultValue: 'Current status of this coin-network pair' })}
                 </small>
               </div>
-                </div>
+                  </div>
 
-                {/* Action Buttons */}
+                  {/* Action Buttons */}
                 <div className="d-flex gap-2 justify-content-end mt-5">
                   <button
                     type="button"
@@ -639,9 +682,9 @@ export default function SupportedCryptoForm() {
                     }
                   </button>
                 </div>
-              </form>
+                </form>
+              </div>
             </div>
-          </div>
 
           {/* Delete Button Card */}
           {isEdit && (

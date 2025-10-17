@@ -40,8 +40,48 @@ function getCoinAssetCandidates(symbol, logoUrl) {
 
 function CoinImg({ coin, symbol, size = 36 }) {
   const [idx, setIdx] = useState(0);
-  const candidates = useMemo(() => getCoinAssetCandidates(symbol, coin?.logoUrl), [coin?.logoUrl, symbol]);
+  const [showFallback, setShowFallback] = useState(false);
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, coin?.logoUrl).filter(c => !c.includes('default.svg')),
+    [coin?.logoUrl, symbol]
+  );
   const src = candidates[Math.min(idx, candidates.length - 1)];
+  
+  const handleError = () => {
+    if (idx + 1 < candidates.length) {
+      setIdx(i => i + 1);
+    } else {
+      setShowFallback(true);
+    }
+  };
+  
+  const getAvatarColor = (text) => {
+    const colors = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD'];
+    const colorIndex = text.charCodeAt(0) % colors.length;
+    return colors[colorIndex];
+  };
+  
+  if (candidates.length === 0 || showFallback) {
+    return (
+      <div
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '8px',
+          backgroundColor: getAvatarColor(symbol || 'C'),
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: size * 0.5,
+          fontWeight: 'bold'
+        }}
+      >
+        {(symbol || 'C').charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+  
   return (
     <img
       src={src}
@@ -49,7 +89,7 @@ function CoinImg({ coin, symbol, size = 36 }) {
       width={size}
       height={size}
       className="rounded"
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+      onError={handleError}
     />
   );
 }
