@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getCoinById, createCoin, updateCoin, deleteCoin } from '../../api/admin.ts'
+import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal'
 
 export default function CoinForm() {
   const { t } = useTranslation()
@@ -66,6 +67,14 @@ export default function CoinForm() {
       processedValue = value.toUpperCase()
     }
     
+    // Validate decimals field (0-18 only)
+    if (name === 'decimals' && value !== '') {
+      const num = parseInt(value)
+      if (num < 0 || num > 18) {
+        return // Don't update if out of range
+      }
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : processedValue
@@ -106,8 +115,13 @@ export default function CoinForm() {
         if (!formData.name || formData.name.length > 100) {
           throw new Error('Name is required and must be max 100 characters')
         }
-        if (formData.decimals < 0 || formData.decimals > 18) {
-          throw new Error('Decimals must be between 0 and 18')
+      }
+      
+      // Validate decimals (always check for both create and edit)
+      if (formData.decimals !== '' && formData.decimals !== null && formData.decimals !== undefined) {
+        const decimals = parseInt(formData.decimals)
+        if (decimals < 0 || decimals > 18) {
+          throw new Error(t('crypto.decimalsRangeError', { defaultValue: 'Decimals must be between 0 and 18' }))
         }
       }
 
@@ -231,7 +245,7 @@ export default function CoinForm() {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Bitcoin"
-                      maxLength={100}
+                      maxLength={30}
                       required
                     />
                     <small className="text-muted">{t('crypto.nameHelp', { defaultValue: 'Full coin name' })}</small>
@@ -360,71 +374,15 @@ export default function CoinForm() {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => setShowDeleteConfirm(false)}>
-          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className="bx bx-error-circle text-danger me-2"></i>
-                  {t('crypto.confirmDelete', { defaultValue: 'Confirm Delete' })}
-                </h5>
-                <button 
-                  type="button" 
-                  className="btn-close" 
-                  onClick={() => setShowDeleteConfirm(false)}
-                  disabled={loading}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <p className="mb-2">
-                  {t('crypto.deleteConfirmMessage', { 
-                    defaultValue: 'Are you sure you want to delete this coin?' 
-                  })}
-                </p>
-                <p className="text-muted small mb-0">
-                  <strong>{formData.symbol}</strong> - {formData.name}
-                </p>
-                <div className="alert alert-warning mt-3 mb-0">
-                  <i className="bx bx-error-circle me-2"></i>
-                  {t('crypto.deleteWarning', { 
-                    defaultValue: 'This action cannot be undone.' 
-                  })}
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-label-secondary" 
-                  onClick={() => setShowDeleteConfirm(false)}
-                  disabled={loading}
-                >
-                  {t('actions.cancel', { defaultValue: 'Cancel' })}
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-danger" 
-                  onClick={handleDelete}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                      {t('actions.deleting', { defaultValue: 'Deleting...' })}
-                    </>
-                  ) : (
-                    <>
-                      <i className="bx bx-trash me-2"></i>
-                      {t('actions.delete', { defaultValue: 'Delete' })}
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        show={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        loading={loading}
+        message={t('crypto.deleteConfirmMessage', { defaultValue: 'Are you sure you want to delete this coin?' })}
+        itemName={formData.symbol}
+        itemDetails={`- ${formData.name}`}
+      />
 
       {/* Error Modal */}
       {showErrorModal && (

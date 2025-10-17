@@ -27,6 +27,7 @@ import CoinForm from '../crypto/CoinForm'
 import NetworkList from '../crypto/NetworkList'
 import NetworkForm from '../crypto/NetworkForm'
 import SupportedCrypto from '../crypto/SupportedCrypto'
+import SupportedCryptoForm from '../crypto/SupportedCryptoForm'
 
 function MenuItem({ to, icon, label, end }) {
   const resolved = useResolvedPath(to)
@@ -525,6 +526,8 @@ export default function DashboardLayout() {
                     <Route path="crypto/networks/create" element={<NetworkForm />} />
                     <Route path="crypto/networks/:id" element={<NetworkForm />} />
                     <Route path="crypto/supported" element={<SupportedCrypto />} />
+                    <Route path="crypto/supported/create" element={<SupportedCryptoForm />} />
+                    <Route path="crypto/supported/:id" element={<SupportedCryptoForm />} />
                     <Route path="settings" element={<Settings />} />
                   </>
                 )}

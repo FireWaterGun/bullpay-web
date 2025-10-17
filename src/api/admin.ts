@@ -171,9 +171,31 @@ export async function deleteNetwork(token: string, id: number) {
 /**
  * Get all coin-networks (Admin only)
  * @param token - Auth token
+ * @param page - Page number
+ * @param limit - Items per page
+ * @param search - Search query (coin or network name)
+ * @param coin - Filter by coin symbol
+ * @param network - Filter by network name
  */
-export async function getCoinNetworks(token: string) {
-  const data = await apiFetch('/admin/coin-networks', {
+export async function getCoinNetworks(token: string, page = 1, limit = 10, search = '', coin?: string, network?: string) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  })
+  
+  if (search) {
+    params.append('search', search)
+  }
+  
+  if (coin) {
+    params.append('coin', coin)
+  }
+  
+  if (network) {
+    params.append('network', network)
+  }
+  
+  const data = await apiFetch(`/admin/coin-networks?${params}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -241,6 +263,95 @@ export async function updateCoin(token: string, id: number, coinData: {
  */
 export async function deleteCoin(token: string, id: number) {
   const data = await apiFetch(`/admin/coins/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Get coin-network by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Coin-network ID
+ */
+export async function getCoinNetworkById(token: string, id: number) {
+  const data = await apiFetch(`/admin/coin-networks/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Create a new coin-network (Admin only)
+ * @param token - Auth token
+ * @param coinNetworkData - Coin-network data
+ */
+export async function createCoinNetwork(token: string, coinNetworkData: {
+  coinId: number
+  networkId: number
+  contractAddress?: string
+  decimals?: number
+  depositEnabled: boolean
+  withdrawEnabled: boolean
+  minDepositAmount: string
+  minWithdrawAmount: string
+  maxWithdrawAmount: string
+  depositFee?: string
+  withdrawFee: string
+  depositConfirmations: number
+}) {
+  const data = await apiFetch('/admin/coin-networks', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: coinNetworkData,
+  })
+  return data.data || data
+}
+
+/**
+ * Update an existing coin-network (Admin only)
+ * @param token - Auth token
+ * @param id - Coin-network ID
+ * @param coinNetworkData - Partial coin-network data to update
+ */
+export async function updateCoinNetwork(token: string, id: number, coinNetworkData: {
+  coinId?: number
+  networkId?: number
+  contractAddress?: string
+  decimals?: number
+  depositEnabled?: boolean
+  withdrawEnabled?: boolean
+  minDepositAmount?: string
+  minWithdrawAmount?: string
+  maxWithdrawAmount?: string
+  depositFee?: string
+  withdrawFee?: string
+  depositConfirmations?: number
+}) {
+  const data = await apiFetch(`/admin/coin-networks/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: coinNetworkData,
+  })
+  return data.data || data
+}
+
+/**
+ * Delete a coin-network (Admin only)
+ * @param token - Auth token
+ * @param id - Coin-network ID
+ */
+export async function deleteCoinNetwork(token: string, id: number) {
+  const data = await apiFetch(`/admin/coin-networks/${id}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
