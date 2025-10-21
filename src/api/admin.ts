@@ -359,3 +359,55 @@ export async function deleteCoinNetwork(token: string, id: number) {
   })
   return data.data || data
 }
+
+/**
+ * Get sweep settings (Admin only)
+ * @param token - Auth token
+ * @param category - Settings category (default: 'blockchain')
+ * @param scope - Settings scope (default: 'global')
+ * @param page - Page number (default: 1)
+ * @param limit - Items per page (default: 50)
+ */
+export async function getSweepSettings(
+  token: string, 
+  category: string = 'blockchain', 
+  scope: string = 'global',
+  page: number = 1,
+  limit: number = 50
+) {
+  const params = new URLSearchParams({
+    category,
+    scope,
+    page: page.toString(),
+    limit: limit.toString(),
+  })
+  
+  const data = await apiFetch(`/admin/settings?${params}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Update sweep setting (Admin only)
+ * @param token - Auth token
+ * @param keyName - Setting key name
+ * @param value - New value
+ */
+export async function updateSweepSetting(
+  token: string,
+  keyName: string,
+  value: any
+) {
+  const data = await apiFetch(`/admin/settings/${keyName}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: { value },
+  })
+  return data.data || data
+}

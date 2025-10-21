@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useToastContext } from '../../context/ToastContext'
 import { getCoinNetworks, getCoins, getNetworks } from '../../api/admin.ts'
 
 // Coin asset helpers
@@ -169,6 +170,7 @@ export default function SupportedCrypto() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const navigate = useNavigate()
+  const toast = useToastContext()
   const [coinNetworks, setCoinNetworks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -265,16 +267,16 @@ export default function SupportedCrypto() {
         <div className="card-header">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h5 className="mb-0">{t('nav.supportedCrypto', { defaultValue: 'Supported Crypto' })}</h5>
-              <p className="text-muted small mb-0 mt-1">{t('crypto.manageSupportedCrypto', { defaultValue: 'Manage supported cryptocurrency networks' })}</p>
+              <h5 className="mb-0">{t('nav.coinNetworks', { defaultValue: 'Coin Networks' })}</h5>
+              <p className="text-muted small mb-0 mt-1">{t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}</p>
             </div>
             <button
               type="button"
               className="btn btn-primary"
-              onClick={() => navigate('/admin/crypto/supported/create')}
+              onClick={() => navigate('/admin/crypto/coin-networks/create')}
             >
               <i className="bx bx-plus me-1"></i>
-              {t('crypto.addSupported', { defaultValue: 'Add Support' })}
+              {t('crypto.addCoinNetwork', { defaultValue: 'Add Coin-Network' })}
             </button>
           </div>
 
@@ -408,7 +410,21 @@ export default function SupportedCrypto() {
                     </td>
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       {coinNetwork.contractAddress ? (
-                        <code className="text-muted small">{coinNetwork.contractAddress.substring(0, 8)}...{coinNetwork.contractAddress.substring(coinNetwork.contractAddress.length - 6)}</code>
+                        <div className="d-inline-flex align-items-center gap-2">
+                          <code className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                            {coinNetwork.contractAddress}
+                          </code>
+                          <button
+                            className="btn btn-sm btn-icon btn-outline-secondary"
+                            onClick={() => {
+                              navigator.clipboard.writeText(coinNetwork.contractAddress)
+                              toast.success(t('actions.copied', { defaultValue: 'Copied' }))
+                            }}
+                            title={t('actions.copy', { defaultValue: 'Copy' })}
+                          >
+                            <i className="bx bx-copy"></i>
+                          </button>
+                        </div>
                       ) : (
                         <span className="text-muted">Native</span>
                       )}
@@ -430,7 +446,7 @@ export default function SupportedCrypto() {
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       <button
                         className="btn btn-sm btn-icon btn-label-primary"
-                        onClick={() => navigate(`/admin/crypto/supported/${coinNetwork.id}`)}
+                        onClick={() => navigate(`/admin/crypto/coin-networks/${coinNetwork.id}`)}
                         title={t('actions.edit', { defaultValue: 'Edit' })}
                       >
                         <i className="bx bx-edit"></i>

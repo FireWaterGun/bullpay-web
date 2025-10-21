@@ -44,6 +44,13 @@ export default function NetworkForm() {
       const network = await getNetworkById(token, parseInt(id))
       
       if (network) {
+        // ฟังก์ชันตัด trailing zeros
+        const cleanNumber = (value) => {
+          if (!value) return ''
+          const num = parseFloat(value)
+          return isNaN(num) ? '' : num.toString()
+        }
+        
         setFormData({
           name: network.name || '',
           symbol: network.symbol || '',
@@ -52,7 +59,7 @@ export default function NetworkForm() {
           explorerUrl: network.explorerUrl || '',
           apiUrl: network.apiUrl || '',
           isTestnet: !!network.isTestnet,
-          gasPrice: network.gasPrice || '',
+          gasPrice: cleanNumber(network.gasPrice),
           confirmationBlocks: network.confirmationBlocks || 1,
           status: network.status || 'active'
         })

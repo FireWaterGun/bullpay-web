@@ -83,6 +83,7 @@ export default function InvoicePaymentV2() {
         paymentAddress: qrData?.address || inv.paymentAddress,
         createdAt: inv.createdAt || inv.created_at,
         paidAmount: inv.paidAmount || inv.paid_amount,
+        paidAt: inv.paidAt || inv.paid_at,
         symbol: qrData?.symbol || inv.symbol,
         network: qrData?.network || inv.network,
       }
@@ -641,6 +642,70 @@ export default function InvoicePaymentV2() {
                           <div style={{ color: '#475569', lineHeight: 1.4, fontSize: '0.875rem' }}>{invoice.description}</div>
                         </div>
                       )}
+
+                    {/* Paid At Info */}
+                    {isPaid && invoice.paidAt && (
+                      <div className="mb-3 p-3 rounded-4" style={{
+                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08))',
+                        border: '1px solid rgba(16, 185, 129, 0.2)'
+                      }}>
+                        <div className="d-flex align-items-center gap-2 mb-2">
+                          <div className="rounded-circle d-flex align-items-center justify-content-center" style={{
+                            width: 28,
+                            height: 28,
+                            background: 'linear-gradient(135deg, #10b981, #059669)',
+                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                          }}>
+                            <i className="bx bx-check text-white" style={{ fontSize: 16 }}></i>
+                          </div>
+                          <span className="small" style={{
+                            color: '#047857',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1.5px',
+                            fontSize: '0.7rem',
+                            fontWeight: '700'
+                          }}>
+                            {t("payment.paidAt", { defaultValue: "Paid At" })}
+                          </span>
+                        </div>
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '4px'
+                        }}>
+                          <div className="fw-bold" style={{
+                            color: '#059669',
+                            fontSize: '1.1rem',
+                            letterSpacing: '0.5px'
+                          }}>
+                            {(() => {
+                              const d = new Date(invoice.paidAt)
+                              return new Intl.DateTimeFormat(undefined, {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              }).format(d)
+                            })()}
+                          </div>
+                          <div className="fw-semibold" style={{
+                            color: '#10b981',
+                            fontSize: '0.9rem',
+                            fontFamily: 'monospace',
+                            letterSpacing: '1px'
+                          }}>
+                            {(() => {
+                              const d = new Date(invoice.paidAt)
+                              return new Intl.DateTimeFormat(undefined, {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                hour12: false
+                              }).format(d)
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Progress Steps */}
                     <div className="mt-3 p-3 rounded-4" style={{

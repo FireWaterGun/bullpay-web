@@ -266,9 +266,9 @@ export default function SupportedCryptoForm() {
         await createCoinNetwork(token, data)
       }
       
-      navigate('/admin/crypto/supported')
+      navigate('/admin/crypto/coin-networks')
     } catch (e) {
-      const message = e?.message || (isEdit ? 'Failed to update supported crypto' : 'Failed to create supported crypto')
+      const message = e?.message || (isEdit ? 'Failed to update coin-network' : 'Failed to create coin-network')
       setErrorMessage(message)
       setShowErrorModal(true)
     } finally {
@@ -285,9 +285,9 @@ export default function SupportedCryptoForm() {
 
     try {
       await deleteCoinNetwork(token, parseInt(id))
-      navigate('/admin/crypto/supported')
+      navigate('/admin/crypto/coin-networks')
     } catch (e) {
-      const message = e?.message || 'Failed to delete supported crypto'
+      const message = e?.message || 'Failed to delete coin-network'
       setErrorMessage(message)
       setShowErrorModal(true)
     } finally {
@@ -314,21 +314,21 @@ export default function SupportedCryptoForm() {
         <button 
           type="button" 
           className="btn btn-icon btn-outline-secondary me-3"
-          onClick={() => navigate('/admin/crypto/supported')}
+          onClick={() => navigate('/admin/crypto/coin-networks')}
         >
           <i className="bx bx-arrow-back"></i>
         </button>
         <div>
           <h4 className="mb-1">
             {isEdit 
-              ? t('crypto.editSupported', { defaultValue: 'Edit Supported Crypto' })
-              : t('crypto.createSupported', { defaultValue: 'Add Supported Crypto' })
+              ? t('crypto.editCoinNetwork', { defaultValue: 'Edit Coin-Network' })
+              : t('crypto.createCoinNetwork', { defaultValue: 'Add Coin-Network' })
             }
           </h4>
           <p className="text-muted mb-0">
             {isEdit
-              ? t('crypto.editSupportedDesc', { defaultValue: 'Update supported cryptocurrency network' })
-              : t('crypto.createSupportedDesc', { defaultValue: 'Add a new supported cryptocurrency network' })
+              ? t('crypto.editCoinNetworkDesc', { defaultValue: 'Update coin-network configuration' })
+              : t('crypto.createCoinNetworkDesc', { defaultValue: 'Add a new coin-network pair' })
             }
           </p>
         </div>
@@ -662,7 +662,7 @@ export default function SupportedCryptoForm() {
                   <button
                     type="button"
                     className="btn btn-outline-secondary"
-                    onClick={() => navigate('/admin/crypto/supported')}
+                    onClick={() => navigate('/admin/crypto/coin-networks')}
                     disabled={loading}
                   >
                     <i className="bx bx-x me-1"></i>
@@ -695,7 +695,7 @@ export default function SupportedCryptoForm() {
                   {t('crypto.dangerZone', { defaultValue: 'Danger Zone' })}
                 </h6>
                 <p className="text-muted mb-3">
-                  {t('crypto.deleteSupportedWarning', { defaultValue: 'Once you delete this supported crypto, there is no going back. Please be certain.' })}
+                  {t('crypto.deleteCoinNetworkWarning', { defaultValue: 'Once you delete this coin-network pair, there is no going back. Please be certain.' })}
                 </p>
                 <button
                   type="button"
@@ -704,7 +704,7 @@ export default function SupportedCryptoForm() {
                   disabled={loading}
                 >
                   <i className="bx bx-trash me-1"></i>
-                  {t('crypto.deleteSupported', { defaultValue: 'Delete Supported Crypto' })}
+                  {t('crypto.deleteCoinNetwork', { defaultValue: 'Delete Coin-Network' })}
                 </button>
               </div>
             </div>
@@ -754,7 +754,7 @@ export default function SupportedCryptoForm() {
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
         loading={loading}
-        message={t('crypto.deleteSupportedConfirm', { defaultValue: 'Are you sure you want to delete this supported crypto?' })}
+        message={t('crypto.deleteCoinNetworkConfirm', { defaultValue: 'Are you sure you want to delete this coin-network pair?' })}
         itemName={selectedCoin?.symbol || formData.coinId}
         itemDetails={`on ${selectedNetwork?.symbol || formData.networkId}`}
       />

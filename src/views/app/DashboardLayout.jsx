@@ -28,6 +28,9 @@ import NetworkList from '../crypto/NetworkList'
 import NetworkForm from '../crypto/NetworkForm'
 import SupportedCrypto from '../crypto/SupportedCrypto'
 import SupportedCryptoForm from '../crypto/SupportedCryptoForm'
+import Sweep from '../admin/Sweep'
+import SweepOverrides from '../admin/SweepOverrides'
+import PaymentSettings from '../admin/PaymentSettings'
 
 function MenuItem({ to, icon, label, end }) {
   const resolved = useResolvedPath(to)
@@ -365,7 +368,14 @@ export default function DashboardLayout() {
                 <MenuGroup base="/admin/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
                   <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
-                  <SubItem to="/admin/crypto/supported" end={true} label={t('nav.supportedCrypto', { defaultValue: 'Supported Crypto' })} />
+                  <SubItem to="/admin/crypto/coin-networks" end={true} label={t('nav.coinNetworks', { defaultValue: 'Coin Networks' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
+                  <SubItem to="/admin/sweep/configuration" end label={t('admin.sweep.configuration', { defaultValue: 'Configuration' })} />
+                  <SubItem to="/admin/sweep/overrides" end={true} label={t('admin.sweep.overrides', { defaultValue: 'Overrides' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })}>
+                  <SubItem to="/admin/settings/payment" end={true} label={t('admin.payment.menuTitle', { defaultValue: 'Payment' })} />
                 </MenuGroup>
               </>
             ) : (
@@ -525,10 +535,12 @@ export default function DashboardLayout() {
                     <Route path="crypto/networks" element={<NetworkList />} />
                     <Route path="crypto/networks/create" element={<NetworkForm />} />
                     <Route path="crypto/networks/:id" element={<NetworkForm />} />
-                    <Route path="crypto/supported" element={<SupportedCrypto />} />
-                    <Route path="crypto/supported/create" element={<SupportedCryptoForm />} />
-                    <Route path="crypto/supported/:id" element={<SupportedCryptoForm />} />
-                    <Route path="settings" element={<Settings />} />
+                    <Route path="crypto/coin-networks" element={<SupportedCrypto />} />
+                    <Route path="crypto/coin-networks/create" element={<SupportedCryptoForm />} />
+                    <Route path="crypto/coin-networks/:id" element={<SupportedCryptoForm />} />
+                    <Route path="sweep/configuration" element={<Sweep />} />
+                    <Route path="sweep/overrides" element={<SweepOverrides />} />
+                    <Route path="settings/payment" element={<PaymentSettings />} />
                   </>
                 )}
                 
