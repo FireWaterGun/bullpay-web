@@ -367,8 +367,8 @@ export default function DashboardLayout() {
             {isAdmin ? (
               <>
                 {/* Admin menu */}
-                <MenuItem to="/admin" end icon="bx-home" label="Dashboard" />
-                <MenuItem to="/admin/system-balance" icon="bx-wallet" label="System Balance" />
+                <MenuItem to="/admin" end icon="bx-home" label={t('nav.dashboard', { defaultValue: 'Dashboard' })} />
+                <MenuItem to="/admin/system-balance" icon="bx-wallet" label={t('admin.systemBalance', { defaultValue: 'System Balance' })} />
                 <MenuGroup base="/admin/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
                   <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />

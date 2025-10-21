@@ -219,7 +219,7 @@ export default function WithdrawalPolicy() {
               <div className="mb-4">
                 <div className="mb-3">
                   <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}</h6>
-                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Automatically approve small withdrawals</p>
+                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.autoApproveDesc', { defaultValue: 'Automatically approve small withdrawals' })}</p>
                 </div>
                 <div className="table-responsive">
                   <table className="table table-borderless mb-0">
@@ -269,7 +269,7 @@ export default function WithdrawalPolicy() {
               <div className="mb-4">
                 <div className="mb-3">
                   <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.gasSettings', { defaultValue: 'Gas Settings' })}</h6>
-                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Native gas guard configuration</p>
+                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.gasSettingsDesc', { defaultValue: 'Native gas guard configuration' })}</p>
                 </div>
                 <div className="table-responsive">
                   <table className="table table-borderless mb-0">
@@ -302,7 +302,7 @@ export default function WithdrawalPolicy() {
                   <div className="d-flex align-items-center">
                     <div className="flex-grow-1">
                       <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.minNativeByNetwork', { defaultValue: 'Min Native by Network' })}</h6>
-                      <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Minimum native balance required per network</p>
+                      <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.minNativeByNetworkDesc', { defaultValue: 'Minimum native balance required per network' })}</p>
                     </div>
                     <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
                       <button type="button" className="btn btn-sm btn-primary" onClick={handleAddGasNetwork}>
@@ -363,7 +363,7 @@ export default function WithdrawalPolicy() {
               <div className="mb-4">
                 <div className="mb-3">
                   <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.policySettings', { defaultValue: 'Policy Settings' })}</h6>
-                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Policy controls for withdrawal validation</p>
+                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.policySettingsDesc', { defaultValue: 'Policy controls for withdrawal validation' })}</p>
                 </div>
                 <div className="table-responsive">
                   <table className="table table-borderless mb-0">
@@ -402,7 +402,7 @@ export default function WithdrawalPolicy() {
               <div className="mb-4">
                 <div className="mb-3">
                   <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.reservation', { defaultValue: 'Reservation' })}</h6>
-                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>System wallet capacity management</p>
+                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.reservationDesc', { defaultValue: 'System wallet capacity management' })}</p>
                 </div>
                 <div className="table-responsive">
                   <table className="table table-borderless mb-0">
@@ -433,7 +433,7 @@ export default function WithdrawalPolicy() {
               <div className="mb-4">
                 <div className="mb-3">
                   <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.reconciliation', { defaultValue: 'Reconciliation' })}</h6>
-                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>Background scanner tuning</p>
+                  <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.reconciliationDesc', { defaultValue: 'Background scanner tuning' })}</p>
                 </div>
                 <div className="table-responsive">
                   <table className="table table-borderless mb-0">
