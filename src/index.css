@@ -62,22 +62,22 @@ button:focus-visible {
 /* Toast animations */
 @keyframes toastSlideIn {
   0% {
-    transform: translateX(120%);
+    transform: translateX(100%) scale(0.9);
     opacity: 0;
   }
   100% {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     opacity: 1;
   }
 }
 
 @keyframes toastSlideOut {
   0% {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translateX(120%);
+    transform: translateX(100%) scale(0.9);
     opacity: 0;
   }
 }

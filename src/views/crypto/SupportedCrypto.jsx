@@ -445,11 +445,11 @@ export default function SupportedCrypto() {
                     </td>
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       <button
-                        className="btn btn-sm btn-icon btn-label-primary"
+                        className="btn btn-sm btn-icon"
                         onClick={() => navigate(`/admin/crypto/coin-networks/${coinNetwork.id}`)}
                         title={t('actions.edit', { defaultValue: 'Edit' })}
                       >
-                        <i className="bx bx-edit"></i>
+                        <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                       </button>
                     </td>
                   </tr>

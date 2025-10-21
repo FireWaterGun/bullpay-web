@@ -30,7 +30,9 @@ import SupportedCrypto from '../crypto/SupportedCrypto'
 import SupportedCryptoForm from '../crypto/SupportedCryptoForm'
 import Sweep from '../admin/Sweep'
 import SweepOverrides from '../admin/SweepOverrides'
-import PaymentSettings from '../admin/PaymentSettings'
+import WithdrawalSettings from '../admin/WithdrawalSettings'
+import EVMFeePolicy from '../admin/EVMFeePolicy'
+import NetworkFees from '../admin/NetworkFees'
 
 function MenuItem({ to, icon, label, end }) {
   const resolved = useResolvedPath(to)
@@ -370,13 +372,17 @@ export default function DashboardLayout() {
                   <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
                   <SubItem to="/admin/crypto/coin-networks" end={true} label={t('nav.coinNetworks', { defaultValue: 'Coin Networks' })} />
                 </MenuGroup>
+                <MenuGroup base="/admin/evm" icon="bx-chip" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
+                  <SubItem to="/admin/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/network" icon="bx-network-chart" label={t('admin.network.menuTitle', { defaultValue: 'Network' })}>
+                  <SubItem to="/admin/network/fees" end label={t('admin.network.fees', { defaultValue: 'Network Fees' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
                   <SubItem to="/admin/sweep/configuration" end label={t('admin.sweep.configuration', { defaultValue: 'Configuration' })} />
                   <SubItem to="/admin/sweep/overrides" end={true} label={t('admin.sweep.overrides', { defaultValue: 'Overrides' })} />
                 </MenuGroup>
-                <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })}>
-                  <SubItem to="/admin/settings/payment" end={true} label={t('admin.payment.menuTitle', { defaultValue: 'Payment' })} />
-                </MenuGroup>
+                <MenuItem to="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })} />
               </>
             ) : (
               <>
@@ -538,9 +544,11 @@ export default function DashboardLayout() {
                     <Route path="crypto/coin-networks" element={<SupportedCrypto />} />
                     <Route path="crypto/coin-networks/create" element={<SupportedCryptoForm />} />
                     <Route path="crypto/coin-networks/:id" element={<SupportedCryptoForm />} />
+                    <Route path="evm/fee-policy" element={<EVMFeePolicy />} />
+                    <Route path="network/fees" element={<NetworkFees />} />
                     <Route path="sweep/configuration" element={<Sweep />} />
                     <Route path="sweep/overrides" element={<SweepOverrides />} />
-                    <Route path="settings/payment" element={<PaymentSettings />} />
+                    <Route path="withdrawal" element={<WithdrawalSettings />} />
                   </>
                 )}
                 

@@ -23,38 +23,38 @@ export function Toast({ message, type = 'success', duration = 5000, onClose }) {
     switch (type) {
       case 'success':
         return {
-          bgClass: 'bg-label-success',
-          borderClass: 'border-success',
+          bg: '#10b981',
+          bgLight: '#d1fae5',
           icon: 'bx-check-circle',
-          iconColor: 'text-success'
+          iconBg: '#10b981'
         };
       case 'error':
         return {
-          bgClass: 'bg-label-danger',
-          borderClass: 'border-danger',
+          bg: '#ef4444',
+          bgLight: '#fee2e2',
           icon: 'bx-error-circle',
-          iconColor: 'text-danger'
+          iconBg: '#ef4444'
         };
       case 'warning':
         return {
-          bgClass: 'bg-label-warning',
-          borderClass: 'border-warning',
+          bg: '#f59e0b',
+          bgLight: '#fef3c7',
           icon: 'bx-error',
-          iconColor: 'text-warning'
+          iconBg: '#f59e0b'
         };
       case 'info':
         return {
-          bgClass: 'bg-label-info',
-          borderClass: 'border-info',
+          bg: '#3b82f6',
+          bgLight: '#dbeafe',
           icon: 'bx-info-circle',
-          iconColor: 'text-info'
+          iconBg: '#3b82f6'
         };
       default:
         return {
-          bgClass: 'bg-label-primary',
-          borderClass: 'border-primary',
+          bg: '#6366f1',
+          bgLight: '#e0e7ff',
           icon: 'bx-bell',
-          iconColor: 'text-primary'
+          iconBg: '#6366f1'
         };
     }
   };
@@ -70,27 +70,69 @@ export function Toast({ message, type = 'success', duration = 5000, onClose }) {
 
   return (
     <div
-      className={`toast show toast-custom border-start border-3 ${styles.borderClass} ${isExiting ? 'toast-exit' : 'toast-enter'}`}
+      className={`toast show ${isExiting ? 'toast-exit' : 'toast-enter'}`}
       role="alert"
-      style={{ backgroundColor: '#fff' }}
+      style={{ 
+        backgroundColor: '#fff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        minWidth: '320px',
+        maxWidth: '420px',
+        pointerEvents: 'auto',
+        overflow: 'hidden'
+      }}
     >
-      <div className="d-flex align-items-start p-3">
-        <div className={`flex-shrink-0 me-3`}>
-          <i className={`bx ${styles.icon} ${styles.iconColor} fs-3`}></i>
+      <div className="d-flex align-items-start" style={{ padding: '1rem' }}>
+        <div 
+          className="flex-shrink-0 me-3 d-flex align-items-center justify-content-center"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '10px',
+            backgroundColor: styles.bgLight,
+            flexShrink: 0
+          }}
+        >
+          <i 
+            className={`bx ${styles.icon}`}
+            style={{ 
+              fontSize: '1.5rem',
+              color: styles.iconBg
+            }}
+          ></i>
         </div>
-        <div className="flex-grow-1">
+        <div className="flex-grow-1" style={{ minWidth: 0 }}>
           <div className="d-flex justify-content-between align-items-start mb-1">
-            <strong className="toast-title">{message.title || 'Notification'}</strong>
+            <strong 
+              className="toast-title" 
+              style={{ 
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                color: '#1f2937'
+              }}
+            >
+              {message.title || 'Notification'}
+            </strong>
             <button
               type="button"
               className="btn-close ms-2"
               onClick={handleClose}
               aria-label="Close"
-              style={{ fontSize: '0.75rem' }}
+              style={{ 
+                fontSize: '0.7rem',
+                flexShrink: 0
+              }}
             ></button>
           </div>
           {message.body && (
-            <div className="text-muted small">
+            <div 
+              className="small"
+              style={{ 
+                color: '#6b7280',
+                fontSize: '0.875rem',
+                lineHeight: '1.4'
+              }}
+            >
               {message.body}
             </div>
           )}
