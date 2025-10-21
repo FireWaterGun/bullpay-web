@@ -279,16 +279,15 @@ export default function NetworkFees() {
               </div>
 
               {/* Slippage by Network */}
-              <hr className="my-4" />
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.network.slippageByNetwork', { defaultValue: 'Slippage by Network' })}
-                    <span className="badge rounded-pill bg-success ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <span className="badge rounded-pill bg-primary ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
                       {Object.keys(slippageByNetwork).length}
                     </span>
                   </h6>
-                  <button type="button" className="btn btn-sm btn-success" onClick={handleAddSlippage}>
+                  <button type="button" className="btn btn-sm btn-primary" onClick={handleAddSlippage}>
                     <i className="bx bx-plus me-1"></i>
                     {t('admin.network.addNetwork', { defaultValue: 'Add Network' })}
                   </button>
@@ -505,7 +504,7 @@ export default function NetworkFees() {
                   </button>
                   <button 
                     type="button" 
-                    className="btn btn-success"
+                    className="btn btn-primary"
                     onClick={handleSaveSlippage}
                     disabled={loading}
                   >

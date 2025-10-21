@@ -250,6 +250,75 @@ export default function WithdrawalSettings() {
                 )}
               </div>
 
+              {/* Coin-Network Overrides */}
+              <div className="mb-5">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h6 className="mb-0">
+                    {t('admin.withdrawal.coinNetworkOverrides', { defaultValue: 'Coin-Network Overrides' })}
+                    <span className="badge rounded-pill bg-warning ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                      {Object.keys(coinNetworkOverrides).length}
+                    </span>
+                  </h6>
+                </div>
+                
+                {Object.keys(coinNetworkOverrides).length > 0 ? (
+                  <div className="table-responsive">
+                    <table className="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>{t('admin.withdrawal.coinNetworkId', { defaultValue: 'CoinNetwork ID' })}</th>
+                          <th>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</th>
+                          <th>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</th>
+                          <th>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</th>
+                          <th>{t('admin.withdrawal.feeConfig', { defaultValue: 'Fee Config' })}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(coinNetworkOverrides).map(([coinNetworkId, config]) => (
+                          <tr key={coinNetworkId}>
+                            <td><strong>{coinNetworkId}</strong></td>
+                            <td>
+                              {config.minimum ? (
+                                <code>{config.minimum}</code>
+                              ) : (
+                                <span className="text-muted">-</span>
+                              )}
+                            </td>
+                            <td>
+                              {config.maximum ? (
+                                <code>{config.maximum}</code>
+                              ) : (
+                                <span className="text-muted">-</span>
+                              )}
+                            </td>
+                            <td>
+                              {config.fee?.type ? (
+                                <span className="badge bg-label-info">{config.fee.type}</span>
+                              ) : (
+                                <span className="text-muted">-</span>
+                              )}
+                            </td>
+                            <td>
+                              {config.fee?.type === 'fixed' && (
+                                <code>Fixed: {config.fee.fixed}</code>
+                              )}
+                              {config.fee?.type === 'percentage' && (
+                                <code>{config.fee.percentage}% (min: {config.fee.min}{config.fee.max ? `, max: ${config.fee.max}` : ''})</code>
+                              )}
+                              {!config.fee?.type && <span className="text-muted">-</span>}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center text-muted py-4">
+                    <p>{t('admin.withdrawal.noCoinNetworkOverrides', { defaultValue: 'No coin-network overrides configured' })}</p>
+                  </div>
+                )}
+              </div>
+
               {/* Additional Settings */}
               <div className="row g-4">
                 {/* Auto Approve */}
@@ -345,6 +414,39 @@ export default function WithdrawalSettings() {
                           <tr>
                             <td><strong>{t('admin.withdrawal.headroomPercent', { defaultValue: 'Headroom %' })}</strong></td>
                             <td><code>{reservation.headroomPercent || '-'}</code></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reconciliation */}
+                <div className="col-md-6">
+                  <div className="card">
+                    <div className="card-header">
+                      <h6 className="mb-0">{t('admin.withdrawal.reconciliation', { defaultValue: 'Reconciliation' })}</h6>
+                    </div>
+                    <div className="card-body">
+                      <table className="table table-sm mb-0">
+                        <tbody>
+                          <tr>
+                            <td><strong>{t('admin.withdrawal.staleMinutes', { defaultValue: 'Stale Minutes' })}</strong></td>
+                            <td><code>{reconciliation.staleMinutes || '-'}</code></td>
+                          </tr>
+                          <tr>
+                            <td><strong>{t('admin.withdrawal.maxPerRun', { defaultValue: 'Max Per Run' })}</strong></td>
+                            <td><code>{reconciliation.maxPerRun || '-'}</code></td>
+                          </tr>
+                          <tr>
+                            <td><strong>{t('admin.withdrawal.jitterMs', { defaultValue: 'Jitter (ms)' })}</strong></td>
+                            <td>
+                              {reconciliation.jitterMs ? (
+                                <code>{reconciliation.jitterMs.min} - {reconciliation.jitterMs.max}</code>
+                              ) : (
+                                <span className="text-muted">-</span>
+                              )}
+                            </td>
                           </tr>
                         </tbody>
                       </table>

@@ -306,17 +306,15 @@ export default function SweepOverrides() {
               </div>
 
               {/* Network Overrides */}
-              <hr className="my-4" />
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h6 className="mb-0">
-                    <i className="bx bx-network-chart me-2"></i>
                     {t('admin.sweep.networkOverrides', { defaultValue: 'Network Overrides' })}  
-                    <span className="badge rounded-pill bg-success ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <span className="badge rounded-pill bg-primary ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
                       {Object.keys(networkOverrides).length}
                     </span>
                   </h6>
-                  <button type="button" className="btn btn-sm btn-success" onClick={handleAddNetwork}>
+                  <button type="button" className="btn btn-sm btn-primary" onClick={handleAddNetwork}>
                     <i className="bx bx-plus me-1"></i>
                     {t('admin.sweep.addNetworkOverride', { defaultValue: 'Add Network Override' })}
                   </button>
@@ -572,7 +570,7 @@ export default function SweepOverrides() {
                   </button>
                   <button 
                     type="button" 
-                    className="btn btn-success"
+                    className="btn btn-primary"
                     onClick={handleSaveNetwork}
                     disabled={loading}
                   >

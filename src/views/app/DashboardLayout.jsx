@@ -30,7 +30,9 @@ import SupportedCrypto from '../crypto/SupportedCrypto'
 import SupportedCryptoForm from '../crypto/SupportedCryptoForm'
 import Sweep from '../admin/Sweep'
 import SweepOverrides from '../admin/SweepOverrides'
-import WithdrawalSettings from '../admin/WithdrawalSettings'
+import WithdrawalDefaults from '../admin/WithdrawalDefaults'
+import WithdrawalOverrides from '../admin/WithdrawalOverrides'
+import WithdrawalPolicy from '../admin/WithdrawalPolicy'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
@@ -382,7 +384,11 @@ export default function DashboardLayout() {
                   <SubItem to="/admin/sweep/configuration" end label={t('admin.sweep.configuration', { defaultValue: 'Configuration' })} />
                   <SubItem to="/admin/sweep/overrides" end={true} label={t('admin.sweep.overrides', { defaultValue: 'Overrides' })} />
                 </MenuGroup>
-                <MenuItem to="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })} />
+                <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
+                  <SubItem to="/admin/withdrawal/defaults" end label={t('admin.withdrawal.defaults', { defaultValue: 'Defaults & Limits' })} />
+                  <SubItem to="/admin/withdrawal/overrides" end label={t('admin.withdrawal.overrides', { defaultValue: 'Overrides' })} />
+                  <SubItem to="/admin/withdrawal/policy" end label={t('admin.withdrawal.policy', { defaultValue: 'Policy & Settings' })} />
+                </MenuGroup>
               </>
             ) : (
               <>
@@ -548,7 +554,9 @@ export default function DashboardLayout() {
                     <Route path="network/fees" element={<NetworkFees />} />
                     <Route path="sweep/configuration" element={<Sweep />} />
                     <Route path="sweep/overrides" element={<SweepOverrides />} />
-                    <Route path="withdrawal" element={<WithdrawalSettings />} />
+                    <Route path="withdrawal/defaults" element={<WithdrawalDefaults />} />
+                    <Route path="withdrawal/overrides" element={<WithdrawalOverrides />} />
+                    <Route path="withdrawal/policy" element={<WithdrawalPolicy />} />
                   </>
                 )}
                 
