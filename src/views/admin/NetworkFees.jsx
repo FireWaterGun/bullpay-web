@@ -216,10 +216,7 @@ export default function NetworkFees() {
                       {Object.keys(baseFees).length}
                     </span>
                   </h6>
-                  <button type="button" className="btn btn-sm btn-primary" onClick={handleAddBaseFee}>
-                    <i className="bx bx-plus me-1"></i>
-                    {t('admin.network.addNetwork', { defaultValue: 'Add Network' })}
-                  </button>
+                  {/* Hidden: Add button */}
                 </div>
                 
                 {Object.keys(baseFees).length > 0 ? (
@@ -250,14 +247,6 @@ export default function NetworkFees() {
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                               </button>
-                              <button 
-                                type="button" 
-                                className="btn btn-sm btn-icon"
-                                onClick={() => handleDeleteBaseFee(network)}
-                                disabled={loading}
-                              >
-                                <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
                             </td>
                           </tr>
                         ))}
@@ -287,10 +276,7 @@ export default function NetworkFees() {
                       {Object.keys(slippageByNetwork).length}
                     </span>
                   </h6>
-                  <button type="button" className="btn btn-sm btn-primary" onClick={handleAddSlippage}>
-                    <i className="bx bx-plus me-1"></i>
-                    {t('admin.network.addNetwork', { defaultValue: 'Add Network' })}
-                  </button>
+                  {/* Hidden: Add button */}
                 </div>
                 
                 {Object.keys(slippageByNetwork).length > 0 ? (
@@ -320,14 +306,6 @@ export default function NetworkFees() {
                                 disabled={loading}
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
-                              <button 
-                                type="button" 
-                                className="btn btn-sm btn-icon"
-                                onClick={() => handleDeleteSlippage(network)}
-                                disabled={loading}
-                              >
-                                <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
                               </button>
                             </td>
                           </tr>

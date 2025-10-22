@@ -230,12 +230,7 @@ export default function WithdrawalOverrides() {
                         </span>
                       </h6>
                     </div>
-                    <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                      <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAdd('coin')}>
-                        <i className="bx bx-plus me-1"></i>
-                        {t('actions.add', { defaultValue: 'Add' })}
-                      </button>
-                    </div>
+                    {/* Hidden: Add button */}
                   </div>
                 </div>
                 
@@ -291,14 +286,6 @@ export default function WithdrawalOverrides() {
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                               </button>
-                              <button 
-                                type="button" 
-                                className="btn btn-sm btn-icon"
-                                onClick={() => handleDelete('coin', coin)}
-                                disabled={loading}
-                              >
-                                <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
                             </td>
                           </tr>
                         ))}
@@ -325,12 +312,7 @@ export default function WithdrawalOverrides() {
                         </span>
                       </h6>
                     </div>
-                    <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                      <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAdd('network')}>
-                        <i className="bx bx-plus me-1"></i>
-                        {t('actions.add', { defaultValue: 'Add' })}
-                      </button>
-                    </div>
+                    {/* Hidden: Add button */}
                   </div>
                 </div>
                 
@@ -386,14 +368,6 @@ export default function WithdrawalOverrides() {
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                               </button>
-                              <button 
-                                type="button" 
-                                className="btn btn-sm btn-icon"
-                                onClick={() => handleDelete('network', network)}
-                                disabled={loading}
-                              >
-                                <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
                             </td>
                           </tr>
                         ))}
@@ -420,12 +394,7 @@ export default function WithdrawalOverrides() {
                         </span>
                       </h6>
                     </div>
-                    <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                      <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAdd('coinNetwork')}>
-                        <i className="bx bx-plus me-1"></i>
-                        {t('actions.add', { defaultValue: 'Add' })}
-                      </button>
-                    </div>
+                    {/* Hidden: Add button */}
                   </div>
                 </div>
                 
@@ -488,14 +457,6 @@ export default function WithdrawalOverrides() {
                                 disabled={loading}
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
-                              <button 
-                                type="button" 
-                                className="btn btn-sm btn-icon"
-                                onClick={() => handleDelete('coinNetwork', coinNetworkId)}
-                                disabled={loading}
-                              >
-                                <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
                               </button>
                             </td>
                           </tr>

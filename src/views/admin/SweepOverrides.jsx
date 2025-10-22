@@ -231,10 +231,7 @@ export default function SweepOverrides() {
                       {Object.keys(coinOverrides).length}
                     </span>
                   </h6>
-                  <button type="button" className="btn btn-sm btn-primary" onClick={handleAddCoin}>
-                    <i className="bx bx-plus me-1"></i>
-                    {t('admin.sweep.addOverride', { defaultValue: 'Add Override' })}
-                  </button>
+                  {/* Hidden: Add button */}
                 </div>
                 
                 {Object.keys(coinOverrides).length > 0 ? (
@@ -277,14 +274,6 @@ export default function SweepOverrides() {
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                               </button>
-                              <button 
-                                type="button" 
-                                className="btn btn-sm btn-icon"
-                                onClick={() => handleDeleteCoin(coin)}
-                                disabled={loading}
-                              >
-                                <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
                             </td>
                           </tr>
                         ))}
@@ -314,10 +303,7 @@ export default function SweepOverrides() {
                       {Object.keys(networkOverrides).length}
                     </span>
                   </h6>
-                  <button type="button" className="btn btn-sm btn-primary" onClick={handleAddNetwork}>
-                    <i className="bx bx-plus me-1"></i>
-                    {t('admin.sweep.addNetworkOverride', { defaultValue: 'Add Network Override' })}
-                  </button>
+                  {/* Hidden: Add button */}
                 </div>
                 
                 {Object.keys(networkOverrides).length > 0 ? (
@@ -359,14 +345,6 @@ export default function SweepOverrides() {
                                 disabled={loading}
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
-                              <button 
-                                type="button" 
-                                className="btn btn-sm btn-icon"
-                                onClick={() => handleDeleteNetwork(coinNetworkId)}
-                                disabled={loading}
-                              >
-                                <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
                               </button>
                             </td>
                           </tr>

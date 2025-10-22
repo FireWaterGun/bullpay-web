@@ -491,12 +491,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.minPriorityFeeByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('minPriority')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -524,14 +519,6 @@ export default function EVMFeePolicy() {
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('minPriority', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -556,12 +543,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.headroomByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('headroom')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -588,14 +570,6 @@ export default function EVMFeePolicy() {
                                     disabled={loading}
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('headroom', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
                                 </td>
                               </tr>
@@ -628,12 +602,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.maxFeeCapByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('maxFeeCap')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -661,14 +630,6 @@ export default function EVMFeePolicy() {
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('maxFeeCap', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -693,12 +654,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.maxPriorityCapByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('maxPriorityCap')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -725,14 +681,6 @@ export default function EVMFeePolicy() {
                                     disabled={loading}
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('maxPriorityCap', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
                                 </td>
                               </tr>
@@ -765,12 +713,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.sweepMaxFeeCapByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('sweepMaxFeeCap')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -798,14 +741,6 @@ export default function EVMFeePolicy() {
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('sweepMaxFeeCap', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -830,12 +765,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.sweepMaxPriorityCapByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('sweepMaxPriorityCap')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -862,14 +792,6 @@ export default function EVMFeePolicy() {
                                     disabled={loading}
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('sweepMaxPriorityCap', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
                                 </td>
                               </tr>
@@ -902,12 +824,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.withdrawMaxFeeCapByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('withdrawMaxFeeCap')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -935,14 +852,6 @@ export default function EVMFeePolicy() {
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('withdrawMaxFeeCap', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -967,12 +876,7 @@ export default function EVMFeePolicy() {
                             {Object.keys(formData.withdrawMaxPriorityCapByChain || {}).length}
                           </span>
                         </div>
-                        <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
-                          <button type="button" className="btn btn-sm btn-primary" onClick={() => handleAddChain('withdrawMaxPriorityCap')}>
-                            <i className="bx bx-plus me-1"></i>
-                            {t('actions.add', { defaultValue: 'Add' })}
-                          </button>
-                        </div>
+                        {/* Hidden: Add button */}
                       </div>
                     </div>
                     
@@ -999,14 +903,6 @@ export default function EVMFeePolicy() {
                                     disabled={loading}
                                   >
                                     <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                  <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-icon"
-                                    onClick={() => handleDeleteChain('withdrawMaxPriorityCap', chainId)}
-                                    disabled={loading}
-                                  >
-                                    <i className="bx bx-trash text-danger" style={{ fontSize: '1.25rem' }}></i>
                                   </button>
                                 </td>
                               </tr>
