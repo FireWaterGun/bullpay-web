@@ -1,8 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
+import { useToastContext } from '../../context/ToastContext'
 import { getSystemWalletStats } from '../../api/admin.ts'
 import { formatAmount } from '../../utils/format'
+import { AmountNormalizer } from '../../utils/amount_normalizer'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -91,9 +93,23 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
 export default function SystemBalance() {
   const { t } = useTranslation()
   const { token } = useAuth()
+  const toast = useToastContext()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [copiedAddress, setCopiedAddress] = useState(null)
+
+  const copyAddress = async (address) => {
+    try {
+      await navigator.clipboard.writeText(address)
+      setCopiedAddress(address)
+      setTimeout(() => setCopiedAddress(null), 2000)
+      toast.success(t('actions.copied', { defaultValue: 'Address copied to clipboard' }))
+    } catch (err) {
+      console.error('Failed to copy:', err)
+      toast.error(t('actions.copyFailed', { defaultValue: 'Failed to copy address' }))
+    }
+  }
 
   useEffect(() => {
     loadStats()
@@ -219,11 +235,19 @@ export default function SystemBalance() {
             <div className="card-body">
               <div className="display-3 fw-bold text-dark">
                 {(() => {
-                  // Calculate total USD from each wallet
+                  // Calculate total USD from each wallet using raw balance
                   const totalUSD = (stats?.balanceDetails || []).reduce((sum, wallet) => {
                     const coinSymbol = wallet.systemWallet?.coinNetwork?.coin?.symbol
+                    const decimals = wallet.decimals || wallet.systemWallet?.coinNetwork?.decimals || 18
+                    
+                    // Convert raw balance to decimal using AmountNormalizer
+                    const decimalBalance = AmountNormalizer.fromRawSimple(
+                      wallet.totalBalanceRaw || '0',
+                      decimals
+                    )
+                    
                     const rate = stats.fiat?.rates?.[coinSymbol] || 0
-                    const usdValue = parseFloat(wallet.totalBalance || 0) * parseFloat(rate)
+                    const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
                     return sum + usdValue
                   }, 0)
                   
@@ -262,6 +286,7 @@ export default function SystemBalance() {
                     <thead>
                       <tr>
                         <th>{t('balance.col.coin')}</th>
+                        <th>{t('admin.address', { defaultValue: 'Address' })}</th>
                         <th>{t('admin.type', { defaultValue: 'Type' })}</th>
                         <th>{t('invoices.statusCol')}</th>
                         <th className="text-end">{t('invoices.amount')}</th>
@@ -276,8 +301,17 @@ export default function SystemBalance() {
                         const network = wallet.systemWallet?.coinNetwork?.network
                         const networkSymbol = network?.symbol
                         const networkName = network?.name
+                        const address = wallet.systemWallet?.address || ''
+                        
+                        // Get decimals and convert raw balance to decimal
+                        const decimals = wallet.decimals || wallet.systemWallet?.coinNetwork?.decimals || 18
+                        const decimalBalance = AmountNormalizer.fromRawSimple(
+                          wallet.totalBalanceRaw || '0',
+                          decimals
+                        )
+                        
                         const rate = stats.fiat?.rates?.[coinSymbol] || 0
-                        const usdValue = parseFloat(wallet.totalBalance || 0) * parseFloat(rate)
+                        const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
                         
                         return (
                           <tr key={wallet.id}>
@@ -288,6 +322,27 @@ export default function SystemBalance() {
                                   <div className="fw-medium">{coinSymbol || 'N/A'}</div>
                                   <small className="text-muted">{networkName || 'N/A'}</small>
                                 </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="d-flex align-items-center gap-2">
+                                <code className="small" style={{ fontSize: '0.8rem', fontFamily: 'monospace' }}>
+                                  {address || 'N/A'}
+                                </code>
+                                {address && (
+                                  <button
+                                    onClick={() => copyAddress(address)}
+                                    className="btn btn-sm btn-icon btn-outline-secondary"
+                                    style={{ padding: '0.25rem 0.5rem' }}
+                                    title={t('actions.copy', { defaultValue: 'Copy' })}
+                                  >
+                                    {copiedAddress === address ? (
+                                      <i className="bx bx-check text-success" style={{ fontSize: '14px' }}></i>
+                                    ) : (
+                                      <i className="bx bx-copy" style={{ fontSize: '14px' }}></i>
+                                    )}
+                                  </button>
+                                )}
                               </div>
                             </td>
                             <td>
@@ -313,8 +368,11 @@ export default function SystemBalance() {
                               )}
                             </td>
                             <td className="text-end">
-                              <span className="fw-medium">
-                                {parseFloat(wallet.totalBalance).toLocaleString(undefined, {
+                              <span 
+                                className="fw-medium" 
+                                title={`Raw: ${wallet.totalBalanceRaw}\nDecimals: ${decimals}\nDecimal: ${decimalBalance} ${coinSymbol}`}
+                              >
+                                {parseFloat(decimalBalance).toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 8
                                 })}

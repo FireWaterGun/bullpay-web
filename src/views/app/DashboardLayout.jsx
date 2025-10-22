@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, Navigate, useNavigate, useMatch, useResolvedPath } from 'react-router-dom'
+import { Routes, Route, NavLink, Navigate, useNavigate, useMatch, useResolvedPath, useLocation } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
@@ -63,17 +63,62 @@ function SubItem({ to, label, end }) {
   )
 }
 
-function MenuGroup({ base, icon, label, children }) {
+function SubMenuGroup({ base, label, children }) {
   const resolved = useResolvedPath(base)
   const match = useMatch({ path: `${resolved.pathname}/*`, end: false })
   const [open, setOpen] = useState(!!match)
   const isActive = !!match
   const toggle = (e) => { e.preventDefault(); setOpen((v)=>!v) }
+  const subRef = useRef(null)
+  
+  useEffect(() => {
+    setOpen(!!match)
+  }, [match])
+
+  useEffect(() => {
+    const sub = subRef.current
+    if (!sub) return
+    
+    if (open) {
+      sub.style.maxHeight = '2000px'
+    } else {
+      sub.style.maxHeight = '0px'
+    }
+  }, [open])
+
+  return (
+    <li className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`}>
+      <a href="#" onClick={toggle} className="menu-link menu-toggle">
+        <div>{label}</div>
+      </a>
+      <ul className="menu-sub" ref={subRef} style={{ 
+        maxHeight: open ? '2000px' : '0px',
+        overflow: 'hidden',
+        transition: 'max-height 0.3s ease-in-out'
+      }}>
+        {children}
+      </ul>
+    </li>
+  )
+}
+
+function MenuGroup({ base, icon, label, children, matchPaths }) {
+  const location = useLocation()
+  const resolved = useResolvedPath(base)
+  
+  // Check if current path matches base or any of the matchPaths
+  const isMatched = matchPaths 
+    ? matchPaths.some(path => location.pathname.startsWith(path))
+    : location.pathname.startsWith(resolved.pathname) && location.pathname !== resolved.pathname
+  
+  const [open, setOpen] = useState(isMatched)
+  const isActive = isMatched
+  const toggle = (e) => { e.preventDefault(); setOpen((v)=>!v) }
   const isCollapsed = typeof document !== 'undefined' && document.documentElement.classList.contains('layout-menu-collapsed')
   const handleEnter = () => { if (isCollapsed) setOpen(true) }
   const handleLeave = () => { if (isCollapsed) setOpen(false) }
   // Keep group in sync with route when not collapsed
-  useEffect(() => { if (!isCollapsed) setOpen(!!match) }, [match])
+  useEffect(() => { if (!isCollapsed) setOpen(isMatched) }, [isMatched, isCollapsed])
 
   // Smooth collapse/expand (match Sneat .3s ease-in-out)
   const subRef = useRef(null)
@@ -93,8 +138,8 @@ function MenuGroup({ base, icon, label, children }) {
     prevOpen.current = open
 
     if (open) {
-      const target = sub.scrollHeight + 'px'
-      requestAnimationFrame(() => { sub.style.maxHeight = target })
+      // Use a large value to accommodate nested menus
+      requestAnimationFrame(() => { sub.style.maxHeight = '3000px' })
     } else {
       if (wasOpen && li) li.classList.add('menu-item-closing')
       requestAnimationFrame(() => { sub.style.maxHeight = '0px' })
@@ -112,10 +157,10 @@ function MenuGroup({ base, icon, label, children }) {
   }, [])
 
   useEffect(() => {
-    // When window resizes or content changes, adjust maxHeight if open
+    // Keep maxHeight large to accommodate nested menus
     const el = subRef.current
     if (!el) return
-    const handle = () => { if (open) el.style.maxHeight = el.scrollHeight + 'px' }
+    const handle = () => { if (open) el.style.maxHeight = '3000px' }
     window.addEventListener('resize', handle)
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(handle) : null
     if (ro) ro.observe(el)
@@ -128,7 +173,7 @@ function MenuGroup({ base, icon, label, children }) {
         <i className={`menu-icon bx ${icon}`}></i>
         <div>{label}</div>
       </a>
-      <ul id={`${label}-submenu`} className="menu-sub" ref={subRef} style={{ maxHeight: open ? undefined : 0, overflow: 'hidden' }}>
+      <ul id={`${label}-submenu`} className="menu-sub" ref={subRef} style={{ maxHeight: open ? '3000px' : 0, overflow: 'hidden' }}>
         {children}
       </ul>
     </li>
@@ -374,20 +419,22 @@ export default function DashboardLayout() {
                   <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
                   <SubItem to="/admin/crypto/coin-networks" end={true} label={t('nav.coinNetworks', { defaultValue: 'Coin Networks' })} />
                 </MenuGroup>
-                <MenuGroup base="/admin/evm" icon="bx-chip" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
-                  <SubItem to="/admin/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/network" icon="bx-network-chart" label={t('admin.network.menuTitle', { defaultValue: 'Network' })}>
-                  <SubItem to="/admin/network/fees" end label={t('admin.network.fees', { defaultValue: 'Network Fees' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
-                  <SubItem to="/admin/sweep/configuration" end label={t('admin.sweep.configuration', { defaultValue: 'Configuration' })} />
-                  <SubItem to="/admin/sweep/overrides" end={true} label={t('admin.sweep.overrides', { defaultValue: 'Overrides' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
-                  <SubItem to="/admin/withdrawal/defaults" end label={t('admin.withdrawal.defaults', { defaultValue: 'Defaults & Limits' })} />
-                  <SubItem to="/admin/withdrawal/overrides" end label={t('admin.withdrawal.overrides', { defaultValue: 'Overrides' })} />
-                  <SubItem to="/admin/withdrawal/policy" end label={t('admin.withdrawal.policy', { defaultValue: 'Policy & Settings' })} />
+                <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/evm', '/admin/network', '/admin/sweep', '/admin/withdrawal']}>
+                  <SubMenuGroup base="/admin/evm" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
+                    <SubItem to="/admin/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
+                  </SubMenuGroup>
+                  <SubMenuGroup base="/admin/network" label={t('admin.network.menuTitle', { defaultValue: 'Network' })}>
+                    <SubItem to="/admin/network/fees" end label={t('admin.network.fees', { defaultValue: 'Network Fees' })} />
+                  </SubMenuGroup>
+                  <SubMenuGroup base="/admin/sweep" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
+                    <SubItem to="/admin/sweep/configuration" end label={t('admin.sweep.configuration', { defaultValue: 'Configuration' })} />
+                    <SubItem to="/admin/sweep/overrides" end={true} label={t('admin.sweep.overrides', { defaultValue: 'Overrides' })} />
+                  </SubMenuGroup>
+                  <SubMenuGroup base="/admin/withdrawal" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
+                    <SubItem to="/admin/withdrawal/defaults" label={t('admin.withdrawal.defaults', { defaultValue: 'Defaults & Limits' })} />
+                    <SubItem to="/admin/withdrawal/overrides" label={t('admin.withdrawal.overrides', { defaultValue: 'Overrides' })} />
+                    <SubItem to="/admin/withdrawal/policy" label={t('admin.withdrawal.policy', { defaultValue: 'Policy & Settings' })} />
+                  </SubMenuGroup>
                 </MenuGroup>
               </>
             ) : (

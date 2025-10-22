@@ -6,7 +6,7 @@
     "history": "ประวัติ",
     "create": "สร้าง",
     "settings": "การตั้งค่า",
-    "cryptoManagement": "จัดการ Crypto",
+    "cryptoManagement": "เหรียญและเครือข่าย",
     "coins": "เหรียญ",
     "networks": "เครือข่าย",
     "supportedCrypto": "คริปโตที่รองรับ",
@@ -46,7 +46,8 @@
     "add": "เพิ่ม",
     "shareFailed": "แชร์ไม่สำเร็จ",
     "shareNotSupported": "อุปกรณ์ไม่รองรับการแชร์",
-    "actions": "การดำเนินการ"
+    "actions": "การดำเนินการ",
+    "copyFailed": "คัดลอกไม่สำเร็จ"
   },
   "invoices": {
     "title": "ประวัติใบแจ้งหนี้",
@@ -291,6 +292,7 @@
     "walletDetails": "รายละเอียดกระเป๋า",
     "wallets": "กระเป๋า",
     "noWalletsFound": "ไม่พบกระเป๋าที่มียอดคงเหลือ",
+    "address": "ที่อยู่",
     "type": "ประเภท",
     "priceUSD": "ราคา (USD)",
     "hot": "ร้อน",
