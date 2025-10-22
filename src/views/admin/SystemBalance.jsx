@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getSystemWalletStats } from '../../api/admin.ts'
@@ -94,6 +95,7 @@ export default function SystemBalance() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
+  const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -387,6 +389,13 @@ export default function SystemBalance() {
                               </strong>
                             </td>
                             <td className="text-center">
+                              <button
+                                onClick={() => navigate(`/admin/system-balance/wallet/${wallet.systemWallet?.id}/transactions`)}
+                                className="btn btn-sm btn-icon btn-outline-primary me-1"
+                                title={t('actions.view', { defaultValue: 'View' })}
+                              >
+                                <i className="bx bx-receipt"></i>
+                              </button>
                               <a
                                 href={`${wallet.systemWallet?.coinNetwork?.network?.explorerUrl}/address/${wallet.systemWallet?.address}`}
                                 target="_blank"

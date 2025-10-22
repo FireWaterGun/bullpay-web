@@ -21,7 +21,9 @@ import BalanceAccount from '../balance/BalanceAccount'
 import BalanceWithdrawals from '../balance/BalanceWithdrawals'
 import WithdrawRequest from '../balance/WithdrawRequest'
 import AdminDashboard from '../admin/AdminDashboard'
+import Dashboard from '../admin/Dashboard'
 import SystemBalance from '../admin/SystemBalance'
+import WalletTransaction from '../admin/WalletTransaction'
 import CoinList from '../crypto/CoinList'
 import CoinForm from '../crypto/CoinForm'
 import NetworkList from '../crypto/NetworkList'
@@ -413,6 +415,7 @@ export default function DashboardLayout() {
               <>
                 {/* Admin menu */}
                 <MenuItem to="/admin" end icon="bx-home" label={t('nav.dashboard', { defaultValue: 'Dashboard' })} />
+                <MenuItem to="/admin/dashboard" icon="bx-bar-chart-alt-2" label={t('admin.paymentDashboard', { defaultValue: 'Payment Dashboard' })} />
                 <MenuItem to="/admin/system-balance" icon="bx-wallet" label={t('admin.systemBalance', { defaultValue: 'System Balance' })} />
                 <MenuGroup base="/admin/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
@@ -586,7 +589,9 @@ export default function DashboardLayout() {
                 {isAdmin && (
                   <>
                     <Route path="admin" element={<AdminDashboard />} />
+                    <Route path="dashboard" element={<Dashboard />} />
                     <Route path="system-balance" element={<SystemBalance />} />
+                    <Route path="system-balance/wallet/:walletId/transactions" element={<WalletTransaction />} />
                     <Route path="crypto/coins" element={<CoinList />} />
                     <Route path="crypto/coins/create" element={<CoinForm />} />
                     <Route path="crypto/coins/edit/:id" element={<CoinForm />} />

@@ -411,3 +411,74 @@ export async function updateSweepSetting(
   })
   return data.data || data
 }
+
+/**
+ * Get payment statistics (Admin only)
+ * @param token - Auth token
+ */
+export async function getPaymentStats(token: string) {
+  const data = await apiFetch('/admin/payments/stats', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Get system wallet details (Admin only)
+ * @param token - Auth token
+ * @param systemWalletId - System wallet ID
+ */
+export async function getSystemWallet(
+  token: string,
+  systemWalletId: number
+) {
+  const data = await apiFetch(`/admin/system-wallets/${systemWalletId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Get system wallet ledger entries (Admin only)
+ * @param token - Auth token
+ * @param systemWalletId - System wallet ID
+ * @param params - Query parameters (page, limit, state, entryType, startDate, endDate)
+ */
+export async function getSystemWalletLedger(
+  token: string,
+  systemWalletId: number,
+  params: {
+    page?: number
+    limit?: number
+    state?: string
+    entryType?: string
+    startDate?: string
+    endDate?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+  
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.state) queryParams.append('state', params.state)
+  if (params.entryType) queryParams.append('entryType', params.entryType)
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
+  
+  const queryString = queryParams.toString()
+  const url = `/admin/system-wallets/${systemWalletId}/ledger${queryString ? `?${queryString}` : ''}`
+  
+  const data = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
