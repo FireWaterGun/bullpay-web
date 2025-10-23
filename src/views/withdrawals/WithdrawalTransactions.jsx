@@ -365,7 +365,7 @@ export default function WithdrawalTransactions() {
                             <span style={{ whiteSpace: 'nowrap' }}>{formatDate(withdrawal.createdAt)}</span>
                           </td>
                           <td className="text-center">
-                            {withdrawal.status?.toLowerCase() === 'pending' && (
+                            {withdrawal.status?.toLowerCase() === 'pending' ? (
                               <button
                                 className="btn btn-sm btn-success"
                                 onClick={() => handleApproveClick(withdrawal)}
@@ -374,6 +374,8 @@ export default function WithdrawalTransactions() {
                                 <i className="bx bx-check me-1"></i>
                                 {t('withdrawal.approve', { defaultValue: 'Approve' })}
                               </button>
+                            ) : (
+                              <span className="text-muted">-</span>
                             )}
                           </td>
                         </tr>

@@ -299,7 +299,7 @@ export default function SweepTransactions() {
                           <td>{getStatusBadge(sweep.status)}</td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <code className="text-primary me-2" style={{ fontSize: '0.75rem' }}>
+                              <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
                                 {sweep.fromAddress || 'N/A'}
                               </code>
                               {sweep.fromAddress && (
@@ -315,7 +315,7 @@ export default function SweepTransactions() {
                           </td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <code className="text-success me-2" style={{ fontSize: '0.75rem' }}>
+                              <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
                                 {sweep.toAddress || 'N/A'}
                               </code>
                               {sweep.toAddress && (
@@ -332,7 +332,7 @@ export default function SweepTransactions() {
                           <td>
                             {sweep.txHash ? (
                               <div className="d-flex align-items-center">
-                                <code className="text-primary me-2" style={{ fontSize: '0.75rem' }}>
+                                <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
                                   {sweep.txHash}
                                 </code>
                                 <a 
