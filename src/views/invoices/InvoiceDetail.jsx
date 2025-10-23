@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
 import { listCoins } from "../../api/coins";
 import { listNetworks } from "../../api/networks";
+import { useInvoiceEvents } from "../../hooks/useInvoiceEvents";
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -203,6 +204,22 @@ export default function InvoiceDetail() {
       setLoading(false);
     }
   }, [id, token]);
+
+  // Subscribe to invoice events
+  useInvoiceEvents(id, {
+    onPaymentReceived: (data) => {
+      console.log('💰 Payment received, reloading invoice data...');
+      loadInvoice();
+    },
+    onStatusChanged: (data) => {
+      console.log('🔄 Status changed, reloading invoice data...');
+      loadInvoice();
+    },
+    onUpdated: (data) => {
+      console.log('📝 Invoice updated, reloading invoice data...');
+      loadInvoice();
+    },
+  });
 
   useEffect(() => {
     let mounted = true;
