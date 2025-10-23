@@ -250,8 +250,7 @@ export default function InvoicePaymentV2() {
 
   return (
     <div className="min-vh-100 position-relative overflow-hidden" style={{
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      background: 'linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)'
     }}>
       {/* Animated Gradient Background */}
       <div className="position-absolute w-100 h-100" style={{ zIndex: 0 }}>
@@ -512,8 +511,7 @@ export default function InvoicePaymentV2() {
                               color: remainingMs <= 60_000 ? '#ff4500' : remainingMs <= 5 * 60_000 ? '#ff6b35' : '#ff8c42',
                               fontWeight: '900',
                               fontSize: '2.25rem',
-                              letterSpacing: '5px',
-                              fontFamily: 'monospace'
+                              letterSpacing: '5px'
                             }}
                           >
                             {formatDuration(remainingMs)}
@@ -760,7 +758,6 @@ export default function InvoicePaymentV2() {
                             <div className="fw-semibold" style={{
                               color: '#10b981',
                               fontSize: '0.9rem',
-                              fontFamily: 'monospace',
                               letterSpacing: '1px'
                             }}>
                               {(() => {

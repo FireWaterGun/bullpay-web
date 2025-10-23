@@ -442,7 +442,7 @@ export default function WalletTransaction() {
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.txHash ? (
                                 <div className="d-flex align-items-center gap-2">
-                                  <code className="text-primary" style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                                  <code className="text-primary" style={{ fontSize: '0.75rem' }}>
                                     {item.txHash}
                                   </code>
                                   {explorerUrl && (
@@ -486,7 +486,7 @@ export default function WalletTransaction() {
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.metadata?.fromAddress ? (
                                 <div className="d-flex align-items-center gap-2">
-                                  <code className="text-primary" style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                                  <code className="text-primary" style={{ fontSize: '0.75rem' }}>
                                     {item.metadata.fromAddress}
                                   </code>
                                   <button
@@ -508,7 +508,7 @@ export default function WalletTransaction() {
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.metadata?.toAddress ? (
                                 <div className="d-flex align-items-center gap-2">
-                                  <code className="text-primary" style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                                  <code className="text-primary" style={{ fontSize: '0.75rem' }}>
                                     {item.metadata.toAddress}
                                   </code>
                                   <button

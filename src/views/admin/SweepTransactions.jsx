@@ -162,21 +162,14 @@ export default function SweepTransactions() {
     return `${day}/${month}/${year} ${hours}:${minutes}`
   }
 
-  function getStatusBadge(status) {
-    const statusConfig = {
-      pending: { class: 'bg-label-warning', icon: 'bx-time-five', text: 'Pending' },
-      processing: { class: 'bg-label-info', icon: 'bx-loader-circle', text: 'Processing' },
-      completed: { class: 'bg-label-success', icon: 'bx-check-circle', text: 'Completed' },
-      failed: { class: 'bg-label-danger', icon: 'bx-x-circle', text: 'Failed' },
-      cancelled: { class: 'bg-label-secondary', icon: 'bx-block', text: 'Cancelled' }
-    }
-    const config = statusConfig[status] || { class: 'bg-label-secondary', icon: 'bx-info-circle', text: status }
-    return (
-      <span className={`badge ${config.class}`}>
-        <i className={`bx ${config.icon} me-1`}></i>
-        {config.text}
-      </span>
-    )
+  function statusBadgeClass(s) {
+    const v = String(s || '').toUpperCase()
+    if (v === 'PENDING') return 'badge bg-label-warning'
+    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-label-info'
+    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-label-success'
+    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-label-danger'
+    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-label-secondary'
+    return 'badge bg-label-secondary'
   }
 
   if (loading && sweeps.length === 0) {
@@ -243,7 +236,7 @@ export default function SweepTransactions() {
                     <tr>
                       <th style={{ minWidth: '60px' }}>ID</th>
                       <th style={{ minWidth: '150px' }}>{t('admin.user', { defaultValue: 'User' })}</th>
-                      <th style={{ minWidth: '120px' }}>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ minWidth: '180px' }}>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
                       <th style={{ minWidth: '150px' }}>{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
                       <th style={{ minWidth: '420px' }}>{t('admin.sweep.from', { defaultValue: 'From' })}</th>
@@ -296,7 +289,7 @@ export default function SweepTransactions() {
                               )}
                             </span>
                           </td>
-                          <td>{getStatusBadge(sweep.status)}</td>
+                          <td className="text-nowrap"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
                           <td>
                             <div className="d-flex align-items-center">
                               <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>

@@ -411,7 +411,7 @@ export default function SupportedCrypto() {
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       {coinNetwork.contractAddress ? (
                         <div className="d-inline-flex align-items-center gap-2">
-                          <code className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                          <code className="text-dark small" style={{ fontSize: '0.75rem' }}>
                             {coinNetwork.contractAddress}
                           </code>
                           <button

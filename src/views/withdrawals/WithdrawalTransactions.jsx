@@ -178,22 +178,14 @@ export default function WithdrawalTransactions() {
     return `${day}/${month}/${year} ${hours}:${minutes}`
   }
 
-  function getStatusBadge(status) {
-    const statusUpper = (status || '').toUpperCase()
-    const statusConfig = {
-      PENDING: { class: 'bg-label-warning', icon: 'bx-time-five', text: 'Pending' },
-      PROCESSING: { class: 'bg-label-info', icon: 'bx-loader-circle', text: 'Processing' },
-      COMPLETED: { class: 'bg-label-success', icon: 'bx-check-circle', text: 'Completed' },
-      FAILED: { class: 'bg-label-danger', icon: 'bx-x-circle', text: 'Failed' },
-      CANCELLED: { class: 'bg-label-secondary', icon: 'bx-block', text: 'Cancelled' }
-    }
-    const config = statusConfig[statusUpper] || { class: 'bg-label-secondary', icon: 'bx-info-circle', text: status }
-    return (
-      <span className={`badge ${config.class}`}>
-        <i className={`bx ${config.icon} me-1`}></i>
-        {config.text}
-      </span>
-    )
+  function statusBadgeClass(s) {
+    const v = String(s || '').toUpperCase()
+    if (v === 'PENDING') return 'badge bg-label-warning'
+    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-label-info'
+    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-label-success'
+    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-label-danger'
+    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-label-secondary'
+    return 'badge bg-label-secondary'
   }
 
   if (loading && withdrawals.length === 0) {
@@ -324,10 +316,10 @@ export default function WithdrawalTransactions() {
                               {formatAmount(withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18)}
                             </span>
                           </td>
-                          <td>{getStatusBadge(withdrawal.status)}</td>
+                          <td className="text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <code className="text-success me-2" style={{ fontSize: '0.75rem' }}>
+                              <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
                                 {withdrawal.toAddress || 'N/A'}
                               </code>
                               {withdrawal.toAddress && (
@@ -344,7 +336,7 @@ export default function WithdrawalTransactions() {
                           <td>
                             {withdrawal.txHash ? (
                               <div className="d-flex align-items-center">
-                                <code className="text-primary me-2" style={{ fontSize: '0.75rem' }}>
+                                <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
                                   {withdrawal.txHash}
                                 </code>
                                 <a 

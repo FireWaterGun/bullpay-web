@@ -334,7 +334,7 @@ export default function SystemBalance() {
                             </td>
                             <td>
                               <div className="d-flex align-items-center gap-2">
-                                <code className="small" style={{ fontSize: '0.8rem', fontFamily: 'monospace' }}>
+                                <code className="small" style={{ fontSize: '0.8rem' }}>
                                   {address || 'N/A'}
                                 </code>
                                 {address && (
