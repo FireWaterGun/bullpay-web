@@ -257,10 +257,10 @@ export default function WithdrawalTransactions() {
                       <th style={{ minWidth: '120px' }}>{t('withdrawal.amount', { defaultValue: 'Amount' })}</th>
                       <th style={{ minWidth: '80px' }}>{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('withdrawal.status', { defaultValue: 'Status' })}</th>
+                      <th style={{ minWidth: '120px' }} className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
                       <th style={{ minWidth: '420px' }}>{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</th>
                       <th style={{ minWidth: '680px' }}>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('withdrawal.createdAt', { defaultValue: 'Created Date' })}</th>
-                      <th style={{ minWidth: '120px' }} className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -317,6 +317,19 @@ export default function WithdrawalTransactions() {
                             </span>
                           </td>
                           <td className="text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
+                          <td className="text-center">
+                            {withdrawal.status?.toLowerCase() === 'pending' ? (
+                              <button
+                                className="btn btn-sm btn-primary"
+                                onClick={() => handleApproveClick(withdrawal)}
+                                disabled={approving}
+                              >
+                                {t('withdrawal.approve', { defaultValue: 'Approve' })}
+                              </button>
+                            ) : (
+                              <span className="text-muted">-</span>
+                            )}
+                          </td>
                           <td>
                             <div className="d-flex align-items-center">
                               <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
@@ -355,20 +368,6 @@ export default function WithdrawalTransactions() {
                           </td>
                           <td>
                             <span style={{ whiteSpace: 'nowrap' }}>{formatDate(withdrawal.createdAt)}</span>
-                          </td>
-                          <td className="text-center">
-                            {withdrawal.status?.toLowerCase() === 'pending' ? (
-                              <button
-                                className="btn btn-sm btn-success"
-                                onClick={() => handleApproveClick(withdrawal)}
-                                disabled={approving}
-                              >
-                                <i className="bx bx-check me-1"></i>
-                                {t('withdrawal.approve', { defaultValue: 'Approve' })}
-                              </button>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
                           </td>
                         </tr>
                       ))
@@ -426,14 +425,13 @@ export default function WithdrawalTransactions() {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">
-                  <i className="bx bx-check-circle text-success me-2"></i>
                   {t('withdrawal.approveConfirm', { defaultValue: 'Approve Withdrawal' })}
                 </h5>
                 <button type="button" className="btn-close" onClick={() => setShowApproveModal(false)} disabled={approving}></button>
               </div>
               <div className="modal-body">
                 <p className="mb-3">{t('withdrawal.approveMessage', { defaultValue: 'Are you sure you want to approve this withdrawal?' })}</p>
-                <div className="card bg-light">
+                <div className="card" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
                   <div className="card-body">
                     <div className="row g-2">
                       <div className="col-6">
@@ -464,17 +462,14 @@ export default function WithdrawalTransactions() {
                 <button type="button" className="btn btn-secondary" onClick={() => setShowApproveModal(false)} disabled={approving}>
                   {t('actions.cancel', { defaultValue: 'Cancel' })}
                 </button>
-                <button type="button" className="btn btn-success" onClick={handleApprove} disabled={approving}>
+                <button type="button" className="btn btn-primary" onClick={handleApprove} disabled={approving}>
                   {approving ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-1"></span>
                       {t('withdrawal.approving', { defaultValue: 'Approving...' })}
                     </>
                   ) : (
-                    <>
-                      <i className="bx bx-check me-1"></i>
-                      {t('withdrawal.approve', { defaultValue: 'Approve' })}
-                    </>
+                    t('withdrawal.approve', { defaultValue: 'Approve' })
                   )}
                 </button>
               </div>
