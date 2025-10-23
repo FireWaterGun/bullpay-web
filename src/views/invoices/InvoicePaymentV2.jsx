@@ -176,6 +176,7 @@ export default function InvoicePaymentV2() {
   const cn = invoice?.coinNetwork
   const coinSym = invoice?.symbol || qr?.symbol || cn?.coin?.symbol || cn?.symbol || ''
   const networkName = invoice?.network || qr?.network || cn?.network?.name || cn?.network || cn?.name || ''
+  const networkSym = (cn?.network?.symbol || networkName || cn?.symbol || '').toUpperCase()
   const year = new Date().getFullYear()
 
   const expiryMs = useMemo(() => invoice?.expiryAt ? new Date(String(invoice.expiryAt)).getTime() : undefined, [invoice?.expiryAt])
@@ -424,12 +425,39 @@ export default function InvoicePaymentV2() {
                     {/* Card Body */}
                     <div className="card-body p-3 p-md-4">
                       {/* Invoice Info & Timer */}
-                      <div className="d-flex justify-content-between align-items-center mb-3">
-                        <div>
+                      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 gap-md-3 mb-3">
+                        {/* Left - Invoice */}
+                        <div className="order-1">
                           <div className="small mb-1" style={{ color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem', fontWeight: '600' }}>{t("invoices.invoice")}</div>
                           <div className="fw-bold" style={{ fontSize: '1.1rem', letterSpacing: '-0.5px', color: '#1e293b' }}>#{invoice.invoiceNumber || invoice.publicCode || invoice.id}</div>
                         </div>
-                        <div className="d-flex align-items-center gap-2 px-3 py-2 rounded-3" style={{
+                        
+                        {/* Center - Chain */}
+                        <div className="order-2 order-md-2 text-center px-3 py-2 rounded-2" style={{
+                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.12))',
+                          border: '1px solid rgba(139, 92, 246, 0.25)'
+                        }}>
+                          <div className="small mb-1" style={{ 
+                            fontSize: '0.6rem', 
+                            color: '#64748b',
+                            fontWeight: '600',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            {t("invoices.chain") || "Chain"}
+                          </div>
+                          <div className="fw-bold" style={{ 
+                            fontSize: '0.9rem', 
+                            color: '#8b5cf6',
+                            letterSpacing: '0.5px',
+                            fontWeight: '700'
+                          }}>
+                            {networkSym || 'N/A'}
+                          </div>
+                        </div>
+
+                        {/* Right - Coin */}
+                        <div className="order-3 d-flex align-items-center gap-2 px-3 py-2 rounded-3" style={{
                           background: 'rgba(139, 92, 246, 0.08)',
                           border: '1px solid rgba(139, 92, 246, 0.2)'
                         }}>
