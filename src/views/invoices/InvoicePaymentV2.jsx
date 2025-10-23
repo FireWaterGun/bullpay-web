@@ -531,17 +531,44 @@ export default function InvoicePaymentV2() {
                                 fontSize: '0.7rem',
                                 fontWeight: '700'
                               }}>{t("invoices.amount")}</div>
-                              <div className="mb-2" style={{
-                                fontSize: '2.25rem',
-                                fontWeight: '800',
-                                letterSpacing: '-2px',
-                                background: 'linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                backgroundClip: 'text',
-                                lineHeight: 1.1
-                              }}>
-                                {formatAmount(invoice.amount)}
+                              <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                <div style={{
+                                  fontSize: '2.25rem',
+                                  fontWeight: '800',
+                                  letterSpacing: '-2px',
+                                  background: 'linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%)',
+                                  WebkitBackgroundClip: 'text',
+                                  WebkitTextFillColor: 'transparent',
+                                  backgroundClip: 'text',
+                                  lineHeight: 1.1
+                                }}>
+                                  {formatAmount(invoice.amount)}
+                                </div>
+                                {invoice.amount != null && (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm"
+                                  style={{
+                                    background: copiedAmt
+                                      ? 'linear-gradient(135deg, #10b981, #059669)'
+                                      : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                                    border: 'none',
+                                    color: 'white',
+                                    borderRadius: 4,
+                                    padding: '4px 6px',
+                                    fontWeight: '600',
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: copiedAmt
+                                      ? '0 2px 8px rgba(16, 185, 129, 0.25)'
+                                      : '0 2px 8px rgba(139, 92, 246, 0.25)',
+                                    transform: copiedAmt ? 'scale(1.02)' : 'scale(1)'
+                                  }}
+                                  onClick={handleCopyAmount}
+                                  title={copiedAmt ? t("actions.copied") : t("actions.copyAmount", { defaultValue: "Copy Amount" })}
+                                >
+                                  <i className={`bx ${copiedAmt ? 'bx-check' : 'bx-copy'}`} style={{ fontSize: '0.8rem' }}></i>
+                                </button>
+                                )}
                               </div>
                               <div className="mb-3" style={{
                                 color: '#64748b',
@@ -549,33 +576,6 @@ export default function InvoicePaymentV2() {
                                 fontWeight: '600',
                                 letterSpacing: '1px'
                               }}>{coinSym}</div>
-                              {invoice.amount != null && (
-                                <button
-                                  type="button"
-                                  className="btn"
-                                  style={{
-                                    background: copiedAmt
-                                      ? 'linear-gradient(135deg, #10b981, #059669)'
-                                      : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
-                                    border: 'none',
-                                    color: 'white',
-                                    borderRadius: 8,
-                                    padding: '10px 24px',
-                                    fontWeight: '600',
-                                    fontSize: '0.85rem',
-                                    letterSpacing: '0.5px',
-                                    transition: 'all 0.3s ease',
-                                    boxShadow: copiedAmt
-                                      ? '0 8px 20px rgba(16, 185, 129, 0.4)'
-                                      : '0 8px 20px rgba(139, 92, 246, 0.4)',
-                                    transform: copiedAmt ? 'scale(1.05)' : 'scale(1)'
-                                  }}
-                                  onClick={handleCopyAmount}
-                                >
-                                  <i className={`bx ${copiedAmt ? 'bx-check' : 'bx-copy'} me-2`}></i>
-                                  {copiedAmt ? t("actions.copied") : t("actions.copyAmount", { defaultValue: "Copy Amount" })}
-                                </button>
-                              )}
                             </div>
                           </div>
                         </div>

@@ -37,6 +37,7 @@ import SweepTransactions from '../admin/SweepTransactions'
 import WithdrawalDefaults from '../admin/WithdrawalDefaults'
 import WithdrawalOverrides from '../admin/WithdrawalOverrides'
 import WithdrawalPolicy from '../admin/WithdrawalPolicy'
+import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
@@ -468,6 +469,9 @@ export default function DashboardLayout() {
                 <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
                   <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
+                <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
+                  <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/settings/evm', '/admin/settings/network', '/admin/settings/sweep', '/admin/settings/withdrawal']}>
                   <SubMenuGroup base="/admin/settings/evm" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
                     <SubItem to="/admin/settings/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
@@ -519,7 +523,7 @@ export default function DashboardLayout() {
                 {/* Balance Display */}
                 <li className="nav-item me-2 me-xl-0">
                   <div className="nav-link d-flex align-items-center" style={{ cursor: 'default' }}>
-                    <i className="bx bxs-wallet-alt me-2" style={{ fontSize: '1.25rem' }}></i>
+                    <i className="bx bxs-wallet-alt me-2 text-primary" style={{ fontSize: '1.25rem' }}></i>
                     <span className="d-none d-md-inline" style={{ fontSize: '1.05rem' }}>
                       ${parseFloat(fiatBalance.amount || 0).toFixed(2)}
                     </span>
@@ -657,6 +661,7 @@ export default function DashboardLayout() {
                     <Route path="crypto/coin-networks/create" element={<SupportedCryptoForm />} />
                     <Route path="crypto/coin-networks/:id" element={<SupportedCryptoForm />} />
                     <Route path="sweep/transactions" element={<SweepTransactions />} />
+                    <Route path="withdrawal/transactions" element={<WithdrawalTransactions />} />
                     <Route path="settings/evm/fee-policy" element={<EVMFeePolicy />} />
                     <Route path="settings/network/fees" element={<NetworkFees />} />
                     <Route path="settings/sweep/configuration" element={<Sweep />} />

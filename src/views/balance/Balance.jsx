@@ -311,7 +311,10 @@ export default function Balance() {
                     key={`${b.coinNetworkId}-${idx}`}
                     className="d-flex align-items-center justify-content-between border rounded-3 py-3 px-4"
                   >
-                    <div className="d-flex align-items-center ms-5">
+                    <div className="d-flex align-items-center">
+                      <div className="text-muted fw-medium me-3" style={{ minWidth: '80px' }}>
+                        {networkSym || coinSym}
+                      </div>
                       <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} />
                       <div className="ms-2">
                         <div className="fw-medium">{coinSym}</div>

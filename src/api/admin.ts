@@ -532,3 +532,53 @@ export async function forceSweep(token: string, sweepId: number) {
   })
   return data.data || data
 }
+
+/**
+ * Get all withdrawal transactions (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (page, limit, status, userId, coinNetworkId)
+ */
+export async function getWithdrawals(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    userId?: number
+    coinNetworkId?: number
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+  
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  
+  const queryString = queryParams.toString()
+  const url = `/admin/withdrawals${queryString ? `?${queryString}` : ''}`
+  
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  
+  // Transform response structure to match component expectations
+  const items = response?.data || []
+  const meta = response?.meta || {}
+  
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 0,
+      hasNext: meta.hasNextPage || false,
+      hasPrev: meta.hasPrevPage || false,
+    }
+  }
+}

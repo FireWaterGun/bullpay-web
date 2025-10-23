@@ -342,7 +342,7 @@ export default function InvoiceDetail() {
                   <div className="d-flex justify-content-between flex-wrap gap-2">
                     <div>
                       <h5 className="mb-1 d-flex align-items-center gap-2">
-                        <span>{invoice.invoiceNumber || invoice.id}</span>
+                        <span>{invoice.publicCode || invoice.code || invoice.id}</span>
                         <span className={`badge rounded-pill d-inline-flex align-items-center px-3 text-capitalize ${statusClass(invoice.status)}`}>
                           {invoice.status || "-"}
                         </span>
@@ -367,7 +367,11 @@ export default function InvoiceDetail() {
                   <hr className="my-4" />
 
                   <div className="row g-3">
-                    <div className="col-md-6">
+                    <div className="col-md-4">
+                      <label className="form-label">{t("invoices.chain") || "Chain"}</label>
+                      <div className="fw-medium text-muted">{networkSym || 'N/A'}</div>
+                    </div>
+                    <div className="col-md-4">
                       <label className="form-label">{t("invoices.coin") || "Coin"}</label>
                       <div className="d-flex align-items-center">
                         <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} size={32} />
@@ -377,9 +381,9 @@ export default function InvoiceDetail() {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-6">
-                      <label className="form-label">{t("invoices.paidAmount") || "Paid"}</label>
-                      <div>
+                    <div className="col-md-4">
+                      <label className="form-label">{t("invoices.paidAmount") || "Paid Amount"}</label>
+                      <div className="fw-medium">
                         {formatAmount(invoice.paidAmount || 0)} {coinSym}
                       </div>
                     </div>

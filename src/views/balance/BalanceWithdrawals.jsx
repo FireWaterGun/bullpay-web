@@ -249,7 +249,8 @@ export default function BalanceWithdrawals() {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th style={{ width: '40%' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ width: '15%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
+                      <th style={{ width: '30%' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
                       <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
                     </tr>
                   </thead>
@@ -262,6 +263,11 @@ export default function BalanceWithdrawals() {
                       const addr = w.address || '-'
                       return (
                         <tr key={w.id || idx}>
+                          <td>
+                            <span className="text-muted fw-medium">
+                              {networkSym || coinSym}
+                            </span>
+                          </td>
                           <td>
                             <div className="d-flex align-items-center">
                               <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} />
@@ -352,6 +358,9 @@ export default function BalanceWithdrawals() {
             <td className="cell-fit"><span className="font-monospace">{it.id}</span></td>
                         <td>
                           <div className="d-flex align-items-center">
+                            <div className="text-muted fw-medium me-3" style={{ minWidth: '80px' }}>
+                              {networkSym || sym}
+                            </div>
                             <CoinImg coin={cn?.coin} symbol={sym} networkSymbol={networkSym} />
                             <div>
                               <div className="fw-medium">{sym}</div>

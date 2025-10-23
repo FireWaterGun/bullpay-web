@@ -326,8 +326,9 @@ export default function InvoiceList() {
                           />
                         </div>
                       </th>
-                      <th className="cell-fit">{t("invoices.number") || "#"}</th>
-                      <th>{t("invoices.invoice") || "Invoice"}</th>
+                      <th className="cell-fit">{t("invoices.code") || "Code"}</th>
+                      <th style={{ minWidth: '420px' }}>{t("invoices.paymentAddress") || "Payment Address"}</th>
+                      <th>{t("invoices.chain") || "Chain"}</th>
                       <th>{t("invoices.coin") || "Coin"}</th>
                       <th className="text-end">{t("invoices.amount")}</th>
                       <th>{t("invoices.statusCol")}</th>
@@ -338,7 +339,7 @@ export default function InvoiceList() {
                   <tbody>
                     {items.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="text-center text-muted">
+                        <td colSpan={9} className="text-center text-muted">
                           {t("invoices.none")}
                         </td>
                       </tr>
@@ -358,17 +359,18 @@ export default function InvoiceList() {
                         </td>
                         <td className="text-nowrap cell-fit">
                           <NavLink to={`/app/invoices/${it.id}`} className="fw-medium">
-                            #{it.invoiceNumber || it.id}
+                            {it.publicCode || it.code || it.id}
                           </NavLink>
                         </td>
-                        <td className="text-nowrap" style={{ maxWidth: 360 }}>
-                          <div className="text-muted small d-flex align-items-center gap-2">
-                            <span>{t("invoices.paymentAddress") || "Address"}:</span>
-                            <span className="font-monospace">{shortAddr(it.paymentAddress)}</span>
+                        <td style={{ maxWidth: 420 }}>
+                          <div className="d-flex align-items-center gap-2">
+                            <code className="text-success font-monospace" style={{ fontSize: '0.75rem', wordBreak: 'break-all' }}>
+                              {it.paymentAddress || 'N/A'}
+                            </code>
                             {it.paymentAddress && (
                               <button
                                 type="button"
-                                className="btn btn-icon btn-sm btn-outline-secondary"
+                                className="btn btn-icon btn-sm btn-outline-secondary flex-shrink-0"
                                 title={t("actions.copyAddress") || t("actions.copy") || "Copy"}
                                 onClick={() => handleCopy(it.paymentAddress, it.id)}
                               >
@@ -376,6 +378,18 @@ export default function InvoiceList() {
                               </button>
                             )}
                           </div>
+                        </td>
+                        <td className="text-nowrap">
+                          {(() => {
+                            const cnId = Number(it.coinNetworkId)
+                            const cn = cnById.get(cnId) || it.coinNetwork
+                            const networkSym = (cn?.network?.symbol || it.coinNetwork?.network?.symbol || "").toUpperCase()
+                            return (
+                              <span className="text-muted fw-medium">
+                                {networkSym || 'N/A'}
+                              </span>
+                            )
+                          })()}
                         </td>
                         <td className="text-nowrap">
                           {(() => {
@@ -413,13 +427,23 @@ export default function InvoiceList() {
                         </td>
                         <td className="text-nowrap">{formatDateTime(it.createdAt || it.created_at)}</td>
                         <td className="text-end">
-                          <NavLink
-                            to={`/app/invoices/${it.id}`}
-                            className="btn btn-icon text-secondary"
-                            title={t("actions.view") || "View"}
-                          >
-                            <i className="icon-base bx bx-show icon-20px"></i>
-                          </NavLink>
+                          {it.publicCode ? (
+                            <NavLink
+                              to={`/pay/${it.publicCode}`}
+                              className="btn btn-icon text-secondary"
+                              title={t("actions.viewPayment") || "View Payment Page"}
+                            >
+                              <i className="icon-base bx bx-qr icon-20px"></i>
+                            </NavLink>
+                          ) : (
+                            <NavLink
+                              to={`/app/invoices/${it.id}`}
+                              className="btn btn-icon text-secondary"
+                              title={t("actions.view") || "View"}
+                            >
+                              <i className="icon-base bx bx-show icon-20px"></i>
+                            </NavLink>
+                          )}
                         </td>
                       </tr>
                     ))}
