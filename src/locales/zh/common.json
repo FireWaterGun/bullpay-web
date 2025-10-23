@@ -119,7 +119,10 @@
     "openInWallet": "在钱包中打开",
     "expired": "已过期",
     "expiredMessage": "该发票已过期，请重新获取支付链接。",
-    "cancelledMessage": "该发票已被取消。"
+    "cancelledMessage": "该发票已被取消。",
+    "paymentReceived": "已收到付款！",
+    "statusUpdated": "状态已更新",
+    "invoiceUpdated": "发票已更新"
   },
   "settings": {
     "title": "设置",

@@ -118,7 +118,10 @@
     "openInWallet": "เปิดในวอลเล็ต",
     "expired": "หมดอายุ",
     "expiredMessage": "ใบแจ้งหนี้นี้หมดอายุแล้ว กรุณาขอลิงก์ชำระเงินใหม่",
-    "cancelledMessage": "ใบแจ้งหนี้นี้ถูกยกเลิกแล้ว"
+    "cancelledMessage": "ใบแจ้งหนี้นี้ถูกยกเลิกแล้ว",
+    "paymentReceived": "ได้รับการชำระเงินแล้ว!",
+    "statusUpdated": "สถานะอัปเดตแล้ว",
+    "invoiceUpdated": "ใบแจ้งหนี้อัปเดตแล้ว"
   },
   "settings": {
     "title": "การตั้งค่า",

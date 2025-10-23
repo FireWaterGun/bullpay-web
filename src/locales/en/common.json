@@ -118,7 +118,10 @@
     "openInWallet": "Open in wallet",
     "expired": "Expired",
     "expiredMessage": "This invoice has expired. Please request a new payment link.",
-    "cancelledMessage": "This invoice has been cancelled."
+    "cancelledMessage": "This invoice has been cancelled.",
+    "paymentReceived": "Payment received!",
+    "statusUpdated": "Status updated",
+    "invoiceUpdated": "Invoice updated"
   },
   "settings": {
     "title": "Settings",

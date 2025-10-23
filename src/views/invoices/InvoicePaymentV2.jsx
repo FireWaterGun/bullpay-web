@@ -123,20 +123,49 @@ export default function InvoicePaymentV2() {
     }
   }, [invoice, loadInvoice, errorCode])
 
-  useInvoiceEvents(publicCode, {
-    onStatusUpdate: (status) => {
-      setInvoice((prev) => (prev ? { ...prev, status } : null))
-      if (status === 'paid') {
-        playNotificationSound()
-        toast.success(t('payment.paymentReceived') || 'Payment received!')
-      }
+  // Subscribe to Pusher events for real-time updates
+  useInvoiceEvents(invoice?.invoiceId || invoice?.id, {
+    onPaymentReceived: (data) => {
+      console.log('Payment received via Pusher:', data)
+      playNotificationSound('success')
+      // Show toast notification
+      toast.success({
+        title: t('payment.paymentReceived') || 'Payment Received',
+        body: data.body || t('payment.completedSub') || 'Payment has been received'
+      });
+      // Update invoice status immediately
+      setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+      // Refresh invoice data in background after delay
+      setTimeout(() => loadInvoice(false), 1000)
     },
-    onPaidAmountUpdate: (paidAmount) => {
-      setInvoice((prev) => (prev ? { ...prev, paidAmount } : null))
-      if (Number(paidAmount) > 0) {
-        playNotificationSound()
+    onStatusChanged: (data) => {
+      console.log('Status changed via Pusher:', data)
+      // Check if it's a payment completion notification
+      if (data.type === 'invoice_completed' || data.status === 'paid') {
+        playNotificationSound('success')
+        // Show toast notification
+        toast.success({
+          title: t('payment.paymentReceived') || 'Invoice Paid',
+          body: data.body || t('payment.completedSub') || 'Invoice has been paid successfully'
+        });
+        // Update invoice status immediately
+        setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+      } else if (data.status) {
+        setInvoice(prev => prev ? { ...prev, status: data.status } : prev)
       }
+      // Then refresh full data in background after delay
+      setTimeout(() => loadInvoice(false), 1000)
     },
+    onUpdated: (data) => {
+      console.log('Invoice updated via Pusher:', data)
+      // Show toast notification
+      toast.info({
+        title: data.title || t('payment.invoiceUpdated') || 'Invoice Updated',
+        body: data.body || t('payment.invoiceUpdated') || 'Invoice has been updated'
+      })
+      // Refresh in background after delay
+      setTimeout(() => loadInvoice(false), 1000)
+    }
   })
 
   useEffect(() => {
@@ -203,7 +232,7 @@ export default function InvoicePaymentV2() {
       await navigator.clipboard.writeText(invoice?.paymentAddress || '')
       setCopied(true)
       setTimeout(() => setCopied(false), 1200)
-    } catch {}
+    } catch { }
   }
 
   const handleCopyAmount = async () => {
@@ -213,13 +242,13 @@ export default function InvoicePaymentV2() {
       await navigator.clipboard.writeText(val)
       setCopiedAmt(true)
       setTimeout(() => setCopiedAmt(false), 1200)
-    } catch {}
+    } catch { }
   }
 
   const isExpiredUnpaid = isExpired && !isPaid
 
   return (
-    <div className="min-vh-100 position-relative overflow-hidden" style={{ 
+    <div className="min-vh-100 position-relative overflow-hidden" style={{
       background: 'linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
@@ -234,7 +263,7 @@ export default function InvoicePaymentV2() {
           animation: 'gradientShift 15s ease infinite',
           filter: 'blur(60px)'
         }}></div>
-        
+
         {/* Floating Orbs */}
         <div className="position-absolute rounded-circle" style={{
           width: 200,
@@ -278,12 +307,12 @@ export default function InvoicePaymentV2() {
               </div>
             </div>
             <div>
-              <h2 className="fw-bold mb-0" style={{ 
+              <h2 className="fw-bold mb-0" style={{
                 fontSize: '1.25rem',
                 letterSpacing: '-0.5px',
                 color: '#1e293b'
               }}>BULL PAY</h2>
-              <p className="mb-0" style={{ 
+              <p className="mb-0" style={{
                 color: '#64748b',
                 fontSize: '0.75rem',
                 letterSpacing: '0.5px'
@@ -292,7 +321,7 @@ export default function InvoicePaymentV2() {
           </div>
         </div>
       </div>
-      
+
       <style>{`
         @keyframes float {
           0%, 100% { transform: translate(0, 0); }
@@ -311,7 +340,7 @@ export default function InvoicePaymentV2() {
           {error && errorCode !== 'BIZ_1200' && (
             <div className="alert alert-danger mx-auto" style={{ maxWidth: 500 }}>{error}</div>
           )}
-          
+
           {loading ? (
             <div className="text-center">
               <div className="spinner-border text-white" role="status">
@@ -342,9 +371,9 @@ export default function InvoicePaymentV2() {
                     filter: 'blur(30px)',
                     opacity: 0.6
                   }}></div>
-                  
-                  <div className="card border-0 position-relative" style={{ 
-                    borderRadius: 12, 
+
+                  <div className="card border-0 position-relative" style={{
+                    borderRadius: 12,
                     overflow: 'hidden',
                     background: 'rgba(255, 255, 255, 0.95)',
                     backdropFilter: 'blur(20px)',
@@ -353,7 +382,7 @@ export default function InvoicePaymentV2() {
                   }}>
                     {/* Status Banner */}
                     <div className="position-relative overflow-hidden" style={{
-                      background: uiStatus === 'paid' 
+                      background: uiStatus === 'paid'
                         ? 'linear-gradient(135deg, #10b981, #059669)'
                         : uiStatus === 'pending'
                           ? 'linear-gradient(135deg, #f59e0b, #d97706)'
@@ -362,7 +391,7 @@ export default function InvoicePaymentV2() {
                             : 'linear-gradient(135deg, #6b7280, #4b5563)',
                       padding: '16px 24px'
                     }}>
-                      <div className="position-absolute w-100 h-100" style={{ 
+                      <div className="position-absolute w-100 h-100" style={{
                         background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
                         animation: 'shimmer 3s infinite',
                         zIndex: 0,
@@ -371,12 +400,11 @@ export default function InvoicePaymentV2() {
                       }}></div>
                       <div className="text-center position-relative" style={{ zIndex: 1 }}>
                         <div className="d-inline-flex align-items-center gap-2">
-                          <i className={`bx ${
-                            uiStatus === 'paid' ? 'bx-check-circle' :
-                            uiStatus === 'pending' ? 'bx-time-five' :
-                            uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'
-                          } text-white`} style={{ fontSize: 20 }}></i>
-                          <span className="fw-bold text-uppercase text-white" style={{ 
+                          <i className={`bx ${uiStatus === 'paid' ? 'bx-check-circle' :
+                              uiStatus === 'pending' ? 'bx-time-five' :
+                                uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'
+                            } text-white`} style={{ fontSize: 20 }}></i>
+                          <span className="fw-bold text-uppercase text-white" style={{
                             letterSpacing: '2px',
                             fontSize: '0.875rem'
                           }}>
@@ -385,7 +413,7 @@ export default function InvoicePaymentV2() {
                         </div>
                       </div>
                     </div>
-                  
+
                     <style>{`
                       @keyframes shimmer {
                         0% { transform: translateX(-100%); }
@@ -552,7 +580,7 @@ export default function InvoicePaymentV2() {
                           </div>
                         </div>
                       )}
-                      
+
                       <style>{`
                         @keyframes pulse {
                           0%, 100% { opacity: 1; transform: scale(1); }
@@ -560,20 +588,20 @@ export default function InvoicePaymentV2() {
                         }
                       `}</style>
 
-                    {/* Expired Alert */}
-                    {isExpiredUnpaid && (
-                      <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
-                        <i className="bx bx-error-circle me-2 fs-4"></i>
-                        <div>
-                          {t("payment.expiredMessage") || "This invoice has expired. Please request a new payment link."}
+                      {/* Expired Alert */}
+                      {isExpiredUnpaid && (
+                        <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                          <i className="bx bx-error-circle me-2 fs-4"></i>
+                          <div>
+                            {t("payment.expiredMessage") || "This invoice has expired. Please request a new payment link."}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                       {/* Payment Address */}
                       {!isExpiredUnpaid && (
                         <div className="mb-3">
-                          <div className="small mb-2" style={{ 
+                          <div className="small mb-2" style={{
                             color: '#64748b',
                             textTransform: 'uppercase',
                             letterSpacing: '2px',
@@ -587,7 +615,7 @@ export default function InvoicePaymentV2() {
                             border: '1px solid rgba(139, 92, 246, 0.15)',
                             boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.5)'
                           }}>
-                            <code className="flex-grow-1 text-break mb-0 fw-medium" style={{ 
+                            <code className="flex-grow-1 text-break mb-0 fw-medium" style={{
                               fontSize: '0.75rem',
                               color: '#6366f1',
                               background: 'none'
@@ -599,7 +627,7 @@ export default function InvoicePaymentV2() {
                                 type="button"
                                 className="btn btn-sm flex-shrink-0"
                                 style={{
-                                  background: copied 
+                                  background: copied
                                     ? 'linear-gradient(135deg, #10b981, #059669)'
                                     : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
                                   border: 'none',
@@ -643,204 +671,203 @@ export default function InvoicePaymentV2() {
                         </div>
                       )}
 
-                    {/* Paid At Info */}
-                    {isPaid && invoice.paidAt && (
-                      <div className="mb-3 p-3 rounded-4" style={{
-                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08))',
-                        border: '1px solid rgba(16, 185, 129, 0.2)'
-                      }}>
-                        <div className="d-flex align-items-center gap-2 mb-2">
-                          <div className="rounded-circle d-flex align-items-center justify-content-center" style={{
-                            width: 28,
-                            height: 28,
-                            background: 'linear-gradient(135deg, #10b981, #059669)',
-                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-                          }}>
-                            <i className="bx bx-check text-white" style={{ fontSize: 16 }}></i>
-                          </div>
-                          <span className="small" style={{
-                            color: '#047857',
-                            textTransform: 'uppercase',
-                            letterSpacing: '1.5px',
-                            fontSize: '0.7rem',
-                            fontWeight: '700'
-                          }}>
-                            {t("payment.paidAt", { defaultValue: "Paid At" })}
-                          </span>
-                        </div>
-                        <div style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '4px'
+                      {/* Paid At Info */}
+                      {isPaid && invoice.paidAt && (
+                        <div className="mb-3 p-3 rounded-4" style={{
+                          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08))',
+                          border: '1px solid rgba(16, 185, 129, 0.2)'
                         }}>
-                          <div className="fw-bold" style={{
-                            color: '#059669',
-                            fontSize: '1.1rem',
-                            letterSpacing: '0.5px'
-                          }}>
-                            {(() => {
-                              const d = new Date(invoice.paidAt)
-                              return new Intl.DateTimeFormat(undefined, {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              }).format(d)
-                            })()}
+                          <div className="d-flex align-items-center gap-2 mb-2">
+                            <div className="rounded-circle d-flex align-items-center justify-content-center" style={{
+                              width: 28,
+                              height: 28,
+                              background: 'linear-gradient(135deg, #10b981, #059669)',
+                              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                            }}>
+                              <i className="bx bx-check text-white" style={{ fontSize: 16 }}></i>
+                            </div>
+                            <span className="small" style={{
+                              color: '#047857',
+                              textTransform: 'uppercase',
+                              letterSpacing: '1.5px',
+                              fontSize: '0.7rem',
+                              fontWeight: '700'
+                            }}>
+                              {t("payment.paidAt", { defaultValue: "Paid At" })}
+                            </span>
                           </div>
-                          <div className="fw-semibold" style={{
-                            color: '#10b981',
-                            fontSize: '0.9rem',
-                            fontFamily: 'monospace',
-                            letterSpacing: '1px'
+                          <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '4px'
                           }}>
-                            {(() => {
-                              const d = new Date(invoice.paidAt)
-                              return new Intl.DateTimeFormat(undefined, {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                hour12: false
-                              }).format(d)
-                            })()}
+                            <div className="fw-bold" style={{
+                              color: '#059669',
+                              fontSize: '1.1rem',
+                              letterSpacing: '0.5px'
+                            }}>
+                              {(() => {
+                                const d = new Date(invoice.paidAt)
+                                return new Intl.DateTimeFormat(undefined, {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                }).format(d)
+                              })()}
+                            </div>
+                            <div className="fw-semibold" style={{
+                              color: '#10b981',
+                              fontSize: '0.9rem',
+                              fontFamily: 'monospace',
+                              letterSpacing: '1px'
+                            }}>
+                              {(() => {
+                                const d = new Date(invoice.paidAt)
+                                return new Intl.DateTimeFormat(undefined, {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  second: '2-digit',
+                                  hour12: false
+                                }).format(d)
+                              })()}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Progress Steps */}
-                    <div className="mt-3 p-3 rounded-4" style={{
-                      background: 'rgba(139, 92, 246, 0.03)',
-                      border: '1px solid rgba(139, 92, 246, 0.1)'
-                    }}>
-                      <div className="d-flex justify-content-between position-relative">
-                        {/* Progress Line */}
-                        <div 
-                          className="position-absolute top-0 start-0 h-100"
-                          style={{ 
-                            width: '100%',
-                            zIndex: 0,
-                            marginTop: 19
-                          }}
-                        >
-                          <div 
-                            className="position-relative"
-                            style={{ 
-                              height: 3,
-                              background: '#e5e7eb',
-                              marginLeft: 20,
-                              marginRight: 20,
-                              borderRadius: 10,
-                              overflow: 'hidden'
+                      {/* Progress Steps */}
+                      <div className="mt-3 p-3 rounded-4" style={{
+                        background: 'rgba(139, 92, 246, 0.03)',
+                        border: '1px solid rgba(139, 92, 246, 0.1)'
+                      }}>
+                        <div className="d-flex justify-content-between position-relative">
+                          {/* Progress Line */}
+                          <div
+                            className="position-absolute top-0 start-0 h-100"
+                            style={{
+                              width: '100%',
+                              zIndex: 0,
+                              marginTop: 19
                             }}
                           >
-                            <div 
-                              className="position-absolute h-100"
+                            <div
+                              className="position-relative"
                               style={{
-                                width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%',
-                                background: isPaid ? 'linear-gradient(90deg, #10b981 0%, #059669 100%)' : 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%)',
-                                transition: 'width 0.5s ease',
-                                left: 0,
-                                top: 0
+                                height: 3,
+                                background: '#e5e7eb',
+                                marginLeft: 20,
+                                marginRight: 20,
+                                borderRadius: 10,
+                                overflow: 'hidden'
                               }}
-                            ></div>
+                            >
+                              <div
+                                className="position-absolute h-100"
+                                style={{
+                                  width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%',
+                                  background: isPaid ? 'linear-gradient(90deg, #10b981 0%, #059669 100%)' : 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%)',
+                                  transition: 'width 0.5s ease',
+                                  left: 0,
+                                  top: 0
+                                }}
+                              ></div>
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Step 1 */}
-                        <div className="text-center" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-                          <div
-                            className="d-inline-flex align-items-center justify-content-center rounded-circle"
-                            style={{ 
-                              width: 40, 
-                              height: 40,
-                              background: isPaid 
-                                ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                                : currentStep >= 1 
-                                  ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
-                                  : '#f3f4f6',
-                              boxShadow: (isPaid || currentStep >= 1) ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
-                              transition: 'all 0.3s ease'
-                            }}
-                          >
-                            <i className={`bx bx-coin-stack ${isPaid || currentStep >= 1 ? 'text-white' : 'text-muted'}`} style={{ fontSize: 20 }}></i>
-                          </div>
-                          <div className="mt-1" style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: isPaid ? '#10b981' : currentStep === 1 ? '#6366f1' : '#94a3b8'
-                          }}>
-                            {t("payment.waiting") || "Waiting"}
-                          </div>
-                        </div>
-
-                        {/* Step 2 */}
-                        <div className="text-center" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-                          <div
-                            className="d-inline-flex align-items-center justify-content-center rounded-circle"
-                            style={{ 
-                              width: 36, 
-                              height: 36,
-                              background: isExpiredUnpaid
-                                ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-                                : isPaid
-                                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                                  : currentStep >= 2
-                                    ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
-                                    : '#f3f4f6',
-                              boxShadow: (isExpiredUnpaid || isPaid || currentStep >= 2) ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
-                              transition: 'all 0.3s ease'
-                            }}
-                          >
-                            <i
-                              className={`bx ${
-                                isExpiredUnpaid
-                                  ? 'bx-calendar-x text-white'
-                                  : isPaid || currentStep >= 2
-                                    ? 'bx-time-five text-white'
-                                    : 'bx-time-five text-muted'
-                              }`}
-                              style={{ fontSize: 20 }}
-                            ></i>
-                          </div>
-                          <div className="mt-1" style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: isExpiredUnpaid ? '#ef4444' : isPaid ? '#10b981' : currentStep === 2 ? '#6366f1' : '#94a3b8'
-                          }}>
-                            {isExpiredUnpaid ? t('payment.expired') || 'Expired' : t("payment.processing") || "Processing"}
-                          </div>
-                        </div>
-
-                        {/* Step 3 */}
-                        {!isExpiredUnpaid && (
+                          {/* Step 1 */}
                           <div className="text-center" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
                             <div
                               className="d-inline-flex align-items-center justify-content-center rounded-circle"
-                              style={{ 
-                                width: 40, 
+                              style={{
+                                width: 40,
                                 height: 40,
-                                background: isPaid 
+                                background: isPaid
                                   ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                                  : '#f3f4f6',
-                                boxShadow: isPaid ? '0 4px 12px rgba(16, 185, 129, 0.4)' : 'none',
-                                transition: 'all 0.3s ease',
-                                animation: isPaid ? 'bounce 0.6s ease' : 'none'
+                                  : currentStep >= 1
+                                    ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+                                    : '#f3f4f6',
+                                boxShadow: (isPaid || currentStep >= 1) ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
+                                transition: 'all 0.3s ease'
                               }}
                             >
-                              <i className={`bx ${isPaid ? 'bx-badge-check text-white' : 'bx-like text-muted'}`} style={{ fontSize: 20 }}></i>
+                              <i className={`bx bx-coin-stack ${isPaid || currentStep >= 1 ? 'text-white' : 'text-muted'}`} style={{ fontSize: 20 }}></i>
                             </div>
                             <div className="mt-1" style={{
                               fontSize: '0.75rem',
                               fontWeight: '600',
-                              color: isPaid ? '#10b981' : '#94a3b8'
+                              color: isPaid ? '#10b981' : currentStep === 1 ? '#6366f1' : '#94a3b8'
                             }}>
-                              {t('payment.completed') || 'Success!'}
+                              {t("payment.waiting") || "Waiting"}
                             </div>
                           </div>
-                        )}
+
+                          {/* Step 2 */}
+                          <div className="text-center" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                            <div
+                              className="d-inline-flex align-items-center justify-content-center rounded-circle"
+                              style={{
+                                width: 36,
+                                height: 36,
+                                background: isExpiredUnpaid
+                                  ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                                  : isPaid
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : currentStep >= 2
+                                      ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+                                      : '#f3f4f6',
+                                boxShadow: (isExpiredUnpaid || isPaid || currentStep >= 2) ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
+                                transition: 'all 0.3s ease'
+                              }}
+                            >
+                              <i
+                                className={`bx ${isExpiredUnpaid
+                                    ? 'bx-calendar-x text-white'
+                                    : isPaid || currentStep >= 2
+                                      ? 'bx-time-five text-white'
+                                      : 'bx-time-five text-muted'
+                                  }`}
+                                style={{ fontSize: 20 }}
+                              ></i>
+                            </div>
+                            <div className="mt-1" style={{
+                              fontSize: '0.75rem',
+                              fontWeight: '600',
+                              color: isExpiredUnpaid ? '#ef4444' : isPaid ? '#10b981' : currentStep === 2 ? '#6366f1' : '#94a3b8'
+                            }}>
+                              {isExpiredUnpaid ? t('payment.expired') || 'Expired' : t("payment.processing") || "Processing"}
+                            </div>
+                          </div>
+
+                          {/* Step 3 */}
+                          {!isExpiredUnpaid && (
+                            <div className="text-center" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                              <div
+                                className="d-inline-flex align-items-center justify-content-center rounded-circle"
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  background: isPaid
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : '#f3f4f6',
+                                  boxShadow: isPaid ? '0 4px 12px rgba(16, 185, 129, 0.4)' : 'none',
+                                  transition: 'all 0.3s ease',
+                                  animation: isPaid ? 'bounce 0.6s ease' : 'none'
+                                }}
+                              >
+                                <i className={`bx ${isPaid ? 'bx-badge-check text-white' : 'bx-like text-muted'}`} style={{ fontSize: 20 }}></i>
+                              </div>
+                              <div className="mt-1" style={{
+                                fontSize: '0.75rem',
+                                fontWeight: '600',
+                                color: isPaid ? '#10b981' : '#94a3b8'
+                              }}>
+                                {t('payment.completed') || 'Success!'}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    
+
                       <style>{`
                         @keyframes bounce {
                           0%, 100% { transform: scale(1); }
@@ -874,7 +901,7 @@ export default function InvoicePaymentV2() {
             backgroundClip: 'text',
             letterSpacing: '1px'
           }}>BULL PAY</div>
-          <div style={{ 
+          <div style={{
             color: '#94a3b8',
             fontSize: '0.75rem'
           }}>{t("common.copyright", { year }) || `© ${year} · All rights reserved`}</div>
