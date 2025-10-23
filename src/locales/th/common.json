@@ -517,7 +517,7 @@
     },
     "withdrawal": {
       "menuTitle": "การถอนเงิน",
-      "transactions": "รายการถอนเงิน",
+      "transactions": "รายการธุรกรรม",
       "transactionsDesc": "ดูรายการถอนเงินทั้งหมดและสถานะ",
       "defaults": "ค่าเริ่มต้นและขีดจำกัด",
       "overrides": "การกำหนดค่าเฉพาะ",
@@ -585,9 +585,16 @@
       "noTransactions": "ไม่พบรายการถอนเงิน",
       "pending": "รอดำเนินการ",
       "processing": "กำลังดำเนินการ",
-      "completed": "เสร็จสิ้น",
+      "completed": "สำเร็จ",
       "failed": "ล้มเหลว",
-      "cancelled": "ยกเลิก"
+      "cancelled": "ยกเลิก",
+      "actions": "ดำเนินการ",
+      "approve": "อนุมัติ",
+      "approving": "กำลังอนุมัติ...",
+      "approveConfirm": "อนุมัติการถอนเงิน",
+      "approveMessage": "คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการถอนเงินนี้?",
+      "approveSuccess": "อนุมัติการถอนเงินเรียบร้อยแล้ว",
+      "approveError": "ไม่สามารถอนุมัติการถอนเงินได้"
     },
     "evm": {
       "menuTitle": "EVM",

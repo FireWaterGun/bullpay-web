@@ -328,7 +328,8 @@ export default function BalanceWithdrawals() {
               <table className="table table-sm align-middle">
                 <colgroup>
                   <col style={{ width: '6%' }} />
-                  <col style={{ width: '30%' }} />
+                  <col style={{ width: '10%' }} />
+                  <col style={{ width: '25%' }} />
                   <col style={{ width: '12%' }} />
                   <col />
                   <col style={{ width: '12%' }} />
@@ -338,6 +339,7 @@ export default function BalanceWithdrawals() {
                 <thead>
                   <tr>
                     <th className="text-nowrap cell-fit">{t('common.id', { defaultValue: 'ID' })}</th>
+                    <th>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
                     <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
                     <th className="text-nowrap">{t('balance.amount', { defaultValue: 'Amount' })}</th>
                     <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
@@ -357,10 +359,12 @@ export default function BalanceWithdrawals() {
                       <tr key={it.id}>
             <td className="cell-fit"><span className="font-monospace">{it.id}</span></td>
                         <td>
+                          <span className="text-muted fw-medium">
+                            {networkSym || sym}
+                          </span>
+                        </td>
+                        <td>
                           <div className="d-flex align-items-center">
-                            <div className="text-muted fw-medium me-3" style={{ minWidth: '80px' }}>
-                              {networkSym || sym}
-                            </div>
                             <CoinImg coin={cn?.coin} symbol={sym} networkSymbol={networkSym} />
                             <div>
                               <div className="fw-medium">{sym}</div>

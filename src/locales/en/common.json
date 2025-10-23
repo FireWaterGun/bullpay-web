@@ -489,7 +489,7 @@
     },
     "withdrawal": {
       "menuTitle": "Withdrawal",
-      "transactions": "Withdrawal Transactions",
+      "transactions": "Transactions",
       "transactionsDesc": "View all withdrawal transactions and their status",
       "defaults": "Defaults & Limits",
       "overrides": "Overrides",
@@ -559,7 +559,14 @@
       "processing": "Processing",
       "completed": "Completed",
       "failed": "Failed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "actions": "Actions",
+      "approve": "Approve",
+      "approving": "Approving...",
+      "approveConfirm": "Approve Withdrawal",
+      "approveMessage": "Are you sure you want to approve this withdrawal?",
+      "approveSuccess": "Withdrawal approved successfully",
+      "approveError": "Failed to approve withdrawal"
     },
     "evm": {
       "menuTitle": "EVM",

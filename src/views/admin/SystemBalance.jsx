@@ -287,6 +287,7 @@ export default function SystemBalance() {
                   <table className="table table-hover">
                     <thead>
                       <tr>
+                        <th>{t('invoices.chain') || 'Chain'}</th>
                         <th>{t('balance.col.coin')}</th>
                         <th>{t('admin.address', { defaultValue: 'Address' })}</th>
                         <th>{t('admin.type', { defaultValue: 'Type' })}</th>
@@ -317,6 +318,11 @@ export default function SystemBalance() {
                         
                         return (
                           <tr key={wallet.id}>
+                            <td>
+                              <span className="text-muted fw-medium">
+                                {(networkSymbol || '').toUpperCase() || 'N/A'}
+                              </span>
+                            </td>
                             <td>
                               <div className="d-flex align-items-center">
                                 <CoinImg coin={coin} symbol={coinSymbol} networkSymbol={networkSymbol} size={32} />

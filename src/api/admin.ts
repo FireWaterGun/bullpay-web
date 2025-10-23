@@ -6,17 +6,17 @@ import { apiFetch } from './client'
  * @param currency - Currency code (e.g., 'USD', 'THB'), empty string for crypto amounts
  */
 export async function getSystemWalletStats(token: string, currency: string = '') {
-  const url = currency 
+  const url = currency
     ? `/admin/system-wallets/stats?currency=${currency}`
     : '/admin/system-wallets/stats'
-    
+
   const data = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  
+
   // apiFetch already returns parsed JSON
   return data.data || data
 }
@@ -33,11 +33,11 @@ export async function getCoins(token: string, page: number = 1, limit: number = 
     page: String(page),
     limit: String(limit),
   })
-  
+
   if (search && search.trim()) {
     queryParams.append('search', search.trim())
   }
-  
+
   const data = await apiFetch(`/admin/coins?${queryParams.toString()}`, {
     method: 'GET',
     headers: {
@@ -73,7 +73,7 @@ export async function getNetworks(token: string, page: number = 1, limit: number
     page: String(page),
     limit: String(limit),
   })
-  
+
   const data = await apiFetch(`/admin/networks?${queryParams.toString()}`, {
     method: 'GET',
     headers: {
@@ -182,19 +182,19 @@ export async function getCoinNetworks(token: string, page = 1, limit = 10, searc
     page: page.toString(),
     limit: limit.toString(),
   })
-  
+
   if (search) {
     params.append('search', search)
   }
-  
+
   if (coin) {
     params.append('coin', coin)
   }
-  
+
   if (network) {
     params.append('network', network)
   }
-  
+
   const data = await apiFetch(`/admin/coin-networks?${params}`, {
     method: 'GET',
     headers: {
@@ -369,8 +369,8 @@ export async function deleteCoinNetwork(token: string, id: number) {
  * @param limit - Items per page (default: 50)
  */
 export async function getSweepSettings(
-  token: string, 
-  category: string = 'blockchain', 
+  token: string,
+  category: string = 'blockchain',
   scope: string = 'global',
   page: number = 1,
   limit: number = 50
@@ -381,7 +381,7 @@ export async function getSweepSettings(
     page: page.toString(),
     limit: limit.toString(),
   })
-  
+
   const data = await apiFetch(`/admin/settings?${params}`, {
     method: 'GET',
     headers: {
@@ -463,17 +463,17 @@ export async function getSystemWalletLedger(
   } = {}
 ) {
   const queryParams = new URLSearchParams()
-  
+
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
   if (params.state) queryParams.append('state', params.state)
   if (params.entryType) queryParams.append('entryType', params.entryType)
   if (params.startDate) queryParams.append('startDate', params.startDate)
   if (params.endDate) queryParams.append('endDate', params.endDate)
-  
+
   const queryString = queryParams.toString()
   const url = `/admin/system-wallets/${systemWalletId}/ledger${queryString ? `?${queryString}` : ''}`
-  
+
   const data = await apiFetch(url, {
     method: 'GET',
     headers: {
@@ -499,16 +499,16 @@ export async function getSweeps(
   } = {}
 ) {
   const queryParams = new URLSearchParams()
-  
+
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
   if (params.status) queryParams.append('status', params.status)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
-  
+
   const queryString = queryParams.toString()
   const url = `/admin/sweeps${queryString ? `?${queryString}` : ''}`
-  
+
   const data = await apiFetch(url, {
     method: 'GET',
     headers: {
@@ -549,36 +549,58 @@ export async function getWithdrawals(
   } = {}
 ) {
   const queryParams = new URLSearchParams()
-  
+
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
   if (params.status) queryParams.append('status', params.status)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
-  
+
   const queryString = queryParams.toString()
   const url = `/admin/withdrawals${queryString ? `?${queryString}` : ''}`
-  
+
   const response = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  
+
   // Transform response structure to match component expectations
-  const items = response?.data || []
-  const meta = response?.meta || {}
-  
+  const items = response?.data?.items || []
+  const pagination = response?.data?.pagination || {}
+
   return {
     items,
     pagination: {
-      page: meta.page || 1,
-      limit: meta.limit || 20,
-      total: meta.total || 0,
-      totalPages: meta.totalPages || 0,
-      hasNext: meta.hasNextPage || false,
-      hasPrev: meta.hasPrevPage || false,
+      page: pagination.page || 1,
+      limit: pagination.limit || 20,
+      total: pagination.total || 0,
+      totalPages: pagination.totalPages || 0,
+      hasNext: pagination.hasNext || false,
+      hasPrev: pagination.hasPrev || false,
     }
   }
+}
+
+/**
+ * Approve a withdrawal transaction
+ * @param token - Auth token
+ * @param withdrawalId - ID of the withdrawal to approve
+ * @param reason - Optional reason for approval
+ */
+export async function approveWithdrawal(
+  token: string,
+  withdrawalId: number,
+  reason?: string
+) {
+  const response = await apiFetch(`/admin/withdrawals/${withdrawalId}/approve`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+  })
+
+  return response
 }

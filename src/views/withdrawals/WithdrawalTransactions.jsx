@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
-import { getWithdrawals } from '../../api/admin.ts'
+import { getWithdrawals, approveWithdrawal } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 
 // Coin asset helpers
@@ -98,6 +98,9 @@ export default function WithdrawalTransactions() {
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('')
+  const [showApproveModal, setShowApproveModal] = useState(false)
+  const [selectedWithdrawal, setSelectedWithdrawal] = useState(null)
+  const [approving, setApproving] = useState(false)
 
   useEffect(() => {
     loadWithdrawals()
@@ -121,9 +124,13 @@ export default function WithdrawalTransactions() {
     }
   }
 
-  function formatAmount(amount) {
-    if (!amount) return '0'
-    return amount
+  function formatAmount(amountRaw, decimals = 18) {
+    if (!amountRaw) return '0'
+    try {
+      return AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
+    } catch (e) {
+      return amountRaw.toString()
+    }
   }
 
   function copyToClipboard(text) {
@@ -132,6 +139,30 @@ export default function WithdrawalTransactions() {
     }).catch(() => {
       toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
     })
+  }
+
+  function handleApproveClick(withdrawal) {
+    setSelectedWithdrawal(withdrawal)
+    setShowApproveModal(true)
+  }
+
+  async function handleApprove() {
+    if (!selectedWithdrawal) return
+
+    try {
+      setApproving(true)
+      await approveWithdrawal(token, selectedWithdrawal.id, 'Withdrawal approved after verification')
+      
+      toast.success(t('withdrawal.approveSuccess', { defaultValue: 'Withdrawal approved successfully' }))
+      setShowApproveModal(false)
+      setSelectedWithdrawal(null)
+      loadWithdrawals() // Reload the list
+    } catch (error) {
+      console.error('Failed to approve withdrawal:', error)
+      toast.error(t('withdrawal.approveError', { defaultValue: 'Failed to approve withdrawal' }))
+    } finally {
+      setApproving(false)
+    }
   }
 
   function formatDate(dateString) {
@@ -148,6 +179,7 @@ export default function WithdrawalTransactions() {
   }
 
   function getStatusBadge(status) {
+    const statusUpper = (status || '').toUpperCase()
     const statusConfig = {
       PENDING: { class: 'bg-label-warning', icon: 'bx-time-five', text: 'Pending' },
       PROCESSING: { class: 'bg-label-info', icon: 'bx-loader-circle', text: 'Processing' },
@@ -155,7 +187,7 @@ export default function WithdrawalTransactions() {
       FAILED: { class: 'bg-label-danger', icon: 'bx-x-circle', text: 'Failed' },
       CANCELLED: { class: 'bg-label-secondary', icon: 'bx-block', text: 'Cancelled' }
     }
-    const config = statusConfig[status] || { class: 'bg-label-secondary', icon: 'bx-info-circle', text: status }
+    const config = statusConfig[statusUpper] || { class: 'bg-label-secondary', icon: 'bx-info-circle', text: status }
     return (
       <span className={`badge ${config.class}`}>
         <i className={`bx ${config.icon} me-1`}></i>
@@ -236,7 +268,7 @@ export default function WithdrawalTransactions() {
                       <th style={{ minWidth: '420px' }}>{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</th>
                       <th style={{ minWidth: '680px' }}>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('withdrawal.createdAt', { defaultValue: 'Created Date' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('withdrawal.completedAt', { defaultValue: 'Completed Date' })}</th>
+                      <th style={{ minWidth: '120px' }} className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -262,7 +294,7 @@ export default function WithdrawalTransactions() {
                           </td>
                           <td>
                             <span className="text-muted fw-medium">
-                              {withdrawal.coinNetwork?.symbol || withdrawal.coinNetwork?.name || 'N/A'}
+                              {(withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
                             </span>
                           </td>
                           <td>
@@ -270,23 +302,27 @@ export default function WithdrawalTransactions() {
                               {withdrawal.coinNetwork && (
                                 <>
                                   <CoinImg 
-                                    symbol={withdrawal.coinNetwork.symbol}
-                                    networkSymbol={null}
+                                    symbol={withdrawal.coinNetwork.coin?.symbol || withdrawal.symbol}
+                                    networkSymbol={withdrawal.coinNetwork.network?.symbol}
                                     size={24}
                                   />
                                   <div className="ms-2">
-                                    <div className="fw-medium">{withdrawal.coinNetwork.symbol}</div>
-                                    <small className="text-muted">{withdrawal.coinNetwork.name}</small>
+                                    <div className="fw-medium">{withdrawal.coinNetwork.coin?.symbol || withdrawal.symbol || 'N/A'}</div>
+                                    <small className="text-muted">{withdrawal.coinNetwork.network?.name || 'N/A'}</small>
                                   </div>
                                 </>
                               )}
                             </div>
                           </td>
                           <td>
-                            <span className="fw-medium">{formatAmount(withdrawal.amount)}</span>
+                            <span className="fw-medium">
+                              {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)}
+                            </span>
                           </td>
                           <td>
-                            <span className="text-muted">{formatAmount(withdrawal.fee)}</span>
+                            <span className="text-muted">
+                              {formatAmount(withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18)}
+                            </span>
                           </td>
                           <td>{getStatusBadge(withdrawal.status)}</td>
                           <td>
@@ -328,10 +364,17 @@ export default function WithdrawalTransactions() {
                           <td>
                             <span style={{ whiteSpace: 'nowrap' }}>{formatDate(withdrawal.createdAt)}</span>
                           </td>
-                          <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>
-                              {withdrawal.completedAt ? formatDate(withdrawal.completedAt) : <span className="text-muted">-</span>}
-                            </span>
+                          <td className="text-center">
+                            {withdrawal.status?.toLowerCase() === 'pending' && (
+                              <button
+                                className="btn btn-sm btn-success"
+                                onClick={() => handleApproveClick(withdrawal)}
+                                disabled={approving}
+                              >
+                                <i className="bx bx-check me-1"></i>
+                                {t('withdrawal.approve', { defaultValue: 'Approve' })}
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))
@@ -381,6 +424,70 @@ export default function WithdrawalTransactions() {
           </div>
         </div>
       </div>
+
+      {/* Approve Confirmation Modal */}
+      {showApproveModal && selectedWithdrawal && (
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !approving && setShowApproveModal(false)}>
+          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="bx bx-check-circle text-success me-2"></i>
+                  {t('withdrawal.approveConfirm', { defaultValue: 'Approve Withdrawal' })}
+                </h5>
+                <button type="button" className="btn-close" onClick={() => setShowApproveModal(false)} disabled={approving}></button>
+              </div>
+              <div className="modal-body">
+                <p className="mb-3">{t('withdrawal.approveMessage', { defaultValue: 'Are you sure you want to approve this withdrawal?' })}</p>
+                <div className="card bg-light">
+                  <div className="card-body">
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('common.id', { defaultValue: 'ID' })}</small>
+                        <strong>{selectedWithdrawal.id}</strong>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('admin.user', { defaultValue: 'User' })}</small>
+                        <strong>{selectedWithdrawal.user?.email || 'N/A'}</strong>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('withdrawal.amount', { defaultValue: 'Amount' })}</small>
+                        <strong>{formatAmount(selectedWithdrawal.amountRaw || selectedWithdrawal.amount, selectedWithdrawal.decimals || 18)} {selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('withdrawal.fee', { defaultValue: 'Fee' })}</small>
+                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18)}</strong>
+                      </div>
+                      <div className="col-12">
+                        <small className="text-muted d-block">{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</small>
+                        <code className="small">{selectedWithdrawal.toAddress}</code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowApproveModal(false)} disabled={approving}>
+                  {t('actions.cancel', { defaultValue: 'Cancel' })}
+                </button>
+                <button type="button" className="btn btn-success" onClick={handleApprove} disabled={approving}>
+                  {approving ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-1"></span>
+                      {t('withdrawal.approving', { defaultValue: 'Approving...' })}
+                    </>
+                  ) : (
+                    <>
+                      <i className="bx bx-check me-1"></i>
+                      {t('withdrawal.approve', { defaultValue: 'Approve' })}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
