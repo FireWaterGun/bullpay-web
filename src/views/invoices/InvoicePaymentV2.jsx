@@ -536,7 +536,21 @@ export default function InvoicePaymentV2() {
                                   boxShadow: '0 15px 40px rgba(0, 0, 0, 0.1)',
                                   border: '2px solid rgba(139, 92, 246, 0.15)'
                                 }}>
-                                  <QRCode value={paymentValue} size={160} includeMargin={false} />
+                                  <QRCode 
+                                    value={paymentValue} 
+                                    size={160} 
+                                    includeMargin={false}
+                                    level="H"
+                                  />
+                                  {/* Overlay coin icon */}
+                                  <div className="position-absolute top-50 start-50 translate-middle" style={{
+                                    background: 'white',
+                                    borderRadius: '50%',
+                                    padding: '4px',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                  }}>
+                                    <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={28} />
+                                  </div>
                                 </div>
                               </div>
                               <div className="mt-2 d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill" style={{
