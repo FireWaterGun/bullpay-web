@@ -390,7 +390,7 @@ export default function SystemBalance() {
                             </td>
                             <td className="text-center">
                               <button
-                                onClick={() => navigate(`/admin/system-balance/wallet/${wallet.systemWallet?.id}/transactions`)}
+                                onClick={() => navigate(`/admin/system-wallet/wallet/${wallet.systemWallet?.id}/transactions`)}
                                 className="btn btn-sm btn-icon btn-outline-primary me-1"
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >

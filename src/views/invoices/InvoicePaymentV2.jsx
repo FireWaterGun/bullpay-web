@@ -319,7 +319,7 @@ export default function InvoicePaymentV2() {
               </div>
             </div>
           ) : errorCode === 'BIZ_1200' && !invoice ? (
-            <div className="card border-0 shadow-lg mx-auto" style={{ maxWidth: 500, borderRadius: 24 }}>
+            <div className="card border-0 shadow-lg mx-auto" style={{ maxWidth: 500, borderRadius: 12 }}>
               <div className="card-body text-center p-5">
                 <div className="mb-4">
                   <i className="bx bx-block" style={{ fontSize: 64, color: '#6c757d' }}></i>
@@ -332,19 +332,19 @@ export default function InvoicePaymentV2() {
             <div className="text-center text-white">{t('invoices.notFound') || 'Not found'}</div>
           ) : (
             <div className="row justify-content-center position-relative" style={{ zIndex: 1 }}>
-              <div className="col-12 col-md-10 col-lg-6">
+              <div className="col-12 col-md-8 col-lg-5">
                 {/* Main Card */}
                 <div className="position-relative">
                   {/* Card Glow Effect */}
                   <div className="position-absolute w-100 h-100" style={{
                     background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2))',
-                    borderRadius: 32,
+                    borderRadius: 12,
                     filter: 'blur(30px)',
                     opacity: 0.6
                   }}></div>
                   
                   <div className="card border-0 position-relative" style={{ 
-                    borderRadius: 32, 
+                    borderRadius: 12, 
                     overflow: 'hidden',
                     background: 'rgba(255, 255, 255, 0.95)',
                     backdropFilter: 'blur(20px)',
@@ -453,10 +453,10 @@ export default function InvoicePaymentV2() {
                           </div>
                           <div
                             style={{
-                              color: remainingMs <= 60_000 ? '#ef4444' : remainingMs <= 5 * 60_000 ? '#f59e0b' : '#8b5cf6',
-                              fontWeight: '800',
-                              fontSize: '1.5rem',
-                              letterSpacing: '3px',
+                              color: remainingMs <= 60_000 ? '#ff4500' : remainingMs <= 5 * 60_000 ? '#ff6b35' : '#ff8c42',
+                              fontWeight: '900',
+                              fontSize: '2.25rem',
+                              letterSpacing: '5px',
                               fontFamily: 'monospace'
                             }}
                           >
@@ -531,7 +531,7 @@ export default function InvoicePaymentV2() {
                                       : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
                                     border: 'none',
                                     color: 'white',
-                                    borderRadius: 12,
+                                    borderRadius: 8,
                                     padding: '10px 24px',
                                     fontWeight: '600',
                                     fontSize: '0.85rem',
@@ -604,7 +604,7 @@ export default function InvoicePaymentV2() {
                                     : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
                                   border: 'none',
                                   color: 'white',
-                                  borderRadius: 10,
+                                  borderRadius: 8,
                                   width: 36,
                                   height: 36,
                                   display: 'flex',

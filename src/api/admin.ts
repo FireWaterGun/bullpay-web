@@ -482,3 +482,53 @@ export async function getSystemWalletLedger(
   })
   return data.data || data
 }
+
+/**
+ * Get sweep transactions (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (page, limit, status, userId, coinNetworkId)
+ */
+export async function getSweeps(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    userId?: number
+    coinNetworkId?: number
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+  
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  
+  const queryString = queryParams.toString()
+  const url = `/admin/sweeps${queryString ? `?${queryString}` : ''}`
+  
+  const data = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
+ * Force a sweep transaction (Admin only)
+ * @param token - Auth token
+ * @param sweepId - Sweep transaction ID
+ */
+export async function forceSweep(token: string, sweepId: number) {
+  const data = await apiFetch(`/admin/sweeps/${sweepId}/force`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}

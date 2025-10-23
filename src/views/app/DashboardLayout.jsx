@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
+import { getPaymentStats } from '../../api/admin.ts'
+import { getBalancesWithFiat } from '../../api/balance.ts'
 
 // Remove inline page components and import split components
 import DashboardHome from './DashboardHome'
@@ -20,7 +22,6 @@ import Balance from '../balance/Balance'
 import BalanceAccount from '../balance/BalanceAccount'
 import BalanceWithdrawals from '../balance/BalanceWithdrawals'
 import WithdrawRequest from '../balance/WithdrawRequest'
-import AdminDashboard from '../admin/AdminDashboard'
 import Dashboard from '../admin/Dashboard'
 import SystemBalance from '../admin/SystemBalance'
 import WalletTransaction from '../admin/WalletTransaction'
@@ -32,6 +33,7 @@ import SupportedCrypto from '../crypto/SupportedCrypto'
 import SupportedCryptoForm from '../crypto/SupportedCryptoForm'
 import Sweep from '../admin/Sweep'
 import SweepOverrides from '../admin/SweepOverrides'
+import SweepTransactions from '../admin/SweepTransactions'
 import WithdrawalDefaults from '../admin/WithdrawalDefaults'
 import WithdrawalOverrides from '../admin/WithdrawalOverrides'
 import WithdrawalPolicy from '../admin/WithdrawalPolicy'
@@ -194,10 +196,50 @@ export default function DashboardLayout() {
   const LANG_STORAGE_KEY = 'ui_lang'
   const [theme, setTheme] = useState('light') // 'light' | 'dark' | 'system'
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
-  const { user, logout, isAdmin } = useAuth()
+  const { user, logout, isAdmin, token } = useAuth()
+  const [fiatBalance, setFiatBalance] = useState({ currency: 'USD', amount: '0.00' })
 
   // Get user identifier (try id, userId, or email)
   const userIdentifier = user?.id || user?.userId || user?.email;
+
+  // Load payment stats for admin users
+  useEffect(() => {
+    if (token) {
+      if (isAdmin) {
+        loadPaymentStats()
+      } else {
+        loadUserBalance()
+      }
+    }
+  }, [isAdmin, token])
+
+  async function loadPaymentStats() {
+    try {
+      const data = await getPaymentStats(token)
+      if (data?.overview?.fiat) {
+        setFiatBalance({
+          currency: data.overview.fiat.currency || 'USD',
+          amount: data.overview.fiat.amount || '0.00'
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load payment stats:', error)
+    }
+  }
+
+  async function loadUserBalance() {
+    try {
+      const data = await getBalancesWithFiat(token, 'USD')
+      if (data?.fiat) {
+        setFiatBalance({
+          currency: data.fiat.currency || 'USD',
+          amount: data.fiat.amount || '0.00'
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load user balance:', error)
+    }
+  }
 
   // Log subscription info
   useEffect(() => {
@@ -415,28 +457,32 @@ export default function DashboardLayout() {
               <>
                 {/* Admin menu */}
                 <MenuItem to="/admin" end icon="bx-home" label={t('nav.dashboard', { defaultValue: 'Dashboard' })} />
-                <MenuItem to="/admin/dashboard" icon="bx-bar-chart-alt-2" label={t('admin.paymentDashboard', { defaultValue: 'Payment Dashboard' })} />
-                <MenuItem to="/admin/system-balance" icon="bx-wallet" label={t('admin.systemBalance', { defaultValue: 'System Balance' })} />
+                <MenuGroup base="/admin/system-wallet" icon="bx-wallet" label={t('admin.systemWallet', { defaultValue: 'System Wallet' })}>
+                  <SubItem to="/admin/system-wallet/balance" end label={t('admin.balance', { defaultValue: 'Balance' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
                   <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
                   <SubItem to="/admin/crypto/coin-networks" end={true} label={t('nav.coinNetworks', { defaultValue: 'Coin Networks' })} />
                 </MenuGroup>
-                <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/evm', '/admin/network', '/admin/sweep', '/admin/withdrawal']}>
-                  <SubMenuGroup base="/admin/evm" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
-                    <SubItem to="/admin/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
+                <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
+                  <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/settings/evm', '/admin/settings/network', '/admin/settings/sweep', '/admin/settings/withdrawal']}>
+                  <SubMenuGroup base="/admin/settings/evm" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
+                    <SubItem to="/admin/settings/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
                   </SubMenuGroup>
-                  <SubMenuGroup base="/admin/network" label={t('admin.network.menuTitle', { defaultValue: 'Network' })}>
-                    <SubItem to="/admin/network/fees" end label={t('admin.network.fees', { defaultValue: 'Network Fees' })} />
+                  <SubMenuGroup base="/admin/settings/network" label={t('admin.network.menuTitle', { defaultValue: 'Network' })}>
+                    <SubItem to="/admin/settings/network/fees" end label={t('admin.network.fees', { defaultValue: 'Network Fees' })} />
                   </SubMenuGroup>
-                  <SubMenuGroup base="/admin/sweep" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
-                    <SubItem to="/admin/sweep/configuration" end label={t('admin.sweep.configuration', { defaultValue: 'Configuration' })} />
-                    <SubItem to="/admin/sweep/overrides" end={true} label={t('admin.sweep.overrides', { defaultValue: 'Overrides' })} />
+                  <SubMenuGroup base="/admin/settings/sweep" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
+                    <SubItem to="/admin/settings/sweep/configuration" end label={t('admin.sweep.configuration', { defaultValue: 'Configuration' })} />
+                    <SubItem to="/admin/settings/sweep/overrides" end={true} label={t('admin.sweep.overrides', { defaultValue: 'Overrides' })} />
                   </SubMenuGroup>
-                  <SubMenuGroup base="/admin/withdrawal" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
-                    <SubItem to="/admin/withdrawal/defaults" label={t('admin.withdrawal.defaults', { defaultValue: 'Defaults & Limits' })} />
-                    <SubItem to="/admin/withdrawal/overrides" label={t('admin.withdrawal.overrides', { defaultValue: 'Overrides' })} />
-                    <SubItem to="/admin/withdrawal/policy" label={t('admin.withdrawal.policy', { defaultValue: 'Policy & Settings' })} />
+                  <SubMenuGroup base="/admin/settings/withdrawal" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
+                    <SubItem to="/admin/settings/withdrawal/defaults" label={t('admin.withdrawal.defaults', { defaultValue: 'Defaults & Limits' })} />
+                    <SubItem to="/admin/settings/withdrawal/overrides" label={t('admin.withdrawal.overrides', { defaultValue: 'Overrides' })} />
+                    <SubItem to="/admin/settings/withdrawal/policy" label={t('admin.withdrawal.policy', { defaultValue: 'Policy & Settings' })} />
                   </SubMenuGroup>
                 </MenuGroup>
               </>
@@ -470,6 +516,17 @@ export default function DashboardLayout() {
             </div>
             <div className="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
               <ul className="navbar-nav flex-row align-items-center ms-md-auto">
+                {/* Balance Display */}
+                <li className="nav-item me-2 me-xl-0">
+                  <div className="nav-link d-flex align-items-center" style={{ cursor: 'default' }}>
+                    <i className="bx bxs-wallet-alt me-2" style={{ fontSize: '1.25rem' }}></i>
+                    <span className="d-none d-md-inline" style={{ fontSize: '1.05rem' }}>
+                      ${parseFloat(fiatBalance.amount || 0).toFixed(2)}
+                    </span>
+                  </div>
+                </li>
+                {/* /Balance Display */}
+                
                 {/* Language */}
                 <li className="nav-item dropdown-language dropdown me-2 me-xl-0">
                   <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e)=>e.preventDefault()} data-bs-toggle="dropdown">
@@ -583,15 +640,12 @@ export default function DashboardLayout() {
           <div className="content-wrapper">
             <div>
               <Routes>
-                <Route index element={<DashboardHome />} />
-                
-                {/* Admin-only routes */}
-                {isAdmin && (
+                {isAdmin ? (
                   <>
-                    <Route path="admin" element={<AdminDashboard />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="system-balance" element={<SystemBalance />} />
-                    <Route path="system-balance/wallet/:walletId/transactions" element={<WalletTransaction />} />
+                    {/* Admin routes */}
+                    <Route index element={<Dashboard />} />
+                    <Route path="system-wallet/balance" element={<SystemBalance />} />
+                    <Route path="system-wallet/wallet/:walletId/transactions" element={<WalletTransaction />} />
                     <Route path="crypto/coins" element={<CoinList />} />
                     <Route path="crypto/coins/create" element={<CoinForm />} />
                     <Route path="crypto/coins/edit/:id" element={<CoinForm />} />
@@ -602,29 +656,33 @@ export default function DashboardLayout() {
                     <Route path="crypto/coin-networks" element={<SupportedCrypto />} />
                     <Route path="crypto/coin-networks/create" element={<SupportedCryptoForm />} />
                     <Route path="crypto/coin-networks/:id" element={<SupportedCryptoForm />} />
-                    <Route path="evm/fee-policy" element={<EVMFeePolicy />} />
-                    <Route path="network/fees" element={<NetworkFees />} />
-                    <Route path="sweep/configuration" element={<Sweep />} />
-                    <Route path="sweep/overrides" element={<SweepOverrides />} />
-                    <Route path="withdrawal/defaults" element={<WithdrawalDefaults />} />
-                    <Route path="withdrawal/overrides" element={<WithdrawalOverrides />} />
-                    <Route path="withdrawal/policy" element={<WithdrawalPolicy />} />
+                    <Route path="sweep/transactions" element={<SweepTransactions />} />
+                    <Route path="settings/evm/fee-policy" element={<EVMFeePolicy />} />
+                    <Route path="settings/network/fees" element={<NetworkFees />} />
+                    <Route path="settings/sweep/configuration" element={<Sweep />} />
+                    <Route path="settings/sweep/overrides" element={<SweepOverrides />} />
+                    <Route path="settings/withdrawal/defaults" element={<WithdrawalDefaults />} />
+                    <Route path="settings/withdrawal/overrides" element={<WithdrawalOverrides />} />
+                    <Route path="settings/withdrawal/policy" element={<WithdrawalPolicy />} />
+                  </>
+                ) : (
+                  <>
+                    {/* User routes */}
+                    <Route index element={<DashboardHome />} />
+                    <Route path="invoices" element={<InvoiceList />} />
+                    <Route path="invoices/create" element={<InvoiceCreate />} />
+                    <Route path="invoices/:id" element={<InvoiceDetail />} />
+                    <Route path="invoices/:id/pay" element={<InvoicePayment />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="balance" element={<BalanceAccount />} />
+                    <Route path="balance/withdrawals" element={<BalanceWithdrawals />} />
+                    <Route path="balance/withdraw/:coinNetworkId" element={<WithdrawRequest />} />
+                    <Route path="balance/new-address" element={<WalletCreate />} />
+                    <Route path="wallets" element={<Navigate to="/app/balance/withdrawals" replace />} />
+                    <Route path="wallets/create" element={<WalletCreate />} />
+                    <Route path="wallets/:id/edit" element={<WalletEdit />} />
                   </>
                 )}
-                
-                {/* User routes */}
-                <Route path="invoices" element={<InvoiceList />} />
-                <Route path="invoices/create" element={<InvoiceCreate />} />
-                <Route path="invoices/:id" element={<InvoiceDetail />} />
-                <Route path="invoices/:id/pay" element={<InvoicePayment />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="balance" element={<BalanceAccount />} />
-                <Route path="balance/withdrawals" element={<BalanceWithdrawals />} />
-                <Route path="balance/withdraw/:coinNetworkId" element={<WithdrawRequest />} />
-                <Route path="balance/new-address" element={<WalletCreate />} />
-                <Route path="wallets" element={<Navigate to="/app/balance/withdrawals" replace />} />
-                <Route path="wallets/create" element={<WalletCreate />} />
-                <Route path="wallets/:id/edit" element={<WalletEdit />} />
                 <Route path="*" element={<Navigate to="." replace />} />
               </Routes>
             </div>

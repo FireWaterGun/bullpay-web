@@ -187,7 +187,7 @@ export default function WalletTransaction() {
         <div className="col-12">
           {/* Back Button */}
           <button 
-            onClick={() => navigate('/admin/system-balance')}
+            onClick={() => navigate('/admin/system-wallet/balance')}
             className="btn btn-outline-secondary mb-3"
           >
             <i className="bx bx-arrow-back me-2"></i>

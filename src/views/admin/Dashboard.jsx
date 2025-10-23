@@ -50,65 +50,6 @@ export default function Dashboard() {
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="row">
         <div className="col-12">
-          {/* Header */}
-          <div className="card mb-4" style={{ 
-            background: 'linear-gradient(120deg, #667eea 0%, #764ba2 100%)',
-            border: 'none',
-            borderRadius: '1rem',
-            boxShadow: '0 4px 20px rgba(102, 126, 234, 0.15)'
-          }}>
-            <div className="card-body" style={{ padding: '1.75rem' }}>
-              <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
-                  <div className="me-3" style={{ 
-                    width: 56,
-                    height: 56,
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '0.875rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <i className="bx bx-bar-chart-alt-2" style={{ fontSize: '2rem', color: 'white' }}></i>
-                  </div>
-                  <div>
-                    <h3 className="text-white mb-1" style={{ fontWeight: 600 }}>
-                      {t('admin.dashboard.title', { defaultValue: 'Payment Dashboard' })}
-                    </h3>
-                    <p className="mb-0" style={{ 
-                      color: 'rgba(255, 255, 255, 0.9)', 
-                      fontSize: '0.875rem'
-                    }}>
-                      {t('admin.dashboard.subtitle', { defaultValue: 'Overview of payment statistics' })}
-                    </p>
-                  </div>
-                </div>
-                <button 
-                  onClick={loadStats}
-                  className="btn btn-icon"
-                  style={{ 
-                    width: 40,
-                    height: 40,
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    border: 'none',
-                    borderRadius: '0.625rem',
-                    color: 'white',
-                    transition: 'all 0.2s ease'
-                  }}
-                  title={t('actions.refresh', { defaultValue: 'Refresh' })}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
-                  }}
-                >
-                  <i className="bx bx-refresh"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Overview Cards */}
           <div className="row g-4 mb-4">
             {/* Total Payments */}
