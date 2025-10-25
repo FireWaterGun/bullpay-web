@@ -264,7 +264,7 @@ export default function BalanceWithdrawals() {
                       return (
                         <tr key={w.id || idx}>
                           <td>
-                            <span className="text-muted fw-medium">
+                            <span className="text-muted">
                               {networkSym || coinSym}
                             </span>
                           </td>
@@ -272,8 +272,8 @@ export default function BalanceWithdrawals() {
                             <div className="d-flex align-items-center">
                               <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} />
                               <div>
-                                <div className="fw-medium">{coinSym}</div>
-                                <div className="text-muted small">{networkName}</div>
+                                <div>{coinSym}</div>
+                                <small className="text-muted">{networkName}</small>
                               </div>
                             </div>
                           </td>
@@ -359,7 +359,7 @@ export default function BalanceWithdrawals() {
                       <tr key={it.id}>
             <td className="cell-fit"><span className="font-monospace">{it.id}</span></td>
                         <td>
-                          <span className="text-muted fw-medium">
+                          <span className="text-muted">
                             {networkSym || sym}
                           </span>
                         </td>
@@ -367,8 +367,8 @@ export default function BalanceWithdrawals() {
                           <div className="d-flex align-items-center">
                             <CoinImg coin={cn?.coin} symbol={sym} networkSymbol={networkSym} />
                             <div>
-                              <div className="fw-medium">{sym}</div>
-                              <div className="text-muted small">{networkName}</div>
+                              <div>{sym}</div>
+                              <small className="text-muted">{networkName}</small>
                             </div>
                           </div>
                         </td>

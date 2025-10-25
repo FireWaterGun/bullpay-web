@@ -484,6 +484,45 @@ export async function getSystemWalletLedger(
 }
 
 /**
+ * Get ledger entries (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (page, limit, type, userId, coinNetworkId, startDate, endDate)
+ */
+export async function getLedgerEntries(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    type?: string
+    userId?: number
+    coinNetworkId?: number
+    startDate?: string
+    endDate?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.type) queryParams.append('type[]', params.type)
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
+
+  const queryString = queryParams.toString()
+  const url = `/admin/ledger/entries${queryString ? `?${queryString}` : ''}`
+
+  const data = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data.data || data
+}
+
+/**
  * Get sweep transactions (Admin only)
  * @param token - Auth token
  * @param params - Query parameters (page, limit, status, userId, coinNetworkId)

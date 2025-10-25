@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
-import { getSweeps } from '../../api/admin.ts'
+import { getLedgerEntries } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 
 // Coin asset helpers
@@ -89,56 +89,45 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   )
 }
 
-export default function SweepTransactions() {
+export default function LedgerTransactions() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
   const [loading, setLoading] = useState(false)
-  const [sweeps, setSweeps] = useState([])
+  const [ledgerEntries, setLedgerEntries] = useState([])
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [statusFilter, setStatusFilter] = useState('')
+  const [typeFilter, setTypeFilter] = useState('')
 
   useEffect(() => {
-    loadSweeps()
-  }, [currentPage, statusFilter])
+    loadLedgerEntries()
+  }, [currentPage, typeFilter])
 
-  async function loadSweeps() {
+  async function loadLedgerEntries() {
     try {
       setLoading(true)
-      const data = await getSweeps(token, {
+      const data = await getLedgerEntries(token, {
         page: currentPage,
         limit: 20,
-        status: statusFilter || undefined
+        type: typeFilter || undefined
       })
-      setSweeps(data.items || [])
+      setLedgerEntries(data.items || [])
       setPagination(data.pagination || null)
     } catch (error) {
-      console.error('Failed to load sweep transactions:', error)
-      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }))
+      console.error('Failed to load ledger entries:', error)
+      toast.error(t('ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
     } finally {
       setLoading(false)
     }
   }
 
-  function formatAmount(amountRaw, decimals, coinSymbol, networkSymbol) {
-    if (!amountRaw || !decimals) return '0'
-    
+  function formatAmount(amountRaw, decimals = 18) {
+    if (!amountRaw) return '0'
     try {
-      // ใช้ AmountNormalizer.detectChain() แทนการ hardcode chainMap
-      const chain = AmountNormalizer.detectChain(coinSymbol || '', networkSymbol || '')
-      return AmountNormalizer.fromRaw(amountRaw.toString(), chain, decimals)
-    } catch (error) {
-      console.error('Failed to format amount:', error)
-      // Fallback to simple calculation
-      const amount = Number(amountRaw) / Math.pow(10, decimals)
-      return amount.toString()
+      return AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
+    } catch (e) {
+      return amountRaw.toString()
     }
-  }
-
-  function formatAddress(address) {
-    if (!address) return 'N/A'
-    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
   }
 
   function copyToClipboard(text) {
@@ -162,17 +151,22 @@ export default function SweepTransactions() {
     return `${day}/${month}/${year} ${hours}:${minutes}`
   }
 
-  function statusBadgeClass(s) {
-    const v = String(s || '').toUpperCase()
-    if (v === 'PENDING') return 'badge bg-label-warning'
-    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-label-info'
-    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-label-success'
-    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-label-danger'
-    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-label-secondary'
+  function typeBadgeClass(type) {
+    const v = String(type || '').toLowerCase()
+    if (v === 'deposit' || v === 'payment_received') return 'badge bg-label-success'
+    if (v === 'withdrawal') return 'badge bg-label-danger'
+    if (v === 'sweep' || v === 'fee') return 'badge bg-label-info'
     return 'badge bg-label-secondary'
   }
 
-  if (loading && sweeps.length === 0) {
+  function walletTypeBadgeClass(type) {
+    const v = String(type || '').toLowerCase()
+    if (v === 'user') return 'badge bg-label-primary'
+    if (v === 'system') return 'badge bg-label-warning'
+    return 'badge bg-label-secondary'
+  }
+
+  if (loading && ledgerEntries.length === 0) {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
@@ -194,31 +188,42 @@ export default function SweepTransactions() {
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-transfer me-2"></i>
-                    {t('admin.sweep.transactions', { defaultValue: 'Sweep Transactions' })}
+                    <i className="bx bx-book me-2"></i>
+                    {t('ledger.transactions', { defaultValue: 'Ledger Transactions' })}
                   </h4>
                   <p className="text-muted mb-0">
-                    {t('admin.sweep.transactionsDesc', { defaultValue: 'View all sweep transactions and their status' })}
+                    {t('ledger.transactionsDesc', { defaultValue: 'View all ledger entries and their status' })}
                   </p>
                 </div>
-                <div className="d-flex gap-2">
+                <div className="d-flex gap-2 flex-wrap">
                   <select 
                     className="form-select" 
-                    value={statusFilter} 
+                    value={typeFilter} 
                     onChange={(e) => {
-                      setStatusFilter(e.target.value)
+                      setTypeFilter(e.target.value)
                       setCurrentPage(1)
                     }}
                     style={{ width: 'auto' }}
                   >
-                    <option value="">{t('common.allStatus', { defaultValue: 'All Status' })}</option>
-                    <option value="pending">{t('admin.sweep.pending', { defaultValue: 'Pending' })}</option>
-                    <option value="processing">{t('admin.sweep.processing', { defaultValue: 'Processing' })}</option>
-                    <option value="completed">{t('admin.sweep.completed', { defaultValue: 'Completed' })}</option>
-                    <option value="failed">{t('admin.sweep.failed', { defaultValue: 'Failed' })}</option>
-                    <option value="cancelled">{t('admin.sweep.cancelled', { defaultValue: 'Cancelled' })}</option>
+                    <option value="">{t('common.allTypes', { defaultValue: 'All Types' })}</option>
+                    <option value="payment_received">{t('ledger.paymentReceived', { defaultValue: 'Payment Received' })}</option>
+                    <option value="payment_sent">{t('ledger.paymentSent', { defaultValue: 'Payment Sent' })}</option>
+                    <option value="withdrawal">{t('ledger.withdrawal', { defaultValue: 'Withdrawal' })}</option>
+                    <option value="deposit">{t('ledger.deposit', { defaultValue: 'Deposit' })}</option>
+                    <option value="sweep">{t('ledger.sweep', { defaultValue: 'Sweep' })}</option>
+                    <option value="fee">{t('ledger.fee', { defaultValue: 'Fee' })}</option>
+                    <option value="refund">{t('ledger.refund', { defaultValue: 'Refund' })}</option>
+                    <option value="reversal">{t('ledger.reversal', { defaultValue: 'Reversal' })}</option>
+                    <option value="adjustment">{t('ledger.adjustment', { defaultValue: 'Adjustment' })}</option>
+                    <option value="interest">{t('ledger.interest', { defaultValue: 'Interest' })}</option>
+                    <option value="penalty">{t('ledger.penalty', { defaultValue: 'Penalty' })}</option>
+                    <option value="bonus">{t('ledger.bonus', { defaultValue: 'Bonus' })}</option>
+                    <option value="commission">{t('ledger.commission', { defaultValue: 'Commission' })}</option>
+                    <option value="exchange">{t('ledger.exchange', { defaultValue: 'Exchange' })}</option>
+                    <option value="transfer_in">{t('ledger.transferIn', { defaultValue: 'Transfer In' })}</option>
+                    <option value="transfer_out">{t('ledger.transferOut', { defaultValue: 'Transfer Out' })}</option>
                   </select>
-                  <button className="btn btn-primary" onClick={loadSweeps} disabled={loading}>
+                  <button className="btn btn-primary" onClick={loadLedgerEntries} disabled={loading}>
                     <i className="bx bx-refresh me-1"></i>
                     {t('actions.refresh', { defaultValue: 'Refresh' })}
                   </button>
@@ -231,130 +236,94 @@ export default function SweepTransactions() {
           <div className="card">
             <div className="card-body">
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover" style={{ minWidth: '1200px' }}>
+                <table className="table table-hover" style={{ minWidth: '1600px' }}>
                   <thead>
                     <tr>
                       <th style={{ minWidth: '60px' }}>ID</th>
-                      <th style={{ minWidth: '150px' }}>{t('admin.user', { defaultValue: 'User' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('admin.chain', { defaultValue: 'Chain' })}</th>
-                      <th style={{ minWidth: '180px' }}>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
-                      <th style={{ minWidth: '150px' }}>{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.from', { defaultValue: 'From' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.to', { defaultValue: 'To' })}</th>
-                      <th style={{ minWidth: '680px' }}>{t('admin.sweep.txHash', { defaultValue: 'Tx Hash' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
+                      <th style={{ minWidth: '150px' }}>{t('ledger.user', { defaultValue: 'User' })}</th>
+                      <th style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('ledger.walletType', { defaultValue: 'Wallet Type' })}</th>
+                      <th style={{ minWidth: '120px' }}>{t('ledger.type', { defaultValue: 'Type' })}</th>
+                      <th style={{ minWidth: '100px' }}>{t('ledger.chain', { defaultValue: 'Chain' })}</th>
+                      <th style={{ minWidth: '220px' }}>{t('ledger.coin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ minWidth: '140px' }}>{t('ledger.amount', { defaultValue: 'Amount' })}</th>
+                      <th style={{ minWidth: '170px', whiteSpace: 'nowrap' }}>{t('ledger.balanceAfter', { defaultValue: 'Balance After' })}</th>
+                      <th style={{ minWidth: '200px' }}>{t('ledger.reference', { defaultValue: 'Reference' })}</th>
+                      <th style={{ minWidth: '300px' }}>{t('ledger.note', { defaultValue: 'Note' })}</th>
+                      <th style={{ minWidth: '140px' }}>{t('ledger.createdAt', { defaultValue: 'Created Date' })}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {sweeps.length === 0 ? (
+                    {ledgerEntries.length === 0 ? (
                       <tr>
                         <td colSpan="11" className="text-center text-muted py-4">
-                          {t('admin.sweep.noTransactions', { defaultValue: 'No sweep transactions found' })}
+                          {t('ledger.noEntries', { defaultValue: 'No ledger entries found' })}
                         </td>
                       </tr>
                     ) : (
-                      sweeps.map((sweep) => (
-                        <tr key={sweep.id}>
+                      ledgerEntries.map((entry) => (
+                        <tr key={entry.id}>
                           <td>
-                            <span className="fw-semibold text-primary">{sweep.id}</span>
+                            <span className="fw-semibold text-primary">{entry.id}</span>
                           </td>
                           <td>
-                            <span>{sweep.user?.email || 'N/A'}</span>
+                            <span>{entry.user?.email || 'N/A'}</span>
+                          </td>
+                          <td>
+                            <span>
+                              {String(entry.walletType || 'N/A').toUpperCase()}
+                            </span>
+                          </td>
+                          <td>
+                            <span>
+                              {String(entry.type || 'N/A').replace(/_/g, ' ').toUpperCase()}
+                            </span>
                           </td>
                           <td>
                             <span className="text-muted">
-                              {(sweep.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
+                              {(entry.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
                             </span>
                           </td>
                           <td>
                             <div className="d-flex align-items-center">
-                              {sweep.coinNetwork?.coin && (
+                              {entry.coinNetwork && (
                                 <>
                                   <CoinImg 
-                                    symbol={sweep.coinNetwork.coin.symbol}
-                                    networkSymbol={sweep.coinNetwork.network?.symbol}
+                                    symbol={entry.coinNetwork.coin?.symbol || entry.symbol}
+                                    networkSymbol={entry.coinNetwork.network?.symbol}
                                     size={24}
                                   />
                                   <div className="ms-2">
-                                    <div>{sweep.coinNetwork.coin.symbol}</div>
-                                    <small className="text-muted">{sweep.coinNetwork.network?.name}</small>
+                                    <div>{entry.coinNetwork.coin?.symbol || entry.symbol || 'N/A'}</div>
+                                    <small className="text-muted">{entry.coinNetwork.network?.name || 'N/A'}</small>
                                   </div>
                                 </>
                               )}
                             </div>
                           </td>
                           <td>
+                            <span className={entry.type === 'deposit' || entry.type === 'payment_received' ? 'text-success' : 'text-danger'}>
+                              {(entry.type === 'deposit' || entry.type === 'payment_received') ? '+' : '-'}
+                              {formatAmount(entry.amountRaw || entry.amount, entry.decimals || 18)}
+                            </span>
+                          </td>
+                          <td>
                             <span>
-                              {formatAmount(
-                                sweep.amountRaw, 
-                                sweep.decimals, 
-                                sweep.coinNetwork?.coin?.symbol,
-                                sweep.coinNetwork?.network?.symbol
-                              )}
+                              {entry.balanceAfterRaw ? formatAmount(entry.balanceAfterRaw, entry.decimals || 18) : '-'}
                             </span>
                           </td>
-                          <td className="text-nowrap"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
                           <td>
-                            <div className="d-flex align-items-center">
-                              <span className="text-truncate me-2" style={{ maxWidth: '300px' }}>
-                                {sweep.fromAddress || 'N/A'}
-                              </span>
-                              {sweep.fromAddress && (
-                                <button
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  onClick={() => copyToClipboard(sweep.fromAddress)}
-                                  title="Copy address"
-                                >
-                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <span className="text-truncate me-2" style={{ maxWidth: '300px' }}>
-                                {sweep.toAddress || 'N/A'}
-                              </span>
-                              {sweep.toAddress && (
-                                <button
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  onClick={() => copyToClipboard(sweep.toAddress)}
-                                  title="Copy address"
-                                >
-                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            {sweep.txHash ? (
-                              <div className="d-flex align-items-center">
-                                <span className="text-truncate me-2" style={{ maxWidth: '300px' }}>
-                                  {sweep.txHash}
-                                </span>
-                                <a 
-                                  href={`${sweep.coinNetwork?.network?.explorerUrl}/tx/${sweep.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  title="View on explorer"
-                                >
-                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                                </a>
+                            <div>
+                              <div>
+                                <span>{entry.referenceType || '-'}</span>
+                                {entry.relatedId && <span className="text-muted"> #{entry.relatedId}</span>}
                               </div>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
+                            </div>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(sweep.createdAt)}</span>
+                            <span className="text-muted" style={{ wordBreak: 'break-word' }}>{entry.note || '-'}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>
-                              {sweep.completedAt ? formatDate(sweep.completedAt) : <span className="text-muted">-</span>}
-                            </span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(entry.createdAt)}</span>
                           </td>
                         </tr>
                       ))

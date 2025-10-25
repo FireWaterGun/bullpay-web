@@ -278,14 +278,14 @@ export default function WithdrawalTransactions() {
                           </td>
                           <td>
                             <div>
-                              <div className="fw-medium">{withdrawal.user?.email || 'N/A'}</div>
+                              <div>{withdrawal.user?.email || 'N/A'}</div>
                               {withdrawal.user?.username && (
                                 <small className="text-muted">@{withdrawal.user.username}</small>
                               )}
                             </div>
                           </td>
                           <td>
-                            <span className="text-muted fw-medium">
+                            <span className="text-muted">
                               {(withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
                             </span>
                           </td>
@@ -299,7 +299,7 @@ export default function WithdrawalTransactions() {
                                     size={24}
                                   />
                                   <div className="ms-2">
-                                    <div className="fw-medium">{withdrawal.coinNetwork.coin?.symbol || withdrawal.symbol || 'N/A'}</div>
+                                    <div>{withdrawal.coinNetwork.coin?.symbol || withdrawal.symbol || 'N/A'}</div>
                                     <small className="text-muted">{withdrawal.coinNetwork.network?.name || 'N/A'}</small>
                                   </div>
                                 </>
@@ -307,7 +307,7 @@ export default function WithdrawalTransactions() {
                             </div>
                           </td>
                           <td>
-                            <span className="fw-medium">
+                            <span>
                               {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)}
                             </span>
                           </td>
@@ -332,16 +332,16 @@ export default function WithdrawalTransactions() {
                           </td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
+                              <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
                                 {withdrawal.toAddress || 'N/A'}
-                              </code>
+                              </span>
                               {withdrawal.toAddress && (
                                 <button
                                   className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                                   onClick={() => copyToClipboard(withdrawal.toAddress)}
                                   title="Copy address"
                                 >
-                                  <i className="bx bx-copy"></i>
+                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                                 </button>
                               )}
                             </div>
@@ -349,9 +349,9 @@ export default function WithdrawalTransactions() {
                           <td>
                             {withdrawal.txHash ? (
                               <div className="d-flex align-items-center">
-                                <code className="text-dark me-2" style={{ fontSize: '0.75rem' }}>
+                                <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
                                   {withdrawal.txHash}
-                                </code>
+                                </span>
                                 <a 
                                   href={`${withdrawal.coinNetwork?.network?.explorerUrl}/tx/${withdrawal.txHash}`}
                                   target="_blank"
@@ -359,7 +359,7 @@ export default function WithdrawalTransactions() {
                                   className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                                   title="View on explorer"
                                 >
-                                  <i className="bx bx-link-external"></i>
+                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                                 </a>
                               </div>
                             ) : (

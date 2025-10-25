@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
 import { listCoins } from "../../api/coins";
 import { listNetworks } from "../../api/networks";
+import { useUserInvoiceEvents } from "../../hooks/useInvoiceEvents";
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -188,8 +189,27 @@ export default function InvoiceList() {
     return () => { mounted = false }
   }, [token])
 
-  // Note: Pusher subscription is handled globally in DashboardLayout
-  // No need to subscribe here to avoid duplicate notifications
+  // Subscribe to Pusher events for real-time invoice updates
+  // Note: Notifications are handled globally in DashboardLayout, here we only reload data
+  const userIdentifier = user?.id || user?.userId || user?.email;
+  useUserInvoiceEvents(userIdentifier, {
+    onInvoiceCreated: () => {
+      console.log('[InvoiceList] 📝 Invoice created, reloading list...');
+      load();
+    },
+    onInvoiceUpdated: () => {
+      console.log('[InvoiceList] 📝 Invoice updated, reloading list...');
+      load();
+    },
+    onStatusChanged: () => {
+      console.log('[InvoiceList] 🔄 Invoice status changed, reloading list...');
+      load();
+    },
+    onPaymentReceived: () => {
+      console.log('[InvoiceList] 💰 Payment received, reloading list...');
+      load();
+    }
+  });
 
   useEffect(() => {
     if (selectAllRef.current) {
@@ -386,7 +406,7 @@ export default function InvoiceList() {
                             const cn = cnById.get(cnId) || it.coinNetwork
                             const networkSym = (cn?.network?.symbol || it.coinNetwork?.network?.symbol || "").toUpperCase()
                             return (
-                              <span className="text-muted fw-medium">
+                              <span className="text-muted">
                                 {networkSym || 'N/A'}
                               </span>
                             )
@@ -403,15 +423,15 @@ export default function InvoiceList() {
                               <div className="d-flex align-items-center">
                                 <CoinImg coin={cn?.coin || it.coinNetwork?.coin} symbol={coinSym} networkSymbol={networkSym} />
                                 <div>
-                                  <div className="fw-medium">{coinSym}</div>
-                                  <div className="text-muted small">{networkName}</div>
+                                  <div>{coinSym}</div>
+                                  <small className="text-muted">{networkName}</small>
                                 </div>
                               </div>
                             )
                           })()}
                         </td>
                         <td className="text-nowrap text-end">
-                          <div className="fw-medium">{formatAmount(it.amount)}</div>
+                          <div>{formatAmount(it.amount)}</div>
                         </td>
                         <td>
                           <span

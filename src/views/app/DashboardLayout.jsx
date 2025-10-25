@@ -38,6 +38,7 @@ import WithdrawalDefaults from '../admin/WithdrawalDefaults'
 import WithdrawalOverrides from '../admin/WithdrawalOverrides'
 import WithdrawalPolicy from '../admin/WithdrawalPolicy'
 import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
+import LedgerTransactions from '../ledger/LedgerTransactions'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
@@ -472,6 +473,9 @@ export default function DashboardLayout() {
                 <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
                   <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
+                <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
+                  <SubItem to="/admin/ledger/transactions" end label={t('admin.ledger.transactions', { defaultValue: 'Transactions' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/settings/evm', '/admin/settings/network', '/admin/settings/sweep', '/admin/settings/withdrawal']}>
                   <SubMenuGroup base="/admin/settings/evm" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
                     <SubItem to="/admin/settings/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
@@ -662,6 +666,7 @@ export default function DashboardLayout() {
                     <Route path="crypto/coin-networks/:id" element={<SupportedCryptoForm />} />
                     <Route path="sweep/transactions" element={<SweepTransactions />} />
                     <Route path="withdrawal/transactions" element={<WithdrawalTransactions />} />
+                    <Route path="ledger/transactions" element={<LedgerTransactions />} />
                     <Route path="settings/evm/fee-policy" element={<EVMFeePolicy />} />
                     <Route path="settings/network/fees" element={<NetworkFees />} />
                     <Route path="settings/sweep/configuration" element={<Sweep />} />

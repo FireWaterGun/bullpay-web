@@ -8,6 +8,44 @@ import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
 import { useToastContext } from '../../context/ToastContext'
 
+// Network icon component
+function NetworkIcon({ networkSymbol, size = 24 }) {
+  const [idx, setIdx] = useState(0)
+  const candidates = useMemo(() => {
+    const sym = String(networkSymbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+    const aliases = {
+      eth: ['ethereum'],
+      bsc: ['binance', 'bnb'],
+      matic: ['polygon'],
+      polygon: ['polygon', 'matic'],
+      arbitrum: ['arbitrum'],
+      optimism: ['optimism'],
+      avalanche: ['avalanche', 'avax'],
+      fantom: ['fantom', 'ftm'],
+      base: ['base'],
+      tron: ['tron', 'trx'],
+    }
+    const names = [sym, ...(aliases[sym] || [])]
+    const exts = ['svg', 'png']
+    const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/networks/${n}.${ext}`))
+    const byCoinFallback = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
+    const arr = [...byAssets, ...byCoinFallback, '/assets/img/coins/default.svg']
+    return Array.from(new Set(arr))
+  }, [networkSymbol])
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  return (
+    <img
+      src={src}
+      alt={networkSymbol}
+      width={size}
+      height={size}
+      className="rounded-circle"
+      style={{ objectFit: 'cover' }}
+      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+    />
+  )
+}
+
 // Coin image component
 function CoinImg({ symbol, logoUrl, size = 32 }) {
   const [idx, setIdx] = useState(0)
@@ -39,7 +77,8 @@ function CoinImg({ symbol, logoUrl, size = 32 }) {
       alt={symbol}
       width={size}
       height={size}
-      className="rounded"
+      className="rounded-circle me-2"
+      style={{ objectFit: 'cover' }}
       onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
     />
   )
@@ -445,13 +484,16 @@ export default function InvoicePaymentV2() {
                           }}>
                             {t("invoices.chain") || "Chain"}
                           </div>
-                          <div className="fw-bold" style={{ 
-                            fontSize: '0.9rem', 
-                            color: '#8b5cf6',
-                            letterSpacing: '0.5px',
-                            fontWeight: '700'
-                          }}>
-                            {networkSym || 'N/A'}
+                          <div className="d-flex align-items-center justify-content-center gap-2">
+                            <NetworkIcon networkSymbol={networkSym} size={24} />
+                            <div className="fw-bold" style={{ 
+                              fontSize: '0.9rem', 
+                              color: '#8b5cf6',
+                              letterSpacing: '0.5px',
+                              fontWeight: '700'
+                            }}>
+                              {networkSym || 'N/A'}
+                            </div>
                           </div>
                         </div>
 

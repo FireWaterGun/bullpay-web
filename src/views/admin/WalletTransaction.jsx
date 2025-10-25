@@ -397,7 +397,7 @@ export default function WalletTransaction() {
                         return (
                           <tr key={item.id}>
                             <td>
-                              <code className="small">{item.id}</code>
+                              <code>{item.id}</code>
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.entryType === 'credit' ? (
@@ -413,7 +413,7 @@ export default function WalletTransaction() {
                               )}
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className="fw-medium">
+                              <span>
                                 {item.entryType === 'credit' ? '+' : '-'}
                                 {parseFloat(amount).toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
@@ -463,13 +463,13 @@ export default function WalletTransaction() {
                               )}
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
-                              <div className="small">
+                              <div>
                                 {new Date(item.createdAt).toLocaleString()}
                               </div>
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.committedAt ? (
-                                <div className="small">
+                                <div>
                                   {new Date(item.committedAt).toLocaleString()}
                                 </div>
                               ) : (
@@ -529,7 +529,7 @@ export default function WalletTransaction() {
                             </td>
                             <td>
                               {item.reservationId ? (
-                                <code className="small">{item.reservationId}</code>
+                                <code>{item.reservationId}</code>
                               ) : (
                                 <span className="text-muted">-</span>
                               )}

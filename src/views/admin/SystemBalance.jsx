@@ -319,7 +319,7 @@ export default function SystemBalance() {
                         return (
                           <tr key={wallet.id}>
                             <td>
-                              <span className="text-muted fw-medium">
+                              <span className="text-muted">
                                 {(networkSymbol || '').toUpperCase() || 'N/A'}
                               </span>
                             </td>
@@ -327,27 +327,26 @@ export default function SystemBalance() {
                               <div className="d-flex align-items-center">
                                 <CoinImg coin={coin} symbol={coinSymbol} networkSymbol={networkSymbol} size={32} />
                                 <div>
-                                  <div className="fw-medium">{coinSymbol || 'N/A'}</div>
+                                  <div>{coinSymbol || 'N/A'}</div>
                                   <small className="text-muted">{networkName || 'N/A'}</small>
                                 </div>
                               </div>
                             </td>
                             <td>
                               <div className="d-flex align-items-center gap-2">
-                                <code className="small" style={{ fontSize: '0.8rem' }}>
+                                <span className="text-truncate" style={{ maxWidth: '400px' }}>
                                   {address || 'N/A'}
-                                </code>
+                                </span>
                                 {address && (
                                   <button
                                     onClick={() => copyAddress(address)}
-                                    className="btn btn-sm btn-icon btn-outline-secondary"
-                                    style={{ padding: '0.25rem 0.5rem' }}
+                                    className="btn btn-sm btn-icon btn-text-secondary"
                                     title={t('actions.copy', { defaultValue: 'Copy' })}
                                   >
                                     {copiedAddress === address ? (
-                                      <i className="bx bx-check text-success" style={{ fontSize: '14px' }}></i>
+                                      <i className="bx bx-check text-success" style={{ fontSize: '1.25rem' }}></i>
                                     ) : (
-                                      <i className="bx bx-copy" style={{ fontSize: '14px' }}></i>
+                                      <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                                     )}
                                   </button>
                                 )}
@@ -377,7 +376,6 @@ export default function SystemBalance() {
                             </td>
                             <td className="text-end">
                               <span 
-                                className="fw-medium" 
                                 title={`Raw: ${wallet.totalBalanceRaw}\nDecimals: ${decimals}\nDecimal: ${decimalBalance} ${coinSymbol}`}
                               >
                                 {parseFloat(decimalBalance).toLocaleString(undefined, {
@@ -387,29 +385,29 @@ export default function SystemBalance() {
                               </span>
                             </td>
                             <td className="text-end">
-                              <strong>
+                              <span>
                                 ${usdValue.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2
                                 })}
-                              </strong>
+                              </span>
                             </td>
                             <td className="text-center">
                               <button
                                 onClick={() => navigate(`/admin/system-wallet/wallet/${wallet.systemWallet?.id}/transactions`)}
-                                className="btn btn-sm btn-icon btn-outline-primary me-1"
+                                className="btn btn-sm btn-icon btn-text-secondary me-1"
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >
-                                <i className="bx bx-receipt"></i>
+                                <i className="bx bx-receipt" style={{ fontSize: '1.25rem' }}></i>
                               </button>
                               <a
                                 href={`${wallet.systemWallet?.coinNetwork?.network?.explorerUrl}/address/${wallet.systemWallet?.address}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="btn btn-sm btn-icon btn-outline-primary"
+                                className="btn btn-sm btn-icon btn-text-secondary"
                                 title={t('invoices.viewOnExplorer')}
                               >
-                                <i className="bx bx-link-external"></i>
+                                <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                               </a>
                             </td>
                           </tr>
