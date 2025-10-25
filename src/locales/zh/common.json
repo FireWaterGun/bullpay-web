@@ -23,6 +23,7 @@
     "search": "搜索",
     "applyFilters": "应用筛选",
     "reset": "重置",
+    "refresh": "刷新",
     "prev": "上一页",
     "next": "下一页",
     "back": "返回",
@@ -48,7 +49,6 @@
     "saving": "保存中...",
     "deleting": "删除中...",
     "add": "添加",
-    "refresh": "刷新",
     "actions": "操作"
   },
   "invoices": {
@@ -182,7 +182,8 @@
     "noData": "暂无数据",
     "allStatus": "全部状态",
     "copyright": "© {{year}} · 版权所有",
-    "poweredBy": "技术支持"
+    "poweredBy": "技术支持",
+    "allTypes": "全部类型"
   },
   "wallet": {
     "loading": "正在加载钱包...",

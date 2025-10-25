@@ -115,7 +115,7 @@ export default function LedgerTransactions() {
       setPagination(data.pagination || null)
     } catch (error) {
       console.error('Failed to load ledger entries:', error)
-      toast.error(t('ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
+      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
     } finally {
       setLoading(false)
     }
@@ -136,6 +136,29 @@ export default function LedgerTransactions() {
     }).catch(() => {
       toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
     })
+  }
+
+  function getTypeLabel(type) {
+    if (!type) return 'N/A'
+    const typeMap = {
+      'payment_received': t('admin.ledger.paymentReceived', { defaultValue: 'Payment Received' }),
+      'payment_sent': t('admin.ledger.paymentSent', { defaultValue: 'Payment Sent' }),
+      'withdrawal': t('admin.ledger.withdrawal', { defaultValue: 'Withdrawal' }),
+      'deposit': t('admin.ledger.deposit', { defaultValue: 'Deposit' }),
+      'sweep': t('admin.ledger.sweep', { defaultValue: 'Sweep' }),
+      'fee': t('admin.ledger.fee', { defaultValue: 'Fee' }),
+      'refund': t('admin.ledger.refund', { defaultValue: 'Refund' }),
+      'reversal': t('admin.ledger.reversal', { defaultValue: 'Reversal' }),
+      'adjustment': t('admin.ledger.adjustment', { defaultValue: 'Adjustment' }),
+      'interest': t('admin.ledger.interest', { defaultValue: 'Interest' }),
+      'penalty': t('admin.ledger.penalty', { defaultValue: 'Penalty' }),
+      'bonus': t('admin.ledger.bonus', { defaultValue: 'Bonus' }),
+      'commission': t('admin.ledger.commission', { defaultValue: 'Commission' }),
+      'exchange': t('admin.ledger.exchange', { defaultValue: 'Exchange' }),
+      'transfer_in': t('admin.ledger.transferIn', { defaultValue: 'Transfer In' }),
+      'transfer_out': t('admin.ledger.transferOut', { defaultValue: 'Transfer Out' })
+    }
+    return typeMap[type.toLowerCase()] || String(type).replace(/_/g, ' ').toUpperCase()
   }
 
   function formatDate(dateString) {
@@ -189,10 +212,10 @@ export default function LedgerTransactions() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-book me-2"></i>
-                    {t('ledger.transactions', { defaultValue: 'Ledger Transactions' })}
+                    {t('admin.ledger.transactions', { defaultValue: 'Ledger Transactions' })}
                   </h4>
                   <p className="text-muted mb-0">
-                    {t('ledger.transactionsDesc', { defaultValue: 'View all ledger entries and their status' })}
+                    {t('admin.ledger.transactionsDesc', { defaultValue: 'View all ledger entries and their status' })}
                   </p>
                 </div>
                 <div className="d-flex gap-2 flex-wrap">
@@ -206,22 +229,22 @@ export default function LedgerTransactions() {
                     style={{ width: 'auto' }}
                   >
                     <option value="">{t('common.allTypes', { defaultValue: 'All Types' })}</option>
-                    <option value="payment_received">{t('ledger.paymentReceived', { defaultValue: 'Payment Received' })}</option>
-                    <option value="payment_sent">{t('ledger.paymentSent', { defaultValue: 'Payment Sent' })}</option>
-                    <option value="withdrawal">{t('ledger.withdrawal', { defaultValue: 'Withdrawal' })}</option>
-                    <option value="deposit">{t('ledger.deposit', { defaultValue: 'Deposit' })}</option>
-                    <option value="sweep">{t('ledger.sweep', { defaultValue: 'Sweep' })}</option>
-                    <option value="fee">{t('ledger.fee', { defaultValue: 'Fee' })}</option>
-                    <option value="refund">{t('ledger.refund', { defaultValue: 'Refund' })}</option>
-                    <option value="reversal">{t('ledger.reversal', { defaultValue: 'Reversal' })}</option>
-                    <option value="adjustment">{t('ledger.adjustment', { defaultValue: 'Adjustment' })}</option>
-                    <option value="interest">{t('ledger.interest', { defaultValue: 'Interest' })}</option>
-                    <option value="penalty">{t('ledger.penalty', { defaultValue: 'Penalty' })}</option>
-                    <option value="bonus">{t('ledger.bonus', { defaultValue: 'Bonus' })}</option>
-                    <option value="commission">{t('ledger.commission', { defaultValue: 'Commission' })}</option>
-                    <option value="exchange">{t('ledger.exchange', { defaultValue: 'Exchange' })}</option>
-                    <option value="transfer_in">{t('ledger.transferIn', { defaultValue: 'Transfer In' })}</option>
-                    <option value="transfer_out">{t('ledger.transferOut', { defaultValue: 'Transfer Out' })}</option>
+                    <option value="payment_received">{t('admin.ledger.paymentReceived', { defaultValue: 'Payment Received' })}</option>
+                    <option value="payment_sent">{t('admin.ledger.paymentSent', { defaultValue: 'Payment Sent' })}</option>
+                    <option value="withdrawal">{t('admin.ledger.withdrawal', { defaultValue: 'Withdrawal' })}</option>
+                    <option value="deposit">{t('admin.ledger.deposit', { defaultValue: 'Deposit' })}</option>
+                    <option value="sweep">{t('admin.ledger.sweep', { defaultValue: 'Sweep' })}</option>
+                    <option value="fee">{t('admin.ledger.fee', { defaultValue: 'Fee' })}</option>
+                    <option value="refund">{t('admin.ledger.refund', { defaultValue: 'Refund' })}</option>
+                    <option value="reversal">{t('admin.ledger.reversal', { defaultValue: 'Reversal' })}</option>
+                    <option value="adjustment">{t('admin.ledger.adjustment', { defaultValue: 'Adjustment' })}</option>
+                    <option value="interest">{t('admin.ledger.interest', { defaultValue: 'Interest' })}</option>
+                    <option value="penalty">{t('admin.ledger.penalty', { defaultValue: 'Penalty' })}</option>
+                    <option value="bonus">{t('admin.ledger.bonus', { defaultValue: 'Bonus' })}</option>
+                    <option value="commission">{t('admin.ledger.commission', { defaultValue: 'Commission' })}</option>
+                    <option value="exchange">{t('admin.ledger.exchange', { defaultValue: 'Exchange' })}</option>
+                    <option value="transfer_in">{t('admin.ledger.transferIn', { defaultValue: 'Transfer In' })}</option>
+                    <option value="transfer_out">{t('admin.ledger.transferOut', { defaultValue: 'Transfer Out' })}</option>
                   </select>
                   <button className="btn btn-primary" onClick={loadLedgerEntries} disabled={loading}>
                     <i className="bx bx-refresh me-1"></i>
@@ -240,23 +263,23 @@ export default function LedgerTransactions() {
                   <thead>
                     <tr>
                       <th style={{ minWidth: '60px' }}>ID</th>
-                      <th style={{ minWidth: '150px' }}>{t('ledger.user', { defaultValue: 'User' })}</th>
-                      <th style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('ledger.walletType', { defaultValue: 'Wallet Type' })}</th>
-                      <th style={{ minWidth: '120px' }}>{t('ledger.type', { defaultValue: 'Type' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('ledger.chain', { defaultValue: 'Chain' })}</th>
-                      <th style={{ minWidth: '220px' }}>{t('ledger.coin', { defaultValue: 'Coin' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('ledger.amount', { defaultValue: 'Amount' })}</th>
-                      <th style={{ minWidth: '170px', whiteSpace: 'nowrap' }}>{t('ledger.balanceAfter', { defaultValue: 'Balance After' })}</th>
-                      <th style={{ minWidth: '200px' }}>{t('ledger.reference', { defaultValue: 'Reference' })}</th>
-                      <th style={{ minWidth: '300px' }}>{t('ledger.note', { defaultValue: 'Note' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('ledger.createdAt', { defaultValue: 'Created Date' })}</th>
+                      <th style={{ minWidth: '150px' }}>{t('admin.ledger.user', { defaultValue: 'User' })}</th>
+                      <th style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('admin.ledger.walletType', { defaultValue: 'Wallet Type' })}</th>
+                      <th style={{ minWidth: '120px' }}>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
+                      <th style={{ minWidth: '100px' }}>{t('admin.ledger.chain', { defaultValue: 'Chain' })}</th>
+                      <th style={{ minWidth: '220px' }}>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ minWidth: '140px' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                      <th style={{ minWidth: '170px', whiteSpace: 'nowrap' }}>{t('admin.ledger.balanceAfter', { defaultValue: 'Balance After' })}</th>
+                      <th style={{ minWidth: '200px' }}>{t('admin.ledger.reference', { defaultValue: 'Reference' })}</th>
+                      <th style={{ minWidth: '300px' }}>{t('admin.ledger.note', { defaultValue: 'Note' })}</th>
+                      <th style={{ minWidth: '140px' }}>{t('admin.ledger.createdAt', { defaultValue: 'Created Date' })}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {ledgerEntries.length === 0 ? (
                       <tr>
                         <td colSpan="11" className="text-center text-muted py-4">
-                          {t('ledger.noEntries', { defaultValue: 'No ledger entries found' })}
+                          {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
                         </td>
                       </tr>
                     ) : (
@@ -275,7 +298,7 @@ export default function LedgerTransactions() {
                           </td>
                           <td>
                             <span>
-                              {String(entry.type || 'N/A').replace(/_/g, ' ').toUpperCase()}
+                              {getTypeLabel(entry.type)}
                             </span>
                           </td>
                           <td>

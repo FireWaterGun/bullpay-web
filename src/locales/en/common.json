@@ -23,6 +23,7 @@
     "search": "Search",
     "applyFilters": "Apply Filters",
     "reset": "Reset",
+    "refresh": "Refresh",
     "actions": "Actions",
     "prev": "Prev",
     "next": "Next",
@@ -178,7 +179,8 @@
     "copied": "Copied",
     "noData": "No data",
     "copyright": "  {{year}} · All rights reserved",
-    "poweredBy": "Powered by"
+    "poweredBy": "Powered by",
+    "allTypes": "All Types"
   },
   "wallet": {
     "loading": "Loading wallet...",
@@ -603,7 +605,7 @@
     },
     "ledger": {
       "menuTitle": "Ledger",
-      "transactions": "Transactions",
+      "transactions": "Ledger Transactions",
       "transactionsDesc": "View all ledger transactions and their status",
       "user": "User",
       "walletType": "Wallet Type",
