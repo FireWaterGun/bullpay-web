@@ -6,24 +6,28 @@ let audioContextInitialized = false;
  * Initialize audio context on first user interaction
  * Call this on any user click/touch event
  */
-export function initAudioContext() {
-  if (audioContextInitialized) return;
+export async function initAudioContext() {
+  if (audioContextInitialized) {
+    console.log('[Notification] Audio context already initialized');
+    return;
+  }
   
   try {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      console.log('[Notification] Audio context created');
     }
     
     if (audioContext.state === 'suspended') {
-      audioContext.resume().then(() => {
-        audioContextInitialized = true;
-        console.log('Audio context initialized and ready');
-      });
-    } else {
-      audioContextInitialized = true;
+      console.log('[Notification] Resuming suspended audio context...');
+      await audioContext.resume();
+      console.log('[Notification] ✅ Audio context resumed and ready!');
     }
+    
+    audioContextInitialized = true;
+    console.log('[Notification] ✅ Audio context initialized (state:', audioContext.state + ')');
   } catch (err) {
-    console.warn('Failed to initialize audio context:', err);
+    console.warn('[Notification] ❌ Failed to initialize audio context:', err);
   }
 }
 
@@ -49,15 +53,24 @@ function getAudioContext() {
  * Play notification sound
  * @param {string} type - Type of notification: 'success', 'info', 'warning', 'error'
  */
-export function playNotificationSound(type = 'success') {
+export async function playNotificationSound(type = 'success') {
   try {
     const ctx = getAudioContext();
     
-    // Skip if audio context is suspended (no user interaction yet)
+    // Try to resume audio context if suspended
     if (ctx.state === 'suspended') {
-      console.log('Audio context suspended, skipping sound');
-      return;
+      console.log('[Notification] Audio context suspended, attempting to resume...');
+      try {
+        await ctx.resume();
+        console.log('[Notification] ✅ Audio context resumed successfully!');
+      } catch (err) {
+        console.warn('[Notification] ❌ Failed to resume audio context:', err);
+        console.log('[Notification] User interaction required for audio. Please click anywhere on the page.');
+        return;
+      }
     }
+    
+    console.log('[Notification] 🔊 Playing', type, 'sound');
     
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();

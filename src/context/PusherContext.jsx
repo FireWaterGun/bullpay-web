@@ -53,11 +53,29 @@ export function PusherProvider({ children }) {
     setPusher(pusherInstance);
 
     console.log('[PusherContext] ✅ Pusher instance created');
+    console.log('[PusherContext] 🔌 Connection state:', pusherInstance.connection.state);
 
     // Connection state handlers
+    pusherInstance.connection.bind('state_change', (states) => {
+      console.log('[PusherContext] 🔄 State changed:', states.previous, '->', states.current);
+    });
+
+    pusherInstance.connection.bind('connecting', () => {
+      console.log('[PusherContext] 🔄 Connecting to Pusher...');
+    });
+
     pusherInstance.connection.bind('connected', () => {
       console.log('[PusherContext] ✅ Pusher connected successfully!');
+      console.log('[PusherContext] 📡 Connection ID:', pusherInstance.connection.socket_id);
       setIsConnected(true);
+    });
+
+    pusherInstance.connection.bind('unavailable', () => {
+      console.error('[PusherContext] ❌ Pusher connection unavailable');
+    });
+
+    pusherInstance.connection.bind('failed', () => {
+      console.error('[PusherContext] ❌ Pusher connection failed');
     });
 
     pusherInstance.connection.bind('disconnected', () => {

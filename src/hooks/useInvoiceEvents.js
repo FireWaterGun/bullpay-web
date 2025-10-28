@@ -79,28 +79,69 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
   const channelRef = useRef(null);
   const callbacksRef = useRef(callbacks);
   const userIdRef = useRef(userId);
+  const pusherRef = useRef(pusher);
+  const isConnectedRef = useRef(isConnected);
+  const isSubscribingRef = useRef(false);
+  const isUnmountingRef = useRef(false);
 
-  // Update callbacks ref without triggering re-subscription
+  console.log('[useUserInvoiceEvents] 📊 State:', {
+    userId,
+    hasPusher: !!pusher,
+    isConnected,
+    hasChannel: !!channelRef.current,
+    hasCallbacks: !!callbacks
+  });
+
+  // Keep refs up to date without triggering re-subscription
   useEffect(() => {
     callbacksRef.current = callbacks;
   });
 
   useEffect(() => {
+    pusherRef.current = pusher;
+    isConnectedRef.current = isConnected;
+    if (isConnected) {
+      console.log('[useUserInvoiceEvents] ✅ Pusher connection ready');
+    }
+  }, [pusher, isConnected]);
+
+  useEffect(() => {
+    console.log('[useUserInvoiceEvents] 🔄 useEffect triggered with userId:', userId);
+    
     if (!pusher || !isConnected || !userId) {
+      console.log(`[useUserInvoiceEvents] ⏸️ Waiting for Pusher connection... (pusher=${!!pusher}, connected=${isConnected}, userId=${userId})`);
+      return;
+    }
+
+    console.log('[useUserInvoiceEvents] ✅ All conditions met, proceeding...');
+    console.log('[useUserInvoiceEvents] 📌 Refs:', {
+      userIdRef: userIdRef.current,
+      hasChannel: !!channelRef.current,
+      isSubscribing: isSubscribingRef.current
+    });
+
+    // Prevent double subscription
+    if (isSubscribingRef.current) {
+      console.log(`[useUserInvoiceEvents] 🔄 Already subscribing, skipping...`);
       return;
     }
 
     // Only re-subscribe if userId actually changed
     if (userIdRef.current === userId && channelRef.current) {
+      console.log(`[useUserInvoiceEvents] ✅ Already subscribed to user.${userId}.invoices, skipping re-subscription`);
       return;
     }
+
+    console.log('[useUserInvoiceEvents] 🚀 Starting subscription process...');
+
+    isSubscribingRef.current = true;
 
     // Unsubscribe from old channel if exists
     if (channelRef.current && userIdRef.current !== userId) {
       const oldChannelName = `user.${userIdRef.current}.invoices`;
       channelRef.current.unbind_all();
       pusher.unsubscribe(oldChannelName);
-      console.log(`Unsubscribed from ${oldChannelName}`);
+      console.log(`🔄 Unsubscribed from ${oldChannelName} (userId changed)`);
     }
 
     userIdRef.current = userId;
@@ -140,16 +181,39 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
       }
     });
 
+    isSubscribingRef.current = false;
+
     return () => {
-      if (channelRef.current) {
+      // Mark that cleanup is running
+      isUnmountingRef.current = true;
+      
+      // Only unsubscribe if userId is changing or component is truly unmounting
+      // Don't unsubscribe when isConnected changes from false to true
+      const isUserIdChanging = userIdRef.current !== userId;
+      const shouldCleanup = isUserIdChanging || !pusher || !isConnected;
+      
+      console.log('[useUserInvoiceEvents] 🧹 Cleanup running:', {
+        hasChannel: !!channelRef.current,
+        isUserIdChanging,
+        shouldCleanup,
+        currentUserId: userIdRef.current,
+        newUserId: userId
+      });
+      
+      if (channelRef.current && (isUserIdChanging || !pusher)) {
         const channelName = `user.${userIdRef.current}.invoices`;
         channelRef.current.unbind_all();
         pusher.unsubscribe(channelName);
         channelRef.current = null;
-        console.log(`❌ Unsubscribed from ${channelName} (component unmount)`);
+        console.log(`❌ Unsubscribed from ${channelName} (cleanup)`);
       }
+      
+      // Reset flag after cleanup
+      setTimeout(() => {
+        isUnmountingRef.current = false;
+      }, 0);
     };
-  }, [pusher, isConnected, userId]);
+  }, [userId, isConnected, pusher]); // Re-run when connection is ready
 
   return { isConnected };
 }

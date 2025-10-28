@@ -1,5 +1,5 @@
 import { Routes, Route, NavLink, Navigate, useNavigate, useMatch, useResolvedPath, useLocation } from 'react-router-dom'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
@@ -246,65 +246,77 @@ export default function DashboardLayout() {
   // Log subscription info
   useEffect(() => {
     console.log('[DashboardLayout] 👤 User data:', user);
+    console.log('[DashboardLayout] 📋 User identifier:', userIdentifier);
     if (userIdentifier) {
-      console.log('[DashboardLayout] 🔔 Subscribing to channel: user.' + userIdentifier + '.invoices');
+      console.log('[DashboardLayout] 🔔 Will subscribe to channel: user.' + userIdentifier + '.invoices');
     } else {
       console.warn('[DashboardLayout] ⚠️ No user identifier found, cannot subscribe to Pusher');
     }
   }, [user, userIdentifier]);
 
-  // Subscribe to Pusher events for real-time updates (global for all dashboard pages)
-  useUserInvoiceEvents(userIdentifier, {
-    onInvoiceCreated: (data) => {
-      console.log('[DashboardLayout] Event: invoice.created', data);
-      playNotificationSound('info');
-      toast.info({
-        title: 'New Invoice',
-        body: data.body || 'A new invoice has been created'
-      });
-    },
-    onInvoiceUpdated: (data) => {
-      console.log('[DashboardLayout] Event: invoice.updated', data);
-      toast.info({
-        title: 'Invoice Updated',
-        body: data.body || 'An invoice has been updated'
-      });
-    },
-    onStatusChanged: (data) => {
-      console.log('[DashboardLayout] Event: invoice.status.changed', data);
-      // Check if it's a payment completion notification
-      if (data.type === 'invoice_completed' || data.status === 'paid') {
+  // Memoize Pusher event callbacks to prevent unnecessary re-subscriptions
+  const pusherCallbacks = useMemo(() => {
+    console.log('[DashboardLayout] 🔧 Creating Pusher callbacks');
+    return {
+      onInvoiceCreated: (data) => {
+        console.log('[DashboardLayout] Event: invoice.created', data);
+        playNotificationSound('info');
+        toast.info({
+          title: 'New Invoice',
+          body: data.body || 'A new invoice has been created'
+        });
+      },
+      onInvoiceUpdated: (data) => {
+        console.log('[DashboardLayout] Event: invoice.updated', data);
+        playNotificationSound('info');
+        toast.info({
+          title: 'Invoice Updated',
+          body: data.body || 'An invoice has been updated'
+        });
+      },
+      onStatusChanged: (data) => {
+        console.log('[DashboardLayout] Event: invoice.status.changed', data);
+        // Check if it's a payment completion notification
+        if (data.type === 'invoice_completed' || data.status === 'paid') {
+          playNotificationSound('success');
+          const invoiceData = {
+            id: data.invoiceId,
+            invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
+            ...data
+          };
+          toast.success({
+            title: 'Invoice Paid',
+            body: data.body || 'Invoice has been paid successfully'
+          });
+          notifyPaymentReceived(invoiceData);
+        } else {
+          playNotificationSound('info');
+          toast.info({
+            title: 'Status Changed',
+            body: data.body || `Invoice status changed to ${data.status}`
+          });
+        }
+      },
+      onPaymentReceived: (data) => {
+        console.log('[DashboardLayout] Event: payment.received', data);
+        playNotificationSound('success');
         const invoiceData = {
           id: data.invoiceId,
           invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
           ...data
         };
         toast.success({
-          title: 'Invoice Paid',
-          body: data.body || 'Invoice has been paid successfully'
+          title: 'Payment Received',
+          body: data.body || 'Payment has been received'
         });
         notifyPaymentReceived(invoiceData);
-      } else {
-        toast.info({
-          title: 'Status Changed',
-          body: data.body || `Invoice status changed to ${data.status}`
-        });
       }
-    },
-    onPaymentReceived: (data) => {
-      console.log('[DashboardLayout] Event: payment.received', data);
-      const invoiceData = {
-        id: data.invoiceId,
-        invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
-        ...data
-      };
-      toast.success({
-        title: 'Payment Received',
-        body: data.body || 'Payment has been received'
-      });
-      notifyPaymentReceived(invoiceData);
-    }
-  });
+    };
+  }, []); // Empty array - create once and never change
+
+  // Subscribe to Pusher events for real-time updates (global for all dashboard pages)
+  console.log('[DashboardLayout] 🔌 Calling useUserInvoiceEvents with userId:', userIdentifier);
+  useUserInvoiceEvents(userIdentifier, pusherCallbacks);
 
   // Helper: breakpoint check (matches navbar-expand-xl)
   const isXlUp = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(min-width: 1200px)').matches
