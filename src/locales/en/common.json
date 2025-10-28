@@ -605,7 +605,7 @@
     },
     "ledger": {
       "menuTitle": "Ledger",
-      "transactions": "Ledger Transactions",
+      "transactions": "Transactions",
       "transactionsDesc": "View all ledger transactions and their status",
       "user": "User",
       "walletType": "Wallet Type",
