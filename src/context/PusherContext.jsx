@@ -1,12 +1,20 @@
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import Pusher from 'pusher-js';
+import { useAuth } from './AuthContext';
 
 const PusherContext = createContext(null);
 
 export function PusherProvider({ children }) {
+  const { token } = useAuth();
   const [pusher, setPusher] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const pusherRef = useRef(null);
+  const tokenRef = useRef(token);
+
+  // Update token ref when token changes
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
 
   useEffect(() => {
     // Get Pusher config from environment variables
@@ -31,12 +39,80 @@ export function PusherProvider({ children }) {
 
     console.log('[PusherContext] 🚀 Initializing Pusher...');
 
+    // Custom authorizer to send JSON instead of form data
+    const authorizer = (channel, options) => {
+      return {
+        authorize: (socketId, callback) => {
+          const authEndpoint = import.meta.env.VITE_PUSHER_AUTH_ENDPOINT || '/api/pusher/auth';
+          const currentToken = tokenRef.current;
+          
+          console.log('[PusherContext] 🔐 Authorizing channel:', channel.name, {
+            hasToken: !!currentToken,
+            tokenPreview: currentToken ? `${currentToken.substring(0, 15)}...` : 'NO TOKEN'
+          });
+          
+          fetch(authEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${currentToken || ''}`
+            },
+            body: JSON.stringify({
+              socket_id: socketId,
+              channel_name: channel.name
+            })
+          })
+            .then(async response => {
+              console.log('[PusherContext] 📡 Auth response:', response.status, response.statusText);
+              
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error('[PusherContext] ❌ Auth failed:', {
+                  status: response.status,
+                  statusText: response.statusText,
+                  body: errorText
+                });
+                throw new Error(`Auth failed: ${response.status} ${response.statusText}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('[PusherContext] ✅ Auth successful for', channel.name, data);
+              
+              // Backend wraps response in {success, data} format
+              // Extract auth data from data.data if present
+              const authData = data.data || data;
+              
+              if (!authData.auth) {
+                console.error('[PusherContext] ❌ Invalid auth response - missing "auth" field:', data);
+                throw new Error('Invalid auth response from server');
+              }
+              
+              console.log('[PusherContext] 🔑 Auth signature:', authData.auth.substring(0, 20) + '...');
+              callback(null, authData);
+            })
+            .catch(error => {
+              console.error('[PusherContext] ❌ Auth error:', error);
+              callback(error, null);
+            });
+        }
+      };
+    };
+
     // Initialize Pusher
     const pusherConfig = {
       cluster,
       forceTLS,
       enabledTransports: ['ws', 'wss'],
+      authorizer: authorizer
     };
+
+    console.log('[PusherContext] 🔑 Auth config:', {
+      authEndpoint: import.meta.env.VITE_PUSHER_AUTH_ENDPOINT || '/api/pusher/auth',
+      hasToken: !!token,
+      tokenPreview: token ? `${token.substring(0, 10)}...` : 'NOT SET',
+      format: 'JSON (custom authorizer)'
+    });
 
     // Support custom host for self-hosted Pusher/Soketi
     if (wsHost) {

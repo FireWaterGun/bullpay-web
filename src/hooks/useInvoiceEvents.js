@@ -24,8 +24,8 @@ export function useInvoiceEvents(invoiceId, callbacks = {}) {
       return;
     }
 
-    // Subscribe to invoice-specific channel
-    const channelName = `invoice.${invoiceId}`;
+    // Subscribe to invoice-specific channel (use private channel for security)
+    const channelName = `private-invoice.${invoiceId}`;
     const channel = pusher.subscribe(channelName);
     channelRef.current = channel;
 
@@ -138,7 +138,7 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
 
     // Unsubscribe from old channel if exists
     if (channelRef.current && userIdRef.current !== userId) {
-      const oldChannelName = `user.${userIdRef.current}.invoices`;
+      const oldChannelName = `private-user.${userIdRef.current}.invoices`;
       channelRef.current.unbind_all();
       pusher.unsubscribe(oldChannelName);
       console.log(`🔄 Unsubscribed from ${oldChannelName} (userId changed)`);
@@ -146,8 +146,8 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
 
     userIdRef.current = userId;
 
-    // Subscribe to user-specific invoice channel
-    const channelName = `user.${userId}.invoices`;
+    // Subscribe to user-specific invoice channel (use private channel for security)
+    const channelName = `private-user.${userId}.invoices`;
     const channel = pusher.subscribe(channelName);
     channelRef.current = channel;
 
@@ -201,7 +201,7 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
       });
       
       if (channelRef.current && (isUserIdChanging || !pusher)) {
-        const channelName = `user.${userIdRef.current}.invoices`;
+        const channelName = `private-user.${userIdRef.current}.invoices`;
         channelRef.current.unbind_all();
         pusher.unsubscribe(channelName);
         channelRef.current = null;
