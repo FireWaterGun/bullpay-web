@@ -1,4 +1,4 @@
-const BASE_URL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3333/api/v1'
+const BASE_URL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3339'
 
 export interface ApiErrorDetails {
   [key: string]: string[] | undefined

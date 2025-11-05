@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import { listInvoices } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
-import { listCoins } from "../../api/coins";
-import { listNetworks } from "../../api/networks";
 import { useUserInvoiceEvents } from "../../hooks/useInvoiceEvents";
 
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -108,8 +106,6 @@ export default function InvoiceList() {
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
   const { token, user } = useAuth();
-  const [coins, setCoins] = useState([]);
-  const [networks, setNetworks] = useState([]);
 
   const [selected, setSelected] = useState(new Set());
   const selectAllRef = useRef(null);
@@ -133,16 +129,6 @@ export default function InvoiceList() {
     [visibleIds, selected]
   );
 
-  const cnById = useMemo(() => {
-    const networkMap = new Map(networks.map(n => [Number(n.id), n]))
-    const m = new Map()
-    for (const cn of coins) {
-      const id = Number(cn.id)
-      const network = networkMap.get(Number(cn.networkId))
-      m.set(id, { ...cn, network })
-    }
-    return m
-  }, [coins, networks]);
 
   async function load() {
     setLoading(true);
@@ -171,23 +157,8 @@ export default function InvoiceList() {
 
   useEffect(() => {
     load();
-  }, [page, limit, sortBy, sortOrder]);
+  }, [page, limit, sortBy, sortOrder, status]);
 
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        const [coinsData, networksData] = await Promise.all([
-          listCoins(token),
-          listNetworks(token)
-        ])
-        if (!mounted) return
-        setCoins(Array.isArray(coinsData) ? coinsData : [])
-        setNetworks(Array.isArray(networksData) ? networksData : [])
-      } catch {/* ignore */}
-    })()
-    return () => { mounted = false }
-  }, [token])
 
   // Subscribe to Pusher events for real-time invoice updates
   // Note: Notifications are handled globally in DashboardLayout, here we only reload data
@@ -401,27 +372,18 @@ export default function InvoiceList() {
                           </div>
                         </td>
                         <td className="text-nowrap">
-                          {(() => {
-                            const cnId = Number(it.coinNetworkId)
-                            const cn = cnById.get(cnId) || it.coinNetwork
-                            const networkSym = (cn?.network?.symbol || it.coinNetwork?.network?.symbol || "").toUpperCase()
-                            return (
-                              <span className="text-muted">
-                                {networkSym || 'N/A'}
-                              </span>
-                            )
-                          })()}
+                          <span className="text-muted">
+                            {(it.network?.symbol || "").toUpperCase() || 'N/A'}
+                          </span>
                         </td>
                         <td className="text-nowrap">
                           {(() => {
-                            const cnId = Number(it.coinNetworkId)
-                            const cn = cnById.get(cnId) || it.coinNetwork
-                            const coinSym = (cn?.coin?.symbol || it.coinNetwork?.coin?.symbol || "").toUpperCase()
-                            const networkSym = (cn?.network?.symbol || it.coinNetwork?.network?.symbol || "").toUpperCase()
-                            const networkName = cn?.network?.name || it.coinNetwork?.network?.name || ""
+                            const coinSym = (it.coin?.symbol || "").toUpperCase()
+                            const networkSym = (it.network?.symbol || "").toUpperCase()
+                            const networkName = it.network?.name || ""
                             return (
                               <div className="d-flex align-items-center">
-                                <CoinImg coin={cn?.coin || it.coinNetwork?.coin} symbol={coinSym} networkSymbol={networkSym} />
+                                <CoinImg coin={it.coin} symbol={coinSym} networkSymbol={networkSym} />
                                 <div>
                                   <div>{coinSym}</div>
                                   <small className="text-muted">{networkName}</small>

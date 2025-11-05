@@ -76,7 +76,7 @@ export async function listInvoices(params: ListInvoicesParams = {}, token?: unkn
 
   const authHeader = toAuthHeader(token)
 
-  const res = await apiFetch<any>(`/invoices?${qs.toString()}`, {
+  const res = await apiFetch<any>(`/api/v1/user/invoices?${qs.toString()}`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -85,23 +85,29 @@ export async function listInvoices(params: ListInvoicesParams = {}, token?: unkn
   })
 
   const payload = res?.data ?? res
-  const items: InvoiceRecord[] = Array.isArray(payload?.items)
-    ? payload.items
-    : Array.isArray(payload)
-      ? (payload as InvoiceRecord[])
-      : Array.isArray(res?.results)
-        ? res.results
-        : []
-  const total = payload?.pagination?.total ?? payload?.total ?? payload?.count ?? (Array.isArray(items) ? items.length : undefined)
-  const currentPage = payload?.pagination?.page ?? page
-  const currentLimit = payload?.pagination?.limit ?? limit
+  // Support new API structure with data.invoices
+  const items: InvoiceRecord[] = Array.isArray(payload?.invoices)
+    ? payload.invoices
+    : Array.isArray(payload?.items)
+      ? payload.items
+      : Array.isArray(payload)
+        ? (payload as InvoiceRecord[])
+        : Array.isArray(res?.results)
+          ? res.results
+          : []
+  
+  // Support new meta structure
+  const meta = payload?.meta ?? payload?.pagination
+  const total = meta?.total ?? payload?.total ?? payload?.count ?? (Array.isArray(items) ? items.length : undefined)
+  const currentPage = meta?.currentPage ?? meta?.page ?? page
+  const currentLimit = meta?.perPage ?? meta?.limit ?? limit
 
   return { items, total, page: currentPage, limit: currentLimit }
 }
 
 export async function getInvoice(id: number | string, token?: unknown): Promise<InvoiceRecord> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/invoices/${id}`, {
+  const res = await apiFetch<any>(`/api/v1/user/invoices/${id}`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -115,7 +121,8 @@ export async function getInvoice(id: number | string, token?: unknown): Promise<
 }
 
 export interface CreateInvoiceBody {
-  coinNetworkId: number
+  coinSymbol: string
+  networkSymbol: string
   amount: string | number
   description?: string
   memo?: string
@@ -124,7 +131,7 @@ export interface CreateInvoiceBody {
 
 export async function createInvoice(body: CreateInvoiceBody, token?: unknown): Promise<InvoiceRecord> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/invoices`, {
+  const res = await apiFetch<any>(`/api/v1/user/invoices`, {
     method: 'POST',
     headers: {
       'x-request-id': requestId(),
