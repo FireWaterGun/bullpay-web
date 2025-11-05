@@ -79,6 +79,8 @@ export default function AppRouter() {
               <Route path="/pay/:id" element={<InvoicePaymentV2 />} />
               <Route path="/pay-v2/:id" element={<InvoicePayment />} />
               <Route path="/verify" element={<VerifyEmailPage />} />
+              {/* API Documentation - Redirect to standalone Swagger UI */}
+              <Route path="/api-docs" element={<Navigate to="/swagger-ui.html" replace />} />
               <Route path="/app/*" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} />
               <Route path="/admin/*" element={<ProtectedRoute requireAdmin><DashboardLayout /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />

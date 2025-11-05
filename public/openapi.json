@@ -1,0 +1,1045 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "BullPay Integration API",
+    "version": "1.0.0",
+    "description": "External integration API for merchants and developers. Use this API to integrate BullPay cryptocurrency payment gateway into your application. Register your account at the dashboard first to get started.",
+    "contact": {
+      "name": "BullPay Integration Support",
+      "email": "integration@bullpay.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3339",
+      "description": "Development server"
+    },
+    {
+      "url": "https://api.bullpay.com",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "System health and status"
+    },
+    {
+      "name": "Authentication",
+      "description": "User authentication and authorization"
+    },
+    {
+      "name": "Currencies",
+      "description": "Available cryptocurrencies and networks"
+    },
+    {
+      "name": "Invoices",
+      "description": "Invoice management and creation"
+    },
+    {
+      "name": "Public Invoices",
+      "description": "Public invoice viewing and payment (customer-facing)"
+    },
+    {
+      "name": "Payments",
+      "description": "Payment tracking and status"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "API health check",
+        "description": "Check if the API is running and healthy",
+        "operationId": "healthCheck",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "uptime": {
+                      "type": "number",
+                      "description": "Server uptime in seconds"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/coins": {
+      "get": {
+        "tags": ["Currencies"],
+        "summary": "Get available cryptocurrencies",
+        "description": "List all supported cryptocurrencies",
+        "operationId": "getCoins",
+        "responses": {
+          "200": {
+            "description": "List of available coins",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/networks": {
+      "get": {
+        "tags": ["Currencies"],
+        "summary": "Get available networks",
+        "description": "List all supported blockchain networks",
+        "operationId": "getNetworks",
+        "responses": {
+          "200": {
+            "description": "List of available networks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetworksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/coins/coin-networks": {
+      "get": {
+        "tags": ["Currencies"],
+        "summary": "Get coin-network combinations",
+        "description": "List all available coin and network combinations with payment details",
+        "operationId": "getCoinNetworks",
+        "responses": {
+          "200": {
+            "description": "List of coin-network combinations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoinNetworksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Get JWT token",
+        "description": "Authenticate with your BullPay account to get a JWT token for API access. Register your account at the BullPay dashboard first.",
+        "operationId": "login",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
+    "/api/v1/invoices": {
+      "get": {
+        "tags": ["Invoices"],
+        "summary": "List invoices",
+        "description": "Get list of user's invoices with pagination",
+        "operationId": "listInvoices",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageParam"
+          },
+          {
+            "$ref": "#/components/parameters/LimitParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of invoices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Invoices"],
+        "summary": "Create invoice",
+        "description": "Create a new cryptocurrency invoice",
+        "operationId": "createInvoice",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invoice created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{id}": {
+      "get": {
+        "tags": ["Invoices"],
+        "summary": "Get invoice by ID",
+        "description": "Retrieve a specific invoice by its ID",
+        "operationId": "getInvoice",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Invoice ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invoice details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      }
+    },
+    "/api/v1/public/invoices/{code}": {
+      "get": {
+        "tags": ["Public Invoices"],
+        "summary": "View public invoice",
+        "description": "View invoice details using public code (no authentication required)",
+        "operationId": "viewPublicInvoice",
+        "security": [],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "description": "Public invoice code",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public invoice details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicInvoiceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      }
+    },
+    "/api/v1/public/invoices/{code}/status": {
+      "get": {
+        "tags": ["Public Invoices"],
+        "summary": "Check invoice payment status",
+        "description": "Check the payment status of an invoice using public code",
+        "operationId": "checkInvoiceStatus",
+        "security": [],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "description": "Public invoice code",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invoice status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/invoices/{code}/qr": {
+      "get": {
+        "tags": ["Public Invoices"],
+        "summary": "Get invoice QR code",
+        "description": "Generate QR code for invoice payment address",
+        "operationId": "getInvoiceQR",
+        "security": [],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "description": "Public invoice code",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code image",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "List payments",
+        "description": "Get list of user's payments",
+        "operationId": "listPayments",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageParam"
+          },
+          {
+            "$ref": "#/components/parameters/LimitParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of payments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{id}": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Get payment details",
+        "description": "Retrieve payment details by ID",
+        "operationId": "getPayment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Payment ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{id}/status": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Get payment status",
+        "description": "Check the current status of a payment",
+        "operationId": "getPaymentStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Payment ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token authentication. Format: `Bearer {token}`"
+      }
+    },
+    "parameters": {
+      "PageParam": {
+        "name": "page",
+        "in": "query",
+        "description": "Page number (1-indexed)",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "LimitParam": {
+        "name": "limit",
+        "in": "query",
+        "description": "Items per page",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string",
+                "description": "JWT access token"
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["user", "admin", "super_admin"],
+            "example": "user"
+          }
+        }
+      },
+      "CreateInvoiceRequest": {
+        "type": "object",
+        "required": ["amount", "coinNetworkId"],
+        "properties": {
+          "amount": {
+            "type": "string",
+            "description": "Invoice amount",
+            "example": "100.00"
+          },
+          "coinNetworkId": {
+            "type": "integer",
+            "description": "Cryptocurrency network ID",
+            "example": 1
+          },
+          "description": {
+            "type": "string",
+            "example": "Payment for services"
+          }
+        }
+      },
+      "InvoiceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/Invoice"
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 123
+          },
+          "invoiceId": {
+            "type": "string",
+            "example": "INV-123456"
+          },
+          "amount": {
+            "type": "string",
+            "example": "100.00"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "paid", "expired", "cancelled"],
+            "example": "pending"
+          },
+          "paymentAddress": {
+            "type": "string",
+            "example": "0x1234567890abcdef"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "InvoiceListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invoice"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "integer",
+            "example": 1
+          },
+          "perPage": {
+            "type": "integer",
+            "example": 20
+          },
+          "total": {
+            "type": "integer",
+            "example": 100
+          },
+          "lastPage": {
+            "type": "integer",
+            "example": 5
+          }
+        }
+      },
+      "CoinsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Coin"
+            }
+          }
+        }
+      },
+      "Coin": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "symbol": {
+            "type": "string",
+            "example": "USDT"
+          },
+          "name": {
+            "type": "string",
+            "example": "Tether USD"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "NetworksResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Network"
+            }
+          }
+        }
+      },
+      "Network": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "symbol": {
+            "type": "string",
+            "example": "POLYGON"
+          },
+          "name": {
+            "type": "string",
+            "example": "Polygon"
+          },
+          "chainId": {
+            "type": "string",
+            "example": "137"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "CoinNetworksResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoinNetwork"
+            }
+          }
+        }
+      },
+      "CoinNetwork": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "coinSymbol": {
+            "type": "string",
+            "example": "USDT"
+          },
+          "networkSymbol": {
+            "type": "string",
+            "example": "POLYGON"
+          },
+          "contractAddress": {
+            "type": "string",
+            "nullable": true,
+            "example": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
+          },
+          "minDeposit": {
+            "type": "string",
+            "example": "1.00"
+          },
+          "minWithdraw": {
+            "type": "string",
+            "example": "10.00"
+          },
+          "withdrawalFee": {
+            "type": "string",
+            "example": "1.00"
+          },
+          "isDepositEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "isWithdrawEnabled": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "PublicInvoiceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "ABC123XYZ"
+              },
+              "amount": {
+                "type": "string",
+                "example": "100.00"
+              },
+              "coinSymbol": {
+                "type": "string",
+                "example": "USDT"
+              },
+              "networkSymbol": {
+                "type": "string",
+                "example": "POLYGON"
+              },
+              "paymentAddress": {
+                "type": "string",
+                "example": "0x1234567890abcdef"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["pending", "paid", "expired", "cancelled"],
+                "example": "pending"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "InvoiceStatusResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["pending", "paid", "expired", "cancelled"],
+                "example": "pending"
+              },
+              "paidAmount": {
+                "type": "string",
+                "nullable": true,
+                "example": "100.00"
+              },
+              "paidAt": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "PaymentListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Payment"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "invoiceId": {
+            "type": "integer",
+            "example": 123
+          },
+          "amount": {
+            "type": "string",
+            "example": "100.00"
+          },
+          "txHash": {
+            "type": "string",
+            "example": "0xabc123..."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "confirmed", "failed"],
+            "example": "confirmed"
+          },
+          "confirmations": {
+            "type": "integer",
+            "example": 12
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PaymentResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/Payment"
+          }
+        }
+      },
+      "PaymentStatusResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["pending", "confirmed", "failed"],
+                "example": "confirmed"
+              },
+              "confirmations": {
+                "type": "integer",
+                "example": 12
+              },
+              "requiredConfirmations": {
+                "type": "integer",
+                "example": 12
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "BIZ_1201"
+              },
+              "message": {
+                "type": "string",
+                "example": "Error message"
+              },
+              "details": {
+                "type": "object"
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "description": "Authentication required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ForbiddenError": {
+        "description": "Access forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}
