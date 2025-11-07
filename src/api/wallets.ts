@@ -3,6 +3,28 @@ import { requestId } from '../utils/requestId'
 import { extractToken } from '../utils/authToken'
 
 export interface WalletRecord {
+  id?: string | number
+  userId?: string | number
+  coinNetworkId?: number
+  address?: string
+  memo?: string | null
+  coin?: {
+    id: number
+    symbol: string
+    name: string
+    type?: string
+    decimals?: number
+    logoUrl?: string
+  }
+  network?: {
+    id: number
+    symbol: string
+    name: string
+    chainId?: number
+    explorerUrl?: string
+  }
+  createdAt?: string
+  updatedAt?: string
   [key: string]: any
 }
 
@@ -25,7 +47,7 @@ function toAuthHeader(input?: unknown): string | undefined {
 
 export async function listWallets(token?: unknown): Promise<WalletRecord[]> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/wallets`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -34,8 +56,10 @@ export async function listWallets(token?: unknown): Promise<WalletRecord[]> {
   })
 
   const payload = res?.data ?? res
-  if (Array.isArray(payload)) return payload as WalletRecord[]
+  // Support new structure: data.wallets, fallback to old data.items
+  if (Array.isArray(payload?.wallets)) return payload.wallets as WalletRecord[]
   if (Array.isArray(payload?.items)) return payload.items as WalletRecord[]
+  if (Array.isArray(payload)) return payload as WalletRecord[]
   if (Array.isArray(res?.results)) return res.results as WalletRecord[]
   return []
 }
@@ -47,7 +71,7 @@ export async function listAllWallets(token?: unknown, pageSize = 100): Promise<W
   // Guard against infinite loops
   const MAX_PAGES = 50
   while (page <= MAX_PAGES) {
-    const res = await apiFetch<any>(`/wallets?page=${page}&limit=${pageSize}`, {
+    const res = await apiFetch<any>(`/api/v1/user/wallet?page=${page}&limit=${pageSize}`, {
       method: 'GET',
       headers: {
         'x-request-id': requestId(),
@@ -55,13 +79,16 @@ export async function listAllWallets(token?: unknown, pageSize = 100): Promise<W
       },
     })
     const payload = res?.data ?? res
-    const items: WalletRecord[] = Array.isArray(payload?.items)
-      ? payload.items
-      : Array.isArray(payload)
-        ? payload
-        : Array.isArray(res?.results)
-          ? res.results
-          : []
+    // Support new structure: data.wallets, fallback to old data.items
+    const items: WalletRecord[] = Array.isArray(payload?.wallets)
+      ? payload.wallets
+      : Array.isArray(payload?.items)
+        ? payload.items
+        : Array.isArray(payload)
+          ? payload
+          : Array.isArray(res?.results)
+            ? res.results
+            : []
     out.push(...items)
     if (items.length < pageSize) break
     page += 1
@@ -76,7 +103,7 @@ export interface CreateWalletBody {
 
 export async function createWallet(body: CreateWalletBody, token?: unknown): Promise<WalletRecord> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/wallets`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet`, {
     method: 'POST',
     headers: {
       'x-request-id': requestId(),
@@ -91,7 +118,7 @@ export async function createWallet(body: CreateWalletBody, token?: unknown): Pro
 
 export async function getWallet(id: number | string, token?: unknown): Promise<WalletRecord | null> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/wallets/${id}`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/${id}`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -109,7 +136,7 @@ export interface UpdateWalletBody {
 
 export async function updateWallet(id: number | string, body: UpdateWalletBody, token?: unknown): Promise<WalletRecord> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/wallets/${id}`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/${id}`, {
     method: 'PUT',
     headers: {
       'x-request-id': requestId(),
@@ -124,7 +151,7 @@ export async function updateWallet(id: number | string, body: UpdateWalletBody, 
 
 export async function deleteWallet(id: number | string, token?: unknown): Promise<boolean> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/wallets/${id}`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/${id}`, {
     method: 'DELETE',
     headers: {
       'x-request-id': requestId(),

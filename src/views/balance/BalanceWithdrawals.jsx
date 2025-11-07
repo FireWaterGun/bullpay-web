@@ -5,7 +5,6 @@ import { listWithdrawals } from '../../api/withdrawals'
 import { useAuth } from '../../context/AuthContext'
 import { listCoins } from '../../api/coins'
 import { listWallets } from '../../api/wallets'
-import { listNetworks } from '../../api/networks'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -44,9 +43,11 @@ function getCoinAssetCandidates(symbol, logoUrl) {
 function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   const [idx, setIdx] = useState(0)
   const [netIdx, setNetIdx] = useState(0)
+  const [showFallback, setShowFallback] = useState(false)
+  const logoUrl = coin?.logoUrl || coin?.logo_url
   const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
-    [coin?.logoUrl, symbol]
+    () => getCoinAssetCandidates(symbol, logoUrl).filter(c => !c.includes('default.svg')),
+    [logoUrl, symbol]
   )
   const networkCandidates = useMemo(
     () => getCoinAssetCandidates(networkSymbol, null),
@@ -56,6 +57,43 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
   const badgeSize = 18
 
+  const handleError = () => {
+    if (idx + 1 < candidates.length) {
+      setIdx(i => i + 1)
+    } else {
+      setShowFallback(true)
+    }
+  }
+
+  const getAvatarColor = (text) => {
+    const colors = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD']
+    const colorIndex = text.charCodeAt(0) % colors.length
+    return colors[colorIndex]
+  }
+
+  if (candidates.length === 0 || showFallback) {
+    return (
+      <div className="position-relative me-3">
+        <div
+          style={{
+            width: size,
+            height: size,
+            borderRadius: '8px',
+            backgroundColor: getAvatarColor(symbol || 'C'),
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: size * 0.5,
+            fontWeight: 'bold'
+          }}
+        >
+          {(symbol || 'C').charAt(0).toUpperCase()}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="position-relative me-3" style={{ width: size, height: size }}>
       <img
@@ -64,7 +102,7 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
         width={size}
         height={size}
         style={{ objectFit: 'cover' }}
-        onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
+        onError={handleError}
       />
       {networkSymbol && networkSymbol !== symbol &&
        !(symbol === 'POL' && networkSymbol === 'MATIC') && (
@@ -120,7 +158,6 @@ export default function BalanceWithdrawals() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [coins, setCoins] = useState([])
-  const [networks, setNetworks] = useState([])
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [status, setStatus] = useState('ALL')
@@ -130,13 +167,9 @@ export default function BalanceWithdrawals() {
     let mounted = true
     ;(async () => {
       try {
-        const [coinsData, networksData] = await Promise.all([
-          listCoins(token),
-          listNetworks(token)
-        ])
+        const coinsData = await listCoins(token)
         if (!mounted) return
         setCoins(Array.isArray(coinsData) ? coinsData : [])
-        setNetworks(Array.isArray(networksData) ? networksData : [])
       } catch {/* ignore */}
     })()
     return () => { mounted = false }
@@ -166,7 +199,7 @@ export default function BalanceWithdrawals() {
     ;(async () => {
       try {
         setLoading(true)
-        const queryStatus = status === 'ALL' ? undefined : status
+        const queryStatus = status === 'ALL' ? undefined : status.toLowerCase()
         const { items, pagination } = await listWithdrawals({ page, limit, status: queryStatus }, token)
         if (!mounted) return
         setItems(Array.isArray(items) ? items : [])
@@ -182,15 +215,15 @@ export default function BalanceWithdrawals() {
   }, [token, page, limit, status])
 
   const cnById = useMemo(() => {
-    const networkMap = new Map(networks.map(n => [Number(n.id), n]))
+    // Fallback map for backward compatibility when coin/network objects are not embedded
+    // Modern API responses include coin and network objects directly in items
     const m = new Map()
     for (const cn of coins) {
       const id = Number(cn.id)
-      const network = networkMap.get(Number(cn.networkId))
-      m.set(id, { ...cn, network })
+      m.set(id, cn)
     }
     return m
-  }, [coins, networks])
+  }, [coins])
 
   const [copiedMap, setCopiedMap] = useState({})
   async function copyAddress(text, key) {
@@ -209,6 +242,7 @@ export default function BalanceWithdrawals() {
   function statusBadgeClass(s) {
     const v = String(s || '').toUpperCase()
     if (v === 'PENDING') return 'badge bg-label-warning'
+    if (v === 'WAITING_FOR_GAS') return 'badge bg-label-warning'
     if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-label-info'
     if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-label-success'
     if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-label-danger'
@@ -216,7 +250,15 @@ export default function BalanceWithdrawals() {
     return 'badge bg-label-secondary'
   }
 
-  const statuses = ['ALL', 'PENDING', 'PROCESSING', 'COMPLETED', 'FAILED']
+  const statuses = ['ALL', 'PENDING', 'WAITING_FOR_GAS', 'PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED']
+  
+  function formatStatusLabel(s) {
+    // Convert WAITING_FOR_GAS to "Waiting for gas"
+    return s.split('_').map((word, idx) => 
+      idx === 0 ? word.charAt(0) + word.slice(1).toLowerCase() : word.toLowerCase()
+    ).join(' ')
+  }
+  
   function changeStatus(s) {
     setStatus(s)
     setPage(1)
@@ -256,10 +298,12 @@ export default function BalanceWithdrawals() {
                   </thead>
                   <tbody>
                     {walletItems.map((w, idx) => {
-                      const cn = cnById.get(Number(w.coinNetworkId))
-                      const coinSym = (cn?.coin?.symbol || w.coinSymbol || '-').toString().toUpperCase()
-                      const networkSym = (cn?.network?.symbol || '').toString().toUpperCase()
-                      const networkName = cn?.network?.name || getNetworkLabel(cn, cn?.coin)
+                      // Support new structure: wallet has coin and network objects directly
+                      const coin = w.coin || cnById.get(Number(w.coinNetworkId))?.coin
+                      const network = w.network || cnById.get(Number(w.coinNetworkId))?.network
+                      const coinSym = (coin?.symbol || w.coinSymbol || '-').toString().toUpperCase()
+                      const networkSym = (network?.symbol || '').toString().toUpperCase()
+                      const networkName = network?.name || getNetworkLabel({ network }, coin)
                       const addr = w.address || '-'
                       return (
                         <tr key={w.id || idx}>
@@ -270,7 +314,7 @@ export default function BalanceWithdrawals() {
                           </td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} />
+                              <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} />
                               <div>
                                 <div>{coinSym}</div>
                                 <small className="text-muted">{networkName}</small>
@@ -311,7 +355,7 @@ export default function BalanceWithdrawals() {
                   className={`nav-link ${status === s ? 'active' : ''}`}
                   onClick={() => changeStatus(s)}
                 >
-                  {t(`status.${s.toLowerCase()}`, { defaultValue: s.charAt(0) + s.slice(1).toLowerCase() })}
+                  {t(`status.${s.toLowerCase()}`, { defaultValue: formatStatusLabel(s) })}
                 </button>
               </li>
             ))}
@@ -350,10 +394,12 @@ export default function BalanceWithdrawals() {
                 </thead>
                 <tbody>
                   {items.map((it) => {
-                    const cn = cnById.get(Number(it.coinNetworkId))
-                    const sym = (cn?.coin?.symbol || 'COIN').toUpperCase()
-                    const networkSym = (cn?.network?.symbol || '').toString().toUpperCase()
-                    const networkName = cn?.network?.name || getNetworkLabel(cn, cn?.coin)
+                    // Support new structure: withdrawal may have coinNetwork with coin and network objects
+                    const coin = it.coinNetwork?.coin || cnById.get(Number(it.coinNetworkId))?.coin
+                    const network = it.coinNetwork?.network || cnById.get(Number(it.coinNetworkId))?.network
+                    const sym = (coin?.symbol || 'COIN').toUpperCase()
+                    const networkSym = (network?.symbol || '').toString().toUpperCase()
+                    const networkName = network?.name || getNetworkLabel({ network }, coin)
                     const key = it.id
                     return (
                       <tr key={it.id}>
@@ -365,7 +411,7 @@ export default function BalanceWithdrawals() {
                         </td>
                         <td>
                           <div className="d-flex align-items-center">
-                            <CoinImg coin={cn?.coin} symbol={sym} networkSymbol={networkSym} />
+                            <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} />
                             <div>
                               <div>{sym}</div>
                               <small className="text-muted">{networkName}</small>
@@ -376,14 +422,14 @@ export default function BalanceWithdrawals() {
                         <td>
                           <span className="font-monospace d-block text-truncate align-middle" title={it.toAddress}>{it.toAddress}</span>
                         </td>
-                        <td className="text-nowrap"><span className={statusBadgeClass(it.status)}>{String(it.status || '').toUpperCase()}</span></td>
+                        <td className="text-nowrap"><span className={statusBadgeClass(it.status)}>{formatStatusLabel(String(it.status || '').toUpperCase())}</span></td>
                         <td className="text-nowrap text-end">
                           <span className="text-muted small">{new Date(it.createdAt).toLocaleString()}</span>
                         </td>
                         <td className="text-center">
                           {it.txHash ? (
                             <a
-                              href={`${it.coinNetwork?.network?.explorerUrl || cn?.network?.explorerUrl || 'https://etherscan.io'}/tx/${it.txHash}`}
+                              href={`${network?.explorerUrl || 'https://etherscan.io'}/tx/${it.txHash}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="btn btn-sm btn-icon btn-outline-primary"
@@ -393,7 +439,7 @@ export default function BalanceWithdrawals() {
                             </a>
                           ) : (
                             <a
-                              href={`${it.coinNetwork?.network?.explorerUrl || cn?.network?.explorerUrl || 'https://etherscan.io'}/address/${it.toAddress}`}
+                              href={`${network?.explorerUrl || 'https://etherscan.io'}/address/${it.toAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="btn btn-sm btn-icon btn-outline-primary"
@@ -409,29 +455,37 @@ export default function BalanceWithdrawals() {
               </table>
             </div>
           )}
-        </div>
-        <div className="card-footer d-flex justify-content-between align-items-center">
-          <div className="text-muted small">
-            {pagination ? (
-              <>
-                {t('common.page', { defaultValue: 'Page' })} {pagination.page} {t('common.of', { defaultValue: 'of' })} {pagination.totalPages || 1}
-              </>
-            ) : null}
+          {/* Simple pagination */}
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <div className="text-muted small">
+              {pagination && items.length > 0 ? (
+                <>
+                  {t('invoices.showingEntries', {
+                    start: (page - 1) * limit + 1,
+                    end: Math.min(page * limit, pagination.total || items.length),
+                    total: pagination.total || items.length,
+                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+                  })}
+                </>
+              ) : null}
+            </div>
+            <div className="btn-group">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                disabled={page <= 1}
+                onClick={() => changePage(-1)}
+              >
+                {t('actions.prev')}
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                disabled={page >= (pagination?.totalPages || 1)}
+                onClick={() => changePage(1)}
+              >
+                {t('actions.next')}
+              </button>
+            </div>
           </div>
-          <nav aria-label="Withdrawals pagination">
-            <ul className="pagination mb-0">
-              <li className={`page-item ${pagination?.hasPrev === false || page <= 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => changePage(-1)} aria-label="Previous">
-                  &laquo; {t('pagination.prev', { defaultValue: 'Prev' })}
-                </button>
-              </li>
-              <li className={`page-item ${pagination?.hasNext === false || (pagination && page >= (pagination.totalPages || 1)) ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => changePage(1)} aria-label="Next">
-                  {t('pagination.next', { defaultValue: 'Next' })} &raquo;
-                </button>
-              </li>
-            </ul>
-          </nav>
         </div>
       </div>
     </div>

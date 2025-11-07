@@ -19,7 +19,7 @@ export interface ForgotPasswordRequest {
 }
 
 export async function loginApi(body: LoginRequest) {
-  return apiFetch('/auth/login', {
+  return apiFetch('/api/v1/auth/login', {
     method: 'POST',
     headers: { 'x-request-id': requestId() },
     body,
@@ -27,7 +27,7 @@ export async function loginApi(body: LoginRequest) {
 }
 
 export async function registerApi(body: RegisterRequest) {
-  return apiFetch('/auth/register', {
+  return apiFetch('/api/v1/auth/register', {
     method: 'POST',
     headers: { 'x-request-id': requestId() },
     body,
@@ -35,7 +35,7 @@ export async function registerApi(body: RegisterRequest) {
 }
 
 export async function forgotPasswordApi(body: ForgotPasswordRequest) {
-  return apiFetch('/auth/forgot-password', {
+  return apiFetch('/api/v1/auth/forgot-password', {
     method: 'POST',
     headers: { 'x-request-id': requestId() },
     body,
@@ -49,7 +49,7 @@ export interface VerifyEmailParams {
 
 export async function verifyEmailApi({ token, email }: VerifyEmailParams) {
   // Call the official endpoint only, as per backend contract
-  return apiFetch('/auth/verify-email', {
+  return apiFetch('/api/v1/auth/verify-email', {
     method: 'POST',
     headers: { 'x-request-id': requestId() },
     body: { token, email },

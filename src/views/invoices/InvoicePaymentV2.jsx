@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { QRCodeSVG as QRCode } from 'qrcode.react'
-import { getPublicInvoiceQr, getPublicInvoiceStatus } from '../../api/invoices'
+import { getPublicInvoice, getPublicInvoiceQr, getPublicInvoiceStatus } from '../../api/invoices'
 import { formatAmount, formatDateTime } from '../../utils/format'
 import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
@@ -110,7 +110,12 @@ export default function InvoicePaymentV2() {
       if (abortRef.current) abortRef.current.abort()
       const controller = new AbortController()
       abortRef.current = controller
-      const { invoice: inv, qr: qrData } = await getPublicInvoiceQr(publicCode)
+      
+      // Use /public/invoices/:code for initial load, /qr for polling
+      const { invoice: inv, qr: qrData } = initial 
+        ? await getPublicInvoice(publicCode)
+        : await getPublicInvoiceQr(publicCode)
+      
       const mapped = {
         id: inv.invoiceId ?? inv.id,
         invoiceId: inv.invoiceId ?? inv.id,

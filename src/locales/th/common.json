@@ -40,6 +40,8 @@
     "openPaymentLink": "เปิดหน้าชำระเงิน",
     "copied": "คัดลอกแล้ว",
     "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "ok": "ตกลง",
     "edit": "แก้ไข",
     "update": "อัพเดต",
     "saving": "กำลังบันทึก...",
@@ -96,7 +98,7 @@
     "number": "หมายเลข",
     "chain": "เชน",
     "selectAll": "เลือกทั้งหมด",
-    "showingEntries": "แสดง {{start}} ถึง {{end}} จากทั้งหมด {{total}} รายการ",
+    "showingEntries": "แสดง {{start}} - {{end}} จาก {{total}} รายการ",
     "sortNewest": "ใหม่ที่สุดก่อน",
     "sortOldest": "เก่าที่สุดก่อน",
     "loadFailed": "ไม่สามารถโหลดใบแจ้งหนี้ได้",
@@ -139,6 +141,16 @@
     "requestWithdraw": "คำขอถอน",
     "withdrawals": "การถอนเงิน",
     "newAddress": "เพิ่มที่อยู่ใหม่",
+    "from": "จาก",
+    "amountToWithdraw": "จำนวนที่ต้องการถอน",
+    "payoutAddress": "ที่อยู่รับเงิน",
+    "currentBalance": "ยอดคงเหลือปัจจุบัน",
+    "outcomeBalance": "ยอดคงเหลือหลังถอน",
+    "amount": "จำนวนเงิน",
+    "withdrawSuccessTitle": "ส่งคำขอถอนเงินแล้ว",
+    "withdrawSuccessMsg": "คำขอถอนเงินของคุณได้รับการส่งเรียบร้อยแล้ว",
+    "withdrawalsList": "รายการถอนเงิน",
+    "noWithdrawals": "ไม่มีรายการถอนเงิน",
     "col": {
       "coin": "เหรียญ",
       "current": "จำนวนปัจจุบัน",
@@ -166,6 +178,19 @@
   "validation": {
     "requiredFields": "กรุณากรอกข้อมูลที่จำเป็น"
   },
+  "status": {
+    "all": "ทั้งหมด",
+    "pending": "รอการอนุมัติ",
+    "waiting_for_gas": "รอเติม gas fee",
+    "processing": "กำลังดำเนินการ",
+    "completed": "สำเร็จแล้ว",
+    "failed": "ล้มเหลว",
+    "cancelled": "ถูกยกเลิก"
+  },
+  "pagination": {
+    "prev": "ก่อนหน้า",
+    "next": "ถัดไป"
+  },
   "update": "อัพเดต",
   "saving": "กำลังบันทึก...",
   "deleting": "กำลังลบ...",
@@ -182,7 +207,12 @@
     "noData": "ไม่พบข้อมูล",
     "copyright": "© {{year}} · สงวนลิขสิทธิ์",
     "poweredBy": "ขับเคลื่อนโดย",
-    "allTypes": "ทุกประเภท"
+    "allTypes": "ทุกประเภท",
+    "id": "รหัส",
+    "status": "สถานะ",
+    "createdAt": "สร้างเมื่อ",
+    "page": "หน้า",
+    "of": "จาก"
   },
   "wallet": {
     "loading": "กำลังโหลดกระเป๋า...",

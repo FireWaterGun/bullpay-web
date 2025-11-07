@@ -2,14 +2,36 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { listCoins, getCoinNetworksBySymbol } from '../../api/coins'
+import { listCoins } from '../../api/coins'
 import { createWallet } from '../../api/wallets'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
   const aliases = {
-    btc: ['bitcoin'], eth: ['ethereum'], doge: ['dogecoin'], sol: ['solana'], matic: ['polygon'], ada: ['cardano'], xmr: ['monero'], zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'], usdttrc20: ['usdt', 'tether'], usdterc20: ['usdt', 'tether'], usdtbsc: ['usdt', 'tether'], usdtbep20: ['usdt', 'tether'], usdte: ['usdt', 'tether'], usdtton: ['usdtton', 'usdt', 'tether'],
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    pol: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+    usdttrc20: ['usdt', 'tether'],
+    usdterc20: ['usdt', 'tether'],
+    usdtbsc: ['usdt', 'tether'],
+    usdtbep20: ['usdt', 'tether'],
+    usdte: ['usdt', 'tether'],
+    usdtton: ['usdtton', 'usdt', 'tether'],
+    usdc: ['usd-coin'],
+    bnb: ['binance'],
+    bsc: ['binance'],
+    trx: ['tron'],
+    arb: ['arbitrum'],
+    op: ['optimism'],
+    base: ['base'],
+    ln: ['lightning'],
   }
   const names = [sym, ...(aliases[sym] || [])]
   if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
@@ -21,9 +43,58 @@ function getCoinAssetCandidates(symbol, logoUrl) {
 
 function CoinImg({ coin, symbol, size = 36 }) {
   const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => getCoinAssetCandidates(symbol, coin?.logoUrl), [coin?.logoUrl, symbol])
+  const [showFallback, setShowFallback] = useState(false)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, coin?.logoUrl).filter(c => !c.includes('default.svg')),
+    [coin?.logoUrl, symbol]
+  )
   const src = candidates[Math.min(idx, candidates.length - 1)]
-  return <img src={src} alt={symbol} width={size} height={size} className="rounded" onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))} />
+  
+  const handleError = () => {
+    if (idx + 1 < candidates.length) {
+      setIdx(i => i + 1)
+    } else {
+      setShowFallback(true)
+    }
+  }
+  
+  const getAvatarColor = (text) => {
+    const colors = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD']
+    const colorIndex = text.charCodeAt(0) % colors.length
+    return colors[colorIndex]
+  }
+  
+  if (candidates.length === 0 || showFallback) {
+    return (
+      <div
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '8px',
+          backgroundColor: getAvatarColor(symbol || 'C'),
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: size * 0.5,
+          fontWeight: 'bold'
+        }}
+      >
+        {(symbol || 'C').charAt(0).toUpperCase()}
+      </div>
+    )
+  }
+  
+  return (
+    <img
+      src={src}
+      alt={symbol}
+      width={size}
+      height={size}
+      className="rounded"
+      onError={handleError}
+    />
+  )
 }
 
 const NETWORK_LABELS = { 1: 'Bitcoin', 2: 'Lightning', 10: 'Ethereum', 11: 'ERC-20', 20: 'BSC (BEP-20)', 21: 'BEP-20', 30: 'TRON (TRC-20)', 31: 'TRC-20', 40: 'Polygon', 50: 'Solana', 60: 'TON', 61: 'TON (Jetton)', 70: 'Base', 80: 'Arbitrum', 90: 'Optimism', 100: 'Avalanche C-Chain' }
@@ -95,20 +166,29 @@ export default function WalletCreate() {
   }, [coins])
 
   useEffect(() => {
-    async function fetchNetworks() {
-      try {
-        if (!selectedCoin) { setNetworks([]); return }
-        const data = await getCoinNetworksBySymbol(selectedCoin, token)
-        setNetworks(Array.isArray(data) ? data : [])
-        if (Array.isArray(data) && data.length === 1) setCoinNetworkId(String(data[0].id))
-        else if (!data.some(n => String(n.id) === String(coinNetworkId))) setCoinNetworkId('')
-      } catch (e) {
-        setNetworks([])
-      }
+    // Use networks from grouped data (already loaded from listCoins API)
+    if (!selectedCoin) {
+      setNetworks([])
+      setCoinNetworkId('')
+      return
     }
-    fetchNetworks()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCoin])
+    
+    const group = grouped[selectedCoin]
+    if (group && group.items) {
+      setNetworks(group.items)
+      
+      // Auto-select if only one network
+      if (group.items.length === 1) {
+        setCoinNetworkId(String(group.items[0].id))
+      } else if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
+        // Clear if current selection is not in available networks
+        setCoinNetworkId('')
+      }
+    } else {
+      setNetworks([])
+      setCoinNetworkId('')
+    }
+  }, [selectedCoin, grouped, coinNetworkId])
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -163,7 +243,9 @@ export default function WalletCreate() {
                           <div>
                             <div className="fw-bold">{sym}</div>
                             <div className="text-muted small">{group.coin?.name || ''}</div>
-                            <div className="text-muted small">{t('form.networksCount', { count: networksCount })}</div>
+                            {networksCount > 1 && (
+                              <div className="text-muted small">{networksCount} networks</div>
+                            )}
                           </div>
                         </div>
                       </div>

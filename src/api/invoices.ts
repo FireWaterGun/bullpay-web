@@ -145,6 +145,29 @@ export async function createInvoice(body: CreateInvoiceBody, token?: unknown): P
 }
 
 // ---------------------------------------------
+// Public invoice (no auth required)
+// GET /public/invoices/:code
+// Response shape: { success, data: { invoice: {...}, qr: {...} } }
+// ---------------------------------------------
+export interface PublicInvoiceResult {
+  invoice: InvoiceRecord
+  qr: Record<string, any>
+}
+
+export async function getPublicInvoice(code: string): Promise<PublicInvoiceResult> {
+  if (!code) throw new Error('Missing invoice code')
+  const res = await apiFetch<any>(`/public/invoices/${encodeURIComponent(code)}`, {
+    method: 'GET',
+    headers: {
+      'x-request-id': requestId(),
+    },
+  })
+  const invoice = res?.data?.invoice ?? res?.invoice ?? res?.data?.data?.invoice ?? res?.data?.data ?? {}
+  const qr = res?.data?.qr ?? res?.qr ?? res?.data?.data?.qr ?? {}
+  return { invoice, qr }
+}
+
+// ---------------------------------------------
 // Public invoice QR (no auth required)
 // GET /public/invoices/:code/qr
 // Response shape (example): { success, data: { invoice: {...}, qr: {...} } }

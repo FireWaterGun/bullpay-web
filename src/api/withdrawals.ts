@@ -28,7 +28,7 @@ export interface CreateWithdrawalBody {
 
 export async function createWithdrawal(body: CreateWithdrawalBody, token?: unknown) {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/withdrawals`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawals`, {
     method: 'POST',
     headers: {
       'x-request-id': requestId(),
@@ -52,7 +52,7 @@ export async function listWithdrawals(params: ListWithdrawalsParams = {}, token?
   qs.set('page', String(page))
   qs.set('limit', String(limit))
   if (status) qs.set('status', status)
-  const res = await apiFetch<any>(`/withdrawals?${qs.toString()}`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawals?${qs.toString()}`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -60,13 +60,16 @@ export async function listWithdrawals(params: ListWithdrawalsParams = {}, token?
     },
   })
   const payload = res?.data ?? res
-  const items = Array.isArray(payload?.items)
-    ? payload.items
-    : Array.isArray(payload)
-      ? payload
-      : Array.isArray(res?.results)
-        ? res.results
-        : []
-  const pagination = payload?.pagination || null
+  // Support new structure: data.withdrawals, fallback to old data.items
+  const items = Array.isArray(payload?.withdrawals)
+    ? payload.withdrawals
+    : Array.isArray(payload?.items)
+      ? payload.items
+      : Array.isArray(payload)
+        ? payload
+        : Array.isArray(res?.results)
+          ? res.results
+          : []
+  const pagination = payload?.pagination || payload?.summary || null
   return { items, pagination }
 }
