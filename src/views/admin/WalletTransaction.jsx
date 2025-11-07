@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
@@ -97,18 +97,19 @@ export default function WalletTransaction() {
   const toast = useToastContext()
   const navigate = useNavigate()
   const { walletId } = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   
   const [loading, setLoading] = useState(true)
   const [ledger, setLedger] = useState(null)
   const [wallet, setWallet] = useState(null)
   const [coinInfo, setCoinInfo] = useState(null) // เก็บข้อมูล coin/network ไว้
   const [filters, setFilters] = useState({
-    page: 1,
+    page: parseInt(searchParams.get('page')) || 1,
     limit: 20,
-    state: '',
-    entryType: '',
-    startDate: '',
-    endDate: ''
+    state: searchParams.get('state') || '',
+    entryType: searchParams.get('entryType') || '',
+    startDate: searchParams.get('startDate') || '',
+    endDate: searchParams.get('endDate') || ''
   })
 
   useEffect(() => {
@@ -154,11 +155,31 @@ export default function WalletTransaction() {
   }
 
   function handleFilterChange(key, value) {
-    setFilters(prev => ({ ...prev, [key]: value, page: 1 }))
+    const newFilters = { ...filters, [key]: value, page: 1 }
+    setFilters(newFilters)
+    
+    // Update URL query parameters
+    const params = new URLSearchParams()
+    if (newFilters.state) params.set('state', newFilters.state)
+    if (newFilters.entryType) params.set('entryType', newFilters.entryType)
+    if (newFilters.startDate) params.set('startDate', newFilters.startDate)
+    if (newFilters.endDate) params.set('endDate', newFilters.endDate)
+    if (newFilters.page > 1) params.set('page', newFilters.page.toString())
+    setSearchParams(params)
   }
 
   function handlePageChange(newPage) {
-    setFilters(prev => ({ ...prev, page: newPage }))
+    const newFilters = { ...filters, page: newPage }
+    setFilters(newFilters)
+    
+    // Update URL query parameters
+    const params = new URLSearchParams()
+    if (newFilters.state) params.set('state', newFilters.state)
+    if (newFilters.entryType) params.set('entryType', newFilters.entryType)
+    if (newFilters.startDate) params.set('startDate', newFilters.startDate)
+    if (newFilters.endDate) params.set('endDate', newFilters.endDate)
+    if (newFilters.page > 1) params.set('page', newFilters.page.toString())
+    setSearchParams(params)
   }
 
   if (loading && !ledger) {
@@ -365,39 +386,50 @@ export default function WalletTransaction() {
                 </div>
               ) : (
                 <div className="table-responsive">
-                  <table className="table table-hover" style={{ minWidth: '2400px' }}>
+                  <table className="table table-hover" style={{ minWidth: '1800px' }}>
                     <thead>
                       <tr>
                         <th style={{ width: '60px', whiteSpace: 'nowrap' }}>{t('admin.ledger.id', { defaultValue: 'ID' })}</th>
                         <th style={{ minWidth: '100px', whiteSpace: 'nowrap' }}>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-                        <th className="text-end" style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                        <th className="text-end" style={{ minWidth: '160px', whiteSpace: 'nowrap' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
                         <th style={{ minWidth: '110px', whiteSpace: 'nowrap' }}>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
+                        <th style={{ minWidth: '200px', whiteSpace: 'nowrap' }}>{t('admin.ledger.reservationId', { defaultValue: 'Reservation ID' })}</th>
                         <th style={{ minWidth: '500px', whiteSpace: 'nowrap' }}>{t('admin.ledger.txHash', { defaultValue: 'Transaction Hash' })}</th>
                         <th style={{ minWidth: '160px', whiteSpace: 'nowrap' }}>{t('admin.ledger.createdAt', { defaultValue: 'Created At' })}</th>
                         <th style={{ minWidth: '160px', whiteSpace: 'nowrap' }}>{t('admin.ledger.committedAt', { defaultValue: 'Committed At' })}</th>
-                        <th style={{ minWidth: '100px', whiteSpace: 'nowrap' }}>{t('admin.ledger.sweepId', { defaultValue: 'Sweep ID' })}</th>
-                        <th style={{ minWidth: '420px', whiteSpace: 'nowrap' }}>{t('admin.ledger.fromAddress', { defaultValue: 'From Address' })}</th>
-                        <th style={{ minWidth: '420px', whiteSpace: 'nowrap' }}>{t('admin.ledger.toAddress', { defaultValue: 'To Address' })}</th>
-                        <th style={{ minWidth: '150px', whiteSpace: 'nowrap' }}>{t('admin.ledger.reservationId', { defaultValue: 'Reservation ID' })}</th>
+                        <th style={{ minWidth: '160px', whiteSpace: 'nowrap' }}>{t('admin.ledger.settledAt', { defaultValue: 'Settled At' })}</th>
+                        <th style={{ minWidth: '300px', whiteSpace: 'nowrap' }}>{t('admin.ledger.note', { defaultValue: 'Note' })}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {items.map((item) => {
                         const decimals = item.decimals || 18
                         const amount = AmountNormalizer.fromRawSimple(item.amountRaw || '0', decimals)
-                        const coinSymbol = item.metadata?.coin || ''
-                        const explorerUrl = item.metadata?.network === 'MATIC' 
+                        
+                        // Parse metadata JSON string
+                        let metadata = {}
+                        try {
+                          metadata = typeof item.metadata === 'string' 
+                            ? JSON.parse(item.metadata) 
+                            : item.metadata || {}
+                        } catch (e) {
+                          console.error('Failed to parse metadata:', e)
+                        }
+                        
+                        const coinSymbol = metadata?.coin || ''
+                        const networkSymbol = metadata?.network || ''
+                        const explorerUrl = networkSymbol === 'POL' || networkSymbol === 'MATIC'
                           ? 'https://polygonscan.com'
-                          : item.metadata?.network === 'ETH'
+                          : networkSymbol === 'ETH'
                           ? 'https://etherscan.io'
-                          : item.metadata?.network === 'BSC'
+                          : networkSymbol === 'BSC'
                           ? 'https://bscscan.com'
                           : null
                         
                         return (
                           <tr key={item.id}>
                             <td>
-                              <code>{item.id}</code>
+                              {item.id}
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.entryType === 'credit' ? (
@@ -422,8 +454,13 @@ export default function WalletTransaction() {
                               </span>
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
-                              {item.state === 'committed' ? (
+                              {item.state === 'settled' ? (
                                 <span className="badge bg-label-success">
+                                  <i className="bx bx-check-double me-1"></i>
+                                  {t('admin.ledger.settled', { defaultValue: 'Settled' })}
+                                </span>
+                              ) : item.state === 'committed' ? (
+                                <span className="badge bg-label-info">
                                   <i className="bx bx-check-circle me-1"></i>
                                   {t('admin.ledger.committed', { defaultValue: 'Committed' })}
                                 </span>
@@ -432,19 +469,30 @@ export default function WalletTransaction() {
                                   <i className="bx bx-time me-1"></i>
                                   {t('admin.ledger.pending', { defaultValue: 'Pending' })}
                                 </span>
-                              ) : (
+                              ) : item.state === 'reversed' ? (
                                 <span className="badge bg-label-danger">
-                                  <i className="bx bx-x-circle me-1"></i>
-                                  {t('admin.ledger.failed', { defaultValue: 'Failed' })}
+                                  <i className="bx bx-revision me-1"></i>
+                                  {t('admin.ledger.reversed', { defaultValue: 'Reversed' })}
                                 </span>
+                              ) : (
+                                <span className="badge bg-label-secondary">
+                                  {item.state || 'N/A'}
+                                </span>
+                              )}
+                            </td>
+                            <td>
+                              {item.reservationId ? (
+                                <span>{item.reservationId}</span>
+                              ) : (
+                                <span className="text-muted">-</span>
                               )}
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.txHash ? (
                                 <div className="d-flex align-items-center gap-2">
-                                  <code className="text-primary" style={{ fontSize: '0.75rem' }}>
+                                  <span>
                                     {item.txHash}
-                                  </code>
+                                  </span>
                                   {explorerUrl && (
                                     <a
                                       href={`${explorerUrl}/tx/${item.txHash}`}
@@ -457,79 +505,59 @@ export default function WalletTransaction() {
                                       <i className="bx bx-link-external" style={{ fontSize: '14px' }}></i>
                                     </a>
                                   )}
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(item.txHash)
+                                      toast.success(t('actions.copied', { defaultValue: 'Copied!' }))
+                                    }}
+                                    className="btn btn-sm btn-icon btn-outline-secondary flex-shrink-0"
+                                    style={{ padding: '0.25rem 0.4rem' }}
+                                    title={t('actions.copy', { defaultValue: 'Copy' })}
+                                  >
+                                    <i className="bx bx-copy" style={{ fontSize: '14px' }}></i>
+                                  </button>
                                 </div>
                               ) : (
                                 <span className="text-muted">-</span>
                               )}
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
-                              <div>
+                              <div style={{ fontSize: '0.813rem' }}>
                                 {new Date(item.createdAt).toLocaleString()}
                               </div>
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                               {item.committedAt ? (
-                                <div>
+                                <div style={{ fontSize: '0.813rem' }}>
                                   {new Date(item.committedAt).toLocaleString()}
                                 </div>
                               ) : (
                                 <span className="text-muted">-</span>
                               )}
                             </td>
-                            <td>
-                              {item.metadata?.sweepId ? (
-                                <span className="badge bg-label-info">#{item.metadata.sweepId}</span>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
-                              {item.metadata?.fromAddress ? (
-                                <div className="d-flex align-items-center gap-2">
-                                  <code className="text-primary" style={{ fontSize: '0.75rem' }}>
-                                    {item.metadata.fromAddress}
-                                  </code>
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(item.metadata.fromAddress)
-                                      toast.success(t('actions.copied', { defaultValue: 'Copied!' }))
-                                    }}
-                                    className="btn btn-sm btn-icon btn-outline-secondary flex-shrink-0"
-                                    style={{ padding: '0.25rem 0.4rem' }}
-                                    title={t('actions.copy', { defaultValue: 'Copy' })}
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '14px' }}></i>
-                                  </button>
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td style={{ whiteSpace: 'nowrap' }}>
-                              {item.metadata?.toAddress ? (
-                                <div className="d-flex align-items-center gap-2">
-                                  <code className="text-primary" style={{ fontSize: '0.75rem' }}>
-                                    {item.metadata.toAddress}
-                                  </code>
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(item.metadata.toAddress)
-                                      toast.success(t('actions.copied', { defaultValue: 'Copied!' }))
-                                    }}
-                                    className="btn btn-sm btn-icon btn-outline-secondary flex-shrink-0"
-                                    style={{ padding: '0.25rem 0.4rem' }}
-                                    title={t('actions.copy', { defaultValue: 'Copy' })}
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '14px' }}></i>
-                                  </button>
+                              {item.settledAt ? (
+                                <div style={{ fontSize: '0.813rem' }}>
+                                  {new Date(item.settledAt).toLocaleString()}
                                 </div>
                               ) : (
                                 <span className="text-muted">-</span>
                               )}
                             </td>
                             <td>
-                              {item.reservationId ? (
-                                <code>{item.reservationId}</code>
+                              {metadata?.note || metadata?.invoiceNumber ? (
+                                <div className="small">
+                                  {metadata?.invoiceNumber && (
+                                    <div className="mb-1">
+                                      <span className="badge bg-label-primary">{metadata.invoiceNumber}</span>
+                                    </div>
+                                  )}
+                                  {metadata?.note && (
+                                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>
+                                      {metadata.note}
+                                    </div>
+                                  )}
+                                </div>
                               ) : (
                                 <span className="text-muted">-</span>
                               )}

@@ -38,13 +38,30 @@ export async function getCoins(token: string, page: number = 1, limit: number = 
     queryParams.append('search', search.trim())
   }
 
-  const data = await apiFetch(`/api/v1/admin/coins?${queryParams.toString()}`, {
+  const response = await apiFetch(`/api/v1/admin/coins?${queryParams.toString()}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { coins: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.coins || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 10,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -74,13 +91,30 @@ export async function getNetworks(token: string, page: number = 1, limit: number
     limit: String(limit),
   })
 
-  const data = await apiFetch(`/api/v1/admin/networks?${queryParams.toString()}`, {
+  const response = await apiFetch(`/api/v1/admin/networks?${queryParams.toString()}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { networks: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.networks || data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 10,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -195,13 +229,30 @@ export async function getCoinNetworks(token: string, page = 1, limit = 10, searc
     params.append('network', network)
   }
 
-  const data = await apiFetch(`/api/v1/admin/coin-networks?${params}`, {
+  const response = await apiFetch(`/api/v1/admin/coin-networks?${params}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { coinNetworks: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.coinNetworks || data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 10,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -435,13 +486,39 @@ export async function getSystemWallet(
   token: string,
   systemWalletId: number
 ) {
-  const data = await apiFetch(`/api/v1/admin/system-wallets/${systemWalletId}`, {
+  const response = await apiFetch(`/api/v1/admin/system-wallets/${systemWalletId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { wallet: {...}, assets: [...], signers: [...] } }
+  const data = response?.data || response
+  const wallet = data?.wallet || {}
+  const assets = data?.assets || []
+  const signers = data?.signers || []
+  
+  // Extract coin/network info from first asset for backward compatibility
+  const firstAsset = assets[0]
+  
+  return {
+    ...wallet,
+    assets,
+    signers,
+    // Add coinNetwork object from assets for component compatibility
+    coinNetwork: firstAsset ? {
+      id: firstAsset.coinNetworkId,
+      coin: {
+        symbol: firstAsset.coinSymbol
+      },
+      network: {
+        symbol: firstAsset.networkSymbol,
+        name: firstAsset.networkName
+      }
+    } : null
+  }
 }
 
 /**
@@ -474,13 +551,38 @@ export async function getSystemWalletLedger(
   const queryString = queryParams.toString()
   const url = `/api/v1/admin/system-wallets/${systemWalletId}/ledger${queryString ? `?${queryString}` : ''}`
 
-  const data = await apiFetch(url, {
+  const response = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { entries: [...], pagination: {...} } }
+  const data = response?.data || response
+  const items = data?.entries || data?.items || []
+  const paginationData = data?.pagination || data?.meta || {}
+
+  const currentPage = paginationData.page || params.page || 1
+  const limit = paginationData.limit || params.limit || 20
+  const total = paginationData.total || 0
+  const totalPages = paginationData.totalPages || Math.ceil(total / limit)
+
+  return {
+    items,
+    pagination: {
+      page: currentPage,
+      limit: limit,
+      total: total,
+      totalPages: totalPages,
+      currentPage: currentPage,
+      from: items.length > 0 ? ((currentPage - 1) * limit) + 1 : 0,
+      to: items.length > 0 ? Math.min(currentPage * limit, total) : 0,
+      hasNext: currentPage < totalPages,
+      hasPrev: currentPage > 1,
+    }
+  }
 }
 
 /**
@@ -504,7 +606,7 @@ export async function getLedgerEntries(
 
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
-  if (params.type) queryParams.append('type[]', params.type)
+  if (params.type) queryParams.append('type', params.type)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
   if (params.startDate) queryParams.append('startDate', params.startDate)
@@ -513,13 +615,30 @@ export async function getLedgerEntries(
   const queryString = queryParams.toString()
   const url = `/api/v1/admin/ledger/entries${queryString ? `?${queryString}` : ''}`
 
-  const data = await apiFetch(url, {
+  const response = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { entries: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.entries || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -548,13 +667,30 @@ export async function getSweeps(
   const queryString = queryParams.toString()
   const url = `/api/v1/admin/sweeps${queryString ? `?${queryString}` : ''}`
 
-  const data = await apiFetch(url, {
+  const response = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { sweeps: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.sweeps || data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**

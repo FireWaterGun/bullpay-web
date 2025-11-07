@@ -394,9 +394,9 @@ export default function BalanceWithdrawals() {
                 </thead>
                 <tbody>
                   {items.map((it) => {
-                    // Support new structure: withdrawal may have coinNetwork with coin and network objects
-                    const coin = it.coinNetwork?.coin || cnById.get(Number(it.coinNetworkId))?.coin
-                    const network = it.coinNetwork?.network || cnById.get(Number(it.coinNetworkId))?.network
+                    // Support new structure: withdrawal may have coin and network objects directly
+                    const coin = it.coin || it.coinNetwork?.coin || cnById.get(Number(it.coinNetworkId))?.coin
+                    const network = it.network || it.coinNetwork?.network || cnById.get(Number(it.coinNetworkId))?.network
                     const sym = (coin?.symbol || 'COIN').toUpperCase()
                     const networkSym = (network?.symbol || '').toString().toUpperCase()
                     const networkName = network?.name || getNetworkLabel({ network }, coin)

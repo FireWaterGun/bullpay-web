@@ -119,6 +119,8 @@ export default function WithdrawRequest() {
   const [address, setAddress] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [successOpen, setSuccessOpen] = useState(false)
+  const [errorOpen, setErrorOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     let mounted = true
@@ -179,7 +181,8 @@ export default function WithdrawRequest() {
       }, token)
       setSuccessOpen(true)
     } catch (err) {
-      alert(typeof err?.message === 'string' ? err.message : 'Withdrawal failed')
+      setErrorMessage(typeof err?.message === 'string' ? err.message : 'Withdrawal failed')
+      setErrorOpen(true)
     } finally {
       setSubmitting(false)
     }
@@ -219,6 +222,11 @@ export default function WithdrawRequest() {
   const closeSuccess = () => {
     setSuccessOpen(false)
     navigate('/app/balance/withdrawals', { replace: true })
+  }
+
+  const closeError = () => {
+    setErrorOpen(false)
+    setErrorMessage('')
   }
 
   return (
@@ -312,6 +320,7 @@ export default function WithdrawRequest() {
         )}
       </div>
   <SuccessModalWrapper open={successOpen} onClose={closeSuccess} amount={amount} sym={sym} address={address} t={t} />
+  <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
     </div>
   )
 }
@@ -339,6 +348,27 @@ export function SuccessModalWrapper({ open, onClose, amount, sym, address, t }) 
       variant="basic"
   confirmVariant="primary"
   cancelVariant="outline-secondary"
+    />
+  )
+}
+
+// Error modal
+export function ErrorModalWrapper({ open, onClose, message, t }) {
+  return (
+    <ConfirmModal
+      show={open}
+      title={t('balance.withdrawErrorTitle', { defaultValue: 'Withdrawal Failed' })}
+      message={(
+        <div>
+          {message || t('balance.withdrawErrorMsg', { defaultValue: 'Failed to process withdrawal request.' })}
+        </div>
+      )}
+      confirmText={t('actions.ok', { defaultValue: 'OK' })}
+      cancelText={t('actions.cancel', { defaultValue: 'Cancel' })}
+      onConfirm={onClose}
+      onCancel={onClose}
+      variant="basic"
+      confirmVariant="danger"
     />
   )
 }
