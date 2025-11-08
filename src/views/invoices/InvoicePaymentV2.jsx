@@ -387,10 +387,6 @@ export default function InvoicePaymentV2() {
       {/* Main Content */}
       <div className="flex-grow-1 d-flex align-items-center py-2">
         <div className="container">
-          {error && errorCode !== 'BIZ_1200' && (
-            <div className="alert alert-danger mx-auto" style={{ maxWidth: 500 }}>{error}</div>
-          )}
-
           {loading ? (
             <div className="text-center">
               <div className="spinner-border text-white" role="status">
