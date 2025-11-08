@@ -48,9 +48,11 @@ function getCoinAssetCandidates(symbol, logoUrl) {
 function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   const [idx, setIdx] = useState(0);
   const [netIdx, setNetIdx] = useState(0);
+  // Support logoUrl from coin object
+  const logoUrl = coin?.logoUrl || coin?.logo_url
   const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
-    [coin?.logoUrl, symbol]
+    () => getCoinAssetCandidates(symbol, logoUrl),
+    [logoUrl, symbol]
   );
   const networkCandidates = useMemo(
     () => getCoinAssetCandidates(networkSymbol, null),
@@ -182,7 +184,8 @@ export default function Balance() {
             ? balanceRes.breakdown
             : [];
           const filtered = list.filter((b) => {
-            const a = Number(b?.availableBalance || b?.balance || 0);
+            // Support new structure: totalBalance or confirmedBalance, fallback to old availableBalance or balance
+            const a = Number(b?.totalBalance || b?.confirmedBalance || b?.availableBalance || b?.balance || 0);
             return Number.isFinite(a) && a > 0;
           });
           setBalances(filtered);
@@ -285,27 +288,37 @@ export default function Balance() {
           ) : (
             <div className="d-flex flex-column gap-2">
               {balances.map((b, idx) => {
+                // Support new structure: coin and network objects from API, fallback to old coinNetById lookup
                 const cn = coinNetById.get(Number(b.coinNetworkId));
-                const coin = cn?.coin;
+                const coin = b.coin || cn?.coin;
+                const network = b.network || cn?.network;
+                
                 const coinSym = (
+                  b.coin?.symbol ||
                   b.coinSymbol ||
                   coin?.symbol ||
                   ""
                 ).toUpperCase();
                 const networkSym = (
+                  b.network?.symbol ||
                   b.networkSymbol ||
-                  cn?.network?.symbol ||
+                  network?.symbol ||
                   ""
                 ).toUpperCase();
                 // Use networkName from API if available, otherwise fallback to network symbol or label
-                const networkName = b.networkName || 
+                const networkName = b.network?.name ||
+                  b.networkName || 
                   b.networkSymbol || 
-                  cn?.network?.name || 
+                  network?.name || 
                   getNetworkLabel(cn, coin);
-                const amount = fmtAmount(b.availableBalance || b.balance || 0);
-                const amtNum = Number(b.availableBalance || b.balance || 0) || 0;
-                const rate = Number((rates && rates[coinSym]) || 0) || 0;
-                const usdVal = amtNum * rate;
+                
+                // Support new structure: totalBalance or confirmedBalance, fallback to old availableBalance or balance
+                const amount = fmtAmount(b.totalBalance || b.confirmedBalance || b.availableBalance || b.balance || 0);
+                const amtNum = Number(b.totalBalance || b.confirmedBalance || b.availableBalance || b.balance || 0) || 0;
+                
+                // Use valueUsd from API if available, otherwise calculate from rate
+                const rate = Number((rates && rates[coinSym]) || b.priceUsd || 0) || 0;
+                const usdVal = Number(b.valueUsd) || (amtNum * rate);
                 return (
                   <div
                     key={`${b.coinNetworkId}-${idx}`}

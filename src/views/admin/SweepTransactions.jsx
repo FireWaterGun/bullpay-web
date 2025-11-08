@@ -111,8 +111,23 @@ export default function SweepTransactions() {
         limit: 20,
         status: statusFilter || undefined
       })
-      setSweeps(data.items || [])
-      setPagination(data.pagination || null)
+      // Support new API structure with data.sweeps and data.meta
+      setSweeps(data.sweeps || data.items || [])
+      
+      // Map new meta structure to old pagination format
+      const meta = data.meta || data.pagination
+      if (meta) {
+        setPagination({
+          page: meta.currentPage || meta.page || currentPage,
+          limit: meta.perPage || meta.limit || 20,
+          total: meta.total || 0,
+          totalPages: meta.lastPage || meta.totalPages || 1,
+          hasPrev: meta.previousPageUrl !== null || (meta.currentPage || meta.page || 1) > 1,
+          hasNext: meta.nextPageUrl !== null || (meta.currentPage || meta.page || 1) < (meta.lastPage || meta.totalPages || 1)
+        })
+      } else {
+        setPagination(null)
+      }
     } catch (error) {
       console.error('Failed to load sweep transactions:', error)
       toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }))
@@ -298,7 +313,7 @@ export default function SweepTransactions() {
                           <td className="text-nowrap"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <span className="text-truncate me-2" style={{ maxWidth: '300px' }}>
+                              <span className="me-2">
                                 {sweep.fromAddress || 'N/A'}
                               </span>
                               {sweep.fromAddress && (
@@ -314,7 +329,7 @@ export default function SweepTransactions() {
                           </td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <span className="text-truncate me-2" style={{ maxWidth: '300px' }}>
+                              <span className="me-2">
                                 {sweep.toAddress || 'N/A'}
                               </span>
                               {sweep.toAddress && (
@@ -331,7 +346,7 @@ export default function SweepTransactions() {
                           <td>
                             {sweep.txHash ? (
                               <div className="d-flex align-items-center">
-                                <span className="text-truncate me-2" style={{ maxWidth: '300px' }}>
+                                <span className="me-2">
                                   {sweep.txHash}
                                 </span>
                                 <a 

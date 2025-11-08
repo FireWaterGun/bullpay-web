@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import { getInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
-import { listCoins } from "../../api/coins";
-import { listNetworks } from "../../api/networks";
 import { useInvoiceEvents } from "../../hooks/useInvoiceEvents";
 
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -185,8 +183,6 @@ export default function InvoiceDetail() {
   const [error, setError] = useState("");
   const [copiedPublic, setCopiedPublic] = useState(false); // still used for fallback share copy
   const [shareError, setShareError] = useState("");
-  const [coins, setCoins] = useState([]);
-  const [networks, setNetworks] = useState([]);
 
   const loadInvoice = useCallback(async () => {
     setLoading(true);
@@ -227,15 +223,9 @@ export default function InvoiceDetail() {
       setLoading(true);
       setError("");
       try {
-        const [invoiceRes, coinsData, networksData] = await Promise.all([
-          getInvoice(id, token),
-          listCoins(token),
-          listNetworks(token)
-        ]);
+        const invoiceRes = await getInvoice(id, token);
         if (mounted) {
           setInvoice(invoiceRes);
-          setCoins(Array.isArray(coinsData) ? coinsData : []);
-          setNetworks(Array.isArray(networksData) ? networksData : []);
         }
       } catch (e) {
         if (mounted)
@@ -304,18 +294,16 @@ export default function InvoiceDetail() {
     }
   };
 
-  const cnWithNetwork = useMemo(() => {
-    if (!invoice?.coinNetwork) return null;
-    const cn = invoice.coinNetwork;
-    const network = networks.find(n => Number(n.id) === Number(cn.networkId));
-    return { ...cn, network: network || cn.network };
-  }, [invoice, networks]);
-
-  const cn = cnWithNetwork || invoice?.coinNetwork;
-  const coinSym = (cn?.coin?.symbol || cn?.symbol || "").toUpperCase();
-  const networkSym = (cn?.network?.symbol || "").toUpperCase();
-  const networkName = cn?.network?.name || cn?.network || cn?.name || "";
-  const explorer = cn?.network?.explorerUrl || cn?.explorerUrl || "";
+  // Extract coin and network info from invoice response
+  const coinSym = (invoice?.coin?.symbol || "").toUpperCase();
+  const networkSym = (invoice?.network?.symbol || "").toUpperCase();
+  const networkName = invoice?.network?.name || "";
+  const explorer = invoice?.network?.explorerUrl || "";
+  const cn = invoice ? {
+    coin: invoice.coin,
+    network: invoice.network,
+    decimals: invoice.decimals
+  } : null;
 
   return (
     <div className="content-wrapper">

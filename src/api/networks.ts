@@ -35,7 +35,7 @@ function toAuthHeader(input?: unknown): string | undefined {
 
 export async function listNetworks(token?: unknown): Promise<Network[]> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/networks?limit=100`, {
+  const res = await apiFetch<any>(`/api/v1/networks?limit=100`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -45,6 +45,8 @@ export async function listNetworks(token?: unknown): Promise<Network[]> {
 
   const payload = res?.data ?? res
   if (Array.isArray(payload)) return payload as Network[]
+  // Support new API structure with data.networks
+  if (Array.isArray(payload?.networks)) return payload.networks as Network[]
   if (Array.isArray(payload?.items)) return payload.items as Network[]
   return []
 }

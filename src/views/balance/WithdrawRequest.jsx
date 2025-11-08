@@ -2,28 +2,15 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
-import { listCoins } from '../../api/coins'
 import { listAllWallets } from '../../api/wallets'
 import { getBalancesWithFiat } from '../../api/balance'
 import { createWithdrawal } from '../../api/withdrawals'
-import { listNetworks } from '../../api/networks'
 import ConfirmModal from '../../components/ConfirmModal'
 
 function fmtAmount(x, maxFrac = 8) {
   const n = Number(x)
   if (!Number.isFinite(n)) return '0'
   return n.toLocaleString(undefined, { maximumFractionDigits: maxFrac })
-}
-
-function getNetworkLabel(n, coin) {
-  if (n?.network && typeof n.network === 'object' && n.network.name) return n.network.name
-  if (typeof n?.network === 'string') return n.network
-  const id = Number(n?.networkId ?? n)
-  if (!Number.isFinite(id)) return '-'
-  const sym = String(coin?.symbol || coin || '').toUpperCase()
-  if (sym === 'BTC') return id === 2 ? 'Lightning' : 'Bitcoin'
-  if (sym === 'ETH' && n?.contractAddress) return 'ERC-20'
-  return n?.name || 'Network'
 }
 
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -63,9 +50,11 @@ function getCoinAssetCandidates(symbol, logoUrl) {
 function CoinImg({ coin, symbol, networkSymbol, size = 40 }) {
   const [idx, setIdx] = useState(0)
   const [netIdx, setNetIdx] = useState(0)
+  // Support logoUrl from coin object
+  const logoUrl = coin?.logoUrl || coin?.logo_url
   const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
-    [coin?.logoUrl, symbol]
+    () => getCoinAssetCandidates(symbol, logoUrl),
+    [logoUrl, symbol]
   )
   const networkCandidates = useMemo(
     () => getCoinAssetCandidates(networkSymbol, null),
@@ -121,9 +110,7 @@ export default function WithdrawRequest() {
   const navigate = useNavigate()
   const { coinNetworkId } = useParams()
 
-  const [coins, setCoins] = useState([])
-  const [networks, setNetworks] = useState([])
-  const [balances, setBalances] = useState([])
+  const [balance, setBalance] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [wallets, setWallets] = useState([])
@@ -132,22 +119,25 @@ export default function WithdrawRequest() {
   const [address, setAddress] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [successOpen, setSuccessOpen] = useState(false)
+  const [errorOpen, setErrorOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     let mounted = true
     ;(async () => {
       try {
         setLoading(true)
-        const [coinList, networksData, balRes, walletList] = await Promise.all([
-          listCoins(token),
-          listNetworks(token),
-          getBalancesWithFiat(token),
+        // Call balance API with coinNetworkId to get coin and network data in one request
+        const [balRes, walletList] = await Promise.all([
+          getBalancesWithFiat(token, undefined, coinNetworkId),
           listAllWallets(token, 100),
         ])
         if (!mounted) return
-        setCoins(Array.isArray(coinList) ? coinList : [])
-        setNetworks(Array.isArray(networksData) ? networksData : [])
-        setBalances(Array.isArray(balRes?.breakdown) ? balRes.breakdown : [])
+        // Get the first balance item (should be the only one since we filtered by coinNetworkId)
+        const balanceItem = Array.isArray(balRes?.breakdown) && balRes.breakdown.length > 0 
+          ? balRes.breakdown[0] 
+          : null
+        setBalance(balanceItem)
         setWallets(Array.isArray(walletList) ? walletList : [])
       } catch (e) {
         setError(e?.message || 'Failed to load data')
@@ -156,28 +146,23 @@ export default function WithdrawRequest() {
       }
     })()
     return () => { mounted = false }
-  }, [token])
+  }, [token, coinNetworkId])
 
-  const cn = useMemo(() => {
-    const id = Number(coinNetworkId)
-    const coinNetwork = coins.find(c => Number(c.id) === id)
-    if (!coinNetwork) return null
-    const network = networks.find(n => Number(n.id) === Number(coinNetwork.networkId))
-    return { ...coinNetwork, network }
-  }, [coins, networks, coinNetworkId])
-
-  const coin = cn?.coin
+  // Extract coin and network info from balance response
+  const coin = balance?.coin
+  const network = balance?.network
   const sym = (coin?.symbol || 'COIN').toUpperCase()
-  const networkSym = (cn?.network?.symbol || '').toUpperCase()
-  const networkLabel = cn?.network?.name || getNetworkLabel(cn, coin)
+  const networkSym = (network?.symbol || '').toUpperCase()
+  const networkLabel = network?.name || 'Network'
 
+  // Get available balance from the balance object
   const available = useMemo(() => {
-    const id = Number(coinNetworkId)
-    const b = balances.find(x => Number(x.coinNetworkId) === id)
-    return Number(b?.availableBalance || b?.balance || 0) || 0
-  }, [balances, coinNetworkId])
+    if (!balance) return 0
+    // Support new structure: totalBalance or confirmedBalance, fallback to old availableBalance or balance
+    return Number(balance?.totalBalance || balance?.confirmedBalance || balance?.availableBalance || balance?.balance || 0) || 0
+  }, [balance])
 
-  const decimals = Number(cn?.decimals || coin?.decimals || 8)
+  const decimals = Number(balance?.decimals || 8)
   const amountNum = Number(amount) || 0
   const outcome = Math.max(available - amountNum, 0)
 
@@ -185,18 +170,19 @@ export default function WithdrawRequest() {
 
   const onConfirm = async (e) => {
     e.preventDefault()
-    if (!cn || !address || !amount) return
+    if (!balance || !address || !amount) return
     try {
       setSubmitting(true)
       await createWithdrawal({
-        coinNetworkId: Number(cn.id),
+        coinNetworkId: Number(balance.coinNetworkId),
         amount: String(amount),
         toAddress: address,
         memo: 'Withdrawal request',
       }, token)
       setSuccessOpen(true)
     } catch (err) {
-      alert(typeof err?.message === 'string' ? err.message : 'Withdrawal failed')
+      setErrorMessage(typeof err?.message === 'string' ? err.message : 'Withdrawal failed')
+      setErrorOpen(true)
     } finally {
       setSubmitting(false)
     }
@@ -238,6 +224,11 @@ export default function WithdrawRequest() {
     navigate('/app/balance/withdrawals', { replace: true })
   }
 
+  const closeError = () => {
+    setErrorOpen(false)
+    setErrorMessage('')
+  }
+
   return (
     <div className="content-wrapper">
       <div className="container-xxl flex-grow-1 container-p-y">
@@ -245,7 +236,7 @@ export default function WithdrawRequest() {
           <div className="card"><div className="card-body"><div className="placeholder-glow"><span className="placeholder col-4"></span><span className="placeholder col-8"></span></div></div></div>
         ) : error ? (
           <div className="alert alert-danger" role="alert">{error}</div>
-        ) : !cn ? (
+        ) : !balance ? (
           <div className="alert alert-warning" role="alert">{t('common.noData') || 'Not found'}</div>
         ) : (
           <div className="card mx-auto" style={{ maxWidth: 520 }}>
@@ -281,7 +272,7 @@ export default function WithdrawRequest() {
                           <div className="text-muted small">{networkLabel}</div>
                         </div>
                       </div>
-                      {networkSym && networkSym !== sym && (
+                      {networkLabel && (
                         <span className="badge bg-danger-subtle text-danger">{t('wallet.colNetwork', { defaultValue: 'Network' })}</span>
                       )}
                     </div>
@@ -329,6 +320,7 @@ export default function WithdrawRequest() {
         )}
       </div>
   <SuccessModalWrapper open={successOpen} onClose={closeSuccess} amount={amount} sym={sym} address={address} t={t} />
+  <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
     </div>
   )
 }
@@ -356,6 +348,27 @@ export function SuccessModalWrapper({ open, onClose, amount, sym, address, t }) 
       variant="basic"
   confirmVariant="primary"
   cancelVariant="outline-secondary"
+    />
+  )
+}
+
+// Error modal
+export function ErrorModalWrapper({ open, onClose, message, t }) {
+  return (
+    <ConfirmModal
+      show={open}
+      title={t('balance.withdrawErrorTitle', { defaultValue: 'Withdrawal Failed' })}
+      message={(
+        <div>
+          {message || t('balance.withdrawErrorMsg', { defaultValue: 'Failed to process withdrawal request.' })}
+        </div>
+      )}
+      confirmText={t('actions.ok', { defaultValue: 'OK' })}
+      cancelText={t('actions.cancel', { defaultValue: 'Cancel' })}
+      onConfirm={onClose}
+      onCancel={onClose}
+      variant="basic"
+      confirmVariant="danger"
     />
   )
 }

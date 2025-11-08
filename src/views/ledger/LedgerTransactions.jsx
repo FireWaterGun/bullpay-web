@@ -141,22 +141,14 @@ export default function LedgerTransactions() {
   function getTypeLabel(type) {
     if (!type) return 'N/A'
     const typeMap = {
-      'payment_received': t('admin.ledger.paymentReceived', { defaultValue: 'Payment Received' }),
-      'payment_sent': t('admin.ledger.paymentSent', { defaultValue: 'Payment Sent' }),
-      'withdrawal': t('admin.ledger.withdrawal', { defaultValue: 'Withdrawal' }),
       'deposit': t('admin.ledger.deposit', { defaultValue: 'Deposit' }),
-      'sweep': t('admin.ledger.sweep', { defaultValue: 'Sweep' }),
+      'withdrawal': t('admin.ledger.withdrawal', { defaultValue: 'Withdrawal' }),
       'fee': t('admin.ledger.fee', { defaultValue: 'Fee' }),
-      'refund': t('admin.ledger.refund', { defaultValue: 'Refund' }),
-      'reversal': t('admin.ledger.reversal', { defaultValue: 'Reversal' }),
+      'conversion_in': t('admin.ledger.conversionIn', { defaultValue: 'Conversion In' }),
+      'conversion_out': t('admin.ledger.conversionOut', { defaultValue: 'Conversion Out' }),
+      'sweep': t('admin.ledger.sweep', { defaultValue: 'Sweep' }),
       'adjustment': t('admin.ledger.adjustment', { defaultValue: 'Adjustment' }),
-      'interest': t('admin.ledger.interest', { defaultValue: 'Interest' }),
-      'penalty': t('admin.ledger.penalty', { defaultValue: 'Penalty' }),
-      'bonus': t('admin.ledger.bonus', { defaultValue: 'Bonus' }),
-      'commission': t('admin.ledger.commission', { defaultValue: 'Commission' }),
-      'exchange': t('admin.ledger.exchange', { defaultValue: 'Exchange' }),
-      'transfer_in': t('admin.ledger.transferIn', { defaultValue: 'Transfer In' }),
-      'transfer_out': t('admin.ledger.transferOut', { defaultValue: 'Transfer Out' })
+      'payment_received': t('admin.ledger.paymentReceived', { defaultValue: 'Payment Received' })
     }
     return typeMap[type.toLowerCase()] || String(type).replace(/_/g, ' ').toUpperCase()
   }
@@ -176,9 +168,11 @@ export default function LedgerTransactions() {
 
   function typeBadgeClass(type) {
     const v = String(type || '').toLowerCase()
-    if (v === 'deposit' || v === 'payment_received') return 'badge bg-label-success'
-    if (v === 'withdrawal') return 'badge bg-label-danger'
-    if (v === 'sweep' || v === 'fee') return 'badge bg-label-info'
+    if (v === 'deposit' || v === 'payment_received' || v === 'conversion_in') return 'badge bg-label-success'
+    if (v === 'withdrawal' || v === 'conversion_out') return 'badge bg-label-danger'
+    if (v === 'sweep') return 'badge bg-label-info'
+    if (v === 'fee') return 'badge bg-label-warning'
+    if (v === 'adjustment') return 'badge bg-label-secondary'
     return 'badge bg-label-secondary'
   }
 
@@ -229,22 +223,14 @@ export default function LedgerTransactions() {
                     style={{ width: 'auto' }}
                   >
                     <option value="">{t('common.allTypes', { defaultValue: 'All Types' })}</option>
-                    <option value="payment_received">{t('admin.ledger.paymentReceived', { defaultValue: 'Payment Received' })}</option>
-                    <option value="payment_sent">{t('admin.ledger.paymentSent', { defaultValue: 'Payment Sent' })}</option>
-                    <option value="withdrawal">{t('admin.ledger.withdrawal', { defaultValue: 'Withdrawal' })}</option>
                     <option value="deposit">{t('admin.ledger.deposit', { defaultValue: 'Deposit' })}</option>
-                    <option value="sweep">{t('admin.ledger.sweep', { defaultValue: 'Sweep' })}</option>
+                    <option value="withdrawal">{t('admin.ledger.withdrawal', { defaultValue: 'Withdrawal' })}</option>
                     <option value="fee">{t('admin.ledger.fee', { defaultValue: 'Fee' })}</option>
-                    <option value="refund">{t('admin.ledger.refund', { defaultValue: 'Refund' })}</option>
-                    <option value="reversal">{t('admin.ledger.reversal', { defaultValue: 'Reversal' })}</option>
+                    <option value="conversion_in">{t('admin.ledger.conversionIn', { defaultValue: 'Conversion In' })}</option>
+                    <option value="conversion_out">{t('admin.ledger.conversionOut', { defaultValue: 'Conversion Out' })}</option>
+                    <option value="sweep">{t('admin.ledger.sweep', { defaultValue: 'Sweep' })}</option>
                     <option value="adjustment">{t('admin.ledger.adjustment', { defaultValue: 'Adjustment' })}</option>
-                    <option value="interest">{t('admin.ledger.interest', { defaultValue: 'Interest' })}</option>
-                    <option value="penalty">{t('admin.ledger.penalty', { defaultValue: 'Penalty' })}</option>
-                    <option value="bonus">{t('admin.ledger.bonus', { defaultValue: 'Bonus' })}</option>
-                    <option value="commission">{t('admin.ledger.commission', { defaultValue: 'Commission' })}</option>
-                    <option value="exchange">{t('admin.ledger.exchange', { defaultValue: 'Exchange' })}</option>
-                    <option value="transfer_in">{t('admin.ledger.transferIn', { defaultValue: 'Transfer In' })}</option>
-                    <option value="transfer_out">{t('admin.ledger.transferOut', { defaultValue: 'Transfer Out' })}</option>
+                    <option value="payment_received">{t('admin.ledger.paymentReceived', { defaultValue: 'Payment Received' })}</option>
                   </select>
                   <button className="btn btn-primary" onClick={loadLedgerEntries} disabled={loading}>
                     <i className="bx bx-refresh me-1"></i>
@@ -324,8 +310,14 @@ export default function LedgerTransactions() {
                             </div>
                           </td>
                           <td>
-                            <span className={entry.type === 'deposit' || entry.type === 'payment_received' ? 'text-success' : 'text-danger'}>
-                              {(entry.type === 'deposit' || entry.type === 'payment_received') ? '+' : '-'}
+                            <span className={
+                              (entry.type === 'deposit' || entry.type === 'payment_received' || entry.type === 'conversion_in') 
+                                ? 'text-success' 
+                                : (entry.type === 'withdrawal' || entry.type === 'conversion_out' || entry.type === 'fee')
+                                  ? 'text-danger'
+                                  : ''
+                            }>
+                              {(entry.type === 'deposit' || entry.type === 'payment_received' || entry.type === 'conversion_in') ? '+' : '-'}
                               {formatAmount(entry.amountRaw || entry.amount, entry.decimals || 18)}
                             </span>
                           </td>

@@ -16,6 +16,7 @@ function getCoinAssetCandidates(symbol, logoUrl) {
     doge: ['dogecoin'],
     sol: ['solana'],
     matic: ['polygon'],
+    pol: ['polygon'],
     ada: ['cardano'],
     xmr: ['monero'],
     zec: ['zcash'],
@@ -279,28 +280,28 @@ export default function WithdrawalTransactions() {
                           <td>
                             <div>
                               <div>{withdrawal.user?.email || 'N/A'}</div>
-                              {withdrawal.user?.username && (
-                                <small className="text-muted">@{withdrawal.user.username}</small>
+                              {withdrawal.user?.fullName && (
+                                <small className="text-muted">{withdrawal.user.fullName}</small>
                               )}
                             </div>
                           </td>
                           <td>
                             <span className="text-muted">
-                              {(withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
+                              {(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
                             </span>
                           </td>
                           <td>
                             <div className="d-flex align-items-center">
-                              {withdrawal.coinNetwork && (
+                              {(withdrawal.coin || withdrawal.coinNetwork) && (
                                 <>
                                   <CoinImg 
-                                    symbol={withdrawal.coinNetwork.coin?.symbol || withdrawal.symbol}
-                                    networkSymbol={withdrawal.coinNetwork.network?.symbol}
+                                    symbol={withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol}
+                                    networkSymbol={withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol}
                                     size={24}
                                   />
                                   <div className="ms-2">
-                                    <div>{withdrawal.coinNetwork.coin?.symbol || withdrawal.symbol || 'N/A'}</div>
-                                    <small className="text-muted">{withdrawal.coinNetwork.network?.name || 'N/A'}</small>
+                                    <div>{withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || 'N/A'}</div>
+                                    <small className="text-muted">{withdrawal.network?.name || withdrawal.coinNetwork?.network?.name || 'N/A'}</small>
                                   </div>
                                 </>
                               )}
@@ -352,15 +353,17 @@ export default function WithdrawalTransactions() {
                                 <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
                                   {withdrawal.txHash}
                                 </span>
-                                <a 
-                                  href={`${withdrawal.coinNetwork?.network?.explorerUrl}/tx/${withdrawal.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  title="View on explorer"
-                                >
-                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                                </a>
+                                {(withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl) && (
+                                  <a 
+                                    href={`${withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl}/tx/${withdrawal.txHash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                    title="View on explorer"
+                                  >
+                                    <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
+                                  </a>
+                                )}
                               </div>
                             ) : (
                               <span className="text-muted">-</span>
@@ -444,7 +447,7 @@ export default function WithdrawalTransactions() {
                       </div>
                       <div className="col-6">
                         <small className="text-muted d-block">{t('withdrawal.amount', { defaultValue: 'Amount' })}</small>
-                        <strong>{formatAmount(selectedWithdrawal.amountRaw || selectedWithdrawal.amount, selectedWithdrawal.decimals || 18)} {selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                        <strong>{formatAmount(selectedWithdrawal.amountRaw || selectedWithdrawal.amount, selectedWithdrawal.decimals || 18)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
                       </div>
                       <div className="col-6">
                         <small className="text-muted d-block">{t('withdrawal.fee', { defaultValue: 'Fee' })}</small>

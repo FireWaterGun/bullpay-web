@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { createInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { listCoins, getCoinNetworks, getCoinNetworksBySymbol } from "../../api/coins";
+import { listCoins } from "../../api/coins";
 // Removed wallet pre-check requirement; invoices can be created without existing wallets
 
 // Try multiple sources for coin logos under public/assets/img/coins
@@ -186,37 +186,32 @@ export default function InvoiceCreate() {
         setCoinNetworkId(String(firstGroup.items[0].id));
       }
     }
-    // If current coinNetworkId is not in newly selected coin, clear it
-    if (selectedCoin) {
-      const g = grouped[selectedCoin];
-      if (g && !g.items.some((i) => String(i.id) === String(coinNetworkId))) {
-        setCoinNetworkId("");
-      }
-    }
   }, [grouped, selectedCoin]);
 
   useEffect(() => {
-    // Fetch networks for selected coin using symbol-based API
-  async function fetchNetworks() {
-      try {
-        if (!selectedCoin) {
-          setNetworks([]);
-          return;
-        }
-        const data = await getCoinNetworksBySymbol(selectedCoin, token);
-        setNetworks(Array.isArray(data) ? data : []);
-        if (Array.isArray(data) && data.length === 1) {
-          setCoinNetworkId(String(data[0].id));
-        } else if (!data.some((n) => String(n.id) === String(coinNetworkId))) {
-          setCoinNetworkId("");
-        }
-      } catch (e) {
-        setNetworks([]);
-      }
+    // Use networks from grouped data (already loaded from listCoins API)
+    if (!selectedCoin) {
+      setNetworks([]);
+      setCoinNetworkId("");
+      return;
     }
-    fetchNetworks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCoin, hasWallet]);
+    
+    const group = grouped[selectedCoin];
+    if (group && group.items) {
+      setNetworks(group.items);
+      
+      // Auto-select if only one network
+      if (group.items.length === 1) {
+        setCoinNetworkId(String(group.items[0].id));
+      } else if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
+        // Clear if current selection is not in available networks
+        setCoinNetworkId("");
+      }
+    } else {
+      setNetworks([]);
+      setCoinNetworkId("");
+    }
+  }, [selectedCoin, grouped, coinNetworkId]);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -233,11 +228,20 @@ export default function InvoiceCreate() {
       setError(t("validation.requiredFields") || "Please fill required fields");
       return;
     }
+    
+    // Find selected network to get networkSymbol
+    const selectedNetwork = networks.find(n => String(n.id) === String(coinNetworkId));
+    if (!selectedNetwork?.network?.symbol) {
+      setError("Invalid network selection");
+      return;
+    }
+    
     try {
       setLoading(true);
       const invoice = await createInvoice(
         {
-          coinNetworkId: Number(coinNetworkId),
+          coinSymbol: selectedCoin,
+          networkSymbol: selectedNetwork.network.symbol,
           amount: amount,
           description: description || undefined,
           memo: memo || undefined,

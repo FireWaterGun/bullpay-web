@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { QRCodeSVG as QRCode } from 'qrcode.react'
-import { getPublicInvoiceQr, getPublicInvoiceStatus } from '../../api/invoices'
+import { getPublicInvoice, getPublicInvoiceQr, getPublicInvoiceStatus } from '../../api/invoices'
 import { formatAmount, formatDateTime } from '../../utils/format'
 import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
@@ -110,7 +110,12 @@ export default function InvoicePaymentV2() {
       if (abortRef.current) abortRef.current.abort()
       const controller = new AbortController()
       abortRef.current = controller
-      const { invoice: inv, qr: qrData } = await getPublicInvoiceQr(publicCode)
+      
+      // Use /public/invoices/:code for initial load, /qr for polling
+      const { invoice: inv, qr: qrData } = initial 
+        ? await getPublicInvoice(publicCode)
+        : await getPublicInvoiceQr(publicCode)
+      
       const mapped = {
         id: inv.invoiceId ?? inv.id,
         invoiceId: inv.invoiceId ?? inv.id,
@@ -123,8 +128,13 @@ export default function InvoicePaymentV2() {
         createdAt: inv.createdAt || inv.created_at,
         paidAmount: inv.paidAmount || inv.paid_amount,
         paidAt: inv.paidAt || inv.paid_at,
-        symbol: qrData?.symbol || inv.symbol,
-        network: qrData?.network || inv.network,
+        decimals: inv.decimals,
+        // Store coin and network objects from new API response
+        coin: inv.coin,
+        network: inv.network,
+        // Keep backward compatibility
+        symbol: qrData?.symbol || inv.coin?.symbol || inv.symbol,
+        networkName: qrData?.network || inv.network?.name || inv.network,
       }
       setInvoice(mapped)
       setQr(qrData)
@@ -212,10 +222,11 @@ export default function InvoicePaymentV2() {
     return () => clearInterval(iv)
   }, [])
 
-  const cn = invoice?.coinNetwork
-  const coinSym = invoice?.symbol || qr?.symbol || cn?.coin?.symbol || cn?.symbol || ''
-  const networkName = invoice?.network || qr?.network || cn?.network?.name || cn?.network || cn?.name || ''
-  const networkSym = (cn?.network?.symbol || networkName || cn?.symbol || '').toUpperCase()
+  // Use new coin and network objects from API response
+  const coinSym = (invoice?.coin?.symbol || invoice?.symbol || qr?.symbol || '').toUpperCase()
+  const networkName = invoice?.network?.name || invoice?.networkName || qr?.network || ''
+  const networkSym = (invoice?.network?.symbol || '').toUpperCase()
+  const explorerUrl = invoice?.network?.explorerUrl || ''
   const year = new Date().getFullYear()
 
   const expiryMs = useMemo(() => invoice?.expiryAt ? new Date(String(invoice.expiryAt)).getTime() : undefined, [invoice?.expiryAt])
@@ -376,10 +387,6 @@ export default function InvoicePaymentV2() {
       {/* Main Content */}
       <div className="flex-grow-1 d-flex align-items-center py-2">
         <div className="container">
-          {error && errorCode !== 'BIZ_1200' && (
-            <div className="alert alert-danger mx-auto" style={{ maxWidth: 500 }}>{error}</div>
-          )}
-
           {loading ? (
             <div className="text-center">
               <div className="spinner-border text-white" role="status">
@@ -502,7 +509,7 @@ export default function InvoicePaymentV2() {
                           background: 'rgba(139, 92, 246, 0.08)',
                           border: '1px solid rgba(139, 92, 246, 0.2)'
                         }}>
-                          <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={36} />
+                          <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={36} />
                           <div>
                             <div className="fw-bold" style={{ fontSize: '0.95rem', color: '#1e293b' }}>{coinSym}</div>
                             <small style={{ color: '#64748b', fontSize: '0.75rem' }}>{networkName}</small>
@@ -589,7 +596,7 @@ export default function InvoicePaymentV2() {
                                     padding: '4px',
                                     boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                                   }}>
-                                    <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={28} />
+                                    <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={28} />
                                   </div>
                                 </div>
                               </div>

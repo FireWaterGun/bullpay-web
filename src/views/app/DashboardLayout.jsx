@@ -488,7 +488,8 @@ export default function DashboardLayout() {
                 <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
                   <SubItem to="/admin/ledger/transactions" end label={t('admin.ledger.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
-                <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/settings/evm', '/admin/settings/network', '/admin/settings/sweep', '/admin/settings/withdrawal']}>
+                {/* Settings menu - Hidden */}
+                {/* <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/settings/evm', '/admin/settings/network', '/admin/settings/sweep', '/admin/settings/withdrawal']}>
                   <SubMenuGroup base="/admin/settings/evm" label={t('admin.evm.menuTitle', { defaultValue: 'EVM' })}>
                     <SubItem to="/admin/settings/evm/fee-policy" end label={t('admin.evm.feePolicy', { defaultValue: 'Fee Policy' })} />
                   </SubMenuGroup>
@@ -504,7 +505,7 @@ export default function DashboardLayout() {
                     <SubItem to="/admin/settings/withdrawal/overrides" label={t('admin.withdrawal.overrides', { defaultValue: 'Overrides' })} />
                     <SubItem to="/admin/settings/withdrawal/policy" label={t('admin.withdrawal.policy', { defaultValue: 'Policy & Settings' })} />
                   </SubMenuGroup>
-                </MenuGroup>
+                </MenuGroup> */}
               </>
             ) : (
               <>
@@ -635,11 +636,13 @@ export default function DashboardLayout() {
                       </a>
                     </li>
                     <li><div className="dropdown-divider"></div></li>
-                    <li>
-                      <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); navigate(isAdmin ? '/admin/settings' : '/app/settings')}}>
-                        <i className="icon-base bx bx-cog icon-md me-3"></i><span>{t('nav.settings')}</span>
-                      </a>
-                    </li>
+                    {!isAdmin && (
+                      <li>
+                        <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); navigate('/app/settings')}}>
+                          <i className="icon-base bx bx-cog icon-md me-3"></i><span>{t('nav.settings')}</span>
+                        </a>
+                      </li>
+                    )}
                     <li>
                       <a className="dropdown-item" href="#" onClick={(e)=>e.preventDefault()}>
                         <i className="icon-base bx bx-credit-card icon-md me-3"></i><span>{t('user.billing')}</span>

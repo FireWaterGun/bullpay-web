@@ -7,8 +7,8 @@ import { apiFetch } from './client'
  */
 export async function getSystemWalletStats(token: string, currency: string = '') {
   const url = currency
-    ? `/admin/system-wallets/stats?currency=${currency}`
-    : '/admin/system-wallets/stats'
+    ? `/api/v1/admin/system-wallets/stats?currency=${currency}`
+    : '/api/v1/admin/system-wallets/stats'
 
   const data = await apiFetch(url, {
     method: 'GET',
@@ -38,13 +38,30 @@ export async function getCoins(token: string, page: number = 1, limit: number = 
     queryParams.append('search', search.trim())
   }
 
-  const data = await apiFetch(`/admin/coins?${queryParams.toString()}`, {
+  const response = await apiFetch(`/api/v1/admin/coins?${queryParams.toString()}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { coins: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.coins || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 10,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -53,7 +70,7 @@ export async function getCoins(token: string, page: number = 1, limit: number = 
  * @param id - Coin ID
  */
 export async function getCoinById(token: string, id: number) {
-  const data = await apiFetch(`/admin/coins/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/coins/${id}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -74,13 +91,30 @@ export async function getNetworks(token: string, page: number = 1, limit: number
     limit: String(limit),
   })
 
-  const data = await apiFetch(`/admin/networks?${queryParams.toString()}`, {
+  const response = await apiFetch(`/api/v1/admin/networks?${queryParams.toString()}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { networks: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.networks || data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 10,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -89,7 +123,7 @@ export async function getNetworks(token: string, page: number = 1, limit: number
  * @param id - Network ID
  */
 export async function getNetworkById(token: string, id: number) {
-  const data = await apiFetch(`/admin/networks/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/networks/${id}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -115,7 +149,7 @@ export async function createNetwork(token: string, networkData: {
   confirmationBlocks?: number
   status?: string
 }) {
-  const data = await apiFetch('/admin/networks', {
+  const data = await apiFetch('/api/v1/admin/networks', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -143,7 +177,7 @@ export async function updateNetwork(token: string, id: number, networkData: {
   confirmationBlocks?: number
   status?: string
 }) {
-  const data = await apiFetch(`/admin/networks/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/networks/${id}`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -159,7 +193,7 @@ export async function updateNetwork(token: string, id: number, networkData: {
  * @param id - Network ID
  */
 export async function deleteNetwork(token: string, id: number) {
-  const data = await apiFetch(`/admin/networks/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/networks/${id}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -195,13 +229,30 @@ export async function getCoinNetworks(token: string, page = 1, limit = 10, searc
     params.append('network', network)
   }
 
-  const data = await apiFetch(`/admin/coin-networks?${params}`, {
+  const response = await apiFetch(`/api/v1/admin/coin-networks?${params}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { coinNetworks: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.coinNetworks || data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 10,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -218,7 +269,7 @@ export async function createCoin(token: string, coinData: {
   logoUrl?: string
   status: string
 }) {
-  const data = await apiFetch('/admin/coins', {
+  const data = await apiFetch('/api/v1/admin/coins', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -246,7 +297,7 @@ export async function updateCoin(token: string, id: number, coinData: {
   logoUrl?: string
   status?: string
 }) {
-  const data = await apiFetch(`/admin/coins/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/coins/${id}`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -262,7 +313,7 @@ export async function updateCoin(token: string, id: number, coinData: {
  * @param id - Coin ID
  */
 export async function deleteCoin(token: string, id: number) {
-  const data = await apiFetch(`/admin/coins/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/coins/${id}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -277,7 +328,7 @@ export async function deleteCoin(token: string, id: number) {
  * @param id - Coin-network ID
  */
 export async function getCoinNetworkById(token: string, id: number) {
-  const data = await apiFetch(`/admin/coin-networks/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/coin-networks/${id}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -305,7 +356,7 @@ export async function createCoinNetwork(token: string, coinNetworkData: {
   withdrawFee: string
   depositConfirmations: number
 }) {
-  const data = await apiFetch('/admin/coin-networks', {
+  const data = await apiFetch('/api/v1/admin/coin-networks', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -335,7 +386,7 @@ export async function updateCoinNetwork(token: string, id: number, coinNetworkDa
   withdrawFee?: string
   depositConfirmations?: number
 }) {
-  const data = await apiFetch(`/admin/coin-networks/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/coin-networks/${id}`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -351,7 +402,7 @@ export async function updateCoinNetwork(token: string, id: number, coinNetworkDa
  * @param id - Coin-network ID
  */
 export async function deleteCoinNetwork(token: string, id: number) {
-  const data = await apiFetch(`/admin/coin-networks/${id}`, {
+  const data = await apiFetch(`/api/v1/admin/coin-networks/${id}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -382,7 +433,7 @@ export async function getSweepSettings(
     limit: limit.toString(),
   })
 
-  const data = await apiFetch(`/admin/settings?${params}`, {
+  const data = await apiFetch(`/api/v1/admin/settings?${params}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -402,7 +453,7 @@ export async function updateSweepSetting(
   keyName: string,
   value: any
 ) {
-  const data = await apiFetch(`/admin/settings/${keyName}`, {
+  const data = await apiFetch(`/api/v1/admin/settings/${keyName}`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -417,7 +468,7 @@ export async function updateSweepSetting(
  * @param token - Auth token
  */
 export async function getPaymentStats(token: string) {
-  const data = await apiFetch('/admin/payments/stats', {
+  const data = await apiFetch('/api/v1/admin/payments/stats', {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -435,13 +486,39 @@ export async function getSystemWallet(
   token: string,
   systemWalletId: number
 ) {
-  const data = await apiFetch(`/admin/system-wallets/${systemWalletId}`, {
+  const response = await apiFetch(`/api/v1/admin/system-wallets/${systemWalletId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { wallet: {...}, assets: [...], signers: [...] } }
+  const data = response?.data || response
+  const wallet = data?.wallet || {}
+  const assets = data?.assets || []
+  const signers = data?.signers || []
+  
+  // Extract coin/network info from first asset for backward compatibility
+  const firstAsset = assets[0]
+  
+  return {
+    ...wallet,
+    assets,
+    signers,
+    // Add coinNetwork object from assets for component compatibility
+    coinNetwork: firstAsset ? {
+      id: firstAsset.coinNetworkId,
+      coin: {
+        symbol: firstAsset.coinSymbol
+      },
+      network: {
+        symbol: firstAsset.networkSymbol,
+        name: firstAsset.networkName
+      }
+    } : null
+  }
 }
 
 /**
@@ -472,15 +549,40 @@ export async function getSystemWalletLedger(
   if (params.endDate) queryParams.append('endDate', params.endDate)
 
   const queryString = queryParams.toString()
-  const url = `/admin/system-wallets/${systemWalletId}/ledger${queryString ? `?${queryString}` : ''}`
+  const url = `/api/v1/admin/system-wallets/${systemWalletId}/ledger${queryString ? `?${queryString}` : ''}`
 
-  const data = await apiFetch(url, {
+  const response = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { entries: [...], pagination: {...} } }
+  const data = response?.data || response
+  const items = data?.entries || data?.items || []
+  const paginationData = data?.pagination || data?.meta || {}
+
+  const currentPage = paginationData.page || params.page || 1
+  const limit = paginationData.limit || params.limit || 20
+  const total = paginationData.total || 0
+  const totalPages = paginationData.totalPages || Math.ceil(total / limit)
+
+  return {
+    items,
+    pagination: {
+      page: currentPage,
+      limit: limit,
+      total: total,
+      totalPages: totalPages,
+      currentPage: currentPage,
+      from: items.length > 0 ? ((currentPage - 1) * limit) + 1 : 0,
+      to: items.length > 0 ? Math.min(currentPage * limit, total) : 0,
+      hasNext: currentPage < totalPages,
+      hasPrev: currentPage > 1,
+    }
+  }
 }
 
 /**
@@ -504,22 +606,39 @@ export async function getLedgerEntries(
 
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
-  if (params.type) queryParams.append('type[]', params.type)
+  if (params.type) queryParams.append('type', params.type)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
   if (params.startDate) queryParams.append('startDate', params.startDate)
   if (params.endDate) queryParams.append('endDate', params.endDate)
 
   const queryString = queryParams.toString()
-  const url = `/admin/ledger/entries${queryString ? `?${queryString}` : ''}`
+  const url = `/api/v1/admin/ledger/entries${queryString ? `?${queryString}` : ''}`
 
-  const data = await apiFetch(url, {
+  const response = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { entries: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.entries || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -546,15 +665,32 @@ export async function getSweeps(
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
 
   const queryString = queryParams.toString()
-  const url = `/admin/sweeps${queryString ? `?${queryString}` : ''}`
+  const url = `/api/v1/admin/sweeps${queryString ? `?${queryString}` : ''}`
 
-  const data = await apiFetch(url, {
+  const response = await apiFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  
+  // Transform response structure to match component expectations
+  // API returns: { data: { sweeps: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.sweeps || data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.totalPages || 1,
+      hasNext: (meta.page || 1) < (meta.totalPages || 1),
+      hasPrev: (meta.page || 1) > 1,
+    }
+  }
 }
 
 /**
@@ -563,7 +699,7 @@ export async function getSweeps(
  * @param sweepId - Sweep transaction ID
  */
 export async function forceSweep(token: string, sweepId: number) {
-  const data = await apiFetch(`/admin/sweeps/${sweepId}/force`, {
+  const data = await apiFetch(`/api/v1/admin/sweeps/${sweepId}/force`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -596,7 +732,7 @@ export async function getWithdrawals(
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
 
   const queryString = queryParams.toString()
-  const url = `/admin/withdrawals${queryString ? `?${queryString}` : ''}`
+  const url = `/api/v1/admin/withdrawals${queryString ? `?${queryString}` : ''}`
 
   const response = await apiFetch(url, {
     method: 'GET',
@@ -633,7 +769,7 @@ export async function approveWithdrawal(
   withdrawalId: number,
   reason?: string
 ) {
-  const response = await apiFetch(`/admin/withdrawals/${withdrawalId}/approve`, {
+  const response = await apiFetch(`/api/v1/admin/withdrawals/${withdrawalId}/approve`, {
     method: 'PATCH',
     headers: {
       'Authorization': `Bearer ${token}`,
