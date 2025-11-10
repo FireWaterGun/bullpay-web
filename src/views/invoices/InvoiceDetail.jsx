@@ -224,6 +224,9 @@ export default function InvoiceDetail() {
       setError("");
       try {
         const invoiceRes = await getInvoice(id, token);
+        console.log('📋 Invoice loaded:', invoiceRes);
+        console.log('💰 Payments array:', invoiceRes?.payments);
+        console.log('📊 Payments count:', Array.isArray(invoiceRes?.payments) ? invoiceRes.payments.length : 'Not an array');
         if (mounted) {
           setInvoice(invoiceRes);
         }
@@ -345,10 +348,34 @@ export default function InvoiceDetail() {
                       )}
                     </div>
                     <div className="text-end">
-                      <div className="fw-medium">
-                        {formatAmount(invoice.amount)} {coinSym}
+                      <div className="p-3 rounded-3" style={{
+                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.12))',
+                        border: '2px solid rgba(139, 92, 246, 0.3)',
+                        boxShadow: '0 4px 12px rgba(139, 92, 246, 0.15)'
+                      }}>
+                        <div className="d-flex align-items-center justify-content-end gap-2 mb-1">
+                          <div style={{
+                            fontSize: '2rem',
+                            fontWeight: '800',
+                            letterSpacing: '-1px',
+                            background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            lineHeight: 1.1
+                          }}>
+                            {formatAmount(invoice.amount)}
+                          </div>
+                          <div style={{
+                            fontSize: '1.25rem',
+                            fontWeight: '700',
+                            color: '#8b5cf6'
+                          }}>
+                            {coinSym}
+                          </div>
+                        </div>
+                        <div className="text-muted small text-end">{networkName}</div>
                       </div>
-                      <div className="text-muted small">{networkName}</div>
                     </div>
                   </div>
 
@@ -403,9 +430,24 @@ export default function InvoiceDetail() {
                     <div className="text-muted">{invoice.description || invoice.memo || "-"}</div>
                   </div>
 
-                  {Array.isArray(invoice.payments) && invoice.payments.length > 0 && (
-                    <div className="mt-4">
-                      <h6 className="mb-2">{t("invoices.payments") || "Payments"}</h6>
+                  <div className="mt-4">
+                    <h6 className="mb-2">{t("invoices.payments") || "Payments"}</h6>
+                    {!invoice.payments ? (
+                      <div className="alert alert-info">
+                        <i className="bx bx-info-circle me-2"></i>
+                        No payments data available (invoice.payments is undefined or null)
+                      </div>
+                    ) : !Array.isArray(invoice.payments) ? (
+                      <div className="alert alert-warning">
+                        <i className="bx bx-error me-2"></i>
+                        Payments data is not an array: {typeof invoice.payments}
+                      </div>
+                    ) : invoice.payments.length === 0 ? (
+                      <div className="alert alert-info">
+                        <i className="bx bx-info-circle me-2"></i>
+                        No payment transactions yet
+                      </div>
+                    ) : (
                       <div className="table-responsive">
                         <table className="table table-sm">
                           <thead>
@@ -420,30 +462,35 @@ export default function InvoiceDetail() {
                             {invoice.payments.map((p, idx) => (
                               <tr key={p.id || idx}>
                                 <td>{idx + 1}</td>
-                                <td className="text-truncate" style={{ maxWidth: 240 }}>
+                                <td style={{ wordBreak: 'break-all', maxWidth: 400 }}>
                                   {p.txHash ? (
                                     explorer ? (
-                                      <a href={`${explorer.replace(/\/$/, "")}/tx/${p.txHash}`} target="_blank" rel="noreferrer">
+                                      <a 
+                                        href={`${explorer.replace(/\/$/, "")}/tx/${p.txHash}`} 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        className="text-decoration-none"
+                                      >
                                         {p.txHash}
                                       </a>
                                     ) : (
-                                      p.txHash
+                                      <code className="small">{p.txHash}</code>
                                     )
                                   ) : (
                                     "-"
                                   )}
                                 </td>
-                                <td>
+                                <td className="text-nowrap">
                                   {formatAmount(p.amount || 0)} {coinSym}
                                 </td>
-                                <td>{formatDateTime(p.createdAt || p.created_at)}</td>
+                                <td className="text-nowrap">{formatDateTime(p.createdAt || p.created_at)}</td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
