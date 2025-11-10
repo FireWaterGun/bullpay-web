@@ -159,8 +159,8 @@ export default function CoinList() {
             <button 
               type="button" 
               className="btn btn-primary"
-              onClick={() => navigate('/admin/crypto/coins/create')}
-            >
+                onClick={() => navigate('/admin/crypto/coins/create')}
+              >
               <i className="bx bx-plus me-1"></i>
               {t('actions.create', { defaultValue: 'Create' })}
             </button>

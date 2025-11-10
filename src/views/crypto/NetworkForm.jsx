@@ -20,6 +20,7 @@ export default function NetworkForm() {
   const [formData, setFormData] = useState({
     name: '',
     symbol: '',
+    type: 'mainnet',
     chainId: '',
     rpcUrl: '',
     explorerUrl: '',
@@ -54,6 +55,7 @@ export default function NetworkForm() {
         setFormData({
           name: network.name || '',
           symbol: network.symbol || '',
+          type: network.type || 'mainnet',
           chainId: network.chainId || '',
           rpcUrl: network.rpcUrl || '',
           explorerUrl: network.explorerUrl || '',
@@ -128,6 +130,15 @@ export default function NetworkForm() {
         if (formData.symbol.length > 10) {
           throw new Error('Symbol must be max 10 characters')
         }
+        if (!formData.type || formData.type.trim().length === 0) {
+          throw new Error('Network Type is required')
+        }
+      }
+
+      // Type validation (for both create and update)
+      const validTypes = ['mainnet', 'testnet', 'devnet', 'layer2', 'sidechain']
+      if (formData.type && !validTypes.includes(formData.type)) {
+        throw new Error('Network Type must be one of: mainnet, testnet, devnet, layer2, sidechain')
       }
 
       // Optional field validations (for both create and update)
@@ -186,6 +197,7 @@ export default function NetworkForm() {
       const payload = {
         name: formData.name.trim(),
         symbol: formData.symbol.trim().toUpperCase(),
+        type: formData.type || 'mainnet',
         chainId: formData.chainId ? parseInt(formData.chainId) : null,
         rpcUrl: formData.rpcUrl?.trim() || undefined,
         explorerUrl: formData.explorerUrl?.trim() || undefined,
@@ -307,6 +319,28 @@ export default function NetworkForm() {
                       style={{ textTransform: 'uppercase' }}
                     />
                     <small className="text-muted">{t('crypto.symbolHelp', { defaultValue: 'Network symbol (e.g., ETH, BSC)' })}</small>
+                  </div>
+
+                  {/* Type */}
+                  <div className="col-md-6">
+                    <label className="form-label" htmlFor="type">
+                      {t('crypto.networkType', { defaultValue: 'Network Type' })} <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select form-select-lg"
+                      id="type"
+                      name="type"
+                      value={formData.type}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="mainnet">Mainnet</option>
+                      <option value="testnet">Testnet</option>
+                      <option value="devnet">Devnet</option>
+                      <option value="layer2">Layer 2</option>
+                      <option value="sidechain">Sidechain</option>
+                    </select>
+                    <small className="text-muted">{t('crypto.networkTypeHelp', { defaultValue: 'Type of blockchain network' })}</small>
                   </div>
 
                   {/* Chain ID */}
@@ -455,8 +489,8 @@ export default function NetworkForm() {
                   {/* Actions */}
                   <div className="col-12 pt-3">
                     <div className="d-flex gap-3 justify-content-between">
-                      {/* Delete button - only show in edit mode */}
-                      {isEdit && (
+                      {/* Delete button - Hidden */}
+                      {false && isEdit && (
                         <button 
                           type="button" 
                           className="btn btn-lg btn-danger"
@@ -468,7 +502,7 @@ export default function NetworkForm() {
                         </button>
                       )}
                       
-                      <div className={`d-flex gap-3 ${!isEdit ? 'ms-auto' : ''}`}>
+                      <div className={`d-flex gap-3 ms-auto`}>
                         <button 
                           type="button" 
                           className="btn btn-lg btn-label-secondary"

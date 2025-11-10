@@ -43,7 +43,8 @@ export function PusherProvider({ children }) {
     const authorizer = (channel, options) => {
       return {
         authorize: (socketId, callback) => {
-          const authEndpoint = import.meta.env.VITE_PUSHER_AUTH_ENDPOINT || '/api/pusher/auth';
+          const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3339';
+          const authEndpoint = `${apiBaseUrl}/api/v1/pusher/auth`;
           const currentToken = tokenRef.current;
           
           console.log('[PusherContext] 🔐 Authorizing channel:', channel.name, {
@@ -107,8 +108,9 @@ export function PusherProvider({ children }) {
       authorizer: authorizer
     };
 
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3339';
     console.log('[PusherContext] 🔑 Auth config:', {
-      authEndpoint: import.meta.env.VITE_PUSHER_AUTH_ENDPOINT || '/api/pusher/auth',
+      authEndpoint: `${apiBaseUrl}/api/v1/pusher/auth`,
       hasToken: !!token,
       tokenPreview: token ? `${token.substring(0, 10)}...` : 'NOT SET',
       format: 'JSON (custom authorizer)'

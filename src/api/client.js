@@ -62,17 +62,25 @@ export async function apiFetch(path, { method = 'GET', headers = {}, body } = {}
   }
 
   if (!res.ok) {
-    // Handle 401 Unauthorized - redirect to login
+    // Handle 401 Unauthorized - redirect to login (except for login/register endpoints)
     if (res.status === 401) {
-      // Clear auth data
-      localStorage.removeItem('auth_user')
-      localStorage.removeItem('auth_token')
-      // Redirect to login page
-      window.location.href = '/login'
-      // Throw error to stop execution
-      const error = new Error('Unauthorized')
-      error.status = 401
-      throw error
+      // Don't redirect if user is trying to login or register (these are auth endpoints that return 401 on invalid credentials)
+      const isLoginEndpoint = path === '/api/v1/auth/login' || path === '/auth/login' || path.endsWith('/login')
+      const isRegisterEndpoint = path === '/api/v1/auth/register' || path === '/auth/register' || path.endsWith('/register')
+      const isAuthEndpoint = isLoginEndpoint || isRegisterEndpoint
+      
+      if (!isAuthEndpoint) {
+        // Clear auth data
+        localStorage.removeItem('auth_user')
+        localStorage.removeItem('auth_token')
+        // Redirect to login page
+        window.location.href = '/login'
+        // Throw error to stop execution
+        const error = new Error('Unauthorized')
+        error.status = 401
+        throw error
+      }
+      // For auth endpoints, continue to normal error handling below
     }
 
     const fallback = res.statusText || 'Request failed'

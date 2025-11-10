@@ -29,11 +29,9 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const res = await loginApi({ email, password, cfToken })
-      console.log('[LoginPage] API Response:', res);
       const token = extractToken(res)
       // API returns user data in res.data.user
       const user = res?.data?.user || res?.user || { email }
-      console.log('[LoginPage] User data to save:', user);
       login(user, token)
       navigate('/app', { replace: true })
     } catch (err) {

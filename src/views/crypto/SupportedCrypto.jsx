@@ -273,8 +273,8 @@ export default function SupportedCrypto() {
             <button
               type="button"
               className="btn btn-primary"
-              onClick={() => navigate('/admin/crypto/coin-networks/create')}
-            >
+                onClick={() => navigate('/admin/crypto/coin-networks/create')}
+              >
               <i className="bx bx-plus me-1"></i>
               {t('crypto.addCoinNetwork', { defaultValue: 'Add Coin-Network' })}
             </button>

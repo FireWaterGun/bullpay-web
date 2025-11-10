@@ -96,8 +96,8 @@ export default function NetworkList() {
             <button 
               type="button" 
               className="btn btn-primary"
-              onClick={() => navigate('/admin/crypto/networks/create')}
-            >
+                onClick={() => navigate('/admin/crypto/networks/create')}
+              >
               <i className="bx bx-plus me-1"></i>
               {t('actions.create', { defaultValue: 'Create' })}
             </button>

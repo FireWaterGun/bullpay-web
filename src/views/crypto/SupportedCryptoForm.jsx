@@ -343,18 +343,18 @@ export default function SupportedCryptoForm() {
 
       <div className="row">
         <div className="col-12">
-            {/* Step 1: Select Coin Card */}
+            {/* Step 1: Select/Display Coin Card */}
             <div className="card mb-4">
               <div className="card-header">
                 <h5 className="mb-0">
                   <span className="badge bg-primary rounded-pill me-2">1</span>
-                  {t('crypto.selectCoin', { defaultValue: 'Select a coin' })}
+                  {isEdit ? t('crypto.coin', { defaultValue: 'Coin' }) : t('crypto.selectCoin', { defaultValue: 'Select a coin' })}
                   <span className="text-danger ms-1">*</span>
                 </h5>
               </div>
               <div className="card-body">
                 <div className="row g-3">
-                  {coins.map(coin => {
+                  {(isEdit ? coins.filter(c => c.id === parseInt(formData.coinId)) : coins).map(coin => {
                     const isActive = formData.coinId === String(coin.id)
                     return (
                       <div className="col-6 col-sm-4 col-md-3" key={coin.id}>
@@ -362,11 +362,14 @@ export default function SupportedCryptoForm() {
                           role="button"
                           className={`card h-100 border-2 rounded-3 overflow-hidden ${isActive ? 'border-primary bg-label-primary shadow-sm' : 'border-2'}`}
                           onClick={() => {
-                            setFormData(prev => ({
-                              ...prev,
-                              coinId: String(coin.id)
-                            }))
+                            if (!isEdit) {
+                              setFormData(prev => ({
+                                ...prev,
+                                coinId: String(coin.id)
+                              }))
+                            }
                           }}
+                          style={isEdit ? { cursor: 'default' } : {}}
                         >
                           <div className="card-body d-flex align-items-center gap-3 p-3">
                             <CoinImg coin={coin} symbol={coin.symbol} size={40} />
@@ -386,19 +389,19 @@ export default function SupportedCryptoForm() {
               </div>
             </div>
 
-            {/* Step 2: Select Network Card */}
+            {/* Step 2: Select/Display Network Card */}
             <div className="card mb-4">
               <div className="card-header">
                 <h5 className="mb-0">
                   <span className="badge bg-primary rounded-pill me-2">2</span>
-                  {t('crypto.selectNetwork', { defaultValue: 'Select a network' })}
+                  {isEdit ? t('crypto.network', { defaultValue: 'Network' }) : t('crypto.selectNetwork', { defaultValue: 'Select a network' })}
                   <span className="text-danger ms-1">*</span>
                 </h5>
               </div>
               <div className="card-body">
                 {formData.coinId ? (
                   <div className="d-flex flex-wrap gap-2">
-                    {networks.map(network => {
+                    {(isEdit ? networks.filter(n => n.id === parseInt(formData.networkId)) : networks).map(network => {
                       const selected = formData.networkId === String(network.id)
                       return (
                         <button
@@ -406,11 +409,14 @@ export default function SupportedCryptoForm() {
                           key={network.id}
                           className={`btn ${selected ? 'btn-primary' : 'btn-outline-secondary'}`}
                           onClick={() => {
-                            setFormData(prev => ({
-                              ...prev,
-                              networkId: String(network.id)
-                            }))
+                            if (!isEdit) {
+                              setFormData(prev => ({
+                                ...prev,
+                                networkId: String(network.id)
+                              }))
+                            }
                           }}
+                          style={isEdit ? { cursor: 'default' } : {}}
                         >
                           {network.symbol} - {network.name}
                         </button>
@@ -686,8 +692,8 @@ export default function SupportedCryptoForm() {
               </div>
             </div>
 
-          {/* Delete Button Card */}
-          {isEdit && (
+          {/* Delete Button Card - Hidden */}
+          {false && isEdit && (
             <div className="card">
               <div className="card-body">
                 <h6 className="card-title text-danger mb-3">

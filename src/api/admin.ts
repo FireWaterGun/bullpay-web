@@ -76,7 +76,7 @@ export async function getCoinById(token: string, id: number) {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  return data?.data?.coin || data?.coin || data?.data || data
 }
 
 /**
@@ -129,7 +129,7 @@ export async function getNetworkById(token: string, id: number) {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  return data?.data?.network || data?.network || data?.data || data
 }
 
 /**
@@ -334,7 +334,7 @@ export async function getCoinNetworkById(token: string, id: number) {
       Authorization: `Bearer ${token}`,
     },
   })
-  return data.data || data
+  return data?.data?.coinNetwork || data?.coinNetwork || data?.data || data
 }
 
 /**

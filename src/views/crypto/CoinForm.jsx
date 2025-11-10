@@ -18,10 +18,10 @@ export default function CoinForm() {
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [formData, setFormData] = useState({
+    type: 'native',
     symbol: '',
     name: '',
     decimals: 8,
-    isStableCoin: false,
     logoUrl: '',
     status: 'active'
   })
@@ -41,10 +41,10 @@ export default function CoinForm() {
       
       if (coin) {
         setFormData({
+          type: coin.type || 'native',
           symbol: coin.symbol || '',
           name: coin.name || '',
           decimals: coin.decimals || 8,
-          isStableCoin: !!coin.isStableCoin,
           logoUrl: coin.logoUrl || '',
           status: coin.status || 'active'
         })
@@ -134,22 +134,21 @@ export default function CoinForm() {
         }
       }
 
-      const payload = {
+      const data = {
         name: formData.name,
         symbol: formData.symbol.toUpperCase(),
         decimals: parseInt(formData.decimals),
         type: 'native',
-        isStableCoin: formData.isStableCoin,
         logoUrl: formData.logoUrl || undefined,
         status: formData.status || 'active'
       }
 
       if (isEdit) {
         // Update existing coin
-        await updateCoin(token, parseInt(id), payload)
+        await updateCoin(token, parseInt(id), data)
       } else {
         // Create new coin
-        await createCoin(token, payload)
+        await createCoin(token, data)
       }
       
       // Navigate to coins list after success
@@ -304,29 +303,11 @@ export default function CoinForm() {
                     <small className="text-muted">{t('crypto.logoUrlHelp', { defaultValue: 'External URL to coin logo image' })}</small>
                   </div>
 
-                  {/* Is Stable Coin */}
-                  <div className="col-12">
-                    <div className="form-check form-check-lg">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="isStableCoin"
-                        name="isStableCoin"
-                        checked={formData.isStableCoin}
-                        onChange={handleChange}
-                      />
-                      <label className="form-check-label" htmlFor="isStableCoin">
-                        {t('crypto.isStableCoin', { defaultValue: 'Stablecoin' })}
-                      </label>
-                    </div>
-                    <small className="text-muted ms-4">{t('crypto.isStableCoinHelp', { defaultValue: 'Check if this is a stablecoin (e.g., USDT, USDC)' })}</small>
-                  </div>
-
                   {/* Actions */}
                   <div className="col-12 pt-3">
                     <div className="d-flex gap-3 justify-content-between">
-                      {/* Delete button - only show in edit mode */}
-                      {isEdit && (
+                      {/* Delete button - Hidden */}
+                      {false && isEdit && (
                         <button 
                           type="button" 
                           className="btn btn-lg btn-danger"
@@ -338,7 +319,7 @@ export default function CoinForm() {
                         </button>
                       )}
                       
-                      <div className={`d-flex gap-3 ${!isEdit ? 'ms-auto' : ''}`}>
+                      <div className={`d-flex gap-3 ms-auto`}>
                         <button 
                           type="button" 
                           className="btn btn-lg btn-label-secondary"
