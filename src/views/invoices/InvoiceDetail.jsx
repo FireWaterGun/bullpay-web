@@ -481,7 +481,7 @@ export default function InvoiceDetail() {
                                   )}
                                 </td>
                                 <td className="text-nowrap">
-                                  {formatAmount(p.amount || 0)} {coinSym}
+                                  {formatAmount(p.actualAmount || p.amount || 0)} {coinSym}
                                 </td>
                                 <td className="text-nowrap">{formatDateTime(p.createdAt || p.created_at)}</td>
                               </tr>

@@ -393,7 +393,7 @@ export default function InvoiceList() {
                           })()}
                         </td>
                         <td className="text-nowrap text-end">
-                          <div>{formatAmount(it.amount)}</div>
+                          <div>{formatAmount(it.amount)} {(it.coin?.symbol || "").toUpperCase()}</div>
                         </td>
                         <td>
                           <span
