@@ -77,7 +77,7 @@ function CoinImg({ symbol, logoUrl, size = 32 }) {
       alt={symbol}
       width={size}
       height={size}
-      className="rounded-circle me-2"
+      className="rounded-circle"
       style={{ objectFit: 'cover' }}
       onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
     />
@@ -469,7 +469,7 @@ export default function InvoicePaymentV2() {
 
                     {/* Card Body */}
                     <div className="card-body p-3 p-md-4">
-                      {/* Invoice Info & Timer */}
+                      {/* Invoice Info & Chain */}
                       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 gap-md-3 mb-3">
                         {/* Left - Invoice */}
                         <div className="order-1">
@@ -477,8 +477,8 @@ export default function InvoicePaymentV2() {
                           <div className="fw-bold" style={{ fontSize: '1.1rem', letterSpacing: '-0.5px', color: '#1e293b' }}>#{invoice.invoiceNumber || invoice.publicCode || invoice.id}</div>
                         </div>
                         
-                        {/* Center - Chain */}
-                        <div className="order-2 order-md-2 text-center px-3 py-2 rounded-2" style={{
+                        {/* Right - Chain */}
+                        <div className="order-2 text-center px-3 py-2 rounded-2" style={{
                           background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.12))',
                           border: '1px solid rgba(139, 92, 246, 0.25)'
                         }}>
@@ -501,18 +501,6 @@ export default function InvoicePaymentV2() {
                             }}>
                               {networkSym || 'N/A'}
                             </div>
-                          </div>
-                        </div>
-
-                        {/* Right - Coin */}
-                        <div className="order-3 d-flex align-items-center gap-2 px-3 py-2 rounded-3" style={{
-                          background: 'rgba(139, 92, 246, 0.08)',
-                          border: '1px solid rgba(139, 92, 246, 0.2)'
-                        }}>
-                          <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={36} />
-                          <div>
-                            <div className="fw-bold" style={{ fontSize: '0.95rem', color: '#1e293b' }}>{coinSym}</div>
-                            <small style={{ color: '#64748b', fontSize: '0.75rem' }}>{networkName}</small>
                           </div>
                         </div>
                       </div>
@@ -594,7 +582,11 @@ export default function InvoicePaymentV2() {
                                     background: 'white',
                                     borderRadius: '50%',
                                     padding: '4px',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                    overflow: 'hidden',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                   }}>
                                     <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={28} />
                                   </div>
@@ -613,58 +605,90 @@ export default function InvoicePaymentV2() {
 
                             {/* Amount - Right Side */}
                             <div className="col-12 col-md-6 text-center">
-                              <div className="small mb-2" style={{
+                              <div className="small mb-3" style={{
                                 color: '#64748b',
                                 textTransform: 'uppercase',
                                 letterSpacing: '2px',
                                 fontSize: '0.7rem',
                                 fontWeight: '700'
                               }}>{t("invoices.amount")}</div>
-                              <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
-                                <div style={{
-                                  fontSize: '2.25rem',
-                                  fontWeight: '800',
-                                  letterSpacing: '-2px',
-                                  background: 'linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%)',
-                                  WebkitBackgroundClip: 'text',
-                                  WebkitTextFillColor: 'transparent',
-                                  backgroundClip: 'text',
-                                  lineHeight: 1.1
-                                }}>
-                                  {formatAmount(invoice.amount)}
+                              
+                              {/* Amount Card with Coin Info */}
+                              <div className="p-4 rounded-3" style={{
+                                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.08))',
+                                border: '2px solid rgba(139, 92, 246, 0.2)',
+                                boxShadow: '0 4px 12px rgba(139, 92, 246, 0.15)'
+                              }}>
+                                {/* Coin Icon and Name */}
+                                <div className="d-flex align-items-center justify-content-center gap-3 mb-3">
+                                  <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={48} />
+                                  <div className="text-start">
+                                    <div style={{
+                                      fontSize: '1.25rem',
+                                      fontWeight: '800',
+                                      color: '#1e293b',
+                                      letterSpacing: '0.5px',
+                                      lineHeight: 1.2
+                                    }}>{coinSym}</div>
+                                    <div style={{
+                                      fontSize: '0.85rem',
+                                      color: '#64748b',
+                                      fontWeight: '600'
+                                    }}>{invoice?.coin?.name || coinSym}</div>
+                                  </div>
                                 </div>
-                                {invoice.amount != null && (
-                                <button
-                                  type="button"
-                                  className="btn btn-sm"
-                                  style={{
-                                    background: copiedAmt
-                                      ? 'linear-gradient(135deg, #10b981, #059669)'
-                                      : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
-                                    border: 'none',
-                                    color: 'white',
-                                    borderRadius: 4,
-                                    padding: '4px 6px',
-                                    fontWeight: '600',
-                                    transition: 'all 0.3s ease',
-                                    boxShadow: copiedAmt
-                                      ? '0 2px 8px rgba(16, 185, 129, 0.25)'
-                                      : '0 2px 8px rgba(139, 92, 246, 0.25)',
-                                    transform: copiedAmt ? 'scale(1.02)' : 'scale(1)'
-                                  }}
-                                  onClick={handleCopyAmount}
-                                  title={copiedAmt ? t("actions.copied") : t("actions.copyAmount", { defaultValue: "Copy Amount" })}
-                                >
-                                  <i className={`bx ${copiedAmt ? 'bx-check' : 'bx-copy'}`} style={{ fontSize: '0.8rem' }}></i>
-                                </button>
-                                )}
+
+                                {/* Amount Value */}
+                                <div className="d-flex align-items-center justify-content-center gap-2">
+                                  <div style={{
+                                    fontSize: '2.5rem',
+                                    fontWeight: '900',
+                                    letterSpacing: '-2px',
+                                    background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    backgroundClip: 'text',
+                                    lineHeight: 1.1,
+                                    color: '#1e293b'
+                                  }}>
+                                    {formatAmount(invoice.amount)}
+                                  </div>
+                                  {invoice.amount != null && (
+                                    <button
+                                      type="button"
+                                      className="btn btn-sm"
+                                      style={{
+                                        background: copiedAmt
+                                          ? 'linear-gradient(135deg, #10b981, #059669)'
+                                          : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                                        border: 'none',
+                                        color: 'white',
+                                        borderRadius: 6,
+                                        padding: '6px 8px',
+                                        fontWeight: '600',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: copiedAmt
+                                          ? '0 2px 8px rgba(16, 185, 129, 0.3)'
+                                          : '0 2px 8px rgba(139, 92, 246, 0.3)',
+                                        transform: copiedAmt ? 'scale(1.05)' : 'scale(1)'
+                                      }}
+                                      onClick={handleCopyAmount}
+                                      title={copiedAmt ? t("actions.copied") : t("actions.copyAmount", { defaultValue: "Copy Amount" })}
+                                    >
+                                      <i className={`bx ${copiedAmt ? 'bx-check' : 'bx-copy'}`} style={{ fontSize: '0.9rem' }}></i>
+                                    </button>
+                                  )}
+                                </div>
+
+                                {/* Network Info */}
+                                <div className="mt-2" style={{
+                                  color: '#64748b',
+                                  fontSize: '0.8rem',
+                                  fontWeight: '500'
+                                }}>
+                                  on {networkName || 'Network'}
+                                </div>
                               </div>
-                              <div className="mb-3" style={{
-                                color: '#64748b',
-                                fontSize: '1rem',
-                                fontWeight: '600',
-                                letterSpacing: '1px'
-                              }}>{coinSym}</div>
                             </div>
                           </div>
                         </div>
