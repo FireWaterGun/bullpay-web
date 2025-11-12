@@ -598,6 +598,90 @@ export default function DashboardLayout() {
                 </li>
                 {/* /Theme Switcher */}
 
+                {/* Notifications */}
+                <li className="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-0">
+                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e)=>e.preventDefault()} data-bs-toggle="dropdown">
+                    <span className="position-relative d-inline-block">
+                      <i className="icon-base bx bx-bell icon-md"></i>
+                      <span className="badge-dot-notifications"></span>
+                    </span>
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-end p-0">
+                    <li className="dropdown-menu-header border-bottom">
+                      <div className="dropdown-header d-flex align-items-center py-3">
+                        <h6 className="mb-0 me-auto">{t('notifications.title', { defaultValue: 'Notifications' })}</h6>
+                        <div className="dropdown-notifications-actions">
+                          <a href="#" className="dropdown-notifications-read" onClick={(e)=>e.preventDefault()}>
+                            <span className="badge badge-dot"></span>
+                          </a>
+                          <a href="#" className="dropdown-notifications-archive" onClick={(e)=>e.preventDefault()}>
+                            <span className="bx bx-x"></span>
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                    <li className="dropdown-notifications-list scrollable-container">
+                      <ul className="list-group list-group-flush">
+                        {/* Sample Notification Items */}
+                        <li className="list-group-item list-group-item-action dropdown-notifications-item">
+                          <div className="d-flex">
+                            <div className="flex-shrink-0 me-3">
+                              <div className="avatar">
+                                <span className="avatar-initial rounded-circle bg-label-success">
+                                  <i className="bx bx-check-circle"></i>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex-grow-1">
+                              <h6 className="small mb-0">{t('notifications.paymentReceived', { defaultValue: 'Payment Received' })}</h6>
+                              <small className="mb-1 d-block text-body">Invoice #ABC-123 paid successfully</small>
+                              <small className="text-muted">2 min ago</small>
+                            </div>
+                          </div>
+                        </li>
+                        <li className="list-group-item list-group-item-action dropdown-notifications-item">
+                          <div className="d-flex">
+                            <div className="flex-shrink-0 me-3">
+                              <div className="avatar">
+                                <span className="avatar-initial rounded-circle bg-label-warning">
+                                  <i className="bx bx-time"></i>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex-grow-1">
+                              <h6 className="small mb-0">{t('notifications.invoiceExpiringSoon', { defaultValue: 'Invoice Expiring Soon' })}</h6>
+                              <small className="mb-1 d-block text-body">Invoice #XYZ-456 expires in 10 minutes</small>
+                              <small className="text-muted">15 min ago</small>
+                            </div>
+                          </div>
+                        </li>
+                        <li className="list-group-item list-group-item-action dropdown-notifications-item">
+                          <div className="d-flex">
+                            <div className="flex-shrink-0 me-3">
+                              <div className="avatar">
+                                <span className="avatar-initial rounded-circle bg-label-info">
+                                  <i className="bx bx-info-circle"></i>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex-grow-1">
+                              <h6 className="small mb-0">{t('notifications.newInvoice', { defaultValue: 'New Invoice Created' })}</h6>
+                              <small className="mb-1 d-block text-body">Invoice #DEF-789 has been created</small>
+                              <small className="text-muted">1 hour ago</small>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                    <li className="dropdown-menu-footer border-top">
+                      <a href="#" className="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center" onClick={(e)=>e.preventDefault()}>
+                        {t('notifications.viewAll', { defaultValue: 'View all notifications' })}
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                {/* /Notifications */}
+
                 {/* User */}
                 <li className="nav-item navbar-dropdown dropdown-user dropdown">
                   <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e)=>e.preventDefault()} data-bs-toggle="dropdown">
@@ -722,6 +806,48 @@ export default function DashboardLayout() {
       </div>
       <div className="layout-overlay layout-menu-toggle" onClick={toggleMenu} role="button" aria-label="Close menu"></div>
       <div className="drag-target"></div>
+
+      {/* Notification Badge Styles */}
+      <style>{`
+        .badge-dot-notifications {
+          position: absolute;
+          top: 2px;
+          right: 0;
+          width: 8px;
+          height: 8px;
+          background-color: #dc3545;
+          border: 2px solid var(--bs-body-bg, #fff);
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+          pointer-events: none;
+        }
+        .dropdown-notifications {
+          position: relative;
+        }
+        .dropdown-notifications .dropdown-menu {
+          width: 380px;
+          max-height: 450px;
+        }
+        .dropdown-notifications-list {
+          max-height: 300px;
+          overflow-y: auto;
+        }
+        .dropdown-notifications-item {
+          padding: 0.75rem 1.5rem;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+        .dropdown-notifications-item:hover {
+          background-color: rgba(0,0,0,0.02);
+        }
+        [data-bs-theme="dark"] .dropdown-notifications-item:hover {
+          background-color: rgba(255,255,255,0.05);
+        }
+        .dropdown-notifications-actions {
+          display: flex;
+          gap: 0.5rem;
+        }
+      `}</style>
     </div>
   )
 }
