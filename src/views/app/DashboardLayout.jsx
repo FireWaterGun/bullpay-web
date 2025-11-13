@@ -7,6 +7,15 @@ import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
 import { getPaymentStats } from '../../api/admin.ts'
 import { getBalancesWithFiat } from '../../api/balance.ts'
+import {
+  getNotifications,
+  getUnreadCount,
+  markAsRead,
+  markAllAsRead,
+  getNotificationIcon,
+  getNotificationColor,
+  formatNotificationTime
+} from '../../api/notifications.ts'
 
 // Remove inline page components and import split components
 import DashboardHome from './DashboardHome'
@@ -48,7 +57,7 @@ function MenuItem({ to, icon, label, end }) {
   const isActive = !!match
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
-      <NavLink to={to} end={end} className="menu-link" onClick={(e)=>{ /* close handled at aside */ }}>
+      <NavLink to={to} end={end} className="menu-link" onClick={(e) => { /* close handled at aside */ }}>
         <i className={`menu-icon bx ${icon}`}></i>
         <div>{label}</div>
       </NavLink>
@@ -74,9 +83,9 @@ function SubMenuGroup({ base, label, children }) {
   const match = useMatch({ path: `${resolved.pathname}/*`, end: false })
   const [open, setOpen] = useState(!!match)
   const isActive = !!match
-  const toggle = (e) => { e.preventDefault(); setOpen((v)=>!v) }
+  const toggle = (e) => { e.preventDefault(); setOpen((v) => !v) }
   const subRef = useRef(null)
-  
+
   useEffect(() => {
     setOpen(!!match)
   }, [match])
@@ -84,7 +93,7 @@ function SubMenuGroup({ base, label, children }) {
   useEffect(() => {
     const sub = subRef.current
     if (!sub) return
-    
+
     if (open) {
       sub.style.maxHeight = '2000px'
     } else {
@@ -97,7 +106,7 @@ function SubMenuGroup({ base, label, children }) {
       <a href="#" onClick={toggle} className="menu-link menu-toggle">
         <div>{label}</div>
       </a>
-      <ul className="menu-sub" ref={subRef} style={{ 
+      <ul className="menu-sub" ref={subRef} style={{
         maxHeight: open ? '2000px' : '0px',
         overflow: 'hidden',
         transition: 'max-height 0.3s ease-in-out'
@@ -111,15 +120,15 @@ function SubMenuGroup({ base, label, children }) {
 function MenuGroup({ base, icon, label, children, matchPaths }) {
   const location = useLocation()
   const resolved = useResolvedPath(base)
-  
+
   // Check if current path matches base or any of the matchPaths
-  const isMatched = matchPaths 
+  const isMatched = matchPaths
     ? matchPaths.some(path => location.pathname.startsWith(path))
     : location.pathname.startsWith(resolved.pathname) && location.pathname !== resolved.pathname
-  
+
   const [open, setOpen] = useState(isMatched)
   const isActive = isMatched
-  const toggle = (e) => { e.preventDefault(); setOpen((v)=>!v) }
+  const toggle = (e) => { e.preventDefault(); setOpen((v) => !v) }
   const isCollapsed = typeof document !== 'undefined' && document.documentElement.classList.contains('layout-menu-collapsed')
   const handleEnter = () => { if (isCollapsed) setOpen(true) }
   const handleLeave = () => { if (isCollapsed) setOpen(false) }
@@ -175,7 +184,7 @@ function MenuGroup({ base, icon, label, children, matchPaths }) {
 
   return (
     <li ref={liRef} className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-      <a href="#" className="menu-link menu-toggle" onClick={(e)=>{ e.preventDefault(); toggle(e) }} aria-expanded={open} aria-controls={`${label}-submenu`}>
+      <a href="#" className="menu-link menu-toggle" onClick={(e) => { e.preventDefault(); toggle(e) }} aria-expanded={open} aria-controls={`${label}-submenu`}>
         <i className={`menu-icon bx ${icon}`}></i>
         <div>{label}</div>
       </a>
@@ -200,6 +209,11 @@ export default function DashboardLayout() {
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
   const { user, logout, isAdmin, token } = useAuth()
   const [fiatBalance, setFiatBalance] = useState({ currency: 'USD', amount: '0.00' })
+
+  // Notifications state
+  const [notifications, setNotifications] = useState([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [notificationsLoading, setNotificationsLoading] = useState(false)
 
   // Get user identifier (try id, userId, or email)
   const userIdentifier = user?.id || user?.userId || user?.email;
@@ -243,6 +257,57 @@ export default function DashboardLayout() {
     }
   }
 
+  // Load notifications
+  async function loadNotifications() {
+    if (!token) return
+
+    try {
+      setNotificationsLoading(true)
+      const [notifData, count] = await Promise.all([
+        getNotifications({ limit: 10, includeRead: false }, token),
+        getUnreadCount(token)
+      ])
+
+      setNotifications(notifData.notifications || [])
+      setUnreadCount(count)
+    } catch (error) {
+      console.error('Failed to load notifications:', error)
+    } finally {
+      setNotificationsLoading(false)
+    }
+  }
+
+  // Mark notification as read
+  async function handleMarkAsRead(notificationId) {
+    try {
+      await markAsRead([notificationId], token)
+      setNotifications(prev => prev.map(n =>
+        n.id === notificationId ? { ...n, isRead: true } : n
+      ))
+      setUnreadCount(prev => Math.max(0, prev - 1))
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error)
+    }
+  }
+
+  // Mark all as read
+  async function handleMarkAllAsRead() {
+    try {
+      await markAllAsRead(token)
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+      setUnreadCount(0)
+    } catch (error) {
+      console.error('Failed to mark all as read:', error)
+    }
+  }
+
+  // Load notifications on mount
+  useEffect(() => {
+    if (token) {
+      loadNotifications()
+    }
+  }, [token])
+
   // Log subscription info
   useEffect(() => {
     console.log('[DashboardLayout] 👤 User data:', user);
@@ -260,6 +325,7 @@ export default function DashboardLayout() {
     return {
       onInvoiceCreated: (data) => {
         console.log('[DashboardLayout] Event: invoice.created', data);
+        loadNotifications();
         playNotificationSound('info');
         toast.info({
           title: 'New Invoice',
@@ -268,6 +334,8 @@ export default function DashboardLayout() {
       },
       onInvoiceUpdated: (data) => {
         console.log('[DashboardLayout] Event: invoice.updated', data);
+        loadNotifications();
+
         playNotificationSound('info');
         toast.info({
           title: 'Invoice Updated',
@@ -296,6 +364,7 @@ export default function DashboardLayout() {
             body: data.body || `Invoice status changed to ${data.status}`
           });
         }
+        loadNotifications();
       },
       onPaymentReceived: (data) => {
         console.log('[DashboardLayout] Event: payment.received', data);
@@ -310,6 +379,7 @@ export default function DashboardLayout() {
           body: data.body || 'Payment has been received'
         });
         notifyPaymentReceived(invoiceData);
+        loadNotifications();
       }
     };
   }, []); // Empty array - create once and never change
@@ -327,10 +397,10 @@ export default function DashboardLayout() {
     const html = document.documentElement
     const body = document.body
     html.setAttribute('data-template', 'vertical-menu-template')
-  if (!html.getAttribute('data-bs-theme')) html.setAttribute('data-bs-theme', 'light')
+    if (!html.getAttribute('data-bs-theme')) html.setAttribute('data-bs-theme', 'light')
     html.classList.add('layout-navbar-fixed', 'layout-menu-fixed', 'layout-compact')
     body.classList.add('animation-enabled')
-    
+
     // Initialize audio context on first user interaction
     const initAudio = () => {
       initAudioContext();
@@ -339,7 +409,7 @@ export default function DashboardLayout() {
       document.removeEventListener('touchstart', initAudio);
       document.removeEventListener('keydown', initAudio);
     };
-    
+
     document.addEventListener('click', initAudio);
     document.addEventListener('touchstart', initAudio);
     document.addEventListener('keydown', initAudio)
@@ -354,7 +424,7 @@ export default function DashboardLayout() {
         const parsed = JSON.parse(savedLang)
         if (parsed?.code) setLanguage(parsed)
       }
-    } catch {}
+    } catch { }
     return () => {
       html.classList.remove('layout-navbar-fixed', 'layout-menu-fixed', 'layout-compact', 'layout-menu-collapsed', 'layout-menu-hover', 'layout-menu-expanded')
       body.classList.remove('animation-enabled')
@@ -374,7 +444,7 @@ export default function DashboardLayout() {
       html.setAttribute('data-bs-theme', applied)
     }
     apply()
-    try { localStorage.setItem(THEME_STORAGE_KEY, theme) } catch {}
+    try { localStorage.setItem(THEME_STORAGE_KEY, theme) } catch { }
 
     // Update when system theme changes
     let mq
@@ -397,7 +467,7 @@ export default function DashboardLayout() {
     if (i18n.language !== language.code) {
       i18n.changeLanguage(language.code)
     }
-    try { localStorage.setItem(LANG_STORAGE_KEY, JSON.stringify(language)) } catch {}
+    try { localStorage.setItem(LANG_STORAGE_KEY, JSON.stringify(language)) } catch { }
   }, [language, i18n])
 
   useEffect(() => {
@@ -452,7 +522,7 @@ export default function DashboardLayout() {
       <div className="layout-container">
         <aside id="layout-menu" className="layout-menu menu-vertical menu" onMouseEnter={onAsideEnter} onMouseLeave={onAsideLeave} onClick={onAsideClick}>
           <div className="app-brand demo">
-            <a href="#" className="app-brand-link" onClick={(e)=>e.preventDefault()}>
+            <a href="#" className="app-brand-link" onClick={(e) => e.preventDefault()}>
               <span className="app-brand-logo demo">
                 <i className="bx bxs-wallet-alt text-primary" style={{ fontSize: '32px' }}></i>
               </span>
@@ -547,10 +617,10 @@ export default function DashboardLayout() {
                   </div>
                 </li>
                 {/* /Balance Display */}
-                
+
                 {/* Language */}
                 <li className="nav-item dropdown-language dropdown me-2 me-xl-0">
-                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e)=>e.preventDefault()} data-bs-toggle="dropdown">
+                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
                     <i className="icon-base bx bx-globe icon-md"></i>
                   </a>
                   <ul className="dropdown-menu dropdown-menu-end">
@@ -559,7 +629,7 @@ export default function DashboardLayout() {
                         <a
                           className={`dropdown-item ${i18n.language === lang.code ? 'active' : ''}`}
                           href="#"
-                          onClick={(e)=>{ e.preventDefault(); setLanguage(lang) }}
+                          onClick={(e) => { e.preventDefault(); setLanguage(lang) }}
                           data-language={lang.code}
                           data-text-direction={lang.dir}
                         >
@@ -573,7 +643,7 @@ export default function DashboardLayout() {
 
                 {/* Theme Switcher */}
                 <li className="nav-item dropdown me-2 me-xl-0">
-                  <a className="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="#" onClick={(e)=>e.preventDefault()} data-bs-toggle="dropdown">
+                  <a className="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
                     <i className={`icon-base bx ${themeIcon} icon-md theme-icon-active`}></i>
                     <span className="d-none ms-2" id="nav-theme-text">Toggle theme</span>
                   </a>
@@ -588,7 +658,7 @@ export default function DashboardLayout() {
                           type="button"
                           className={`dropdown-item align-items-center ${theme === opt.value ? 'active' : ''}`}
                           aria-pressed={theme === opt.value}
-                          onClick={()=> setTheme(opt.value)}
+                          onClick={() => setTheme(opt.value)}
                         >
                           <span><i className={`icon-base bx ${opt.icon} icon-md me-3`} data-icon={opt.label.toLowerCase()}></i>{opt.label}</span>
                         </button>
@@ -600,82 +670,78 @@ export default function DashboardLayout() {
 
                 {/* Notifications */}
                 <li className="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-0">
-                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e)=>e.preventDefault()} data-bs-toggle="dropdown">
+                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
                     <span className="position-relative d-inline-block">
                       <i className="icon-base bx bx-bell icon-md"></i>
-                      <span className="badge-dot-notifications"></span>
+                      {unreadCount > 0 && <span className="badge-dot-notifications"></span>}
                     </span>
                   </a>
                   <ul className="dropdown-menu dropdown-menu-end p-0">
                     <li className="dropdown-menu-header border-bottom">
                       <div className="dropdown-header d-flex align-items-center py-3">
-                        <h6 className="mb-0 me-auto">{t('notifications.title', { defaultValue: 'Notifications' })}</h6>
+                        <h6 className="mb-0 me-auto">
+                          {t('notifications.title', { defaultValue: 'Notifications' })}
+                          {unreadCount > 0 && <span className="badge bg-primary ms-2">{unreadCount}</span>}
+                        </h6>
                         <div className="dropdown-notifications-actions">
-                          <a href="#" className="dropdown-notifications-read" onClick={(e)=>e.preventDefault()}>
-                            <span className="badge badge-dot"></span>
-                          </a>
-                          <a href="#" className="dropdown-notifications-archive" onClick={(e)=>e.preventDefault()}>
-                            <span className="bx bx-x"></span>
+                          <a
+                            href="#"
+                            className="dropdown-notifications-read"
+                            onClick={(e) => { e.preventDefault(); handleMarkAllAsRead() }}
+                            title={t('notifications.markAllRead', { defaultValue: 'Mark all as read' })}
+                          >
+                            <i className="bx bx-check-double"></i>
                           </a>
                         </div>
                       </div>
                     </li>
                     <li className="dropdown-notifications-list scrollable-container">
-                      <ul className="list-group list-group-flush">
-                        {/* Sample Notification Items */}
-                        <li className="list-group-item list-group-item-action dropdown-notifications-item">
-                          <div className="d-flex">
-                            <div className="flex-shrink-0 me-3">
-                              <div className="avatar">
-                                <span className="avatar-initial rounded-circle bg-label-success">
-                                  <i className="bx bx-check-circle"></i>
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <h6 className="small mb-0">{t('notifications.paymentReceived', { defaultValue: 'Payment Received' })}</h6>
-                              <small className="mb-1 d-block text-body">Invoice #ABC-123 paid successfully</small>
-                              <small className="text-muted">2 min ago</small>
-                            </div>
+                      {notificationsLoading ? (
+                        <div className="d-flex align-items-center justify-content-center py-4" style={{ minHeight: '150px' }}>
+                          <div className="spinner-border spinner-border-sm text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
                           </div>
-                        </li>
-                        <li className="list-group-item list-group-item-action dropdown-notifications-item">
-                          <div className="d-flex">
-                            <div className="flex-shrink-0 me-3">
-                              <div className="avatar">
-                                <span className="avatar-initial rounded-circle bg-label-warning">
-                                  <i className="bx bx-time"></i>
-                                </span>
+                        </div>
+                      ) : notifications.length === 0 ? (
+                        <div className="d-flex flex-column align-items-center justify-content-center py-4 text-muted w-100" style={{ minHeight: '150px' }}>
+                          <i className="bx bx-bell-off mb-2" style={{ fontSize: '2rem' }}></i>
+                          <small>{t('notifications.noNotifications', { defaultValue: 'No notifications' })}</small>
+                        </div>
+                      ) : (
+                        <ul className="list-group list-group-flush">
+                          {notifications.map((notif) => (
+                            <li
+                              key={notif.id}
+                              className={`list-group-item list-group-item-action dropdown-notifications-item ${notif.isRead ? '' : 'unread'}`}
+                              onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}
+                              style={{ cursor: notif.isRead ? 'default' : 'pointer' }}
+                            >
+                              <div className="d-flex">
+                                <div className="flex-shrink-0 me-3">
+                                  <div className="avatar">
+                                    <span className={`avatar-initial rounded-circle bg-label-${getNotificationColor(notif.type)}`}>
+                                      <i className={`bx ${getNotificationIcon(notif.type)}`}></i>
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex-grow-1">
+                                  <h6 className="small mb-0">
+                                    {notif.title}
+                                    {!notif.isRead && <span className="badge bg-primary badge-sm ms-2">New</span>}
+                                  </h6>
+                                  <small className="mb-1 d-block text-body">{notif.message}</small>
+                                  <small className="text-muted">{formatNotificationTime(notif.createdAt)}</small>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <h6 className="small mb-0">{t('notifications.invoiceExpiringSoon', { defaultValue: 'Invoice Expiring Soon' })}</h6>
-                              <small className="mb-1 d-block text-body">Invoice #XYZ-456 expires in 10 minutes</small>
-                              <small className="text-muted">15 min ago</small>
-                            </div>
-                          </div>
-                        </li>
-                        <li className="list-group-item list-group-item-action dropdown-notifications-item">
-                          <div className="d-flex">
-                            <div className="flex-shrink-0 me-3">
-                              <div className="avatar">
-                                <span className="avatar-initial rounded-circle bg-label-info">
-                                  <i className="bx bx-info-circle"></i>
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <h6 className="small mb-0">{t('notifications.newInvoice', { defaultValue: 'New Invoice Created' })}</h6>
-                              <small className="mb-1 d-block text-body">Invoice #DEF-789 has been created</small>
-                              <small className="text-muted">1 hour ago</small>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                     <li className="dropdown-menu-footer border-top">
-                      <a href="#" className="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center" onClick={(e)=>e.preventDefault()}>
-                        {t('notifications.viewAll', { defaultValue: 'View all notifications' })}
+                      <a href="#" className="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center" onClick={(e) => { e.preventDefault(); loadNotifications() }}>
+                        <i className="bx bx-refresh me-2"></i>
+                        {t('notifications.refresh', { defaultValue: 'Refresh' })}
                       </a>
                     </li>
                   </ul>
@@ -684,7 +750,7 @@ export default function DashboardLayout() {
 
                 {/* User */}
                 <li className="nav-item navbar-dropdown dropdown-user dropdown">
-                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e)=>e.preventDefault()} data-bs-toggle="dropdown">
+                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
                     <div className="avatar avatar-online">
                       {user?.avatarUrl ? (
                         <img src={user.avatarUrl} alt="avatar" className="rounded-circle" />
@@ -695,7 +761,7 @@ export default function DashboardLayout() {
                   </a>
                   <ul className="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a className="dropdown-item" href="#" onClick={(e)=>e.preventDefault()}>
+                      <a className="dropdown-item" href="#" onClick={(e) => e.preventDefault()}>
                         <div className="d-flex">
                           <div className="flex-shrink-0 me-3">
                             <div className="avatar avatar-online">
@@ -722,19 +788,19 @@ export default function DashboardLayout() {
                     <li><div className="dropdown-divider"></div></li>
                     {!isAdmin && (
                       <li>
-                        <a className="dropdown-item" href="#" onClick={(e)=>{e.preventDefault(); navigate('/app/settings')}}>
+                        <a className="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); navigate('/app/settings') }}>
                           <i className="icon-base bx bx-cog icon-md me-3"></i><span>{t('nav.settings')}</span>
                         </a>
                       </li>
                     )}
                     <li>
-                      <a className="dropdown-item" href="#" onClick={(e)=>e.preventDefault()}>
+                      <a className="dropdown-item" href="#" onClick={(e) => e.preventDefault()}>
                         <i className="icon-base bx bx-credit-card icon-md me-3"></i><span>{t('user.billing')}</span>
                       </a>
                     </li>
                     <li><div className="dropdown-divider"></div></li>
                     <li>
-                      <a className="dropdown-item" href="#" onClick={(e)=>{ e.preventDefault(); logout(); navigate('/', { replace: true }) }}>
+                      <a className="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); logout(); navigate('/', { replace: true }) }}>
                         <i className="icon-base bx bx-log-out icon-md me-3"></i><span>{t('user.logout')}</span>
                       </a>
                     </li>
@@ -831,21 +897,48 @@ export default function DashboardLayout() {
         .dropdown-notifications-list {
           max-height: 300px;
           overflow-y: auto;
+          min-height: 150px;
+        }
+        .dropdown-notifications-list .list-group-flush {
+          margin: 0;
         }
         .dropdown-notifications-item {
           padding: 0.75rem 1.5rem;
           cursor: pointer;
           transition: background-color 0.2s;
+          border-left: 3px solid transparent;
+        }
+        .dropdown-notifications-item.unread {
+          background-color: rgba(139, 92, 246, 0.05);
+          border-left-color: rgba(139, 92, 246, 0.5);
+          font-weight: 500;
         }
         .dropdown-notifications-item:hover {
           background-color: rgba(0,0,0,0.02);
         }
+        .dropdown-notifications-item.unread:hover {
+          background-color: rgba(139, 92, 246, 0.08);
+        }
         [data-bs-theme="dark"] .dropdown-notifications-item:hover {
           background-color: rgba(255,255,255,0.05);
+        }
+        [data-bs-theme="dark"] .dropdown-notifications-item.unread {
+          background-color: rgba(139, 92, 246, 0.1);
         }
         .dropdown-notifications-actions {
           display: flex;
           gap: 0.5rem;
+        }
+        .dropdown-notifications-actions a {
+          color: #6c757d;
+          transition: color 0.2s;
+        }
+        .dropdown-notifications-actions a:hover {
+          color: #8b5cf6;
+        }
+        .badge-sm {
+          font-size: 0.625rem;
+          padding: 0.15rem 0.35rem;
         }
       `}</style>
     </div>
