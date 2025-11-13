@@ -87,6 +87,9 @@
     "paidAmount": "已付金额",
     "description": "描述",
     "payments": "支付记录",
+    "expiryHoursRange": "最小: 1 | 最大: 1,000 小时",
+    "amountRange": "最小: {{min}} | 最大: {{max}} (最多 8 位小数)",
+    "maxAmountInfo": "最大: {{max}} (最多 8 位小数)",
     "txHash": "交易哈希",
     "notFound": "未找到发票",
     "viewOnExplorer": "在区块浏览器查看",
@@ -164,7 +167,15 @@
     "networksCount": "{{count}} 个网络"
   },
   "validation": {
-    "requiredFields": "请填写必填项"
+    "requiredFields": "请填写必填项",
+    "selectCoin": "请选择币种",
+    "selectNetwork": "请选择网络",
+    "invalidAmount": "金额无效",
+    "amountMustBePositive": "金额必须大于 0",
+    "amountTooSmall": "金额不得少于 {{min}}",
+    "amountTooLarge": "金额不得超过 {{max}}",
+    "expiryHoursTooSmall": "小时数不得少于 1",
+    "expiryHoursTooLarge": "小时数不得超过 1,000"
   },
   "update": "更新",
   "saving": "保存中...",

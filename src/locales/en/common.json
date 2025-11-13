@@ -87,6 +87,9 @@
     "paidAmount": "Paid Amount",
     "description": "Description",
     "payments": "Payments",
+    "expiryHoursRange": "Min: 1 | Max: 1,000 hours",
+    "amountRange": "Min: {{min}} | Max: {{max}} (Max 8 decimals)",
+    "maxAmountInfo": "Max: {{max}} (Max 8 decimals)",
     "txHash": "Tx Hash",
     "notFound": "Invoice not found",
     "viewOnExplorer": "View on Explorer",
@@ -164,7 +167,15 @@
     "networksCount": "{{count}} networks"
   },
   "validation": {
-    "requiredFields": "Please fill required fields"
+    "requiredFields": "Please fill required fields",
+    "selectCoin": "Please select a coin",
+    "selectNetwork": "Please select a network",
+    "invalidAmount": "Invalid amount",
+    "amountMustBePositive": "Amount must be greater than 0",
+    "amountTooSmall": "Amount must be at least {{min}}",
+    "amountTooLarge": "Amount must not exceed {{max}}",
+    "expiryHoursTooSmall": "Hours must be at least 1",
+    "expiryHoursTooLarge": "Hours must not exceed 1,000"
   },
   "update": "Update",
   "saving": "Saving...",

@@ -89,6 +89,9 @@
     "paidAmount": "จำนวนที่ชำระ",
     "description": "คำอธิบาย",
     "payments": "การชำระเงิน",
+    "expiryHoursRange": "ขั้นต่ำ: 1 | สูงสุด: 1,000 ชั่วโมง",
+    "amountRange": "ขั้นต่ำ: {{min}} | สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
+    "maxAmountInfo": "สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
     "txHash": "Tx Hash",
     "notFound": "ไม่พบใบแจ้งหนี้",
     "viewOnExplorer": "ดูบน Explorer",
@@ -178,7 +181,15 @@
     "networksCount": "{{count}} เครือข่าย"
   },
   "validation": {
-    "requiredFields": "กรุณากรอกข้อมูลที่จำเป็น"
+    "requiredFields": "กรุณากรอกข้อมูลที่จำเป็น",
+    "selectCoin": "กรุณาเลือกเหรียญ",
+    "selectNetwork": "กรุณาเลือกเครือข่าย",
+    "invalidAmount": "จำนวนเงินไม่ถูกต้อง",
+    "amountMustBePositive": "จำนวนเงินต้องมากกว่า 0",
+    "amountTooSmall": "จำนวนเงินต้องไม่น้อยกว่า {{min}}",
+    "amountTooLarge": "จำนวนเงินต้องไม่เกิน {{max}}",
+    "expiryHoursTooSmall": "ชั่วโมงต้องไม่น้อยกว่า 1",
+    "expiryHoursTooLarge": "ชั่วโมงต้องไม่เกิน 1,000"
   },
   "status": {
     "all": "ทั้งหมด",

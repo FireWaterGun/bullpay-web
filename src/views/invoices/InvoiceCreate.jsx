@@ -138,6 +138,8 @@ export default function InvoiceCreate() {
   const [walletError] = useState("");
   const [coinNetworkId, setCoinNetworkId] = useState("");
   const [amount, setAmount] = useState("");
+  const [amountError, setAmountError] = useState("");
+  const [expiryHoursError, setExpiryHoursError] = useState("");
   const [description, setDescription] = useState("");
   const [memo, setMemo] = useState("");
   const [expiryHours, setExpiryHours] = useState(24);
@@ -188,6 +190,19 @@ export default function InvoiceCreate() {
     }
   }, [grouped, selectedCoin]);
 
+  // Get selected network details
+  const selectedNetwork = useMemo(() => {
+    return networks.find(n => String(n.id) === String(coinNetworkId));
+  }, [networks, coinNetworkId]);
+
+  // Get min/max deposit limits from selected network
+  const minDeposit = useMemo(() => {
+    const min = selectedNetwork?.minDeposit ? parseFloat(selectedNetwork.minDeposit) : 0;
+    return min;
+  }, [selectedNetwork]);
+
+  const maxDeposit = 99999999; // Max 99,999,999
+
   useEffect(() => {
     // Use networks from grouped data (already loaded from listCoins API)
     if (!selectedCoin) {
@@ -228,9 +243,43 @@ export default function InvoiceCreate() {
       setError(t("validation.requiredFields") || "Please fill required fields");
       return;
     }
+    // Check if there's already a validation error from real-time validation
+    if (amountError) {
+      setError(amountError);
+      return;
+    }
+    if (expiryHoursError) {
+      setError(expiryHoursError);
+      return;
+    }
+    // Validate expiry hours
+    if (expiryHours) {
+      const hoursNum = parseInt(expiryHours);
+      if (isNaN(hoursNum) || hoursNum < 1) {
+        setError(t("validation.expiryHoursTooSmall") || "ชั่วโมงต้องไม่น้อยกว่า 1");
+        return;
+      }
+      if (hoursNum > 1000) {
+        setError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 1,000");
+        return;
+      }
+    }
+    // Validate amount range (redundant check for safety)
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setError(t("validation.invalidAmount") || "จำนวนเงินต้องมากกว่า 0");
+      return;
+    }
+    if (minDeposit > 0 && amountNum < minDeposit) {
+      setError(t("validation.amountTooSmall", { min: minDeposit }) || `จำนวนเงินต้องไม่น้อยกว่า ${minDeposit}`);
+      return;
+    }
+    if (amountNum > maxDeposit) {
+      setError(t("validation.amountTooLarge", { max: maxDeposit.toLocaleString() }) || `จำนวนเงินต้องไม่เกิน ${maxDeposit.toLocaleString()}`);
+      return;
+    }
     
-    // Find selected network to get networkSymbol
-    const selectedNetwork = networks.find(n => String(n.id) === String(coinNetworkId));
+    // Check selected network (using useMemo value)
     if (!selectedNetwork?.network?.symbol) {
       setError("Invalid network selection");
       return;
@@ -362,26 +411,150 @@ export default function InvoiceCreate() {
             <div className="row g-3">
               {/* Removed manual Coin Network ID input. Now selected via UI above. */}
               <div className="col-sm-6 col-md-4">
-                <label className="form-label">{t("invoices.amount")}</label>
+                <label className="form-label">{t("invoices.amount")} *</label>
                 <input
-                  className="form-control"
+                  className={`form-control ${amountError ? 'is-invalid' : ''}`}
                   type="number"
                   step="0.00000001"
-                  placeholder="0.001"
+                  min={minDeposit || 0}
+                  max={maxDeposit}
+                  placeholder={minDeposit > 0 ? String(minDeposit) : "0.001"}
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onInput={(e) => {
+                    // ป้องกันทศนิยมเกิน 8 ตำแหน่งและจำนวนเต็มเกิน 10 หลัก
+                    let value = e.target.value;
+                    
+                    if (value.includes('.')) {
+                      const parts = value.split('.');
+                      
+                      // จำกัดจำนวนเต็มไม่เกิน 10 หลัก (รองรับ 1,000,000)
+                      if (parts[0] && parts[0].replace('-', '').length > 10) {
+                        parts[0] = parts[0].substring(0, parts[0].startsWith('-') ? 11 : 10);
+                      }
+                      
+                      // จำกัดทศนิยมไม่เกิน 8 ตำแหน่ง
+                      if (parts[1] && parts[1].length > 8) {
+                        parts[1] = parts[1].substring(0, 8);
+                      }
+                      
+                      e.target.value = parts.join('.');
+                    } else if (value && value.replace('-', '').length > 10) {
+                      // จำกัดจำนวนเต็มเมื่อไม่มีจุดทศนิยม
+                      e.target.value = value.substring(0, value.startsWith('-') ? 11 : 10);
+                    }
+                  }}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    
+                    // จำกัดความยาวและจำนวนทศนิยม
+                    if (value !== '') {
+                      // ตรวจสอบและจำกัดทศนิยมไม่เกิน 8 ตำแหน่ง
+                      const parts = value.split('.');
+                      if (parts.length === 2 && parts[1].length > 8) {
+                        // ตัดทศนิยมให้เหลือ 8 ตำแหน่ง
+                        value = `${parts[0]}.${parts[1].substring(0, 8)}`;
+                      }
+                      
+                      // ตรวจสอบค่าไม่เกิน max - ถ้าเกินให้หยุดการพิมพ์ (ไม่ update state)
+                      const num = parseFloat(value);
+                      if (!isNaN(num) && num > maxDeposit) {
+                        // หยุดการพิมพ์ โดยไม่ update state
+                        return;
+                      }
+                    }
+                    
+                    setAmount(value);
+                    
+                    // Real-time validation
+                    if (value === '') {
+                      setAmountError('');
+                      return;
+                    }
+                    
+                    const num = parseFloat(value);
+                    if (isNaN(num)) {
+                      setAmountError(t("validation.invalidAmount") || "จำนวนเงินไม่ถูกต้อง");
+                    } else if (num <= 0) {
+                      setAmountError(t("validation.amountMustBePositive") || "จำนวนเงินต้องมากกว่า 0");
+                    } else if (minDeposit > 0 && num < minDeposit) {
+                      setAmountError(t("validation.amountTooSmall", { min: minDeposit }) || `จำนวนเงินต้องไม่น้อยกว่า ${minDeposit}`);
+                    } else if (num > maxDeposit) {
+                      setAmountError(t("validation.amountTooLarge", { max: maxDeposit.toLocaleString() }) || `จำนวนเงินต้องไม่เกิน ${maxDeposit.toLocaleString()}`);
+                    } else {
+                      setAmountError('');
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // ตรวจสอบอีกครั้งเมื่อ blur เพื่อให้แน่ใจว่าทศนิยมถูกต้อง
+                    let value = e.target.value;
+                    if (value !== '') {
+                      // ตัดทศนิยมเกิน 8 ตำแหน่ง
+                      const parts = value.split('.');
+                      if (parts.length === 2 && parts[1].length > 8) {
+                        value = `${parts[0]}.${parts[1].substring(0, 8)}`;
+                        // อัพเดทค่าถ้ามีการเปลี่ยนแปลง
+                        setAmount(value);
+                      }
+                    }
+                  }}
+                  required
                 />
+                {amountError && <div className="invalid-feedback d-block">{amountError}</div>}
+                {!amountError && (
+                  <small className="text-muted">
+                    {minDeposit > 0 
+                      ? t("invoices.amountRange", { min: minDeposit, max: maxDeposit.toLocaleString() })
+                      : t("invoices.maxAmountInfo", { max: maxDeposit.toLocaleString() })
+                    }
+                  </small>
+                )}
               </div>
               <div className="col-sm-6 col-md-4">
                 <label className="form-label">{t("form.expiryHours") || "Expiry (hours)"}</label>
                 <input
-                  className="form-control"
+                  className={`form-control ${expiryHoursError ? 'is-invalid' : ''}`}
                   type="number"
                   min={1}
+                  max={1000}
                   placeholder="24"
                   value={expiryHours}
-                  onChange={(e) => setExpiryHours(e.target.value)}
+                  onInput={(e) => {
+                    // จำกัดจำนวนหลักไม่เกิน 4 หลัก (รองรับ 1000)
+                    const value = e.target.value;
+                    if (value && value.replace('-', '').length > 4) {
+                      e.target.value = value.substring(0, value.startsWith('-') ? 5 : 4);
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    
+                    // ตรวจสอบค่าไม่เกิน 1000 - ถ้าเกินให้หยุดการพิมพ์
+                    if (value !== '') {
+                      const num = parseInt(value);
+                      if (!isNaN(num) && num > 1000) {
+                        // หยุดการพิมพ์
+                        return;
+                      }
+                      if (!isNaN(num) && num < 1) {
+                        setExpiryHoursError(t("validation.expiryHoursTooSmall") || "ชั่วโมงต้องไม่น้อยกว่า 1");
+                      } else if (!isNaN(num) && num > 1000) {
+                        setExpiryHoursError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 1,000");
+                      } else {
+                        setExpiryHoursError('');
+                      }
+                    } else {
+                      setExpiryHoursError('');
+                    }
+                    
+                    setExpiryHours(value);
+                  }}
                 />
+                {expiryHoursError && <div className="invalid-feedback d-block">{expiryHoursError}</div>}
+                {!expiryHoursError && (
+                  <small className="text-muted">
+                    {t("invoices.expiryHoursRange")}
+                  </small>
+                )}
               </div>
               <div className="col-sm-6 col-md-6">
                 <label className="form-label">{t("invoices.description")}</label>
@@ -407,7 +580,7 @@ export default function InvoiceCreate() {
             <button type="button" className="btn btn-outline-secondary" onClick={() => navigate(-1)} disabled={loading}>
               {t("actions.back") || "Back"}
             </button>
-            <button type="submit" className="btn btn-primary" disabled={loading || !selectedCoin || !coinNetworkId || !amount}>
+            <button type="submit" className="btn btn-primary" disabled={loading || !selectedCoin || !coinNetworkId || !amount || !!amountError}>
               {loading ? t("common.saving") || "Saving..." : t("invoice.createTitle")}
             </button>
           </div>
