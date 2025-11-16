@@ -250,12 +250,30 @@ export default function InvoiceDetail() {
   // Note: Pusher subscription is handled globally in DashboardLayout
   // No need to subscribe here to avoid duplicate notifications
 
-  const statusClass = (s) =>
-    s === "paid"
-      ? "bg-label-success"
-      : s === "pending"
-      ? "bg-label-warning"
-      : "bg-label-secondary";
+  const statusClass = (s) => {
+    const status = String(s || '').toLowerCase();
+    switch (status) {
+      case 'paid':
+      case 'completed':
+      case 'confirmed':
+        return "bg-label-success";
+      case 'pending':
+      case 'detecting':
+        return "bg-label-warning";
+      case 'confirming':
+        return "bg-label-info";
+      case 'expired':
+      case 'cancelled':
+        return "bg-label-secondary";
+      case 'failed':
+      case 'unconfirmed':
+        return "bg-label-danger";
+      case 'refunded':
+        return "bg-label-primary";
+      default:
+        return "bg-label-secondary";
+    }
+  };
 
   // Removed print action per requirement
 
@@ -297,6 +315,11 @@ export default function InvoiceDetail() {
     }
   };
 
+  const formatTxHash = (hash, startChars = 10, endChars = 8) => {
+    if (!hash || hash.length <= startChars + endChars) return hash;
+    return `${hash.substring(0, startChars)}...${hash.substring(hash.length - endChars)}`;
+  };
+
   // Extract coin and network info from invoice response
   const coinSym = (invoice?.coin?.symbol || "").toUpperCase();
   const networkSym = (invoice?.network?.symbol || "").toUpperCase();
@@ -330,63 +353,31 @@ export default function InvoiceDetail() {
             <div className="col-12 col-lg-9 mb-4">
               <div className="card invoice-preview-card">
                 <div className="card-body">
-                  <div className="d-flex justify-content-between flex-wrap gap-2">
-                    <div>
-                      <h5 className="mb-1 d-flex align-items-center gap-2">
-                        <span>{invoice.publicCode || invoice.code || invoice.id}</span>
-                        <span className={`badge rounded-pill d-inline-flex align-items-center px-3 text-capitalize ${statusClass(invoice.status)}`}>
-                          {invoice.status || "-"}
-                        </span>
-                      </h5>
+                  <div>
+                    <h5 className="mb-1 d-flex align-items-center gap-2">
+                      <span>{invoice.publicCode || invoice.code || invoice.id}</span>
+                      <span className={`badge rounded-pill d-inline-flex align-items-center px-3 text-capitalize ${statusClass(invoice.status)}`}>
+                        {invoice.status || "-"}
+                      </span>
+                    </h5>
+                    <div className="text-muted small">
+                      {t("invoices.createdAt") || "Created"}: {formatDateTime(invoice.createdAt || invoice.created_at)}
+                    </div>
+                    {invoice.expiryAt && (
                       <div className="text-muted small">
-                        {t("invoices.createdAt") || "Created"}: {formatDateTime(invoice.createdAt || invoice.created_at)}
+                        {t("invoices.expiryAt") || "Expires"}: {formatDateTime(invoice.expiryAt)}
                       </div>
-                      {invoice.expiryAt && (
-                        <div className="text-muted small">
-                          {t("invoices.expiryAt") || "Expires"}: {formatDateTime(invoice.expiryAt)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-end">
-                      <div className="p-3 rounded-3" style={{
-                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.12))',
-                        border: '2px solid rgba(139, 92, 246, 0.3)',
-                        boxShadow: '0 4px 12px rgba(139, 92, 246, 0.15)'
-                      }}>
-                        <div className="d-flex align-items-center justify-content-end gap-2 mb-1">
-                          <div style={{
-                            fontSize: '2rem',
-                            fontWeight: '800',
-                            letterSpacing: '-1px',
-                            background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                            lineHeight: 1.1
-                          }}>
-                            {formatAmount(invoice.amount)}
-                          </div>
-                          <div style={{
-                            fontSize: '1.25rem',
-                            fontWeight: '700',
-                            color: '#8b5cf6'
-                          }}>
-                            {coinSym}
-                          </div>
-                        </div>
-                        <div className="text-muted small text-end">{networkName}</div>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   <hr className="my-4" />
 
                   <div className="row g-3">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <label className="form-label">{t("invoices.chain") || "Chain"}</label>
                       <div className="fw-medium text-muted">{networkSym || 'N/A'}</div>
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <label className="form-label">{t("invoices.coin") || "Coin"}</label>
                       <div className="d-flex align-items-center">
                         <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} size={32} />
@@ -396,7 +387,13 @@ export default function InvoiceDetail() {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
+                      <label className="form-label">{t("invoices.amount") || "Amount"}</label>
+                      <div className="fw-medium">
+                        {formatAmount(invoice.amount)} {coinSym}
+                      </div>
+                    </div>
+                    <div className="col-md-3">
                       <label className="form-label">{t("invoices.paidAmount") || "Paid Amount"}</label>
                       <div className="fw-medium">
                         {formatAmount(invoice.paidAmount || 0)} {coinSym}
@@ -455,6 +452,7 @@ export default function InvoiceDetail() {
                               <th>#</th>
                               <th>{t("invoices.txHash") || "Tx Hash"}</th>
                               <th>{t("invoices.amount") || "Amount"}</th>
+                              <th>{t("invoices.status") || "Status"}</th>
                               <th>{t("invoices.date") || "Date"}</th>
                             </tr>
                           </thead>
@@ -462,7 +460,7 @@ export default function InvoiceDetail() {
                             {invoice.payments.map((p, idx) => (
                               <tr key={p.id || idx}>
                                 <td>{idx + 1}</td>
-                                <td style={{ wordBreak: 'break-all', maxWidth: 400 }}>
+                                <td className="text-nowrap">
                                   {p.txHash ? (
                                     explorer ? (
                                       <a 
@@ -470,11 +468,12 @@ export default function InvoiceDetail() {
                                         target="_blank" 
                                         rel="noreferrer"
                                         className="text-decoration-none"
+                                        title={p.txHash}
                                       >
-                                        {p.txHash}
+                                        {formatTxHash(p.txHash)}
                                       </a>
                                     ) : (
-                                      <code className="small">{p.txHash}</code>
+                                      <code className="small" title={p.txHash}>{formatTxHash(p.txHash)}</code>
                                     )
                                   ) : (
                                     "-"
@@ -482,6 +481,11 @@ export default function InvoiceDetail() {
                                 </td>
                                 <td className="text-nowrap">
                                   {formatAmount(p.actualAmount || p.amount || 0)} {coinSym}
+                                </td>
+                                <td>
+                                  <span className={`badge text-capitalize ${statusClass(p.status)}`}>
+                                    {p.status ? t(`invoices.${p.status.toLowerCase()}`, { defaultValue: p.status }) : "-"}
+                                  </span>
                                 </td>
                                 <td className="text-nowrap">{formatDateTime(p.createdAt || p.created_at)}</td>
                               </tr>
@@ -555,9 +559,7 @@ export default function InvoiceDetail() {
                       </div>
                     </>
                   )}
-                  <small className="text-muted d-block mb-1">{t("invoices.invoiceId") || "Invoice ID"}</small>
-                  <div className="fw-medium">{invoice.id}</div>
-                  <small className="text-muted d-block mt-3 mb-1">{t("invoices.createdAt") || "Created"}</small>
+                  <small className="text-muted d-block mb-1">{t("invoices.createdAt") || "Created"}</small>
                   <div>{formatDateTime(invoice.createdAt || invoice.created_at)}</div>
                   {invoice.expiryAt && (
                     <>
