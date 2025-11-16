@@ -318,7 +318,7 @@ export default function LedgerTransactions() {
                                   : ''
                             }>
                               {(entry.type === 'deposit' || entry.type === 'payment_received' || entry.type === 'conversion_in') ? '+' : '-'}
-                              {parseFloat(formatAmount(entry.amountRaw || entry.amount, entry.decimals || 18)).toLocaleString(undefined, {
+                              {parseFloat(entry.amountDecimal || entry.amount || 0).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 8
                               })}
@@ -326,7 +326,7 @@ export default function LedgerTransactions() {
                           </td>
                           <td>
                             <span>
-                              {entry.balanceAfterRaw ? parseFloat(formatAmount(entry.balanceAfterRaw, entry.decimals || 18)).toLocaleString(undefined, {
+                              {entry.balanceDecimal ? parseFloat(entry.balanceDecimal).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 8
                               }) : '-'}

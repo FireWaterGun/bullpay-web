@@ -46,20 +46,20 @@ export async function getCoins(token: string, page: number = 1, limit: number = 
   })
   
   // Transform response structure to match component expectations
-  // API returns: { data: { coins: [...], meta: {...} } }
+  // API returns: { data: { items: [...], meta: {...} } }
   const data = response?.data || response
-  const items = data?.coins || []
+  const items = data?.items || []
   const meta = data?.meta || {}
 
   return {
     items,
     pagination: {
       page: meta.page || 1,
-      limit: meta.limit || 10,
+      limit: meta.perPage || meta.limit || 10,
       total: meta.total || 0,
-      totalPages: meta.totalPages || 1,
-      hasNext: (meta.page || 1) < (meta.totalPages || 1),
-      hasPrev: (meta.page || 1) > 1,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
     }
   }
 }
@@ -99,20 +99,20 @@ export async function getNetworks(token: string, page: number = 1, limit: number
   })
   
   // Transform response structure to match component expectations
-  // API returns: { data: { networks: [...], meta: {...} } }
+  // API returns: { data: { items: [...], meta: {...} } }
   const data = response?.data || response
-  const items = data?.networks || data?.items || []
-  const meta = data?.meta || data?.pagination || {}
+  const items = data?.items || []
+  const meta = data?.meta || {}
 
   return {
     items,
     pagination: {
       page: meta.page || 1,
-      limit: meta.limit || 10,
+      limit: meta.perPage || meta.limit || 10,
       total: meta.total || 0,
-      totalPages: meta.totalPages || 1,
-      hasNext: (meta.page || 1) < (meta.totalPages || 1),
-      hasPrev: (meta.page || 1) > 1,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
     }
   }
 }
@@ -237,20 +237,20 @@ export async function getCoinNetworks(token: string, page = 1, limit = 10, searc
   })
   
   // Transform response structure to match component expectations
-  // API returns: { data: { coinNetworks: [...], meta: {...} } }
+  // API returns: { data: { items: [...], meta: {...} } }
   const data = response?.data || response
-  const items = data?.coinNetworks || data?.items || []
-  const meta = data?.meta || data?.pagination || {}
+  const items = data?.items || []
+  const meta = data?.meta || {}
 
   return {
     items,
     pagination: {
       page: meta.page || 1,
-      limit: meta.limit || 10,
+      limit: meta.perPage || meta.limit || 10,
       total: meta.total || 0,
-      totalPages: meta.totalPages || 1,
-      hasNext: (meta.page || 1) < (meta.totalPages || 1),
-      hasPrev: (meta.page || 1) > 1,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
     }
   }
 }
@@ -623,20 +623,20 @@ export async function getLedgerEntries(
   })
   
   // Transform response structure to match component expectations
-  // API returns: { data: { entries: [...], meta: {...} } }
+  // API returns: { data: { items: [...], meta: {...} } }
   const data = response?.data || response
-  const items = data?.entries || []
+  const items = data?.items || []
   const meta = data?.meta || {}
 
   return {
     items,
     pagination: {
       page: meta.page || 1,
-      limit: meta.limit || 20,
+      limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
-      totalPages: meta.totalPages || 1,
-      hasNext: (meta.page || 1) < (meta.totalPages || 1),
-      hasPrev: (meta.page || 1) > 1,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
     }
   }
 }
@@ -675,20 +675,20 @@ export async function getSweeps(
   })
   
   // Transform response structure to match component expectations
-  // API returns: { data: { sweeps: [...], meta: {...} } }
+  // API returns: { data: { items: [...], meta: {...} } }
   const data = response?.data || response
-  const items = data?.sweeps || data?.items || []
-  const meta = data?.meta || data?.pagination || {}
+  const items = data?.items || []
+  const meta = data?.meta || {}
 
   return {
     items,
     pagination: {
       page: meta.page || 1,
-      limit: meta.limit || 20,
+      limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
-      totalPages: meta.totalPages || 1,
-      hasNext: (meta.page || 1) < (meta.totalPages || 1),
-      hasPrev: (meta.page || 1) > 1,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
     }
   }
 }
