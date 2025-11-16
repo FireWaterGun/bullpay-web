@@ -318,12 +318,18 @@ export default function LedgerTransactions() {
                                   : ''
                             }>
                               {(entry.type === 'deposit' || entry.type === 'payment_received' || entry.type === 'conversion_in') ? '+' : '-'}
-                              {formatAmount(entry.amountRaw || entry.amount, entry.decimals || 18)}
+                              {parseFloat(formatAmount(entry.amountRaw || entry.amount, entry.decimals || 18)).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 8
+                              })}
                             </span>
                           </td>
                           <td>
                             <span>
-                              {entry.balanceAfterRaw ? formatAmount(entry.balanceAfterRaw, entry.decimals || 18) : '-'}
+                              {entry.balanceAfterRaw ? parseFloat(formatAmount(entry.balanceAfterRaw, entry.decimals || 18)).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 8
+                              }) : '-'}
                             </span>
                           </td>
                           <td>

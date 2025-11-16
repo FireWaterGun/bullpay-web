@@ -307,7 +307,8 @@ export default function SweepTransactions() {
                                 sweep.decimals, 
                                 sweep.coinNetwork?.coin?.symbol,
                                 sweep.coinNetwork?.network?.symbol
-                              )}
+                              )}{' '}
+                              <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>
                             </span>
                           </td>
                           <td className="text-nowrap"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>

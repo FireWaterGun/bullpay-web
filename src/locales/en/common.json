@@ -321,6 +321,7 @@
     "wallets": "wallets",
     "noWalletsFound": "No wallets with balance found",
     "address": "Address",
+    "purpose": "Purpose",
     "type": "Type",
     "priceUSD": "Price (USD)",
     "hot": "Hot",

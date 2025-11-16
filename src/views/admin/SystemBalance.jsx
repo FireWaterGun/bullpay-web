@@ -290,6 +290,7 @@ export default function SystemBalance() {
                         <th>{t('invoices.chain') || 'Chain'}</th>
                         <th>{t('balance.col.coin')}</th>
                         <th>{t('admin.address', { defaultValue: 'Address' })}</th>
+                        <th>{t('admin.purpose', { defaultValue: 'Purpose' })}</th>
                         <th>{t('admin.type', { defaultValue: 'Type' })}</th>
                         <th>{t('invoices.statusCol')}</th>
                         <th className="text-end">{t('invoices.amount')}</th>
@@ -351,6 +352,11 @@ export default function SystemBalance() {
                                   </button>
                                 )}
                               </div>
+                            </td>
+                            <td>
+                              <span className="text-capitalize">
+                                {wallet.systemWallet?.purpose || 'N/A'}
+                              </span>
                             </td>
                             <td>
                               {wallet.systemWallet?.walletType === 'hot' ? (

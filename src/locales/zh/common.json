@@ -325,6 +325,7 @@
     "wallets": "个钱包",
     "noWalletsFound": "未找到有余额的钱包",
     "address": "地址",
+    "purpose": "用途",
     "type": "类型",
     "priceUSD": "价格 (USD)",
     "hot": "热",
