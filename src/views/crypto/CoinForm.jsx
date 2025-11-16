@@ -138,7 +138,7 @@ export default function CoinForm() {
         name: formData.name,
         symbol: formData.symbol.toUpperCase(),
         decimals: parseInt(formData.decimals),
-        type: 'native',
+        type: formData.type,
         logoUrl: formData.logoUrl || undefined,
         status: formData.status || 'active'
       }
@@ -248,6 +248,25 @@ export default function CoinForm() {
                       required
                     />
                     <small className="text-muted">{t('crypto.nameHelp', { defaultValue: 'Full coin name' })}</small>
+                  </div>
+
+                  {/* Type */}
+                  <div className="col-md-6">
+                    <label className="form-label" htmlFor="type">
+                      {t('crypto.type', { defaultValue: 'Type' })} <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select form-select-lg"
+                      id="type"
+                      name="type"
+                      value={formData.type}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="native">{t('crypto.native', { defaultValue: 'Native' })}</option>
+                      <option value="token">{t('crypto.token', { defaultValue: 'Token' })}</option>
+                    </select>
+                    <small className="text-muted">{t('crypto.typeHelp', { defaultValue: 'Native blockchain coin or ERC-20/BEP-20 token' })}</small>
                   </div>
 
                   {/* Decimals */}

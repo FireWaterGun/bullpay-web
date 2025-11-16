@@ -225,6 +225,7 @@ export default function CoinList() {
                   <tr>
                     <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
                     <th>{t('crypto.symbol', { defaultValue: 'Symbol' })}</th>
+                    <th className="text-center">{t('crypto.type', { defaultValue: 'Type' })}</th>
                     <th className="text-center">{t('crypto.decimals', { defaultValue: 'Decimals' })}</th>
                     <th className="text-center">{t('invoices.statusCol')}</th>
                     <th className="text-center">{t('invoices.actions')}</th>
@@ -270,6 +271,12 @@ export default function CoinList() {
                       </td>
                       <td style={{ verticalAlign: 'middle' }}>
                         <span className="fw-medium">{coin.symbol}</span>
+                      </td>
+                      <td className="text-center" style={{ verticalAlign: 'middle' }}>
+                        {coin.type === 'native' 
+                          ? t('crypto.native', { defaultValue: 'Native' })
+                          : t('crypto.token', { defaultValue: 'Token' })
+                        }
                       </td>
                       <td className="text-center" style={{ verticalAlign: 'middle' }}>{coin.decimals || 0}</td>
                       <td className="text-center" style={{ verticalAlign: 'middle' }}>
