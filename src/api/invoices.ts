@@ -146,7 +146,7 @@ export async function createInvoice(body: CreateInvoiceBody, token?: unknown): P
 
 // ---------------------------------------------
 // Public invoice (no auth required)
-// GET /public/invoices/:code
+// GET /api/v1/public/invoices/:code
 // Response shape: { success, data: { invoice: {...}, qr: {...} } }
 // ---------------------------------------------
 export interface PublicInvoiceResult {
@@ -156,7 +156,7 @@ export interface PublicInvoiceResult {
 
 export async function getPublicInvoice(code: string): Promise<PublicInvoiceResult> {
   if (!code) throw new Error('Missing invoice code')
-  const res = await apiFetch<any>(`/public/invoices/${encodeURIComponent(code)}`, {
+  const res = await apiFetch<any>(`/api/v1/public/invoices/${encodeURIComponent(code)}`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -169,7 +169,7 @@ export async function getPublicInvoice(code: string): Promise<PublicInvoiceResul
 
 // ---------------------------------------------
 // Public invoice QR (no auth required)
-// GET /public/invoices/:code/qr
+// GET /api/v1/public/invoices/:code/qr
 // Response shape (example): { success, data: { invoice: {...}, qr: {...} } }
 // ---------------------------------------------
 export interface PublicInvoiceQrResult {
@@ -179,7 +179,7 @@ export interface PublicInvoiceQrResult {
 
 export async function getPublicInvoiceQr(code: string): Promise<PublicInvoiceQrResult> {
   if (!code) throw new Error('Missing invoice code')
-  const res = await apiFetch<any>(`/public/invoices/${encodeURIComponent(code)}/qr`, {
+  const res = await apiFetch<any>(`/api/v1/public/invoices/${encodeURIComponent(code)}/qr`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -192,7 +192,7 @@ export async function getPublicInvoiceQr(code: string): Promise<PublicInvoiceQrR
 
 // ---------------------------------------------
 // Public invoice status (lighter than QR endpoint)
-// GET /public/invoices/:code/status
+// GET /api/v1/public/invoices/:code/status
 // Expected generic shapes:
 // { success, data: { invoice: {...} } }
 // or { invoice: {...} }
@@ -203,7 +203,7 @@ export interface PublicInvoiceStatusResult {
 
 export async function getPublicInvoiceStatus(code: string): Promise<PublicInvoiceStatusResult> {
   if (!code) throw new Error('Missing invoice code')
-  const res = await apiFetch<any>(`/public/invoices/${encodeURIComponent(code)}/status`, {
+  const res = await apiFetch<any>(`/api/v1/public/invoices/${encodeURIComponent(code)}/status`, {
     method: 'GET',
     headers: { 'x-request-id': requestId() },
   })
