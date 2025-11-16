@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
-import { getCoinNetworks, getCoins, getNetworks } from '../../api/admin.ts'
+import { getCoinNetworks } from '../../api/admin.ts'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -175,10 +175,6 @@ export default function SupportedCrypto() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterCoin, setFilterCoin] = useState('')
-  const [filterNetwork, setFilterNetwork] = useState('')
-  const [coins, setCoins] = useState([])
-  const [networks, setNetworks] = useState([])
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -190,27 +186,8 @@ export default function SupportedCrypto() {
 
   useEffect(() => {
     loadCoinNetworks()
-    loadFilterOptions()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  async function loadFilterOptions() {
-    try {
-      // Load all coins for filter (get unique symbols)
-      const coinsResponse = await getCoins(token, 1, 100)
-      const allCoins = coinsResponse?.items || []
-      const coinSymbols = [...new Set(allCoins.map(c => c.symbol).filter(Boolean))].sort()
-      setCoins(coinSymbols)
-
-      // Load all networks for filter (get unique symbols)
-      const networksResponse = await getNetworks(token, 1, 100)
-      const allNetworks = networksResponse?.items || []
-      const networkSymbols = [...new Set(allNetworks.map(n => n.symbol).filter(Boolean))].sort()
-      setNetworks(networkSymbols)
-    } catch (e) {
-      console.error('Failed to load filter options:', e)
-    }
-  }
 
   // Debounce search
   useEffect(() => {
@@ -222,17 +199,11 @@ export default function SupportedCrypto() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery])
 
-  // Reload when filters change
-  useEffect(() => {
-    loadCoinNetworks(1, pagination.limit)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterCoin, filterNetwork])
-
   async function loadCoinNetworks(page = pagination.page, limit = pagination.limit) {
     setLoading(true)
     setError('')
     try {
-      const response = await getCoinNetworks(token, page, limit, searchQuery, filterCoin, filterNetwork)
+      const response = await getCoinNetworks(token, page, limit, searchQuery, '', '')
       const items = response?.items || []
       const paginationData = response?.pagination || {}
 
@@ -280,9 +251,9 @@ export default function SupportedCrypto() {
             </button>
           </div>
 
-          {/* Search Bar & Filters */}
-          <div className="row g-3">
-            <div className="col-md-4">
+          {/* Search Bar */}
+          <div className="row">
+            <div className="col-md-6">
               <div className="input-group">
                 <span className="input-group-text">
                   <i className="bx bx-search"></i>
@@ -305,44 +276,6 @@ export default function SupportedCrypto() {
                 )}
               </div>
             </div>
-            <div className="col-md-3">
-              <select
-                className="form-select"
-                value={filterCoin}
-                onChange={(e) => setFilterCoin(e.target.value)}
-              >
-                <option value="">{t('crypto.allCoins', { defaultValue: 'All Coins' })}</option>
-                {coins.map(symbol => (
-                  <option key={symbol} value={symbol}>{symbol}</option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-3">
-              <select
-                className="form-select"
-                value={filterNetwork}
-                onChange={(e) => setFilterNetwork(e.target.value)}
-              >
-                <option value="">{t('crypto.allNetworks', { defaultValue: 'All Networks' })}</option>
-                {networks.map(symbol => (
-                  <option key={symbol} value={symbol}>{symbol}</option>
-                ))}
-              </select>
-            </div>
-            {(filterCoin || filterNetwork) && (
-              <div className="col-md-2">
-                <button
-                  className="btn btn-outline-secondary w-100"
-                  onClick={() => {
-                    setFilterCoin('')
-                    setFilterNetwork('')
-                  }}
-                >
-                  <i className="bx bx-x me-1"></i>
-                  {t('actions.reset', { defaultValue: 'Reset' })}
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
