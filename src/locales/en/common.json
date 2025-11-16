@@ -87,7 +87,7 @@
     "paidAmount": "Paid Amount",
     "description": "Description",
     "payments": "Payments",
-    "expiryHoursRange": "Min: 1 | Max: 1,000 hours",
+    "expiryHoursRange": "Min: 1 | Max: 168 hours (7 days)",
     "amountRange": "Min: {{min}} | Max: {{max}} (Max 8 decimals)",
     "maxAmountInfo": "Max: {{max}} (Max 8 decimals)",
     "txHash": "Tx Hash",
@@ -175,7 +175,7 @@
     "amountTooSmall": "Amount must be at least {{min}}",
     "amountTooLarge": "Amount must not exceed {{max}}",
     "expiryHoursTooSmall": "Hours must be at least 1",
-    "expiryHoursTooLarge": "Hours must not exceed 1,000"
+    "expiryHoursTooLarge": "Hours must not exceed 168"
   },
   "update": "Update",
   "saving": "Saving...",

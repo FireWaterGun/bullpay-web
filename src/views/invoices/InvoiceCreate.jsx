@@ -201,7 +201,7 @@ export default function InvoiceCreate() {
     return min;
   }, [selectedNetwork]);
 
-  const maxDeposit = 99999999; // Max 99,999,999
+  const maxDeposit = 1000000; // Max 1,000,000
 
   useEffect(() => {
     // Use networks from grouped data (already loaded from listCoins API)
@@ -259,8 +259,8 @@ export default function InvoiceCreate() {
         setError(t("validation.expiryHoursTooSmall") || "ชั่วโมงต้องไม่น้อยกว่า 1");
         return;
       }
-      if (hoursNum > 1000) {
-        setError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 1,000");
+      if (hoursNum > 168) {
+        setError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 168");
         return;
       }
     }
@@ -515,30 +515,30 @@ export default function InvoiceCreate() {
                   className={`form-control ${expiryHoursError ? 'is-invalid' : ''}`}
                   type="number"
                   min={1}
-                  max={1000}
+                  max={168}
                   placeholder="24"
                   value={expiryHours}
                   onInput={(e) => {
-                    // จำกัดจำนวนหลักไม่เกิน 4 หลัก (รองรับ 1000)
+                    // จำกัดจำนวนหลักไม่เกิน 3 หลัก (รองรับ 168)
                     const value = e.target.value;
-                    if (value && value.replace('-', '').length > 4) {
-                      e.target.value = value.substring(0, value.startsWith('-') ? 5 : 4);
+                    if (value && value.replace('-', '').length > 3) {
+                      e.target.value = value.substring(0, 3);
                     }
                   }}
                   onChange={(e) => {
                     const value = e.target.value;
                     
-                    // ตรวจสอบค่าไม่เกิน 1000 - ถ้าเกินให้หยุดการพิมพ์
+                    // ตรวจสอบค่าไม่เกิน 168 - ถ้าเกินให้หยุดการพิมพ์
                     if (value !== '') {
                       const num = parseInt(value);
-                      if (!isNaN(num) && num > 1000) {
+                      if (!isNaN(num) && num > 168) {
                         // หยุดการพิมพ์
                         return;
                       }
                       if (!isNaN(num) && num < 1) {
                         setExpiryHoursError(t("validation.expiryHoursTooSmall") || "ชั่วโมงต้องไม่น้อยกว่า 1");
-                      } else if (!isNaN(num) && num > 1000) {
-                        setExpiryHoursError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 1,000");
+                      } else if (!isNaN(num) && num > 168) {
+                        setExpiryHoursError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 168");
                       } else {
                         setExpiryHoursError('');
                       }

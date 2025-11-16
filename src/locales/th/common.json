@@ -89,7 +89,7 @@
     "paidAmount": "จำนวนที่ชำระ",
     "description": "คำอธิบาย",
     "payments": "การชำระเงิน",
-    "expiryHoursRange": "ขั้นต่ำ: 1 | สูงสุด: 1,000 ชั่วโมง",
+    "expiryHoursRange": "ขั้นต่ำ: 1 | สูงสุด: 168 ชั่วโมง (7 วัน)",
     "amountRange": "ขั้นต่ำ: {{min}} | สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
     "maxAmountInfo": "สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
     "txHash": "Tx Hash",
@@ -189,7 +189,7 @@
     "amountTooSmall": "จำนวนเงินต้องไม่น้อยกว่า {{min}}",
     "amountTooLarge": "จำนวนเงินต้องไม่เกิน {{max}}",
     "expiryHoursTooSmall": "ชั่วโมงต้องไม่น้อยกว่า 1",
-    "expiryHoursTooLarge": "ชั่วโมงต้องไม่เกิน 1,000"
+    "expiryHoursTooLarge": "ชั่วโมงต้องไม่เกิน 168"
   },
   "status": {
     "all": "ทั้งหมด",
