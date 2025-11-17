@@ -14,9 +14,16 @@ export interface Notification {
 }
 
 export interface NotificationsListResponse {
-  notifications: Notification[]
+  items: Notification[]
   unreadCount: number
-  hasMore: boolean
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
 }
 
 export interface UnreadCountResponse {
@@ -50,10 +57,20 @@ export async function getNotifications(
   })
 
   const data = res?.data || res
+  const items = data?.items || []
+  const meta = data?.meta || {}
+  
   return {
-    notifications: data.notifications || [],
+    items,
     unreadCount: data.unreadCount || 0,
-    hasMore: data.hasMore || false,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || limit,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? false,
+      hasPrev: meta.hasPrevPage ?? false,
+    }
   }
 }
 

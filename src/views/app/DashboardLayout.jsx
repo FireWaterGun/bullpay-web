@@ -268,7 +268,7 @@ export default function DashboardLayout() {
         getUnreadCount(token)
       ])
 
-      setNotifications(notifData.notifications || [])
+      setNotifications(notifData.items || [])
       setUnreadCount(count)
     } catch (error) {
       console.error('Failed to load notifications:', error)
@@ -730,7 +730,7 @@ export default function DashboardLayout() {
                                     {!notif.isRead && <span className="badge bg-primary badge-sm ms-2">New</span>}
                                   </h6>
                                   <small className="mb-1 d-block text-body">{notif.message}</small>
-                                  <small className="text-muted">{formatNotificationTime(notif.createdAt)}</small>
+                                  <small className="text-muted" style={{ opacity: 0.5, fontSize: '0.75rem' }}>{formatNotificationTime(notif.createdAt)}</small>
                                 </div>
                               </div>
                             </li>
