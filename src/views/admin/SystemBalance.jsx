@@ -278,8 +278,8 @@ export default function SystemBalance() {
             </div>
             <div className="card-body">
               {!stats?.balanceDetails || stats.balanceDetails.length === 0 ? (
-                <div className="text-center py-6">
-                  <i className="bx bx-wallet bx-lg text-muted mb-3 d-block"></i>
+                <div className="d-flex flex-column align-items-center justify-content-center py-6">
+                  <i className="bx bx-wallet text-muted mb-3" style={{ fontSize: '3rem' }}></i>
                   <p className="text-muted mb-0">{t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })}</p>
                 </div>
               ) : (
