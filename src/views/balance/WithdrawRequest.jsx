@@ -372,20 +372,20 @@ export default function WithdrawRequest() {
                           <span className="small fw-medium">{fmtAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
-                          <span className="small text-muted">{t('balance.baseFee', { defaultValue: 'Base fee' })}</span>
-                          <span className="small text-muted">{fmtAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="small">{t('balance.baseFee', { defaultValue: 'Base fee' })}</span>
+                          <span className="small">{fmtAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
-                          <span className="small text-muted">{t('balance.percentFee', { defaultValue: 'Percent fee' })} ({feeEstimate.feePercentage}%)</span>
-                          <span className="small text-muted">{fmtAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="small">{t('balance.percentFee', { defaultValue: 'Percent fee' })} ({feeEstimate.feePercentage}%)</span>
+                          <span className="small">{fmtAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2 pt-2 border-top">
-                          <span className="small text-danger">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
-                          <span className="small fw-medium text-danger">-{fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="small">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
+                          <span className="small fw-medium">-{fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-0 pt-2 border-top">
                           <span className="fw-medium">{t('balance.youWillReceive', { defaultValue: 'You will receive' })}</span>
-                          <span className="fw-semibold text-success">{fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="fw-semibold">{fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                       </div>
                     </div>
