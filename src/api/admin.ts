@@ -774,7 +774,8 @@ export async function approveWithdrawal(
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
-    }
+    },
+    body: reason ? { reason } : undefined
   })
 
   return response

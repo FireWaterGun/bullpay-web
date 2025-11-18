@@ -125,10 +125,19 @@ export default function WithdrawalTransactions() {
     }
   }
 
-  function formatAmount(amountRaw, decimals = 18) {
+  function formatAmount(amountRaw, decimals = 18, maxFrac = 8) {
     if (!amountRaw) return '0'
     try {
-      return AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
+      const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
+      const num = Number(value)
+      if (!Number.isFinite(num)) return value
+      
+      // Limit decimal places
+      let result = num.toFixed(maxFrac)
+      // Remove trailing zeros
+      result = result.replace(/\.?0+$/, '')
+      
+      return result
     } catch (e) {
       return amountRaw.toString()
     }
@@ -309,12 +318,12 @@ export default function WithdrawalTransactions() {
                           </td>
                           <td>
                             <span>
-                              {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)}
+                              {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)} {withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || ''}
                             </span>
                           </td>
                           <td>
                             <span className="text-muted">
-                              {formatAmount(withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18)}
+                              {formatAmount(withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 4)}
                             </span>
                           </td>
                           <td className="text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
@@ -451,7 +460,7 @@ export default function WithdrawalTransactions() {
                       </div>
                       <div className="col-6">
                         <small className="text-muted d-block">{t('withdrawal.fee', { defaultValue: 'Fee' })}</small>
-                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18)}</strong>
+                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 4)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
                       </div>
                       <div className="col-12">
                         <small className="text-muted d-block">{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</small>
