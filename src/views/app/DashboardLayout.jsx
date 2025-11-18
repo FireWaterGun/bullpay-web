@@ -23,6 +23,7 @@ import Settings from './Settings'
 import WalletCreate from '../wallets/WalletCreate'
 import WalletList from '../wallets/WalletList'
 import WalletEdit from '../wallets/WalletEdit'
+import WalletVerify from '../wallets/WalletVerify'
 import InvoiceList from '../invoices/InvoiceList'
 import InvoiceCreate from '../invoices/InvoiceCreate'
 import InvoiceDetail from '../invoices/InvoiceDetail'
@@ -716,7 +717,7 @@ export default function DashboardLayout() {
                               onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}
                               style={{ cursor: notif.isRead ? 'default' : 'pointer' }}
                             >
-                              <div className="d-flex">
+                              <div className="d-flex position-relative">
                                 <div className="flex-shrink-0 me-3">
                                   <div className="avatar">
                                     <span className={`avatar-initial rounded-circle bg-label-${getNotificationColor(notif.type)}`}>
@@ -727,11 +728,21 @@ export default function DashboardLayout() {
                                 <div className="flex-grow-1">
                                   <h6 className="small mb-0">
                                     {notif.title}
-                                    {!notif.isRead && <span className="badge bg-primary badge-sm ms-2">New</span>}
                                   </h6>
                                   <small className="mb-1 d-block text-body">{notif.message}</small>
                                   <small className="text-muted" style={{ opacity: 0.5, fontSize: '0.75rem' }}>{formatNotificationTime(notif.createdAt)}</small>
                                 </div>
+                                {!notif.isRead && (
+                                  <div className="position-absolute" style={{ top: '50%', right: '16px', transform: 'translateY(-50%)' }}>
+                                    <span style={{
+                                      display: 'inline-block',
+                                      width: '10px',
+                                      height: '10px',
+                                      borderRadius: '50%',
+                                      backgroundColor: '#5f61e6'
+                                    }}></span>
+                                  </div>
+                                )}
                               </div>
                             </li>
                           ))}
@@ -853,9 +864,11 @@ export default function DashboardLayout() {
                     <Route path="balance/withdrawals" element={<BalanceWithdrawals />} />
                     <Route path="balance/withdraw/:coinNetworkId" element={<WithdrawRequest />} />
                     <Route path="balance/new-address" element={<WalletCreate />} />
+                    <Route path="balance/verify-address" element={<WalletVerify />} />
                     <Route path="wallets" element={<Navigate to="/app/balance/withdrawals" replace />} />
                     <Route path="wallets/create" element={<WalletCreate />} />
                     <Route path="wallets/:id/edit" element={<WalletEdit />} />
+                    <Route path="wallets/verify" element={<WalletVerify />} />
                   </>
                 )}
                 <Route path="*" element={<Navigate to="." replace />} />

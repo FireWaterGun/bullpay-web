@@ -123,6 +123,8 @@ export default function WalletCreate() {
   const [networks, setNetworks] = useState([])
   const [coinNetworkId, setCoinNetworkId] = useState('')
   const [address, setAddress] = useState('')
+  const [label, setLabel] = useState('')
+  const [memo, setMemo] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -193,15 +195,21 @@ export default function WalletCreate() {
   async function onSubmit(e) {
     e.preventDefault()
     setError('')
-    if (!coinNetworkId || !address) {
+    if (!coinNetworkId || !address || !label.trim()) {
       setError(t('validation.requiredFields') || 'Please fill required fields')
       return
     }
     try {
       setSaving(true)
-  await createWallet({ coinNetworkId: Number(coinNetworkId), address: address.trim() }, token)
-  if (returnTo && typeof returnTo === 'string') navigate(returnTo, { replace: true })
-  else navigate('/app/balance/withdrawals')
+      const payload = {
+        coinNetworkId: Number(coinNetworkId),
+        address: address.trim(),
+        label: label.trim(),
+        ...(memo.trim() && { memo: memo.trim() })
+      }
+      await createWallet(payload, token)
+      if (returnTo && typeof returnTo === 'string') navigate(returnTo, { replace: true })
+      else navigate('/app/balance/withdrawals')
     } catch (e) {
       setError(typeof e?.message === 'string' ? e.message : 'Failed to save')
     } finally {
@@ -306,6 +314,29 @@ export default function WalletCreate() {
                   maxLength={128}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-12 col-md-8 col-lg-6">
+                <label className="form-label">{t('wallet.label', { defaultValue: 'Label' })}</label>
+                <input
+                  className="form-control"
+                  placeholder={t('wallet.labelPlaceholder', { defaultValue: 'e.g., My Binance Wallet' })}
+                  maxLength={100}
+                  value={label}
+                  onChange={(e) => setLabel(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-12 col-md-8 col-lg-6">
+                <label className="form-label">{t('wallet.memo', { defaultValue: 'Memo (Optional)' })}</label>
+                <textarea
+                  className="form-control"
+                  placeholder={t('wallet.memoPlaceholder', { defaultValue: 'Optional memo text' })}
+                  rows={3}
+                  maxLength={500}
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
                 />
               </div>
             </div>

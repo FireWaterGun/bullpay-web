@@ -22,7 +22,7 @@ function toAuthHeader(input?: unknown): string | undefined {
 export interface CreateWithdrawalBody {
   coinNetworkId: number
   amount: string
-  toAddress: string
+  withdrawalAddressId: string | number
   memo?: string
 }
 
@@ -72,4 +72,41 @@ export async function listWithdrawals(params: ListWithdrawalsParams = {}, token?
           : []
   const pagination = payload?.pagination || payload?.summary || null
   return { items, pagination }
+}
+
+export interface FeeEstimate {
+  coinNetworkId: number
+  symbol: string
+  networkSymbol: string
+  amount: string
+  baseFee: string
+  percentFee: string
+  totalFee: string
+  netAmount: string
+  amountRaw?: string
+  baseFeeRaw?: string
+  percentFeeRaw?: string
+  totalFeeRaw?: string
+  netAmountRaw?: string
+  decimals: number
+  feePercentage: number
+}
+
+export async function estimateWithdrawalFee(coinNetworkId: number | string, amount: string | number, token?: unknown): Promise<FeeEstimate | null> {
+  const authHeader = toAuthHeader(token)
+  const qs = new URLSearchParams()
+  qs.set('coinNetworkId', String(coinNetworkId))
+  qs.set('amount', String(amount))
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawals/estimate-fee?${qs.toString()}`, {
+    method: 'GET',
+    headers: {
+      'x-request-id': requestId(),
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+  })
+  const payload = res?.data ?? res
+  if (payload && typeof payload === 'object') {
+    return payload as FeeEstimate
+  }
+  return null
 }

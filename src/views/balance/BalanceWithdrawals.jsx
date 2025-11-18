@@ -239,6 +239,24 @@ export default function BalanceWithdrawals() {
     }
   }
 
+  function formatAddressStatus(s) {
+    const v = String(s || '').toLowerCase()
+    if (v === 'pending_verification') return t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })
+    if (v === 'active') return t('wallet.status.active', { defaultValue: 'Active' })
+    if (v === 'suspended') return t('wallet.status.suspended', { defaultValue: 'Suspended' })
+    if (v === 'deleted') return t('wallet.status.deleted', { defaultValue: 'Deleted' })
+    return v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  }
+
+  function addressStatusBadgeClass(s) {
+    const v = String(s || '').toLowerCase()
+    if (v === 'pending_verification') return 'badge bg-label-warning'
+    if (v === 'active') return 'badge bg-label-success'
+    if (v === 'suspended') return 'badge bg-label-danger'
+    if (v === 'deleted') return 'badge bg-label-secondary'
+    return 'badge bg-label-secondary'
+  }
+
   function statusBadgeClass(s) {
     const v = String(s || '').toUpperCase()
     if (v === 'PENDING') return 'badge bg-label-warning'
@@ -291,9 +309,11 @@ export default function BalanceWithdrawals() {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th style={{ width: '15%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
-                      <th style={{ width: '30%' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ width: '12%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
+                      <th style={{ width: '22%' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ width: '15%' }}>{t('wallet.label', { defaultValue: 'Label' })}</th>
                       <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
+                      <th style={{ width: '12%' }} className="text-nowrap">{t('common.status', { defaultValue: 'Status' })}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -305,6 +325,7 @@ export default function BalanceWithdrawals() {
                       const networkSym = (network?.symbol || '').toString().toUpperCase()
                       const networkName = network?.name || getNetworkLabel({ network }, coin)
                       const addr = w.address || '-'
+                      const label = w.label || '-'
                       return (
                         <tr key={w.id || idx}>
                           <td>
@@ -321,8 +342,11 @@ export default function BalanceWithdrawals() {
                               </div>
                             </div>
                           </td>
-                          <td style={{ maxWidth: 520 }}>
-                            <span className="font-monospace text-truncate d-inline-block align-middle" style={{ maxWidth: 420 }} title={addr}>{addr}</span>
+                          <td>
+                            <span className="text-truncate d-inline-block" style={{ maxWidth: 200 }} title={label}>{label}</span>
+                          </td>
+                          <td style={{ maxWidth: 420 }}>
+                            <span className="font-monospace text-truncate d-inline-block align-middle" style={{ maxWidth: 320 }} title={addr}>{addr}</span>
                             <button
                               type="button"
                               className="btn btn-icon btn-sm btn-outline-secondary ms-2 align-middle"
@@ -333,6 +357,9 @@ export default function BalanceWithdrawals() {
                             >
                               <i className={`bx ${copiedMap[w.id || idx] ? 'bx-check text-success' : 'bx-copy'}`}></i>
                             </button>
+                          </td>
+                          <td>
+                            <span className={addressStatusBadgeClass(w.status)}>{formatAddressStatus(w.status)}</span>
                           </td>
                         </tr>
                       )

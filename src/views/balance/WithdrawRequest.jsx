@@ -4,13 +4,35 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { listAllWallets } from '../../api/wallets'
 import { getBalancesWithFiat } from '../../api/balance'
-import { createWithdrawal } from '../../api/withdrawals'
+import { createWithdrawal, estimateWithdrawalFee } from '../../api/withdrawals'
 import ConfirmModal from '../../components/ConfirmModal'
+import { AmountNormalizer } from '../../utils/amount_normalizer'
 
-function fmtAmount(x, maxFrac = 8) {
+function fmtAmount(x, maxFrac = 4) {
   const n = Number(x)
   if (!Number.isFinite(n)) return '0'
-  return n.toLocaleString(undefined, { maximumFractionDigits: maxFrac })
+  
+  // Use toFixed to limit decimals precisely
+  let result = n.toFixed(maxFrac)
+  
+  // Remove trailing zeros and unnecessary decimal point
+  result = result.replace(/\.?0+$/, '')
+  
+  // Add thousands separator
+  const parts = result.split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  
+  return parts.join('.')
+}
+
+function fromRaw(rawValue, decimals) {
+  if (!rawValue || !decimals) return '0'
+  try {
+    // Return string directly from AmountNormalizer - no Number conversion to avoid precision loss
+    return AmountNormalizer.fromRawSimple(rawValue, decimals)
+  } catch {
+    return '0'
+  }
 }
 
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -76,30 +98,30 @@ function CoinImg({ coin, symbol, networkSymbol, size = 40 }) {
         onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
       />
       {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
+        !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+          <div
+            className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+            style={{
+              bottom: -2,
+              right: -2,
+              width: badgeSize,
+              height: badgeSize,
+              backgroundColor: 'white',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              padding: '2px'
+            }}
+          >
+            <img
+              src={netSrc}
+              alt={networkSymbol}
+              width={badgeSize - 4}
+              height={badgeSize - 4}
+              className="rounded-circle"
+              style={{ objectFit: 'cover' }}
+              onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
+            />
+          </div>
+        )}
     </div>
   )
 }
@@ -121,30 +143,33 @@ export default function WithdrawRequest() {
   const [successOpen, setSuccessOpen] = useState(false)
   const [errorOpen, setErrorOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [feeEstimate, setFeeEstimate] = useState(null)
+  const [estimatingFee, setEstimatingFee] = useState(false)
+  const [feeError, setFeeError] = useState('')
 
   useEffect(() => {
     let mounted = true
-    ;(async () => {
-      try {
-        setLoading(true)
-        // Call balance API with coinNetworkId to get coin and network data in one request
-        const [balRes, walletList] = await Promise.all([
-          getBalancesWithFiat(token, undefined, coinNetworkId),
-          listAllWallets(token, 100),
-        ])
-        if (!mounted) return
-        // Get the first balance item (should be the only one since we filtered by coinNetworkId)
-        const balanceItem = Array.isArray(balRes?.breakdown) && balRes.breakdown.length > 0 
-          ? balRes.breakdown[0] 
-          : null
-        setBalance(balanceItem)
-        setWallets(Array.isArray(walletList) ? walletList : [])
-      } catch (e) {
-        setError(e?.message || 'Failed to load data')
-      } finally {
-        setLoading(false)
-      }
-    })()
+      ; (async () => {
+        try {
+          setLoading(true)
+          // Call balance API with coinNetworkId to get coin and network data in one request
+          const [balRes, walletList] = await Promise.all([
+            getBalancesWithFiat(token, undefined, coinNetworkId),
+            listAllWallets(token, 100, coinNetworkId),
+          ])
+          if (!mounted) return
+          // Get the first balance item (should be the only one since we filtered by coinNetworkId)
+          const balanceItem = Array.isArray(balRes?.breakdown) && balRes.breakdown.length > 0
+            ? balRes.breakdown[0]
+            : null
+          setBalance(balanceItem)
+          setWallets(Array.isArray(walletList) ? walletList : [])
+        } catch (e) {
+          setError(e?.message || 'Failed to load data')
+        } finally {
+          setLoading(false)
+        }
+      })()
     return () => { mounted = false }
   }, [token, coinNetworkId])
 
@@ -158,35 +183,15 @@ export default function WithdrawRequest() {
   // Get available balance from the balance object
   const available = useMemo(() => {
     if (!balance) return 0
-    // Support new structure: totalBalance or confirmedBalance, fallback to old availableBalance or balance
+    const decimals = Number(balance?.decimals || 8)
+    // Prefer raw values for accurate calculation
+    const rawValue = balance?.totalBalanceRaw || balance?.confirmedBalanceRaw || balance?.availableBalanceRaw
+    if (rawValue) {
+      return Number(fromRaw(rawValue, decimals))
+    }
+    // Fallback to string values
     return Number(balance?.totalBalance || balance?.confirmedBalance || balance?.availableBalance || balance?.balance || 0) || 0
   }, [balance])
-
-  const decimals = Number(balance?.decimals || 8)
-  const amountNum = Number(amount) || 0
-  const outcome = Math.max(available - amountNum, 0)
-
-  const canSubmit = amountNum > 0 && amountNum <= available && address.trim().length > 0
-
-  const onConfirm = async (e) => {
-    e.preventDefault()
-    if (!balance || !address || !amount) return
-    try {
-      setSubmitting(true)
-      await createWithdrawal({
-        coinNetworkId: Number(balance.coinNetworkId),
-        amount: String(amount),
-        toAddress: address,
-        memo: 'Withdrawal request',
-      }, token)
-      setSuccessOpen(true)
-    } catch (err) {
-      setErrorMessage(typeof err?.message === 'string' ? err.message : 'Withdrawal failed')
-      setErrorOpen(true)
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   const matchingWallets = useMemo(() => {
     const id = Number(coinNetworkId)
@@ -206,6 +211,33 @@ export default function WithdrawRequest() {
     return matchingWallets[0] || null
   }, [matchingWallets, address])
 
+  const decimals = Number(balance?.decimals || 8)
+  const amountNum = Number(amount) || 0
+  const outcome = Math.max(available - amountNum, 0)
+
+  // Require valid fee estimate before allowing submission
+  const canSubmit = amountNum > 0 && amountNum <= available && address.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee
+
+  const onConfirm = async (e) => {
+    e.preventDefault()
+    if (!balance || !address || !amount || !selectedWallet?.id || !feeEstimate) return
+    try {
+      setSubmitting(true)
+      await createWithdrawal({
+        coinNetworkId: Number(balance.coinNetworkId),
+        amount: String(amount),
+        withdrawalAddressId: selectedWallet.id,
+        memo: '',
+      }, token)
+      setSuccessOpen(true)
+    } catch (err) {
+      setErrorMessage(typeof err?.message === 'string' ? err.message : 'Withdrawal failed')
+      setErrorOpen(true)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const walletAvailable = useMemo(() => {
     const n = Number(selectedWallet?.availableBalance || selectedWallet?.balance || 0)
     return Number.isFinite(n) ? n : 0
@@ -218,6 +250,43 @@ export default function WithdrawRequest() {
       if (fill > 0) setAmount(String(fill))
     }
   }, [walletAvailable, available])
+
+  // Estimate fee when amount changes
+  useEffect(() => {
+    if (!coinNetworkId || !amount || Number(amount) <= 0) {
+      setFeeEstimate(null)
+      setFeeError('')
+      return
+    }
+
+    let mounted = true
+    const timer = setTimeout(async () => {
+      try {
+        setEstimatingFee(true)
+        setFeeError('')
+        const estimate = await estimateWithdrawalFee(coinNetworkId, amount, token)
+        if (mounted) {
+          setFeeEstimate(estimate)
+        }
+      } catch (e) {
+        if (mounted) {
+          setFeeEstimate(null)
+          // Extract error message from API response
+          const errMsg = e?.error?.message || e?.message || 'Failed to estimate fee'
+          setFeeError(errMsg)
+        }
+      } finally {
+        if (mounted) {
+          setEstimatingFee(false)
+        }
+      }
+    }, 500) // Debounce 500ms
+
+    return () => {
+      mounted = false
+      clearTimeout(timer)
+    }
+  }, [amount, coinNetworkId, token])
 
   const closeSuccess = () => {
     setSuccessOpen(false)
@@ -283,7 +352,7 @@ export default function WithdrawRequest() {
                       <label className="form-label mb-1">{t('balance.amountToWithdraw', { defaultValue: 'Amount to withdraw' })}</label>
                     </div>
                     <div className="input-group">
-                      <input type="number" min="0" step={1/Math.pow(10, Math.min(decimals, 8))} className="form-control" value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder={`0.0`} />
+                      <input type="number" min="0" step={1 / Math.pow(10, Math.min(decimals, 8))} className="form-control" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={`0.0`} />
                       <span className="input-group-text">{sym}</span>
                     </div>
                   </div>
@@ -293,16 +362,59 @@ export default function WithdrawRequest() {
                     <input className="form-control" value={address} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
                   </div>
 
-                  {/* Address list removed per request; auto-filled from first matching wallet */}
+                  {/* Fee breakdown */}
+                  {feeEstimate && (
+                    <div className="mb-3">
+                      <div className="border rounded-3 p-3">
+                        <div className="small text-muted mb-2">{t('balance.feeBreakdown', { defaultValue: 'Fee Breakdown' })}</div>
+                        <div className="d-flex justify-content-between mb-2">
+                          <span className="small">{t('balance.withdrawAmount', { defaultValue: 'Withdraw amount' })}</span>
+                          <span className="small fw-medium">{fmtAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} {sym}</span>
+                        </div>
+                        <div className="d-flex justify-content-between mb-2">
+                          <span className="small text-muted">{t('balance.baseFee', { defaultValue: 'Base fee' })}</span>
+                          <span className="small text-muted">{fmtAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                        </div>
+                        <div className="d-flex justify-content-between mb-2">
+                          <span className="small text-muted">{t('balance.percentFee', { defaultValue: 'Percent fee' })} ({feeEstimate.feePercentage}%)</span>
+                          <span className="small text-muted">{fmtAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                        </div>
+                        <div className="d-flex justify-content-between mb-2 pt-2 border-top">
+                          <span className="small text-danger">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
+                          <span className="small fw-medium text-danger">-{fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                        </div>
+                        <div className="d-flex justify-content-between mb-0 pt-2 border-top">
+                          <span className="fw-medium">{t('balance.youWillReceive', { defaultValue: 'You will receive' })}</span>
+                          <span className="fw-semibold text-success">{fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} {sym}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {estimatingFee && !feeEstimate && (
+                    <div className="mb-3 text-center">
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      <span className="small text-muted">{t('balance.calculatingFee', { defaultValue: 'Calculating fee...' })}</span>
+                    </div>
+                  )}
+
+                  {feeError && !estimatingFee && (
+                    <div className="mb-3">
+                      <div className="alert alert-danger py-2 px-3 mb-0" role="alert">
+                        <i className="bx bx-error-circle me-1"></i>
+                        <span className="small">{feeError}</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="d-flex justify-content-between small">
                     <div>
                       <span className="text-primary">{t('balance.currentBalance', { defaultValue: 'Current balance' })}</span>
-                      <div className="fw-medium">{fmtAmount(available, decimals)} {sym}</div>
+                      <div className="fw-medium">{fmtAmount(available, 4)} {sym}</div>
                     </div>
                     <div className="text-end">
-                      <span className="text-primary">{t('balance.outcomeBalance', { defaultValue: 'Outcome balance' })}</span>
-                      <div className="fw-medium">{fmtAmount(outcome, decimals)} {sym}</div>
+                      <span className="text-primary">{t('balance.remainingBalance', { defaultValue: 'Remaining balance' })}</span>
+                      <div className="fw-medium">{fmtAmount(outcome, 4)} {sym}</div>
                     </div>
                   </div>
                 </>
@@ -319,15 +431,15 @@ export default function WithdrawRequest() {
           </div>
         )}
       </div>
-  <SuccessModalWrapper open={successOpen} onClose={closeSuccess} amount={amount} sym={sym} address={address} t={t} />
-  <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
+      <SuccessModalWrapper open={successOpen} onClose={closeSuccess} amount={amount} sym={sym} address={address} t={t} />
+      <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
     </div>
   )
 }
 
 // Success modal
 // Show a simple success message and navigate back to withdrawals on close or confirm
-;(() => {})
+; (() => { })
 
 export function SuccessModalWrapper({ open, onClose, amount, sym, address, t }) {
   return (
@@ -346,8 +458,8 @@ export function SuccessModalWrapper({ open, onClose, amount, sym, address, t }) 
       onConfirm={onClose}
       onCancel={onClose}
       variant="basic"
-  confirmVariant="primary"
-  cancelVariant="outline-secondary"
+      confirmVariant="primary"
+      cancelVariant="outline-secondary"
     />
   )
 }

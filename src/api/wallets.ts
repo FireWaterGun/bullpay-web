@@ -2,12 +2,27 @@ import { apiFetch } from './client'
 import { requestId } from '../utils/requestId'
 import { extractToken } from '../utils/authToken'
 
+export enum AddressStatus {
+  PENDING_VERIFICATION = 'pending_verification',
+  ACTIVE = 'active',
+  SUSPENDED = 'suspended',
+  DELETED = 'deleted',
+}
+
 export interface WalletRecord {
   id?: string | number
   userId?: string | number
   coinNetworkId?: number
   address?: string
+  label?: string
   memo?: string | null
+  status?: AddressStatus | string
+  isVerified?: number
+  isDefault?: number
+  isLocked?: boolean
+  isFlagged?: number
+  usageCount?: number
+  totalWithdrawn?: string
   coin?: {
     id: number
     symbol: string
@@ -45,9 +60,10 @@ function toAuthHeader(input?: unknown): string | undefined {
   return token ? `Bearer ${token}` : undefined
 }
 
-export async function listWallets(token?: unknown): Promise<WalletRecord[]> {
+export async function listWallets(token?: unknown, coinNetworkId?: number | string): Promise<WalletRecord[]> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/api/v1/user/wallet`, {
+  const queryParams = coinNetworkId ? `?coinNetworkId=${coinNetworkId}` : ''
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses${queryParams}`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -56,7 +72,8 @@ export async function listWallets(token?: unknown): Promise<WalletRecord[]> {
   })
 
   const payload = res?.data ?? res
-  // Support new structure: data.wallets, fallback to old data.items
+  // Support new structure: data.addresses
+  if (Array.isArray(payload?.addresses)) return payload.addresses as WalletRecord[]
   if (Array.isArray(payload?.wallets)) return payload.wallets as WalletRecord[]
   if (Array.isArray(payload?.items)) return payload.items as WalletRecord[]
   if (Array.isArray(payload)) return payload as WalletRecord[]
@@ -64,14 +81,15 @@ export async function listWallets(token?: unknown): Promise<WalletRecord[]> {
   return []
 }
 
-export async function listAllWallets(token?: unknown, pageSize = 100): Promise<WalletRecord[]> {
+export async function listAllWallets(token?: unknown, pageSize = 100, coinNetworkId?: number | string): Promise<WalletRecord[]> {
   const authHeader = toAuthHeader(token)
   let page = 1
   const out: WalletRecord[] = []
   // Guard against infinite loops
   const MAX_PAGES = 50
   while (page <= MAX_PAGES) {
-    const res = await apiFetch<any>(`/api/v1/user/wallet?page=${page}&limit=${pageSize}`, {
+    const coinNetworkParam = coinNetworkId ? `&coinNetworkId=${coinNetworkId}` : ''
+    const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses?page=${page}&limit=${pageSize}${coinNetworkParam}`, {
       method: 'GET',
       headers: {
         'x-request-id': requestId(),
@@ -79,16 +97,18 @@ export async function listAllWallets(token?: unknown, pageSize = 100): Promise<W
       },
     })
     const payload = res?.data ?? res
-    // Support new structure: data.wallets, fallback to old data.items
-    const items: WalletRecord[] = Array.isArray(payload?.wallets)
-      ? payload.wallets
-      : Array.isArray(payload?.items)
-        ? payload.items
-        : Array.isArray(payload)
-          ? payload
-          : Array.isArray(res?.results)
-            ? res.results
-            : []
+    // Support new structure: data.addresses
+    const items: WalletRecord[] = Array.isArray(payload?.addresses)
+      ? payload.addresses
+      : Array.isArray(payload?.wallets)
+        ? payload.wallets
+        : Array.isArray(payload?.items)
+          ? payload.items
+          : Array.isArray(payload)
+            ? payload
+            : Array.isArray(res?.results)
+              ? res.results
+              : []
     out.push(...items)
     if (items.length < pageSize) break
     page += 1
@@ -99,11 +119,13 @@ export async function listAllWallets(token?: unknown, pageSize = 100): Promise<W
 export interface CreateWalletBody {
   coinNetworkId: number
   address: string
+  label: string
+  memo?: string
 }
 
 export async function createWallet(body: CreateWalletBody, token?: unknown): Promise<WalletRecord> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/api/v1/user/wallet`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses`, {
     method: 'POST',
     headers: {
       'x-request-id': requestId(),
@@ -118,7 +140,7 @@ export async function createWallet(body: CreateWalletBody, token?: unknown): Pro
 
 export async function getWallet(id: number | string, token?: unknown): Promise<WalletRecord | null> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/api/v1/user/wallet/${id}`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses/${id}`, {
     method: 'GET',
     headers: {
       'x-request-id': requestId(),
@@ -132,11 +154,13 @@ export async function getWallet(id: number | string, token?: unknown): Promise<W
 export interface UpdateWalletBody {
   coinNetworkId?: number
   address?: string
+  label?: string
+  memo?: string
 }
 
 export async function updateWallet(id: number | string, body: UpdateWalletBody, token?: unknown): Promise<WalletRecord> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/api/v1/user/wallet/${id}`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses/${id}`, {
     method: 'PUT',
     headers: {
       'x-request-id': requestId(),
@@ -151,7 +175,7 @@ export async function updateWallet(id: number | string, body: UpdateWalletBody, 
 
 export async function deleteWallet(id: number | string, token?: unknown): Promise<boolean> {
   const authHeader = toAuthHeader(token)
-  const res = await apiFetch<any>(`/api/v1/user/wallet/${id}`, {
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses/${id}`, {
     method: 'DELETE',
     headers: {
       'x-request-id': requestId(),
@@ -164,4 +188,21 @@ export async function deleteWallet(id: number | string, token?: unknown): Promis
     (res && res.data && res.data.success === true)
   )
   return ok
+}
+
+export interface VerifyWalletBody {
+  token: string
+}
+
+export async function verifyWalletAddress(body: VerifyWalletBody, authToken?: unknown): Promise<any> {
+  const authHeader = toAuthHeader(authToken)
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses/verify`, {
+    method: 'POST',
+    headers: {
+      'x-request-id': requestId(),
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+    body,
+  })
+  return res
 }
