@@ -372,11 +372,11 @@ export default function WithdrawRequest() {
                           <span className="small fw-medium">{fmtAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
-                          <span className="small">{t('balance.baseFee', { defaultValue: 'Base fee' })}</span>
+                          <span className="small">{t('balance.networkFee', { defaultValue: 'Network fee' })}</span>
                           <span className="small">{fmtAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
-                          <span className="small">{t('balance.percentFee', { defaultValue: 'Percent fee' })} ({feeEstimate.feePercentage}%)</span>
+                          <span className="small">{t('balance.platformFee', { defaultValue: 'Platform fee' })} ({feeEstimate.feePercentage}%)</span>
                           <span className="small">{fmtAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2 pt-2 border-top">

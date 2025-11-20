@@ -345,18 +345,20 @@ export default function BalanceWithdrawals() {
                           <td>
                             <span className="text-truncate d-inline-block" style={{ maxWidth: 200 }} title={label}>{label}</span>
                           </td>
-                          <td style={{ maxWidth: 420 }}>
-                            <span className="font-monospace text-truncate d-inline-block align-middle" style={{ maxWidth: 320 }} title={addr}>{addr}</span>
-                            <button
-                              type="button"
-                              className="btn btn-icon btn-sm btn-outline-secondary ms-2 align-middle"
-                              onClick={() => copyAddress(addr, w.id || idx)}
-                              disabled={!w.address}
-                              aria-label={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
-                              title={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
-                            >
-                              <i className={`bx ${copiedMap[w.id || idx] ? 'bx-check text-success' : 'bx-copy'}`}></i>
-                            </button>
+                          <td>
+                            <div className="d-flex align-items-start">
+                              <span className="font-monospace" style={{ wordBreak: 'break-all' }}>{addr}</span>
+                              <button
+                                type="button"
+                                className="btn btn-icon btn-sm btn-outline-secondary ms-2 flex-shrink-0"
+                                onClick={() => copyAddress(addr, w.id || idx)}
+                                disabled={!w.address}
+                                aria-label={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
+                                title={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
+                              >
+                                <i className={`bx ${copiedMap[w.id || idx] ? 'bx-check text-success' : 'bx-copy'}`}></i>
+                              </button>
+                            </div>
                           </td>
                           <td>
                             <span className={addressStatusBadgeClass(w.status)}>{formatAddressStatus(w.status)}</span>
