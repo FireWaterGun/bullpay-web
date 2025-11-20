@@ -158,6 +158,7 @@
     "outcomeBalance": "ยอดคงเหลือหลังถอน",
     "remainingBalance": "ยอดคงเหลือคงเหลือ",
     "amount": "จำนวนเงิน",
+    "fee": "ค่าธรรมเนียม",
     "feeBreakdown": "รายละเอียดค่าธรรมเนียม",
     "withdrawAmount": "จำนวนที่ถอน",
     "networkFee": "ค่าธรรมเนียมเครือข่าย",

@@ -5,6 +5,7 @@ import { listWithdrawals } from '../../api/withdrawals'
 import { useAuth } from '../../context/AuthContext'
 import { listCoins } from '../../api/coins'
 import { listWallets } from '../../api/wallets'
+import { AmountNormalizer } from '../../utils/amount_normalizer'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -131,6 +132,24 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
       )}
     </div>
   )
+}
+
+function formatAmount(amountRaw, decimals = 18, maxFrac = 4) {
+  if (!amountRaw) return '0'
+  try {
+    const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
+    const num = Number(value)
+    if (!Number.isFinite(num)) return value
+    
+    // Limit decimal places
+    let result = num.toFixed(maxFrac)
+    // Remove trailing zeros
+    result = result.replace(/\.?0+$/, '')
+    
+    return result
+  } catch (e) {
+    return amountRaw.toString()
+  }
 }
 
 function getNetworkLabel(n, coin) {
@@ -402,8 +421,9 @@ export default function BalanceWithdrawals() {
                 <colgroup>
                   <col style={{ width: '6%' }} />
                   <col style={{ width: '10%' }} />
-                  <col style={{ width: '25%' }} />
+                  <col style={{ width: '20%' }} />
                   <col style={{ width: '12%' }} />
+                  <col style={{ width: '10%' }} />
                   <col />
                   <col style={{ width: '12%' }} />
                   <col style={{ width: '16%' }} />
@@ -415,6 +435,7 @@ export default function BalanceWithdrawals() {
                     <th>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
                     <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
                     <th className="text-nowrap">{t('balance.amount', { defaultValue: 'Amount' })}</th>
+                    <th className="text-nowrap">{t('balance.fee', { defaultValue: 'Fee' })}</th>
                     <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
                     <th className="text-nowrap cell-fit">{t('common.status', { defaultValue: 'Status' })}</th>
                     <th className="text-nowrap text-end cell-fit">{t('common.createdAt', { defaultValue: 'Created at' })}</th>
@@ -448,6 +469,11 @@ export default function BalanceWithdrawals() {
                           </div>
                         </td>
                         <td className="text-nowrap">{Number(it.amount) || it.amount} {sym}</td>
+                        <td className="text-nowrap">
+                          <span className="text-muted">
+                            {formatAmount(it.feeRaw || it.fee, it.decimals || coin?.decimals || 18, 4)}
+                          </span>
+                        </td>
                         <td>
                           <span className="font-monospace d-block text-truncate align-middle" title={it.toAddress}>{it.toAddress}</span>
                         </td>

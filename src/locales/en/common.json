@@ -156,6 +156,7 @@
     "outcomeBalance": "Outcome balance",
     "remainingBalance": "Remaining balance",
     "amount": "Amount",
+    "fee": "Fee",
     "feeBreakdown": "Fee Breakdown",
     "withdrawAmount": "Withdraw amount",
     "networkFee": "Network fee",

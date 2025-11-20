@@ -156,6 +156,7 @@
     "outcomeBalance": "提现后余额",
     "remainingBalance": "剩余余额",
     "amount": "金额",
+    "fee": "手续费",
     "feeBreakdown": "手续费明细",
     "withdrawAmount": "提现金额",
     "networkFee": "网络费用",
