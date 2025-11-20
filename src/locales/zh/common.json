@@ -426,6 +426,7 @@
       "date": "日期",
       "coin": "代币",
       "amount": "金额",
+      "actualAmount": "实际金额",
       "from": "从",
       "to": "到",
       "status": "状态",

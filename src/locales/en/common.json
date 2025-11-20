@@ -402,6 +402,7 @@
       "date": "Date",
       "coin": "Coin",
       "amount": "Amount",
+      "actualAmount": "Actual Amount",
       "from": "From",
       "to": "To",
       "status": "Status",
@@ -483,7 +484,12 @@
       "atLeastOneField": "At least one field (Min Balance or Gas Buffer) must be specified",
       "coinNetworkId": "Coin-Network ID",
       "coinNetworkIdRequired": "Coin-Network ID is required",
-      "coinNetworkIdHelp": "Format: coin_network_id (e.g., 1-eth, 1-bsc)"
+      "coinNetworkIdHelp": "Format: coin_network_id (e.g., 1-eth, 1-bsc)",
+      "transactions": "Sweep Transactions",
+      "transactionsDesc": "View all sweep transactions and their status",
+      "noTransactions": "No sweep transactions found",
+      "createdAt": "Created Date",
+      "completedAt": "Completed Date"
     },
     "payment": {
       "menuTitle": "Payment",

@@ -254,6 +254,7 @@ export default function SweepTransactions() {
                       <th style={{ minWidth: '100px' }}>{t('admin.chain', { defaultValue: 'Chain' })}</th>
                       <th style={{ minWidth: '180px' }}>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
                       <th style={{ minWidth: '150px' }}>{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
+                      <th style={{ minWidth: '260px' }}>{t('admin.sweep.actualAmount', { defaultValue: 'Actual Amount' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
                       <th style={{ minWidth: '420px' }}>{t('admin.sweep.from', { defaultValue: 'From' })}</th>
                       <th style={{ minWidth: '420px' }}>{t('admin.sweep.to', { defaultValue: 'To' })}</th>
@@ -265,7 +266,7 @@ export default function SweepTransactions() {
                   <tbody>
                     {sweeps.length === 0 ? (
                       <tr>
-                        <td colSpan="11" className="text-center text-muted py-4">
+                        <td colSpan="12" className="text-center text-muted py-4">
                           {t('admin.sweep.noTransactions', { defaultValue: 'No sweep transactions found' })}
                         </td>
                       </tr>
@@ -309,6 +310,17 @@ export default function SweepTransactions() {
                                 sweep.coinNetwork?.network?.symbol
                               )}{' '}
                               <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>
+                            </span>
+                          </td>
+                          <td>
+                            <span>
+                              {sweep.actualAmountRaw ? formatAmount(
+                                sweep.actualAmountRaw, 
+                                sweep.decimals, 
+                                sweep.coinNetwork?.coin?.symbol,
+                                sweep.coinNetwork?.network?.symbol
+                              ) : '-'}{' '}
+                              {sweep.actualAmountRaw && <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>}
                             </span>
                           </td>
                           <td className="text-nowrap"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
