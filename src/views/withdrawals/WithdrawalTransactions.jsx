@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
-import { getWithdrawals, approveWithdrawal } from '../../api/admin.ts'
+import { getWithdrawals, approveWithdrawal, rejectWithdrawal } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 
 // Coin asset helpers
@@ -100,8 +100,11 @@ export default function WithdrawalTransactions() {
   const [currentPage, setCurrentPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('')
   const [showApproveModal, setShowApproveModal] = useState(false)
+  const [showRejectModal, setShowRejectModal] = useState(false)
   const [selectedWithdrawal, setSelectedWithdrawal] = useState(null)
   const [approving, setApproving] = useState(false)
+  const [rejecting, setRejecting] = useState(false)
+  const [rejectReason, setRejectReason] = useState('')
 
   useEffect(() => {
     loadWithdrawals()
@@ -159,6 +162,12 @@ export default function WithdrawalTransactions() {
     setShowApproveModal(true)
   }
 
+  function handleRejectClick(withdrawal) {
+    setSelectedWithdrawal(withdrawal)
+    setRejectReason('')
+    setShowRejectModal(true)
+  }
+
   async function handleApprove() {
     if (!selectedWithdrawal) return
 
@@ -175,6 +184,34 @@ export default function WithdrawalTransactions() {
       toast.error(t('withdrawal.approveError', { defaultValue: 'Failed to approve withdrawal' }))
     } finally {
       setApproving(false)
+    }
+  }
+
+  async function handleReject() {
+    if (!selectedWithdrawal || !rejectReason.trim()) {
+      toast.error(t('withdrawal.rejectReasonRequired', { defaultValue: 'Please provide a reason for rejection' }))
+      return
+    }
+
+    if (rejectReason.trim().length < 10) {
+      toast.error(t('withdrawal.rejectReasonTooShort', { defaultValue: 'The reason field must have at least 10 characters' }))
+      return
+    }
+
+    try {
+      setRejecting(true)
+      await rejectWithdrawal(token, selectedWithdrawal.id, rejectReason.trim())
+      
+      toast.success(t('withdrawal.rejectSuccess', { defaultValue: 'Withdrawal rejected successfully' }))
+      setShowRejectModal(false)
+      setSelectedWithdrawal(null)
+      setRejectReason('')
+      loadWithdrawals() // Reload the list
+    } catch (error) {
+      console.error('Failed to reject withdrawal:', error)
+      toast.error(t('withdrawal.rejectError', { defaultValue: 'Failed to reject withdrawal' }))
+    } finally {
+      setRejecting(false)
     }
   }
 
@@ -332,13 +369,24 @@ export default function WithdrawalTransactions() {
                           <td className="text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
                           <td className="text-center">
                             {withdrawal.status?.toLowerCase() === 'pending' ? (
-                              <button
-                                className="btn btn-sm btn-primary"
-                                onClick={() => handleApproveClick(withdrawal)}
-                                disabled={approving}
-                              >
-                                {t('withdrawal.approve', { defaultValue: 'Approve' })}
-                              </button>
+                              <div className="d-flex gap-1 justify-content-center">
+                                <button
+                                  className="btn btn-sm btn-primary"
+                                  onClick={() => handleApproveClick(withdrawal)}
+                                  disabled={approving || rejecting}
+                                >
+                                  <i className="bx bx-check me-1"></i>
+                                  {t('withdrawal.approve', { defaultValue: 'Approve' })}
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-danger"
+                                  onClick={() => handleRejectClick(withdrawal)}
+                                  disabled={approving || rejecting}
+                                >
+                                  <i className="bx bx-x me-1"></i>
+                                  {t('withdrawal.reject', { defaultValue: 'Reject' })}
+                                </button>
+                              </div>
                             ) : (
                               <span className="text-muted">-</span>
                             )}
@@ -485,6 +533,93 @@ export default function WithdrawalTransactions() {
                     </>
                   ) : (
                     t('withdrawal.approve', { defaultValue: 'Approve' })
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {showRejectModal && selectedWithdrawal && (
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !rejecting && setShowRejectModal(false)}>
+          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {t('withdrawal.rejectConfirm', { defaultValue: 'Reject Withdrawal' })}
+                </h5>
+                <button type="button" className="btn-close" onClick={() => setShowRejectModal(false)} disabled={rejecting}></button>
+              </div>
+              <div className="modal-body">
+                <p className="mb-3">{t('withdrawal.rejectMessage', { defaultValue: 'Are you sure you want to reject this withdrawal?' })}</p>
+                <div className="card mb-3" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
+                  <div className="card-body">
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('common.id', { defaultValue: 'ID' })}</small>
+                        <strong>{selectedWithdrawal.id}</strong>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('admin.user', { defaultValue: 'User' })}</small>
+                        <strong>{selectedWithdrawal.user?.email || 'N/A'}</strong>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('withdrawal.amount', { defaultValue: 'Amount' })}</small>
+                        <strong className="text-nowrap">{formatAmount(selectedWithdrawal.amountRaw || selectedWithdrawal.amount, selectedWithdrawal.decimals || 18)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">{t('withdrawal.fee', { defaultValue: 'Fee' })}</small>
+                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 8, true)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                      </div>
+                      <div className="col-12">
+                        <small className="text-muted d-block">{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</small>
+                        <code className="small">{selectedWithdrawal.toAddress}</code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Reason input */}
+                <div className="mb-3">
+                  <label htmlFor="rejectReason" className="form-label">
+                    {t('withdrawal.rejectReason', { defaultValue: 'Reason for rejection' })} <span className="text-danger">*</span>
+                  </label>
+                  <textarea 
+                    id="rejectReason"
+                    className={`form-control ${rejectReason.trim().length > 0 && rejectReason.trim().length < 10 ? 'is-invalid' : ''}`}
+                    rows="3"
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder={t('withdrawal.rejectReasonPlaceholder', { defaultValue: 'e.g., Suspicious activity detected' })}
+                    disabled={rejecting}
+                  />
+                  <div className="d-flex justify-content-between mt-1">
+                    <small className={`${rejectReason.trim().length > 0 && rejectReason.trim().length < 10 ? 'text-danger' : 'text-muted'}`}>
+                      {rejectReason.trim().length < 10 
+                        ? t('withdrawal.rejectReasonMinLength', { defaultValue: 'Minimum 10 characters required' })
+                        : t('common.optional', { defaultValue: '' })
+                      }
+                    </small>
+                    <small className="text-muted">
+                      {rejectReason.trim().length}/10
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowRejectModal(false)} disabled={rejecting}>
+                  {t('actions.cancel', { defaultValue: 'Cancel' })}
+                </button>
+                <button type="button" className="btn btn-danger" onClick={handleReject} disabled={rejecting || rejectReason.trim().length < 10}>
+                  {rejecting ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-1"></span>
+                      {t('withdrawal.rejecting', { defaultValue: 'Rejecting...' })}
+                    </>
+                  ) : (
+                    t('withdrawal.reject', { defaultValue: 'Reject' })
                   )}
                 </button>
               </div>

@@ -11,17 +11,17 @@ import { AmountNormalizer } from '../../utils/amount_normalizer'
 function fmtAmount(x, maxFrac = 4) {
   const n = Number(x)
   if (!Number.isFinite(n)) return '0'
-  
+
   // Use toFixed to limit decimals precisely
   let result = n.toFixed(maxFrac)
-  
+
   // Remove trailing zeros and unnecessary decimal point
   result = result.replace(/\.?0+$/, '')
-  
+
   // Add thousands separator
   const parts = result.split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  
+
   return parts.join('.')
 }
 
@@ -445,25 +445,94 @@ export default function WithdrawRequest() {
 ; (() => { })
 
 export function SuccessModalWrapper({ open, onClose, amount, sym, address, t }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    if (address) {
+      navigator.clipboard.writeText(address).then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      }).catch(() => { })
+    }
+  }
+
+  if (!open) return null
+
   return (
-    <ConfirmModal
-      show={open}
-      title={t('balance.withdrawSuccessTitle', { defaultValue: 'Withdrawal requested' })}
-      message={(
-        <>
-          <div className="mb-1">{t('balance.withdrawSuccessMsg', { defaultValue: 'Your withdrawal request has been submitted successfully.' })}</div>
-          <div className="small text-muted">{t('balance.amount', { defaultValue: 'Amount' })}: {amount} {sym}</div>
-          <div className="small text-muted">{t('balance.payoutAddress', { defaultValue: 'Payout address' })}: <span className="font-monospace">{address}</span></div>
-        </>
-      )}
-      confirmText={t('actions.ok', { defaultValue: 'OK' })}
-      cancelText={t('actions.close', { defaultValue: 'Close' })}
-      onConfirm={onClose}
-      onCancel={onClose}
-      variant="basic"
-      confirmVariant="primary"
-      cancelVariant="outline-secondary"
-    />
+    <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} tabIndex="-1">
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+            <div className="modal-header border-0">
+              <h5 className="modal-title">{t('balance.withdrawSuccessTitle', { defaultValue: 'Request withdrawal' })}</h5>
+              <button type="button" className="btn-close" onClick={onClose} aria-label="Close"></button>
+            </div>
+            <div className="modal-body text-center px-4 pb-4">
+            {/* Success Icon with decorations */}
+            <div className="position-relative my-4" style={{ height: '180px' }}>
+              {/* Decorative elements */}
+              <div className="position-absolute" style={{ top: '20px', left: '20%', opacity: 0.3 }}>
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                  <path d="M20 5L22 18L35 20L22 22L20 35L18 22L5 20L18 18L20 5Z" fill="#E0E7FF" />
+                </svg>
+              </div>
+              <div className="position-absolute" style={{ top: '10px', right: '15%', opacity: 0.3 }}>
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+                  <path d="M15 3L16.5 13.5L27 15L16.5 16.5L15 27L13.5 16.5L3 15L13.5 13.5L15 3Z" fill="#C7D2FE" />
+                </svg>
+              </div>
+              <div className="position-absolute" style={{ bottom: '20px', right: '25%', opacity: 0.3 }}>
+                <svg width="35" height="35" viewBox="0 0 35 35" fill="none">
+                  <path d="M17.5 8L14 17.5L4 21L14 24.5L17.5 34L21 24.5L31 21L21 17.5L17.5 8Z" fill="#A5B4FC" />
+                </svg>
+              </div>
+
+              {/* Main success circle */}
+              <div className="position-absolute top-50 start-50 translate-middle">
+                <div className="rounded-circle d-flex align-items-center justify-content-center"
+                  style={{ width: '120px', height: '120px', backgroundColor: '#C6F432' }}>
+                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                    <path d="M10 30L25 45L50 15" stroke="white" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Success message */}
+            <h4 className="mb-3 fw-bold">{t('balance.withdrawalCreated', { defaultValue: 'Your withdrawal has been created' })}</h4>
+            <p className="text-muted mb-1">
+              {t('balance.withdrawalReceived', {
+                defaultValue: `We've received your withdrawal of ${amount} ${sym}.`
+              })}
+            </p>
+            <p className="text-muted mb-4">
+              {t('balance.withdrawalWaitingApproval', {
+                defaultValue: 'It is currently waiting admin approve.'
+              })}
+            </p>
+
+            {/* Important notice */}
+            <div className="alert alert-info text-start mb-4" role="alert" style={{ backgroundColor: '#F0F7FF', border: 'none' }}>
+              <strong className="text-primary">{t('common.important', { defaultValue: 'Important' })}:</strong>{' '}
+              <span className="text-muted">
+                {t('balance.withdrawalAdminApprovalRequired', { 
+                  defaultValue: 'Your withdrawal will be processed after admin approval. If not approved, please contact support@bullpay.com' 
+                })}
+              </span>
+            </div>
+
+            {/* OK Button */}
+            <button
+              type="button"
+              className="btn btn-primary w-100 py-2 fw-semibold"
+              onClick={onClose}
+              style={{ fontSize: '16px' }}
+            >
+              {t('actions.ok', { defaultValue: 'OK' })}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -70,7 +70,17 @@ export async function listWithdrawals(params: ListWithdrawalsParams = {}, token?
         : Array.isArray(res?.results)
           ? res.results
           : []
-  const pagination = payload?.pagination || payload?.summary || null
+  // Support meta, pagination, or summary
+  const rawPagination = payload?.meta || payload?.pagination || payload?.summary || null
+  // Normalize pagination structure
+  const pagination = rawPagination ? {
+    total: rawPagination.total,
+    page: rawPagination.page,
+    perPage: rawPagination.perPage || rawPagination.limit,
+    totalPages: rawPagination.lastPage || rawPagination.totalPages || Math.ceil(rawPagination.total / (rawPagination.perPage || rawPagination.limit || 10)),
+    hasNextPage: rawPagination.hasNextPage,
+    hasPrevPage: rawPagination.hasPrevPage
+  } : null
   return { items, pagination }
 }
 

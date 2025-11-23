@@ -780,3 +780,26 @@ export async function approveWithdrawal(
 
   return response
 }
+
+/**
+ * Reject a withdrawal transaction
+ * @param token - Auth token
+ * @param withdrawalId - ID of the withdrawal to reject
+ * @param reason - Reason for rejection
+ */
+export async function rejectWithdrawal(
+  token: string,
+  withdrawalId: number,
+  reason: string
+) {
+  const response = await apiFetch(`/api/v1/admin/withdrawals/${withdrawalId}/reject`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: { reason }
+  })
+
+  return response
+}
