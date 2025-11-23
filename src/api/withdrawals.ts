@@ -79,17 +79,45 @@ export interface FeeEstimate {
   symbol: string
   networkSymbol: string
   amount: string
+  grossAmount?: string
   baseFee: string
   percentFee: string
   totalFee: string
   netAmount: string
   amountRaw?: string
+  grossAmountRaw?: string
   baseFeeRaw?: string
   percentFeeRaw?: string
   totalFeeRaw?: string
   netAmountRaw?: string
   decimals: number
   feePercentage: number
+  precision?: {
+    displayDecimals: number
+  }
+  display?: {
+    amount: string
+    grossAmount: string
+    baseFee: string
+    percentFee: string
+    totalFee: string
+    netAmount: string
+    percentFeeText: string
+  }
+  displayUsd?: {
+    amountUsd: string
+    grossAmountUsd: string
+    baseFeeUsd: string
+    percentFeeUsd: string
+    totalFeeUsd: string
+    netAmountUsd: string
+    percentFeeUsdText: string
+  }
+  metadata?: {
+    usdPriceStatus: string
+    usdPriceSource: string
+    usdPriceLastUpdated: string
+  }
 }
 
 export async function estimateWithdrawalFee(coinNetworkId: number | string, amount: string | number, token?: unknown): Promise<FeeEstimate | null> {

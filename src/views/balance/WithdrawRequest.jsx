@@ -372,23 +372,23 @@ export default function WithdrawRequest() {
                         <div className="small text-muted mb-2">{t('balance.feeBreakdown', { defaultValue: 'Fee Breakdown' })}</div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="small">{t('balance.withdrawAmount', { defaultValue: 'Withdraw amount' })}</span>
-                          <span className="small fw-medium">{fmtAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="small fw-medium">{feeEstimate.display?.grossAmount || feeEstimate.display?.amount || `${fmtAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="small">{t('balance.networkFee', { defaultValue: 'Network fee' })}</span>
-                          <span className="small">{fmtAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="small">{feeEstimate.display?.baseFee || `${fmtAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
-                          <span className="small">{t('balance.platformFee', { defaultValue: 'Platform fee' })} ({feeEstimate.feePercentage}%)</span>
-                          <span className="small">{fmtAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="small">{t('balance.platformFee', { defaultValue: 'Platform fee' })} ({feeEstimate.display?.percentFeeText || `${feeEstimate.feePercentage}%`})</span>
+                          <span className="small">{feeEstimate.display?.percentFee || `${fmtAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2 pt-2 border-top">
                           <span className="small">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
-                          <span className="small fw-medium">-{fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="small fw-medium">{feeEstimate.display?.totalFee || `${fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-0 pt-2 border-top">
                           <span className="fw-medium">{t('balance.youWillReceive', { defaultValue: 'You will receive' })}</span>
-                          <span className="fw-semibold">{fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} {sym}</span>
+                          <span className="fw-semibold">{feeEstimate.display?.netAmount || `${fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                       </div>
                     </div>
