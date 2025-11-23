@@ -134,8 +134,8 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   )
 }
 
-function formatAmount(amountRaw, decimals = 18, maxFrac = 4) {
-  if (!amountRaw) return '0'
+function formatAmount(amountRaw, decimals = 18, maxFrac = 4, keepTrailingZeros = false) {
+  if (!amountRaw) return keepTrailingZeros ? '0.0000' : '0'
   try {
     const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
     const num = Number(value)
@@ -143,8 +143,11 @@ function formatAmount(amountRaw, decimals = 18, maxFrac = 4) {
     
     // Limit decimal places
     let result = num.toFixed(maxFrac)
-    // Remove trailing zeros
-    result = result.replace(/\.?0+$/, '')
+    
+    // Remove trailing zeros only if not explicitly keeping them
+    if (!keepTrailingZeros) {
+      result = result.replace(/\.?0+$/, '')
+    }
     
     return result
   } catch (e) {
@@ -181,6 +184,18 @@ export default function BalanceWithdrawals() {
   const [limit, setLimit] = useState(10)
   const [status, setStatus] = useState('ALL')
   const [pagination, setPagination] = useState(null)
+
+  // Clean up any leftover modal styles on mount
+  useEffect(() => {
+    // Remove any leftover modal-related classes and styles
+    document.body.classList.remove('modal-open')
+    document.body.style.overflow = ''
+    document.body.style.paddingRight = ''
+    
+    // Remove any leftover backdrop elements
+    const backdrops = document.querySelectorAll('.modal-backdrop')
+    backdrops.forEach(backdrop => backdrop.remove())
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -471,7 +486,7 @@ export default function BalanceWithdrawals() {
                         <td className="text-nowrap">{Number(it.amount) || it.amount} {sym}</td>
                         <td className="text-nowrap">
                           <span className="text-muted">
-                            {formatAmount(it.feeRaw || it.fee, it.decimals || coin?.decimals || 18, 4)}
+                            {formatAmount(it.feeRaw || it.fee, it.decimals || coin?.decimals || 18, 8, true)}
                           </span>
                         </td>
                         <td>

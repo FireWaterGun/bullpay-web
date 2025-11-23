@@ -42,6 +42,15 @@ export default function ConfirmModal({
         // ensure hidden before dispose to clean backdrops
         instanceRef.current?.hide()
         instanceRef.current?.dispose()
+        
+        // Force cleanup of body styles in case modal cleanup didn't complete
+        document.body.classList.remove('modal-open')
+        document.body.style.overflow = ''
+        document.body.style.paddingRight = ''
+        
+        // Remove any leftover backdrops
+        const backdrops = document.querySelectorAll('.modal-backdrop')
+        backdrops.forEach(backdrop => backdrop.remove())
       } catch {}
       instanceRef.current = null
     }

@@ -125,8 +125,8 @@ export default function WithdrawalTransactions() {
     }
   }
 
-  function formatAmount(amountRaw, decimals = 18, maxFrac = 8) {
-    if (!amountRaw) return '0'
+  function formatAmount(amountRaw, decimals = 18, maxFrac = 8, keepTrailingZeros = false) {
+    if (!amountRaw) return keepTrailingZeros ? '0.' + '0'.repeat(maxFrac) : '0'
     try {
       const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
       const num = Number(value)
@@ -134,8 +134,11 @@ export default function WithdrawalTransactions() {
       
       // Limit decimal places
       let result = num.toFixed(maxFrac)
-      // Remove trailing zeros
-      result = result.replace(/\.?0+$/, '')
+      
+      // Remove trailing zeros only if not explicitly keeping them
+      if (!keepTrailingZeros) {
+        result = result.replace(/\.?0+$/, '')
+      }
       
       return result
     } catch (e) {
@@ -316,14 +319,14 @@ export default function WithdrawalTransactions() {
                               )}
                             </div>
                           </td>
-                          <td>
+                          <td className="text-nowrap">
                             <span>
                               {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)} {withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || ''}
                             </span>
                           </td>
                           <td>
                             <span className="text-muted">
-                              {formatAmount(withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 4)}
+                              {formatAmount(withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
                             </span>
                           </td>
                           <td className="text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
@@ -456,11 +459,11 @@ export default function WithdrawalTransactions() {
                       </div>
                       <div className="col-6">
                         <small className="text-muted d-block">{t('withdrawal.amount', { defaultValue: 'Amount' })}</small>
-                        <strong>{formatAmount(selectedWithdrawal.amountRaw || selectedWithdrawal.amount, selectedWithdrawal.decimals || 18)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                        <strong className="text-nowrap">{formatAmount(selectedWithdrawal.amountRaw || selectedWithdrawal.amount, selectedWithdrawal.decimals || 18)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
                       </div>
                       <div className="col-6">
                         <small className="text-muted d-block">{t('withdrawal.fee', { defaultValue: 'Fee' })}</small>
-                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 4)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 8, true)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
                       </div>
                       <div className="col-12">
                         <small className="text-muted d-block">{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</small>

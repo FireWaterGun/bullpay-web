@@ -290,7 +290,10 @@ export default function WithdrawRequest() {
 
   const closeSuccess = () => {
     setSuccessOpen(false)
-    navigate('/app/balance/withdrawals', { replace: true })
+    // Wait for modal to fully close and cleanup before navigating
+    setTimeout(() => {
+      navigate('/app/balance/withdrawals', { replace: true })
+    }, 300)
   }
 
   const closeError = () => {
