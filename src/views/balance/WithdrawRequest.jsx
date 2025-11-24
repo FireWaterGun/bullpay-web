@@ -146,6 +146,7 @@ export default function WithdrawRequest() {
   const [feeEstimate, setFeeEstimate] = useState(null)
   const [estimatingFee, setEstimatingFee] = useState(false)
   const [feeError, setFeeError] = useState('')
+  const [amountError, setAmountError] = useState('')
 
   useEffect(() => {
     let mounted = true
@@ -172,6 +173,26 @@ export default function WithdrawRequest() {
       })()
     return () => { mounted = false }
   }, [token, coinNetworkId])
+
+  // Initialize Bootstrap tooltips
+  useEffect(() => {
+    // Initialize all tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltips = Array.from(tooltipTriggerList).map(tooltipTriggerEl => {
+      // Check if bootstrap is available
+      if (window.bootstrap && window.bootstrap.Tooltip) {
+        return new window.bootstrap.Tooltip(tooltipTriggerEl, {
+          delay: { show: 100, hide: 0 }
+        })
+      }
+      return null
+    }).filter(Boolean)
+    
+    // Cleanup tooltips on unmount
+    return () => {
+      tooltips.forEach(tooltip => tooltip.dispose())
+    }
+  }, [feeEstimate])
 
   // Extract coin and network info from balance response
   const coin = balance?.coin
@@ -351,18 +372,52 @@ export default function WithdrawRequest() {
                   </div>
 
                   <div className="mb-3">
-                    <div className="d-flex justify-content-between align-items-end">
-                      <label className="form-label mb-1">{t('balance.amountToWithdraw', { defaultValue: 'Amount to withdraw' })}</label>
-                    </div>
-                    <div className="input-group">
-                      <input type="number" min="0" step={1 / Math.pow(10, Math.min(decimals, 8))} className="form-control" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={`0.0`} />
-                      <span className="input-group-text">{sym}</span>
-                    </div>
+                    <label className="form-label">{t('balance.payoutAddress', { defaultValue: 'Payout address' })}</label>
+                    <input className="form-control" value={address} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label">{t('balance.payoutAddress', { defaultValue: 'Payout address' })}</label>
-                    <input className="form-control" value={address} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
+                    <label className="form-label">{t('balance.amount', { defaultValue: 'Amount' })}</label>
+                    <div className="position-relative">
+                      <input 
+                        type="number" 
+                        min="0" 
+                        max={available}
+                        step={1 / Math.pow(10, Math.min(decimals, 8))} 
+                        className="form-control form-control-lg" 
+                        value={amount} 
+                        onChange={(e) => {
+                          const value = e.target.value
+                          const numValue = Number(value)
+                          // Allow empty string or values within range
+                          if (value === '' || (numValue >= 0 && numValue <= available)) {
+                            setAmount(value)
+                            setAmountError('')
+                          } else if (numValue > available) {
+                            setAmountError(t('balance.amountExceedsBalance', { defaultValue: 'Amount exceeds available balance' }))
+                          }
+                        }} 
+                        placeholder="0.0"
+                        style={{ paddingRight: '80px' }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y me-2 text-primary text-decoration-none"
+                        onClick={() => setAmount(String(available))}
+                        style={{ fontSize: '0.875rem' }}
+                      >
+                        Max
+                      </button>
+                    </div>
+                    <div className="text-muted small mt-2">
+                      {t('balance.balance', { defaultValue: 'Balance' })}: {fmtAmount(available)} {sym}
+                    </div>
+                    {amountError && (
+                      <div className="text-danger small mt-1">
+                        <i className="bx bx-error-circle me-1"></i>
+                        {amountError}
+                      </div>
+                    )}
                   </div>
 
                   {/* Fee breakdown */}
@@ -384,12 +439,29 @@ export default function WithdrawRequest() {
                         </div>
                         <div className="d-flex justify-content-between mb-2 pt-2 border-top">
                           <span className="small">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
-                          <span className="small fw-medium">{feeEstimate.display?.totalFee || `${fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
+                          <div className="text-end">
+                            <div className="small fw-medium">{feeEstimate.display?.totalFee || `${fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
+                            {feeEstimate.displayUsd?.totalFeeUsd && (
+                              <div className="text-muted" style={{ fontSize: '0.75rem' }}>{feeEstimate.displayUsd.totalFeeUsd}</div>
+                            )}
+                          </div>
                         </div>
-                        <div className="d-flex justify-content-between mb-0 pt-2 border-top">
-                          <span className="fw-medium">{t('balance.youWillReceive', { defaultValue: 'You will receive' })}</span>
-                          <span className="fw-semibold">{feeEstimate.display?.netAmount || `${fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
-                        </div>
+                        
+                        {feeEstimate.displayUsd?.netAmountUsd && (
+                          <div className="d-flex justify-content-between mb-0 pt-2 border-top">
+                            <span className="small text-muted d-flex align-items-center">
+                              {t('balance.totalUsd', { defaultValue: 'Total USD' })}
+                              <i 
+                                className="bx bx-info-circle ms-1" 
+                                style={{ cursor: 'pointer' }}
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-title={t('balance.totalUsdTooltip', { defaultValue: 'Total transaction amount in USD after including network fees and platform fees.' })}
+                              ></i>
+                            </span>
+                            <span className="fw-semibold">{feeEstimate.displayUsd.netAmountUsd}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -409,17 +481,6 @@ export default function WithdrawRequest() {
                       </div>
                     </div>
                   )}
-
-                  <div className="d-flex justify-content-between small">
-                    <div>
-                      <span className="text-primary">{t('balance.currentBalance', { defaultValue: 'Current balance' })}</span>
-                      <div className="fw-medium">{fmtAmount(available, 4)} {sym}</div>
-                    </div>
-                    <div className="text-end">
-                      <span className="text-primary">{t('balance.remainingBalance', { defaultValue: 'Remaining balance' })}</span>
-                      <div className="fw-medium">{fmtAmount(outcome, 4)} {sym}</div>
-                    </div>
-                  </div>
                 </>
               )}
             </div>
