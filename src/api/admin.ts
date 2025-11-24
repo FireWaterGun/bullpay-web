@@ -742,18 +742,20 @@ export async function getWithdrawals(
   })
 
   // Transform response structure to match component expectations
-  const items = response?.data?.items || []
-  const pagination = response?.data?.pagination || {}
+  // API returns: { data: { items: [...], meta: {...} } }
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || {}
 
   return {
     items,
     pagination: {
-      page: pagination.page || 1,
-      limit: pagination.limit || 20,
-      total: pagination.total || 0,
-      totalPages: pagination.totalPages || 0,
-      hasNext: pagination.hasNext || false,
-      hasPrev: pagination.hasPrev || false,
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
     }
   }
 }
