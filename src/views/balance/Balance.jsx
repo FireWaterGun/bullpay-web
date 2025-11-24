@@ -184,8 +184,8 @@ export default function Balance() {
             ? balanceRes.breakdown
             : [];
           const filtered = list.filter((b) => {
-            // Support new structure: totalBalance or confirmedBalance, fallback to old availableBalance or balance
-            const a = Number(b?.totalBalance || b?.confirmedBalance || b?.availableBalance || b?.balance || 0);
+            // Support new structure: availableBalance first, then totalBalance or confirmedBalance, fallback to balance
+            const a = Number(b?.availableBalance || b?.totalBalance || b?.confirmedBalance || b?.balance || 0);
             return Number.isFinite(a) && a > 0;
           });
           setBalances(filtered);
@@ -312,9 +312,9 @@ export default function Balance() {
                   network?.name || 
                   getNetworkLabel(cn, coin);
                 
-                // Support new structure: totalBalance or confirmedBalance, fallback to old availableBalance or balance
-                const amount = fmtAmount(b.totalBalance || b.confirmedBalance || b.availableBalance || b.balance || 0);
-                const amtNum = Number(b.totalBalance || b.confirmedBalance || b.availableBalance || b.balance || 0) || 0;
+                // Support new structure: availableBalance first, then totalBalance or confirmedBalance, fallback to balance
+                const amount = fmtAmount(b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0);
+                const amtNum = Number(b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0) || 0;
                 
                 // Use valueUsd from API if available, otherwise calculate from rate
                 const rate = Number((rates && rates[coinSym]) || b.priceUsd || 0) || 0;
