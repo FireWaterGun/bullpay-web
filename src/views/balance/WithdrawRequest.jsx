@@ -479,19 +479,24 @@ export default function WithdrawRequest() {
                           </div>
                         </div>
                         
-                        {feeEstimate.displayUsd?.netAmountUsd && (
+                        {feeEstimate && (
                           <div className="d-flex justify-content-between mb-0 pt-2 border-top">
                             <span className="small text-muted d-flex align-items-center">
-                              {t('balance.totalUsd', { defaultValue: 'Total USD' })}
+                              {t('balance.total', { defaultValue: 'Total' })}
                               <i 
                                 className="bx bx-info-circle ms-1" 
                                 style={{ cursor: 'pointer' }}
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="top"
-                                data-bs-title={t('balance.totalUsdTooltip', { defaultValue: 'Total transaction amount in USD after including network fees and platform fees.' })}
+                                data-bs-title={t('balance.totalTooltip', { defaultValue: 'Amount you will receive after fees' })}
                               ></i>
                             </span>
-                            <span className="fw-semibold">{feeEstimate.displayUsd.netAmountUsd}</span>
+                            <div className="text-end">
+                              <div className="fw-semibold">{feeEstimate.display?.netAmount || `${fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
+                              {feeEstimate.displayUsd?.netAmountUsd && (
+                                <div className="text-muted" style={{ fontSize: '0.75rem' }}>{feeEstimate.displayUsd.netAmountUsd}</div>
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>
