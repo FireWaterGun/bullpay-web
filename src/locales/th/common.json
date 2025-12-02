@@ -141,7 +141,42 @@
   },
   "settings": {
     "title": "การตั้งค่า",
-    "subtitle": "การตั้งค่าของแอป"
+    "subtitle": "จัดการการตั้งค่าบัญชีและการตั้งค่าส่วนตัว",
+    "security": {
+      "title": "ความปลอดภัย"
+    },
+    "2fa": {
+      "title": "การยืนยันตัวตนแบบสองขั้นตอน",
+      "description": "เพิ่มความปลอดภัยให้บัญชีของคุณ เราจะขอรหัสจากแอป Authenticator เมื่อคุณเข้าสู่ระบบ",
+      "enabled": "เปิดใช้งานแล้ว",
+      "disabled": "ปิดใช้งาน",
+      "enabledSince": "เปิดใช้งานตั้งแต่",
+      "enable": "เปิดใช้งาน 2FA",
+      "disable": "ปิด 2FA",
+      "reconfigure": "ตั้งค่าใหม่",
+      "setupTitle": "ตั้งค่าการยืนยันตัวตนแบบสองขั้นตอน",
+      "disableTitle": "ปิด 2FA",
+      "disableWarning": "การปิด 2FA จะทำให้บัญชีของคุณมีความปลอดภัยน้อยลง",
+      "disableButton": "ปิด 2FA",
+      "enableButton": "เปิดใช้งาน 2FA",
+      "scanQRDescription": "สแกน QR code ด้วยแอป Authenticator (Google Authenticator, Authy ฯลฯ)",
+      "cantScan": "สแกนไม่ได้? ใส่รหัสนี้ด้วยตนเอง:",
+      "saveBackupCodes": "บันทึกรหัสสำรองของคุณ!",
+      "backupCodesDescription": "หากคุณเข้าถึงแอป Authenticator ไม่ได้ คุณสามารถใช้รหัสเหล่านี้เพื่อเข้าสู่ระบบ แต่ละรหัสใช้ได้เพียงครั้งเดียว",
+      "enterCode": "ใส่รหัส 6 หลักจากแอป Authenticator เพื่อยืนยันการตั้งค่า",
+      "enterPassword": "ใส่รหัสผ่านของคุณเพื่อยืนยัน",
+      "errorInvalidCode": "กรุณาใส่รหัส 6 หลักที่ถูกต้อง",
+      "errorPasswordRequired": "กรุณาใส่รหัสผ่าน"
+    }
+  },
+  "2fa": {
+    "verifyTitle": "การยืนยันตัวตนแบบสองขั้นตอน",
+    "verifyDescription": "ใส่รหัส 6 หลักจากแอป Authenticator",
+    "errorInvalidCode": "กรุณาใส่รหัส 6 หลักที่ถูกต้อง",
+    "errorInvalidBackupCode": "กรุณาใส่รหัสสำรองที่ถูกต้อง (เช่น ABCD-EFGH)",
+    "errorVerificationFailed": "การยืนยันล้มเหลว",
+    "useAuthenticator": "ใช้แอป Authenticator แทน",
+    "useBackupCode": "ใช้รหัสสำรองแทน"
   },
   "balance": {
     "balances": "ยอดคงเหลือ",
@@ -166,6 +201,8 @@
     "totalFee": "ค่าธรรมเนียมรวม",
     "youWillReceive": "คุณจะได้รับ",
     "calculatingFee": "กำลังคำนวณค่าธรรมเนียม...",
+    "confirm2FATitle": "ยืนยันการถอน",
+    "confirm2FADescription": "ใส่รหัส 2FA เพื่อยืนยันการถอนเงิน",
     "withdrawSuccessTitle": "ส่งคำขอถอนเงินแล้ว",
     "withdrawSuccessMsg": "คำขอถอนเงินของคุณได้รับการส่งเรียบร้อยแล้ว",
     "withdrawErrorTitle": "การถอนเงินล้มเหลว",
@@ -241,7 +278,18 @@
     "status": "สถานะ",
     "createdAt": "สร้างเมื่อ",
     "page": "หน้า",
-    "of": "จาก"
+    "of": "จาก",
+    "loading": "กำลังโหลด...",
+    "cancel": "ยกเลิก",
+    "back": "กลับ",
+    "continue": "ดำเนินการต่อ",
+    "verify": "ยืนยัน",
+    "verifying": "กำลังยืนยัน...",
+    "processing": "กำลังดำเนินการ...",
+    "manage": "จัดการ",
+    "copy": "คัดลอก",
+    "download": "ดาวน์โหลด",
+    "password": "รหัสผ่าน"
   },
   "wallet": {
     "loading": "กำลังโหลดกระเป๋า...",

@@ -139,7 +139,42 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Application preferences"
+    "subtitle": "Manage your account settings and preferences",
+    "security": {
+      "title": "Security"
+    },
+    "2fa": {
+      "title": "Two-Factor Authentication",
+      "description": "Add an extra layer of security. We'll ask for a code from your authenticator app when you sign in.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "enabledSince": "Since",
+      "enable": "Enable 2FA",
+      "disable": "Disable 2FA",
+      "reconfigure": "Reconfigure",
+      "setupTitle": "Setup Two-Factor Authentication",
+      "disableTitle": "Disable 2FA",
+      "disableWarning": "Disabling 2FA will make your account less secure.",
+      "disableButton": "Disable 2FA",
+      "enableButton": "Enable 2FA",
+      "scanQRDescription": "Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)",
+      "cantScan": "Can't scan? Enter this code manually:",
+      "saveBackupCodes": "Save your backup codes!",
+      "backupCodesDescription": "If you lose access to your authenticator app, you can use these codes to sign in. Each code can only be used once.",
+      "enterCode": "Enter the 6-digit code from your authenticator app to verify setup",
+      "enterPassword": "Enter your password to confirm",
+      "errorInvalidCode": "Please enter a valid 6-digit code",
+      "errorPasswordRequired": "Password is required"
+    }
+  },
+  "2fa": {
+    "verifyTitle": "Two-Factor Authentication",
+    "verifyDescription": "Enter the 6-digit code from your authenticator app",
+    "errorInvalidCode": "Please enter a valid 6-digit code",
+    "errorInvalidBackupCode": "Please enter a valid backup code (e.g., ABCD-EFGH)",
+    "errorVerificationFailed": "Verification failed",
+    "useAuthenticator": "Use authenticator app instead",
+    "useBackupCode": "Use backup code instead"
   },
   "balance": {
     "balances": "Balances",
@@ -164,6 +199,8 @@
     "totalFee": "Total fee",
     "youWillReceive": "You will receive",
     "calculatingFee": "Calculating fee...",
+    "confirm2FATitle": "Confirm Withdrawal",
+    "confirm2FADescription": "Enter your 2FA code to confirm this withdrawal",
     "withdrawSuccessTitle": "Withdrawal requested",
     "withdrawSuccessMsg": "Your withdrawal request has been submitted successfully.",
     "withdrawErrorTitle": "Withdrawal Failed",
@@ -219,7 +256,18 @@
     "noData": "No data",
     "copyright": "  {{year}} · All rights reserved",
     "poweredBy": "Powered by",
-    "allTypes": "All Types"
+    "allTypes": "All Types",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "back": "Back",
+    "continue": "Continue",
+    "verify": "Verify",
+    "verifying": "Verifying...",
+    "processing": "Processing...",
+    "manage": "Manage",
+    "copy": "Copy",
+    "download": "Download",
+    "password": "Password"
   },
   "wallet": {
     "loading": "Loading wallet...",

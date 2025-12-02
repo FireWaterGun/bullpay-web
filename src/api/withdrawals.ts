@@ -24,6 +24,7 @@ export interface CreateWithdrawalBody {
   amount: string
   withdrawalAddressId: string | number
   memo?: string
+  twoFactorCode?: string
 }
 
 export async function createWithdrawal(body: CreateWithdrawalBody, token?: unknown) {

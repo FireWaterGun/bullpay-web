@@ -139,7 +139,42 @@
   },
   "settings": {
     "title": "设置",
-    "subtitle": "应用偏好"
+    "subtitle": "管理您的账户设置和偏好",
+    "security": {
+      "title": "安全"
+    },
+    "2fa": {
+      "title": "双重身份验证",
+      "description": "为您的账户增加额外的安全保护。登录时我们会要求您输入来自验证器应用的代码。",
+      "enabled": "已启用",
+      "disabled": "已禁用",
+      "enabledSince": "启用于",
+      "enable": "启用 2FA",
+      "disable": "禁用 2FA",
+      "reconfigure": "重新配置",
+      "setupTitle": "设置双重身份验证",
+      "disableTitle": "禁用 2FA",
+      "disableWarning": "禁用 2FA 将降低您账户的安全性。",
+      "disableButton": "禁用 2FA",
+      "enableButton": "启用 2FA",
+      "scanQRDescription": "使用您的验证器应用扫描此二维码（Google Authenticator、Authy 等）",
+      "cantScan": "无法扫描？手动输入此代码：",
+      "saveBackupCodes": "保存您的备份代码！",
+      "backupCodesDescription": "如果您无法访问验证器应用，可以使用这些代码登录。每个代码只能使用一次。",
+      "enterCode": "输入验证器应用中的6位数代码以验证设置",
+      "enterPassword": "输入您的密码以确认",
+      "errorInvalidCode": "请输入有效的6位数代码",
+      "errorPasswordRequired": "请输入密码"
+    }
+  },
+  "2fa": {
+    "verifyTitle": "双重身份验证",
+    "verifyDescription": "输入验证器应用中的6位数代码",
+    "errorInvalidCode": "请输入有效的6位数代码",
+    "errorInvalidBackupCode": "请输入有效的备份代码（如 ABCD-EFGH）",
+    "errorVerificationFailed": "验证失败",
+    "useAuthenticator": "改用验证器应用",
+    "useBackupCode": "改用备份代码"
   },
   "balance": {
     "balances": "余额",
@@ -163,7 +198,9 @@
     "platformFee": "平台费用",
     "totalFee": "总手续费",
     "youWillReceive": "您将收到",
-    "calculatingFee": "计算手续费中...",
+    "calculatingFee": "正在计算费用...",
+    "confirm2FATitle": "确认提款",
+    "confirm2FADescription": "输入您的2FA代码以确认此次提款",
     "withdrawSuccessTitle": "提现请求已提交",
     "withdrawSuccessMsg": "您的提现请求已成功提交。",
     "withdrawErrorTitle": "提现失败",
@@ -222,7 +259,18 @@
     "allStatus": "全部状态",
     "copyright": "© {{year}} · 版权所有",
     "poweredBy": "技术支持",
-    "allTypes": "全部类型"
+    "allTypes": "全部类型",
+    "loading": "加载中...",
+    "cancel": "取消",
+    "back": "返回",
+    "continue": "继续",
+    "verify": "验证",
+    "verifying": "验证中...",
+    "processing": "处理中...",
+    "manage": "管理",
+    "copy": "复制",
+    "download": "下载",
+    "password": "密码"
   },
   "wallet": {
     "loading": "正在加载钱包...",

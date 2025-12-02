@@ -6,6 +6,8 @@ import { listAllWallets } from '../../api/wallets'
 import { getBalancesWithFiat } from '../../api/balance'
 import { createWithdrawal, estimateWithdrawalFee } from '../../api/withdrawals'
 import ConfirmModal from '../../components/ConfirmModal'
+import Verify2FAModal from '../../components/Verify2FAModal'
+import use2FAStatus from '../../hooks/use2FAStatus'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 
 function fmtAmount(x, maxFrac = 4) {
@@ -147,6 +149,15 @@ export default function WithdrawRequest() {
   const [estimatingFee, setEstimatingFee] = useState(false)
   const [feeError, setFeeError] = useState('')
   const [amountError, setAmountError] = useState('')
+  const [show2FAModal, setShow2FAModal] = useState(false)
+
+  // Check if user has 2FA enabled
+  const { isEnabled: is2FAEnabled, isLoading: is2FALoading, status: twoFAStatus } = use2FAStatus()
+  
+  // Debug log - remove after testing
+  useEffect(() => {
+    console.log('2FA Status:', { is2FAEnabled, is2FALoading, twoFAStatus })
+  }, [is2FAEnabled, is2FALoading, twoFAStatus])
 
   useEffect(() => {
     let mounted = true
@@ -236,11 +247,11 @@ export default function WithdrawRequest() {
   const amountNum = Number(amount) || 0
   const outcome = Math.max(available - amountNum, 0)
 
-  // Require valid fee estimate before allowing submission
-  const canSubmit = amountNum > 0 && amountNum <= available && address.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee
+  // Require valid fee estimate and 2FA status loaded before allowing submission
+  const canSubmit = amountNum > 0 && amountNum <= available && address.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee && !is2FALoading
 
-  const onConfirm = async (e) => {
-    e.preventDefault()
+  // Execute the actual withdrawal
+  const executeWithdrawal = async (twoFactorCode) => {
     if (!balance || !address || !amount || !selectedWallet?.id || !feeEstimate) return
     try {
       setSubmitting(true)
@@ -249,6 +260,7 @@ export default function WithdrawRequest() {
         amount: String(amount),
         withdrawalAddressId: selectedWallet.id,
         memo: '',
+        ...(twoFactorCode ? { twoFactorCode } : {}),
       }, token)
       setSuccessOpen(true)
     } catch (err) {
@@ -257,6 +269,26 @@ export default function WithdrawRequest() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const onConfirm = async (e) => {
+    e.preventDefault()
+    if (!balance || !address || !amount || !selectedWallet?.id || !feeEstimate) return
+    
+    // If 2FA is enabled, show modal to collect code
+    if (is2FAEnabled) {
+      setShow2FAModal(true)
+      return
+    }
+    
+    // Otherwise, proceed directly
+    await executeWithdrawal()
+  }
+
+  // Handle 2FA code submission - pass code directly to withdrawal
+  const handle2FASuccess = async (code) => {
+    setShow2FAModal(false)
+    await executeWithdrawal(code)
   }
 
   const walletAvailable = useMemo(() => {
@@ -497,6 +529,16 @@ export default function WithdrawRequest() {
       </div>
       <SuccessModalWrapper open={successOpen} onClose={closeSuccess} amount={amount} sym={sym} address={address} t={t} />
       <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
+      
+      {/* 2FA Verification Modal */}
+      <Verify2FAModal
+        show={show2FAModal}
+        onClose={() => setShow2FAModal(false)}
+        onSuccess={handle2FASuccess}
+        title={t('balance.confirm2FATitle', { defaultValue: 'Confirm Withdrawal' })}
+        description={t('balance.confirm2FADescription', { defaultValue: 'Enter your 2FA code to confirm this withdrawal' })}
+        skipVerify={true}
+      />
     </div>
   )
 }
