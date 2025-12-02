@@ -474,7 +474,7 @@ export default function WithdrawRequest() {
                           <div className="text-end">
                             <div className="small fw-medium">{feeEstimate.display?.totalFee || `${fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
                             {feeEstimate.displayUsd?.totalFeeUsd && (
-                              <div className="text-muted" style={{ fontSize: '0.75rem' }}>{feeEstimate.displayUsd.totalFeeUsd}</div>
+                              <div className="text-muted" style={{ fontSize: '0.75rem' }}>≈ {feeEstimate.displayUsd.totalFeeUsd}</div>
                             )}
                           </div>
                         </div>
@@ -494,7 +494,7 @@ export default function WithdrawRequest() {
                             <div className="text-end">
                               <div className="fw-semibold">{feeEstimate.display?.netAmount || `${fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
                               {feeEstimate.displayUsd?.netAmountUsd && (
-                                <div className="text-muted" style={{ fontSize: '0.75rem' }}>{feeEstimate.displayUsd.netAmountUsd}</div>
+                                <div className="text-muted" style={{ fontSize: '0.75rem' }}>≈ {feeEstimate.displayUsd.netAmountUsd}</div>
                               )}
                             </div>
                           </div>
