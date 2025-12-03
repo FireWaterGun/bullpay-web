@@ -521,7 +521,7 @@ export default function WithdrawRequest() {
                 </>
               )}
             </div>
-            {wallets.length > 0 && matchingWallets.length > 0 && (
+            {wallets.length > 0 && matchingWallets.length > 0 && !successOpen && (
               <div className="card-footer">
                 <button className="btn btn-primary w-100" onClick={onConfirm} disabled={!canSubmit || submitting}>
                   {submitting ? (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>) : null}
@@ -532,7 +532,7 @@ export default function WithdrawRequest() {
           </div>
         )}
       </div>
-      <SuccessModalWrapper open={successOpen} onClose={closeSuccess} amount={amount} sym={sym} address={address} t={t} />
+      <SuccessModalWrapper open={successOpen} onClose={closeSuccess} receiveAmount={feeEstimate?.display?.netAmount || amount} sym={sym} address={address} networkName={networkLabel} t={t} />
       <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
       
       {/* 2FA Verification Modal */}
@@ -552,7 +552,7 @@ export default function WithdrawRequest() {
 // Show a simple success message and navigate back to withdrawals on close or confirm
 ; (() => { })
 
-export function SuccessModalWrapper({ open, onClose, amount, sym, address, t }) {
+export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address, networkName, t }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -567,80 +567,79 @@ export function SuccessModalWrapper({ open, onClose, amount, sym, address, t }) 
   if (!open) return null
 
   return (
-    <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} tabIndex="-1">
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-            <div className="modal-header border-0">
-              <h5 className="modal-title">{t('balance.withdrawSuccessTitle', { defaultValue: 'Request withdrawal' })}</h5>
-              <button type="button" className="btn-close" onClick={onClose} aria-label="Close"></button>
-            </div>
-            <div className="modal-body text-center px-4 pb-4">
-            {/* Success Icon with decorations */}
-            <div className="position-relative my-4" style={{ height: '180px' }}>
-              {/* Decorative elements */}
-              <div className="position-absolute" style={{ top: '20px', left: '20%', opacity: 0.3 }}>
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                  <path d="M20 5L22 18L35 20L22 22L20 35L18 22L5 20L18 18L20 5Z" fill="#E0E7FF" />
-                </svg>
-              </div>
-              <div className="position-absolute" style={{ top: '10px', right: '15%', opacity: 0.3 }}>
-                <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-                  <path d="M15 3L16.5 13.5L27 15L16.5 16.5L15 27L13.5 16.5L3 15L13.5 13.5L15 3Z" fill="#C7D2FE" />
-                </svg>
-              </div>
-              <div className="position-absolute" style={{ bottom: '20px', right: '25%', opacity: 0.3 }}>
-                <svg width="35" height="35" viewBox="0 0 35 35" fill="none">
-                  <path d="M17.5 8L14 17.5L4 21L14 24.5L17.5 34L21 24.5L31 21L21 17.5L17.5 8Z" fill="#A5B4FC" />
-                </svg>
-              </div>
-
-              {/* Main success circle */}
-              <div className="position-absolute top-50 start-50 translate-middle">
-                <div className="rounded-circle d-flex align-items-center justify-content-center"
-                  style={{ width: '120px', height: '120px', backgroundColor: '#C6F432' }}>
-                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-                    <path d="M10 30L25 45L50 15" stroke="white" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+    <>
+      {/* Modal backdrop */}
+      <div className="modal-backdrop fade show" style={{ opacity: 0.5 }}></div>
+      <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '600px' }}>
+          <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '16px' }}>
+            <div className="modal-body text-center px-4 py-5">
+              {/* Success Icon */}
+              <div className="my-4">
+                <div className="rounded-circle d-inline-flex align-items-center justify-content-center"
+                  style={{ width: '80px', height: '80px', backgroundColor: '#C6F432' }}>
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <path d="M8 20L17 29L32 11" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </div>
-            </div>
 
-            {/* Success message */}
-            <h4 className="mb-3 fw-bold">{t('balance.withdrawalCreated', { defaultValue: 'Your withdrawal has been created' })}</h4>
-            <p className="text-muted mb-1">
-              {t('balance.withdrawalReceived', {
-                defaultValue: `We've received your withdrawal of ${amount} ${sym}.`
-              })}
-            </p>
-            <p className="text-muted mb-4">
-              {t('balance.withdrawalWaitingApproval', {
-                defaultValue: 'It is currently waiting admin approve.'
-              })}
-            </p>
+              {/* Amount Display */}
+              <div className="mb-3">
+                <div className="text-secondary" style={{ fontSize: '0.9rem' }}>
+                  {t('balance.recipientAmount', { defaultValue: 'Recipient Amount' })}
+                </div>
+                <div className="fw-bold" style={{ fontSize: '1.75rem' }}>
+                  {receiveAmount}
+                </div>
+              </div>
 
-            {/* Important notice */}
-            <div className="alert alert-info text-start mb-4" role="alert" style={{ backgroundColor: '#F0F7FF', border: 'none' }}>
-              <strong className="text-primary">{t('common.important', { defaultValue: 'Important' })}:</strong>{' '}
-              <span className="text-muted">
-                {t('balance.withdrawalAdminApprovalRequired', { 
-                  defaultValue: 'Your withdrawal will be processed after admin approval. If not approved, please contact support@bullpay.com' 
+              <p className="text-secondary mb-4" style={{ fontSize: '0.9rem' }}>
+                {t('balance.withdrawalWaitingApproval', {
+                  defaultValue: 'Please note that you will receive an email once it is completed.'
                 })}
-              </span>
-            </div>
+              </p>
 
-            {/* OK Button */}
-            <button
-              type="button"
-              className="btn btn-primary w-100 py-2 fw-semibold"
-              onClick={onClose}
-              style={{ fontSize: '16px' }}
-            >
-              {t('actions.ok', { defaultValue: 'OK' })}
-            </button>
+              {/* Details Section */}
+              <div className="text-start mb-4" style={{ borderRadius: '12px', padding: '20px', border: '1px solid #e9ecef' }}>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <span className="text-secondary" style={{ fontSize: '0.9rem' }}>{t('balance.address', { defaultValue: 'Address' })}</span>
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="font-monospace fw-medium" style={{ fontSize: '0.9rem' }}>{address || '-'}</span>
+                    <button 
+                      type="button" 
+                      className="btn btn-sm btn-link p-0" 
+                      onClick={handleCopy}
+                      title={copied ? t('common.copied', { defaultValue: 'Copied!' }) : t('common.copy', { defaultValue: 'Copy' })}
+                    >
+                      <i className={`bx ${copied ? 'bx-check text-success' : 'bx-copy'}`} style={{ fontSize: '1.1rem' }}></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <span className="text-secondary" style={{ fontSize: '0.9rem' }}>{t('balance.network', { defaultValue: 'Network' })}</span>
+                  <span className="fw-medium" style={{ fontSize: '0.9rem' }}>{networkName}</span>
+                </div>
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className="text-secondary" style={{ fontSize: '0.9rem' }}>{t('balance.coin', { defaultValue: 'Coin' })}</span>
+                  <span className="fw-medium" style={{ fontSize: '0.9rem' }}>{sym}</span>
+                </div>
+              </div>
+
+              {/* Button */}
+              <button
+                type="button"
+                className="btn btn-primary w-100 py-2 fw-semibold"
+                onClick={onClose}
+                style={{ borderRadius: '8px' }}
+              >
+                {t('actions.ok', { defaultValue: 'OK' })}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
