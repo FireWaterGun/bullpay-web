@@ -3,6 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import { get2FAStatus, setup2FA, enable2FA, disable2FA } from "../../api/twoFactor";
 
+// LocalStorage key for 2FA rate limit
+const RATE_LIMIT_KEY = '2fa_rate_limit_until';
+
 // ===== Setup 2FA Modal =====
 function Setup2FAModal({ show, onClose, onSuccess, token }) {
   const { t } = useTranslation();
@@ -13,7 +16,53 @@ function Setup2FAModal({ show, onClose, onSuccess, token }) {
   const [error, setError] = useState("");
   const [copiedSecret, setCopiedSecret] = useState(false);
   const [copiedCodes, setCopiedCodes] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   const inputRefs = useRef([]);
+  const countdownRef = useRef(null);
+
+  // Check localStorage for existing rate limit on mount
+  useEffect(() => {
+    const checkRateLimit = () => {
+      const storedUntil = localStorage.getItem(RATE_LIMIT_KEY);
+      if (storedUntil) {
+        const until = parseInt(storedUntil, 10);
+        const now = Date.now();
+        if (until > now) {
+          const remaining = Math.ceil((until - now) / 1000);
+          setCountdown(remaining);
+        } else {
+          localStorage.removeItem(RATE_LIMIT_KEY);
+          setCountdown(0);
+        }
+      } else {
+        // No rate limit in localStorage, reset countdown
+        setCountdown(0);
+      }
+    };
+    checkRateLimit();
+  }, [show]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (countdown > 0) {
+      countdownRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownRef.current);
+            localStorage.removeItem(RATE_LIMIT_KEY);
+            setError("");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+      }
+    };
+  }, [countdown]);
 
   // Fetch setup data when modal opens
   useEffect(() => {
@@ -107,6 +156,7 @@ function Setup2FAModal({ show, onClose, onSuccess, token }) {
   };
 
   const handleEnable = async () => {
+    if (countdown > 0) return;
     if (totpCode.length !== 6) {
       setError(t("settings.2fa.errorInvalidCode", { defaultValue: "Please enter a valid 6-digit code" }));
       return;
@@ -118,7 +168,22 @@ function Setup2FAModal({ show, onClose, onSuccess, token }) {
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err?.message || "Failed to enable 2FA");
+      // Check for rate limit error with retryAfterSeconds (handle multiple response formats)
+      const retryAfter = err?.retryAfterSeconds 
+        || err?.data?.retryAfterSeconds 
+        || err?.data?.error?.retryAfterSeconds;
+      if (retryAfter && retryAfter > 0) {
+        const until = Date.now() + (retryAfter * 1000);
+        localStorage.setItem(RATE_LIMIT_KEY, until.toString());
+        setCountdown(retryAfter);
+        setError(t("settings.2fa.tooManyAttempts", { 
+          defaultValue: "Too many attempts. Please try again in {{seconds}} seconds",
+          seconds: retryAfter
+        }));
+      } else {
+        setError(err?.message || "Failed to enable 2FA");
+      }
+      setTotpCode("");
     } finally {
       setLoading(false);
     }
@@ -272,10 +337,21 @@ function Setup2FAModal({ show, onClose, onSuccess, token }) {
                           onChange={(e) => handleCodeChange(i, e.target.value)}
                           onKeyDown={(e) => handleKeyDown(i, e)}
                           autoFocus={i === 0}
+                          disabled={countdown > 0}
                         />
                       ))}
                     </div>
-                    {error && <div className="alert alert-danger py-2">{error}</div>}
+                    {error && (
+                      <div className="alert alert-danger py-2">
+                        {countdown > 0 
+                          ? t("settings.2fa.tooManyAttempts", { 
+                              defaultValue: "Too many attempts. Please try again in {{seconds}} seconds",
+                              seconds: countdown
+                            })
+                          : error
+                        }
+                      </div>
+                    )}
                   </div>
                 )}
               </>
@@ -308,12 +384,17 @@ function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 type="button"
                 className="btn btn-primary"
                 onClick={handleEnable}
-                disabled={loading || totpCode.length !== 6}
+                disabled={loading || totpCode.length !== 6 || countdown > 0}
               >
                 {loading ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-1"></span>
                     {t("common.verifying", { defaultValue: "Verifying..." })}
+                  </>
+                ) : countdown > 0 ? (
+                  <>
+                    <i className="bx bx-time me-1"></i>
+                    {t("settings.2fa.retryIn", { defaultValue: "Retry in {{seconds}}s", seconds: countdown })}
                   </>
                 ) : (
                   <>
