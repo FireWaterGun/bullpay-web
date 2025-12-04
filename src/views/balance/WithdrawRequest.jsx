@@ -617,9 +617,14 @@ export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address
                 </div>
               </div>
 
-              <p className="text-secondary mb-4" style={{ fontSize: '0.9rem' }}>
-                {t('balance.withdrawalWaitingApproval', {
+              <p className="text-secondary mb-1" style={{ fontSize: '0.9rem' }}>
+                {t('balance.withdrawalNote', {
                   defaultValue: 'Please note that you will receive an email once it is completed.'
+                })}
+              </p>
+              <p className="text-secondary mb-4" style={{ fontSize: '0.9rem' }}>
+                {t('balance.withdrawalProcessTime', {
+                  defaultValue: 'Withdrawals are typically processed within 24 hours.'
                 })}
               </p>
 

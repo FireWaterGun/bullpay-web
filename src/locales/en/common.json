@@ -213,7 +213,16 @@
       "withdraw": "Withdraw"
     },
     "withdraw": "Withdraw",
-    "noBalances": "No balances to show"
+    "noBalances": "No balances to show",
+    "withdrawalNote": "Please note that you will receive an email once it is completed.",
+    "withdrawalProcessTime": "Withdrawals are typically processed within 24 hours.",
+    "recipientAmount": "Recipient Amount",
+    "address": "Address",
+    "network": "Network",
+    "coin": "Coin",
+    "require2FATitle": "Two-Factor Authentication Required",
+    "require2FADesc": "For your security, please enable Two-Factor Authentication (2FA) before making withdrawals.",
+    "setup2FA": "Setup 2FA"
   },
   "theme": {
     "light": "Light",

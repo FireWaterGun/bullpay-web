@@ -213,7 +213,16 @@
       "withdraw": "提现"
     },
     "withdraw": "提现",
-    "noBalances": "暂无余额可显示"
+    "noBalances": "暂无余额可显示",
+    "withdrawalNote": "请注意，处理完成后您将收到电子邮件通知。",
+    "withdrawalProcessTime": "提现通常会在24小时内处理完成。",
+    "recipientAmount": "到账金额",
+    "address": "地址",
+    "network": "网络",
+    "coin": "币种",
+    "require2FATitle": "需要双重认证",
+    "require2FADesc": "为了您的安全，请在提现前启用双重认证（2FA）。",
+    "setup2FA": "设置 2FA"
   },
   "theme": {
     "light": "浅色",
