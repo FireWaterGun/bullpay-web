@@ -302,7 +302,7 @@ export default function BalanceWithdrawals() {
     return 'badge bg-label-secondary'
   }
 
-  const statuses = ['ALL', 'PENDING', 'WAITING_FOR_GAS', 'PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED']
+  const statuses = ['ALL', 'PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED']
   
   function formatStatusLabel(s) {
     // Convert WAITING_FOR_GAS to "Waiting for gas"

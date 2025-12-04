@@ -804,11 +804,6 @@ export default function DashboardLayout() {
                         </a>
                       </li>
                     )}
-                    <li>
-                      <a className="dropdown-item" href="#" onClick={(e) => e.preventDefault()}>
-                        <i className="icon-base bx bx-credit-card icon-md me-3"></i><span>{t('user.billing')}</span>
-                      </a>
-                    </li>
                     <li><div className="dropdown-divider"></div></li>
                     <li>
                       <a className="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); logout(); navigate('/', { replace: true }) }}>

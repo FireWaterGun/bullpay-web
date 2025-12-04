@@ -363,6 +363,29 @@ export default function WithdrawRequest() {
           <div className="alert alert-danger" role="alert">{error}</div>
         ) : !balance ? (
           <div className="alert alert-warning" role="alert">{t('common.noData') || 'Not found'}</div>
+        ) : !is2FALoading && !is2FAEnabled ? (
+          // 2FA not enabled - show warning card
+          <div className="card mx-auto" style={{ maxWidth: 520 }}>
+            <div className="card-body text-center py-5">
+              <div className="mb-4">
+                <div className="rounded-circle d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10" style={{ width: 80, height: 80 }}>
+                  <i className="bx bx-shield-x text-warning" style={{ fontSize: '2.5rem' }}></i>
+                </div>
+              </div>
+              <h5 className="mb-2">{t('balance.require2FATitle', { defaultValue: 'Two-Factor Authentication Required' })}</h5>
+              <p className="text-muted mb-4">
+                {t('balance.require2FADesc', { defaultValue: 'For your security, please enable Two-Factor Authentication (2FA) before making withdrawals.' })}
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => navigate('/app/settings')}
+              >
+                <i className="bx bx-lock me-2"></i>
+                {t('balance.setup2FA', { defaultValue: 'Setup 2FA' })}
+              </button>
+            </div>
+          </div>
         ) : (
           <div className="card mx-auto" style={{ maxWidth: 520 }}>
             <div className="card-header">
