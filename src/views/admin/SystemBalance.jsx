@@ -387,7 +387,7 @@ export default function SystemBalance() {
                                 {parseFloat(decimalBalance).toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 8
-                                })}
+                                })} {coinSymbol || ''}
                               </span>
                             </td>
                             <td className="text-end">
@@ -406,15 +406,17 @@ export default function SystemBalance() {
                               >
                                 <i className="bx bx-receipt" style={{ fontSize: '1.25rem' }}></i>
                               </button>
-                              <a
-                                href={`${wallet.systemWallet?.coinNetwork?.network?.explorerUrl}/address/${wallet.systemWallet?.address}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-sm btn-icon btn-text-secondary"
-                                title={t('invoices.viewOnExplorer')}
-                              >
-                                <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                              </a>
+                              {wallet.systemWallet?.coinNetwork?.network?.explorerUrl && wallet.systemWallet?.address && (
+                                <a
+                                  href={`${wallet.systemWallet.coinNetwork.network.explorerUrl}/address/${wallet.systemWallet.address}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-icon btn-text-secondary"
+                                  title={t('invoices.viewOnExplorer')}
+                                >
+                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
+                                </a>
+                              )}
                             </td>
                           </tr>
                         )

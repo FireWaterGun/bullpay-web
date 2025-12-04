@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
-import { getPaymentStats } from '../../api/admin.ts'
+import { getPaymentStats, getSystemWalletStats } from '../../api/admin.ts'
+import { AmountNormalizer } from '../../utils/amount_normalizer'
 import { getBalancesWithFiat } from '../../api/balance.ts'
 import {
   getNotifications,
@@ -232,15 +233,26 @@ export default function DashboardLayout() {
 
   async function loadPaymentStats() {
     try {
-      const data = await getPaymentStats(token)
-      if (data?.overview?.fiat) {
-        setFiatBalance({
-          currency: data.overview.fiat.currency || 'USD',
-          amount: data.overview.fiat.amount || '0.00'
-        })
-      }
+      const stats = await getSystemWalletStats(token, 'USD')
+      // Calculate total USD from system wallet balances
+      const totalUSD = (stats?.balanceDetails || []).reduce((sum, wallet) => {
+        const coinSymbol = wallet.systemWallet?.coinNetwork?.coin?.symbol
+        const decimals = wallet.decimals || wallet.systemWallet?.coinNetwork?.decimals || 18
+        const decimalBalance = AmountNormalizer.fromRawSimple(
+          wallet.totalBalanceRaw || '0',
+          decimals
+        )
+        const rate = stats.fiat?.rates?.[coinSymbol] || 0
+        const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
+        return sum + usdValue
+      }, 0)
+      
+      setFiatBalance({
+        currency: stats?.fiat?.currency || 'USD',
+        amount: totalUSD.toFixed(2)
+      })
     } catch (error) {
-      console.error('Failed to load payment stats:', error)
+      console.error('Failed to load system wallet stats:', error)
     }
   }
 
