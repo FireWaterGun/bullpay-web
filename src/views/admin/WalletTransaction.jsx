@@ -451,6 +451,8 @@ export default function WalletTransaction() {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 8
                                 })}
+                                {' '}
+                                <span className="text-muted">{coinSymbol || wallet?.coinNetwork?.coin?.symbol || ''}</span>
                               </span>
                             </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
@@ -571,66 +573,40 @@ export default function WalletTransaction() {
               )}
 
               {/* Pagination */}
-              {items.length > 0 && (
-                <div className="mt-4">
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <div className="text-muted small">
-                      {t('admin.ledger.showing', { defaultValue: 'Showing' })} {pagination.from || 1} - {pagination.to || items.length} {t('admin.ledger.of', { defaultValue: 'of' })} {pagination.total || items.length}
-                    </div>
-                  </div>
-                  {pagination.totalPages > 1 && (
-                    <nav>
-                      <ul className="pagination justify-content-center mb-0">
-                    <li className={`page-item ${pagination.currentPage === 1 ? 'disabled' : ''}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => handlePageChange(pagination.currentPage - 1)}
-                        disabled={pagination.currentPage === 1}
-                      >
-                        {t('actions.previous', { defaultValue: 'Previous' })}
-                      </button>
-                    </li>
-                    
-                    {[...Array(pagination.totalPages)].map((_, i) => {
-                      const page = i + 1
-                      // Show first, last, current, and pages around current
-                      if (
-                        page === 1 ||
-                        page === pagination.totalPages ||
-                        (page >= pagination.currentPage - 2 && page <= pagination.currentPage + 2)
-                      ) {
-                        return (
-                          <li key={page} className={`page-item ${pagination.currentPage === page ? 'active' : ''}`}>
-                            <button
-                              className="page-link"
-                              onClick={() => handlePageChange(page)}
-                            >
-                              {page}
-                            </button>
-                          </li>
-                        )
-                      } else if (page === pagination.currentPage - 3 || page === pagination.currentPage + 3) {
-                        return (
-                          <li key={page} className="page-item disabled">
-                            <span className="page-link">...</span>
-                          </li>
-                        )
-                      }
-                      return null
+              {pagination && pagination.total > 0 && (
+                <div className="d-flex justify-content-between align-items-center mt-4">
+                  <div className="text-muted small">
+                    {t('invoices.showingEntries', {
+                      start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
+                      end: Math.min(pagination.page * pagination.limit, pagination.total),
+                      total: pagination.total,
+                      defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
                     })}
-                    
-                    <li className={`page-item ${pagination.currentPage === pagination.totalPages ? 'disabled' : ''}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => handlePageChange(pagination.currentPage + 1)}
-                        disabled={pagination.currentPage === pagination.totalPages}
-                      >
-                        {t('actions.next', { defaultValue: 'Next' })}
-                      </button>
-                    </li>
-                  </ul>
-                    </nav>
-                  )}
+                  </div>
+                  <div className="btn-group">
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled={!pagination.hasPrev || loading}
+                      onClick={() => handlePageChange(pagination.currentPage - 1)}
+                    >
+                      <i className="bx bx-chevron-left"></i>
+                      {t('actions.previous', { defaultValue: 'Previous' })}
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled
+                    >
+                      {pagination.page} / {pagination.totalPages}
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled={!pagination.hasNext || loading}
+                      onClick={() => handlePageChange(pagination.currentPage + 1)}
+                    >
+                      {t('actions.next', { defaultValue: 'Next' })}
+                      <i className="bx bx-chevron-right"></i>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

@@ -559,15 +559,15 @@ export async function getSystemWalletLedger(
   })
   
   // Transform response structure to match component expectations
-  // API returns: { data: { entries: [...], pagination: {...} } }
+  // API returns: { success, data: { items: [...], meta: { total, page, perPage, lastPage, hasNextPage, hasPrevPage } } }
   const data = response?.data || response
   const items = data?.entries || data?.items || []
   const paginationData = data?.pagination || data?.meta || {}
 
   const currentPage = paginationData.page || params.page || 1
-  const limit = paginationData.limit || params.limit || 20
-  const total = paginationData.total || 0
-  const totalPages = paginationData.totalPages || Math.ceil(total / limit)
+  const limit = paginationData.perPage || paginationData.limit || params.limit || 20
+  const total = paginationData.total || items.length
+  const totalPages = paginationData.lastPage || paginationData.totalPages || Math.ceil(total / limit) || 1
 
   return {
     items,
