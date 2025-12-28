@@ -254,7 +254,7 @@ export default function LedgerTransactions() {
                       <th style={{ minWidth: '120px' }}>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('admin.ledger.chain', { defaultValue: 'Chain' })}</th>
                       <th style={{ minWidth: '220px' }}>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                      <th style={{ minWidth: '180px', whiteSpace: 'nowrap' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
                       <th style={{ minWidth: '170px', whiteSpace: 'nowrap' }}>{t('admin.ledger.balanceAfter', { defaultValue: 'Balance After' })}</th>
                       <th style={{ minWidth: '200px' }}>{t('admin.ledger.reference', { defaultValue: 'Reference' })}</th>
                       <th style={{ minWidth: '300px' }}>{t('admin.ledger.note', { defaultValue: 'Note' })}</th>
@@ -309,27 +309,23 @@ export default function LedgerTransactions() {
                               )}
                             </div>
                           </td>
-                          <td>
-                            <span className={
-                              (entry.type === 'deposit' || entry.type === 'payment_received' || entry.type === 'conversion_in') 
-                                ? 'text-success' 
-                                : (entry.type === 'withdrawal' || entry.type === 'conversion_out' || entry.type === 'fee')
-                                  ? 'text-danger'
-                                  : ''
-                            }>
+                          <td style={{ whiteSpace: 'nowrap' }}>
+                            <span>
                               {(entry.type === 'deposit' || entry.type === 'payment_received' || entry.type === 'conversion_in') ? '+' : '-'}
                               {parseFloat(entry.amountDecimal || entry.amount || 0).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 8
                               })}
+                              {' '}{entry.coinNetwork?.coin?.symbol || ''}
                             </span>
                           </td>
-                          <td>
+                          <td style={{ whiteSpace: 'nowrap' }}>
                             <span>
                               {entry.balanceDecimal ? parseFloat(entry.balanceDecimal).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 8
                               }) : '-'}
+                              {entry.balanceDecimal && entry.coinNetwork?.coin?.symbol ? ` ${entry.coinNetwork.coin.symbol}` : ''}
                             </span>
                           </td>
                           <td>
