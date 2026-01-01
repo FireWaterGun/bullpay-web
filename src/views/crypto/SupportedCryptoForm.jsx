@@ -256,7 +256,7 @@ export default function SupportedCryptoForm() {
         maxWithdrawAmount: formData.maxWithdrawAmount,
         depositFee: formData.depositFee || '0',
         withdrawFee: formData.withdrawFee,
-        depositConfirmations: parseInt(formData.depositConfirmations),
+        depositConfirmations: parseFloat(formData.depositConfirmations),
         status: formData.status || 'active'
       }
 
@@ -576,7 +576,8 @@ export default function SupportedCryptoForm() {
                   onChange={handleChange}
                   required
                   disabled={loading}
-                  min="1"
+                  min="0.00001"
+                  step="0.00001"
                   placeholder="12"
                 />
                 <small className="text-muted">

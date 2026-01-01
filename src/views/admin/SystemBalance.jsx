@@ -283,19 +283,19 @@ export default function SystemBalance() {
                   <p className="text-muted mb-0">{t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })}</p>
                 </div>
               ) : (
-                <div className="table-responsive">
-                  <table className="table table-hover">
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="table table-hover" style={{ minWidth: '1200px' }}>
                     <thead>
                       <tr>
                         <th>{t('invoices.chain') || 'Chain'}</th>
-                        <th>{t('balance.col.coin')}</th>
+                        <th style={{ minWidth: '180px' }}>{t('balance.col.coin')}</th>
                         <th>{t('admin.address', { defaultValue: 'Address' })}</th>
                         <th>{t('admin.purpose', { defaultValue: 'Purpose' })}</th>
                         <th>{t('admin.type', { defaultValue: 'Type' })}</th>
                         <th>{t('invoices.statusCol')}</th>
-                        <th className="text-end">{t('invoices.amount')}</th>
-                        <th className="text-end">{t('admin.priceUSD', { defaultValue: 'Price (USD)' })}</th>
-                        <th className="text-center">{t('invoices.actions')}</th>
+                        <th className="text-end" style={{ minWidth: '180px', whiteSpace: 'nowrap' }}>{t('invoices.amount')}</th>
+                        <th className="text-end" style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('admin.priceUSD', { defaultValue: 'Price (USD)' })}</th>
+                        <th className="text-center" style={{ minWidth: '120px' }}>{t('invoices.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -380,7 +380,7 @@ export default function SystemBalance() {
                                 </span>
                               )}
                             </td>
-                            <td className="text-end">
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
                               <span 
                                 title={`Raw: ${wallet.totalBalanceRaw}\nDecimals: ${decimals}\nDecimal: ${decimalBalance} ${coinSymbol}`}
                               >

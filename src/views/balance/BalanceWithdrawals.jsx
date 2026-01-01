@@ -448,7 +448,7 @@ export default function BalanceWithdrawals() {
                   <tr>
                     <th className="text-nowrap cell-fit">{t('common.id', { defaultValue: 'ID' })}</th>
                     <th>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
-                    <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+                    <th style={{ minWidth: '180px' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
                     <th className="text-nowrap">{t('balance.amount', { defaultValue: 'Amount' })}</th>
                     <th className="text-nowrap">{t('balance.fee', { defaultValue: 'Fee' })}</th>
                     <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>

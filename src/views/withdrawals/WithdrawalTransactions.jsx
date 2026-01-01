@@ -303,7 +303,7 @@ export default function WithdrawalTransactions() {
                       <th style={{ minWidth: '60px' }}>ID</th>
                       <th style={{ minWidth: '150px' }}>{t('admin.user', { defaultValue: 'User' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('withdrawal.chain', { defaultValue: 'Chain' })}</th>
-                      <th style={{ minWidth: '120px' }}>{t('withdrawal.coin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ minWidth: '180px' }}>{t('withdrawal.coin', { defaultValue: 'Coin' })}</th>
                       <th style={{ minWidth: '120px' }}>{t('withdrawal.amount', { defaultValue: 'Amount' })}</th>
                       <th style={{ minWidth: '80px' }}>{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('withdrawal.status', { defaultValue: 'Status' })}</th>
