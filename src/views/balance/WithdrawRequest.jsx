@@ -216,13 +216,12 @@ export default function WithdrawRequest() {
   const available = useMemo(() => {
     if (!balance) return 0
     const decimals = Number(balance?.decimals || 8)
-    // Prefer raw values for accurate calculation
-    const rawValue = balance?.totalBalanceRaw || balance?.confirmedBalanceRaw || balance?.availableBalanceRaw
+    // Use only availableBalance
+    const rawValue = balance?.availableBalanceRaw
     if (rawValue) {
       return Number(fromRaw(rawValue, decimals))
     }
-    // Fallback to string values
-    return Number(balance?.totalBalance || balance?.confirmedBalance || balance?.availableBalance || balance?.balance || 0) || 0
+    return Number(balance?.availableBalance || 0) || 0
   }, [balance])
 
   const matchingWallets = useMemo(() => {
