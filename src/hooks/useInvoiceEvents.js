@@ -8,6 +8,8 @@ import { usePusher } from '../context/PusherContext';
  * @param {Function} callbacks.onPaymentReceived - Called when payment is received
  * @param {Function} callbacks.onStatusChanged - Called when invoice status changes
  * @param {Function} callbacks.onUpdated - Called when invoice is updated
+ * @param {Function} callbacks.onPaymentCompleted - Called when payment is completed
+ * @param {Function} callbacks.onWithdrawalCompleted - Called when withdrawal is completed
  */
 export function useInvoiceEvents(invoiceId, callbacks = {}) {
   const { pusher, isConnected } = usePusher();
@@ -53,6 +55,20 @@ export function useInvoiceEvents(invoiceId, callbacks = {}) {
       }
     });
 
+    channel.bind('payment_completed', (data) => {
+      console.log('Payment completed event:', data);
+      if (callbacksRef.current.onPaymentCompleted) {
+        callbacksRef.current.onPaymentCompleted(data);
+      }
+    });
+
+    channel.bind('withdrawal_completed', (data) => {
+      console.log('Withdrawal completed event:', data);
+      if (callbacksRef.current.onWithdrawalCompleted) {
+        callbacksRef.current.onWithdrawalCompleted(data);
+      }
+    });
+
     // Cleanup on unmount or when invoiceId changes
     return () => {
       if (channelRef.current) {
@@ -68,11 +84,13 @@ export function useInvoiceEvents(invoiceId, callbacks = {}) {
 }
 
 /**
- * Hook to subscribe to all invoice events for a user
+ * Hook to subscribe to all notification events for a user
  * @param {Object} callbacks - Event callbacks
  * @param {Function} callbacks.onInvoiceCreated - Called when new invoice is created
  * @param {Function} callbacks.onInvoiceUpdated - Called when any invoice is updated
  * @param {Function} callbacks.onPaymentReceived - Called when payment is received on any invoice
+ * @param {Function} callbacks.onPaymentCompleted - Called when payment is completed (from notifications channel)
+ * @param {Function} callbacks.onWithdrawalCompleted - Called when withdrawal is completed (from notifications channel)
  */
 export function useUserInvoiceEvents(userId, callbacks = {}) {
   const { pusher, isConnected } = usePusher();
@@ -128,7 +146,7 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
 
     // Only re-subscribe if userId actually changed
     if (userIdRef.current === userId && channelRef.current) {
-      console.log(`[useUserInvoiceEvents] ✅ Already subscribed to user.${userId}.invoices, skipping re-subscription`);
+      console.log(`[useUserInvoiceEvents] ✅ Already subscribed to user.${userId}.notifications, skipping re-subscription`);
       return;
     }
 
@@ -138,7 +156,7 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
 
     // Unsubscribe from old channel if exists
     if (channelRef.current && userIdRef.current !== userId) {
-      const oldChannelName = `private-user.${userIdRef.current}.invoices`;
+      const oldChannelName = `private-user.${userIdRef.current}.notifications`;
       channelRef.current.unbind_all();
       pusher.unsubscribe(oldChannelName);
       console.log(`🔄 Unsubscribed from ${oldChannelName} (userId changed)`);
@@ -146,8 +164,8 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
 
     userIdRef.current = userId;
 
-    // Subscribe to user-specific invoice channel (use private channel for security)
-    const channelName = `private-user.${userId}.invoices`;
+    // Subscribe to user-specific notifications channel (use private channel for security)
+    const channelName = `private-user.${userId}.notifications`;
     const channel = pusher.subscribe(channelName);
     channelRef.current = channel;
 
@@ -181,6 +199,20 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
       }
     });
 
+    channel.bind('payment_completed', (data) => {
+      console.log('✅ Payment completed event:', data);
+      if (callbacksRef.current.onPaymentCompleted) {
+        callbacksRef.current.onPaymentCompleted(data);
+      }
+    });
+
+    channel.bind('withdrawal_completed', (data) => {
+      console.log('💸 Withdrawal completed event:', data);
+      if (callbacksRef.current.onWithdrawalCompleted) {
+        callbacksRef.current.onWithdrawalCompleted(data);
+      }
+    });
+
     isSubscribingRef.current = false;
 
     return () => {
@@ -201,7 +233,7 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
       });
       
       if (channelRef.current && (isUserIdChanging || !pusher)) {
-        const channelName = `private-user.${userIdRef.current}.invoices`;
+        const channelName = `private-user.${userIdRef.current}.notifications`;
         channelRef.current.unbind_all();
         pusher.unsubscribe(channelName);
         channelRef.current = null;

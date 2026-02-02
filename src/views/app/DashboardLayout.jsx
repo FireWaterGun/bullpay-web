@@ -393,6 +393,30 @@ export default function DashboardLayout() {
         });
         notifyPaymentReceived(invoiceData);
         loadNotifications();
+      },
+      onPaymentCompleted: (data) => {
+        console.log('[DashboardLayout] Event: payment_completed', data);
+        playNotificationSound('success');
+        const invoiceData = {
+          id: data.metadata?.referenceId,
+          ...data.metadata,
+          ...data
+        };
+        toast.success({
+          title: data.title || 'Payment Completed',
+          body: data.message || 'Payment has been completed successfully'
+        });
+        notifyPaymentReceived(invoiceData);
+        loadNotifications();
+      },
+      onWithdrawalCompleted: (data) => {
+        console.log('[DashboardLayout] Event: withdrawal_completed', data);
+        playNotificationSound('success');
+        toast.success({
+          title: data.title || 'Withdrawal Completed',
+          body: data.message || 'Withdrawal has been completed successfully'
+        });
+        loadNotifications();
       }
     };
   }, []); // Empty array - create once and never change

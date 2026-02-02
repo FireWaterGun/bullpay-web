@@ -179,6 +179,14 @@ export default function InvoiceList() {
     onPaymentReceived: () => {
       console.log('[InvoiceList] 💰 Payment received, reloading list...');
       load();
+    },
+    onPaymentCompleted: () => {
+      console.log('[InvoiceList] ✅ Payment completed, reloading list...');
+      load();
+    },
+    onWithdrawalCompleted: () => {
+      console.log('[InvoiceList] 💸 Withdrawal completed, reloading list...');
+      load();
     }
   });
 

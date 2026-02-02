@@ -215,6 +215,10 @@ export default function InvoiceDetail() {
       console.log('📝 Invoice updated, reloading invoice data...');
       loadInvoice();
     },
+    onPaymentCompleted: (data) => {
+      console.log('✅ Payment completed, reloading invoice data...');
+      loadInvoice();
+    },
   });
 
   useEffect(() => {

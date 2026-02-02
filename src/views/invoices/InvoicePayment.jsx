@@ -180,6 +180,18 @@ export default function InvoicePayment() {
       })
       // Refresh in background after delay
       setTimeout(() => refreshStatus(), 1000)
+    },
+    onPaymentCompleted: (data) => {
+      console.log('Payment completed via Pusher:', data)
+      playNotificationSound('success')
+      toast.success({
+        title: data.title || 'Payment Completed',
+        body: data.message || 'Payment has been completed successfully'
+      })
+      // Update invoice status immediately
+      setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+      // Refresh in background after delay
+      setTimeout(() => refreshStatus(), 1000)
     }
   })
 
