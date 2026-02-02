@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { listWithdrawals } from '../../api/withdrawals'
@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { listCoins } from '../../api/coins'
 import { listWallets } from '../../api/wallets'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -170,7 +171,7 @@ function getNetworkLabel(n, coin) {
 
 export default function BalanceWithdrawals() {
   const { t } = useTranslation()
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const navigate = useNavigate()
   // Wallets state
   const [walletItems, setWalletItems] = useState([])
@@ -228,25 +229,32 @@ export default function BalanceWithdrawals() {
     return () => { mounted = false }
   }, [token])
 
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        setLoading(true)
-        const queryStatus = status === 'ALL' ? undefined : status.toLowerCase()
-        const { items, pagination } = await listWithdrawals({ page, limit, status: queryStatus }, token)
-        if (!mounted) return
-        setItems(Array.isArray(items) ? items : [])
-        setPagination(pagination || null)
-      } catch (e) {
-        if (!mounted) return
-        setError(typeof e?.message === 'string' ? e.message : 'Failed to load')
-      } finally {
-        setLoading(false)
-      }
-    })()
-    return () => { mounted = false }
+  const loadWithdrawals = useCallback(async () => {
+    try {
+      setLoading(true)
+      const queryStatus = status === 'ALL' ? undefined : status.toLowerCase()
+      const { items, pagination } = await listWithdrawals({ page, limit, status: queryStatus }, token)
+      setItems(Array.isArray(items) ? items : [])
+      setPagination(pagination || null)
+    } catch (e) {
+      setError(typeof e?.message === 'string' ? e.message : 'Failed to load')
+    } finally {
+      setLoading(false)
+    }
   }, [token, page, limit, status])
+
+  useEffect(() => {
+    loadWithdrawals()
+  }, [loadWithdrawals])
+
+  // Subscribe to Pusher events for real-time withdrawal updates
+  const userIdentifier = user?.id || user?.userId || user?.email
+  useUserInvoiceEvents(userIdentifier, {
+    onWithdrawalCompleted: () => {
+      console.log('[BalanceWithdrawals] 💸 Withdrawal completed, reloading list...')
+      loadWithdrawals()
+    }
+  })
 
   const cnById = useMemo(() => {
     // Fallback map for backward compatibility when coin/network objects are not embedded
