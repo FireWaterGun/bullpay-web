@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
-import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
+import { useUserInvoiceEvents, useSystemNotifications } from '../../hooks/useInvoiceEvents'
 import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
 import { getPaymentStats, getSystemWalletStats } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
@@ -424,6 +424,19 @@ export default function DashboardLayout() {
   // Subscribe to Pusher events for real-time updates (global for all dashboard pages)
   console.log('[DashboardLayout] 🔌 Calling useUserInvoiceEvents with userId:', userIdentifier);
   useUserInvoiceEvents(userIdentifier, pusherCallbacks);
+
+  // Subscribe to system notifications for admin users (sweep_completed)
+  useSystemNotifications(isAdmin, {
+    onSweepCompleted: (data) => {
+      console.log('[DashboardLayout] 🧹 Sweep completed event:', data);
+      playNotificationSound('success');
+      toast.success({
+        title: data.title || 'Sweep Completed',
+        body: data.message || 'Sweep has been completed successfully'
+      });
+      loadNotifications();
+    }
+  });
 
   // Helper: breakpoint check (matches navbar-expand-xl)
   const isXlUp = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(min-width: 1200px)').matches

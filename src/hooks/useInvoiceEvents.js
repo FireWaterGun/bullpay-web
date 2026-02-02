@@ -249,3 +249,64 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
 
   return { isConnected };
 }
+
+/**
+ * Hook to subscribe to system-wide notification events (admin only)
+ * Channel: private-system.notifications
+ * @param {boolean} isAdmin - Whether the current user is an admin
+ * @param {Object} callbacks - Event callbacks
+ * @param {Function} callbacks.onSweepCompleted - Called when sweep is completed
+ */
+export function useSystemNotifications(isAdmin, callbacks = {}) {
+  const { pusher, isConnected } = usePusher();
+  const channelRef = useRef(null);
+  const callbacksRef = useRef(callbacks);
+  const isSubscribingRef = useRef(false);
+
+  // Keep callbacks ref up to date
+  useEffect(() => {
+    callbacksRef.current = callbacks;
+  });
+
+  useEffect(() => {
+    if (!pusher || !isConnected || !isAdmin) {
+      return;
+    }
+
+    if (isSubscribingRef.current || channelRef.current) {
+      return;
+    }
+
+    isSubscribingRef.current = true;
+
+    const channelName = 'private-system.notifications';
+    console.log(`[useSystemNotifications] 🔔 Subscribing to ${channelName}`);
+
+    const channel = pusher.subscribe(channelName);
+    channelRef.current = channel;
+
+    channel.bind('pusher:subscription_succeeded', () => {
+      console.log(`[useSystemNotifications] ✅ Subscribed to ${channelName}`);
+    });
+
+    channel.bind('sweep_completed', (data) => {
+      console.log('🧹 Sweep completed event:', data);
+      if (callbacksRef.current.onSweepCompleted) {
+        callbacksRef.current.onSweepCompleted(data);
+      }
+    });
+
+    isSubscribingRef.current = false;
+
+    return () => {
+      if (channelRef.current) {
+        channelRef.current.unbind_all();
+        pusher.unsubscribe(channelName);
+        channelRef.current = null;
+        console.log(`[useSystemNotifications] ❌ Unsubscribed from ${channelName}`);
+      }
+    };
+  }, [isAdmin, isConnected, pusher]);
+
+  return { isConnected };
+}
