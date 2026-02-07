@@ -363,7 +363,7 @@ export default function WithdrawalTransactions() {
                           </td>
                           <td>
                             <span className="text-muted">
-                              {formatAmount(withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
+                              {formatAmount(withdrawal.totalFeeRaw || withdrawal.totalFee || withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
                             </span>
                           </td>
                           <td className="text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
@@ -511,7 +511,7 @@ export default function WithdrawalTransactions() {
                       </div>
                       <div className="col-6">
                         <small className="text-muted d-block">{t('withdrawal.fee', { defaultValue: 'Fee' })}</small>
-                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 8, true)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                        <strong>{formatAmount(selectedWithdrawal.totalFeeRaw || selectedWithdrawal.totalFee || selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 8, true)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
                       </div>
                       <div className="col-12">
                         <small className="text-muted d-block">{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</small>
@@ -571,7 +571,7 @@ export default function WithdrawalTransactions() {
                       </div>
                       <div className="col-6">
                         <small className="text-muted d-block">{t('withdrawal.fee', { defaultValue: 'Fee' })}</small>
-                        <strong>{formatAmount(selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 8, true)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
+                        <strong>{formatAmount(selectedWithdrawal.totalFeeRaw || selectedWithdrawal.totalFee || selectedWithdrawal.feeRaw || selectedWithdrawal.fee, selectedWithdrawal.decimals || 18, 8, true)} {selectedWithdrawal.coin?.symbol || selectedWithdrawal.coinNetwork?.coin?.symbol || selectedWithdrawal.symbol}</strong>
                       </div>
                       <div className="col-12">
                         <small className="text-muted d-block">{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</small>

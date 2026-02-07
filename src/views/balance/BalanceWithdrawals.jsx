@@ -494,7 +494,7 @@ export default function BalanceWithdrawals() {
                         <td className="text-nowrap">{Number(it.amount) || it.amount} {sym}</td>
                         <td className="text-nowrap">
                           <span className="text-muted">
-                            {formatAmount(it.feeRaw || it.fee, it.decimals || coin?.decimals || 18, 8, true)}
+                            {formatAmount(it.totalFeeRaw || it.totalFee || it.feeRaw || it.fee, it.decimals || coin?.decimals || 18, 8, true)}
                           </span>
                         </td>
                         <td>
