@@ -96,7 +96,7 @@
     "paidAmount": "จำนวนที่ชำระ",
     "description": "คำอธิบาย",
     "payments": "การชำระเงิน",
-    "expiryHoursRange": "ขั้นต่ำ: 1 | สูงสุด: 168 ชั่วโมง (7 วัน)",
+    "expiryHoursRange": "ขั้นต่ำ: 1 | สูงสุด: 24 ชั่วโมง",
     "amountRange": "ขั้นต่ำ: {{min}} | สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
     "maxAmountInfo": "สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
     "txHash": "Tx Hash",

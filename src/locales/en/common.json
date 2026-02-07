@@ -94,7 +94,7 @@
     "paidAmount": "Paid Amount",
     "description": "Description",
     "payments": "Payments",
-    "expiryHoursRange": "Min: 1 | Max: 168 hours (7 days)",
+    "expiryHoursRange": "Min: 1 | Max: 24 hours",
     "amountRange": "Min: {{min}} | Max: {{max}} (Max 8 decimals)",
     "maxAmountInfo": "Max: {{max}} (Max 8 decimals)",
     "txHash": "Tx Hash",
