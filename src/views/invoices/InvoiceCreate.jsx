@@ -259,8 +259,8 @@ export default function InvoiceCreate() {
         setError(t("validation.expiryHoursTooSmall") || "ชั่วโมงต้องไม่น้อยกว่า 1");
         return;
       }
-      if (hoursNum > 168) {
-        setError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 168");
+      if (hoursNum > 24) {
+        setError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 24");
         return;
       }
     }
@@ -515,30 +515,30 @@ export default function InvoiceCreate() {
                   className={`form-control ${expiryHoursError ? 'is-invalid' : ''}`}
                   type="number"
                   min={1}
-                  max={168}
+                  max={24}
                   placeholder="24"
                   value={expiryHours}
                   onInput={(e) => {
-                    // จำกัดจำนวนหลักไม่เกิน 3 หลัก (รองรับ 168)
+                    // จำกัดจำนวนหลักไม่เกิน 2 หลัก (รองรับ 24)
                     const value = e.target.value;
-                    if (value && value.replace('-', '').length > 3) {
-                      e.target.value = value.substring(0, 3);
+                    if (value && value.replace('-', '').length > 2) {
+                      e.target.value = value.substring(0, 2);
                     }
                   }}
                   onChange={(e) => {
                     const value = e.target.value;
                     
-                    // ตรวจสอบค่าไม่เกิน 168 - ถ้าเกินให้หยุดการพิมพ์
+                    // ตรวจสอบค่าไม่เกิน 24 - ถ้าเกินให้หยุดการพิมพ์
                     if (value !== '') {
                       const num = parseInt(value);
-                      if (!isNaN(num) && num > 168) {
+                      if (!isNaN(num) && num > 24) {
                         // หยุดการพิมพ์
                         return;
                       }
                       if (!isNaN(num) && num < 1) {
                         setExpiryHoursError(t("validation.expiryHoursTooSmall") || "ชั่วโมงต้องไม่น้อยกว่า 1");
-                      } else if (!isNaN(num) && num > 168) {
-                        setExpiryHoursError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 168");
+                      } else if (!isNaN(num) && num > 24) {
+                        setExpiryHoursError(t("validation.expiryHoursTooLarge") || "ชั่วโมงต้องไม่เกิน 24");
                       } else {
                         setExpiryHoursError('');
                       }
