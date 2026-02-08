@@ -11,6 +11,7 @@ import {
   getNetworks
 } from '../../api/admin.ts'
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal'
+import { useToastContext } from '../../context/ToastContext'
 
 // Coin asset helpers (same as SupportedCrypto.jsx)
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -112,6 +113,7 @@ export default function SupportedCryptoForm() {
   const { token } = useAuth()
   const navigate = useNavigate()
   const { id } = useParams()
+  const toast = useToastContext()
   const isEdit = !!id
 
   const [loading, setLoading] = useState(false)
@@ -262,11 +264,13 @@ export default function SupportedCryptoForm() {
 
       if (isEdit) {
         await updateCoinNetwork(token, parseInt(id), data)
+        toast.success(t('crypto.updateSuccess', { defaultValue: 'Coin network updated successfully' }))
+        navigate('/admin/crypto/coin-networks')
       } else {
         await createCoinNetwork(token, data)
+        toast.success(t('crypto.createSuccess', { defaultValue: 'Coin network created successfully' }))
+        navigate('/admin/crypto/coin-networks')
       }
-      
-      navigate('/admin/crypto/coin-networks')
     } catch (e) {
       const message = e?.message || (isEdit ? 'Failed to update coin-network' : 'Failed to create coin-network')
       setErrorMessage(message)

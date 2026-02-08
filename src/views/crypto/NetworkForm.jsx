@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getNetworkById, createNetwork, updateNetwork, deleteNetwork } from '../../api/admin.ts'
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal'
+import { useToastContext } from '../../context/ToastContext'
 
 export default function NetworkForm() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const navigate = useNavigate()
   const { id } = useParams()
+  const toast = useToastContext()
   const isEdit = !!id
 
   const [loading, setLoading] = useState(false)
@@ -212,10 +214,11 @@ export default function NetworkForm() {
 
       if (isEdit) {
         await updateNetwork(token, parseInt(id), payload)
+        toast.success(t('crypto.networkUpdateSuccess', { defaultValue: 'Network updated successfully' }))
       } else {
         await createNetwork(token, payload)
+        toast.success(t('crypto.networkCreateSuccess', { defaultValue: 'Network created successfully' }))
       }
-      
       navigate('/admin/crypto/networks')
     } catch (e) {
       const message = e?.message || (isEdit ? 'Failed to update network' : 'Failed to create network')

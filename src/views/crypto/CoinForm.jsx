@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getCoinById, createCoin, updateCoin, deleteCoin } from '../../api/admin.ts'
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal'
+import { useToastContext } from '../../context/ToastContext'
 
 export default function CoinForm() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const navigate = useNavigate()
   const { id } = useParams()
+  const toast = useToastContext()
   const isEdit = !!id
 
   const [loading, setLoading] = useState(false)
@@ -144,14 +146,12 @@ export default function CoinForm() {
       }
 
       if (isEdit) {
-        // Update existing coin
         await updateCoin(token, parseInt(id), data)
+        toast.success(t('crypto.coinUpdateSuccess', { defaultValue: 'Coin updated successfully' }))
       } else {
-        // Create new coin
         await createCoin(token, data)
+        toast.success(t('crypto.coinCreateSuccess', { defaultValue: 'Coin created successfully' }))
       }
-      
-      // Navigate to coins list after success
       navigate('/admin/crypto/coins')
     } catch (e) {
       const message = e?.message || (isEdit ? 'Failed to update coin' : 'Failed to create coin')

@@ -115,7 +115,8 @@
   },
   "invoice": {
     "createTitle": "创建发票",
-    "createSubtitle": "创建新发票的表单"
+    "createSubtitle": "创建新发票的表单",
+    "createSuccess": "发票创建成功"
   },
   "payment": {
     "title": "发票支付",
@@ -921,6 +922,12 @@
     "supportedInformation": "支持的加密货币信息",
     "dangerZone": "危险区",
     "deleteSupportedWarning": "一旦删除此支持的加密货币，将无法恢复。请确认。",
-    "deleteSupported": "删除支持的加密货币"
+    "deleteSupported": "删除支持的加密货币",
+    "coinUpdateSuccess": "代币更新成功",
+    "coinCreateSuccess": "代币创建成功",
+    "networkUpdateSuccess": "网络更新成功",
+    "networkCreateSuccess": "网络创建成功",
+    "updateSuccess": "代币网络更新成功",
+    "createSuccess": "代币网络创建成功"
   }
 }

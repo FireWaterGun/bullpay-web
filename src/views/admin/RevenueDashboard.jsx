@@ -582,8 +582,8 @@ export default function RevenueDashboard() {
           title={t('admin.profit', { defaultValue: 'Profit' })}
           value={loadingSummary ? '...' : formatCurrency(summary?.grossProfitUsd)}
           icon="bx-dollar-circle"
-          color={parseFloat(summary?.grossProfitUsd || 0) >= 0 ? 'success' : 'danger'}
-          valueColor={parseFloat(summary?.grossProfitUsd || 0) >= 0 ? 'success' : 'danger'}
+          color={parseFloat(summary?.grossProfitUsd || 0) > 0 ? 'success' : parseFloat(summary?.grossProfitUsd || 0) < 0 ? 'danger' : 'warning'}
+          valueColor={parseFloat(summary?.grossProfitUsd || 0) > 0 ? 'success' : parseFloat(summary?.grossProfitUsd || 0) < 0 ? 'danger' : undefined}
         />
         <SummaryCard
           title={t('admin.margin', { defaultValue: 'Margin' })}

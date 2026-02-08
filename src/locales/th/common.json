@@ -117,7 +117,8 @@
   },
   "invoice": {
     "createTitle": "สร้างใบแจ้งหนี้",
-    "createSubtitle": "ฟอร์มสร้างใบแจ้งหนี้ใหม่"
+    "createSubtitle": "ฟอร์มสร้างใบแจ้งหนี้ใหม่",
+    "createSuccess": "สร้างใบแจ้งหนี้สำเร็จ"
   },
   "payment": {
     "title": "ชำระเงินใบแจ้งหนี้",
@@ -968,6 +969,12 @@
     "supportedInformation": "ข้อมูลคริปโตที่รองรับ",
     "dangerZone": "พื้นที่อันตราย",
     "deleteSupportedWarning": "เมื่อคุณลบคริปโตที่รองรับนี้ จะไม่สามารถย้อนกลับได้ โปรดตรวจสอบให้แน่ใจ",
-    "deleteSupported": "ลบคริปโตที่รองรับ"
+    "deleteSupported": "ลบคริปโตที่รองรับ",
+    "coinUpdateSuccess": "อัพเดตเหรียญสำเร็จ",
+    "coinCreateSuccess": "สร้างเหรียญสำเร็จ",
+    "networkUpdateSuccess": "อัพเดตเครือข่ายสำเร็จ",
+    "networkCreateSuccess": "สร้างเครือข่ายสำเร็จ",
+    "updateSuccess": "อัพเดตเหรียญเครือข่ายสำเร็จ",
+    "createSuccess": "สร้างเหรียญเครือข่ายสำเร็จ"
   }
 }

@@ -115,7 +115,8 @@
   },
   "invoice": {
     "createTitle": "Create Invoice",
-    "createSubtitle": "Form to create a new invoice"
+    "createSubtitle": "Form to create a new invoice",
+    "createSuccess": "Invoice created successfully"
   },
   "payment": {
     "title": "Invoice Payment",
@@ -887,6 +888,12 @@
     "supportedInformation": "Supported Crypto Information",
     "dangerZone": "Danger Zone",
     "deleteSupportedWarning": "Once you delete this supported crypto, there is no going back. Please be certain.",
-    "deleteSupported": "Delete Supported Crypto"
+    "deleteSupported": "Delete Supported Crypto",
+    "coinUpdateSuccess": "Coin updated successfully",
+    "coinCreateSuccess": "Coin created successfully",
+    "networkUpdateSuccess": "Network updated successfully",
+    "networkCreateSuccess": "Network created successfully",
+    "updateSuccess": "Coin network updated successfully",
+    "createSuccess": "Coin network created successfully"
   }
 }

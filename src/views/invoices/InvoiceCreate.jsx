@@ -4,6 +4,7 @@ import { createInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { listCoins } from "../../api/coins";
+import { useToastContext } from "../../context/ToastContext";
 // Removed wallet pre-check requirement; invoices can be created without existing wallets
 
 // Try multiple sources for coin logos under public/assets/img/coins
@@ -133,6 +134,7 @@ export default function InvoiceCreate() {
   const { t } = useTranslation();
   const { token } = useAuth();
   const navigate = useNavigate();
+  const toast = useToastContext();
   // No longer require wallet before creating invoice
   const [hasWallet] = useState(true);
   const [walletError] = useState("");
@@ -299,6 +301,7 @@ export default function InvoiceCreate() {
         token
       );
       const id = invoice.id || invoice.invoice?.id || invoice.data?.invoice?.id
+      toast.success(t('invoice.createSuccess', { defaultValue: 'Invoice created successfully' }));
       navigate(`/app/invoices/${id}`);
     } catch (e) {
       setError(typeof e?.message === "string" ? e.message : "Failed to create");
