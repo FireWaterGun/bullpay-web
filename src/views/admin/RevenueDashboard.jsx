@@ -3,6 +3,107 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '../../api/admin'
 
+// Coin asset helpers
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap((n) =>
+    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
+  )
+  const candidates = [
+    ...byAssets,
+    ...(logoUrl ? [logoUrl] : []),
+    '/assets/img/coins/default.svg',
+  ]
+  return Array.from(new Set(candidates))
+}
+
+function networkNameToSymbol(name) {
+  const map = {
+    'bnb smart chain': 'bnb',
+    'bsc': 'bnb',
+    'optimism': 'op',
+    'polygon': 'matic',
+    'ethereum': 'eth',
+    'arbitrum': 'arb',
+    'avalanche': 'avax',
+    'base': 'base',
+    'solana': 'sol',
+    'tron': 'trx',
+  }
+  return map[String(name || '').toLowerCase()] || null
+}
+
+function CoinImg({ symbol, networkSymbol, networkName, size = 24 }) {
+  const resolvedNetworkSymbol = networkSymbol || networkNameToSymbol(networkName)
+  const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, null),
+    [symbol]
+  )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(resolvedNetworkSymbol, null),
+    [resolvedNetworkSymbol]
+  )
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 14
+
+  return (
+    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {resolvedNetworkSymbol && resolvedNetworkSymbol !== symbol?.toLowerCase() &&
+       !(symbol === 'POL' && resolvedNetworkSymbol === 'matic') && (
+        <div
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '1px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={resolvedNetworkSymbol}
+            width={badgeSize - 2}
+            height={badgeSize - 2}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 function formatCurrency(value, decimals) {
   if (value === null || value === undefined) return '$0.00'
   const num = typeof value === 'string' ? parseFloat(value) : value
@@ -70,7 +171,7 @@ function getDateRange(preset) {
   return { from, to }
 }
 
-function SummaryCard({ title, value, change, changeLabel, icon, color = 'primary' }) {
+function SummaryCard({ title, value, change, changeLabel, icon, color = 'primary', valueColor }) {
   const isPositive = change >= 0
   const changeColor = isPositive ? 'text-success' : 'text-danger'
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
@@ -83,7 +184,7 @@ function SummaryCard({ title, value, change, changeLabel, icon, color = 'primary
             <div className="content-left">
               <span className="text-muted d-block mb-1">{title}</span>
               <div className="d-flex align-items-center">
-                <h4 className="mb-0 me-2">{value}</h4>
+                <h4 className={`mb-0 me-2${valueColor ? ` text-${valueColor}` : ''}`}>{value}</h4>
                 {change !== undefined && change !== null && (
                   <small className={changeColor}>
                     <i className={`bx ${changeIcon}`}></i>
@@ -481,7 +582,8 @@ export default function RevenueDashboard() {
           title={t('admin.profit', { defaultValue: 'Profit' })}
           value={loadingSummary ? '...' : formatCurrency(summary?.grossProfitUsd)}
           icon="bx-dollar-circle"
-          color={parseFloat(summary?.grossProfitUsd || 0) >= 0 ? 'success' : 'warning'}
+          color={parseFloat(summary?.grossProfitUsd || 0) >= 0 ? 'success' : 'danger'}
+          valueColor={parseFloat(summary?.grossProfitUsd || 0) >= 0 ? 'success' : 'danger'}
         />
         <SummaryCard
           title={t('admin.margin', { defaultValue: 'Margin' })}
@@ -562,14 +664,17 @@ export default function RevenueDashboard() {
                             return (
                               <tr key={index}>
                                 <td>
-                                  <span className="fw-medium">{item.coinSymbol}</span>
-                                  {item.networkName && (
-                                    <small className="text-muted ms-1">/ {item.networkName}</small>
-                                  )}
+                                  <div className="d-flex align-items-center">
+                                    <CoinImg symbol={item.coinSymbol} size={24} />
+                                    <span className="fw-medium">{item.coinSymbol}</span>
+                                    {item.networkName && (
+                                      <small className="text-muted ms-1">/ {item.networkName}</small>
+                                    )}
+                                  </div>
                                 </td>
                                 <td className="text-end">{formatCurrency(revenue)}</td>
                                 <td className="text-end">{formatCurrency(cost)}</td>
-                                <td className={`text-end ${profit >= 0 ? 'text-success' : 'text-danger'}`}>
+                                <td className={`text-end ${profit > 0 ? 'text-success' : profit < 0 ? 'text-danger' : ''}`}>
                                   {formatCurrency(profit)}
                                 </td>
                                 <td className="text-end">{formatPercent(margin)}</td>
@@ -582,7 +687,7 @@ export default function RevenueDashboard() {
                             <td>{t('common.total', { defaultValue: 'TOTAL' })}</td>
                             <td className="text-end">{formatCurrency(totals.revenue)}</td>
                             <td className="text-end">{formatCurrency(totals.cost)}</td>
-                            <td className={`text-end ${totals.profit >= 0 ? 'text-success' : 'text-danger'}`}>
+                            <td className={`text-end ${totals.profit > 0 ? 'text-success' : totals.profit < 0 ? 'text-danger' : ''}`}>
                               {formatCurrency(totals.profit)}
                             </td>
                             <td className="text-end">{formatPercent(totals.margin)}</td>
