@@ -34,6 +34,7 @@ import BalanceAccount from '../balance/BalanceAccount'
 import BalanceWithdrawals from '../balance/BalanceWithdrawals'
 import WithdrawRequest from '../balance/WithdrawRequest'
 import Dashboard from '../admin/Dashboard'
+import RevenueDashboard from '../admin/RevenueDashboard'
 import SystemBalance from '../admin/SystemBalance'
 import WalletTransaction from '../admin/WalletTransaction'
 import CoinList from '../crypto/CoinList'
@@ -590,7 +591,7 @@ export default function DashboardLayout() {
             {isAdmin ? (
               <>
                 {/* Admin menu */}
-                <MenuItem to="/admin" end icon="bx-home" label={t('nav.dashboard', { defaultValue: 'Dashboard' })} />
+                <MenuItem to="/admin" end icon="bx-bar-chart-alt-2" label={t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })} />
                 <MenuGroup base="/admin/system-wallet" icon="bx-wallet" label={t('admin.systemWallet', { defaultValue: 'System Wallet' })}>
                   <SubItem to="/admin/system-wallet/balance" end label={t('admin.balance', { defaultValue: 'Balance' })} />
                 </MenuGroup>
@@ -871,7 +872,7 @@ export default function DashboardLayout() {
                 {isAdmin ? (
                   <>
                     {/* Admin routes */}
-                    <Route index element={<Dashboard />} />
+                    <Route index element={<RevenueDashboard />} />
                     <Route path="system-wallet/balance" element={<SystemBalance />} />
                     <Route path="system-wallet/wallet/:walletId/transactions" element={<WalletTransaction />} />
                     <Route path="crypto/coins" element={<CoinList />} />

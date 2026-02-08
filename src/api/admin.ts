@@ -805,3 +805,58 @@ export async function rejectWithdrawal(
 
   return response
 }
+
+/**
+ * Get revenue summary (Admin only)
+ * @param token - Auth token
+ * @param from - Start date (YYYY-MM-DD)
+ * @param to - End date (YYYY-MM-DD)
+ */
+export async function getRevenueSummary(token: string, from: string, to: string) {
+  const queryParams = new URLSearchParams({ from, to })
+  const response = await apiFetch(`/api/v1/admin/revenue/summary?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  return response?.data || response
+}
+
+/**
+ * Get daily revenue data (Admin only)
+ * @param token - Auth token
+ * @param from - Start date (YYYY-MM-DD)
+ * @param to - End date (YYYY-MM-DD)
+ * @param coinNetworkId - Optional coin network ID filter
+ */
+export async function getRevenueDaily(token: string, from: string, to: string, coinNetworkId?: number) {
+  const queryParams = new URLSearchParams({ from, to })
+  if (coinNetworkId) {
+    queryParams.append('coinNetworkId', String(coinNetworkId))
+  }
+  const response = await apiFetch(`/api/v1/admin/revenue/daily?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  return response?.data || response
+}
+
+/**
+ * Get revenue by coin (Admin only)
+ * @param token - Auth token
+ * @param from - Start date (YYYY-MM-DD)
+ * @param to - End date (YYYY-MM-DD)
+ */
+export async function getRevenueByCoin(token: string, from: string, to: string) {
+  const queryParams = new URLSearchParams({ from, to })
+  const response = await apiFetch(`/api/v1/admin/revenue/by-coin?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  return response?.data || response
+}
