@@ -604,7 +604,7 @@ export default function DashboardLayout() {
                 <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
                   <SubItem to="/admin/ledger/transactions" end label={t('admin.ledger.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
-                <MenuGroup base="/admin/crypto" icon="bx-bitcoin" label={t('nav.cryptoManagement', { defaultValue: 'Crypto Management' })}>
+                <MenuGroup base="/admin/crypto" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })}>
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
                   <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
                   <SubItem to="/admin/crypto/coin-networks" end={true} label={t('nav.coinNetworks', { defaultValue: 'Coin Networks' })} />
