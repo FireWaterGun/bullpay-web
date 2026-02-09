@@ -652,18 +652,17 @@ export default function RevenueDashboard() {
                   <table className="table table-hover mb-0">
                     <thead className="table-light">
                       <tr>
-                        <th>{t('admin.coin', { defaultValue: 'Coin' })}</th>
-                        <th className="text-end">{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
-                        <th className="text-end">{t('admin.cost', { defaultValue: 'Cost' })}</th>
-                        <th className="text-end">{t('admin.profit', { defaultValue: 'Profit' })}</th>
-                        <th className="text-end">{t('admin.margin', { defaultValue: 'Margin' })}</th>
-                        <th></th>
+                        <th className="text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.cost', { defaultValue: 'Cost' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.profit', { defaultValue: 'Profit' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.margin', { defaultValue: 'Margin' })}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {byCoinData.length === 0 ? (
                         <tr>
-                          <td colSpan="6" className="text-center text-muted py-4">
+                          <td colSpan="5" className="text-center text-muted py-4">
                             {t('common.noData', { defaultValue: 'No data available' })}
                           </td>
                         </tr>
@@ -692,7 +691,6 @@ export default function RevenueDashboard() {
                                   {formatCurrency(profit)}
                                 </td>
                                 <td className="text-end">{formatPercent(margin)}</td>
-                                <td></td>
                               </tr>
                             )
                           })}
@@ -705,7 +703,6 @@ export default function RevenueDashboard() {
                               {formatCurrency(totals.profit)}
                             </td>
                             <td className="text-end">{formatPercent(totals.margin)}</td>
-                            <td></td>
                           </tr>
                         </>
                       )}

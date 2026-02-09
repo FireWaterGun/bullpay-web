@@ -1,7 +1,58 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
-import { getUserTransactionSummary, getUserTransactionDaily } from '../../api/userTransactions.ts'
+import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '../../api/userTransactions.ts'
+
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'], eth: ['ethereum'], doge: ['dogecoin'], sol: ['solana'],
+    matic: ['polygon'], ada: ['cardano'], xmr: ['monero'], zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
+  const candidates = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
+  return Array.from(new Set(candidates))
+}
+
+function networkNameToSymbol(name) {
+  const map = {
+    'bnb smart chain': 'bnb', 'bsc': 'bnb', 'optimism': 'op', 'polygon': 'matic',
+    'ethereum': 'eth', 'arbitrum': 'arb', 'avalanche': 'avax', 'base': 'base',
+    'solana': 'sol', 'tron': 'trx',
+  }
+  return map[String(name || '').toLowerCase()] || null
+}
+
+function CoinImg({ symbol, networkSymbol, networkName, size = 24 }) {
+  const resolvedNetworkSymbol = networkSymbol || networkNameToSymbol(networkName)
+  const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(() => getCoinAssetCandidates(symbol, null), [symbol])
+  const networkCandidates = useMemo(() => getCoinAssetCandidates(resolvedNetworkSymbol, null), [resolvedNetworkSymbol])
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 14
+
+  return (
+    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
+      <img src={src} alt={symbol} width={size} height={size} style={{ objectFit: 'cover' }}
+        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))} />
+      {resolvedNetworkSymbol && resolvedNetworkSymbol !== symbol?.toLowerCase() &&
+       !(symbol === 'POL' && resolvedNetworkSymbol === 'matic') && (
+        <div className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{ bottom: -2, right: -2, width: badgeSize, height: badgeSize, backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '1px' }}>
+          <img src={netSrc} alt={resolvedNetworkSymbol} width={badgeSize - 2} height={badgeSize - 2}
+            className="rounded-circle" style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))} />
+        </div>
+      )}
+    </div>
+  )
+}
 
 function formatCurrency(value) {
   if (value === null || value === undefined) return '$0.00'
@@ -169,7 +220,7 @@ function DailyTrendChart({ data, meta, height = 300 }) {
             ))}
           </div>
           {/* Chart area */}
-          <div style={{ position: 'relative', flex: 1, minWidth: barAreaW, height: chartH }}>
+          <div style={{ position: 'relative', width: barAreaW, flexShrink: 0, height: chartH }}>
             {/* Grid lines */}
             {yScale.labels.map((v, i) => (
               <div
@@ -263,10 +314,10 @@ function DailyTrendChart({ data, meta, height = 300 }) {
           </div>
         </div>
         {/* X-axis labels */}
-        <div style={{ display: 'flex', marginLeft: yAxisW }}>
+        <div style={{ display: 'flex', marginLeft: yAxisW, width: barAreaW }}>
           {data.map((item, i) => (
-            <div key={i} style={{ width: barGroupW, textAlign: 'center' }}>
-              <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+            <div key={i} style={{ width: barGroupW, textAlign: 'center', flexShrink: 0 }}>
+              <small className="text-muted" style={{ fontSize: '0.72rem' }}>
                 {item.label}
               </small>
             </div>
@@ -316,6 +367,8 @@ export default function UserTransactionsDashboard() {
 
   const [loadingSummary, setLoadingSummary] = useState(false)
   const [loadingDaily, setLoadingDaily] = useState(false)
+  const [byCoinData, setByCoinData] = useState([])
+  const [loadingByCoin, setLoadingByCoin] = useState(false)
   const [error, setError] = useState('')
 
   const [autoRefresh, setAutoRefresh] = useState(true)
@@ -372,6 +425,17 @@ export default function UserTransactionsDashboard() {
     } finally {
       setLoadingDaily(false)
     }
+
+    // Load by coin
+    setLoadingByCoin(true)
+    try {
+      const byCoinRes = await getUserTransactionByCoin(token, dateRange.from, dateRange.to)
+      setByCoinData(byCoinRes?.items || byCoinRes || [])
+    } catch (e) {
+      console.error('Failed to load by-coin data:', e)
+    } finally {
+      setLoadingByCoin(false)
+    }
   }
 
   useEffect(() => {
@@ -398,6 +462,17 @@ export default function UserTransactionsDashboard() {
   const previous = summary?.previous || {}
   const changes = summary?.changes || {}
   const counts = current?.counts || {}
+
+  const byCoinTotals = useMemo(() => {
+    if (!byCoinData || byCoinData.length === 0) {
+      return { deposit: 0, withdrawal: 0, fee: 0, netFlow: 0 }
+    }
+    const deposit = byCoinData.reduce((sum, item) => sum + parseFloat(item.depositUsd || 0), 0)
+    const withdrawal = byCoinData.reduce((sum, item) => sum + parseFloat(item.withdrawalUsd || 0), 0)
+    const fee = byCoinData.reduce((sum, item) => sum + parseFloat(item.feeUsd || 0), 0)
+    const netFlow = deposit - withdrawal
+    return { deposit, withdrawal, fee, netFlow }
+  }, [byCoinData])
 
   const presets = [
     { key: 'today', label: t('filter.today', { defaultValue: 'Today' }) },
@@ -558,6 +633,90 @@ export default function UserTransactionsDashboard() {
                 </div>
               ) : (
                 <DailyTrendChart data={dailyData} meta={dailyMeta} height={300} />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 3: Transaction by Coin */}
+      <div className="row mb-4">
+        <div className="col-12">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title mb-0">
+                {t('userDashboard.transactionByCoin', { defaultValue: 'Transaction by Coin' })}
+              </h5>
+            </div>
+            <div className="card-body p-0">
+              {loadingByCoin ? (
+                <div className="d-flex justify-content-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-hover mb-0">
+                    <thead className="table-light">
+                      <tr>
+                        <th className="text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('userDashboard.deposits', { defaultValue: 'Deposits' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('userDashboard.feesCollected', { defaultValue: 'Fees' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted text-nowrap" style={{ fontSize: '0.8rem' }}>{t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {byCoinData.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="text-center text-muted py-4">
+                            {t('common.noData', { defaultValue: 'No data available' })}
+                          </td>
+                        </tr>
+                      ) : (
+                        <>
+                          {byCoinData.map((item, index) => {
+                            const deposit = parseFloat(item.depositUsd || 0)
+                            const withdrawal = parseFloat(item.withdrawalUsd || 0)
+                            const fee = parseFloat(item.feeUsd || 0)
+                            const netFlow = deposit - withdrawal
+
+                            return (
+                              <tr key={index}>
+                                <td>
+                                  <div className="d-flex align-items-center">
+                                    <CoinImg symbol={item.coinSymbol} size={24} />
+                                    <span className="fw-medium">{item.coinSymbol}</span>
+                                    {item.networkName && (
+                                      <small className="text-muted ms-1">/ {item.networkName}</small>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="text-end">{formatCurrencyPlain(deposit)}</td>
+                                <td className="text-end">{formatCurrencyPlain(withdrawal)}</td>
+                                <td className="text-end">{formatCurrencyPlain(fee)}</td>
+                                <td className={`text-end ${netFlow > 0 ? 'text-success' : netFlow < 0 ? 'text-danger' : ''}`}>
+                                  {formatCurrencyPlain(netFlow)}
+                                </td>
+                              </tr>
+                            )
+                          })}
+                          {/* Total row */}
+                          <tr className="table-light fw-semibold">
+                            <td className="text-body">{t('common.total', { defaultValue: 'TOTAL' })}</td>
+                            <td className="text-end text-body">{formatCurrencyPlain(byCoinTotals.deposit)}</td>
+                            <td className="text-end text-body">{formatCurrencyPlain(byCoinTotals.withdrawal)}</td>
+                            <td className="text-end text-body">{formatCurrencyPlain(byCoinTotals.fee)}</td>
+                            <td className={`text-end ${byCoinTotals.netFlow > 0 ? 'text-success' : byCoinTotals.netFlow < 0 ? 'text-danger' : ''}`}>
+                              {formatCurrencyPlain(byCoinTotals.netFlow)}
+                            </td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </div>
