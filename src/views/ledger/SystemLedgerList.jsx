@@ -1,9 +1,93 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getSystemLedgerEntries } from '../../api/admin.ts'
+
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    pol: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap((n) =>
+    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
+  )
+  const candidates = [
+    ...byAssets,
+    ...(logoUrl ? [logoUrl] : []),
+    '/assets/img/coins/default.svg',
+  ]
+  return Array.from(new Set(candidates))
+}
+
+function CoinImg({ symbol, networkSymbol, size = 24 }) {
+  const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, null),
+    [symbol]
+  )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  )
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 16
+
+  return (
+    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol &&
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function SystemLedgerList() {
   const { t } = useTranslation()
@@ -180,6 +264,7 @@ export default function SystemLedgerList() {
                       <th style={{ width: '50px' }}>ID</th>
                       <th style={{ minWidth: '130px' }}>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
+                      <th style={{ minWidth: '120px' }}>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
                       <th className="text-end" style={{ minWidth: '200px' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
                       <th className="text-end" style={{ minWidth: '100px' }}>USD</th>
                       <th style={{ minWidth: '200px' }}>Purpose</th>
@@ -191,7 +276,7 @@ export default function SystemLedgerList() {
                   <tbody>
                     {entries.length === 0 ? (
                       <tr>
-                        <td colSpan="9" className="text-center text-muted py-4">
+                        <td colSpan="10" className="text-center text-muted py-4">
                           {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
                         </td>
                       </tr>
@@ -215,6 +300,21 @@ export default function SystemLedgerList() {
                             </td>
                             <td>
                               {stateBadge(entry.state)}
+                            </td>
+                            <td style={{ whiteSpace: 'nowrap' }}>
+                              <div className="d-flex align-items-center">
+                                <CoinImg
+                                  symbol={entry.coinSymbol}
+                                  networkSymbol={entry.networkSymbol}
+                                  size={24}
+                                />
+                                <div>
+                                  <div className="fw-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
+                                  {entry.networkName && (
+                                    <small className="text-muted" style={{ fontSize: '0.75rem' }}>{entry.networkName}</small>
+                                  )}
+                                </div>
+                              </div>
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
                               <span className={`fw-medium ${isCredit ? 'text-success' : 'text-danger'}`}>
@@ -244,13 +344,18 @@ export default function SystemLedgerList() {
                               {entry.txHash ? (
                                 <div className="d-flex align-items-center">
                                   <span className="me-2">{entry.txHash}</span>
-                                  <button
-                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={(e) => copyToClipboard(entry.txHash, e)}
-                                    title="Copy"
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
+                                  {entry.explorerUrl && (
+                                    <a
+                                      href={`${entry.explorerUrl}/tx/${entry.txHash}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                      onClick={(e) => e.stopPropagation()}
+                                      title="View on explorer"
+                                    >
+                                      <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
+                                    </a>
+                                  )}
                                 </div>
                               ) : (
                                 <span className="text-muted">-</span>

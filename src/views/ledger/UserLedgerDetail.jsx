@@ -1,9 +1,93 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getUserLedgerEntry } from '../../api/admin.ts'
+
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    pol: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap((n) =>
+    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
+  )
+  const candidates = [
+    ...byAssets,
+    ...(logoUrl ? [logoUrl] : []),
+    '/assets/img/coins/default.svg',
+  ]
+  return Array.from(new Set(candidates))
+}
+
+function CoinImg({ symbol, networkSymbol, size = 32 }) {
+  const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, null),
+    [symbol]
+  )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  )
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 18
+
+  return (
+    <div className="position-relative me-3" style={{ width: size, height: size, flexShrink: 0 }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol &&
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function UserLedgerDetail() {
   const { t } = useTranslation()
@@ -131,36 +215,48 @@ export default function UserLedgerDetail() {
           <div className="card mb-4">
             <div className="card-body">
               <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                <div>
-                  <h4 className="mb-1">
-                    {t('admin.ledger.userLedgerEntry', { defaultValue: 'User Ledger Entry' })} #{entry.id}
-                  </h4>
-                  <div className="d-flex align-items-center gap-2 flex-wrap">
-                    <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
-                      <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
-                      {isCredit ? 'Credit' : 'Debit'}
-                    </span>
-                    {entry.entryCode && (
-                      <span className="badge bg-label-secondary">
-                        {entryCodeLabels[entry.entryCode] || entry.entryCode}
+                <div className="d-flex align-items-center gap-3">
+                  {entry.coinSymbol && (
+                    <CoinImg
+                      symbol={entry.coinSymbol}
+                      networkSymbol={entry.networkSymbol}
+                      size={48}
+                    />
+                  )}
+                  <div>
+                    <h4 className="mb-1">
+                      {t('admin.ledger.userLedgerEntry', { defaultValue: 'User Ledger Entry' })} #{entry.id}
+                    </h4>
+                    <div className="d-flex align-items-center gap-2 flex-wrap">
+                      <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                        <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
+                        {isCredit ? 'Credit' : 'Debit'}
                       </span>
-                    )}
-                    {stateBadge(entry.state)}
-                    {entry.userId && (
-                      <span className="badge bg-label-primary">
-                        <i className="bx bx-user me-1"></i>
-                        User #{entry.userId}
-                      </span>
-                    )}
+                      {entry.entryCode && (
+                        <span className="badge bg-label-secondary">
+                          {entryCodeLabels[entry.entryCode] || entry.entryCode}
+                        </span>
+                      )}
+                      {stateBadge(entry.state)}
+                      {entry.userId && (
+                        <span className="badge bg-label-primary">
+                          <i className="bx bx-user me-1"></i>
+                          User #{entry.userId}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="text-end">
                   <div className={`fs-4 fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
-                    {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
+                    {isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">
                     {formatUsd(entry.amountUsd)}
                   </div>
+                  {entry.networkName && (
+                    <small className="text-muted">{entry.networkName}</small>
+                  )}
                 </div>
               </div>
             </div>
@@ -188,8 +284,18 @@ export default function UserLedgerDetail() {
                         <td><span className="badge bg-label-primary">#{entry.userId}</span></td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Coin Network ID</td>
-                        <td>{entry.coinNetworkId || 'N/A'}</td>
+                        <td className="text-muted">{t('admin.ledger.coin', { defaultValue: 'Coin' })}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} />
+                            <div>
+                              <span className="fw-medium">{entry.coinSymbol || 'N/A'}</span>
+                              {entry.networkName && (
+                                <small className="text-muted ms-1">/ {entry.networkName}</small>
+                              )}
+                            </div>
+                          </div>
+                        </td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
@@ -273,10 +379,19 @@ export default function UserLedgerDetail() {
                         <tr>
                           <td className="text-muted">Tx Hash</td>
                           <td>
-                            <div className="d-flex align-items-center gap-2">
-                              <code className="text-break" style={{ fontSize: '0.75rem' }}>{entry.txHash}</code>
-                            </div>
-                            <div className="d-flex gap-1 mt-1">
+                            <code className="text-break" style={{ fontSize: '0.75rem' }}>{entry.txHash}</code>
+                            <div className="d-flex gap-1 mt-2">
+                              {entry.explorerUrl && (
+                                <a
+                                  href={`${entry.explorerUrl}/tx/${entry.txHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-outline-primary"
+                                  style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                                >
+                                  <i className="bx bx-link-external me-1"></i>View on Explorer
+                                </a>
+                              )}
                               <button
                                 className="btn btn-sm btn-outline-secondary"
                                 onClick={() => copyToClipboard(entry.txHash)}

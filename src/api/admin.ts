@@ -864,7 +864,7 @@ export async function getSystemLedgerEntries(
 
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
-  if (params.type) queryParams.append('type', params.type)
+  if (params.type) queryParams.append('entryType', params.type)
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
   if (params.startDate) queryParams.append('startDate', params.startDate)
   if (params.endDate) queryParams.append('endDate', params.endDate)
@@ -932,7 +932,7 @@ export async function getUserLedgerEntries(
 
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
-  if (params.type) queryParams.append('type', params.type)
+  if (params.type) queryParams.append('entryType', params.type)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
   if (params.startDate) queryParams.append('startDate', params.startDate)
