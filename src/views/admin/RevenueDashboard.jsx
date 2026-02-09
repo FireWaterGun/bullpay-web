@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '../../api/admin'
+import LocaleDatePicker from '../../components/LocaleDatePicker'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -205,7 +206,7 @@ function SummaryCard({ title, value, change, changeLabel, icon, color = 'primary
   )
 }
 
-function SimpleBarChart({ data, height = 300 }) {
+function SimpleBarChart({ data, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
       <div className="d-flex align-items-center justify-content-center" style={{ height }}>
@@ -383,15 +384,15 @@ function SimpleBarChart({ data, height = 300 }) {
           <div style={{ width: 100, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
             <div className="d-flex align-items-center gap-2">
               <span style={{ width: 14, height: 14, backgroundColor: '#696cff', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>Revenue</small>
+              <small>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}</small>
             </div>
             <div className="d-flex align-items-center gap-2">
               <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(#a8b8d8 0% 25%, #8898b8 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>Cost</small>
+              <small>{t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}</small>
             </div>
             <div className="d-flex align-items-center gap-2">
               <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
-              <small>Profit</small>
+              <small>{t ? t('admin.profit', { defaultValue: 'Profit' }) : 'Profit'}</small>
             </div>
           </div>
         </div>
@@ -400,7 +401,7 @@ function SimpleBarChart({ data, height = 300 }) {
           {data.map((item, i) => (
             <div key={i} style={{ width: barGroupW, textAlign: 'center' }}>
               <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                {item.label || item.date}
+                {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
             </div>
           ))}
@@ -411,8 +412,13 @@ function SimpleBarChart({ data, height = 300 }) {
 }
 
 export default function RevenueDashboard() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { token } = useAuth()
+
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
   
   const [datePreset, setDatePreset] = useState('thisMonth')
   const [customFrom, setCustomFrom] = useState('')
@@ -440,9 +446,9 @@ export default function RevenueDashboard() {
     if (from === to) return from
     const fromDate = new Date(from)
     const toDate = new Date(to)
-    const formatDate = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    const formatDate = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
     return `${formatDate(fromDate)} - ${formatDate(toDate)}`
-  }, [dateRange])
+  }, [dateRange, locale])
 
   useEffect(() => {
     if (!token || !dateRange.from || !dateRange.to) return
@@ -469,7 +475,6 @@ export default function RevenueDashboard() {
         const items = dailyRes?.items || dailyRes || []
         const chartData = items.map(item => ({
           date: item.date,
-          label: new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           revenue: parseFloat(item.revenueUsd || 0),
           cost: parseFloat(item.costUsd || 0),
           profit: parseFloat(item.profitUsd || 0),
@@ -544,20 +549,20 @@ export default function RevenueDashboard() {
             </>
           ) : (
             <>
-              <input
-                type="date"
-                className="form-control form-control-sm"
+              <LocaleDatePicker
                 value={customFrom}
-                onChange={(e) => setCustomFrom(e.target.value)}
-                style={{ width: 'auto' }}
+                onChange={setCustomFrom}
+                locale={locale}
+                placeholder={t('filter.from', { defaultValue: 'From' })}
+                t={t}
               />
               <span className="align-self-center">–</span>
-              <input
-                type="date"
-                className="form-control form-control-sm"
+              <LocaleDatePicker
                 value={customTo}
-                onChange={(e) => setCustomTo(e.target.value)}
-                style={{ width: 'auto' }}
+                onChange={setCustomTo}
+                locale={locale}
+                placeholder={t('filter.to', { defaultValue: 'To' })}
+                t={t}
               />
               <button
                 className="btn btn-sm btn-outline-secondary"
@@ -624,7 +629,7 @@ export default function RevenueDashboard() {
                   </div>
                 </div>
               ) : (
-                <SimpleBarChart data={dailyData} height={280} />
+                <SimpleBarChart data={dailyData} height={280} locale={locale} t={t} />
               )}
             </div>
           </div>

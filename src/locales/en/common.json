@@ -16,6 +16,21 @@
     "billing": "Billing",
     "logout": "Logout"
   },
+  "datePicker": {
+    "clear": "Clear",
+    "today": "Today"
+  },
+  "filter": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "last7days": "Last 7 Days",
+    "last30days": "Last 30 Days",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "custom": "Custom",
+    "from": "From",
+    "to": "To"
+  },
   "actions": {
     "filters": "Filters",
     "createInvoice": "Create Invoice",
@@ -264,6 +279,8 @@
     "saving": "Saving...",
     "copied": "Copied",
     "noData": "No data",
+    "noDataAvailable": "No data available",
+    "total": "TOTAL",
     "copyright": "  {{year}} · All rights reserved",
     "poweredBy": "Powered by",
     "allTypes": "All Types",
@@ -420,7 +437,30 @@
     "minutes": "Minutes",
     "seconds": "Seconds"
   },
+  "userDashboard": {
+    "deposits": "Deposits",
+    "withdrawals": "Withdrawals",
+    "feesCollected": "Fees Collected",
+    "netFlow": "Net Flow",
+    "dailyTrend": "Daily Trend Chart",
+    "transactionByCoin": "Transaction by Coin",
+    "vsPrev": "vs prev",
+    "daysTotal": "days total",
+    "daysWithData": "days with data",
+    "daysPositiveFlow": "days positive flow",
+    "daysNegative": "days negative"
+  },
   "admin": {
+    "revenueDashboard": "Revenue Dashboard",
+    "revenue": "Revenue",
+    "cost": "Cost",
+    "profit": "Profit",
+    "margin": "Margin",
+    "revenueCostTrend": "Revenue & Cost Trend (Daily)",
+    "revenueByCoin": "Revenue by Coin",
+    "coin": "Coin",
+    "volume": "Volume",
+    "counts": "Counts",
     "totalWallets": "Total Wallets",
     "activeWallets": "Active Wallets",
     "hotWallets": "Hot Wallets",

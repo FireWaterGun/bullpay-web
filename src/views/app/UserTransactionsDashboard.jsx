@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '../../api/userTransactions.ts'
+import LocaleDatePicker from '../../components/LocaleDatePicker'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -100,8 +101,9 @@ function getDateRange(preset) {
   return { from, to }
 }
 
-function SummaryCard({ title, value, change, icon, color = 'primary', valueColor }) {
-  const isPositive = change >= 0
+function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
+  const numChange = typeof change === 'number' ? change : parseFloat(change)
+  const isPositive = numChange >= 0
   const changeColor = isPositive ? 'text-success' : 'text-danger'
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
 
@@ -113,10 +115,10 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
             <div className="content-left">
               <span className="text-muted d-block mb-1">{title}</span>
               <h3 className={`mb-0${valueColor ? ` text-${valueColor}` : ''}`} style={{ fontSize: '1.75rem' }}>{value}</h3>
-              {change !== undefined && change !== null && !isNaN(parseFloat(change)) && (
+              {change !== undefined && change !== null && !isNaN(numChange) && (
                 <small className={changeColor} style={{ fontSize: '0.8rem' }}>
                   <i className={`bx ${changeIcon}`}></i>
-                  {isPositive ? '+' : ''}{parseFloat(change).toFixed(1)}% vs prev
+                  {isPositive ? '+' : ''}{numChange.toFixed(1)}% {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
                 </small>
               )}
             </div>
@@ -132,7 +134,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
   )
 }
 
-function DailyTrendChart({ data, meta, height = 300 }) {
+function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
       <div className="d-flex align-items-center justify-content-center" style={{ height }}>
@@ -301,15 +303,15 @@ function DailyTrendChart({ data, meta, height = 300 }) {
           <div style={{ width: 110, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
             <div className="d-flex align-items-center gap-2">
               <span style={{ width: 14, height: 14, backgroundColor: '#696cff', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>Deposit</small>
+              <small>{t ? t('userDashboard.deposits', { defaultValue: 'Deposit' }) : 'Deposit'}</small>
             </div>
             <div className="d-flex align-items-center gap-2">
               <span style={{ width: 14, height: 14, backgroundColor: '#a8b8d8', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>Withdrawal</small>
+              <small>{t ? t('userDashboard.withdrawals', { defaultValue: 'Withdrawal' }) : 'Withdrawal'}</small>
             </div>
             <div className="d-flex align-items-center gap-2">
               <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
-              <small>Net Flow</small>
+              <small>{t ? t('userDashboard.netFlow', { defaultValue: 'Net Flow' }) : 'Net Flow'}</small>
             </div>
           </div>
         </div>
@@ -318,7 +320,7 @@ function DailyTrendChart({ data, meta, height = 300 }) {
           {data.map((item, i) => (
             <div key={i} style={{ width: barGroupW, textAlign: 'center', flexShrink: 0 }}>
               <small className="text-muted" style={{ fontSize: '0.72rem' }}>
-                {item.label}
+                {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
             </div>
           ))}
@@ -330,19 +332,19 @@ function DailyTrendChart({ data, meta, height = 300 }) {
           <div className="d-flex flex-wrap gap-3 align-items-center">
             <div>
               <i className="bx bx-calendar text-primary me-1"></i>
-              <small className="fw-medium">{meta.totalDays || 0} days total</small>
+              <small className="fw-medium">{meta.totalDays || 0} {t ? t('userDashboard.daysTotal', { defaultValue: 'days total' }) : 'days total'}</small>
               <small className="text-muted mx-1">•</small>
-              <small>{meta.daysWithData || 0} days with data</small>
+              <small>{meta.daysWithData || 0} {t ? t('userDashboard.daysWithData', { defaultValue: 'days with data' }) : 'days with data'}</small>
             </div>
             <div>
               <small className="text-success">
                 <i className="bx bx-up-arrow-alt"></i>
-                {meta.daysPositiveFlow || 0} days positive flow
+                {meta.daysPositiveFlow || 0} {t ? t('userDashboard.daysPositiveFlow', { defaultValue: 'days positive flow' }) : 'days positive flow'}
               </small>
               <small className="text-muted mx-1">•</small>
               <small className="text-danger">
                 <i className="bx bx-down-arrow-alt"></i>
-                {meta.daysNegativeFlow || 0} day{(meta.daysNegativeFlow || 0) !== 1 ? 's' : ''} negative
+                {meta.daysNegativeFlow || 0} {t ? t('userDashboard.daysNegative', { defaultValue: 'days negative' }) : 'days negative'}
               </small>
             </div>
           </div>
@@ -353,8 +355,13 @@ function DailyTrendChart({ data, meta, height = 300 }) {
 }
 
 export default function UserTransactionsDashboard() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { token } = useAuth()
+
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
 
   const [datePreset, setDatePreset] = useState('thisMonth')
   const [customFrom, setCustomFrom] = useState('')
@@ -371,8 +378,6 @@ export default function UserTransactionsDashboard() {
   const [loadingByCoin, setLoadingByCoin] = useState(false)
   const [error, setError] = useState('')
 
-  const [autoRefresh, setAutoRefresh] = useState(true)
-  const refreshIntervalRef = useRef(null)
 
   const dateRange = useMemo(() => {
     if (showCustom && customFrom && customTo) {
@@ -386,9 +391,9 @@ export default function UserTransactionsDashboard() {
     if (from === to) return from
     const fromDate = new Date(from + 'T00:00:00')
     const toDate = new Date(to + 'T00:00:00')
-    const fmt = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    return `${fmt(fromDate)} → ${fmt(toDate)}`
-  }, [dateRange])
+    const formatDate = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
+    return `${formatDate(fromDate)} - ${formatDate(toDate)}`
+  }, [dateRange, locale])
 
   const loadData = async () => {
     if (!token || !dateRange.from || !dateRange.to) return
@@ -413,7 +418,6 @@ export default function UserTransactionsDashboard() {
       const items = res?.items || res || []
       const chartData = items.map(item => ({
         date: item.date,
-        label: new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         deposit: parseFloat(item.depositUsd || 0),
         withdrawal: parseFloat(item.withdrawalUsd || 0),
         netFlow: parseFloat(item.netFlowUsd || 0),
@@ -442,21 +446,6 @@ export default function UserTransactionsDashboard() {
     loadData()
   }, [token, dateRange])
 
-  // Auto-refresh
-  useEffect(() => {
-    if (refreshIntervalRef.current) {
-      clearInterval(refreshIntervalRef.current)
-      refreshIntervalRef.current = null
-    }
-    if (autoRefresh) {
-      refreshIntervalRef.current = setInterval(() => {
-        loadData()
-      }, 300000) // 5 minutes
-    }
-    return () => {
-      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current)
-    }
-  }, [autoRefresh, dateRange, token])
 
   const current = summary?.current || {}
   const previous = summary?.previous || {}
@@ -474,96 +463,70 @@ export default function UserTransactionsDashboard() {
     return { deposit, withdrawal, fee, netFlow }
   }, [byCoinData])
 
-  const presets = [
-    { key: 'today', label: t('filter.today', { defaultValue: 'Today' }) },
-    { key: 'last7days', label: t('filter.last7days', { defaultValue: '7 Days' }) },
-    { key: 'last30days', label: t('filter.last30days', { defaultValue: '30 Days' }) },
-    { key: 'thisMonth', label: t('filter.thisMonth', { defaultValue: 'This Month' }) },
-  ]
-
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       {/* Header */}
       <div className="d-flex flex-wrap align-items-center mb-4 gap-3">
         <h4 className="mb-0">
+          <i className="bx bx-bar-chart-alt-2 text-primary me-2"></i>
           {t('nav.dashboard', { defaultValue: 'Dashboard' })}
         </h4>
-      </div>
-
-      {/* Filters */}
-      <div className="card mb-4">
-        <div className="card-body py-3">
-          <div className="d-flex flex-wrap align-items-center gap-3">
-            {/* Date range display */}
-            <div className="d-flex align-items-center gap-2">
-              <i className="bx bx-calendar text-primary"></i>
-              <span className="fw-medium">{dateRangeLabel}</span>
-            </div>
-
-            {/* Auto-refresh toggle */}
-            <div className="d-flex align-items-center gap-2 ms-auto">
-              <i className={`bx bx-revision ${autoRefresh ? 'text-success' : 'text-muted'}`}></i>
-              <small>Auto-refresh:</small>
-              <button
-                className={`btn btn-xs ${autoRefresh ? 'btn-success' : 'btn-outline-secondary'}`}
-                onClick={() => setAutoRefresh(!autoRefresh)}
-                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+        <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
+          <span className="badge bg-label-secondary fs-6 fw-normal px-3 py-2">
+            {dateRangeLabel}
+          </span>
+          {!showCustom ? (
+            <>
+              <select
+                className="form-select form-select-sm"
+                value={datePreset}
+                onChange={(e) => setDatePreset(e.target.value)}
+                style={{ width: 'auto' }}
               >
-                {autoRefresh ? 'ON' : 'OFF'}
+                <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
+                <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
+                <option value="last7days">{t('filter.last7days', { defaultValue: 'Last 7 Days' })}</option>
+                <option value="last30days">{t('filter.last30days', { defaultValue: 'Last 30 Days' })}</option>
+                <option value="thisMonth">{t('filter.thisMonth', { defaultValue: 'This Month' })}</option>
+                <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
+              </select>
+              <button
+                className="btn btn-sm btn-outline-secondary"
+                onClick={() => setShowCustom(true)}
+              >
+                <i className="bx bx-calendar me-1"></i>
+                {t('filter.custom', { defaultValue: 'Custom' })}
               </button>
-            </div>
-          </div>
-
-          {/* Quick filters */}
-          <div className="d-flex flex-wrap align-items-center gap-2 mt-2">
-            
-            {!showCustom ? (
-              <>
-                {presets.map(p => (
-                  <button
-                    key={p.key}
-                    className={`btn btn-sm ${datePreset === p.key ? 'btn-primary' : 'btn-outline-primary'}`}
-                    onClick={() => setDatePreset(p.key)}
-                    style={{ fontSize: '0.78rem' }}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-                <button
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={() => setShowCustom(true)}
-                  style={{ fontSize: '0.78rem' }}
-                >
-                  <i className="bx bx-calendar me-1"></i>
-                  {t('filter.custom', { defaultValue: 'Custom' })}
-                </button>
-              </>
-            ) : (
-              <>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  value={customFrom}
-                  onChange={(e) => setCustomFrom(e.target.value)}
-                  style={{ width: 'auto' }}
-                />
-                <span>–</span>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  value={customTo}
-                  onChange={(e) => setCustomTo(e.target.value)}
-                  style={{ width: 'auto' }}
-                />
-                <button
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={() => { setShowCustom(false); setCustomFrom(''); setCustomTo('') }}
-                >
-                  <i className="bx bx-x"></i>
-                </button>
-              </>
-            )}
-          </div>
+            </>
+          ) : (
+            <>
+              <LocaleDatePicker
+                value={customFrom}
+                onChange={setCustomFrom}
+                locale={locale}
+                placeholder={t('filter.from', { defaultValue: 'From' })}
+                t={t}
+              />
+              <span className="align-self-center">–</span>
+              <LocaleDatePicker
+                value={customTo}
+                onChange={setCustomTo}
+                locale={locale}
+                placeholder={t('filter.to', { defaultValue: 'To' })}
+                t={t}
+              />
+              <button
+                className="btn btn-sm btn-outline-secondary"
+                onClick={() => {
+                  setShowCustom(false)
+                  setCustomFrom('')
+                  setCustomTo('')
+                }}
+              >
+                <i className="bx bx-x"></i>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -586,6 +549,7 @@ export default function UserTransactionsDashboard() {
             change={changes.depositPercent}
             icon="bx-wallet"
             color="primary"
+            t={t}
           />
           <SummaryCard
             title={t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}
@@ -593,6 +557,7 @@ export default function UserTransactionsDashboard() {
             change={changes.withdrawalPercent}
             icon="bx-transfer-alt"
             color="danger"
+            t={t}
           />
           <SummaryCard
             title={t('userDashboard.feesCollected', { defaultValue: 'Fees Collected' })}
@@ -600,6 +565,7 @@ export default function UserTransactionsDashboard() {
             change={changes.feePercent}
             icon="bx-dollar-circle"
             color="warning"
+            t={t}
           />
           <SummaryCard
             title={t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}
@@ -610,6 +576,7 @@ export default function UserTransactionsDashboard() {
             icon="bx-line-chart"
             color="info"
             valueColor={(() => { const nf = parseFloat(current.totalDepositUsd || 0) - parseFloat(current.totalWithdrawalUsd || 0); return nf > 0 ? 'success' : nf < 0 ? 'danger' : undefined })()}
+            t={t}
           />
         </div>
       )}
@@ -632,7 +599,7 @@ export default function UserTransactionsDashboard() {
                   </div>
                 </div>
               ) : (
-                <DailyTrendChart data={dailyData} meta={dailyMeta} height={300} />
+                <DailyTrendChart data={dailyData} meta={dailyMeta} height={300} locale={locale} t={t} />
               )}
             </div>
           </div>

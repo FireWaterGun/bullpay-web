@@ -16,6 +16,21 @@
     "billing": "การเรียกเก็บเงิน",
     "logout": "ออกจากระบบ"
   },
+  "datePicker": {
+    "clear": "ล้าง",
+    "today": "วันนี้"
+  },
+  "filter": {
+    "today": "วันนี้",
+    "yesterday": "เมื่อวาน",
+    "last7days": "7 วันล่าสุด",
+    "last30days": "30 วันล่าสุด",
+    "thisMonth": "เดือนนี้",
+    "lastMonth": "เดือนที่แล้ว",
+    "custom": "กำหนดเอง",
+    "from": "ตั้งแต่",
+    "to": "ถึง"
+  },
   "actions": {
     "filters": "ตัวกรอง",
     "createInvoice": "สร้างใบแจ้งหนี้",
@@ -281,6 +296,8 @@
     "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว!",
     "copyFailed": "ไม่สามารถคัดลอกได้",
     "noData": "ไม่พบข้อมูล",
+    "noDataAvailable": "ไม่มีข้อมูล",
+    "total": "รวม",
     "copyright": "© {{year}} · สงวนลิขสิทธิ์",
     "poweredBy": "ขับเคลื่อนโดย",
     "allTypes": "ทุกประเภท",
@@ -442,7 +459,30 @@
     "minutes": "นาที",
     "seconds": "วินาที"
   },
+  "userDashboard": {
+    "deposits": "เงินฝาก",
+    "withdrawals": "เงินถอน",
+    "feesCollected": "ค่าธรรมเนียม",
+    "netFlow": "กระแสเงินสุทธิ",
+    "dailyTrend": "กราฟแนวโน้มรายวัน",
+    "transactionByCoin": "ธุรกรรมตามเหรียญ",
+    "vsPrev": "เทียบก่อนหน้า",
+    "daysTotal": "วันทั้งหมด",
+    "daysWithData": "วันที่มีข้อมูล",
+    "daysPositiveFlow": "วันที่เงินไหลเข้า",
+    "daysNegative": "วันที่เงินไหลออก"
+  },
   "admin": {
+    "revenueDashboard": "แดชบอร์ดรายได้",
+    "revenue": "รายได้",
+    "cost": "ต้นทุน",
+    "profit": "กำไร",
+    "margin": "อัตรากำไร",
+    "revenueCostTrend": "แนวโน้มรายได้และต้นทุน (รายวัน)",
+    "revenueByCoin": "รายได้ตามเหรียญ",
+    "coin": "เหรียญ",
+    "volume": "ปริมาณ",
+    "counts": "จำนวน",
     "totalWallets": "กระเป๋าทั้งหมด",
     "activeWallets": "กระเป๋าที่ใช้งาน",
     "hotWallets": "กระเป๋าร้อน",

@@ -517,7 +517,8 @@ export default function DashboardLayout() {
   // Apply language sync to html + i18next
   useEffect(() => {
     const html = document.documentElement
-    html.setAttribute('lang', language.code || 'en')
+    const localeMap = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    html.setAttribute('lang', localeMap[language.code] || language.code || 'en')
     html.setAttribute('dir', language.dir || 'ltr')
     // change i18next language if different
     if (i18n.language !== language.code) {
