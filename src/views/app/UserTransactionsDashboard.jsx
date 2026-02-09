@@ -49,51 +49,32 @@ function getDateRange(preset) {
   return { from, to }
 }
 
-function KPICard({ title, icon, iconColor, amount, changePercent, count, countLabel, currentVal, previousVal, showChange = true }) {
-  const isPositive = changePercent >= 0
+function SummaryCard({ title, value, change, icon, color = 'primary', valueColor }) {
+  const isPositive = change >= 0
   const changeColor = isPositive ? 'text-success' : 'text-danger'
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
 
-  // Progress bar: current vs previous
-  const maxVal = Math.max(currentVal || 0, previousVal || 0, 1)
-  const currentPct = Math.min(((currentVal || 0) / maxVal) * 100, 100)
-  const previousPct = Math.min(((previousVal || 0) / maxVal) * 100, 100)
-
   return (
-    <div className="col-sm-6 col-lg-4">
+    <div className="col-sm-6 col-xl-3">
       <div className="card h-100">
         <div className="card-body">
-          <div className="d-flex align-items-center mb-2">
-            <span className="me-2" style={{ fontSize: '1.25rem' }}>{icon}</span>
-            <span className="text-uppercase fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>{title}</span>
-          </div>
-          <h3 className="mb-2">{formatCurrencyPlain(amount)}</h3>
-          {showChange && changePercent !== undefined && changePercent !== null && !isNaN(parseFloat(changePercent)) && (
-            <div className="mb-2">
-              <small className={changeColor}>
-                <i className={`bx ${changeIcon}`}></i>
-                {parseFloat(changePercent).toFixed(1)}% vs prev
-              </small>
+          <div className="d-flex align-items-start justify-content-between">
+            <div className="content-left">
+              <span className="text-muted d-block mb-1">{title}</span>
+              <h3 className={`mb-0${valueColor ? ` text-${valueColor}` : ''}`} style={{ fontSize: '1.75rem' }}>{value}</h3>
+              {change !== undefined && change !== null && !isNaN(parseFloat(change)) && (
+                <small className={changeColor} style={{ fontSize: '0.8rem' }}>
+                  <i className={`bx ${changeIcon}`}></i>
+                  {isPositive ? '+' : ''}{parseFloat(change).toFixed(1)}% vs prev
+                </small>
+              )}
             </div>
-          )}
-          <div className="mb-2">
-            <small className="text-muted">{count || 0} {countLabel || 'transactions'}</small>
-          </div>
-          {showChange && (
-            <div>
-              <div className="rounded-pill overflow-hidden" style={{ height: '6px', backgroundColor: '#f0f0f0' }}>
-                <div
-                  className="rounded-pill h-100"
-                  style={{
-                    width: `${currentPct}%`,
-                    background: `linear-gradient(90deg, ${iconColor || '#696cff'}, ${iconColor ? iconColor + 'aa' : '#a3a5ff'})`,
-                    minWidth: currentPct > 0 ? '4px' : '0',
-                    transition: 'width 0.5s ease',
-                  }}
-                ></div>
-              </div>
+            <div className="avatar">
+              <span className={`avatar-initial rounded bg-label-${color}`}>
+                <i className={`bx ${icon} bx-sm`}></i>
+              </span>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -237,7 +218,7 @@ function DailyTrendChart({ data, meta, height = 300 }) {
                       width={barW}
                       height={wthH}
                       rx={2}
-                      fill="#ff6b6b"
+                      fill="#a8b8d8"
                     >
                       <title>Withdrawal: ${wth.toLocaleString('en-US', { maximumFractionDigits: 2 })}</title>
                     </rect>
@@ -272,7 +253,7 @@ function DailyTrendChart({ data, meta, height = 300 }) {
               <small>Deposit</small>
             </div>
             <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, backgroundColor: '#ff6b6b', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+              <span style={{ width: 14, height: 14, backgroundColor: '#a8b8d8', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
               <small>Withdrawal</small>
             </div>
             <div className="d-flex align-items-center gap-2">
@@ -523,78 +504,39 @@ export default function UserTransactionsDashboard() {
           </div>
         </div>
       ) : (
-        <>
-          {/* Row 1: Top 3 cards with % change */}
-          <div className="row g-4 mb-4">
-            <KPICard
-              title={t('userDashboard.deposits', { defaultValue: 'Deposits' })}
-              icon="💰"
-              iconColor="#696cff"
-              amount={current.totalDepositUsd}
-              changePercent={changes.depositPercent}
-              count={counts.deposits}
-              countLabel="transactions"
-              currentVal={parseFloat(current.totalDepositUsd || 0)}
-              previousVal={parseFloat(previous?.totalDepositUsd || 0)}
-              showChange={true}
-            />
-            <KPICard
-              title={t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}
-              icon="💸"
-              iconColor="#ff3e1d"
-              amount={current.totalWithdrawalUsd}
-              changePercent={changes.withdrawalPercent}
-              count={counts.withdrawals}
-              countLabel="transactions"
-              currentVal={parseFloat(current.totalWithdrawalUsd || 0)}
-              previousVal={parseFloat(previous?.totalWithdrawalUsd || 0)}
-              showChange={true}
-            />
-            <KPICard
-              title={t('userDashboard.feesCollected', { defaultValue: 'Fees Collected' })}
-              icon="🔥"
-              iconColor="#ffab00"
-              amount={current.totalFeeUsd}
-              changePercent={changes.feePercent}
-              count={counts.fees}
-              countLabel="transactions"
-              currentVal={parseFloat(current.totalFeeUsd || 0)}
-              previousVal={parseFloat(previous?.totalFeeUsd || 0)}
-              showChange={true}
-            />
-          </div>
-
-          {/* Row 2: Bottom 3 cards without % change */}
-          <div className="row g-4 mb-4">
-            <KPICard
-              title={t('userDashboard.refunds', { defaultValue: 'Refunds' })}
-              icon="🔄"
-              iconColor="#696cff"
-              amount={current.totalRefundUsd}
-              count={counts.refunds}
-              countLabel="transactions"
-              showChange={false}
-            />
-            <KPICard
-              title={t('userDashboard.feeRefunds', { defaultValue: 'Fee Refunds' })}
-              icon="🔄"
-              iconColor="#696cff"
-              amount={current.totalFeeRefundUsd}
-              count={counts.feeRefunds}
-              countLabel={counts.feeRefunds === 1 ? 'transaction' : 'transactions'}
-              showChange={false}
-            />
-            <KPICard
-              title={t('userDashboard.adjNet', { defaultValue: 'Adj. Net' })}
-              icon="⚙️"
-              iconColor="#03c3ec"
-              amount={current.totalAdjustmentNetUsd}
-              count={counts.adjustments}
-              countLabel="transactions"
-              showChange={false}
-            />
-          </div>
-        </>
+        <div className="row g-4 mb-4">
+          <SummaryCard
+            title={t('userDashboard.deposits', { defaultValue: 'Deposits' })}
+            value={formatCurrencyPlain(current.totalDepositUsd)}
+            change={changes.depositPercent}
+            icon="bx-wallet"
+            color="primary"
+          />
+          <SummaryCard
+            title={t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}
+            value={formatCurrencyPlain(current.totalWithdrawalUsd)}
+            change={changes.withdrawalPercent}
+            icon="bx-transfer-alt"
+            color="danger"
+          />
+          <SummaryCard
+            title={t('userDashboard.feesCollected', { defaultValue: 'Fees Collected' })}
+            value={formatCurrencyPlain(current.totalFeeUsd)}
+            change={changes.feePercent}
+            icon="bx-dollar-circle"
+            color="warning"
+          />
+          <SummaryCard
+            title={t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}
+            value={formatCurrencyPlain(
+              (parseFloat(current.totalDepositUsd || 0) - parseFloat(current.totalWithdrawalUsd || 0))
+            )}
+            change={changes.netFlowPercent}
+            icon="bx-line-chart"
+            color="info"
+            valueColor={(() => { const nf = parseFloat(current.totalDepositUsd || 0) - parseFloat(current.totalWithdrawalUsd || 0); return nf > 0 ? 'success' : nf < 0 ? 'danger' : undefined })()}
+          />
+        </div>
       )}
 
       {/* Section 2: Daily Trend Chart */}

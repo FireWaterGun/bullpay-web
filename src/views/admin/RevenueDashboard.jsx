@@ -251,12 +251,25 @@ function SimpleBarChart({ data, height = 300 }) {
   const yPos = (val) => padTop + (chartH - padTop) - ((val - yScale.min) / yRange) * (chartH - padTop)
   const zeroY = yPos(0)
 
-  // Profit line points
-  const profitPoints = data.map((item, i) => {
-    const cx = i * barGroupW + barGroupW / 2
-    const cy = yPos(item.profit || 0)
-    return `${cx},${cy}`
-  }).join(' ')
+  // Profit line - smooth cubic bezier path
+  const profitPath = (() => {
+    const points = data.map((item, i) => ({
+      x: i * barGroupW + barGroupW / 2,
+      y: yPos(item.profit || 0),
+    }))
+    if (points.length < 2) return ''
+    let d = `M ${points[0].x},${points[0].y}`
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1]
+      const curr = points[i]
+      const tension = 0.3
+      const dx = curr.x - prev.x
+      const cp1x = prev.x + dx * tension
+      const cp2x = curr.x - dx * tension
+      d += ` C ${cp1x},${prev.y} ${cp2x},${curr.y} ${curr.x},${curr.y}`
+    }
+    return d
+  })()
 
   return (
     <div>
@@ -345,13 +358,14 @@ function SimpleBarChart({ data, height = 300 }) {
                   </g>
                 )
               })}
-              {/* Profit line */}
-              <polyline
-                points={profitPoints}
+              {/* Profit line (smooth curve) */}
+              <path
+                d={profitPath}
                 fill="none"
                 stroke="#03c3ec"
-                strokeWidth="2"
-                strokeDasharray="6,3"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               {/* Profit dots */}
               {data.map((item, i) => {
@@ -376,7 +390,7 @@ function SimpleBarChart({ data, height = 300 }) {
               <small>Cost</small>
             </div>
             <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 16, borderBottom: '2px dashed #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
+              <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
               <small>Profit</small>
             </div>
           </div>
