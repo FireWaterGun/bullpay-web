@@ -222,7 +222,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
             ))}
           </div>
           {/* Chart area */}
-          <div style={{ position: 'relative', width: barAreaW, flexShrink: 0, height: chartH }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: barAreaW, height: chartH }}>
             {/* Grid lines */}
             {yScale.labels.map((v, i) => (
               <div
@@ -238,6 +238,12 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
             ))}
             {/* Bars + line */}
             <svg width={barAreaW} height={chartH} style={{ position: 'absolute', top: 0, left: 0 }}>
+              <defs>
+                <pattern id="withdrawalPattern" patternUnits="userSpaceOnUse" width="4" height="4">
+                  <rect width="4" height="4" fill="#a8b8d8" />
+                  <circle cx="2" cy="2" r="1" fill="#8898b8" />
+                </pattern>
+              </defs>
               {data.map((item, i) => {
                 const cx = i * barGroupW + barGroupW / 2
                 const dep = item.deposit || 0
@@ -271,7 +277,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                       width={barW}
                       height={wthH}
                       rx={2}
-                      fill="#a8b8d8"
+                      fill="url(#withdrawalPattern)"
                     >
                       <title>Withdrawal: ${wth.toLocaleString('en-US', { maximumFractionDigits: 2 })}</title>
                     </rect>
@@ -306,7 +312,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
               <small>{t ? t('userDashboard.deposits', { defaultValue: 'Deposit' }) : 'Deposit'}</small>
             </div>
             <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, backgroundColor: '#a8b8d8', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+              <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(#a8b8d8 0% 25%, #8898b8 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
               <small>{t ? t('userDashboard.withdrawals', { defaultValue: 'Withdrawal' }) : 'Withdrawal'}</small>
             </div>
             <div className="d-flex align-items-center gap-2">

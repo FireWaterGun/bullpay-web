@@ -397,9 +397,9 @@ function SimpleBarChart({ data, height = 300, locale = 'en-US', t }) {
           </div>
         </div>
         {/* X-axis labels */}
-        <div style={{ display: 'flex', marginLeft: yAxisW }}>
+        <div style={{ display: 'flex', marginLeft: yAxisW, width: barAreaW }}>
           {data.map((item, i) => (
-            <div key={i} style={{ width: barGroupW, textAlign: 'center' }}>
+            <div key={i} style={{ width: barGroupW, flexShrink: 0, textAlign: 'center' }}>
               <small className="text-muted" style={{ fontSize: '0.75rem' }}>
                 {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
