@@ -308,15 +308,16 @@ export default function WithdrawalTransactions() {
                       <th style={{ minWidth: '80px' }}>{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('withdrawal.status', { defaultValue: 'Status' })}</th>
                       <th style={{ minWidth: '120px' }} className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</th>
                       <th style={{ minWidth: '680px' }}>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
+                      <th style={{ minWidth: '420px' }}>{t('withdrawal.fromAddress', { defaultValue: 'From Address' })}</th>
+                      <th style={{ minWidth: '420px' }}>{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('withdrawal.createdAt', { defaultValue: 'Created Date' })}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {withdrawals.length === 0 ? (
                       <tr>
-                        <td colSpan="11" className="text-center text-muted py-4">
+                        <td colSpan="12" className="text-center text-muted py-4">
                           {t('withdrawal.noTransactions', { defaultValue: 'No withdrawal transactions found' })}
                         </td>
                       </tr>
@@ -392,22 +393,6 @@ export default function WithdrawalTransactions() {
                             )}
                           </td>
                           <td>
-                            <div className="d-flex align-items-center">
-                              <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                                {withdrawal.toAddress || 'N/A'}
-                              </span>
-                              {withdrawal.toAddress && (
-                                <button
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  onClick={() => copyToClipboard(withdrawal.toAddress)}
-                                  title="Copy address"
-                                >
-                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                          <td>
                             {withdrawal.txHash ? (
                               <div className="d-flex align-items-center">
                                 <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
@@ -428,6 +413,38 @@ export default function WithdrawalTransactions() {
                             ) : (
                               <span className="text-muted">-</span>
                             )}
+                          </td>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                                {withdrawal.fromAddress || 'N/A'}
+                              </span>
+                              {withdrawal.fromAddress && (
+                                <button
+                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                  onClick={() => copyToClipboard(withdrawal.fromAddress)}
+                                  title="Copy address"
+                                >
+                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                                {withdrawal.toAddress || 'N/A'}
+                              </span>
+                              {withdrawal.toAddress && (
+                                <button
+                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                  onClick={() => copyToClipboard(withdrawal.toAddress)}
+                                  title="Copy address"
+                                >
+                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
+                                </button>
+                              )}
+                            </div>
                           </td>
                           <td>
                             <span style={{ whiteSpace: 'nowrap' }}>{formatDate(withdrawal.createdAt)}</span>

@@ -137,6 +137,9 @@ export default function UserLedgerList() {
     'SP': 'Settlement Payment',
     'SC': 'Sweep Cost',
     'SG': 'Sweep Gas',
+    'WA': 'Wallet Actual',
+    'WF': 'Wallet Fee',
+    'WG': 'Wallet Gas',
     'WD': 'Withdrawal',
     'DP': 'Deposit',
     'FE': 'Fee',
@@ -246,6 +249,7 @@ export default function UserLedgerList() {
                       <th style={{ minWidth: '130px' }}>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
                       <th style={{ minWidth: '120px' }}>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
+                      <th style={{ minWidth: '130px' }}>Code</th>
                       <th className="text-end" style={{ minWidth: '200px' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
                       <th className="text-end" style={{ minWidth: '100px' }}>USD</th>
                       <th style={{ minWidth: '200px' }}>Tx Hash</th>
@@ -256,7 +260,7 @@ export default function UserLedgerList() {
                   <tbody>
                     {entries.length === 0 ? (
                       <tr>
-                        <td colSpan="10" className="text-center text-muted py-4">
+                        <td colSpan="11" className="text-center text-muted py-4">
                           {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
                         </td>
                       </tr>
@@ -295,6 +299,13 @@ export default function UserLedgerList() {
                                   )}
                                 </div>
                               </div>
+                            </td>
+                            <td>
+                              {entry.entryCode ? (
+                                <span className="fw-medium">{entry.entryCode}</span>
+                              ) : (
+                                <span className="text-muted">-</span>
+                              )}
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
                               <span className={`fw-medium ${isCredit ? 'text-success' : 'text-danger'}`}>

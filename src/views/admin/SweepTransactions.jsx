@@ -256,9 +256,9 @@ export default function SweepTransactions() {
                       <th style={{ minWidth: '150px' }}>{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
                       <th style={{ minWidth: '260px' }}>{t('admin.sweep.actualAmount', { defaultValue: 'Actual Amount' })}</th>
                       <th style={{ minWidth: '100px' }}>{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.from', { defaultValue: 'From' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.to', { defaultValue: 'To' })}</th>
                       <th style={{ minWidth: '680px' }}>{t('admin.sweep.txHash', { defaultValue: 'Tx Hash' })}</th>
+                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.from', { defaultValue: 'From Address' })}</th>
+                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.to', { defaultValue: 'To Address' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
                     </tr>
@@ -325,6 +325,26 @@ export default function SweepTransactions() {
                           </td>
                           <td className="text-nowrap"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
                           <td>
+                            {sweep.txHash ? (
+                              <div className="d-flex align-items-center">
+                                <span className="me-2">
+                                  {sweep.txHash}
+                                </span>
+                                <a 
+                                  href={`${sweep.coinNetwork?.network?.explorerUrl}/tx/${sweep.txHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                  title="View on explorer"
+                                >
+                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
+                                </a>
+                              </div>
+                            ) : (
+                              <span className="text-muted">-</span>
+                            )}
+                          </td>
+                          <td>
                             <div className="d-flex align-items-center">
                               <span className="me-2">
                                 {sweep.fromAddress || 'N/A'}
@@ -355,26 +375,6 @@ export default function SweepTransactions() {
                                 </button>
                               )}
                             </div>
-                          </td>
-                          <td>
-                            {sweep.txHash ? (
-                              <div className="d-flex align-items-center">
-                                <span className="me-2">
-                                  {sweep.txHash}
-                                </span>
-                                <a 
-                                  href={`${sweep.coinNetwork?.network?.explorerUrl}/tx/${sweep.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  title="View on explorer"
-                                >
-                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                                </a>
-                              </div>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
                           </td>
                           <td>
                             <span style={{ whiteSpace: 'nowrap' }}>{formatDate(sweep.createdAt)}</span>
