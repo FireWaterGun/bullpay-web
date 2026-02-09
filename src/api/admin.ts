@@ -845,6 +845,142 @@ export async function getRevenueDaily(token: string, from: string, to: string, c
 }
 
 /**
+ * Get system ledger entries (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (page, limit, type, coinNetworkId, startDate, endDate)
+ */
+export async function getSystemLedgerEntries(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    type?: string
+    coinNetworkId?: number
+    startDate?: string
+    endDate?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.type) queryParams.append('type', params.type)
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/system-ledger${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get system ledger entry by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Ledger entry ID
+ */
+export async function getSystemLedgerEntry(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/system-ledger/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response?.data || response
+}
+
+/**
+ * Get user ledger entries (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (page, limit, type, userId, coinNetworkId, startDate, endDate)
+ */
+export async function getUserLedgerEntries(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    type?: string
+    userId?: number
+    coinNetworkId?: number
+    startDate?: string
+    endDate?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.type) queryParams.append('type', params.type)
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/user-ledger${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get user ledger entry by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Ledger entry ID
+ */
+export async function getUserLedgerEntry(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/user-ledger/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response?.data || response
+}
+
+/**
  * Get revenue by coin (Admin only)
  * @param token - Auth token
  * @param from - Start date (YYYY-MM-DD)

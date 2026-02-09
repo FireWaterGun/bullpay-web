@@ -839,7 +839,17 @@
       "transferOut": "โอนออก",
       "conversionIn": "แปลงเข้า",
       "conversionOut": "แปลงออก",
-      "loadError": "โหลดข้อมูลไม่สำเร็จ"
+      "loadError": "โหลดข้อมูลไม่สำเร็จ",
+      "systemLedger": "บัญชีแยกประเภทระบบ",
+      "systemLedgerDesc": "ดูรายการบัญชีแยกประเภทระบบทั้งหมด",
+      "systemLedgerEntry": "รายการบัญชีแยกประเภทระบบ",
+      "userLedger": "บัญชีแยกประเภทผู้ใช้",
+      "userLedgerDesc": "ดูรายการบัญชีแยกประเภทผู้ใช้ทั้งหมด",
+      "userLedgerEntry": "รายการบัญชีแยกประเภทผู้ใช้",
+      "details": "รายละเอียด",
+      "notFound": "ไม่พบรายการบัญชี",
+      "referenceType": "ประเภทอ้างอิง",
+      "relatedId": "รหัสที่เกี่ยวข้อง"
     },
     "wallet": {
       "loadError": "โหลดข้อมูลกระเป๋าไม่สำเร็จ"

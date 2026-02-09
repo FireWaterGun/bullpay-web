@@ -20,6 +20,7 @@ import {
 
 // Remove inline page components and import split components
 import DashboardHome from './DashboardHome'
+import UserTransactionsDashboard from './UserTransactionsDashboard'
 import Settings from './Settings'
 import WalletCreate from '../wallets/WalletCreate'
 import WalletList from '../wallets/WalletList'
@@ -51,6 +52,10 @@ import WithdrawalOverrides from '../admin/WithdrawalOverrides'
 import WithdrawalPolicy from '../admin/WithdrawalPolicy'
 import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
 import LedgerTransactions from '../ledger/LedgerTransactions'
+import SystemLedgerList from '../ledger/SystemLedgerList'
+import SystemLedgerDetail from '../ledger/SystemLedgerDetail'
+import UserLedgerList from '../ledger/UserLedgerList'
+import UserLedgerDetail from '../ledger/UserLedgerDetail'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
@@ -602,7 +607,8 @@ export default function DashboardLayout() {
                   <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
-                  <SubItem to="/admin/ledger/transactions" end label={t('admin.ledger.transactions', { defaultValue: 'Transactions' })} />
+                  <SubItem to="/admin/ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
+                  <SubItem to="/admin/ledger/user" end label={t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/crypto" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })}>
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
@@ -888,6 +894,10 @@ export default function DashboardLayout() {
                     <Route path="sweep/transactions" element={<SweepTransactions />} />
                     <Route path="withdrawal/transactions" element={<WithdrawalTransactions />} />
                     <Route path="ledger/transactions" element={<LedgerTransactions />} />
+                    <Route path="ledger/system" element={<SystemLedgerList />} />
+                    <Route path="ledger/system/:id" element={<SystemLedgerDetail />} />
+                    <Route path="ledger/user" element={<UserLedgerList />} />
+                    <Route path="ledger/user/:id" element={<UserLedgerDetail />} />
                     <Route path="settings/evm/fee-policy" element={<EVMFeePolicy />} />
                     <Route path="settings/network/fees" element={<NetworkFees />} />
                     <Route path="settings/sweep/configuration" element={<Sweep />} />
@@ -899,7 +909,7 @@ export default function DashboardLayout() {
                 ) : (
                   <>
                     {/* User routes */}
-                    <Route index element={<DashboardHome />} />
+                    <Route index element={<UserTransactionsDashboard />} />
                     <Route path="invoices" element={<InvoiceList />} />
                     <Route path="invoices/create" element={<InvoiceCreate />} />
                     <Route path="invoices/:id" element={<InvoiceDetail />} />
