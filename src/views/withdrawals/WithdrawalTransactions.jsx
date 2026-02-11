@@ -116,7 +116,7 @@ export default function WithdrawalTransactions() {
       const data = await getWithdrawals(token, {
         page: currentPage,
         limit: 20,
-        status: statusFilter || undefined
+        status: statusFilter ? statusFilter.toLowerCase() : undefined
       })
       setWithdrawals(data.items || [])
       setPagination(data.pagination || null)
