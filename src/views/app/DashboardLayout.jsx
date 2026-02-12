@@ -605,9 +605,9 @@ export default function DashboardLayout() {
               <>
                 {/* Admin menu */}
                 <MenuItem to="/admin" end icon="bx-bar-chart-alt-2" label={t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })} />
-                <MenuGroup base="/admin/pnl" icon="bx-line-chart" label={t('admin.pnl.menuTitle', { defaultValue: 'Revenue & Expenses' })}>
+                <MenuGroup base="/admin/pnl" icon="bx-line-chart" label={t('admin.pnl.menuTitle', { defaultValue: 'Profit & Loss' })}>
                   <SubItem to="/admin/pnl/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
-                  <SubItem to="/admin/pnl/platform-ledger" end label={t('admin.pnl.platformLedger', { defaultValue: 'Platform Ledger' })} />
+                  <SubItem to="/admin/pnl/platform-ledger" end label={t('admin.pnl.platformLedger', { defaultValue: 'Revenue & Expenses' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
                   <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />

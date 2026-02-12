@@ -260,7 +260,6 @@ export default function IncomeStatement() {
                                 <td>
                                   <span className="badge bg-label-primary me-2">{item.code}</span>
                                   <span>{item.name || item.code}</span>
-                                  {item.entries && <small className="text-muted ms-1">({item.entries})</small>}
                                 </td>
                                 <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                               </tr>
@@ -280,7 +279,6 @@ export default function IncomeStatement() {
                                   <td>
                                     <span className="badge bg-label-warning me-2">{item.code}</span>
                                     <span>{item.name || item.code}</span>
-                                    {item.entries && <small className="text-muted ms-1">({item.entries})</small>}
                                   </td>
                                   <td className="text-end fw-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
                                 </tr>
@@ -314,7 +312,6 @@ export default function IncomeStatement() {
                                 <td>
                                   <span className="badge bg-label-danger me-2">{item.code}</span>
                                   <span>{item.name || item.code}</span>
-                                  {item.entries && <small className="text-muted ms-1">({item.entries})</small>}
                                 </td>
                                 <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                               </tr>

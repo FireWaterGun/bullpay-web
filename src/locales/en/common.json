@@ -894,9 +894,9 @@
       "conversionOut": "Conversion Out"
     },
     "pnl": {
-      "menuTitle": "Revenue & Expenses",
+      "menuTitle": "Profit & Loss",
       "incomeStatement": "Income Statement",
-      "platformLedger": "Platform Ledger"
+      "platformLedger": "Revenue & Expenses"
     },
     "platformLedger": {
       "title": "Platform Ledger",
