@@ -29,7 +29,27 @@
     "lastMonth": "เดือนที่แล้ว",
     "custom": "กำหนดเอง",
     "from": "ตั้งแต่",
-    "to": "ถึง"
+    "to": "ถึง",
+    "status": "สถานะ",
+    "allStatus": "ทุกสถานะ",
+    "userId": "รหัสผู้ใช้",
+    "merchantId": "รหัสร้านค้า",
+    "invoiceId": "รหัสใบแจ้งหนี้",
+    "txHash": "แฮชธุรกรรม",
+    "fromDate": "ตั้งแต่วันที่",
+    "toDate": "ถึงวันที่",
+    "sortBy": "เรียงตาม",
+    "sortOrder": "ลำดับ",
+    "default": "ค่าเริ่มต้น",
+    "createdAt": "วันที่สร้าง",
+    "amount": "จำนวน",
+    "expiryAt": "วันหมดอายุ",
+    "paidAt": "วันที่ชำระ",
+    "confirmations": "การยืนยัน",
+    "ascending": "น้อยไปมาก",
+    "descending": "มากไปน้อย",
+    "apply": "ใช้ตัวกรอง",
+    "reset": "รีเซ็ต"
   },
   "actions": {
     "filters": "ตัวกรอง",
@@ -271,12 +291,19 @@
   },
   "status": {
     "all": "ทั้งหมด",
-    "pending": "รอการอนุมัติ",
-    "waiting_for_gas": "รอเติม gas fee",
-    "processing": "กำลังดำเนินการ",
-    "completed": "สำเร็จแล้ว",
+    "pending": "รอดำเนินการ",
+    "paid": "ชำระแล้ว",
+    "expired": "หมดอายุ",
+    "cancelled": "ยกเลิก",
+    "detecting": "กำลังตรวจจับ",
+    "confirming": "กำลังยืนยัน",
+    "confirmed": "ยืนยันแล้ว",
+    "completed": "เสร็จสิ้น",
     "failed": "ล้มเหลว",
-    "cancelled": "ถูกยกเลิก"
+    "refunded": "คืนเงินแล้ว",
+    "unconfirmed": "ยังไม่ยืนยัน",
+    "waiting_for_gas": "รอเติม gas fee",
+    "processing": "กำลังดำเนินการ"
   },
   "pagination": {
     "prev": "ก่อนหน้า",
@@ -501,6 +528,20 @@
     "hot": "ร้อน",
     "cold": "เย็น",
     "active": "ใช้งาน",
+    "invoices": {
+      "menuTitle": "ใบแจ้งหนี้",
+      "title": "ใบแจ้งหนี้",
+      "description": "ดูใบแจ้งหนี้ทั้งหมดและสถานะ",
+      "noInvoices": "ไม่พบใบแจ้งหนี้",
+      "loadError": "ไม่สามารถโหลดใบแจ้งหนี้ได้"
+    },
+    "payments": {
+      "menuTitle": "การชำระเงิน",
+      "title": "การชำระเงิน",
+      "description": "ดูรายการธุรกรรมการชำระเงินบนบล็อกเชนทั้งหมด",
+      "noPayments": "ไม่พบรายการชำระเงิน",
+      "loadError": "ไม่สามารถโหลดรายการชำระเงินได้"
+    },
     "paymentDashboard": "แดชบอร์ดการชำระเงิน",
     "dashboard": {
       "title": "แดชบอร์ดการชำระเงิน",
@@ -1026,5 +1067,23 @@
     "networkCreateSuccess": "สร้างเครือข่ายสำเร็จ",
     "updateSuccess": "อัพเดตเหรียญเครือข่ายสำเร็จ",
     "createSuccess": "สร้างเหรียญเครือข่ายสำเร็จ"
+  },
+  "table": {
+    "id": "รหัส",
+    "userId": "รหัสผู้ใช้",
+    "status": "สถานะ",
+    "invoiceId": "รหัสใบแจ้งหนี้",
+    "code": "รหัส",
+    "coin": "เหรียญ",
+    "amount": "จำนวน",
+    "usd": "USD",
+    "confirmations": "การยืนยัน",
+    "txHash": "แฮชธุรกรรม",
+    "fromAddress": "ที่อยู่ต้นทาง",
+    "toAddress": "ที่อยู่ปลายทาง",
+    "paymentAddress": "ที่อยู่ชำระเงิน",
+    "created": "วันที่สร้าง",
+    "confirmed": "ยืนยันแล้ว",
+    "expires": "หมดอายุ"
   }
 }

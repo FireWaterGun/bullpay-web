@@ -996,3 +996,157 @@ export async function getRevenueByCoin(token: string, from: string, to: string) 
   })
   return response?.data || response
 }
+
+/**
+ * Get admin invoices (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (page, limit, status, userId)
+ */
+export async function getAdminInvoices(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    userId?: number
+    merchantId?: number
+    coinNetworkId?: number
+    fromDate?: string
+    toDate?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.merchantId) queryParams.append('merchantId', String(params.merchantId))
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.fromDate) queryParams.append('fromDate', params.fromDate)
+  if (params.toDate) queryParams.append('toDate', params.toDate)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/invoices${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get admin invoice by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Invoice ID
+ */
+export async function getAdminInvoice(token: string, id: number | string) {
+  const response = await apiFetch(`/api/v1/admin/invoices/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  const data = response?.data || response
+  return data?.invoice || data
+}
+
+/**
+ * Get admin payments (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (page, limit, status, userId)
+ */
+export async function getAdminPayments(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    userId?: number
+    invoiceId?: number
+    coinNetworkId?: number
+    txHash?: string
+    fromDate?: string
+    toDate?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.invoiceId) queryParams.append('invoiceId', String(params.invoiceId))
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.txHash) queryParams.append('txHash', params.txHash)
+  if (params.fromDate) queryParams.append('fromDate', params.fromDate)
+  if (params.toDate) queryParams.append('toDate', params.toDate)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/payments${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get admin payment by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Payment ID
+ */
+export async function getAdminPayment(token: string, id: number | string) {
+  const response = await apiFetch(`/api/v1/admin/payments/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  const data = response?.data || response
+  return data?.payment || data
+}

@@ -29,7 +29,40 @@
     "lastMonth": "Last Month",
     "custom": "Custom",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "status": "Status",
+    "allStatus": "All Status",
+    "userId": "User ID",
+    "merchantId": "Merchant ID",
+    "invoiceId": "Invoice ID",
+    "txHash": "Tx Hash",
+    "fromDate": "From Date",
+    "toDate": "To Date",
+    "sortBy": "Sort By",
+    "sortOrder": "Sort Order",
+    "default": "Default",
+    "createdAt": "Created At",
+    "amount": "Amount",
+    "expiryAt": "Expiry At",
+    "paidAt": "Paid At",
+    "confirmations": "Confirmations",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "apply": "Apply Filters",
+    "reset": "Reset"
+  },
+  "status": {
+    "pending": "Pending",
+    "paid": "Paid",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "detecting": "Detecting",
+    "confirming": "Confirming",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "failed": "Failed",
+    "refunded": "Refunded",
+    "unconfirmed": "Unconfirmed"
   },
   "actions": {
     "filters": "Filters",
@@ -477,6 +510,20 @@
     "hot": "Hot",
     "cold": "Cold",
     "active": "Active",
+    "invoices": {
+      "menuTitle": "Invoices",
+      "title": "Invoices",
+      "description": "View all invoices and their status",
+      "noInvoices": "No invoices found",
+      "loadError": "Failed to load invoices"
+    },
+    "payments": {
+      "menuTitle": "Payments",
+      "title": "Payments",
+      "description": "View all blockchain payment transactions",
+      "noPayments": "No payments found",
+      "loadError": "Failed to load payments"
+    },
     "sweep": {
       "menuTitle": "Sweep",
       "title": "Sweep Management",
@@ -957,5 +1004,23 @@
     "networkCreateSuccess": "Network created successfully",
     "updateSuccess": "Coin network updated successfully",
     "createSuccess": "Coin network created successfully"
+  },
+  "table": {
+    "id": "ID",
+    "userId": "User ID",
+    "status": "Status",
+    "invoiceId": "Invoice ID",
+    "code": "Code",
+    "coin": "Coin",
+    "amount": "Amount",
+    "usd": "USD",
+    "confirmations": "Confirmations",
+    "txHash": "Tx Hash",
+    "fromAddress": "From Address",
+    "toAddress": "To Address",
+    "paymentAddress": "Payment Address",
+    "created": "Created",
+    "confirmed": "Confirmed",
+    "expires": "Expires"
   }
 }

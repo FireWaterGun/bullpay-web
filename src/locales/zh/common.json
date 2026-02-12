@@ -29,7 +29,40 @@
     "lastMonth": "上月",
     "custom": "自定义",
     "from": "从",
-    "to": "到"
+    "to": "到",
+    "status": "状态",
+    "allStatus": "全部状态",
+    "userId": "用户ID",
+    "merchantId": "商户ID",
+    "invoiceId": "发票ID",
+    "txHash": "交易哈希",
+    "fromDate": "开始日期",
+    "toDate": "结束日期",
+    "sortBy": "排序依据",
+    "sortOrder": "排序方式",
+    "default": "默认",
+    "createdAt": "创建时间",
+    "amount": "金额",
+    "expiryAt": "过期时间",
+    "paidAt": "支付时间",
+    "confirmations": "确认数",
+    "ascending": "升序",
+    "descending": "降序",
+    "apply": "应用筛选",
+    "reset": "重置"
+  },
+  "status": {
+    "pending": "待处理",
+    "paid": "已支付",
+    "expired": "已过期",
+    "cancelled": "已取消",
+    "detecting": "检测中",
+    "confirming": "确认中",
+    "confirmed": "已确认",
+    "completed": "已完成",
+    "failed": "失败",
+    "refunded": "已退款",
+    "unconfirmed": "未确认"
   },
   "actions": {
     "filters": "筛选",
@@ -481,6 +514,20 @@
     "hot": "热",
     "cold": "冷",
     "active": "活跃",
+    "invoices": {
+      "menuTitle": "发票",
+      "title": "发票",
+      "description": "查看所有发票及其状态",
+      "noInvoices": "未找到发票",
+      "loadError": "加载发票失败"
+    },
+    "payments": {
+      "menuTitle": "支付",
+      "title": "支付",
+      "description": "查看所有区块链支付交易",
+      "noPayments": "未找到支付记录",
+      "loadError": "加载支付记录失败"
+    },
     "paymentDashboard": "支付仪表板",
     "user": "用户",
     "balance": "余额",
@@ -991,5 +1038,23 @@
     "networkCreateSuccess": "网络创建成功",
     "updateSuccess": "代币网络更新成功",
     "createSuccess": "代币网络创建成功"
+  },
+  "table": {
+    "id": "编号",
+    "userId": "用户ID",
+    "status": "状态",
+    "invoiceId": "发票ID",
+    "code": "代码",
+    "coin": "代币",
+    "amount": "金额",
+    "usd": "USD",
+    "confirmations": "确认数",
+    "txHash": "交易哈希",
+    "fromAddress": "来源地址",
+    "toAddress": "目标地址",
+    "paymentAddress": "支付地址",
+    "created": "创建时间",
+    "confirmed": "确认时间",
+    "expires": "过期时间"
   }
 }

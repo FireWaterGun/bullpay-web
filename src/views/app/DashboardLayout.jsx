@@ -56,6 +56,10 @@ import SystemLedgerList from '../ledger/SystemLedgerList'
 import SystemLedgerDetail from '../ledger/SystemLedgerDetail'
 import UserLedgerList from '../ledger/UserLedgerList'
 import UserLedgerDetail from '../ledger/UserLedgerDetail'
+import AdminInvoiceList from '../admin/AdminInvoiceList'
+import AdminInvoiceDetail from '../admin/AdminInvoiceDetail'
+import AdminPaymentList from '../admin/AdminPaymentList'
+import AdminPaymentDetail from '../admin/AdminPaymentDetail'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
@@ -601,6 +605,12 @@ export default function DashboardLayout() {
                 <MenuGroup base="/admin/system-wallet" icon="bx-wallet" label={t('admin.systemWallet', { defaultValue: 'System Wallet' })}>
                   <SubItem to="/admin/system-wallet/balance" end label={t('admin.balance', { defaultValue: 'Balance' })} />
                 </MenuGroup>
+                <MenuGroup base="/admin/invoices" icon="bx-receipt" label={t('admin.invoices.menuTitle', { defaultValue: 'Invoices' })}>
+                  <SubItem to="/admin/invoices" end label={t('admin.invoices.transactions', { defaultValue: 'Transactions' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/payments" icon="bx-transfer-alt" label={t('admin.payments.menuTitle', { defaultValue: 'Payments' })}>
+                  <SubItem to="/admin/payments" end label={t('admin.payments.transactions', { defaultValue: 'Transactions' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
                   <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
@@ -892,6 +902,10 @@ export default function DashboardLayout() {
                     <Route path="crypto/coin-networks" element={<SupportedCrypto />} />
                     <Route path="crypto/coin-networks/create" element={<SupportedCryptoForm />} />
                     <Route path="crypto/coin-networks/:id" element={<SupportedCryptoForm />} />
+                    <Route path="invoices" element={<AdminInvoiceList />} />
+                    <Route path="invoices/:id" element={<AdminInvoiceDetail />} />
+                    <Route path="payments" element={<AdminPaymentList />} />
+                    <Route path="payments/:id" element={<AdminPaymentDetail />} />
                     <Route path="sweep/transactions" element={<SweepTransactions />} />
                     <Route path="withdrawal/transactions" element={<WithdrawalTransactions />} />
                     <Route path="ledger/transactions" element={<LedgerTransactions />} />
