@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
@@ -94,35 +95,62 @@ export default function SweepTransactions() {
   const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
     return map[i18n.language] || 'en-US'
   }, [i18n.language])
 
+  const initStatus = searchParams.get('status') || ''
+  const initUserId = searchParams.get('userId') || ''
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
+  const initStartDate = searchParams.get('startDate') || ''
+  const initEndDate = searchParams.get('endDate') || ''
+  const initSortBy = searchParams.get('sortBy') || ''
+  const initSortOrder = searchParams.get('sortOrder') || ''
+  const initPage = parseInt(searchParams.get('page')) || 1
+
   const [loading, setLoading] = useState(false)
   const [sweeps, setSweeps] = useState([])
   const [pagination, setPagination] = useState(null)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(initPage)
 
   // Filter states (draft — applied on "Apply")
-  const [statusFilter, setStatusFilter] = useState('')
-  const [userIdFilter, setUserIdFilter] = useState('')
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('')
-  const [startDateFilter, setStartDateFilter] = useState('')
-  const [endDateFilter, setEndDateFilter] = useState('')
-  const [sortByFilter, setSortByFilter] = useState('')
-  const [sortOrderFilter, setSortOrderFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState(initStatus)
+  const [userIdFilter, setUserIdFilter] = useState(initUserId)
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
+  const [startDateFilter, setStartDateFilter] = useState(initStartDate)
+  const [endDateFilter, setEndDateFilter] = useState(initEndDate)
+  const [sortByFilter, setSortByFilter] = useState(initSortBy)
+  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
 
   // Applied filters (sent to API)
-  const [appliedFilters, setAppliedFilters] = useState({})
+  const [appliedFilters, setAppliedFilters] = useState(() => {
+    const f = {}
+    if (initStatus) f.status = initStatus
+    if (initUserId) f.userId = Number(initUserId)
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
+    if (initStartDate) f.startDate = initStartDate
+    if (initEndDate) f.endDate = initEndDate
+    if (initSortBy) f.sortBy = initSortBy
+    if (initSortOrder) f.sortOrder = initSortOrder
+    return f
+  })
 
   useEffect(() => {
     loadSweeps()
   }, [currentPage, appliedFilters])
 
+  function syncSearchParams(filters, page) {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
+    if (page > 1) params.set('page', page)
+    setSearchParams(params, { replace: true })
+  }
+
   function applyFilters() {
-    setAppliedFilters({
+    const f = {
       status: statusFilter || undefined,
       userId: userIdFilter ? Number(userIdFilter) : undefined,
       coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
@@ -130,8 +158,10 @@ export default function SweepTransactions() {
       endDate: endDateFilter || undefined,
       sortBy: sortByFilter || undefined,
       sortOrder: sortOrderFilter || undefined,
-    })
+    }
+    setAppliedFilters(f)
     setCurrentPage(1)
+    syncSearchParams(f, 1)
   }
 
   function resetFilters() {
@@ -144,6 +174,7 @@ export default function SweepTransactions() {
     setSortOrderFilter('')
     setAppliedFilters({})
     setCurrentPage(1)
+    setSearchParams({}, { replace: true })
   }
 
   async function loadSweeps() {
@@ -500,7 +531,7 @@ export default function SweepTransactions() {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       disabled={!pagination.hasPrev || loading}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      onClick={() => { setCurrentPage(currentPage - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
                     >
                       <i className="bx bx-chevron-left"></i>
                       {t('actions.prev', { defaultValue: 'Previous' })}
@@ -514,7 +545,7 @@ export default function SweepTransactions() {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       disabled={!pagination.hasNext || loading}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      onClick={() => { setCurrentPage(currentPage + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
                     >
                       {t('actions.next', { defaultValue: 'Next' })}
                       <i className="bx bx-chevron-right"></i>

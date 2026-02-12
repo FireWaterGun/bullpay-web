@@ -172,7 +172,7 @@ export default function UserLedgerDetail() {
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
           <p className="text-muted mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
-          <button className="btn btn-primary" onClick={() => navigate('/admin/ledger/user')}>
+          <button className="btn btn-primary" onClick={() => navigate(-1)}>
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
         </div>
@@ -204,7 +204,7 @@ export default function UserLedgerDetail() {
         <div className="col-12">
           {/* Back Button */}
           <button
-            onClick={() => navigate('/admin/ledger/user')}
+            onClick={() => navigate(-1)}
             className="btn btn-outline-secondary mb-3"
           >
             <i className="bx bx-arrow-back me-2"></i>

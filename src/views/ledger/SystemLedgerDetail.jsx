@@ -163,7 +163,7 @@ export default function SystemLedgerDetail() {
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
           <p className="text-muted mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
-          <button className="btn btn-primary" onClick={() => navigate('/admin/ledger/system')}>
+          <button className="btn btn-primary" onClick={() => navigate(-1)}>
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
         </div>
@@ -218,7 +218,7 @@ export default function SystemLedgerDetail() {
         <div className="col-12">
           {/* Back Button */}
           <button
-            onClick={() => navigate('/admin/ledger/system')}
+            onClick={() => navigate(-1)}
             className="btn btn-outline-secondary mb-3"
           >
             <i className="bx bx-arrow-back me-2"></i>
@@ -243,8 +243,8 @@ export default function SystemLedgerDetail() {
                       {t('admin.ledger.systemLedgerEntry', { defaultValue: 'System Ledger Entry' })} #{entry.id}
                     </h4>
                     <div className="d-flex align-items-center gap-2 flex-wrap">
-                      <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
-                        <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
+                      <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
+                        <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </span>
                       {entry.entryCode && (
@@ -257,8 +257,8 @@ export default function SystemLedgerDetail() {
                   </div>
                 </div>
                 <div className="text-end">
-                  <div className={`fs-4 fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
-                    {isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
+                  <div className={`fs-4 fw-bold ${isCredit ? 'text-danger' : 'text-success'}`}>
+                    {isCredit ? '-' : '+'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">
                     {formatUsd(entry.amountUsd)}
@@ -309,7 +309,7 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
                         <td>
-                          <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                          <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
                             {isCredit ? 'Credit' : 'Debit'}
                           </span>
                         </td>
@@ -330,8 +330,8 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
                         <td>
-                          <span className={`fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
-                            {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
+                          <span className={`fw-bold ${isCredit ? 'text-danger' : 'text-success'}`}>
+                            {isCredit ? '-' : '+'}{formatAmount(entry.amount)}
                           </span>
                         </td>
                       </tr>
