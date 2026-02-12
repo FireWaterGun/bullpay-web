@@ -342,8 +342,8 @@ export default function SweepTransactions() {
                       <th>{t('admin.chain', { defaultValue: 'Chain' })}</th>
                       <th>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
                       <th className="text-end">{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
                       <th className="text-end">{t('admin.sweep.actualAmount', { defaultValue: 'Actual Amount' })}</th>
+                      <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
                       <th className="text-center">{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
                       <th>{t('admin.sweep.txHash', { defaultValue: 'Tx Hash' })}</th>
                       <th>{t('admin.sweep.from', { defaultValue: 'From Address' })}</th>
@@ -400,13 +400,6 @@ export default function SweepTransactions() {
                             </span>
                           </td>
                           <td className="text-end text-nowrap">
-                            {sweep.amountUsd ? (
-                              <span className="fw-medium">${Number(sweep.amountUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
-                          </td>
-                          <td className="text-end text-nowrap">
                             <span>
                               {sweep.actualAmountRaw ? formatAmount(
                                 sweep.actualAmountRaw, 
@@ -416,6 +409,13 @@ export default function SweepTransactions() {
                               ) : '-'}{' '}
                               {sweep.actualAmountRaw && <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>}
                             </span>
+                          </td>
+                          <td className="text-end text-nowrap">
+                            {sweep.amountUsd ? (
+                              <span className="fw-medium">${Number(sweep.amountUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            ) : (
+                              <span className="text-muted">-</span>
+                            )}
                           </td>
                           <td className="text-nowrap text-center"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
                           <td>
