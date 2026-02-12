@@ -107,9 +107,18 @@ export default function IncomeStatement() {
   }
 
   function formatUsd(val) {
-    if (!val && val !== 0) return '$0.00'
-    const num = parseFloat(val)
-    return '$' + Math.abs(num).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    if (val === null || val === undefined) return '$0.00'
+    const num = typeof val === 'string' ? parseFloat(val) : val
+    if (isNaN(num)) return '$0.00'
+    let decimals
+    const abs = Math.abs(num)
+    if (abs === 0) decimals = 2
+    else if (abs < 0.01) decimals = 8
+    else if (abs < 1) decimals = 4
+    else decimals = 2
+    const prefix = num < 0 ? '-$' : '$'
+    const minD = Math.min(2, decimals)
+    return prefix + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: minD, maximumFractionDigits: Math.max(minD, decimals) })
   }
 
   function formatPercent(val) {
@@ -345,7 +354,7 @@ export default function IncomeStatement() {
                     </div>
                     <div className="col-md-6 text-md-end mt-3 mt-md-0">
                       <h6 className="text-muted mb-1">Profit Margin</h6>
-                      <h2 className={`mb-0 fw-bold ${parseFloat(profitMargin) >= 0 ? 'text-success' : 'text-danger'}`}>
+                      <h2 className={`mb-0 fw-bold ${parseFloat(profitMargin) === 0 ? 'text-muted' : parseFloat(profitMargin) > 0 ? 'text-success' : 'text-danger'}`}>
                         {formatPercent(profitMargin)}
                       </h2>
                     </div>
