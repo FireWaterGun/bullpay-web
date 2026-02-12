@@ -336,18 +336,18 @@ export default function UserLedgerList() {
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
                 <table className="table table-hover" style={{ minWidth: '1200px' }}>
                   <thead>
-                    <tr>
-                      <th style={{ width: '50px' }}>ID</th>
-                      <th style={{ minWidth: '80px' }}>User ID</th>
-                      <th style={{ minWidth: '130px' }}>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-                      <th style={{ minWidth: '120px' }}>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
-                      <th style={{ minWidth: '130px' }}>Code</th>
-                      <th className="text-end" style={{ minWidth: '200px' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end" style={{ minWidth: '100px' }}>USD</th>
-                      <th style={{ minWidth: '200px' }}>Tx Hash</th>
-                      <th style={{ minWidth: '140px' }}>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
-                      <th style={{ width: '50px' }}></th>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th>User ID</th>
+                      <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
+                      <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
+                      <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
+                      <th>Code</th>
+                      <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-end">USD</th>
+                      <th>Tx Hash</th>
+                      <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>

@@ -364,18 +364,18 @@ export default function SystemLedgerList() {
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
                 <table className="table table-hover" style={{ minWidth: '1200px' }}>
                   <thead>
-                    <tr>
-                      <th style={{ width: '50px' }}>ID</th>
-                      <th style={{ minWidth: '130px' }}>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-                      <th style={{ minWidth: '120px' }}>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
-                      <th style={{ minWidth: '130px' }}>Code</th>
-                      <th className="text-end" style={{ minWidth: '200px' }}>{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end" style={{ minWidth: '100px' }}>USD</th>
-                      <th style={{ minWidth: '200px' }}>Purpose</th>
-                      <th style={{ minWidth: '200px' }}>Tx Hash</th>
-                      <th style={{ minWidth: '140px' }}>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
-                      <th style={{ width: '50px' }}></th>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
+                      <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
+                      <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
+                      <th>Code</th>
+                      <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-end">USD</th>
+                      <th>Purpose</th>
+                      <th>Tx Hash</th>
+                      <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -398,8 +398,8 @@ export default function SystemLedgerList() {
                               <span className="fw-semibold text-primary">{entry.id}</span>
                             </td>
                             <td>
-                              <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
-                                <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
+                              <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
+                                <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
                                 {isCredit ? 'Credit' : 'Debit'}
                               </span>
                             </td>
@@ -429,8 +429,8 @@ export default function SystemLedgerList() {
                               )}
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className={`fw-medium ${isCredit ? 'text-success' : 'text-danger'}`}>
-                                {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
+                              <span className={`fw-medium ${isCredit ? 'text-danger' : 'text-success'}`}>
+                                {isCredit ? '-' : '+'}{formatAmount(entry.amount)}
                               </span>
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>

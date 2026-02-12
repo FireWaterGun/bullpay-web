@@ -306,20 +306,20 @@ export default function AdminInvoiceList() {
           <div className="card">
             <div className="card-body">
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover" style={{ minWidth: '1200px' }}>
+                <table className="table table-hover">
                   <thead>
-                    <tr>
-                      <th style={{ minWidth: '60px' }}>{t('table.id', { defaultValue: 'ID' })}</th>
-                      <th className="text-center" style={{ minWidth: '120px' }}>{t('table.userId', { defaultValue: 'User ID' })}</th>
-                      <th style={{ minWidth: '200px' }}>{t('table.code', { defaultValue: 'Code' })}</th>
-                      <th style={{ minWidth: '150px' }}>{t('table.coin', { defaultValue: 'Coin' })}</th>
-                      <th className="text-end" style={{ minWidth: '50px' }}>{t('table.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end" style={{ minWidth: '50px' }}>{t('table.usd', { defaultValue: 'USD' })}</th>
-                      <th className="text-center" style={{ minWidth: '100px' }}>{t('table.status', { defaultValue: 'Status' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('table.paymentAddress', { defaultValue: 'Payment Address' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('table.created', { defaultValue: 'Created' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('table.expires', { defaultValue: 'Expires' })}</th>
-                      <th style={{ width: '50px' }}></th>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>{t('table.id', { defaultValue: 'ID' })}</th>
+                      <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
+                      <th>{t('table.code', { defaultValue: 'Code' })}</th>
+                      <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
+                      <th className="text-end">{t('table.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
+                      <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
+                      <th>{t('table.paymentAddress', { defaultValue: 'Payment Address' })}</th>
+                      <th>{t('table.created', { defaultValue: 'Created' })}</th>
+                      <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>

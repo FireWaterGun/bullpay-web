@@ -296,7 +296,7 @@ export default function WithdrawalTransactions() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-money-withdraw me-2"></i>
-                    {t('withdrawal.transactions', { defaultValue: 'Withdrawal Transactions' })}
+                    {t('withdrawal.transactions', { defaultValue: 'Withdrawal' })}
                   </h4>
                   <p className="text-muted mb-0">
                     {t('withdrawal.transactionsDesc', { defaultValue: 'View all withdrawal transactions and their status' })}
@@ -354,161 +354,162 @@ export default function WithdrawalTransactions() {
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
                 <table className="table table-hover" style={{ minWidth: '1200px' }}>
                   <thead>
-                    <tr>
-                      <th style={{ minWidth: '60px' }}>ID</th>
-                      <th style={{ minWidth: '150px' }}>{t('admin.user', { defaultValue: 'User' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('withdrawal.chain', { defaultValue: 'Chain' })}</th>
-                      <th style={{ minWidth: '180px' }}>{t('withdrawal.coin', { defaultValue: 'Coin' })}</th>
-                      <th style={{ minWidth: '120px' }}>{t('withdrawal.amount', { defaultValue: 'Amount' })}</th>
-                      <th style={{ minWidth: '80px' }}>{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('withdrawal.status', { defaultValue: 'Status' })}</th>
-                      <th style={{ minWidth: '120px' }} className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
-                      <th style={{ minWidth: '680px' }}>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('withdrawal.fromAddress', { defaultValue: 'From Address' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('withdrawal.createdAt', { defaultValue: 'Created Date' })}</th>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
+                      <th>{t('withdrawal.chain', { defaultValue: 'Chain' })}</th>
+                      <th>{t('withdrawal.coin', { defaultValue: 'Coin' })}</th>
+                      <th className="text-end">{t('withdrawal.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
+                      <th className="text-end">{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
+                      <th className="text-center">{t('withdrawal.status', { defaultValue: 'Status' })}</th>
+                      <th className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
+                      <th>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
+                      <th>{t('withdrawal.fromAddress', { defaultValue: 'From Address' })}</th>
+                      <th>{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</th>
+                      <th>{t('withdrawal.createdAt', { defaultValue: 'Created Date' })}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {withdrawals.length === 0 ? (
                       <tr>
-                        <td colSpan="12" className="text-center text-muted py-4">
+                        <td colSpan="13" className="text-center text-muted py-4">
                           {t('withdrawal.noTransactions', { defaultValue: 'No withdrawal transactions found' })}
                         </td>
                       </tr>
                     ) : (
-                      withdrawals.map((withdrawal) => (
-                        <tr key={withdrawal.id}>
-                          <td>
-                            <span className="fw-semibold text-primary">{withdrawal.id}</span>
-                          </td>
-                          <td>
+                    withdrawals.map((withdrawal) => (
+                      <tr key={withdrawal.id}>
+                        <td>
+                          <span className="fw-semibold text-primary">{withdrawal.id}</span>
+                        </td>
+                        <td className="text-center">
+                          <span className="fw-medium">{withdrawal.userId || withdrawal.user?.id || '-'}</span>
+                        </td>
+                        <td>
+                          <span className="text-muted">
+                            {(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
+                          </span>
+                        </td>
+                        <td style={{ whiteSpace: 'nowrap' }}>
+                          <div className="d-flex align-items-center">
+                            <CoinImg
+                              symbol={(withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || '').toUpperCase()}
+                              networkSymbol={(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase()}
+                              size={24}
+                            />
                             <div>
-                              <div>{withdrawal.user?.email || 'N/A'}</div>
-                              {withdrawal.user?.fullName && (
-                                <small className="text-muted">{withdrawal.user.fullName}</small>
+                              <div className="fw-medium" style={{ lineHeight: 1.2 }}>{(withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || '-').toUpperCase()}</div>
+                              {(withdrawal.network?.name || withdrawal.coinNetwork?.network?.name) && (
+                                <small className="text-muted" style={{ fontSize: '0.75rem' }}>{withdrawal.network?.name || withdrawal.coinNetwork?.network?.name}</small>
                               )}
                             </div>
-                          </td>
-                          <td>
-                            <span className="text-muted">
-                              {(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              {(withdrawal.coin || withdrawal.coinNetwork) && (
-                                <>
-                                  <CoinImg 
-                                    symbol={withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol}
-                                    networkSymbol={withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol}
-                                    size={24}
-                                  />
-                                  <div className="ms-2">
-                                    <div>{withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || 'N/A'}</div>
-                                    <small className="text-muted">{withdrawal.network?.name || withdrawal.coinNetwork?.network?.name || 'N/A'}</small>
-                                  </div>
-                                </>
-                              )}
+                          </div>
+                        </td>
+                        <td className="text-end text-nowrap">
+                          <span className="fw-medium">
+                            {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)} {withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || ''}
+                          </span>
+                        </td>
+                        <td className="text-end text-nowrap">
+                          {withdrawal.amountUsd ? (
+                            <span className="fw-medium">${Number(withdrawal.amountUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                          ) : (
+                            <span className="text-muted">-</span>
+                          )}
+                        </td>
+                        <td className="text-end text-nowrap">
+                          <span className="text-muted">
+                            {formatAmount(withdrawal.totalFeeRaw || withdrawal.totalFee || withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
+                          </span>
+                        </td>
+                        <td className="text-center text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
+                        <td className="text-center">
+                          {withdrawal.status?.toLowerCase() === 'pending' ? (
+                            <div className="d-flex gap-1 justify-content-center">
+                              <button
+                                className="btn btn-sm btn-primary"
+                                onClick={() => handleApproveClick(withdrawal)}
+                                disabled={approving || rejecting}
+                              >
+                                <i className="bx bx-check me-1"></i>
+                                {t('withdrawal.approve', { defaultValue: 'Approve' })}
+                              </button>
+                              <button
+                                className="btn btn-sm btn-danger"
+                                onClick={() => handleRejectClick(withdrawal)}
+                                disabled={approving || rejecting}
+                              >
+                                <i className="bx bx-x me-1"></i>
+                                {t('withdrawal.reject', { defaultValue: 'Reject' })}
+                              </button>
                             </div>
-                          </td>
-                          <td className="text-nowrap">
-                            <span>
-                              {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)} {withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || ''}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="text-muted">
-                              {formatAmount(withdrawal.totalFeeRaw || withdrawal.totalFee || withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
-                            </span>
-                          </td>
-                          <td className="text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
-                          <td className="text-center">
-                            {withdrawal.status?.toLowerCase() === 'pending' ? (
-                              <div className="d-flex gap-1 justify-content-center">
-                                <button
-                                  className="btn btn-sm btn-primary"
-                                  onClick={() => handleApproveClick(withdrawal)}
-                                  disabled={approving || rejecting}
-                                >
-                                  <i className="bx bx-check me-1"></i>
-                                  {t('withdrawal.approve', { defaultValue: 'Approve' })}
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-danger"
-                                  onClick={() => handleRejectClick(withdrawal)}
-                                  disabled={approving || rejecting}
-                                >
-                                  <i className="bx bx-x me-1"></i>
-                                  {t('withdrawal.reject', { defaultValue: 'Reject' })}
-                                </button>
-                              </div>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
-                          </td>
-                          <td>
-                            {withdrawal.txHash ? (
-                              <div className="d-flex align-items-center">
-                                <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                                  {withdrawal.txHash}
-                                </span>
-                                {(withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl) && (
-                                  <a 
-                                    href={`${withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl}/tx/${withdrawal.txHash}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    title="View on explorer"
-                                  >
-                                    <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                                  </a>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
-                          </td>
-                          <td>
+                          ) : (
+                            <span className="text-muted">-</span>
+                          )}
+                        </td>
+                        <td>
+                          {withdrawal.txHash ? (
                             <div className="d-flex align-items-center">
                               <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                                {withdrawal.fromAddress || 'N/A'}
+                                {withdrawal.txHash}
                               </span>
-                              {withdrawal.fromAddress && (
-                                <button
+                              {(withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl) && (
+                                <a 
+                                  href={`${withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl}/tx/${withdrawal.txHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                   className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  onClick={() => copyToClipboard(withdrawal.fromAddress)}
-                                  title="Copy address"
+                                  title="View on explorer"
                                 >
-                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                </button>
+                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
+                                </a>
                               )}
                             </div>
-                          </td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                                {withdrawal.toAddress || 'N/A'}
-                              </span>
-                              {withdrawal.toAddress && (
-                                <button
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                  onClick={() => copyToClipboard(withdrawal.toAddress)}
-                                  title="Copy address"
-                                >
-                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(withdrawal.createdAt)}</span>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                          ) : (
+                            <span className="text-muted">-</span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                              {withdrawal.fromAddress || 'N/A'}
+                            </span>
+                            {withdrawal.fromAddress && (
+                              <button
+                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                onClick={() => copyToClipboard(withdrawal.fromAddress)}
+                                title="Copy address"
+                              >
+                                <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                              {withdrawal.toAddress || 'N/A'}
+                            </span>
+                            {withdrawal.toAddress && (
+                              <button
+                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                onClick={() => copyToClipboard(withdrawal.toAddress)}
+                                title="Copy address"
+                              >
+                                <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <span style={{ whiteSpace: 'nowrap' }}>{formatDate(withdrawal.createdAt)}</span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
               </div>
 
               {/* Pagination */}

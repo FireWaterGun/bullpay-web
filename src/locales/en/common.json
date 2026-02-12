@@ -650,7 +650,7 @@
       "coinNetworkId": "Coin-Network ID",
       "coinNetworkIdRequired": "Coin-Network ID is required",
       "coinNetworkIdHelp": "Format: coin_network_id (e.g., 1-eth, 1-bsc)",
-      "transactions": "Transactions",
+      "transactions": "Sweep",
       "transactionsDesc": "View all sweep transactions and their status",
       "noTransactions": "No sweep transactions found",
       "createdAt": "Created Date",
@@ -726,7 +726,7 @@
     },
     "withdrawal": {
       "menuTitle": "Withdrawal",
-      "transactions": "Transactions",
+      "transactions": "Withdrawal",
       "transactionsDesc": "View all withdrawal transactions and their status",
       "defaults": "Defaults & Limits",
       "overrides": "Overrides",

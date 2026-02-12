@@ -253,7 +253,7 @@ export default function SweepTransactions() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-transfer me-2"></i>
-                    {t('admin.sweep.transactions', { defaultValue: 'Sweep Transactions' })}
+                    {t('admin.sweep.transactions', { defaultValue: 'Sweep' })}
                   </h4>
                   <p className="text-muted mb-0">
                     {t('admin.sweep.transactionsDesc', { defaultValue: 'View all sweep transactions and their status' })}
@@ -336,25 +336,26 @@ export default function SweepTransactions() {
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
                 <table className="table table-hover" style={{ minWidth: '1200px' }}>
                   <thead>
-                    <tr>
-                      <th style={{ minWidth: '60px' }}>ID</th>
-                      <th style={{ minWidth: '150px' }}>{t('admin.user', { defaultValue: 'User' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('admin.chain', { defaultValue: 'Chain' })}</th>
-                      <th style={{ minWidth: '180px' }}>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
-                      <th style={{ minWidth: '150px' }}>{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
-                      <th style={{ minWidth: '260px' }}>{t('admin.sweep.actualAmount', { defaultValue: 'Actual Amount' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
-                      <th style={{ minWidth: '680px' }}>{t('admin.sweep.txHash', { defaultValue: 'Tx Hash' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.from', { defaultValue: 'From Address' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('admin.sweep.to', { defaultValue: 'To Address' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</th>
-                      <th style={{ minWidth: '160px' }}>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
+                      <th>{t('admin.chain', { defaultValue: 'Chain' })}</th>
+                      <th>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
+                      <th className="text-end">{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
+                      <th className="text-end">{t('admin.sweep.actualAmount', { defaultValue: 'Actual Amount' })}</th>
+                      <th className="text-center">{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
+                      <th>{t('admin.sweep.txHash', { defaultValue: 'Tx Hash' })}</th>
+                      <th>{t('admin.sweep.from', { defaultValue: 'From Address' })}</th>
+                      <th>{t('admin.sweep.to', { defaultValue: 'To Address' })}</th>
+                      <th>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</th>
+                      <th>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {sweeps.length === 0 ? (
                       <tr>
-                        <td colSpan="12" className="text-center text-muted py-4">
+                        <td colSpan="13" className="text-center text-muted py-4">
                           {t('admin.sweep.noTransactions', { defaultValue: 'No sweep transactions found' })}
                         </td>
                       </tr>
@@ -364,33 +365,31 @@ export default function SweepTransactions() {
                           <td>
                             <span className="fw-semibold text-primary">{sweep.id}</span>
                           </td>
-                          <td>
-                            <span>{sweep.user?.email || 'N/A'}</span>
+                          <td className="text-center">
+                            <span className="fw-medium">{sweep.userId || sweep.user?.id || '-'}</span>
                           </td>
                           <td>
                             <span className="text-muted">
                               {(sweep.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
                             </span>
                           </td>
-                          <td>
+                          <td style={{ whiteSpace: 'nowrap' }}>
                             <div className="d-flex align-items-center">
-                              {sweep.coinNetwork?.coin && (
-                                <>
-                                  <CoinImg 
-                                    symbol={sweep.coinNetwork.coin.symbol}
-                                    networkSymbol={sweep.coinNetwork.network?.symbol}
-                                    size={24}
-                                  />
-                                  <div className="ms-2">
-                                    <div>{sweep.coinNetwork.coin.symbol}</div>
-                                    <small className="text-muted">{sweep.coinNetwork.network?.name}</small>
-                                  </div>
-                                </>
-                              )}
+                              <CoinImg
+                                symbol={(sweep.coinNetwork?.coin?.symbol || '').toUpperCase()}
+                                networkSymbol={(sweep.coinNetwork?.network?.symbol || '').toUpperCase()}
+                                size={24}
+                              />
+                              <div>
+                                <div className="fw-medium" style={{ lineHeight: 1.2 }}>{(sweep.coinNetwork?.coin?.symbol || '-').toUpperCase()}</div>
+                                {sweep.coinNetwork?.network?.name && (
+                                  <small className="text-muted" style={{ fontSize: '0.75rem' }}>{sweep.coinNetwork.network.name}</small>
+                                )}
+                              </div>
                             </div>
                           </td>
-                          <td>
-                            <span>
+                          <td className="text-end text-nowrap">
+                            <span className="fw-medium">
                               {formatAmount(
                                 sweep.amountRaw, 
                                 sweep.decimals, 
@@ -400,7 +399,14 @@ export default function SweepTransactions() {
                               <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>
                             </span>
                           </td>
-                          <td>
+                          <td className="text-end text-nowrap">
+                            {sweep.amountUsd ? (
+                              <span className="fw-medium">${Number(sweep.amountUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            ) : (
+                              <span className="text-muted">-</span>
+                            )}
+                          </td>
+                          <td className="text-end text-nowrap">
                             <span>
                               {sweep.actualAmountRaw ? formatAmount(
                                 sweep.actualAmountRaw, 
@@ -411,7 +417,7 @@ export default function SweepTransactions() {
                               {sweep.actualAmountRaw && <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>}
                             </span>
                           </td>
-                          <td className="text-nowrap"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
+                          <td className="text-nowrap text-center"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
                           <td>
                             {sweep.txHash ? (
                               <div className="d-flex align-items-center">

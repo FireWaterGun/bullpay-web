@@ -318,23 +318,23 @@ export default function AdminPaymentList() {
           <div className="card">
             <div className="card-body">
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover" style={{ minWidth: '1400px' }}>
+                <table className="table table-hover">
                   <thead>
-                    <tr>
-                      <th style={{ minWidth: '60px' }}>{t('table.id', { defaultValue: 'ID' })}</th>
-                      <th className="text-center" style={{ minWidth: '120px' }}>{t('table.userId', { defaultValue: 'User ID' })}</th>
-                      <th className="text-center" style={{ minWidth: '120px' }}>{t('table.invoiceId', { defaultValue: 'Invoice ID' })}</th>
-                      <th style={{ minWidth: '150px' }}>{t('table.coin', { defaultValue: 'Coin' })}</th>
-                      <th className="text-end" style={{ minWidth: '50px' }}>{t('table.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end" style={{ minWidth: '50px' }}>{t('table.usd', { defaultValue: 'USD' })}</th>
-                      <th className="text-center" style={{ minWidth: '100px' }}>{t('table.status', { defaultValue: 'Status' })}</th>
-                      <th style={{ minWidth: '80px' }}>{t('table.confirmations', { defaultValue: 'Confirmations' })}</th>
-                      <th style={{ minWidth: '680px' }}>{t('table.txHash', { defaultValue: 'Tx Hash' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('table.fromAddress', { defaultValue: 'From Address' })}</th>
-                      <th style={{ minWidth: '420px' }}>{t('table.toAddress', { defaultValue: 'To Address' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('table.created', { defaultValue: 'Created' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('table.confirmed', { defaultValue: 'Confirmed' })}</th>
-                      <th style={{ width: '50px' }}></th>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>{t('table.id', { defaultValue: 'ID' })}</th>
+                      <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
+                      <th className="text-center">{t('table.invoiceId', { defaultValue: 'Invoice ID' })}</th>
+                      <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
+                      <th className="text-end">{t('table.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
+                      <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
+                      <th>{t('table.confirmations', { defaultValue: 'Confirmations' })}</th>
+                      <th>{t('table.txHash', { defaultValue: 'Tx Hash' })}</th>
+                      <th>{t('table.fromAddress', { defaultValue: 'From Address' })}</th>
+                      <th>{t('table.toAddress', { defaultValue: 'To Address' })}</th>
+                      <th>{t('table.created', { defaultValue: 'Created' })}</th>
+                      <th>{t('table.confirmed', { defaultValue: 'Confirmed' })}</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
