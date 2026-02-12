@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getAdminInvoices } from '../../api/admin.ts'
 import { formatAmount } from '../../utils/format'
-import LocaleDatePicker from '../../components/LocaleDatePicker'
+import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '')
@@ -258,23 +258,14 @@ export default function AdminInvoiceList() {
                   <input type="number" className="form-control form-control-sm" placeholder={t('filter.merchantId', { defaultValue: 'Merchant ID' })} value={merchantIdFilter} onChange={(e) => setMerchantIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.fromDate', { defaultValue: 'From Date' })}</label>
-                  <LocaleDatePicker
-                    value={fromDateFilter}
-                    onChange={setFromDateFilter}
+                  <label className="form-label small mb-1">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
+                  <LocaleDateRangePicker
+                    startDate={fromDateFilter}
+                    endDate={toDateFilter}
+                    onChangeStart={setFromDateFilter}
+                    onChangeEnd={setToDateFilter}
                     locale={locale}
-                    placeholder={t('filter.fromDate', { defaultValue: 'From Date' })}
-                    t={t}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.toDate', { defaultValue: 'To Date' })}</label>
-                  <LocaleDatePicker
-                    value={toDateFilter}
-                    onChange={setToDateFilter}
-                    locale={locale}
-                    placeholder={t('filter.toDate', { defaultValue: 'To Date' })}
+                    placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
                     t={t}
                     style={{ width: '100%' }}
                   />
@@ -321,10 +312,10 @@ export default function AdminInvoiceList() {
                       <th style={{ minWidth: '60px' }}>{t('table.id', { defaultValue: 'ID' })}</th>
                       <th className="text-center" style={{ minWidth: '120px' }}>{t('table.userId', { defaultValue: 'User ID' })}</th>
                       <th style={{ minWidth: '200px' }}>{t('table.code', { defaultValue: 'Code' })}</th>
-                      <th style={{ minWidth: '100px' }}>{t('table.status', { defaultValue: 'Status' })}</th>
                       <th style={{ minWidth: '150px' }}>{t('table.coin', { defaultValue: 'Coin' })}</th>
-                      <th className="text-end" style={{ minWidth: '150px' }}>{t('table.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end" style={{ minWidth: '120px' }}>{t('table.usd', { defaultValue: 'USD' })}</th>
+                      <th className="text-end" style={{ minWidth: '50px' }}>{t('table.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-end" style={{ minWidth: '50px' }}>{t('table.usd', { defaultValue: 'USD' })}</th>
+                      <th className="text-center" style={{ minWidth: '100px' }}>{t('table.status', { defaultValue: 'Status' })}</th>
                       <th style={{ minWidth: '420px' }}>{t('table.paymentAddress', { defaultValue: 'Payment Address' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('table.created', { defaultValue: 'Created' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('table.expires', { defaultValue: 'Expires' })}</th>
@@ -355,11 +346,6 @@ export default function AdminInvoiceList() {
                             <td style={{ whiteSpace: 'nowrap' }}>
                               <span className="fw-medium">{invoice.invoiceNumber || invoice.publicCode || invoice.code || '-'}</span>
                             </td>
-                            <td className="text-nowrap">
-                              <span className={statusBadgeClass(invoice.status)}>
-                                {String(invoice.status || '').toUpperCase()}
-                              </span>
-                            </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                               <div className="d-flex align-items-center">
                                 <CoinImg
@@ -386,6 +372,11 @@ export default function AdminInvoiceList() {
                               ) : (
                                 <span className="text-muted">-</span>
                               )}
+                            </td>
+                            <td className="text-nowrap text-center">
+                              <span className={statusBadgeClass(invoice.status)}>
+                                {String(invoice.status || '').toUpperCase()}
+                              </span>
                             </td>
                             <td>
                               {invoice.paymentAddress ? (

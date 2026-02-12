@@ -644,7 +644,7 @@ export async function getLedgerEntries(
 /**
  * Get sweep transactions (Admin only)
  * @param token - Auth token
- * @param params - Query parameters (page, limit, status, userId, coinNetworkId)
+ * @param params - Query parameters (page, limit, status, userId, coinNetworkId, sortBy, sortOrder)
  */
 export async function getSweeps(
   token: string,
@@ -654,6 +654,10 @@ export async function getSweeps(
     status?: string
     userId?: number
     coinNetworkId?: number
+    startDate?: string
+    endDate?: string
+    sortBy?: string
+    sortOrder?: string
   } = {}
 ) {
   const queryParams = new URLSearchParams()
@@ -663,6 +667,10 @@ export async function getSweeps(
   if (params.status) queryParams.append('status', params.status)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
 
   const queryString = queryParams.toString()
   const url = `/api/v1/admin/sweeps${queryString ? `?${queryString}` : ''}`
@@ -711,7 +719,7 @@ export async function forceSweep(token: string, sweepId: number) {
 /**
  * Get all withdrawal transactions (Admin only)
  * @param token - Auth token
- * @param params - Query parameters (page, limit, status, userId, coinNetworkId)
+ * @param params - Query parameters (page, limit, status, userId, coinNetworkId, search)
  */
 export async function getWithdrawals(
   token: string,
@@ -719,8 +727,9 @@ export async function getWithdrawals(
     page?: number
     limit?: number
     status?: string
-    userId?: number
+    userId?: string
     coinNetworkId?: number
+    search?: string
   } = {}
 ) {
   const queryParams = new URLSearchParams()
@@ -728,8 +737,9 @@ export async function getWithdrawals(
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
   if (params.status) queryParams.append('status', params.status)
-  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.userId) queryParams.append('userId', params.userId)
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.search) queryParams.append('search', params.search)
 
   const queryString = queryParams.toString()
   const url = `/api/v1/admin/withdrawals${queryString ? `?${queryString}` : ''}`
@@ -847,7 +857,7 @@ export async function getRevenueDaily(token: string, from: string, to: string, c
 /**
  * Get system ledger entries (Admin only)
  * @param token - Auth token
- * @param params - Query parameters (page, limit, type, coinNetworkId, startDate, endDate)
+ * @param params - Query parameters (page, limit, type, walletId, coinNetworkId, entryCode, state, txHash, startDate, endDate)
  */
 export async function getSystemLedgerEntries(
   token: string,
@@ -855,7 +865,11 @@ export async function getSystemLedgerEntries(
     page?: number
     limit?: number
     type?: string
+    walletId?: number
     coinNetworkId?: number
+    entryCode?: string
+    state?: string
+    txHash?: string
     startDate?: string
     endDate?: string
   } = {}
@@ -865,7 +879,11 @@ export async function getSystemLedgerEntries(
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
   if (params.type) queryParams.append('entryType', params.type)
+  if (params.walletId) queryParams.append('walletId', String(params.walletId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.entryCode) queryParams.append('entryCode', params.entryCode)
+  if (params.state) queryParams.append('state', params.state)
+  if (params.txHash) queryParams.append('txHash', params.txHash)
   if (params.startDate) queryParams.append('startDate', params.startDate)
   if (params.endDate) queryParams.append('endDate', params.endDate)
 
@@ -914,7 +932,7 @@ export async function getSystemLedgerEntry(token: string, id: number) {
 /**
  * Get user ledger entries (Admin only)
  * @param token - Auth token
- * @param params - Query parameters (page, limit, type, userId, coinNetworkId, startDate, endDate)
+ * @param params - Query parameters (page, limit, type, userId, coinNetworkId, entryCode, state, startDate, endDate)
  */
 export async function getUserLedgerEntries(
   token: string,
@@ -924,6 +942,8 @@ export async function getUserLedgerEntries(
     type?: string
     userId?: number
     coinNetworkId?: number
+    entryCode?: string
+    state?: string
     startDate?: string
     endDate?: string
   } = {}
@@ -935,6 +955,8 @@ export async function getUserLedgerEntries(
   if (params.type) queryParams.append('entryType', params.type)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.entryCode) queryParams.append('entryCode', params.entryCode)
+  if (params.state) queryParams.append('state', params.state)
   if (params.startDate) queryParams.append('startDate', params.startDate)
   if (params.endDate) queryParams.append('endDate', params.endDate)
 

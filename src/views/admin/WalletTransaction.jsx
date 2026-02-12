@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getSystemWallet, getSystemWalletLedger } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -92,12 +93,17 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
 }
 
 export default function WalletTransaction() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
   const navigate = useNavigate()
   const { walletId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
+
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
   
   const [loading, setLoading] = useState(true)
   const [ledger, setLedger] = useState(null)
@@ -329,21 +335,16 @@ export default function WalletTransaction() {
                   </select>
                 </div>
                 <div className="col-md-3">
-                  <label className="form-label">{t('admin.ledger.startDate', { defaultValue: 'Start Date' })}</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={filters.startDate}
-                    onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label className="form-label">{t('admin.ledger.endDate', { defaultValue: 'End Date' })}</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={filters.endDate}
-                    onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
+                  <LocaleDateRangePicker
+                    startDate={filters.startDate}
+                    endDate={filters.endDate}
+                    onChangeStart={(val) => handleFilterChange('startDate', val)}
+                    onChangeEnd={(val) => handleFilterChange('endDate', val)}
+                    locale={locale}
+                    placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
+                    t={t}
+                    style={{ width: '100%' }}
                   />
                 </div>
               </div>

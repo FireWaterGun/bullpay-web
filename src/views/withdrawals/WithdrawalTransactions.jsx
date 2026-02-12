@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getWithdrawals, approveWithdrawal, rejectWithdrawal } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import LocaleDatePicker from '../../components/LocaleDatePicker'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -91,14 +92,29 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
 }
 
 export default function WithdrawalTransactions() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
+
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
+
   const [loading, setLoading] = useState(false)
   const [withdrawals, setWithdrawals] = useState([])
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
+
+  // Filter states (draft — applied on "Apply")
   const [statusFilter, setStatusFilter] = useState('')
+  const [userIdFilter, setUserIdFilter] = useState('')
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState('')
+
+  // Applied filters (sent to API)
+  const [appliedFilters, setAppliedFilters] = useState({})
+
   const [showApproveModal, setShowApproveModal] = useState(false)
   const [showRejectModal, setShowRejectModal] = useState(false)
   const [selectedWithdrawal, setSelectedWithdrawal] = useState(null)
@@ -108,7 +124,26 @@ export default function WithdrawalTransactions() {
 
   useEffect(() => {
     loadWithdrawals()
-  }, [currentPage, statusFilter])
+  }, [currentPage, appliedFilters])
+
+  function applyFilters() {
+    setAppliedFilters({
+      status: statusFilter || undefined,
+      userId: userIdFilter || undefined,
+      coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
+      search: searchFilter || undefined,
+    })
+    setCurrentPage(1)
+  }
+
+  function resetFilters() {
+    setStatusFilter('')
+    setUserIdFilter('')
+    setCoinNetworkIdFilter('')
+    setSearchFilter('')
+    setAppliedFilters({})
+    setCurrentPage(1)
+  }
 
   async function loadWithdrawals() {
     try {
@@ -116,7 +151,7 @@ export default function WithdrawalTransactions() {
       const data = await getWithdrawals(token, {
         page: currentPage,
         limit: 20,
-        status: statusFilter ? statusFilter.toLowerCase() : undefined
+        ...appliedFilters,
       })
       setWithdrawals(data.items || [])
       setPagination(data.pagination || null)
@@ -267,28 +302,48 @@ export default function WithdrawalTransactions() {
                     {t('withdrawal.transactionsDesc', { defaultValue: 'View all withdrawal transactions and their status' })}
                   </p>
                 </div>
-                <div className="d-flex gap-2">
-                  <select 
-                    className="form-select" 
-                    value={statusFilter} 
-                    onChange={(e) => {
-                      setStatusFilter(e.target.value)
-                      setCurrentPage(1)
-                    }}
-                    style={{ width: 'auto' }}
-                  >
-                    <option value="">{t('common.allStatus', { defaultValue: 'All Status' })}</option>
-                    <option value="PENDING">{t('withdrawal.pending', { defaultValue: 'Pending' })}</option>
-                    <option value="PROCESSING">{t('withdrawal.processing', { defaultValue: 'Processing' })}</option>
-                    <option value="COMPLETED">{t('withdrawal.completed', { defaultValue: 'Completed' })}</option>
-                    <option value="FAILED">{t('withdrawal.failed', { defaultValue: 'Failed' })}</option>
-                    <option value="CANCELLED">{t('withdrawal.cancelled', { defaultValue: 'Cancelled' })}</option>
+                <button className="btn btn-primary" onClick={loadWithdrawals} disabled={loading}>
+                  <i className="bx bx-refresh me-1"></i>
+                  {t('actions.refresh', { defaultValue: 'Refresh' })}
+                </button>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row g-3">
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.status', { defaultValue: 'Status' })}</label>
+                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                    <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
+                    <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
+                    <option value="waiting_for_gas">{t('status.waiting_for_gas', { defaultValue: 'Waiting for Gas' })}</option>
+                    <option value="processing">{t('status.processing', { defaultValue: 'Processing' })}</option>
+                    <option value="completed">{t('status.completed', { defaultValue: 'Completed' })}</option>
+                    <option value="failed">{t('status.failed', { defaultValue: 'Failed' })}</option>
+                    <option value="cancelled">{t('status.cancelled', { defaultValue: 'Cancelled' })}</option>
                   </select>
-                  <button className="btn btn-primary" onClick={loadWithdrawals} disabled={loading}>
-                    <i className="bx bx-refresh me-1"></i>
-                    {t('actions.refresh', { defaultValue: 'Refresh' })}
-                  </button>
                 </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.userId', { defaultValue: 'User ID' })}</label>
+                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
+                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.search', { defaultValue: 'Search' })}</label>
+                  <input type="text" className="form-control form-control-sm" placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })} value={searchFilter} onChange={(e) => setSearchFilter(e.target.value)} />
+                </div>
+              </div>
+              <div className="d-flex gap-2 mt-3">
+                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                  <i className="bx bx-filter-alt me-1"></i>
+                  {t('filter.apply', { defaultValue: 'Apply Filters' })}
+                </button>
+                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset me-1"></i>
+                  {t('filter.reset', { defaultValue: 'Reset' })}
+                </button>
               </div>
             </div>
           </div>

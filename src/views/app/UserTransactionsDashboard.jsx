@@ -512,6 +512,8 @@ export default function UserTransactionsDashboard() {
                 locale={locale}
                 placeholder={t('filter.from', { defaultValue: 'From' })}
                 t={t}
+                maxDate={customTo ? customTo : undefined}
+                minDate={customTo ? (() => { const d = new Date(customTo + 'T00:00:00'); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <span className="align-self-center">–</span>
               <LocaleDatePicker
@@ -520,16 +522,19 @@ export default function UserTransactionsDashboard() {
                 locale={locale}
                 placeholder={t('filter.to', { defaultValue: 'To' })}
                 t={t}
+                minDate={customFrom ? customFrom : undefined}
+                maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <button
-                className="btn btn-sm btn-outline-secondary"
+                className="btn btn-outline-secondary btn-sm"
                 onClick={() => {
                   setShowCustom(false)
                   setCustomFrom('')
                   setCustomTo('')
                 }}
               >
-                <i className="bx bx-x"></i>
+                <i className="bx bx-reset me-1"></i>
+                {t('filter.reset', { defaultValue: 'Reset' })}
               </button>
             </>
           )}

@@ -49,7 +49,25 @@
     "ascending": "Ascending",
     "descending": "Descending",
     "apply": "Apply Filters",
-    "reset": "Reset"
+    "reset": "Reset",
+    "coinNetworkId": "Coin Network ID",
+    "completedAt": "Completed At",
+    "search": "Search",
+    "searchPlaceholder": "tx_hash, address, email...",
+    "all": "All",
+    "entryType": "Entry Type",
+    "credit": "Credit",
+    "debit": "Debit",
+    "entryCode": "Entry Code",
+    "state": "State",
+    "committed": "Committed",
+    "settled": "Settled",
+    "reversed": "Reversed",
+    "walletId": "Wallet ID",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "dateRange": "Date Range",
+    "dateRangePlaceholder": "Select date range"
   },
   "status": {
     "pending": "Pending",
@@ -62,7 +80,9 @@
     "completed": "Completed",
     "failed": "Failed",
     "refunded": "Refunded",
-    "unconfirmed": "Unconfirmed"
+    "unconfirmed": "Unconfirmed",
+    "processing": "Processing",
+    "waiting_for_gas": "Waiting for Gas"
   },
   "actions": {
     "filters": "Filters",
@@ -630,7 +650,7 @@
       "coinNetworkId": "Coin-Network ID",
       "coinNetworkIdRequired": "Coin-Network ID is required",
       "coinNetworkIdHelp": "Format: coin_network_id (e.g., 1-eth, 1-bsc)",
-      "transactions": "Sweep Transactions",
+      "transactions": "Transactions",
       "transactionsDesc": "View all sweep transactions and their status",
       "noTransactions": "No sweep transactions found",
       "createdAt": "Created Date",

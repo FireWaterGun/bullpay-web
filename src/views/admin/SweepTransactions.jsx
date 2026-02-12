@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getSweeps } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -90,18 +91,60 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
 }
 
 export default function SweepTransactions() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
+
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
+
   const [loading, setLoading] = useState(false)
   const [sweeps, setSweeps] = useState([])
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
+
+  // Filter states (draft — applied on "Apply")
   const [statusFilter, setStatusFilter] = useState('')
+  const [userIdFilter, setUserIdFilter] = useState('')
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('')
+  const [startDateFilter, setStartDateFilter] = useState('')
+  const [endDateFilter, setEndDateFilter] = useState('')
+  const [sortByFilter, setSortByFilter] = useState('')
+  const [sortOrderFilter, setSortOrderFilter] = useState('')
+
+  // Applied filters (sent to API)
+  const [appliedFilters, setAppliedFilters] = useState({})
 
   useEffect(() => {
     loadSweeps()
-  }, [currentPage, statusFilter])
+  }, [currentPage, appliedFilters])
+
+  function applyFilters() {
+    setAppliedFilters({
+      status: statusFilter || undefined,
+      userId: userIdFilter ? Number(userIdFilter) : undefined,
+      coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
+      startDate: startDateFilter || undefined,
+      endDate: endDateFilter || undefined,
+      sortBy: sortByFilter || undefined,
+      sortOrder: sortOrderFilter || undefined,
+    })
+    setCurrentPage(1)
+  }
+
+  function resetFilters() {
+    setStatusFilter('')
+    setUserIdFilter('')
+    setCoinNetworkIdFilter('')
+    setStartDateFilter('')
+    setEndDateFilter('')
+    setSortByFilter('')
+    setSortOrderFilter('')
+    setAppliedFilters({})
+    setCurrentPage(1)
+  }
 
   async function loadSweeps() {
     try {
@@ -109,7 +152,7 @@ export default function SweepTransactions() {
       const data = await getSweeps(token, {
         page: currentPage,
         limit: 20,
-        status: statusFilter || undefined
+        ...appliedFilters,
       })
       // Support new API structure with data.sweeps and data.meta
       setSweeps(data.sweeps || data.items || [])
@@ -216,28 +259,73 @@ export default function SweepTransactions() {
                     {t('admin.sweep.transactionsDesc', { defaultValue: 'View all sweep transactions and their status' })}
                   </p>
                 </div>
-                <div className="d-flex gap-2">
-                  <select 
-                    className="form-select" 
-                    value={statusFilter} 
-                    onChange={(e) => {
-                      setStatusFilter(e.target.value)
-                      setCurrentPage(1)
-                    }}
-                    style={{ width: 'auto' }}
-                  >
-                    <option value="">{t('common.allStatus', { defaultValue: 'All Status' })}</option>
-                    <option value="pending">{t('admin.sweep.pending', { defaultValue: 'Pending' })}</option>
-                    <option value="processing">{t('admin.sweep.processing', { defaultValue: 'Processing' })}</option>
-                    <option value="completed">{t('admin.sweep.completed', { defaultValue: 'Completed' })}</option>
-                    <option value="failed">{t('admin.sweep.failed', { defaultValue: 'Failed' })}</option>
-                    <option value="cancelled">{t('admin.sweep.cancelled', { defaultValue: 'Cancelled' })}</option>
+                <button className="btn btn-primary" onClick={loadSweeps} disabled={loading}>
+                  <i className="bx bx-refresh me-1"></i>
+                  {t('actions.refresh', { defaultValue: 'Refresh' })}
+                </button>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row g-3">
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.status', { defaultValue: 'Status' })}</label>
+                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                    <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
+                    <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
+                    <option value="processing">{t('status.processing', { defaultValue: 'Processing' })}</option>
+                    <option value="completed">{t('status.completed', { defaultValue: 'Completed' })}</option>
+                    <option value="failed">{t('status.failed', { defaultValue: 'Failed' })}</option>
+                    <option value="cancelled">{t('status.cancelled', { defaultValue: 'Cancelled' })}</option>
                   </select>
-                  <button className="btn btn-primary" onClick={loadSweeps} disabled={loading}>
-                    <i className="bx bx-refresh me-1"></i>
-                    {t('actions.refresh', { defaultValue: 'Refresh' })}
-                  </button>
                 </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.userId', { defaultValue: 'User ID' })}</label>
+                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
+                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
+                  <LocaleDateRangePicker
+                    startDate={startDateFilter}
+                    endDate={endDateFilter}
+                    onChangeStart={setStartDateFilter}
+                    onChangeEnd={setEndDateFilter}
+                    locale={locale}
+                    placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
+                    t={t}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
+                  <select className="form-select form-select-sm" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
+                    <option value="created_at">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
+                    <option value="amount">{t('filter.amount', { defaultValue: 'Amount' })}</option>
+                    <option value="completed_at">{t('filter.completedAt', { defaultValue: 'Completed At' })}</option>
+                  </select>
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
+                  <select className="form-select form-select-sm" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
+                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
+                  </select>
+                </div>
+              </div>
+              <div className="d-flex gap-2 mt-3">
+                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                  <i className="bx bx-filter-alt me-1"></i>
+                  {t('filter.apply', { defaultValue: 'Apply Filters' })}
+                </button>
+                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset me-1"></i>
+                  {t('filter.reset', { defaultValue: 'Reset' })}
+                </button>
               </div>
             </div>
           </div>
@@ -260,7 +348,7 @@ export default function SweepTransactions() {
                       <th style={{ minWidth: '420px' }}>{t('admin.sweep.from', { defaultValue: 'From Address' })}</th>
                       <th style={{ minWidth: '420px' }}>{t('admin.sweep.to', { defaultValue: 'To Address' })}</th>
                       <th style={{ minWidth: '140px' }}>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</th>
-                      <th style={{ minWidth: '140px' }}>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
+                      <th style={{ minWidth: '160px' }}>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
                     </tr>
                   </thead>
                   <tbody>
