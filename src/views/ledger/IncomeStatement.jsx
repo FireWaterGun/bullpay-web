@@ -1,23 +1,91 @@
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getIncomeStatement } from '../../api/admin.ts'
+import LocaleDatePicker from '../../components/LocaleDatePicker'
+
+function getDateRange(preset) {
+  const now = new Date()
+  const to = now.toISOString().split('T')[0]
+  let from = to
+
+  switch (preset) {
+    case 'today':
+      from = to
+      break
+    case 'yesterday': {
+      const yesterday = new Date(now)
+      yesterday.setDate(yesterday.getDate() - 1)
+      from = yesterday.toISOString().split('T')[0]
+      break
+    }
+    case 'last7days': {
+      const last7 = new Date(now)
+      last7.setDate(last7.getDate() - 6)
+      from = last7.toISOString().split('T')[0]
+      break
+    }
+    case 'last30days': {
+      const last30 = new Date(now)
+      last30.setDate(last30.getDate() - 29)
+      from = last30.toISOString().split('T')[0]
+      break
+    }
+    case 'thisMonth': {
+      from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+      break
+    }
+    case 'lastMonth': {
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      from = lastMonth.toISOString().split('T')[0]
+      const endLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+      return { from, to: endLastMonth.toISOString().split('T')[0] }
+    }
+    default:
+      from = to
+  }
+  return { from, to }
+}
 
 export default function IncomeStatement() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
+
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
 
   const [loading, setLoading] = useState(false)
   const [report, setReport] = useState(null)
 
-  // Date filters (required)
-  const today = new Date()
-  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-  const [fromDate, setFromDate] = useState(firstOfMonth.toISOString().split('T')[0])
-  const [toDate, setToDate] = useState(today.toISOString().split('T')[0])
+  // Date filters
+  const [datePreset, setDatePreset] = useState('thisMonth')
+  const [customFrom, setCustomFrom] = useState('')
+  const [customTo, setCustomTo] = useState('')
+  const [showCustom, setShowCustom] = useState(false)
   const [coinNetworkId, setCoinNetworkId] = useState('')
+
+  const dateRange = useMemo(() => {
+    if (showCustom && customFrom && customTo) {
+      return { from: customFrom, to: customTo }
+    }
+    return getDateRange(datePreset)
+  }, [datePreset, showCustom, customFrom, customTo])
+
+  const fromDate = dateRange.from
+  const toDate = dateRange.to
+
+  const dateRangeLabel = useMemo(() => {
+    const { from, to } = dateRange
+    if (from === to) return from
+    const fromD = new Date(from + 'T00:00:00')
+    const toD = new Date(to + 'T00:00:00')
+    const fmt = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
+    return `${fmt(fromD)} - ${fmt(toD)}`
+  }, [dateRange, locale])
 
   async function loadReport() {
     if (!fromDate || !toDate) {
@@ -55,43 +123,27 @@ export default function IncomeStatement() {
 
   // Revenue items
   const revenueItems = revenue?.items || []
-  const grossRevenue = revenue?.grossRevenueUsd || 0
 
   // Deductions are nested inside revenue
   const deductionItems = revenue?.deductions || []
-  const totalDeductions = revenue?.deductionsUsd || 0
-
-  // Net Revenue
-  const netRevenue = revenue?.netRevenueUsd || 0
 
   // Expense items
   const expenseItems = expenses?.items || []
-  const totalExpenses = expenses?.totalExpensesUsd || 0
 
-  // Net Income & Profit Margin at root level
+  // Use totals from API
+  const grossRevenue = revenue?.grossRevenueUsd || 0
+  const totalDeductions = revenue?.deductionsUsd || 0
+  const netRevenue = revenue?.netRevenueUsd || 0
+  const totalExpenses = expenses?.totalExpensesUsd || 0
   const netIncome = report?.netIncomeUsd || 0
   const profitMargin = report?.profitMarginPercent || 0
 
-  // Compute counts from revenue/expense items
-  const allItems = [...revenueItems, ...deductionItems, ...expenseItems]
-  function getItemEntries(code) {
-    const item = allItems.find(i => i.code === code)
-    return item?.entries ?? 0
-  }
-  function getItemAmountUsd(code) {
-    const item = allItems.find(i => i.code === code)
-    return item?.amountUsd ?? 0
-  }
-
-  // Volume from expense items (SG = sweep gas, WG = withdrawal gas)
-  const sweepVolumeUsd = getItemAmountUsd('SG')
-  const withdrawalVolumeUsd = getItemAmountUsd('WG')
-
-  // Counts from items
-  const sweepCount = getItemEntries('SG')
-  const withdrawalCount = getItemEntries('WG') + getItemEntries('WF')
-  const gasTopupCount = getItemEntries('SG')
-  const adjustmentCount = getItemEntries('XI') + getItemEntries('XO')
+  // Auto-load report when date range changes
+  useEffect(() => {
+    if (token && fromDate && toDate) {
+      loadReport()
+    }
+  }, [token, fromDate, toDate, coinNetworkId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
@@ -99,57 +151,73 @@ export default function IncomeStatement() {
         <div className="col-12">
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                  <h4 className="mb-1">
-                    <i className="bx bx-line-chart me-2"></i>
-                    {t('admin.incomeStatement.title', { defaultValue: 'Income Statement' })}
-                  </h4>
-                  <p className="text-muted mb-0">
-                    {t('admin.incomeStatement.description', { defaultValue: 'Profit & Loss report for the platform' })}
-                  </p>
-                </div>
-              </div>
-            </div>
             <div className="card-body">
-              <div className="row g-3 align-items-end">
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">From Date <span className="text-danger">*</span></label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">To Date <span className="text-danger">*</span></label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">Coin Network ID</label>
-                  <input
-                    type="number"
-                    className="form-control form-control-sm"
-                    placeholder="Optional"
-                    value={coinNetworkId}
-                    onChange={(e) => setCoinNetworkId(e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <button className="btn btn-primary btn-sm w-100" onClick={loadReport} disabled={loading}>
-                    {loading ? (
-                      <><span className="spinner-border spinner-border-sm me-1"></span>Loading...</>
-                    ) : (
-                      <><i className="bx bx-search me-1"></i>Generate Report</>
-                    )}
-                  </button>
+              <div className="d-flex flex-wrap align-items-center gap-3">
+                <h4 className="mb-0">
+                  <i className="bx bx-line-chart text-primary me-2"></i>
+                  {t('admin.incomeStatement.title', { defaultValue: 'Income Statement' })}
+                </h4>
+                <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
+                  <span className="badge bg-label-secondary fs-6 fw-normal px-3 py-2">
+                    {dateRangeLabel}
+                  </span>
+                  {!showCustom ? (
+                    <>
+                      <select
+                        className="form-select form-select-sm"
+                        value={datePreset}
+                        onChange={(e) => setDatePreset(e.target.value)}
+                        style={{ width: 'auto' }}
+                      >
+                        <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
+                        <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
+                        <option value="last7days">{t('filter.last7days', { defaultValue: 'Last 7 Days' })}</option>
+                        <option value="last30days">{t('filter.last30days', { defaultValue: 'Last 30 Days' })}</option>
+                        <option value="thisMonth">{t('filter.thisMonth', { defaultValue: 'This Month' })}</option>
+                        <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
+                      </select>
+                      <button
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => setShowCustom(true)}
+                      >
+                        <i className="bx bx-calendar me-1"></i>
+                        {t('filter.custom', { defaultValue: 'Custom' })}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <LocaleDatePicker
+                        value={customFrom}
+                        onChange={setCustomFrom}
+                        locale={locale}
+                        placeholder={t('filter.from', { defaultValue: 'From' })}
+                        t={t}
+                        maxDate={customTo ? customTo : undefined}
+                        minDate={customTo ? (() => { const d = new Date(customTo + 'T00:00:00'); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
+                      />
+                      <span className="align-self-center">–</span>
+                      <LocaleDatePicker
+                        value={customTo}
+                        onChange={setCustomTo}
+                        locale={locale}
+                        placeholder={t('filter.to', { defaultValue: 'To' })}
+                        t={t}
+                        minDate={customFrom ? customFrom : undefined}
+                        maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
+                      />
+                      <button
+                        className="btn btn-outline-secondary btn-sm"
+                        onClick={() => {
+                          setShowCustom(false)
+                          setCustomFrom('')
+                          setCustomTo('')
+                        }}
+                      >
+                        <i className="bx bx-reset me-1"></i>
+                        {t('filter.reset', { defaultValue: 'Reset' })}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -185,7 +253,7 @@ export default function IncomeStatement() {
                                   <span>{item.name || item.code}</span>
                                   {item.entries && <small className="text-muted ms-1">({item.entries})</small>}
                                 </td>
-                                <td className="text-end fw-medium">{formatUsd(item.amountUsd)}</td>
+                                <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                               </tr>
                             ))
                           ) : (
@@ -193,36 +261,30 @@ export default function IncomeStatement() {
                               <td className="text-muted" colSpan="2">No revenue items</td>
                             </tr>
                           )}
-                        </tbody>
-                      </table>
 
-                      {/* Deductions */}
-                      {deductionItems.length > 0 && (
-                        <>
-                          <hr className="my-2" />
-                          <small className="text-muted fw-semibold">DEDUCTIONS</small>
-                          <table className="table table-borderless mb-0">
-                            <tbody>
+                          {/* Deductions */}
+                          {deductionItems.length > 0 && (
+                            <>
+                              <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted fw-semibold">DEDUCTIONS</small></td></tr>
                               {deductionItems.map((item, i) => (
-                                <tr key={i}>
+                                <tr key={`d-${i}`}>
                                   <td>
                                     <span className="badge bg-label-warning me-2">{item.code}</span>
                                     <span>{item.name || item.code}</span>
                                     {item.entries && <small className="text-muted ms-1">({item.entries})</small>}
                                   </td>
-                                  <td className="text-end fw-medium text-danger">({formatUsd(item.amountUsd)})</td>
+                                  <td className="text-end fw-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
                                 </tr>
                               ))}
-                            </tbody>
-                          </table>
-                        </>
-                      )}
+                            </>
+                          )}
 
-                      <hr className="my-2" />
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span className="fw-bold">Net Revenue</span>
-                        <span className="fw-bold text-success fs-5">{formatUsd(netRevenue)}</span>
-                      </div>
+                          <tr style={{ borderTop: '2px solid #e9ecef' }}>
+                            <td className="fw-bold">Net Revenue</td>
+                            <td className="text-end fw-bold text-success fs-5" style={{ whiteSpace: 'nowrap' }}>{formatUsd(netRevenue)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -245,7 +307,7 @@ export default function IncomeStatement() {
                                   <span>{item.name || item.code}</span>
                                   {item.entries && <small className="text-muted ms-1">({item.entries})</small>}
                                 </td>
-                                <td className="text-end fw-medium">{formatUsd(item.amountUsd)}</td>
+                                <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                               </tr>
                             ))
                           ) : (
@@ -253,13 +315,12 @@ export default function IncomeStatement() {
                               <td className="text-muted" colSpan="2">No expense items</td>
                             </tr>
                           )}
+                          <tr style={{ borderTop: '2px solid #e9ecef' }}>
+                            <td className="fw-bold">Total Expenses</td>
+                            <td className="text-end fw-bold text-danger fs-5" style={{ whiteSpace: 'nowrap' }}>({formatUsd(totalExpenses)})</td>
+                          </tr>
                         </tbody>
                       </table>
-                      <hr className="my-2" />
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span className="fw-bold">Total Expenses</span>
-                        <span className="fw-bold text-danger fs-5">({formatUsd(totalExpenses)})</span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -292,86 +353,21 @@ export default function IncomeStatement() {
                 </div>
               </div>
 
-              {/* Volume & Counts (informational) */}
+              {/* Counts */}
               <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-bar-chart me-2"></i>
-                    Volume & Counts
-                    <small className="text-muted ms-2">(informational — not P&L)</small>
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <div className="row g-4">
-                    <div className="col-md-3 col-sm-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-2" style={{ backgroundColor: 'rgba(115, 103, 240, 0.1)' }}>
-                          <i className="bx bx-transfer fs-4" style={{ color: '#7367f0' }}></i>
-                        </div>
-                        <div>
-                          <small className="text-muted">Sweep Volume</small>
-                          <div className="fw-bold">{formatUsd(sweepVolumeUsd)}</div>
-                        </div>
+                <div className="card-body py-3">
+                  <div className="d-flex flex-wrap gap-4">
+                    {[...revenueItems, ...deductionItems, ...expenseItems].map((item, i) => (
+                      <div key={i} className="d-flex align-items-center gap-2">
+                        <span className="badge bg-label-secondary">{item.code}</span>
+                        <span className="text-muted">{item.name || item.code}:</span>
+                        <span className="fw-semibold">{item.entries || 0}</span>
                       </div>
-                    </div>
-                    <div className="col-md-3 col-sm-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-2" style={{ backgroundColor: 'rgba(255, 159, 67, 0.1)' }}>
-                          <i className="bx bx-money-withdraw fs-4" style={{ color: '#ff9f43' }}></i>
-                        </div>
-                        <div>
-                          <small className="text-muted">Withdrawal Volume</small>
-                          <div className="fw-bold">{formatUsd(withdrawalVolumeUsd)}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-3 col-sm-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-2" style={{ backgroundColor: 'rgba(0, 207, 232, 0.1)' }}>
-                          <i className="bx bx-hash fs-4" style={{ color: '#00cfe8' }}></i>
-                        </div>
-                        <div>
-                          <small className="text-muted">Sweeps</small>
-                          <div className="fw-bold">{sweepCount}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-3 col-sm-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-2" style={{ backgroundColor: 'rgba(234, 84, 85, 0.1)' }}>
-                          <i className="bx bx-hash fs-4" style={{ color: '#ea5455' }}></i>
-                        </div>
-                        <div>
-                          <small className="text-muted">Withdrawals</small>
-                          <div className="fw-bold">{withdrawalCount}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-3 col-sm-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-2" style={{ backgroundColor: 'rgba(40, 199, 111, 0.1)' }}>
-                          <i className="bx bx-gas-pump fs-4" style={{ color: '#28c76f' }}></i>
-                        </div>
-                        <div>
-                          <small className="text-muted">Gas Topups</small>
-                          <div className="fw-bold">{gasTopupCount}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-3 col-sm-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-2" style={{ backgroundColor: 'rgba(168, 170, 174, 0.1)' }}>
-                          <i className="bx bx-adjust fs-4" style={{ color: '#a8aaae' }}></i>
-                        </div>
-                        <div>
-                          <small className="text-muted">Adjustments</small>
-                          <div className="fw-bold">{adjustmentCount}</div>
-                        </div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
+
             </>
           )}
 

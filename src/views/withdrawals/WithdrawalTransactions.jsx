@@ -362,6 +362,7 @@ export default function WithdrawalTransactions() {
                       <th className="text-end">{t('withdrawal.amount', { defaultValue: 'Amount' })}</th>
                       <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
                       <th className="text-end">{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
+                      <th className="text-end">{t('withdrawal.feeUsd', { defaultValue: 'Fee USD' })}</th>
                       <th className="text-center">{t('withdrawal.status', { defaultValue: 'Status' })}</th>
                       <th className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
                       <th>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
@@ -373,7 +374,7 @@ export default function WithdrawalTransactions() {
                   <tbody>
                     {withdrawals.length === 0 ? (
                       <tr>
-                        <td colSpan="13" className="text-center text-muted py-4">
+                        <td colSpan="14" className="text-center text-muted py-4">
                           {t('withdrawal.noTransactions', { defaultValue: 'No withdrawal transactions found' })}
                         </td>
                       </tr>
@@ -422,6 +423,13 @@ export default function WithdrawalTransactions() {
                           <span className="text-muted">
                             {formatAmount(withdrawal.totalFeeRaw || withdrawal.totalFee || withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
                           </span>
+                        </td>
+                        <td className="text-end text-nowrap">
+                          {withdrawal.networkFeeUsd ? (
+                            <span className="text-muted">${Number(withdrawal.networkFeeUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                          ) : (
+                            <span className="text-muted">-</span>
+                          )}
                         </td>
                         <td className="text-center text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
                         <td className="text-center">

@@ -212,11 +212,11 @@ export default function SystemLedgerList() {
   }
 
   function stateBadge(state) {
-    if (state === 'settled') return <span className="badge bg-label-success">Settled</span>
-    if (state === 'committed') return <span className="badge bg-label-warning">Committed</span>
-    if (state === 'pending') return <span className="badge bg-label-warning">Pending</span>
-    if (state === 'reversed') return <span className="badge bg-label-danger">Reversed</span>
-    return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
+    if (state === 'settled') return <span>Settled</span>
+    if (state === 'committed') return <span>Committed</span>
+    if (state === 'pending') return <span>Pending</span>
+    if (state === 'reversed') return <span>Reversed</span>
+    return <span className="text-muted">{state || 'N/A'}</span>
   }
 
   function truncateHash(hash) {

@@ -605,28 +605,28 @@ export default function DashboardLayout() {
               <>
                 {/* Admin menu */}
                 <MenuItem to="/admin" end icon="bx-bar-chart-alt-2" label={t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })} />
+                <MenuGroup base="/admin/pnl" icon="bx-line-chart" label={t('admin.pnl.menuTitle', { defaultValue: 'Revenue & Expenses' })}>
+                  <SubItem to="/admin/pnl/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
+                  <SubItem to="/admin/pnl/platform-ledger" end label={t('admin.pnl.platformLedger', { defaultValue: 'Platform Ledger' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
+                  <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
+                  <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/system-wallet" icon="bx-wallet" label={t('admin.systemWallet', { defaultValue: 'System Wallet' })}>
                   <SubItem to="/admin/system-wallet/balance" end label={t('admin.balance', { defaultValue: 'Balance' })} />
+                </MenuGroup>
+                <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
+                  <SubItem to="/admin/ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
+                  <SubItem to="/admin/ledger/user" end label={t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/invoices" icon="bx-receipt" label={t('admin.invoices.menuTitle', { defaultValue: 'Invoices' })}>
                   <SubItem to="/admin/invoices" end label={t('admin.invoices.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/payments" icon="bx-transfer-alt" label={t('admin.payments.menuTitle', { defaultValue: 'Payments' })}>
                   <SubItem to="/admin/payments" end label={t('admin.payments.transactions', { defaultValue: 'Transactions' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
-                  <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
-                  <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/pnl" icon="bx-line-chart" label={t('admin.pnl.menuTitle', { defaultValue: 'Profit & Loss' })}>
-                  <SubItem to="/admin/pnl/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
-                  <SubItem to="/admin/pnl/platform-ledger" end label={t('admin.pnl.platformLedger', { defaultValue: 'Platform Ledger' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
-                  <SubItem to="/admin/ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
-                  <SubItem to="/admin/ledger/user" end label={t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/crypto" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })}>
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />

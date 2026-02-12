@@ -190,16 +190,16 @@ export default function PlatformLedgerList() {
   }
 
   function accountTypeBadge(type) {
-    if (type === 'revenue') return <span className="badge bg-label-success">Revenue</span>
-    if (type === 'expense') return <span className="badge bg-label-warning">Expense</span>
-    return <span className="badge bg-label-secondary">{type || 'N/A'}</span>
+    if (type === 'revenue') return <span>Revenue</span>
+    if (type === 'expense') return <span>Expense</span>
+    return <span className="text-muted">{type || 'N/A'}</span>
   }
 
   function stateBadge(state) {
-    if (state === 'settled') return <span className="badge bg-label-success">Settled</span>
-    if (state === 'committed') return <span className="badge bg-label-warning">Committed</span>
-    if (state === 'reversed') return <span className="badge bg-label-danger">Reversed</span>
-    return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
+    if (state === 'settled') return <span>Settled</span>
+    if (state === 'committed') return <span>Committed</span>
+    if (state === 'reversed') return <span>Reversed</span>
+    return <span className="text-muted">{state || 'N/A'}</span>
   }
 
   function formatAmount(val) {
@@ -383,8 +383,8 @@ export default function PlatformLedgerList() {
                               {accountTypeBadge(entry.accountType)}
                             </td>
                             <td>
-                              <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
-                                <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
+                              <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                                <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
                                 {isCredit ? 'Credit' : 'Debit'}
                               </span>
                             </td>
@@ -414,8 +414,8 @@ export default function PlatformLedgerList() {
                               {stateBadge(entry.state)}
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className={`fw-medium ${isCredit ? 'text-danger' : 'text-success'}`}>
-                                {isCredit ? '-' : '+'}{formatAmount(entry.amount)}
+                              <span className={`fw-medium ${isCredit ? 'text-success' : 'text-danger'}`}>
+                                {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
                               </span>
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
