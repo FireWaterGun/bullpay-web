@@ -1172,3 +1172,107 @@ export async function getAdminPayment(token: string, id: number | string) {
   const data = response?.data || response
   return data?.payment || data
 }
+
+/**
+ * Get platform ledger entries (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters
+ */
+export async function getPlatformLedgerEntries(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    accountType?: string
+    coinNetworkId?: number
+    entryType?: string
+    entryCode?: string
+    state?: string
+    txHash?: string
+    startDate?: string
+    endDate?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.accountType) queryParams.append('accountType', params.accountType)
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.entryType) queryParams.append('entryType', params.entryType)
+  if (params.entryCode) queryParams.append('entryCode', params.entryCode)
+  if (params.state) queryParams.append('state', params.state)
+  if (params.txHash) queryParams.append('txHash', params.txHash)
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/platform-ledger/entries${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get platform ledger entry by ID (Admin only)
+ * @param token - Auth token
+ * @param id - Entry ID
+ */
+export async function getPlatformLedgerEntry(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/platform-ledger/entries/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response?.data || response
+}
+
+/**
+ * Get income statement / P&L report (Admin only)
+ * @param token - Auth token
+ * @param params - Query parameters (from, to required; coinNetworkId optional)
+ */
+export async function getIncomeStatement(
+  token: string,
+  params: {
+    from: string
+    to: string
+    coinNetworkId?: number
+  }
+) {
+  const queryParams = new URLSearchParams()
+  queryParams.append('from', params.from)
+  queryParams.append('to', params.to)
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+
+  const url = `/api/v1/admin/platform-ledger/income-statement?${queryParams.toString()}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response?.data || response
+}

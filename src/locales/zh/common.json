@@ -925,6 +925,23 @@
       "settledAt": "结算时间",
       "conversionIn": "转入兑换",
       "conversionOut": "转出兑换"
+    },
+    "pnl": {
+      "menuTitle": "损益表",
+      "incomeStatement": "收入报表",
+      "platformLedger": "平台账本"
+    },
+    "platformLedger": {
+      "title": "平台账本",
+      "description": "查看所有平台账本记录",
+      "noEntries": "未找到平台账本记录",
+      "loadError": "加载平台账本记录失败",
+      "notFound": "未找到平台账本记录"
+    },
+    "incomeStatement": {
+      "title": "收入报表",
+      "description": "平台损益报告",
+      "loadError": "加载收入报表失败"
     }
   },
   "crypto": {

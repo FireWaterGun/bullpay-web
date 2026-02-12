@@ -191,7 +191,7 @@ export default function UserLedgerList() {
 
   function stateBadge(state) {
     if (state === 'settled') return <span className="badge bg-label-success"><i className="bx bx-check-double me-1"></i>Settled</span>
-    if (state === 'committed') return <span className="badge bg-label-info"><i className="bx bx-check-circle me-1"></i>Committed</span>
+    if (state === 'committed') return <span className="badge bg-label-warning"><i className="bx bx-check-circle me-1"></i>Committed</span>
     if (state === 'pending') return <span className="badge bg-label-warning"><i className="bx bx-time me-1"></i>Pending</span>
     if (state === 'reversed') return <span className="badge bg-label-danger"><i className="bx bx-revision me-1"></i>Reversed</span>
     return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
@@ -340,9 +340,9 @@ export default function UserLedgerList() {
                       <th>ID</th>
                       <th>User ID</th>
                       <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-                      <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
                       <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
                       <th>Code</th>
+                      <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
                       <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
                       <th className="text-end">USD</th>
                       <th>Tx Hash</th>
@@ -375,9 +375,6 @@ export default function UserLedgerList() {
                                 {isCredit ? 'Credit' : 'Debit'}
                               </span>
                             </td>
-                            <td>
-                              {stateBadge(entry.state)}
-                            </td>
                             <td style={{ whiteSpace: 'nowrap' }}>
                               <div className="d-flex align-items-center">
                                 <CoinImg
@@ -399,6 +396,9 @@ export default function UserLedgerList() {
                               ) : (
                                 <span className="text-muted">-</span>
                               )}
+                            </td>
+                            <td>
+                              {stateBadge(entry.state)}
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
                               <span className={`fw-medium ${isCredit ? 'text-success' : 'text-danger'}`}>

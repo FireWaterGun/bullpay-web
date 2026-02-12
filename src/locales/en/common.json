@@ -892,6 +892,23 @@
       "settledAt": "Settled At",
       "conversionIn": "Conversion In",
       "conversionOut": "Conversion Out"
+    },
+    "pnl": {
+      "menuTitle": "Profit & Loss",
+      "incomeStatement": "Income Statement",
+      "platformLedger": "Platform Ledger"
+    },
+    "platformLedger": {
+      "title": "Platform Ledger",
+      "description": "View all platform ledger entries (P&L)",
+      "noEntries": "No platform ledger entries found",
+      "loadError": "Failed to load platform ledger entries",
+      "notFound": "Platform ledger entry not found"
+    },
+    "incomeStatement": {
+      "title": "Income Statement",
+      "description": "Profit & Loss report for the platform",
+      "loadError": "Failed to load income statement"
     }
   },
   "crypto": {

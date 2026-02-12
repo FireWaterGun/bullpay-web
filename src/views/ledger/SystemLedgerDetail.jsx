@@ -131,7 +131,7 @@ export default function SystemLedgerDetail() {
 
   function stateBadge(state) {
     if (state === 'settled') return <span className="badge bg-label-success"><i className="bx bx-check-double me-1"></i>Settled</span>
-    if (state === 'committed') return <span className="badge bg-label-info"><i className="bx bx-check-circle me-1"></i>Committed</span>
+    if (state === 'committed') return <span className="badge bg-label-warning"><i className="bx bx-check-circle me-1"></i>Committed</span>
     if (state === 'pending') return <span className="badge bg-label-warning"><i className="bx bx-time me-1"></i>Pending</span>
     if (state === 'reversed') return <span className="badge bg-label-danger"><i className="bx bx-revision me-1"></i>Reversed</span>
     return <span className="badge bg-label-secondary">{state || 'N/A'}</span>

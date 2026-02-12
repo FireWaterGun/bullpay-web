@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
-import { getUserLedgerEntry } from '../../api/admin.ts'
+import { getPlatformLedgerEntry } from '../../api/admin.ts'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '')
@@ -89,7 +89,7 @@ function CoinImg({ symbol, networkSymbol, size = 32 }) {
   )
 }
 
-export default function UserLedgerDetail() {
+export default function PlatformLedgerDetail() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
@@ -105,11 +105,11 @@ export default function UserLedgerDetail() {
   async function loadEntry() {
     try {
       setLoading(true)
-      const data = await getUserLedgerEntry(token, parseInt(id))
+      const data = await getPlatformLedgerEntry(token, parseInt(id))
       setEntry(data)
     } catch (error) {
-      console.error('Failed to load user ledger entry:', error)
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entry' }))
+      console.error('Failed to load platform ledger entry:', error)
+      toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entry' }))
     } finally {
       setLoading(false)
     }
@@ -141,7 +141,6 @@ export default function UserLedgerDetail() {
   function stateBadge(state) {
     if (state === 'settled') return <span className="badge bg-label-success"><i className="bx bx-check-double me-1"></i>Settled</span>
     if (state === 'committed') return <span className="badge bg-label-warning"><i className="bx bx-check-circle me-1"></i>Committed</span>
-    if (state === 'pending') return <span className="badge bg-label-warning"><i className="bx bx-time me-1"></i>Pending</span>
     if (state === 'reversed') return <span className="badge bg-label-danger"><i className="bx bx-revision me-1"></i>Reversed</span>
     return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
   }
@@ -152,6 +151,16 @@ export default function UserLedgerDetail() {
     }).catch(() => {
       toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
     })
+  }
+
+  const entryCodeLabels = {
+    'WF': 'Withdrawal Fee',
+    'FR': 'Fee Refund',
+    'SG': 'Sweep Gas Topup',
+    'SC': 'Sweep Gas Cost',
+    'WG': 'Withdrawal Gas',
+    'XI': 'Internal Transfer In',
+    'XO': 'Internal Transfer Out',
   }
 
   if (loading) {
@@ -171,8 +180,8 @@ export default function UserLedgerDetail() {
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
-          <p className="text-muted mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
-          <button className="btn btn-primary" onClick={() => navigate('/admin/ledger/user')}>
+          <p className="text-muted mt-2">{t('admin.platformLedger.notFound', { defaultValue: 'Platform ledger entry not found' })}</p>
+          <button className="btn btn-primary" onClick={() => navigate('/admin/pnl/platform-ledger')}>
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
         </div>
@@ -188,15 +197,7 @@ export default function UserLedgerDetail() {
     metadata = typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
   } catch (e) { /* ignore */ }
 
-  const entryCodeLabels = {
-    'SP': 'Settlement Payment',
-    'SC': 'Sweep Cost',
-    'SG': 'Sweep Gas',
-    'WD': 'Withdrawal',
-    'DP': 'Deposit',
-    'FE': 'Fee',
-    'AJ': 'Adjustment',
-  }
+  const explorerUrl = entry.explorerUrl || null
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
@@ -204,7 +205,7 @@ export default function UserLedgerDetail() {
         <div className="col-12">
           {/* Back Button */}
           <button
-            onClick={() => navigate('/admin/ledger/user')}
+            onClick={() => navigate('/admin/pnl/platform-ledger')}
             className="btn btn-outline-secondary mb-3"
           >
             <i className="bx bx-arrow-back me-2"></i>
@@ -225,11 +226,14 @@ export default function UserLedgerDetail() {
                   )}
                   <div>
                     <h4 className="mb-1">
-                      {t('admin.ledger.userLedgerEntry', { defaultValue: 'User Ledger Entry' })} #{entry.id}
+                      Platform Ledger Entry #{entry.id}
                     </h4>
                     <div className="d-flex align-items-center gap-2 flex-wrap">
-                      <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
-                        <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
+                      <span className={`badge ${entry.accountType === 'revenue' ? 'bg-label-success' : 'bg-label-warning'}`}>
+                        {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
+                      </span>
+                      <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
+                        <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </span>
                       {entry.entryCode && (
@@ -238,18 +242,12 @@ export default function UserLedgerDetail() {
                         </span>
                       )}
                       {stateBadge(entry.state)}
-                      {entry.userId && (
-                        <span className="badge bg-label-primary">
-                          <i className="bx bx-user me-1"></i>
-                          User #{entry.userId}
-                        </span>
-                      )}
                     </div>
                   </div>
                 </div>
                 <div className="text-end">
-                  <div className={`fs-4 fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
-                    {isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
+                  <div className={`fs-4 fw-bold ${isCredit ? 'text-danger' : 'text-success'}`}>
+                    {isCredit ? '-' : '+'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">
                     {formatUsd(entry.amountUsd)}
@@ -269,7 +267,7 @@ export default function UserLedgerDetail() {
                 <div className="card-header">
                   <h5 className="mb-0">
                     <i className="bx bx-detail me-2"></i>
-                    {t('admin.ledger.details', { defaultValue: 'Details' })}
+                    Details
                   </h5>
                 </div>
                 <div className="card-body">
@@ -280,167 +278,60 @@ export default function UserLedgerDetail() {
                         <td className="fw-medium">{entry.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">User ID</td>
-                        <td><span className="badge bg-label-primary">#{entry.userId}</span></td>
+                        <td className="text-muted">Account Type</td>
+                        <td>
+                          <span className={`badge ${entry.accountType === 'revenue' ? 'bg-label-success' : 'bg-label-warning'}`}>
+                            {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
+                          </span>
+                        </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.coin', { defaultValue: 'Coin' })}</td>
+                        <td className="text-muted">Coin</td>
                         <td>
                           <div className="d-flex align-items-center">
                             <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} />
-                            <div>
-                              <span className="fw-medium">{entry.coinSymbol || 'N/A'}</span>
-                              {entry.networkName && (
-                                <small className="text-muted ms-1">/ {entry.networkName}</small>
-                              )}
-                            </div>
+                            <span className="fw-medium">{entry.coinSymbol || '-'}</span>
+                            {entry.networkName && <span className="text-muted ms-1">({entry.networkName})</span>}
                           </div>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
+                        <td className="text-muted">Entry Code</td>
                         <td>
-                          <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                          <span className="fw-medium">{entry.entryCode || '-'}</span>
+                          {entry.entryCode && entryCodeLabels[entry.entryCode] && (
+                            <span className="text-muted ms-1">- {entryCodeLabels[entry.entryCode]}</span>
+                          )}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-muted">Entry Type</td>
+                        <td>
+                          <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
                             {isCredit ? 'Credit' : 'Debit'}
                           </span>
                         </td>
                       </tr>
-                      {entry.entryCode && (
-                        <tr>
-                          <td className="text-muted">Entry Code</td>
-                          <td>
-                            <code>{entry.entryCode}</code>
-                            <span className="text-muted ms-2">({entryCodeLabels[entry.entryCode] || entry.entryCode})</span>
-                          </td>
-                        </tr>
-                      )}
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.state', { defaultValue: 'State' })}</td>
+                        <td className="text-muted">State</td>
                         <td>{stateBadge(entry.state)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
+                        <td className="text-muted">Amount</td>
                         <td>
-                          <span className={`fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
-                            {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
+                          <span className={`fw-medium ${isCredit ? 'text-danger' : 'text-success'}`}>
+                            {isCredit ? '-' : '+'}{formatAmount(entry.amount)} {entry.coinSymbol}
                           </span>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Amount (Raw)</td>
-                        <td><code style={{ fontSize: '0.8rem' }}>{entry.amountRaw || 'N/A'}</code></td>
-                      </tr>
-                      <tr>
                         <td className="text-muted">USD Value</td>
-                        <td>{formatUsd(entry.amountUsd)}</td>
+                        <td className="fw-medium">{formatUsd(entry.amountUsd)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">USD Rate</td>
-                        <td>
-                          {entry.usdRate ? `$${parseFloat(entry.usdRate).toLocaleString()}` : 'N/A'}
-                          {entry.rateSource && <small className="text-muted ms-1">({entry.rateSource})</small>}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted">Decimals</td>
-                        <td>{entry.decimals ?? 'N/A'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            {/* Transaction & Timestamps */}
-            <div className="col-md-6">
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-link me-2"></i>
-                    Transaction
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless">
-                    <tbody>
-                      {entry.reservationId && (
-                        <tr>
-                          <td className="text-muted" style={{ width: '40%' }}>Reservation ID</td>
-                          <td><code>{entry.reservationId}</code></td>
-                        </tr>
-                      )}
-                      {entry.relatedId && (
-                        <tr>
-                          <td className="text-muted">Related ID</td>
-                          <td>#{entry.relatedId}</td>
-                        </tr>
-                      )}
-                      {entry.txHash && (
-                        <tr>
-                          <td className="text-muted">Tx Hash</td>
-                          <td>
-                            <code className="text-break" style={{ fontSize: '0.75rem' }}>{entry.txHash}</code>
-                            <div className="d-flex gap-1 mt-2">
-                              {entry.explorerUrl && (
-                                <a
-                                  href={`${entry.explorerUrl}/tx/${entry.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-outline-primary"
-                                  style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
-                                >
-                                  <i className="bx bx-link-external me-1"></i>View on Explorer
-                                </a>
-                              )}
-                              <button
-                                className="btn btn-sm btn-outline-secondary"
-                                onClick={() => copyToClipboard(entry.txHash)}
-                                style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
-                              >
-                                <i className="bx bx-copy me-1"></i>Copy
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Timestamps */}
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-time me-2"></i>
-                    Timestamps
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Created</td>
+                        <td className="text-muted">Created</td>
                         <td>{formatDate(entry.createdAt)}</td>
                       </tr>
-                      {entry.committedAt && (
-                        <tr>
-                          <td className="text-muted">Committed</td>
-                          <td>{formatDate(entry.committedAt)}</td>
-                        </tr>
-                      )}
-                      {entry.settledAt && (
-                        <tr>
-                          <td className="text-muted">Settled</td>
-                          <td>{formatDate(entry.settledAt)}</td>
-                        </tr>
-                      )}
-                      {entry.reversedAt && (
-                        <tr>
-                          <td className="text-muted">Reversed</td>
-                          <td>{formatDate(entry.reversedAt)}</td>
-                        </tr>
-                      )}
                       {entry.updatedAt && (
                         <tr>
                           <td className="text-muted">Updated</td>
@@ -451,18 +342,63 @@ export default function UserLedgerDetail() {
                   </table>
                 </div>
               </div>
+            </div>
 
-              {/* Metadata card (if present) */}
+            {/* Transaction & Metadata */}
+            <div className="col-md-6">
+              {entry.txHash && (
+                <div className="card mb-4">
+                  <div className="card-header">
+                    <h5 className="mb-0">
+                      <i className="bx bx-link me-2"></i>
+                      Transaction
+                    </h5>
+                  </div>
+                  <div className="card-body">
+                    <table className="table table-borderless">
+                      <tbody>
+                        <tr>
+                          <td className="text-muted" style={{ width: '30%' }}>Tx Hash</td>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <code className="me-2" style={{ wordBreak: 'break-all' }}>{entry.txHash}</code>
+                              <button
+                                className="btn btn-sm btn-icon btn-text-secondary"
+                                onClick={() => copyToClipboard(entry.txHash)}
+                                title="Copy"
+                              >
+                                <i className="bx bx-copy"></i>
+                              </button>
+                              {explorerUrl && (
+                                <a
+                                  href={`${explorerUrl}/tx/${entry.txHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-icon btn-text-secondary"
+                                  title="View on explorer"
+                                >
+                                  <i className="bx bx-link-external"></i>
+                                </a>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
               {metadata && Object.keys(metadata).length > 0 && (
                 <div className="card mb-4">
                   <div className="card-header">
                     <h5 className="mb-0">
-                      <i className="bx bx-code-block me-2"></i>
+                      <i className="bx bx-code-alt me-2"></i>
                       Metadata
                     </h5>
                   </div>
                   <div className="card-body">
-                    <pre className="mb-0 p-3 bg-light rounded" style={{ fontSize: '0.8rem', maxHeight: '300px', overflow: 'auto' }}>
+                    <pre className="bg-lighter p-3 rounded" style={{ fontSize: '0.85rem', maxHeight: '400px', overflow: 'auto' }}>
                       {JSON.stringify(metadata, null, 2)}
                     </pre>
                   </div>

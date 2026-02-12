@@ -60,6 +60,9 @@ import AdminInvoiceList from '../admin/AdminInvoiceList'
 import AdminInvoiceDetail from '../admin/AdminInvoiceDetail'
 import AdminPaymentList from '../admin/AdminPaymentList'
 import AdminPaymentDetail from '../admin/AdminPaymentDetail'
+import PlatformLedgerList from '../ledger/PlatformLedgerList'
+import PlatformLedgerDetail from '../ledger/PlatformLedgerDetail'
+import IncomeStatement from '../ledger/IncomeStatement'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
@@ -617,6 +620,10 @@ export default function DashboardLayout() {
                 <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
                   <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
+                <MenuGroup base="/admin/pnl" icon="bx-line-chart" label={t('admin.pnl.menuTitle', { defaultValue: 'Profit & Loss' })}>
+                  <SubItem to="/admin/pnl/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
+                  <SubItem to="/admin/pnl/platform-ledger" end label={t('admin.pnl.platformLedger', { defaultValue: 'Platform Ledger' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
                   <SubItem to="/admin/ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
                   <SubItem to="/admin/ledger/user" end label={t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })} />
@@ -908,6 +915,9 @@ export default function DashboardLayout() {
                     <Route path="payments/:id" element={<AdminPaymentDetail />} />
                     <Route path="sweep/transactions" element={<SweepTransactions />} />
                     <Route path="withdrawal/transactions" element={<WithdrawalTransactions />} />
+                    <Route path="pnl/income-statement" element={<IncomeStatement />} />
+                    <Route path="pnl/platform-ledger" element={<PlatformLedgerList />} />
+                    <Route path="pnl/platform-ledger/:id" element={<PlatformLedgerDetail />} />
                     <Route path="ledger/transactions" element={<LedgerTransactions />} />
                     <Route path="ledger/system" element={<SystemLedgerList />} />
                     <Route path="ledger/system/:id" element={<SystemLedgerDetail />} />

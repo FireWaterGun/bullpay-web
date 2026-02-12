@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
-import { getSystemLedgerEntries } from '../../api/admin.ts'
+import { getPlatformLedgerEntries } from '../../api/admin.ts'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -90,7 +90,7 @@ function CoinImg({ symbol, networkSymbol, size = 24 }) {
   )
 }
 
-export default function SystemLedgerList() {
+export default function PlatformLedgerList() {
   const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
@@ -106,17 +106,17 @@ export default function SystemLedgerList() {
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Filter states (draft — applied on "Apply")
-  const [typeFilter, setTypeFilter] = useState('')
-  const [walletIdFilter, setWalletIdFilter] = useState('')
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('')
+  // Filter states
+  const [accountTypeFilter, setAccountTypeFilter] = useState('')
+  const [entryTypeFilter, setEntryTypeFilter] = useState('')
   const [entryCodeFilter, setEntryCodeFilter] = useState('')
   const [stateFilter, setStateFilter] = useState('')
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('')
   const [txHashFilter, setTxHashFilter] = useState('')
   const [startDateFilter, setStartDateFilter] = useState('')
   const [endDateFilter, setEndDateFilter] = useState('')
 
-  // Applied filters (sent to API)
+  // Applied filters
   const [appliedFilters, setAppliedFilters] = useState({})
 
   useEffect(() => {
@@ -125,11 +125,11 @@ export default function SystemLedgerList() {
 
   function applyFilters() {
     setAppliedFilters({
-      type: typeFilter || undefined,
-      walletId: walletIdFilter ? Number(walletIdFilter) : undefined,
-      coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
+      accountType: accountTypeFilter || undefined,
+      entryType: entryTypeFilter || undefined,
       entryCode: entryCodeFilter || undefined,
       state: stateFilter || undefined,
+      coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
       txHash: txHashFilter || undefined,
       startDate: startDateFilter || undefined,
       endDate: endDateFilter || undefined,
@@ -138,11 +138,11 @@ export default function SystemLedgerList() {
   }
 
   function resetFilters() {
-    setTypeFilter('')
-    setWalletIdFilter('')
-    setCoinNetworkIdFilter('')
+    setAccountTypeFilter('')
+    setEntryTypeFilter('')
     setEntryCodeFilter('')
     setStateFilter('')
+    setCoinNetworkIdFilter('')
     setTxHashFilter('')
     setStartDateFilter('')
     setEndDateFilter('')
@@ -153,7 +153,7 @@ export default function SystemLedgerList() {
   async function loadEntries() {
     try {
       setLoading(true)
-      const data = await getSystemLedgerEntries(token, {
+      const data = await getPlatformLedgerEntries(token, {
         page: currentPage,
         limit: 20,
         ...appliedFilters,
@@ -161,8 +161,8 @@ export default function SystemLedgerList() {
       setEntries(data.items || [])
       setPagination(data.pagination || null)
     } catch (error) {
-      console.error('Failed to load system ledger entries:', error)
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
+      console.error('Failed to load platform ledger entries:', error)
+      toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entries' }))
     } finally {
       setLoading(false)
     }
@@ -179,62 +179,31 @@ export default function SystemLedgerList() {
     return `${day}/${month}/${year} ${hours}:${minutes}`
   }
 
-  // Entry code labels
   const entryCodeLabels = {
-    'SP': 'Settlement Payment',
-    'SC': 'Sweep Cost',
-    'SG': 'Sweep Gas',
-    'WA': 'Wallet Actual',
-    'WF': 'Wallet Fee',
-    'WG': 'Wallet Gas',
-    'WD': 'Withdrawal',
-    'DP': 'Deposit',
-    'FE': 'Fee',
-    'AJ': 'Adjustment',
+    'WF': 'Withdrawal Fee',
+    'FR': 'Fee Refund',
+    'SG': 'Sweep Gas Topup',
+    'SC': 'Sweep Gas Cost',
+    'WG': 'Withdrawal Gas',
+    'XI': 'Internal Transfer In',
+    'XO': 'Internal Transfer Out',
   }
 
-  function parseMetadata(entry) {
-    try {
-      return typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
-    } catch { return {} }
-  }
-
-  function getPurposeLabel(metadata) {
-    if (!metadata) return null
-    const purposeMap = {
-      'payment_received': 'Payment Received',
-      'merchant_credit': 'Merchant Credit',
-      'native_coin_sweep_cost': 'Sweep Cost',
-      'gas_topup_for_token_sweep': 'Gas Top-up',
-      'token_sweep_cost': 'Token Sweep Cost',
-    }
-    return purposeMap[metadata.purpose] || purposeMap[metadata.type] || metadata.purpose || metadata.type || null
+  function accountTypeBadge(type) {
+    if (type === 'revenue') return <span className="badge bg-label-success">Revenue</span>
+    if (type === 'expense') return <span className="badge bg-label-warning">Expense</span>
+    return <span className="badge bg-label-secondary">{type || 'N/A'}</span>
   }
 
   function stateBadge(state) {
     if (state === 'settled') return <span className="badge bg-label-success">Settled</span>
     if (state === 'committed') return <span className="badge bg-label-warning">Committed</span>
-    if (state === 'pending') return <span className="badge bg-label-warning">Pending</span>
     if (state === 'reversed') return <span className="badge bg-label-danger">Reversed</span>
     return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
   }
 
-  function truncateHash(hash) {
-    if (!hash) return ''
-    if (hash.length <= 16) return hash
-    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
-  }
-
-  function copyToClipboard(text, e) {
-    e.stopPropagation()
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-    })
-  }
-
   function formatAmount(val) {
     if (!val && val !== 0) return '0'
-    // Use the string value directly, just trim trailing zeros
     let str = String(val)
     if (str.includes('.')) {
       str = str.replace(/0+$/, '').replace(/\.$/, '')
@@ -249,6 +218,19 @@ export default function SystemLedgerList() {
       return '$' + num.toFixed(8).replace(/0+$/, '').replace(/\.$/, '.00')
     }
     return '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+
+  function copyToClipboard(text, e) {
+    e.stopPropagation()
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
+    })
+  }
+
+  function truncateHash(hash) {
+    if (!hash) return ''
+    if (hash.length <= 16) return hash
+    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
   }
 
   if (loading && entries.length === 0) {
@@ -273,11 +255,11 @@ export default function SystemLedgerList() {
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-server me-2"></i>
-                    {t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })}
+                    <i className="bx bx-book-open me-2"></i>
+                    {t('admin.platformLedger.title', { defaultValue: 'Platform Ledger' })}
                   </h4>
                   <p className="text-muted mb-0">
-                    {t('admin.ledger.systemLedgerDesc', { defaultValue: 'View all system ledger entries' })}
+                    {t('admin.platformLedger.description', { defaultValue: 'View all platform ledger entries (P&L)' })}
                   </p>
                 </div>
                 <button className="btn btn-primary" onClick={loadEntries} disabled={loading}>
@@ -289,47 +271,50 @@ export default function SystemLedgerList() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.entryType', { defaultValue: 'Entry Type' })}</label>
-                  <select className="form-select form-select-sm" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-                    <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="credit">{t('filter.credit', { defaultValue: 'Credit' })}</option>
-                    <option value="debit">{t('filter.debit', { defaultValue: 'Debit' })}</option>
+                  <label className="form-label small mb-1">Account Type</label>
+                  <select className="form-select form-select-sm" value={accountTypeFilter} onChange={(e) => setAccountTypeFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="revenue">Revenue</option>
+                    <option value="expense">Expense</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.entryCode', { defaultValue: 'Entry Code' })}</label>
+                  <label className="form-label small mb-1">Entry Type</label>
+                  <select className="form-select form-select-sm" value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="credit">Credit</option>
+                    <option value="debit">Debit</option>
+                  </select>
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label small mb-1">Entry Code</label>
                   <select className="form-select form-select-sm" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
-                    <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="WA">WA - Wallet Actual</option>
-                    <option value="WF">WF - Wallet Fee</option>
-                    <option value="WG">WG - Wallet Gas</option>
-                    <option value="SP">SP - Settlement Payment</option>
-                    <option value="SG">SG - Sweep Gas</option>
-                    <option value="SC">SC - Sweep Cost</option>
-                    <option value="XI">XI - Internal In</option>
-                    <option value="XO">XO - Internal Out</option>
+                    <option value="">All</option>
+                    <option value="WF">WF - Withdrawal Fee</option>
+                    <option value="FR">FR - Fee Refund</option>
+                    <option value="SG">SG - Sweep Gas Topup</option>
+                    <option value="SC">SC - Sweep Gas Cost</option>
+                    <option value="WG">WG - Withdrawal Gas</option>
+                    <option value="XI">XI - Internal Transfer In</option>
+                    <option value="XO">XO - Internal Transfer Out</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.state', { defaultValue: 'State' })}</label>
+                  <label className="form-label small mb-1">State</label>
                   <select className="form-select form-select-sm" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
-                    <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="committed">{t('filter.committed', { defaultValue: 'Committed' })}</option>
-                    <option value="settled">{t('filter.settled', { defaultValue: 'Settled' })}</option>
-                    <option value="reversed">{t('filter.reversed', { defaultValue: 'Reversed' })}</option>
+                    <option value="">All</option>
+                    <option value="committed">Committed</option>
+                    <option value="settled">Settled</option>
+                    <option value="reversed">Reversed</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.walletId', { defaultValue: 'Wallet ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.walletId', { defaultValue: 'Wallet ID' })} value={walletIdFilter} onChange={(e) => setWalletIdFilter(e.target.value)} />
+                  <label className="form-label small mb-1">Coin Network ID</label>
+                  <input type="number" className="form-control form-control-sm" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.txHash', { defaultValue: 'Tx Hash' })}</label>
-                  <input type="text" className="form-control form-control-sm" placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })} value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+                  <label className="form-label small mb-1">Tx Hash</label>
+                  <input type="text" className="form-control form-control-sm" placeholder="Tx Hash" value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
                   <label className="form-label small mb-1">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
@@ -362,19 +347,19 @@ export default function SystemLedgerList() {
           <div className="card">
             <div className="card-body">
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover" style={{ minWidth: '1200px' }}>
+                <table className="table table-hover">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>ID</th>
-                      <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-                      <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
+                      <th>Account</th>
+                      <th>Type</th>
+                      <th>Coin</th>
                       <th>Code</th>
-                      <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-                      <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                      <th>State</th>
+                      <th className="text-end">Amount</th>
                       <th className="text-end">USD</th>
-                      <th>Purpose</th>
                       <th>Tx Hash</th>
-                      <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
+                      <th>Created</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -382,20 +367,20 @@ export default function SystemLedgerList() {
                     {entries.length === 0 ? (
                       <tr>
                         <td colSpan="11" className="text-center text-muted py-4">
-                          {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
+                          {t('admin.platformLedger.noEntries', { defaultValue: 'No platform ledger entries found' })}
                         </td>
                       </tr>
                     ) : (
                       entries.map((entry) => {
                         const isCredit = entry.entryType === 'credit'
-                        const metadata = parseMetadata(entry)
-                        const networkSymbol = metadata?.networkSymbol || ''
-                        const purposeLabel = getPurposeLabel(metadata)
 
                         return (
-                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/ledger/system/${entry.id}`)}>
+                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/pnl/platform-ledger/${entry.id}`)}>
                             <td>
                               <span className="fw-semibold text-primary">{entry.id}</span>
+                            </td>
+                            <td>
+                              {accountTypeBadge(entry.accountType)}
                             </td>
                             <td>
                               <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
@@ -437,22 +422,6 @@ export default function SystemLedgerList() {
                               <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
                             </td>
                             <td>
-                              <div>
-                                {purposeLabel && (
-                                  <div className="fw-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
-                                )}
-                                {metadata?.invoiceNumber && (
-                                  <small className="badge bg-label-primary">{metadata.invoiceNumber}</small>
-                                )}
-                                {metadata?.sweepId && !metadata?.invoiceNumber && (
-                                  <small className="text-muted">Sweep #{metadata.sweepId}</small>
-                                )}
-                                {!purposeLabel && !metadata?.invoiceNumber && !metadata?.sweepId && (
-                                  <span className="text-muted">-</span>
-                                )}
-                              </div>
-                            </td>
-                            <td>
                               {entry.txHash ? (
                                 <div className="d-flex align-items-center">
                                   <span className="me-2">{entry.txHash}</span>
@@ -481,7 +450,7 @@ export default function SystemLedgerList() {
                                 className="btn btn-sm btn-icon btn-outline-primary"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  navigate(`/admin/ledger/system/${entry.id}`)
+                                  navigate(`/admin/pnl/platform-ledger/${entry.id}`)
                                 }}
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >
