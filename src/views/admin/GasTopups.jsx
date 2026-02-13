@@ -331,7 +331,7 @@ export default function GasTopups() {
           <div className="card">
             <div className="card-body">
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover" style={{ minWidth: '1800px' }}>
+                <table className="table table-hover">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>ID</th>
@@ -352,7 +352,7 @@ export default function GasTopups() {
                     {topups.length === 0 ? (
                       <tr>
                         <td colSpan="12" className="text-center text-muted py-4">
-                          No gas topups found
+                          {t('admin.gasTopup.noTopups', { defaultValue: 'No gas topups found' })}
                         </td>
                       </tr>
                     ) : (
