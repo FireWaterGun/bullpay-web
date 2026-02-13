@@ -899,8 +899,8 @@
       "platformLedger": "Revenue & Expenses"
     },
     "platformLedger": {
-      "title": "Platform Ledger",
-      "description": "View all platform ledger entries (P&L)",
+      "title": "Revenue & Expenses",
+      "description": "View all revenue and expense entries",
       "noEntries": "No platform ledger entries found",
       "loadError": "Failed to load platform ledger entries",
       "notFound": "Platform ledger entry not found"

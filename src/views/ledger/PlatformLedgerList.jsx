@@ -288,10 +288,10 @@ export default function PlatformLedgerList() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-book-open me-2"></i>
-                    {t('admin.platformLedger.title', { defaultValue: 'Platform Ledger' })}
+                    {t('admin.platformLedger.title', { defaultValue: 'Revenue & Expenses' })}
                   </h4>
                   <p className="text-muted mb-0">
-                    {t('admin.platformLedger.description', { defaultValue: 'View all platform ledger entries (P&L)' })}
+                    {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
                   </p>
                 </div>
                 <button className="btn btn-primary" onClick={loadEntries} disabled={loading}>
@@ -407,7 +407,7 @@ export default function PlatformLedgerList() {
                         const isCredit = entry.entryType === 'credit'
 
                         return (
-                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/pnl/platform-ledger/${entry.id}`)}>
+                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/pnl/revenue-expenses/${entry.id}`)}>
                             <td>
                               <span className="fw-semibold text-primary">{entry.id}</span>
                             </td>
@@ -482,7 +482,7 @@ export default function PlatformLedgerList() {
                                 className="btn btn-sm btn-icon btn-outline-primary"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  navigate(`/admin/pnl/platform-ledger/${entry.id}`)
+                                  navigate(`/admin/pnl/revenue-expenses/${entry.id}`)
                                 }}
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >

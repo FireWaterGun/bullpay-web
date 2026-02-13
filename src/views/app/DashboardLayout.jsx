@@ -607,7 +607,7 @@ export default function DashboardLayout() {
                 <MenuItem to="/admin" end icon="bx-bar-chart-alt-2" label={t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })} />
                 <MenuGroup base="/admin/pnl" icon="bx-line-chart" label={t('admin.pnl.menuTitle', { defaultValue: 'Profit & Loss' })}>
                   <SubItem to="/admin/pnl/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
-                  <SubItem to="/admin/pnl/platform-ledger" end label={t('admin.pnl.platformLedger', { defaultValue: 'Revenue & Expenses' })} />
+                  <SubItem to="/admin/pnl/revenue-expenses" end label={t('admin.pnl.platformLedger', { defaultValue: 'Revenue & Expenses' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
                   <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
@@ -916,8 +916,8 @@ export default function DashboardLayout() {
                     <Route path="sweep/transactions" element={<SweepTransactions />} />
                     <Route path="withdrawal/transactions" element={<WithdrawalTransactions />} />
                     <Route path="pnl/income-statement" element={<IncomeStatement />} />
-                    <Route path="pnl/platform-ledger" element={<PlatformLedgerList />} />
-                    <Route path="pnl/platform-ledger/:id" element={<PlatformLedgerDetail />} />
+                    <Route path="pnl/revenue-expenses" element={<PlatformLedgerList />} />
+                    <Route path="pnl/revenue-expenses/:id" element={<PlatformLedgerDetail />} />
                     <Route path="ledger/transactions" element={<LedgerTransactions />} />
                     <Route path="ledger/system" element={<SystemLedgerList />} />
                     <Route path="ledger/system/:id" element={<SystemLedgerDetail />} />

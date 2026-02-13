@@ -232,8 +232,8 @@ export default function PlatformLedgerDetail() {
                       <span className={`badge ${entry.accountType === 'revenue' ? 'bg-label-success' : 'bg-label-warning'}`}>
                         {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
                       </span>
-                      <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
-                        <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
+                      <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                        <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </span>
                       {entry.entryCode && (
@@ -246,8 +246,8 @@ export default function PlatformLedgerDetail() {
                   </div>
                 </div>
                 <div className="text-end">
-                  <div className={`fs-4 fw-bold ${isCredit ? 'text-danger' : 'text-success'}`}>
-                    {isCredit ? '-' : '+'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
+                  <div className={`fs-4 fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
+                    {isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">
                     {formatUsd(entry.amountUsd)}
@@ -307,7 +307,7 @@ export default function PlatformLedgerDetail() {
                       <tr>
                         <td className="text-muted">Entry Type</td>
                         <td>
-                          <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
+                          <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
                             {isCredit ? 'Credit' : 'Debit'}
                           </span>
                         </td>
@@ -319,8 +319,8 @@ export default function PlatformLedgerDetail() {
                       <tr>
                         <td className="text-muted">Amount</td>
                         <td>
-                          <span className={`fw-medium ${isCredit ? 'text-danger' : 'text-success'}`}>
-                            {isCredit ? '-' : '+'}{formatAmount(entry.amount)} {entry.coinSymbol}
+                          <span className={`fw-medium ${isCredit ? 'text-success' : 'text-danger'}`}>
+                            {isCredit ? '+' : '-'}{formatAmount(entry.amount)} {entry.coinSymbol}
                           </span>
                         </td>
                       </tr>
