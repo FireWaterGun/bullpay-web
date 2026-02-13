@@ -605,6 +605,9 @@ export default function DashboardLayout() {
               <>
                 {/* Admin menu */}
                 <MenuItem to="/admin" end icon="bx-bar-chart-alt-2" label={t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })} />
+                <MenuGroup base="/admin/system-wallet" icon="bx-wallet" label={t('admin.systemWallet', { defaultValue: 'System Wallet' })}>
+                  <SubItem to="/admin/system-wallet/balance" end label={t('admin.balance', { defaultValue: 'Balance' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/pnl" icon="bx-line-chart" label={t('admin.pnl.menuTitle', { defaultValue: 'Profit & Loss' })}>
                   <SubItem to="/admin/pnl/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
                   <SubItem to="/admin/pnl/revenue-expenses" end label={t('admin.pnl.platformLedger', { defaultValue: 'Revenue & Expenses' })} />
@@ -614,9 +617,6 @@ export default function DashboardLayout() {
                 </MenuGroup>
                 <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
                   <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
-                </MenuGroup>
-                <MenuGroup base="/admin/system-wallet" icon="bx-wallet" label={t('admin.systemWallet', { defaultValue: 'System Wallet' })}>
-                  <SubItem to="/admin/system-wallet/balance" end label={t('admin.balance', { defaultValue: 'Balance' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
                   <SubItem to="/admin/ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
