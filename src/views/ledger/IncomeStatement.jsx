@@ -147,6 +147,9 @@ export default function IncomeStatement() {
   const netIncome = report?.netIncomeUsd || 0
   const profitMargin = report?.profitMarginPercent || 0
 
+  // Check if report has any actual data
+  const hasData = revenueItems.length > 0 || deductionItems.length > 0 || expenseItems.length > 0
+
   // Auto-load report when date range changes
   useEffect(() => {
     if (token && fromDate && toDate) {
@@ -232,8 +235,8 @@ export default function IncomeStatement() {
             </div>
           </div>
 
-          {/* Report */}
-          {report && (
+          {/* Report with data */}
+          {report && hasData && (
             <>
               {/* Title Card */}
               <div className="card mb-4">
@@ -254,21 +257,15 @@ export default function IncomeStatement() {
                     <div className="card-body">
                       <table className="table table-borderless mb-0">
                         <tbody>
-                          {revenueItems.length > 0 ? (
-                            revenueItems.map((item, i) => (
-                              <tr key={i}>
-                                <td>
-                                  <span className="badge bg-label-primary me-2">{item.code}</span>
-                                  <span>{item.name || item.code}</span>
-                                </td>
-                                <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td className="text-muted" colSpan="2">No revenue items</td>
+                          {revenueItems.map((item, i) => (
+                            <tr key={i}>
+                              <td>
+                                <span className="badge bg-label-primary me-2">{item.code}</span>
+                                <span>{item.name || item.code}</span>
+                              </td>
+                              <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                             </tr>
-                          )}
+                          ))}
 
                           {/* Deductions */}
                           {deductionItems.length > 0 && (
@@ -288,7 +285,7 @@ export default function IncomeStatement() {
 
                           <tr style={{ borderTop: '2px solid #e9ecef' }}>
                             <td className="fw-bold">Net Revenue</td>
-                            <td className="text-end fw-bold text-success fs-5" style={{ whiteSpace: 'nowrap' }}>{formatUsd(netRevenue)}</td>
+                            <td className={`text-end fw-bold fs-5 ${parseFloat(netRevenue) === 0 ? 'text-muted' : 'text-success'}`} style={{ whiteSpace: 'nowrap' }}>{formatUsd(netRevenue)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -306,24 +303,18 @@ export default function IncomeStatement() {
                     <div className="card-body">
                       <table className="table table-borderless mb-0">
                         <tbody>
-                          {expenseItems.length > 0 ? (
-                            expenseItems.map((item, i) => (
-                              <tr key={i}>
-                                <td>
-                                  <span className="badge bg-label-danger me-2">{item.code}</span>
-                                  <span>{item.name || item.code}</span>
-                                </td>
-                                <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td className="text-muted" colSpan="2">No expense items</td>
+                          {expenseItems.map((item, i) => (
+                            <tr key={i}>
+                              <td>
+                                <span className="badge bg-label-danger me-2">{item.code}</span>
+                                <span>{item.name || item.code}</span>
+                              </td>
+                              <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                             </tr>
-                          )}
+                          ))}
                           <tr style={{ borderTop: '2px solid #e9ecef' }}>
                             <td className="fw-bold">Total Expenses</td>
-                            <td className="text-end fw-bold text-danger fs-5" style={{ whiteSpace: 'nowrap' }}>({formatUsd(totalExpenses)})</td>
+                            <td className={`text-end fw-bold fs-5 ${parseFloat(totalExpenses) === 0 ? 'text-muted' : 'text-danger'}`} style={{ whiteSpace: 'nowrap' }}>({formatUsd(totalExpenses)})</td>
                           </tr>
                         </tbody>
                       </table>
@@ -338,12 +329,12 @@ export default function IncomeStatement() {
                   <div className="row align-items-center">
                     <div className="col-md-6">
                       <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-3" style={{ backgroundColor: parseFloat(netIncome) >= 0 ? 'rgba(40, 199, 111, 0.1)' : 'rgba(234, 84, 85, 0.1)' }}>
-                          <i className={`bx ${parseFloat(netIncome) >= 0 ? 'bx-trending-up' : 'bx-trending-down'} fs-1`} style={{ color: parseFloat(netIncome) >= 0 ? '#28c76f' : '#ea5455' }}></i>
+                        <div className="rounded-3 p-3" style={{ backgroundColor: parseFloat(netIncome) === 0 ? 'rgba(168,170,174,0.1)' : parseFloat(netIncome) > 0 ? 'rgba(40, 199, 111, 0.1)' : 'rgba(234, 84, 85, 0.1)' }}>
+                          <i className={`bx ${parseFloat(netIncome) === 0 ? 'bx-minus-circle' : parseFloat(netIncome) > 0 ? 'bx-trending-up' : 'bx-trending-down'} fs-1`} style={{ color: parseFloat(netIncome) === 0 ? '#a8aaae' : parseFloat(netIncome) > 0 ? '#28c76f' : '#ea5455' }}></i>
                         </div>
                         <div>
                           <h6 className="text-muted mb-1">NET INCOME (Gross Profit)</h6>
-                          <h2 className={`mb-0 fw-bold ${parseFloat(netIncome) >= 0 ? 'text-success' : 'text-danger'}`}>
+                          <h2 className={`mb-0 fw-bold ${parseFloat(netIncome) === 0 ? 'text-muted' : parseFloat(netIncome) > 0 ? 'text-success' : 'text-danger'}`}>
                             {formatUsd(netIncome)}
                           </h2>
                         </div>
@@ -377,13 +368,36 @@ export default function IncomeStatement() {
             </>
           )}
 
-          {/* Empty state */}
+          {/* Empty state - no data for this period */}
+          {report && !hasData && !loading && (
+            <div className="card">
+              <div className="card-body text-center py-5">
+                <div className="mb-3">
+                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(168,170,174,0.1)' }}>
+                    <i className="bx bx-bar-chart-alt-2" style={{ fontSize: '2.5rem', color: '#a8aaae' }}></i>
+                  </div>
+                </div>
+                <h5 className="mb-2">No transactions found</h5>
+                <p className="text-muted mb-3" style={{ maxWidth: 400, margin: '0 auto' }}>
+                  There are no revenue or expense records for the period <strong>{fromDate}</strong> to <strong>{toDate}</strong>.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Empty state - no report loaded */}
           {!report && !loading && (
             <div className="card">
               <div className="card-body text-center py-5">
-                <i className="bx bx-line-chart" style={{ fontSize: '4rem', color: '#ccc' }}></i>
-                <h5 className="text-muted mt-3">Select a date range and generate report</h5>
-                <p className="text-muted">Choose the period you want to view the Income Statement for.</p>
+                <div className="mb-3">
+                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(105,108,255,0.08)' }}>
+                    <i className="bx bx-line-chart" style={{ fontSize: '2.5rem', color: '#696cff' }}></i>
+                  </div>
+                </div>
+                <h5 className="mb-2">Select a date range</h5>
+                <p className="text-muted mb-0" style={{ maxWidth: 400, margin: '0 auto' }}>
+                  Choose the period you want to view the Income Statement for.
+                </p>
               </div>
             </div>
           )}

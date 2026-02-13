@@ -399,7 +399,7 @@ export default function PlatformLedgerList() {
                     {entries.length === 0 ? (
                       <tr>
                         <td colSpan="11" className="text-center text-muted py-4">
-                          {t('admin.platformLedger.noEntries', { defaultValue: 'No platform ledger entries found' })}
+                          {t('admin.platformLedger.noEntries', { defaultValue: 'No revenue & expense entries found' })}
                         </td>
                       </tr>
                     ) : (

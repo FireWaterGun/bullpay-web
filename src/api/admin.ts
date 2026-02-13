@@ -702,6 +702,22 @@ export async function getSweeps(
 }
 
 /**
+ * Get a single sweep transaction by ID (Admin only)
+ * @param token - Auth token
+ * @param sweepId - Sweep transaction ID
+ */
+export async function getSweepById(token: string, sweepId: number) {
+  const response = await apiFetch(`/api/v1/admin/sweeps/${sweepId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  const data = response?.data || response
+  return data?.sweep || data
+}
+
+/**
  * Force a sweep transaction (Admin only)
  * @param token - Auth token
  * @param sweepId - Sweep transaction ID
@@ -1253,6 +1269,187 @@ export async function getPlatformLedgerEntry(token: string, id: number) {
  * @param token - Auth token
  * @param params - Query parameters (from, to required; coinNetworkId optional)
  */
+// ── Gas Topups ────────────────────────────────────────────────────
+
+/**
+ * Get all gas topups (Admin only)
+ */
+export async function getGasTopups(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    coinNetworkId?: number
+    sweepId?: number
+    fromAddress?: string
+    dateFrom?: string
+    dateTo?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.sweepId) queryParams.append('sweepId', String(params.sweepId))
+  if (params.fromAddress) queryParams.append('fromAddress', params.fromAddress)
+  if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom)
+  if (params.dateTo) queryParams.append('dateTo', params.dateTo)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/wallet-gas-topups${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || meta.currentPage || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get gas topup by ID (Admin only)
+ */
+export async function getGasTopupById(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/wallet-gas-topups/${id}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = response?.data || response
+  return data?.gasTopup || data
+}
+
+// ── Withdrawal Addresses ──────────────────────────────────────────
+
+/**
+ * Get all withdrawal addresses (Admin only)
+ */
+export async function getWithdrawalAddresses(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    userId?: string
+    coinNetworkId?: number
+    status?: string
+    isFlagged?: boolean
+    isVerified?: boolean
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.userId) queryParams.append('userId', params.userId)
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.isFlagged !== undefined) queryParams.append('isFlagged', String(params.isFlagged))
+  if (params.isVerified !== undefined) queryParams.append('isVerified', String(params.isVerified))
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/withdrawal-addresses${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || meta.currentPage || 1,
+      limit: meta.perPage || meta.limit || 50,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get withdrawal address by ID (Admin only)
+ */
+export async function getWithdrawalAddressById(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/withdrawal-addresses/${id}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * Flag a withdrawal address (Admin only)
+ */
+export async function flagWithdrawalAddress(token: string, id: number, reason: string) {
+  const response = await apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/flag`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: { reason }
+  })
+  return response
+}
+
+/**
+ * Unflag a withdrawal address (Admin only)
+ */
+export async function unflagWithdrawalAddress(token: string, id: number, reason: string) {
+  const response = await apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/unflag`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: { reason }
+  })
+  return response
+}
+
+/**
+ * Force verify a withdrawal address (Admin only)
+ */
+export async function forceVerifyWithdrawalAddress(token: string, id: number, reason: string, skipLockPeriod?: boolean) {
+  const response = await apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/force-verify`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: { reason, skipLockPeriod: skipLockPeriod || false }
+  })
+  return response
+}
+
+/**
+ * Permanently delete a withdrawal address (Admin only)
+ */
+export async function deleteWithdrawalAddress(token: string, id: number, reason: string) {
+  const response = await apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/permanent`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: { reason, confirmed: true }
+  })
+  return response
+}
+
 export async function getIncomeStatement(
   token: string,
   params: {

@@ -650,7 +650,7 @@
       "coinNetworkId": "Coin-Network ID",
       "coinNetworkIdRequired": "Coin-Network ID is required",
       "coinNetworkIdHelp": "Format: coin_network_id (e.g., 1-eth, 1-bsc)",
-      "transactions": "Sweep",
+      "transactions": "Transactions",
       "transactionsDesc": "View all sweep transactions and their status",
       "noTransactions": "No sweep transactions found",
       "createdAt": "Created Date",
@@ -726,7 +726,7 @@
     },
     "withdrawal": {
       "menuTitle": "Withdrawal",
-      "transactions": "Withdrawal",
+      "transactions": "Transactions",
       "transactionsDesc": "View all withdrawal transactions and their status",
       "defaults": "Defaults & Limits",
       "overrides": "Overrides",
@@ -901,7 +901,7 @@
     "platformLedger": {
       "title": "Revenue & Expenses",
       "description": "View all revenue and expense entries",
-      "noEntries": "No platform ledger entries found",
+      "noEntries": "No revenue & expense entries found",
       "loadError": "Failed to load platform ledger entries",
       "notFound": "Platform ledger entry not found"
     },

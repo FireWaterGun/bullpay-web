@@ -239,6 +239,7 @@ export default function WithdrawalTransactions() {
       setShowApproveModal(false)
       setSelectedWithdrawal(null)
       loadWithdrawals() // Reload the list
+      window.dispatchEvent(new Event('withdrawal-status-changed'))
     } catch (error) {
       console.error('Failed to approve withdrawal:', error)
       toast.error(t('withdrawal.approveError', { defaultValue: 'Failed to approve withdrawal' }))
@@ -267,6 +268,7 @@ export default function WithdrawalTransactions() {
       setSelectedWithdrawal(null)
       setRejectReason('')
       loadWithdrawals() // Reload the list
+      window.dispatchEvent(new Event('withdrawal-status-changed'))
     } catch (error) {
       console.error('Failed to reject withdrawal:', error)
       toast.error(t('withdrawal.rejectError', { defaultValue: 'Failed to reject withdrawal' }))
@@ -450,8 +452,8 @@ export default function WithdrawalTransactions() {
                           </span>
                         </td>
                         <td className="text-end text-nowrap">
-                          {withdrawal.networkFeeUsd ? (
-                            <span className="text-muted">${Number(withdrawal.networkFeeUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                          {withdrawal.totalFeeUsd ? (
+                            <span className="text-muted">${withdrawal.totalFeeUsd}</span>
                           ) : (
                             <span className="text-muted">-</span>
                           )}

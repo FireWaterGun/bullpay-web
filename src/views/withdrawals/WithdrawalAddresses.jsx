@@ -1,0 +1,652 @@
+import { useState, useEffect, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { useTranslation } from 'react-i18next'
+import { useToastContext } from '../../context/ToastContext'
+import {
+  getWithdrawalAddresses,
+  flagWithdrawalAddress,
+  unflagWithdrawalAddress,
+  forceVerifyWithdrawalAddress,
+} from '../../api/admin.ts'
+
+// Coin asset helpers
+function getCoinAssetCandidates(symbol, logoUrl) {
+  const sym = String(symbol || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+  const aliases = {
+    btc: ['bitcoin'],
+    eth: ['ethereum'],
+    doge: ['dogecoin'],
+    sol: ['solana'],
+    matic: ['polygon'],
+    pol: ['polygon'],
+    ada: ['cardano'],
+    xmr: ['monero'],
+    zec: ['zcash'],
+    usdt: ['usdterc20', 'tether'],
+  }
+  const names = [sym, ...(aliases[sym] || [])]
+  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
+  const exts = ['svg', 'png']
+  const byAssets = names.flatMap((n) =>
+    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
+  )
+  const candidates = [
+    ...byAssets,
+    ...(logoUrl ? [logoUrl] : []),
+    '/assets/img/coins/default.svg',
+  ]
+  return Array.from(new Set(candidates))
+}
+
+function CoinImg({ symbol, networkSymbol, size = 28 }) {
+  const [idx, setIdx] = useState(0)
+  const [netIdx, setNetIdx] = useState(0)
+  const candidates = useMemo(
+    () => getCoinAssetCandidates(symbol, null),
+    [symbol]
+  )
+  const networkCandidates = useMemo(
+    () => getCoinAssetCandidates(networkSymbol, null),
+    [networkSymbol]
+  )
+  const src = candidates[Math.min(idx, candidates.length - 1)]
+  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
+  const badgeSize = 16
+
+  return (
+    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
+      <img
+        src={src}
+        alt={symbol}
+        width={size}
+        height={size}
+        style={{ objectFit: 'cover' }}
+        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
+      />
+      {networkSymbol && networkSymbol !== symbol &&
+       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
+        <div
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            bottom: -2,
+            right: -2,
+            width: badgeSize,
+            height: badgeSize,
+            backgroundColor: 'white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            padding: '2px'
+          }}
+        >
+          <img
+            src={netSrc}
+            alt={networkSymbol}
+            width={badgeSize - 4}
+            height={badgeSize - 4}
+            className="rounded-circle"
+            style={{ objectFit: 'cover' }}
+            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function WithdrawalAddresses() {
+  const { t } = useTranslation()
+  const { token } = useAuth()
+  const toast = useToastContext()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const initStatus = searchParams.get('status') || ''
+  const initUserId = searchParams.get('userId') || ''
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
+  const initIsFlagged = searchParams.get('isFlagged') || ''
+  const initIsVerified = searchParams.get('isVerified') || ''
+  const initPage = parseInt(searchParams.get('page')) || 1
+
+  const [loading, setLoading] = useState(false)
+  const [addresses, setAddresses] = useState([])
+  const [pagination, setPagination] = useState(null)
+  const [currentPage, setCurrentPage] = useState(initPage)
+
+  // Filter states
+  const [statusFilter, setStatusFilter] = useState(initStatus)
+  const [userIdFilter, setUserIdFilter] = useState(initUserId)
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
+  const [isFlaggedFilter, setIsFlaggedFilter] = useState(initIsFlagged)
+  const [isVerifiedFilter, setIsVerifiedFilter] = useState(initIsVerified)
+
+  // Applied filters
+  const [appliedFilters, setAppliedFilters] = useState(() => {
+    const f = {}
+    if (initStatus) f.status = initStatus
+    if (initUserId) f.userId = initUserId
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
+    if (initIsFlagged) f.isFlagged = initIsFlagged === 'true'
+    if (initIsVerified) f.isVerified = initIsVerified === 'true'
+    return f
+  })
+
+  // Modal states
+  const [showActionModal, setShowActionModal] = useState(false)
+  const [actionType, setActionType] = useState('') // flag, unflag, forceVerify, delete
+  const [selectedAddress, setSelectedAddress] = useState(null)
+  const [actionReason, setActionReason] = useState('')
+  const [skipLockPeriod, setSkipLockPeriod] = useState(false)
+  const [actionLoading, setActionLoading] = useState(false)
+
+  useEffect(() => {
+    loadAddresses()
+  }, [currentPage, appliedFilters])
+
+  function syncSearchParams(filters, page) {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
+    if (page > 1) params.set('page', page)
+    setSearchParams(params, { replace: true })
+  }
+
+  function applyFilters() {
+    const f = {
+      status: statusFilter || undefined,
+      userId: userIdFilter || undefined,
+      coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
+      isFlagged: isFlaggedFilter ? isFlaggedFilter === 'true' : undefined,
+      isVerified: isVerifiedFilter ? isVerifiedFilter === 'true' : undefined,
+    }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
+  }
+
+  function resetFilters() {
+    setStatusFilter('')
+    setUserIdFilter('')
+    setCoinNetworkIdFilter('')
+    setIsFlaggedFilter('')
+    setIsVerifiedFilter('')
+    setAppliedFilters({})
+    setCurrentPage(1)
+    setSearchParams({}, { replace: true })
+  }
+
+  async function loadAddresses() {
+    try {
+      setLoading(true)
+      const data = await getWithdrawalAddresses(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters,
+      })
+      setAddresses(data.items || [])
+      setPagination(data.pagination || null)
+    } catch (error) {
+      console.error('Failed to load withdrawal addresses:', error)
+      toast.error(t('withdrawal.addressLoadError', { defaultValue: 'Failed to load withdrawal addresses' }))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+    }).catch(() => {
+      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
+    })
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return 'N/A'
+    const date = new Date(dateString)
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${day}/${month}/${year} ${hours}:${minutes}`
+  }
+
+  function statusBadgeClass(s) {
+    const v = String(s || '').toLowerCase().replace(/_/g, '_')
+    if (v === 'active') return 'badge bg-label-success'
+    if (v === 'pending_verification') return 'badge bg-label-warning'
+    if (v === 'suspended') return 'badge bg-label-danger'
+    if (v === 'deleted') return 'badge bg-label-secondary'
+    return 'badge bg-label-secondary'
+  }
+
+  function statusLabel(s) {
+    const v = String(s || '').toLowerCase()
+    if (v === 'active') return 'Active'
+    if (v === 'pending_verification') return 'Pending Verification'
+    if (v === 'suspended') return 'Suspended'
+    if (v === 'deleted') return 'Deleted'
+    return String(s || '').toUpperCase()
+  }
+
+  function openActionModal(type, addr) {
+    setActionType(type)
+    setSelectedAddress(addr)
+    setActionReason('')
+    setSkipLockPeriod(false)
+    setShowActionModal(true)
+  }
+
+  function getActionConfig() {
+    switch (actionType) {
+      case 'flag':
+        return { title: 'Flag Address', btnClass: 'btn-warning', btnLabel: 'Flag', icon: 'bx-flag' }
+      case 'unflag':
+        return { title: 'Remove Flag', btnClass: 'btn-success', btnLabel: 'Unflag', icon: 'bx-check-circle' }
+      case 'forceVerify':
+        return { title: 'Force Verify', btnClass: 'btn-info', btnLabel: 'Verify', icon: 'bx-shield-quarter' }
+      default:
+        return { title: '', btnClass: '', btnLabel: '', icon: '' }
+    }
+  }
+
+  async function handleAction() {
+    if (!selectedAddress || !actionReason.trim()) {
+      toast.error('Please provide a reason (minimum 10 characters)')
+      return
+    }
+    if (actionReason.trim().length < 10) {
+      toast.error('Reason must be at least 10 characters')
+      return
+    }
+
+    try {
+      setActionLoading(true)
+
+      switch (actionType) {
+        case 'flag':
+          await flagWithdrawalAddress(token, selectedAddress.id, actionReason.trim())
+          toast.success('Address flagged successfully')
+          break
+        case 'unflag':
+          await unflagWithdrawalAddress(token, selectedAddress.id, actionReason.trim())
+          toast.success('Address unflagged successfully')
+          break
+        case 'forceVerify':
+          await forceVerifyWithdrawalAddress(token, selectedAddress.id, actionReason.trim(), skipLockPeriod)
+          toast.success('Address force verified successfully')
+          break
+      }
+
+      setShowActionModal(false)
+      setSelectedAddress(null)
+      setActionReason('')
+      loadAddresses()
+    } catch (error) {
+      console.error(`Failed to ${actionType} address:`, error)
+      toast.error(`Failed to ${actionType} address`)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  function truncateAddress(addr) {
+    if (!addr || addr.length <= 16) return addr || 'N/A'
+    return `${addr.slice(0, 8)}...${addr.slice(-6)}`
+  }
+
+  if (loading && addresses.length === 0) {
+    return (
+      <div className="container-xxl flex-grow-1 container-p-y">
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const actionConfig = getActionConfig()
+
+  return (
+    <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="row">
+        <div className="col-12">
+          {/* Header */}
+          <div className="card mb-4">
+            <div className="card-header">
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                  <h4 className="mb-1">
+                    <i className="bx bx-wallet me-2"></i>
+                    {t('withdrawal.walletAddresses', { defaultValue: 'Wallet Addresses' })}
+                  </h4>
+                  <p className="text-muted mb-0">
+                    {t('withdrawal.walletAddressesDesc', { defaultValue: 'Manage user withdrawal wallet addresses' })}
+                  </p>
+                </div>
+                <button className="btn btn-primary" onClick={loadAddresses} disabled={loading}>
+                  <i className="bx bx-refresh me-1"></i>
+                  {t('actions.refresh', { defaultValue: 'Refresh' })}
+                </button>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row g-3">
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label small mb-1">Status</label>
+                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="pending_verification">Pending Verification</option>
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="deleted">Deleted</option>
+                  </select>
+                </div>
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label small mb-1">User ID</label>
+                  <input type="number" className="form-control form-control-sm" placeholder="User ID" value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+                </div>
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label small mb-1">Coin Network ID</label>
+                  <input type="number" className="form-control form-control-sm" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                </div>
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label small mb-1">Flagged</label>
+                  <select className="form-select form-select-sm" value={isFlaggedFilter} onChange={(e) => setIsFlaggedFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="true">Flagged</option>
+                    <option value="false">Not Flagged</option>
+                  </select>
+                </div>
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label small mb-1">Verified</label>
+                  <select className="form-select form-select-sm" value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="true">Verified</option>
+                    <option value="false">Not Verified</option>
+                  </select>
+                </div>
+              </div>
+              <div className="d-flex gap-2 mt-3">
+                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                  <i className="bx bx-filter-alt me-1"></i>
+                  {t('filter.apply', { defaultValue: 'Apply Filters' })}
+                </button>
+                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset me-1"></i>
+                  {t('filter.reset', { defaultValue: 'Reset' })}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="card">
+            <div className="card-body">
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table table-hover" style={{ minWidth: '1000px' }}>
+                  <thead>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th className="text-center">User ID</th>
+                      <th>Coin</th>
+                      <th>Label</th>
+                      <th>Address</th>
+                      <th className="text-center">Status</th>
+                      <th className="text-center">Verified</th>
+                      <th className="text-center">Flagged</th>
+                      <th className="text-center">Actions</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {addresses.length === 0 ? (
+                      <tr>
+                        <td colSpan="10" className="text-center text-muted py-4">
+                          No withdrawal addresses found
+                        </td>
+                      </tr>
+                    ) : (
+                      addresses.map((addr) => {
+                        const coinSymbol = (addr.coinNetwork?.coin?.symbol || addr.coinSymbol || '').toUpperCase()
+                        const networkSymbol = (addr.coinNetwork?.network?.symbol || addr.networkSymbol || '').toUpperCase()
+                        const networkName = addr.coinNetwork?.network?.name || addr.networkName || ''
+                        const isPending = addr.status === 'pending_verification'
+                        const isFlagged = addr.isFlagged
+
+                        return (
+                          <tr key={addr.id}>
+                            <td>
+                              <span className="fw-semibold text-primary">{addr.id}</span>
+                            </td>
+                            <td className="text-center">{addr.userId}</td>
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} />
+                                <div>
+                                  <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{coinSymbol}</div>
+                                  <div className="text-muted" style={{ fontSize: '0.75rem' }}>{networkName || networkSymbol}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className="text-muted" style={{ fontSize: '0.85rem' }}>{addr.label || '-'}</span>
+                            </td>
+                            <td>
+                              <div className="d-flex align-items-center gap-1">
+                                <span style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                                  {addr.address || 'N/A'}
+                                </span>
+                                {addr.address && (
+                                  <button
+                                    className="btn btn-sm p-0 border-0 text-muted"
+                                    onClick={() => copyToClipboard(addr.address)}
+                                    title="Copy address"
+                                    style={{ flexShrink: 0 }}
+                                  >
+                                    <i className="bx bx-copy" style={{ fontSize: '0.85rem' }}></i>
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td className="text-center text-nowrap">
+                              <span className={statusBadgeClass(addr.status)}>
+                                {statusLabel(addr.status)}
+                              </span>
+                            </td>
+                            <td className="text-center">
+                              {addr.isVerified ? (
+                                <i className="bx bx-check-circle text-success" style={{ fontSize: '1.1rem' }}></i>
+                              ) : (
+                                <i className="bx bx-x-circle text-muted" style={{ fontSize: '1.1rem' }}></i>
+                              )}
+                            </td>
+                            <td className="text-center">
+                              {isFlagged ? (
+                                <i className="bx bxs-flag-alt text-danger" style={{ fontSize: '1.1rem' }} title={addr.flagReason || 'Flagged'}></i>
+                              ) : (
+                                <span className="text-muted">-</span>
+                              )}
+                            </td>
+                            <td className="text-center">
+                              <div className="dropdown">
+                                <button
+                                  className="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  style={{ fontSize: '0.75rem', padding: '2px 8px' }}
+                                >
+                                  <i className="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <ul className="dropdown-menu dropdown-menu-end">
+                                  {!isFlagged ? (
+                                    <li>
+                                      <button className="dropdown-item" onClick={() => openActionModal('flag', addr)}>
+                                        <i className="bx bx-flag me-2 text-warning"></i>Flag
+                                      </button>
+                                    </li>
+                                  ) : (
+                                    <li>
+                                      <button className="dropdown-item" onClick={() => openActionModal('unflag', addr)}>
+                                        <i className="bx bx-check-circle me-2 text-success"></i>Unflag
+                                      </button>
+                                    </li>
+                                  )}
+                                  {isPending && (
+                                    <li>
+                                      <button className="dropdown-item" onClick={() => openActionModal('forceVerify', addr)}>
+                                        <i className="bx bx-shield-quarter me-2 text-info"></i>Force Verify
+                                      </button>
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
+                            </td>
+                            <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
+                              {formatDate(addr.createdAt)}
+                            </td>
+                          </tr>
+                        )
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {pagination && pagination.total > 0 && (
+                <div className="d-flex justify-content-between align-items-center mt-4">
+                  <div className="text-muted small">
+                    {t('invoices.showingEntries', {
+                      start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
+                      end: Math.min(pagination.page * pagination.limit, pagination.total),
+                      total: pagination.total,
+                      defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+                    })}
+                  </div>
+                  <div className="btn-group">
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled={!pagination.hasPrev || loading}
+                      onClick={() => { setCurrentPage(currentPage - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
+                    >
+                      <i className="bx bx-chevron-left"></i>
+                      {t('actions.prev', { defaultValue: 'Previous' })}
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled
+                    >
+                      {pagination.page} / {pagination.totalPages}
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled={!pagination.hasNext || loading}
+                      onClick={() => { setCurrentPage(currentPage + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
+                    >
+                      {t('actions.next', { defaultValue: 'Next' })}
+                      <i className="bx bx-chevron-right"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Confirmation Modal */}
+      {showActionModal && selectedAddress && (
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !actionLoading && setShowActionModal(false)}>
+          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className={`bx ${actionConfig.icon} me-2`}></i>
+                  {actionConfig.title}
+                </h5>
+                <button type="button" className="btn-close" onClick={() => setShowActionModal(false)} disabled={actionLoading}></button>
+              </div>
+              <div className="modal-body">
+                <div className="card mb-3" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
+                  <div className="card-body py-2 px-3">
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <small className="text-muted d-block">Address ID</small>
+                        <strong>#{selectedAddress.id}</strong>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted d-block">User ID</small>
+                        <strong>{selectedAddress.userId}</strong>
+                      </div>
+                      <div className="col-12">
+                        <small className="text-muted d-block">Address</small>
+                        <code style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>{selectedAddress.address}</code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="mb-3">
+                  <label className="form-label">Reason <span className="text-danger">*</span></label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    placeholder="Enter reason (minimum 10 characters)..."
+                    value={actionReason}
+                    onChange={(e) => setActionReason(e.target.value)}
+                    disabled={actionLoading}
+                  ></textarea>
+                  <small className="text-muted">{actionReason.trim().length}/500 characters</small>
+                </div>
+
+                {actionType === 'forceVerify' && (
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="skipLockPeriod"
+                      checked={skipLockPeriod}
+                      onChange={(e) => setSkipLockPeriod(e.target.checked)}
+                      disabled={actionLoading}
+                    />
+                    <label className="form-check-label" htmlFor="skipLockPeriod">
+                      Skip lock period
+                    </label>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowActionModal(false)} disabled={actionLoading}>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${actionConfig.btnClass}`}
+                  onClick={handleAction}
+                  disabled={actionLoading || actionReason.trim().length < 10}
+                >
+                  {actionLoading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-1"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <i className={`bx ${actionConfig.icon} me-1`}></i>
+                      {actionConfig.btnLabel}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

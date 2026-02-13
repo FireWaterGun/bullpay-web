@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
-import { getSweeps } from '../../api/admin.ts'
+import { getSweeps, forceSweep } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 
@@ -96,6 +96,7 @@ export default function SweepTransactions() {
   const { token } = useAuth()
   const toast = useToastContext()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
@@ -115,6 +116,7 @@ export default function SweepTransactions() {
   const [sweeps, setSweeps] = useState([])
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
+  const [retryingId, setRetryingId] = useState(null)
 
   // Filter states (draft — applied on "Apply")
   const [statusFilter, setStatusFilter] = useState(initStatus)
@@ -207,6 +209,20 @@ export default function SweepTransactions() {
       toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }))
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleRetry(sweepId) {
+    try {
+      setRetryingId(sweepId)
+      await forceSweep(token, sweepId)
+      toast.success(t('admin.sweep.retrySuccess', { defaultValue: 'Sweep retry initiated successfully' }))
+      loadSweeps()
+    } catch (error) {
+      console.error('Failed to retry sweep:', error)
+      toast.error(t('admin.sweep.retryError', { defaultValue: 'Failed to retry sweep' }))
+    } finally {
+      setRetryingId(null)
     }
   }
 
@@ -381,18 +397,19 @@ export default function SweepTransactions() {
                       <th>{t('admin.sweep.to', { defaultValue: 'To Address' })}</th>
                       <th>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</th>
                       <th>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
+                      <th className="text-center">{t('admin.sweep.actions', { defaultValue: 'Actions' })}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {sweeps.length === 0 ? (
                       <tr>
-                        <td colSpan="13" className="text-center text-muted py-4">
+                        <td colSpan="14" className="text-center text-muted py-4">
                           {t('admin.sweep.noTransactions', { defaultValue: 'No sweep transactions found' })}
                         </td>
                       </tr>
                     ) : (
                       sweeps.map((sweep) => (
-                        <tr key={sweep.id}>
+                        <tr key={sweep.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/sweep/transactions/${sweep.id}`)}>
                           <td>
                             <span className="fw-semibold text-primary">{sweep.id}</span>
                           </td>
@@ -508,6 +525,24 @@ export default function SweepTransactions() {
                             <span style={{ whiteSpace: 'nowrap' }}>
                               {sweep.completedAt ? formatDate(sweep.completedAt) : <span className="text-muted">-</span>}
                             </span>
+                          </td>
+                          <td className="text-center">
+                            {['failed', 'error'].includes(String(sweep.status || '').toLowerCase()) ? (
+                              <button
+                                className="btn btn-sm btn-outline-warning"
+                                disabled={retryingId === sweep.id}
+                                onClick={(e) => { e.stopPropagation(); handleRetry(sweep.id) }}
+                                title="Retry sweep"
+                              >
+                                {retryingId === sweep.id ? (
+                                  <span className="spinner-border spinner-border-sm"></span>
+                                ) : (
+                                  <><i className="bx bx-refresh me-1"></i>Retry</>
+                                )}
+                              </button>
+                            ) : (
+                              <span className="text-muted">-</span>
+                            )}
                           </td>
                         </tr>
                       ))

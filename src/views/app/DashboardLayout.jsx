@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { useUserInvoiceEvents, useSystemNotifications } from '../../hooks/useInvoiceEvents'
 import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
-import { getPaymentStats, getSystemWalletStats } from '../../api/admin.ts'
+import { getPaymentStats, getSystemWalletStats, getWithdrawals } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import { getBalancesWithFiat } from '../../api/balance.ts'
 import {
@@ -47,10 +47,14 @@ import SupportedCryptoForm from '../crypto/SupportedCryptoForm'
 import Sweep from '../admin/Sweep'
 import SweepOverrides from '../admin/SweepOverrides'
 import SweepTransactions from '../admin/SweepTransactions'
+import GasTopups from '../admin/GasTopups'
+import GasTopupDetail from '../admin/GasTopupDetail'
+import SweepDetail from '../admin/SweepDetail'
 import WithdrawalDefaults from '../admin/WithdrawalDefaults'
 import WithdrawalOverrides from '../admin/WithdrawalOverrides'
 import WithdrawalPolicy from '../admin/WithdrawalPolicy'
 import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
+import WithdrawalAddresses from '../withdrawals/WithdrawalAddresses'
 import LedgerTransactions from '../ledger/LedgerTransactions'
 import SystemLedgerList from '../ledger/SystemLedgerList'
 import SystemLedgerDetail from '../ledger/SystemLedgerDetail'
@@ -132,7 +136,7 @@ function SubMenuGroup({ base, label, children }) {
   )
 }
 
-function MenuGroup({ base, icon, label, children, matchPaths }) {
+function MenuGroup({ base, icon, label, children, matchPaths, badge }) {
   const location = useLocation()
   const resolved = useResolvedPath(base)
 
@@ -201,7 +205,23 @@ function MenuGroup({ base, icon, label, children, matchPaths }) {
     <li ref={liRef} className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <a href="#" className="menu-link menu-toggle" onClick={(e) => { e.preventDefault(); toggle(e) }} aria-expanded={open} aria-controls={`${label}-submenu`}>
         <i className={`menu-icon bx ${icon}`}></i>
-        <div>{label}</div>
+        <div data-i18n={label}>{label}</div>
+        {badge > 0 && (
+          <span
+            className="badge rounded-pill bg-danger"
+            style={{
+              fontSize: '0.65rem',
+              lineHeight: '1',
+              padding: '3px 6px',
+              minWidth: '18px',
+              textAlign: 'center',
+              position: 'absolute',
+              right: '38px',
+            }}
+          >
+            {badge > 99 ? '99+' : badge}
+          </span>
+        )}
       </a>
       <ul id={`${label}-submenu`} className="menu-sub" ref={subRef} style={{ maxHeight: open ? '3000px' : 0, overflow: 'hidden' }}>
         {children}
@@ -230,6 +250,16 @@ export default function DashboardLayout() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [notificationsLoading, setNotificationsLoading] = useState(false)
 
+  // Pending withdrawal count for badge
+  const [pendingWithdrawalCount, setPendingWithdrawalCount] = useState(0)
+
+  // Listen for withdrawal status changes (approve/reject) to refresh badge
+  useEffect(() => {
+    const handler = () => { if (isAdmin && token) loadPendingWithdrawalCount() }
+    window.addEventListener('withdrawal-status-changed', handler)
+    return () => window.removeEventListener('withdrawal-status-changed', handler)
+  }, [isAdmin, token])
+
   // Get user identifier (try id, userId, or email)
   const userIdentifier = user?.id || user?.userId || user?.email;
 
@@ -238,11 +268,21 @@ export default function DashboardLayout() {
     if (token) {
       if (isAdmin) {
         loadPaymentStats()
+        loadPendingWithdrawalCount()
       } else {
         loadUserBalance()
       }
     }
   }, [isAdmin, token])
+
+  async function loadPendingWithdrawalCount() {
+    try {
+      const data = await getWithdrawals(token, { status: 'pending', page: 1, limit: 1 })
+      setPendingWithdrawalCount(data.pagination?.total || 0)
+    } catch (error) {
+      console.error('Failed to load pending withdrawal count:', error)
+    }
+  }
 
   async function loadPaymentStats() {
     try {
@@ -430,6 +470,7 @@ export default function DashboardLayout() {
           body: data.message || 'Withdrawal has been completed successfully'
         });
         loadNotifications();
+        loadPendingWithdrawalCount();
       }
     };
   }, []); // Empty array - create once and never change
@@ -612,12 +653,14 @@ export default function DashboardLayout() {
                   <SubItem to="/admin/pnl/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
                   <SubItem to="/admin/pnl/revenue-expenses" end label={t('admin.pnl.platformLedger', { defaultValue: 'Revenue & Expenses' })} />
                 </MenuGroup>
-                <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })}>
+                <MenuGroup base="/admin/withdrawal" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })} badge={pendingWithdrawalCount}>
                   <SubItem to="/admin/withdrawal/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
+                  <SubItem to="/admin/withdrawal/addresses" end label={t('admin.withdrawal.walletAddresses', { defaultValue: 'Wallet Addresses' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/sweep" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
                   <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
+                <MenuItem to="/admin/gas-topups" end icon="bx-gas-pump" label={t('admin.gasTopup.menuTitle', { defaultValue: 'Gas Topup' })} />
                 <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
                   <SubItem to="/admin/ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
                   <SubItem to="/admin/ledger/user" end label={t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })} />
@@ -914,7 +957,11 @@ export default function DashboardLayout() {
                     <Route path="payments" element={<AdminPaymentList />} />
                     <Route path="payments/:id" element={<AdminPaymentDetail />} />
                     <Route path="sweep/transactions" element={<SweepTransactions />} />
+                    <Route path="sweep/transactions/:id" element={<SweepDetail />} />
                     <Route path="withdrawal/transactions" element={<WithdrawalTransactions />} />
+                    <Route path="withdrawal/addresses" element={<WithdrawalAddresses />} />
+                    <Route path="gas-topups" element={<GasTopups />} />
+                    <Route path="gas-topups/:id" element={<GasTopupDetail />} />
                     <Route path="pnl/income-statement" element={<IncomeStatement />} />
                     <Route path="pnl/revenue-expenses" element={<PlatformLedgerList />} />
                     <Route path="pnl/revenue-expenses/:id" element={<PlatformLedgerDetail />} />
