@@ -677,7 +677,7 @@ export default function DashboardLayout() {
                   <SubItem to="/admin/payments" end label={t('admin.payments.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
                 <MenuGroup base="/admin/crypto" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/crypto', '/admin/system-settings']}>
-                  <SubItem to="/admin/system-settings" end label={t('admin.settings.systemSettings', { defaultValue: 'System Settings' })} />
+                  <SubItem to="/admin/system-settings" end label={t('admin.settings.system', { defaultValue: 'System' })} />
                   <SubItem to="/admin/crypto/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
                   <SubItem to="/admin/crypto/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
                   <SubItem to="/admin/crypto/coin-networks" end={true} label={t('nav.coinNetworks', { defaultValue: 'Coin Networks' })} />

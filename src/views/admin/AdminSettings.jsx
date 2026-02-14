@@ -176,20 +176,11 @@ export default function AdminSettings() {
       toast.error(t('admin.settings.valueRequired', { defaultValue: 'Value is required' }))
       return
     }
-    if ((modalScope === 'merchant' || modalScope === 'user') && !modalEntityId) {
-      toast.error(t('admin.settings.entityIdRequired', { defaultValue: 'Entity ID is required for merchant/user scope' }))
-      return
-    }
     try {
       setModalLoading(true)
       await upsertSetting(token, {
         keyName: modalSetting.keyName,
         value: modalValue,
-        description: modalDesc || undefined,
-        scope: modalScope,
-        entityId: modalEntityId ? Number(modalEntityId) : null,
-        isPublic: modalIsPublic,
-        isEncrypted: modalIsEncrypted,
       })
       toast.success(t('admin.settings.saveSuccess', { defaultValue: 'Setting saved successfully' }))
       closeModal()
@@ -253,19 +244,28 @@ export default function AdminSettings() {
       }))
   }, [settings])
 
-  useEffect(() => {
-    if (groupedSettings.length > 0) {
-      const allKeys = new Set()
-      groupedSettings.forEach(g => {
-        allKeys.add(g.network)
-        g.subGroups.forEach(sg => { if (sg.name) allKeys.add(`${g.network}.${sg.name}`) })
-      })
-      setExpandedGroups(allKeys)
-    }
-  }, [groupedSettings])
-
   function toggleGroup(key) {
-    setExpandedGroups(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n })
+    setExpandedGroups(prev => {
+      if (prev.has(key)) {
+        const n = new Set(prev)
+        n.delete(key)
+        return n
+      }
+      // Check if key is a network (top-level) — collapse others and open only this one
+      const isNetwork = groupedSettings.some(g => g.network === key)
+      if (isNetwork) {
+        const n = new Set()
+        n.add(key)
+        // Also expand its sub-groups
+        const group = groupedSettings.find(g => g.network === key)
+        if (group) group.subGroups.forEach(sg => { if (sg.name) n.add(`${key}.${sg.name}`) })
+        return n
+      }
+      // Sub-group toggle
+      const n = new Set(prev)
+      n.add(key)
+      return n
+    })
   }
   function expandAll() {
     const a = new Set()
@@ -298,48 +298,15 @@ export default function AdminSettings() {
         </button>
       </div>
 
-      {/* Category pills */}
-      {categoryList.length > 0 && (
-        <div className="d-flex flex-wrap gap-2 mb-4">
-          {categoryList.filter(c => CATEGORY_OPTIONS.includes(c)).map(cat => {
-            const active = appliedFilters.category === cat
-            return (
-              <button
-                key={cat}
-                className={`btn btn-sm ${active ? 'btn-primary' : 'btn-outline-secondary'}`}
-                onClick={() => handleCategoryClick(cat)}
-                style={{ borderRadius: '20px' }}
-              >
-                {formatLabel(cat)}
-                <span className={`ms-1 badge ${active ? 'bg-white text-primary' : 'bg-label-secondary'}`} style={{ fontSize: '0.65rem' }}>
-                  {categoryCounts[cat] ?? 0}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      )}
-
       {/* Filters */}
       <div className="card mb-4">
         <div className="card-body">
           <div className="row g-3">
             <div className="col-md-3 col-sm-6">
-              <label className="form-label small mb-1">{t('filter.search', { defaultValue: 'Search' })}</label>
-              <input
-                type="text"
-                className="form-control form-control-sm"
-                placeholder={t('admin.settings.searchPlaceholder', { defaultValue: 'Key name...' })}
-                value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
-              />
-            </div>
-            <div className="col-md-3 col-sm-6">
               <label className="form-label small mb-1">{t('admin.settings.category', { defaultValue: 'Category' })}</label>
               <select className="form-select form-select-sm" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
                 <option value="">{t('admin.settings.allCategories', { defaultValue: 'All Categories' })}</option>
-                {CATEGORY_OPTIONS.map(c => (
+                {categoryList.map(c => (
                   <option key={c} value={c}>{formatLabel(c)}</option>
                 ))}
               </select>
@@ -404,13 +371,16 @@ export default function AdminSettings() {
                       <table className="table table-hover mb-0" style={{ tableLayout: 'fixed' }}>
                         <thead>
                           <tr style={{ background: '#f1f3f5' }}>
-                            <th style={{ width: '40%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d' }}>
+                            <th style={{ width: '35%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d' }}>
                               {t('admin.settings.keyName', { defaultValue: 'Setting' })}
                             </th>
-                            <th style={{ width: '15%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d' }}>
+                            <th style={{ width: '10%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d' }}>
                               {t('admin.settings.dataType', { defaultValue: 'Type' })}
                             </th>
-                            <th style={{ width: '25%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d' }}>
+                            <th style={{ width: '15%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d' }}>
+                              {t('admin.settings.defaultValue', { defaultValue: 'Default' })}
+                            </th>
+                            <th style={{ width: '20%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d' }}>
                               {t('admin.settings.value', { defaultValue: 'Value' })}
                             </th>
                             <th style={{ width: '20%', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '10px 16px', color: '#697a8d', textAlign: 'right' }}>
@@ -431,7 +401,7 @@ export default function AdminSettings() {
                                     style={{ cursor: 'pointer', background: `${color}10` }}
                                     onClick={() => toggleGroup(sgKey)}
                                   >
-                                    <td colSpan="4" style={{ padding: '10px 16px', borderBottom: '2px solid #e9ecef' }}>
+                                    <td colSpan="5" style={{ padding: '10px 16px', borderBottom: '2px solid #e9ecef' }}>
                                       <div className="d-flex align-items-center gap-2">
                                         <i className={`bx ${sgOpen ? 'bx-chevron-down' : 'bx-chevron-right'}`} style={{ fontSize: '1rem', color }}></i>
                                         <span className="fw-bold" style={{ fontSize: '0.9rem', color }}>{formatLabel(sg.name)}</span>
@@ -467,6 +437,11 @@ export default function AdminSettings() {
                                         <span className="text-muted" style={{ fontSize: '0.8rem' }}>{s.dataType}</span>
                                       </td>
 
+                                      {/* Default value */}
+                                      <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                                        <span className="text-muted" style={{ fontSize: '0.85rem' }}>{s.defaultValue || '-'}</span>
+                                      </td>
+
                                       {/* Value */}
                                       <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
                                         {isEditing ? (
@@ -497,20 +472,12 @@ export default function AdminSettings() {
                                             </button>
                                           </div>
                                         ) : (
-                                          <div>
-                                            <span
-                                              className={`fw-semibold ${changed ? 'text-primary' : ''}`}
-                                              style={{ fontSize: '0.9rem', cursor: Number(s.isEncrypted) === 1 ? 'default' : 'pointer' }}
-                                              onClick={() => !Number(s.isEncrypted) && startEdit(s)}
-                                              title={Number(s.isEncrypted) === 1 ? '' : t('admin.settings.clickToEdit', { defaultValue: 'Click to edit' })}
-                                            >
+                                          <div className="d-flex align-items-center gap-2">
+                                            <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
                                               {Number(s.isEncrypted) === 1 ? <span className="text-muted fst-italic">••••••</span> : s.value}
                                             </span>
                                             {changed && !Number(s.isEncrypted) && (
-                                              <span className="badge bg-label-warning ms-2" style={{ fontSize: '0.6rem', padding: '2px 5px', verticalAlign: 'middle' }}>modified</span>
-                                            )}
-                                            {changed && s.defaultValue && !Number(s.isEncrypted) && (
-                                              <small className="text-muted d-block" style={{ fontSize: '0.72rem' }}>default: {s.defaultValue}</small>
+                                              <span className="badge bg-label-warning" style={{ fontSize: '0.6rem', padding: '2px 5px' }}>modified</span>
                                             )}
                                           </div>
                                         )}
@@ -570,90 +537,79 @@ export default function AdminSettings() {
         </>
       )}
 
-      {/* Advanced Edit Modal */}
+      {/* Edit Modal */}
       {showModal && modalSetting && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !modalLoading && closeModal()}>
-          <div className="modal-dialog modal-lg modal-dialog-centered" onClick={e => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className="bx bx-slider-alt me-2"></i>
-                  {t('admin.settings.editSetting', { defaultValue: 'Edit Setting' })}
-                </h5>
-                <button type="button" className="btn-close" onClick={closeModal} disabled={modalLoading}></button>
-              </div>
-              <div className="modal-body">
-                <div className="bg-light rounded p-3 mb-3">
-                  <code className="fw-bold d-block mb-2">{modalSetting.keyName}</code>
-                  <div className="d-flex gap-3">
-                    <small className="text-muted">Type: <strong>{modalSetting.dataType}</strong></small>
-                    <small className="text-muted">Category: <strong>{formatLabel(modalSetting.category)}</strong></small>
-                    <small className="text-muted">Default: <strong>{modalSetting.defaultValue || '-'}</strong></small>
-                  </div>
+        <>
+          <div className="modal-backdrop fade show"></div>
+          <div className="modal fade show d-block" tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{t('admin.settings.editSetting', { defaultValue: 'Edit Setting' })}</h5>
                 </div>
-
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">{t('admin.settings.value', { defaultValue: 'Value' })} <span className="text-danger">*</span></label>
-                  {modalSetting.dataType === 'boolean' ? (
-                    <select className="form-select" value={modalValue} onChange={e => setModalValue(e.target.value)} disabled={modalLoading}>
-                      <option value="true">true</option>
-                      <option value="false">false</option>
-                    </select>
-                  ) : modalSetting.dataType === 'json' || modalSetting.dataType === 'array' ? (
-                    <textarea className="form-control font-monospace" rows="5" value={modalValue} onChange={e => setModalValue(e.target.value)} disabled={modalLoading} style={{ fontSize: '0.85rem' }} />
-                  ) : (
-                    <input
-                      type={modalSetting.dataType === 'integer' || modalSetting.dataType === 'decimal' ? 'number' : 'text'}
-                      className="form-control"
-                      value={modalValue}
-                      onChange={e => setModalValue(e.target.value)}
-                      disabled={modalLoading}
-                      step={modalSetting.dataType === 'decimal' ? 'any' : undefined}
-                    />
-                  )}
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">{t('admin.settings.descriptionLabel', { defaultValue: 'Description' })}</label>
-                  <textarea className="form-control" rows="2" value={modalDesc} onChange={e => setModalDesc(e.target.value)} disabled={modalLoading} maxLength={500} />
-                </div>
-
-                <div className="row g-3 mb-3">
-                  <div className="col-md-4">
-                    <label className="form-label fw-semibold">{t('admin.settings.scope', { defaultValue: 'Scope' })}</label>
-                    <select className="form-select" value={modalScope} onChange={e => setModalScope(e.target.value)} disabled={modalLoading}>
-                      {SCOPE_OPTIONS.map(s => <option key={s} value={s}>{formatLabel(s)}</option>)}
-                    </select>
-                  </div>
-                  {(modalScope === 'merchant' || modalScope === 'user') && (
-                    <div className="col-md-4">
-                      <label className="form-label fw-semibold">Entity ID <span className="text-danger">*</span></label>
-                      <input type="number" className="form-control" value={modalEntityId} onChange={e => setModalEntityId(e.target.value)} disabled={modalLoading} min="1" />
+                <div className="modal-body">
+                  <div className="row g-3">
+                    <div className="col-12">
+                      <label className="form-label">{t('admin.settings.descriptionLabel', { defaultValue: 'Description' })}</label>
+                      <p className="mb-0 fw-semibold">{modalSetting.description || '-'}</p>
                     </div>
-                  )}
-                </div>
-
-                <div className="d-flex gap-4">
-                  <div className="form-check form-switch">
-                    <input className="form-check-input" type="checkbox" id="modalIsPublic" checked={modalIsPublic} onChange={e => setModalIsPublic(e.target.checked)} disabled={modalLoading} />
-                    <label className="form-check-label" htmlFor="modalIsPublic"><i className="bx bx-globe me-1"></i>Public</label>
+                    <div className="col-12">
+                      <label className="form-label">{t('admin.settings.keyName', { defaultValue: 'Key' })}</label>
+                      <p className="mb-0"><code>{modalSetting.keyName}</code></p>
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">{t('admin.settings.dataType', { defaultValue: 'Type' })}</label>
+                      <p className="mb-0">{modalSetting.dataType}</p>
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">{t('admin.settings.scope', { defaultValue: 'Scope' })}</label>
+                      <p className="mb-0">{formatLabel(modalSetting.scope || 'global')}{modalSetting.entityId ? ` #${modalSetting.entityId}` : ''}</p>
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">{t('admin.settings.defaultValue', { defaultValue: 'Default' })}</label>
+                      <p className="mb-0">{modalSetting.defaultValue || '-'}</p>
+                    </div>
+                    <div className="col-12">
+                      <hr className="my-0" />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label">{t('admin.settings.value', { defaultValue: 'Value' })} *</label>
+                      {modalSetting.dataType === 'boolean' ? (
+                        <select className="form-select" value={modalValue} onChange={e => setModalValue(e.target.value)} disabled={modalLoading}>
+                          <option value="true">true</option>
+                          <option value="false">false</option>
+                        </select>
+                      ) : modalSetting.dataType === 'json' || modalSetting.dataType === 'array' ? (
+                        <textarea className="form-control font-monospace" rows="5" value={modalValue} onChange={e => setModalValue(e.target.value)} disabled={modalLoading} style={{ fontSize: '0.85rem' }} />
+                      ) : (
+                        <input
+                          type={modalSetting.dataType === 'integer' || modalSetting.dataType === 'decimal' ? 'number' : 'text'}
+                          className="form-control"
+                          value={modalValue}
+                          onChange={e => setModalValue(e.target.value)}
+                          disabled={modalLoading}
+                          step={modalSetting.dataType === 'decimal' ? 'any' : undefined}
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div className="form-check form-switch">
-                    <input className="form-check-input" type="checkbox" id="modalIsEncrypted" checked={modalIsEncrypted} onChange={e => setModalIsEncrypted(e.target.checked)} disabled={modalLoading} />
-                    <label className="form-check-label" htmlFor="modalIsEncrypted"><i className="bx bx-lock-alt me-1"></i>Encrypted</label>
-                  </div>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-outline-secondary" onClick={closeModal} disabled={modalLoading}>{t('actions.cancel', { defaultValue: 'Cancel' })}</button>
-                <button className="btn btn-primary" onClick={handleModalSave} disabled={modalLoading}>
-                  {modalLoading ? <span className="spinner-border spinner-border-sm me-1"></span> : <i className="bx bx-save me-1"></i>}
-                  {t('actions.save', { defaultValue: 'Save' })}
-                </button>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={closeModal} disabled={modalLoading}>
+                    {t('actions.cancel', { defaultValue: 'Cancel' })}
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={handleModalSave} disabled={modalLoading}>
+                    {modalLoading ? (
+                      <><span className="spinner-border spinner-border-sm me-2"></span>{t('actions.saving', { defaultValue: 'Saving...' })}</>
+                    ) : (
+                      <><i className="bx bx-save me-1"></i>{t('actions.save', { defaultValue: 'Save' })}</>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )
