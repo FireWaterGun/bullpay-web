@@ -1602,3 +1602,117 @@ export async function disableUser2FA(token: string, id: number) {
   })
   return response?.data || response
 }
+
+// ── Admin Settings ──────────────────────────────────────────
+
+/**
+ * List settings with filters (Admin only)
+ */
+export async function getSettings(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    category?: string
+    scope?: string
+    entityId?: number
+    search?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.category) queryParams.append('category', params.category)
+  if (params.scope) queryParams.append('scope', params.scope)
+  if (params.entityId) queryParams.append('entityId', String(params.entityId))
+  if (params.search) queryParams.append('search', params.search)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/settings${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || data?.settings || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.currentPage || meta.page || 1,
+      limit: meta.perPage || meta.limit || 50,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get setting categories with counts (Admin only)
+ */
+export async function getSettingCategories(token: string) {
+  const response = await apiFetch('/api/v1/admin/settings/categories', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = response?.data || response
+  return data
+}
+
+/**
+ * Get setting by ID (Admin only)
+ */
+export async function getSettingById(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/settings/${id}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = response?.data || response
+  return data?.setting || data
+}
+
+/**
+ * Get setting by key name (Admin only)
+ */
+export async function getSettingByKey(token: string, key: string) {
+  const response = await apiFetch(`/api/v1/admin/settings/key/${encodeURIComponent(key)}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = response?.data || response
+  return data?.setting || data
+}
+
+/**
+ * Upsert (update) a setting (Admin only)
+ */
+export async function upsertSetting(
+  token: string,
+  payload: {
+    keyName: string
+    value: string
+    defaultValue?: string | null
+    dataType?: string
+    category?: string
+    scope?: string
+    entityId?: number | null
+    isEncrypted?: boolean
+    isPublic?: boolean
+    description?: string
+  }
+) {
+  const response = await apiFetch('/api/v1/admin/settings', {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: payload,
+  })
+  return response?.data || response
+}
