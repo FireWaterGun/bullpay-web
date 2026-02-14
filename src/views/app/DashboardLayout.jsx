@@ -55,6 +55,7 @@ import WithdrawalOverrides from '../admin/WithdrawalOverrides'
 import WithdrawalPolicy from '../admin/WithdrawalPolicy'
 import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
 import WithdrawalAddresses from '../withdrawals/WithdrawalAddresses'
+import UserList from '../admin/UserList'
 import LedgerTransactions from '../ledger/LedgerTransactions'
 import SystemLedgerList from '../ledger/SystemLedgerList'
 import SystemLedgerDetail from '../ledger/SystemLedgerDetail'
@@ -661,6 +662,9 @@ export default function DashboardLayout() {
                   <SubItem to="/admin/sweep/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
                 </MenuGroup>
                 <MenuItem to="/admin/gas-topups" end icon="bx-gas-pump" label={t('admin.gasTopup.menuTitle', { defaultValue: 'Gas Topup' })} />
+                <MenuGroup base="/admin/users" icon="bx-group" label={t('admin.users.menuTitle', { defaultValue: 'User Management' })}>
+                  <SubItem to="/admin/users" end label={t('admin.users.listUsers', { defaultValue: 'List Users' })} />
+                </MenuGroup>
                 <MenuGroup base="/admin/ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
                   <SubItem to="/admin/ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
                   <SubItem to="/admin/ledger/user" end label={t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })} />
@@ -962,6 +966,7 @@ export default function DashboardLayout() {
                     <Route path="withdrawal/addresses" element={<WithdrawalAddresses />} />
                     <Route path="gas-topups" element={<GasTopups />} />
                     <Route path="gas-topups/:id" element={<GasTopupDetail />} />
+                    <Route path="users" element={<UserList />} />
                     <Route path="pnl/income-statement" element={<IncomeStatement />} />
                     <Route path="pnl/revenue-expenses" element={<PlatformLedgerList />} />
                     <Route path="pnl/revenue-expenses/:id" element={<PlatformLedgerDetail />} />

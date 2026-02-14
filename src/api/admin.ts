@@ -1473,3 +1473,132 @@ export async function getIncomeStatement(
   })
   return response?.data || response
 }
+
+// ── User Management ──────────────────────────────────────────
+
+/**
+ * List users with filters (Admin only)
+ */
+export async function getUsers(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    role?: string
+    email?: string
+    search?: string
+    dateFrom?: string
+    dateTo?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.role) queryParams.append('role', params.role)
+  if (params.email) queryParams.append('email', params.email)
+  if (params.search) queryParams.append('search', params.search)
+  if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom)
+  if (params.dateTo) queryParams.append('dateTo', params.dateTo)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/users${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || data?.users || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.currentPage || meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get user detail by ID (Admin only)
+ */
+export async function getUserById(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/users/${id}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = response?.data || response
+  return data?.user || data
+}
+
+/**
+ * Change user status (Admin only)
+ */
+export async function changeUserStatus(token: string, id: number, status: string, reason?: string) {
+  const body: any = { status }
+  if (reason) body.reason = reason
+
+  const response = await apiFetch(`/api/v1/admin/users/${id}/status`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+  return response?.data || response
+}
+
+/**
+ * Change user role (Admin only)
+ */
+export async function changeUserRole(token: string, id: number, role: string) {
+  const response = await apiFetch(`/api/v1/admin/users/${id}/role`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ role }),
+  })
+  return response?.data || response
+}
+
+/**
+ * Admin reset user password (Admin only)
+ */
+export async function resetUserPassword(token: string, id: number, newPassword: string) {
+  const response = await apiFetch(`/api/v1/admin/users/${id}/reset-password`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ newPassword }),
+  })
+  return response?.data || response
+}
+
+/**
+ * Disable user 2FA (Admin only)
+ */
+export async function disableUser2FA(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/users/${id}/disable-2fa`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
