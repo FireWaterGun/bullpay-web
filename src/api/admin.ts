@@ -355,6 +355,7 @@ export async function createCoinNetwork(token: string, coinNetworkData: {
   depositFee?: string
   withdrawFee: string
   depositConfirmations: number
+  dailyWithdrawLimitUsd?: string
 }) {
   const data = await apiFetch('/api/v1/admin/coin-networks', {
     method: 'POST',
@@ -385,6 +386,7 @@ export async function updateCoinNetwork(token: string, id: number, coinNetworkDa
   depositFee?: string
   withdrawFee?: string
   depositConfirmations?: number
+  dailyWithdrawLimitUsd?: string
 }) {
   const data = await apiFetch(`/api/v1/admin/coin-networks/${id}`, {
     method: 'PUT',

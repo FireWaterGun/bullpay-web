@@ -136,6 +136,7 @@ export default function SupportedCryptoForm() {
     depositFee: '0',
     withdrawFee: '',
     depositConfirmations: '',
+    dailyWithdrawLimitUsd: '',
     status: 'active'
   })
 
@@ -195,6 +196,7 @@ export default function SupportedCryptoForm() {
           depositFee: cleanNumber(coinNetwork.depositFee) || '0',
           withdrawFee: cleanNumber(coinNetwork.withdrawFee),
           depositConfirmations: coinNetwork.depositConfirmations?.toString() || '',
+          dailyWithdrawLimitUsd: cleanNumber(coinNetwork.dailyWithdrawLimitUsd),
           status: coinNetwork.status || 'active'
         })
       } else {
@@ -259,6 +261,7 @@ export default function SupportedCryptoForm() {
         depositFee: formData.depositFee || '0',
         withdrawFee: formData.withdrawFee,
         depositConfirmations: parseFloat(formData.depositConfirmations),
+        ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
         status: formData.status || 'active'
       }
 
@@ -643,6 +646,27 @@ export default function SupportedCryptoForm() {
                   disabled={loading}
                   placeholder="5.00"
                 />
+              </div>
+
+              {/* Daily Withdraw Limit USD */}
+              <div className="col-md-6">
+                <label className="form-label">
+                  {t('crypto.dailyWithdrawLimitUsd', { defaultValue: 'Daily Withdraw Limit (USD)' })}
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control form-control-lg"
+                  id="dailyWithdrawLimitUsd"
+                  name="dailyWithdrawLimitUsd"
+                  value={formData.dailyWithdrawLimitUsd}
+                  onChange={handleChange}
+                  disabled={loading}
+                  placeholder="10000.00"
+                />
+                <small className="text-muted">
+                  {t('crypto.dailyWithdrawLimitUsdHelp', { defaultValue: 'Maximum daily withdrawal limit in USD. Leave empty for no limit.' })}
+                </small>
               </div>
 
               <div className="col-md-12">
