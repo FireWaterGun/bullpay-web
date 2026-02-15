@@ -76,8 +76,9 @@ function MenuItem({ to, icon, label, end }) {
   const location = useLocation()
   const resolved = useResolvedPath(to)
   const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
-  const prefixMatch = location.pathname.startsWith(resolved.pathname + '/')
-  const isActive = !!exactMatch || prefixMatch
+  const remaining = location.pathname.slice(resolved.pathname.length)
+  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/') && /^\/\d+/.test(remaining)
+  const isActive = !!exactMatch || isDetailMatch
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
       <NavLink to={to} end={end} className="menu-link" onClick={(e) => { /* close handled at aside */ }}>
@@ -92,8 +93,9 @@ function SubItem({ to, label, end }) {
   const location = useLocation()
   const resolved = useResolvedPath(to)
   const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
-  const prefixMatch = location.pathname.startsWith(resolved.pathname + '/')
-  const isActive = !!exactMatch || prefixMatch
+  const remaining = location.pathname.slice(resolved.pathname.length)
+  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/') && /^\/\d+/.test(remaining)
+  const isActive = !!exactMatch || isDetailMatch
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
       <NavLink to={to} end={end} className="menu-link">
