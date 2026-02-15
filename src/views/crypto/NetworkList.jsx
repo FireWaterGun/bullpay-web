@@ -12,6 +12,7 @@ export default function NetworkList() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [draftSearch, setDraftSearch] = useState('')
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -26,16 +27,16 @@ export default function NetworkList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Debounce search - reset to page 1 when searching
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery !== undefined) {
-        loadNetworks(1, searchQuery)
-      }
-    }, 500)
-    return () => clearTimeout(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery])
+  function handleApplyFilter() {
+    setSearchQuery(draftSearch)
+    loadNetworks(1, draftSearch)
+  }
+
+  function handleResetFilter() {
+    setDraftSearch('')
+    setSearchQuery('')
+    loadNetworks(1, '')
+  }
 
   async function loadNetworks(page = pagination.page, search = searchQuery) {
     setLoading(true)
@@ -79,10 +80,6 @@ export default function NetworkList() {
     }
   }
 
-  function handleSearchChange(e) {
-    setSearchQuery(e.target.value)
-  }
-
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="card">
@@ -103,30 +100,28 @@ export default function NetworkList() {
             </button>
           </div>
 
-          {/* Search Bar */}
-          <div className="row">
-            <div className="col-md-6">
-              <div className="input-group">
-                <span className="input-group-text">
-                  <i className="bx bx-search"></i>
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder={t('crypto.searchNetworks', { defaultValue: 'Search by name or chain ID...' })}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-                {searchQuery && (
-                  <button
-                    className="btn btn-outline-secondary"
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                  >
-                    <i className="bx bx-x"></i>
-                  </button>
-                )}
-              </div>
+          {/* Filters */}
+          <div className="row g-3 align-items-end">
+            <div className="col-md-3 col-sm-6">
+              <label className="form-label small mb-1">{t('filter.search', { defaultValue: 'Search' })}</label>
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                placeholder={t('crypto.searchNetworks', { defaultValue: 'Search by name or chain ID...' })}
+                value={draftSearch}
+                onChange={(e) => setDraftSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
+              />
+            </div>
+            <div className="col-auto d-flex gap-2">
+              <button className="btn btn-primary btn-sm" onClick={handleApplyFilter} disabled={loading}>
+                <i className="bx bx-filter-alt me-1"></i>
+                {t('filter.apply', { defaultValue: 'Apply Filters' })}
+              </button>
+              <button className="btn btn-outline-secondary btn-sm" onClick={handleResetFilter} disabled={loading}>
+                <i className="bx bx-reset me-1"></i>
+                {t('filter.reset', { defaultValue: 'Reset' })}
+              </button>
             </div>
           </div>
         </div>

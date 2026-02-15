@@ -175,6 +175,7 @@ export default function SupportedCrypto() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [draftSearch, setDraftSearch] = useState('')
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -189,21 +190,22 @@ export default function SupportedCrypto() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadCoinNetworks(1, pagination.limit)
-    }, 500)
+  function handleApplyFilter() {
+    setSearchQuery(draftSearch)
+    loadCoinNetworks(1, pagination.limit, draftSearch)
+  }
 
-    return () => clearTimeout(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery])
+  function handleResetFilter() {
+    setDraftSearch('')
+    setSearchQuery('')
+    loadCoinNetworks(1, pagination.limit, '')
+  }
 
-  async function loadCoinNetworks(page = pagination.page, limit = pagination.limit) {
+  async function loadCoinNetworks(page = pagination.page, limit = pagination.limit, search = searchQuery) {
     setLoading(true)
     setError('')
     try {
-      const response = await getCoinNetworks(token, page, limit, searchQuery, '', '')
+      const response = await getCoinNetworks(token, page, limit, search, '', '')
       const items = response?.items || []
       const paginationData = response?.pagination || {}
 
@@ -228,10 +230,6 @@ export default function SupportedCrypto() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function handleSearchChange(e) {
-    setSearchQuery(e.target.value)
-  }
-
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="card">
@@ -251,30 +249,28 @@ export default function SupportedCrypto() {
             </button>
           </div>
 
-          {/* Search Bar */}
-          <div className="row">
-            <div className="col-md-6">
-              <div className="input-group">
-                <span className="input-group-text">
-                  <i className="bx bx-search"></i>
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder={t('crypto.searchSupported', { defaultValue: 'Search by coin or network...' })}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-                {searchQuery && (
-                  <button
-                    className="btn btn-outline-secondary"
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                  >
-                    <i className="bx bx-x"></i>
-                  </button>
-                )}
-              </div>
+          {/* Filters */}
+          <div className="row g-3 align-items-end">
+            <div className="col-md-3 col-sm-6">
+              <label className="form-label small mb-1">{t('filter.search', { defaultValue: 'Search' })}</label>
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                placeholder={t('crypto.searchSupported', { defaultValue: 'Search by coin or network...' })}
+                value={draftSearch}
+                onChange={(e) => setDraftSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
+              />
+            </div>
+            <div className="col-auto d-flex gap-2">
+              <button className="btn btn-primary btn-sm" onClick={handleApplyFilter} disabled={loading}>
+                <i className="bx bx-filter-alt me-1"></i>
+                {t('filter.apply', { defaultValue: 'Apply Filters' })}
+              </button>
+              <button className="btn btn-outline-secondary btn-sm" onClick={handleResetFilter} disabled={loading}>
+                <i className="bx bx-reset me-1"></i>
+                {t('filter.reset', { defaultValue: 'Reset' })}
+              </button>
             </div>
           </div>
         </div>
