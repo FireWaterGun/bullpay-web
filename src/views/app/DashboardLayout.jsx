@@ -73,9 +73,11 @@ import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
 function MenuItem({ to, icon, label, end }) {
+  const location = useLocation()
   const resolved = useResolvedPath(to)
-  const match = useMatch({ path: resolved.pathname, end: !!end })
-  const isActive = !!match
+  const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
+  const prefixMatch = location.pathname.startsWith(resolved.pathname + '/')
+  const isActive = !!exactMatch || prefixMatch
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
       <NavLink to={to} end={end} className="menu-link" onClick={(e) => { /* close handled at aside */ }}>
@@ -87,9 +89,11 @@ function MenuItem({ to, icon, label, end }) {
 }
 
 function SubItem({ to, label, end }) {
+  const location = useLocation()
   const resolved = useResolvedPath(to)
-  const match = useMatch({ path: resolved.pathname, end: !!end })
-  const isActive = !!match
+  const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
+  const prefixMatch = location.pathname.startsWith(resolved.pathname + '/')
+  const isActive = !!exactMatch || prefixMatch
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
       <NavLink to={to} end={end} className="menu-link">

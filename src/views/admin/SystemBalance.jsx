@@ -160,7 +160,23 @@ export default function SystemBalance() {
         <div className="col-12">
           {/* Stats Cards */}
           <div className="row g-4 mb-4">
-            <div className="col-md-6 col-sm-6">
+            <div className="col-md-4 col-sm-6">
+              <div className="card">
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0 me-3">
+                      <i className="bx bxs-wallet bx-lg text-info"></i>
+                    </div>
+                    <div>
+                      <small className="text-muted d-block">{t('admin.totalWallets', { defaultValue: 'Total Wallets' })}</small>
+                      <h4 className="mb-0">{stats?.totalWallets || 0}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4 col-sm-6">
               <div className="card">
                 <div className="card-body">
                   <div className="d-flex align-items-center">
@@ -176,7 +192,7 @@ export default function SystemBalance() {
               </div>
             </div>
 
-            <div className="col-md-6 col-sm-6">
+            <div className="col-md-4 col-sm-6">
               <div className="card">
                 <div className="card-body">
                   <div className="d-flex align-items-center">
@@ -205,22 +221,17 @@ export default function SystemBalance() {
             <div className="card-body">
               <div className="display-3 fw-bold text-dark">
                 {(() => {
-                  // Calculate total USD from each wallet using raw balance
                   const totalUSD = (stats?.balanceDetails || []).reduce((sum, wallet) => {
                     const coinSymbol = wallet.systemWallet?.coinNetwork?.coin?.symbol
                     const decimals = wallet.decimals || wallet.systemWallet?.coinNetwork?.decimals || 18
-                    
-                    // Convert raw balance to decimal using AmountNormalizer
                     const decimalBalance = AmountNormalizer.fromRawSimple(
                       wallet.totalBalanceRaw || '0',
                       decimals
                     )
-                    
                     const rate = stats.fiat?.rates?.[coinSymbol] || 0
                     const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
                     return sum + usdValue
                   }, 0)
-                  
                   return totalUSD.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
@@ -252,7 +263,7 @@ export default function SystemBalance() {
                 </div>
               ) : (
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                  <table className="table table-hover" style={{ minWidth: '1200px' }}>
+                  <table className="table table-hover" style={{ minWidth: '1600px' }}>
                     <thead>
                       <tr>
                         <th>{t('invoices.chain') || 'Chain'}</th>
@@ -261,8 +272,10 @@ export default function SystemBalance() {
                         <th>{t('admin.purpose', { defaultValue: 'Purpose' })}</th>
                         <th>{t('admin.type', { defaultValue: 'Type' })}</th>
                         <th>{t('invoices.statusCol')}</th>
-                        <th className="text-end" style={{ minWidth: '180px', whiteSpace: 'nowrap' }}>{t('invoices.amount')}</th>
-                        <th className="text-end" style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('admin.priceUSD', { defaultValue: 'Price (USD)' })}</th>
+                        <th className="text-end" style={{ minWidth: '200px', whiteSpace: 'nowrap' }}>{t('admin.confirmedBalance', { defaultValue: 'Confirmed' })}</th>
+                        <th className="text-end" style={{ minWidth: '200px', whiteSpace: 'nowrap' }}>{t('admin.unconfirmedBalance', { defaultValue: 'Unconfirmed' })}</th>
+                        <th className="text-end" style={{ minWidth: '200px', whiteSpace: 'nowrap' }}>{t('admin.totalBalance', { defaultValue: 'Total Balance' })}</th>
+                        <th className="text-end" style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('admin.valueUSD', { defaultValue: 'Value (USD)' })}</th>
                         <th className="text-center" style={{ minWidth: '120px' }}>{t('invoices.actions')}</th>
                       </tr>
                     </thead>
@@ -349,17 +362,48 @@ export default function SystemBalance() {
                               )}
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span 
-                                title={`Raw: ${wallet.totalBalanceRaw}\nDecimals: ${decimals}\nDecimal: ${decimalBalance} ${coinSymbol}`}
-                              >
+                              {(() => {
+                                const val = AmountNormalizer.fromRawSimple(wallet.confirmedBalanceRaw || '0', decimals)
+                                return (
+                                  <>
+                                    <span className="fw-medium" title={`Raw: ${wallet.confirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
+                                      {parseFloat(val).toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 8
+                                      })}
+                                    </span>
+                                    <small className="text-muted ms-1">{coinSymbol}</small>
+                                  </>
+                                )
+                              })()}
+                            </td>
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                              {(() => {
+                                const val = AmountNormalizer.fromRawSimple(wallet.unconfirmedBalanceRaw || '0', decimals)
+                                return (
+                                  <>
+                                    <span className="fw-medium" title={`Raw: ${wallet.unconfirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
+                                      {parseFloat(val).toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 8
+                                      })}
+                                    </span>
+                                    <small className="text-muted ms-1">{coinSymbol}</small>
+                                  </>
+                                )
+                              })()}
+                            </td>
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                              <span className="fw-medium" title={`Raw: ${wallet.totalBalanceRaw || '0'}\nDecimals: ${decimals}`}>
                                 {parseFloat(decimalBalance).toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 8
-                                })} {coinSymbol || ''}
+                                })}
                               </span>
+                              <small className="text-muted ms-1">{coinSymbol}</small>
                             </td>
-                            <td className="text-end">
-                              <span>
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                              <span className="fw-medium">
                                 ${usdValue.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2

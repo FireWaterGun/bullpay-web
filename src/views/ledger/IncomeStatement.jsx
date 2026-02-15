@@ -241,7 +241,7 @@ export default function IncomeStatement() {
               {/* Title Card */}
               <div className="card mb-4">
                 <div className="card-body text-center py-4">
-                  <h5 className="fw-bold mb-1">BULLPAY — INCOME STATEMENT</h5>
+                  <h5 className="fw-bold mb-1">INCOME STATEMENT</h5>
                   <h6 className="text-muted mb-0">Period: {fromDate} to {toDate}</h6>
                 </div>
               </div>
