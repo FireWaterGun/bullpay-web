@@ -128,9 +128,7 @@ export default function SupportedCryptoForm() {
     networkId: '',
     contractAddress: '',
     decimals: '',
-    depositEnabled: true,
     withdrawEnabled: true,
-    minDepositAmount: '',
     minWithdrawAmount: '',
     maxWithdrawAmount: '',
     depositFee: '0',
@@ -188,9 +186,7 @@ export default function SupportedCryptoForm() {
           networkId: coinNetwork.networkId?.toString() || '',
           contractAddress: coinNetwork.contractAddress || '',
           decimals: coinNetwork.decimals?.toString() || '',
-          depositEnabled: coinNetwork.depositEnabled ?? true,
           withdrawEnabled: coinNetwork.withdrawEnabled ?? true,
-          minDepositAmount: cleanNumber(coinNetwork.minDepositAmount),
           minWithdrawAmount: cleanNumber(coinNetwork.minWithdrawAmount),
           maxWithdrawAmount: cleanNumber(coinNetwork.maxWithdrawAmount),
           depositFee: cleanNumber(coinNetwork.depositFee) || '0',
@@ -218,7 +214,7 @@ export default function SupportedCryptoForm() {
 
   // DECIMAL(32,18) — crypto amounts: max 14 integer + 18 decimal digits
   const cryptoAmountFields = new Set([
-    'minDepositAmount', 'minWithdrawAmount', 'maxWithdrawAmount',
+    'minWithdrawAmount', 'maxWithdrawAmount',
     'depositFee', 'withdrawFee'
   ])
   // DECIMAL(16,2) — USD amounts: max 14 integer + 2 decimal digits
@@ -254,7 +250,7 @@ export default function SupportedCryptoForm() {
       }
 
       // Validate crypto amount fields — DECIMAL(32,18): max 14 integer + 18 decimal
-      const cryptoFields = ['minDepositAmount', 'minWithdrawAmount', 'maxWithdrawAmount', 'depositFee', 'withdrawFee']
+      const cryptoFields = ['minWithdrawAmount', 'maxWithdrawAmount', 'depositFee', 'withdrawFee']
       const cryptoPattern = /^\d{1,14}(\.\d{1,18})?$/
       for (const field of cryptoFields) {
         if (formData[field] && !cryptoPattern.test(formData[field])) {
@@ -271,9 +267,7 @@ export default function SupportedCryptoForm() {
         // PUT: only send editable fields
         data = {
           ...(formData.contractAddress !== undefined && { contractAddress: formData.contractAddress || null }),
-          depositEnabled: formData.depositEnabled,
           withdrawEnabled: formData.withdrawEnabled,
-          ...(formData.minDepositAmount && { minDepositAmount: formData.minDepositAmount }),
           ...(formData.minWithdrawAmount && { minWithdrawAmount: formData.minWithdrawAmount }),
           ...(formData.maxWithdrawAmount && { maxWithdrawAmount: formData.maxWithdrawAmount }),
           depositFee: formData.depositFee || '0',
@@ -288,9 +282,7 @@ export default function SupportedCryptoForm() {
           networkId: parseInt(formData.networkId),
           ...(formData.contractAddress && { contractAddress: formData.contractAddress }),
           ...(formData.decimals && { decimals: parseInt(formData.decimals) }),
-          depositEnabled: formData.depositEnabled,
           withdrawEnabled: formData.withdrawEnabled,
-          minDepositAmount: formData.minDepositAmount,
           minWithdrawAmount: formData.minWithdrawAmount,
           maxWithdrawAmount: formData.maxWithdrawAmount,
           depositFee: formData.depositFee || '0',
@@ -530,66 +522,6 @@ export default function SupportedCryptoForm() {
                 </small>
               </div>
 
-              {/* Toggles */}
-              <div className="col-md-6">
-                <div className="d-flex align-items-center justify-content-between p-3 border rounded">
-                  <div>
-                    <h6 className="mb-1">{t('crypto.depositEnabled', { defaultValue: 'Deposit Enabled' })}</h6>
-                    <small className="text-muted">{t('crypto.allowDeposits', { defaultValue: 'Allow users to deposit' })}</small>
-                  </div>
-                  <div className="form-check form-switch form-switch-lg m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name="depositEnabled"
-                      id="depositEnabled"
-                      checked={formData.depositEnabled}
-                      onChange={handleChange}
-                      disabled={loading}
-                    />
-                    <label className="form-check-label" htmlFor="depositEnabled"></label>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="d-flex align-items-center justify-content-between p-3 border rounded">
-                  <div>
-                    <h6 className="mb-1">{t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</h6>
-                    <small className="text-muted">{t('crypto.allowWithdrawals', { defaultValue: 'Allow users to withdraw' })}</small>
-                  </div>
-                  <div className="form-check form-switch form-switch-lg m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name="withdrawEnabled"
-                      id="withdrawEnabled"
-                      checked={formData.withdrawEnabled}
-                      onChange={handleChange}
-                      disabled={loading}
-                    />
-                    <label className="form-check-label" htmlFor="withdrawEnabled"></label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.minDepositAmount', { defaultValue: 'Min Deposit Amount' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="minDepositAmount"
-                  name="minDepositAmount"
-                  value={formData.minDepositAmount}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="10"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
-              </div>
-
               {/* Deposit Fee */}
               <div className="col-md-6">
                 <label className="form-label">
@@ -707,6 +639,28 @@ export default function SupportedCryptoForm() {
                 <small className="text-muted">
                   {t('crypto.statusHelp', { defaultValue: 'Current status of this coin-network pair' })}
                 </small>
+              </div>
+
+              {/* Withdraw Toggle */}
+              <div className="col-md-6">
+                <div className="d-flex align-items-center justify-content-between p-3 border rounded">
+                  <div>
+                    <h6 className="mb-1">{t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</h6>
+                    <small className="text-muted">{t('crypto.allowWithdrawals', { defaultValue: 'Allow users to withdraw' })}</small>
+                  </div>
+                  <div className="form-check form-switch form-switch-lg m-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="withdrawEnabled"
+                      id="withdrawEnabled"
+                      checked={formData.withdrawEnabled}
+                      onChange={handleChange}
+                      disabled={loading}
+                    />
+                    <label className="form-check-label" htmlFor="withdrawEnabled"></label>
+                  </div>
+                </div>
               </div>
                   </div>
 
