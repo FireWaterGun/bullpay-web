@@ -407,7 +407,7 @@ export default function PlatformLedgerList() {
                         const isCredit = entry.entryType === 'credit'
 
                         return (
-                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/pnl/revenue-expenses/${entry.id}`)}>
+                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/revenue/revenue-expenses/${entry.id}`)}>
                             <td>
                               <span className="fw-semibold text-primary">{entry.id}</span>
                             </td>
@@ -482,7 +482,7 @@ export default function PlatformLedgerList() {
                                 className="btn btn-sm btn-icon btn-outline-primary"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  navigate(`/admin/pnl/revenue-expenses/${entry.id}`)
+                                  navigate(`/admin/revenue/revenue-expenses/${entry.id}`)
                                 }}
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >

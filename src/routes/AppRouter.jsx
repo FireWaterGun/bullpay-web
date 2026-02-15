@@ -26,7 +26,7 @@ function ProtectedRoute({ children, requireAdmin = false }) {
   // Check admin requirement
   if (requireAdmin && !isAdmin) {
     console.warn('[ProtectedRoute] Access denied: Admin role required', { user })
-    return <Navigate to="/app" replace />
+    return <Navigate to="/dashboard" replace />
   }
   
   return children
@@ -49,9 +49,9 @@ function RootHandler() {
     } else if (isAuthenticated) {
       // Redirect to appropriate dashboard based on role
       if (isAdmin) {
-        navigate('/admin', { replace: true })
+        navigate('/admin/revenue', { replace: true })
       } else {
-        navigate('/app', { replace: true })
+        navigate('/dashboard', { replace: true })
       }
     } else {
       // Show landing page for non-authenticated users
@@ -82,9 +82,8 @@ export default function AppRouter() {
               <Route path="/verify" element={<VerifyEmailPage />} />
               {/* API Documentation - Redirect to standalone Swagger UI */}
               <Route path="/api-docs" element={<Navigate to="/swagger-ui.html" replace />} />
-              <Route path="/app/*" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} />
-              <Route path="/admin/*" element={<ProtectedRoute requireAdmin><DashboardLayout /></ProtectedRoute>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              {/* Protected routes — single DashboardLayout instance handles all authenticated paths */}
+              <Route path="/*" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} />
             </Routes>
           </BrowserRouter>
         </PusherProvider>

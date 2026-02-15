@@ -135,10 +135,10 @@ export default function SupportedCryptoForm() {
     maxWithdrawAmount: '',
     depositFee: '0',
     withdrawFee: '',
-    depositConfirmations: '',
     dailyWithdrawLimitUsd: '',
     status: 'active'
   })
+  const [coinNetworkMeta, setCoinNetworkMeta] = useState(null)
 
   const selectedCoin = useMemo(() => {
     return coins.find(c => c.id === parseInt(formData.coinId))
@@ -195,9 +195,16 @@ export default function SupportedCryptoForm() {
           maxWithdrawAmount: cleanNumber(coinNetwork.maxWithdrawAmount),
           depositFee: cleanNumber(coinNetwork.depositFee) || '0',
           withdrawFee: cleanNumber(coinNetwork.withdrawFee),
-          depositConfirmations: coinNetwork.depositConfirmations?.toString() || '',
           dailyWithdrawLimitUsd: cleanNumber(coinNetwork.dailyWithdrawLimitUsd),
           status: coinNetwork.status || 'active'
+        })
+        setCoinNetworkMeta({
+          id: coinNetwork.id,
+          tokenStandard: coinNetwork.tokenStandard || null,
+          coin: coinNetwork.coin || null,
+          network: coinNetwork.network || null,
+          createdAt: coinNetwork.createdAt,
+          updatedAt: coinNetwork.updatedAt
         })
       } else {
         setError('Supported crypto not found')
@@ -209,17 +216,26 @@ export default function SupportedCryptoForm() {
     }
   }
 
+  // DECIMAL(32,18) — crypto amounts: max 14 integer + 18 decimal digits
+  const cryptoAmountFields = new Set([
+    'minDepositAmount', 'minWithdrawAmount', 'maxWithdrawAmount',
+    'depositFee', 'withdrawFee'
+  ])
+  // DECIMAL(16,2) — USD amounts: max 14 integer + 2 decimal digits
+  const usdAmountFields = new Set(['dailyWithdrawLimitUsd'])
+
   function handleChange(e) {
     const { name, value, type, checked } = e.target
-    
-    // Validate decimals field (0-18 only)
-    if (name === 'decimals' && value !== '') {
-      const num = parseInt(value)
-      if (num < 0 || num > 18) {
-        return // Don't update if out of range
-      }
+
+    // Filter numeric fields: only digits and one dot
+    if (cryptoAmountFields.has(name) || usdAmountFields.has(name)) {
+      if (value !== '' && !/^\d*\.?\d*$/.test(value)) return
+      const maxDec = usdAmountFields.has(name) ? 2 : 18
+      const [intPart, decPart] = value.split('.')
+      if (intPart && intPart.length > 14) return
+      if (decPart !== undefined && decPart.length > maxDec) return
     }
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -232,47 +248,66 @@ export default function SupportedCryptoForm() {
     setError('')
 
     try {
-      // Validate contract address format (Ethereum-style: 0x + 40 hex chars)
-      if (formData.contractAddress) {
-        const addressPattern = /^0x[a-fA-F0-9]{40}$/
-        if (!addressPattern.test(formData.contractAddress)) {
-          throw new Error(t('crypto.invalidContractAddress', { defaultValue: 'Invalid contract address format (must be 0x followed by 40 hex characters)' }))
+      // Validate contract address (1-255 chars if provided)
+      if (formData.contractAddress && formData.contractAddress.length > 255) {
+        throw new Error(t('crypto.contractAddressTooLong', { defaultValue: 'Contract address must be 255 characters or less' }))
+      }
+
+      // Validate crypto amount fields — DECIMAL(32,18): max 14 integer + 18 decimal
+      const cryptoFields = ['minDepositAmount', 'minWithdrawAmount', 'maxWithdrawAmount', 'depositFee', 'withdrawFee']
+      const cryptoPattern = /^\d{1,14}(\.\d{1,18})?$/
+      for (const field of cryptoFields) {
+        if (formData[field] && !cryptoPattern.test(formData[field])) {
+          throw new Error(`${field} must be a valid number (max 14 integer digits, max 18 decimal digits)`)
         }
       }
-      
-      // Validate decimals
-      if (formData.decimals) {
-        const decimals = parseInt(formData.decimals)
-        if (decimals < 0 || decimals > 18) {
-          throw new Error(t('crypto.decimalsRangeError', { defaultValue: 'Decimals must be between 0 and 18' }))
-        }
+      // Validate USD amount — DECIMAL(16,2): max 14 integer + 2 decimal
+      if (formData.dailyWithdrawLimitUsd && !/^\d{1,14}(\.\d{1,2})?$/.test(formData.dailyWithdrawLimitUsd)) {
+        throw new Error(t('crypto.invalidDailyLimit', { defaultValue: 'Daily withdraw limit must be a number with max 2 decimal places' }))
       }
-      
-      const data = {
-        coinId: parseInt(formData.coinId),
-        networkId: parseInt(formData.networkId),
-        ...(formData.contractAddress && { contractAddress: formData.contractAddress }),
-        ...(formData.decimals && { decimals: parseInt(formData.decimals) }),
-        depositEnabled: formData.depositEnabled,
-        withdrawEnabled: formData.withdrawEnabled,
-        minDepositAmount: formData.minDepositAmount,
-        minWithdrawAmount: formData.minWithdrawAmount,
-        maxWithdrawAmount: formData.maxWithdrawAmount,
-        depositFee: formData.depositFee || '0',
-        withdrawFee: formData.withdrawFee,
-        depositConfirmations: parseFloat(formData.depositConfirmations),
-        ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
-        status: formData.status || 'active'
+
+      let data
+      if (isEdit) {
+        // PUT: only send editable fields
+        data = {
+          ...(formData.contractAddress !== undefined && { contractAddress: formData.contractAddress || null }),
+          depositEnabled: formData.depositEnabled,
+          withdrawEnabled: formData.withdrawEnabled,
+          ...(formData.minDepositAmount && { minDepositAmount: formData.minDepositAmount }),
+          ...(formData.minWithdrawAmount && { minWithdrawAmount: formData.minWithdrawAmount }),
+          ...(formData.maxWithdrawAmount && { maxWithdrawAmount: formData.maxWithdrawAmount }),
+          depositFee: formData.depositFee || '0',
+          ...(formData.withdrawFee && { withdrawFee: formData.withdrawFee }),
+          ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
+          status: formData.status || 'active'
+        }
+      } else {
+        // POST: send all fields including coinId, networkId, decimals
+        data = {
+          coinId: parseInt(formData.coinId),
+          networkId: parseInt(formData.networkId),
+          ...(formData.contractAddress && { contractAddress: formData.contractAddress }),
+          ...(formData.decimals && { decimals: parseInt(formData.decimals) }),
+          depositEnabled: formData.depositEnabled,
+          withdrawEnabled: formData.withdrawEnabled,
+          minDepositAmount: formData.minDepositAmount,
+          minWithdrawAmount: formData.minWithdrawAmount,
+          maxWithdrawAmount: formData.maxWithdrawAmount,
+          depositFee: formData.depositFee || '0',
+          withdrawFee: formData.withdrawFee,
+          ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
+          status: formData.status || 'active'
+        }
       }
 
       if (isEdit) {
         await updateCoinNetwork(token, parseInt(id), data)
         toast.success(t('crypto.updateSuccess', { defaultValue: 'Coin network updated successfully' }))
-        navigate('/admin/crypto/coin-networks')
+        navigate('/admin/coin-networks')
       } else {
         await createCoinNetwork(token, data)
         toast.success(t('crypto.createSuccess', { defaultValue: 'Coin network created successfully' }))
-        navigate('/admin/crypto/coin-networks')
+        navigate('/admin/coin-networks')
       }
     } catch (e) {
       const message = e?.message || (isEdit ? 'Failed to update coin-network' : 'Failed to create coin-network')
@@ -292,7 +327,7 @@ export default function SupportedCryptoForm() {
 
     try {
       await deleteCoinNetwork(token, parseInt(id))
-      navigate('/admin/crypto/coin-networks')
+      navigate('/admin/coin-networks')
     } catch (e) {
       const message = e?.message || 'Failed to delete coin-network'
       setErrorMessage(message)
@@ -321,7 +356,7 @@ export default function SupportedCryptoForm() {
         <button 
           type="button" 
           className="btn btn-icon btn-outline-secondary me-3"
-          onClick={() => navigate('/admin/crypto/coin-networks')}
+          onClick={() => navigate('/admin/coin-networks')}
         >
           <i className="bx bx-arrow-back"></i>
         </button>
@@ -482,13 +517,16 @@ export default function SupportedCryptoForm() {
                   name="decimals"
                   value={formData.decimals}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={loading || isEdit}
                   min="0"
                   max="18"
                   placeholder="18"
                 />
                 <small className="text-muted">
-                  {t('crypto.coinNetworkDecimalsHelp', { defaultValue: 'Override coin decimals if needed' })}
+                  {isEdit
+                    ? t('crypto.decimalsReadOnly', { defaultValue: 'Decimals cannot be changed after creation' })
+                    : t('crypto.coinNetworkDecimalsHelp', { defaultValue: 'Override coin decimals if needed' })
+                  }
                 </small>
               </div>
 
@@ -536,19 +574,19 @@ export default function SupportedCryptoForm() {
 
               <div className="col-md-6">
                 <label className="form-label">
-                  {t('crypto.minDepositAmount', { defaultValue: 'Min Deposit Amount' })} <span className="text-danger">*</span>
+                  {t('crypto.minDepositAmount', { defaultValue: 'Min Deposit Amount' })}
                 </label>
                 <input
-                  type="number"
-                  step="0.01"
+                  type="text"
                   className="form-control form-control-lg"
                   id="minDepositAmount"
                   name="minDepositAmount"
                   value={formData.minDepositAmount}
                   onChange={handleChange}
-                  required
                   disabled={loading}
                   placeholder="10"
+                  pattern="^\d+(\.\d+)?$"
+                  maxLength={32}
                 />
               </div>
 
@@ -558,8 +596,7 @@ export default function SupportedCryptoForm() {
                   {t('crypto.depositFee', { defaultValue: 'Deposit Fee' })}
                 </label>
                 <input
-                  type="number"
-                  step="0.01"
+                  type="text"
                   className="form-control form-control-lg"
                   id="depositFee"
                   name="depositFee"
@@ -567,84 +604,64 @@ export default function SupportedCryptoForm() {
                   onChange={handleChange}
                   disabled={loading}
                   placeholder="0"
+                  pattern="^\d+(\.\d+)?$"
+                  maxLength={32}
                 />
               </div>
 
               <div className="col-md-6">
                 <label className="form-label">
-                  {t('crypto.depositConfirmations', { defaultValue: 'Deposit Confirmations' })} <span className="text-danger">*</span>
+                  {t('crypto.minWithdrawAmount', { defaultValue: 'Min Withdraw Amount' })}
                 </label>
                 <input
-                  type="number"
-                  className="form-control form-control-lg"
-                  id="depositConfirmations"
-                  name="depositConfirmations"
-                  value={formData.depositConfirmations}
-                  onChange={handleChange}
-                  required
-                  disabled={loading}
-                  min="0.00001"
-                  step="0.00001"
-                  placeholder="12"
-                />
-                <small className="text-muted">
-                  {t('crypto.depositConfirmationsHelp', { defaultValue: 'Number of confirmations required' })}
-                </small>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.minWithdrawAmount', { defaultValue: 'Min Withdraw Amount' })} <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
+                  type="text"
                   className="form-control form-control-lg"
                   id="minWithdrawAmount"
                   name="minWithdrawAmount"
                   value={formData.minWithdrawAmount}
                   onChange={handleChange}
-                  required
                   disabled={loading}
-                  placeholder="20.00"
+                  placeholder="20"
+                  pattern="^\d+(\.\d+)?$"
+                  maxLength={32}
                 />
               </div>
 
               {/* Max Withdraw Amount */}
               <div className="col-md-6">
                 <label className="form-label">
-                  {t('crypto.maxWithdrawAmount', { defaultValue: 'Max Withdraw Amount' })} <span className="text-danger">*</span>
+                  {t('crypto.maxWithdrawAmount', { defaultValue: 'Max Withdraw Amount' })}
                 </label>
                 <input
-                  type="number"
-                  step="0.01"
+                  type="text"
                   className="form-control form-control-lg"
                   id="maxWithdrawAmount"
                   name="maxWithdrawAmount"
                   value={formData.maxWithdrawAmount}
                   onChange={handleChange}
-                  required
                   disabled={loading}
-                  placeholder="50000.00"
+                  placeholder="50000"
+                  pattern="^\d+(\.\d+)?$"
+                  maxLength={32}
                 />
               </div>
 
               {/* Withdraw Fee */}
               <div className="col-md-6">
                 <label className="form-label">
-                  {t('crypto.withdrawFee', { defaultValue: 'Withdraw Fee' })} <span className="text-danger">*</span>
+                  {t('crypto.withdrawFee', { defaultValue: 'Withdraw Fee' })}
                 </label>
                 <input
-                  type="number"
-                  step="0.01"
+                  type="text"
                   className="form-control form-control-lg"
                   id="withdrawFee"
                   name="withdrawFee"
                   value={formData.withdrawFee}
                   onChange={handleChange}
-                  required
                   disabled={loading}
-                  placeholder="5.00"
+                  placeholder="5"
+                  pattern="^\d+(\.\d+)?$"
+                  maxLength={32}
                 />
               </div>
 
@@ -654,8 +671,7 @@ export default function SupportedCryptoForm() {
                   {t('crypto.dailyWithdrawLimitUsd', { defaultValue: 'Daily Withdraw Limit (USD)' })}
                 </label>
                 <input
-                  type="number"
-                  step="0.01"
+                  type="text"
                   className="form-control form-control-lg"
                   id="dailyWithdrawLimitUsd"
                   name="dailyWithdrawLimitUsd"
@@ -663,13 +679,15 @@ export default function SupportedCryptoForm() {
                   onChange={handleChange}
                   disabled={loading}
                   placeholder="10000.00"
+                  pattern="^\d+(\.\d{1,2})?$"
+                  maxLength={17}
                 />
                 <small className="text-muted">
                   {t('crypto.dailyWithdrawLimitUsdHelp', { defaultValue: 'Maximum daily withdrawal limit in USD. Leave empty for no limit.' })}
                 </small>
               </div>
 
-              <div className="col-md-12">
+              <div className="col-md-6">
                 <label className="form-label">
                   {t('crypto.status', { defaultValue: 'Status' })} <span className="text-danger">*</span>
                 </label>
@@ -697,7 +715,7 @@ export default function SupportedCryptoForm() {
                   <button
                     type="button"
                     className="btn btn-outline-secondary"
-                    onClick={() => navigate('/admin/crypto/coin-networks')}
+                    onClick={() => navigate('/admin/coin-networks')}
                     disabled={loading}
                   >
                     <i className="bx bx-x me-1"></i>

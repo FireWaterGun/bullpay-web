@@ -123,7 +123,7 @@ export default function WalletEdit() {
     try {
       setSaving(true)
       await updateWallet(id, { coinNetworkId: Number(coinNetworkId), address: address.trim() }, token)
-      navigate('/app/wallets')
+      navigate('/wallet/withdrawals')
     } catch (e) {
       setError(typeof e?.message === 'string' ? e.message : 'Failed to save')
     } finally {
@@ -139,7 +139,7 @@ export default function WalletEdit() {
     try {
       setSaving(true)
       await deleteWallet(id, token)
-      navigate('/app/wallets')
+      navigate('/wallet/withdrawals')
     } catch (e) {
       setError(typeof e?.message === 'string' ? e.message : 'Failed to delete')
     } finally {

@@ -363,7 +363,7 @@ export default function GasTopups() {
                         const decimals = topup.coinNetwork?.decimals || topup.decimals || 18
 
                         return (
-                          <tr key={topup.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/gas-topups/${topup.id}`)}>
+                          <tr key={topup.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/wallet-gas-topups/${topup.id}`)}>
                             <td>
                               <span className="fw-semibold text-primary">{topup.id}</span>
                             </td>

@@ -53,7 +53,7 @@ function getNetworkLabel(n, coin) {
   return `Network #${n?.networkId ?? id ?? '-'}`
 }
 
-export default function WalletList({ titleKey, titleDefault, showCreate = true, createLabelKey = 'wallet.createButton', createLabelDefault = 'Withdraw wallet', createPath = '/app/wallets/create', showActions = true }) {
+export default function WalletList({ titleKey, titleDefault, showCreate = true, createLabelKey = 'wallet.createButton', createLabelDefault = 'Withdraw wallet', createPath = '/wallet/new-address', showActions = true }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { token } = useAuth()
@@ -243,7 +243,7 @@ export default function WalletList({ titleKey, titleDefault, showCreate = true, 
                               <button
                                 className="btn btn-sm btn-outline-secondary"
                                 title={t('actions.edit') || 'Edit'}
-                                onClick={() => navigate(`/app/wallets/${w.id}/edit`)}
+                                onClick={() => navigate(`/wallets/${w.id}/edit`)}
                               >
                                 <i className="bx bx-pencil"></i>
                               </button>

@@ -244,7 +244,7 @@ export default function SupportedCrypto() {
             <button
               type="button"
               className="btn btn-primary"
-                onClick={() => navigate('/admin/crypto/coin-networks/create')}
+                onClick={() => navigate('/admin/coin-networks/create')}
               >
               <i className="bx bx-plus me-1"></i>
               {t('crypto.addCoinNetwork', { defaultValue: 'Add Coin-Network' })}
@@ -379,7 +379,7 @@ export default function SupportedCrypto() {
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       <button
                         className="btn btn-sm btn-icon"
-                        onClick={() => navigate(`/admin/crypto/coin-networks/${coinNetwork.id}`)}
+                        onClick={() => navigate(`/admin/coin-networks/${coinNetwork.id}`)}
                         title={t('actions.edit', { defaultValue: 'Edit' })}
                       >
                         <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>

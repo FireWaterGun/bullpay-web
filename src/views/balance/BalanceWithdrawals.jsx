@@ -336,7 +336,7 @@ export default function BalanceWithdrawals() {
         <div className="card">
           <div className="card-header d-flex align-items-center justify-content-between">
             <h5 className="card-title mb-0">{t('balance.withdrawals', { defaultValue: 'Withdrawals' })}</h5>
-            <button className="btn btn-primary" onClick={() => navigate('/app/balance/new-address')}>
+            <button className="btn btn-primary" onClick={() => navigate('/wallet/new-address')}>
               {t('balance.newAddress', { defaultValue: 'New Address' })}
             </button>
           </div>

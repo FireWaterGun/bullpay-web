@@ -92,7 +92,7 @@ export default function CoinForm() {
 
     try {
       await deleteCoin(token, parseInt(id))
-      navigate('/admin/crypto/coins')
+      navigate('/admin/coins')
     } catch (e) {
       const message = e?.message || 'Failed to delete coin'
       setErrorMessage(message)
@@ -152,7 +152,7 @@ export default function CoinForm() {
         await createCoin(token, data)
         toast.success(t('crypto.coinCreateSuccess', { defaultValue: 'Coin created successfully' }))
       }
-      navigate('/admin/crypto/coins')
+      navigate('/admin/coins')
     } catch (e) {
       const message = e?.message || (isEdit ? 'Failed to update coin' : 'Failed to create coin')
       setErrorMessage(message)
@@ -181,7 +181,7 @@ export default function CoinForm() {
         <button 
           type="button" 
           className="btn btn-icon btn-outline-secondary me-3"
-          onClick={() => navigate('/app/crypto/coins')}
+          onClick={() => navigate('/admin/coins')}
         >
           <i className="bx bx-arrow-back"></i>
         </button>
@@ -342,7 +342,7 @@ export default function CoinForm() {
                         <button 
                           type="button" 
                           className="btn btn-lg btn-label-secondary"
-                          onClick={() => navigate('/app/crypto/coins')}
+                          onClick={() => navigate('/admin/coins')}
                           disabled={loading}
                         >
                           {t('actions.cancel', { defaultValue: 'Cancel' })}

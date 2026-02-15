@@ -55,7 +55,7 @@ export default function WalletVerify() {
   }, [searchParams, authToken, t])
 
   const handleGoToWallets = () => {
-    navigate('/app/balance/withdrawals')
+    navigate('/wallet/withdrawals')
   }
 
   return (
@@ -124,7 +124,7 @@ export default function WalletVerify() {
                     </button>
                     <button 
                       className="btn btn-primary"
-                      onClick={() => navigate('/app/balance/new-address')}
+                      onClick={() => navigate('/wallet/new-address')}
                     >
                       {t('wallet.verify.addNewAddress', { defaultValue: 'Add New Address' })}
                     </button>

@@ -357,7 +357,7 @@ export default function InvoiceList() {
                           </div>
                         </td>
                         <td className="text-nowrap cell-fit">
-                          <NavLink to={`/app/invoices/${it.id}`} className="text-dark">
+                          <NavLink to={`/invoices/${it.id}`} className="text-dark">
                             {it.publicCode || it.code || it.id}
                           </NavLink>
                         </td>
@@ -420,7 +420,7 @@ export default function InvoiceList() {
                         <td className="text-end">
                           <div className="d-flex gap-1 justify-content-end">
                             <NavLink
-                              to={`/app/invoices/${it.id}`}
+                              to={`/invoices/${it.id}`}
                               className="btn btn-icon btn-sm text-secondary"
                               title={t("actions.view") || "View"}
                             >

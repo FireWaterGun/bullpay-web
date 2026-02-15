@@ -278,7 +278,7 @@ export default function GasTopupDetail() {
                         <tr>
                           <td className="text-muted">Sweep ID</td>
                           <td>
-                            <a href={`/admin/sweep/transactions/${topup.sweepId}`} className="fw-medium">
+                            <a href={`/admin/sweeps/transactions/${topup.sweepId}`} className="fw-medium">
                               {topup.sweepId}
                             </a>
                           </td>

@@ -28,10 +28,10 @@ export default function NetworkForm() {
     explorerUrl: '',
     apiUrl: '',
     isTestnet: false,
-    gasPrice: '',
     confirmationBlocks: 1,
     status: 'active'
   })
+  const [networkMeta, setNetworkMeta] = useState(null)
 
   useEffect(() => {
     if (isEdit && id) {
@@ -47,13 +47,6 @@ export default function NetworkForm() {
       const network = await getNetworkById(token, parseInt(id))
       
       if (network) {
-        // ฟังก์ชันตัด trailing zeros
-        const cleanNumber = (value) => {
-          if (!value) return ''
-          const num = parseFloat(value)
-          return isNaN(num) ? '' : num.toString()
-        }
-        
         setFormData({
           name: network.name || '',
           symbol: network.symbol || '',
@@ -63,9 +56,16 @@ export default function NetworkForm() {
           explorerUrl: network.explorerUrl || '',
           apiUrl: network.apiUrl || '',
           isTestnet: !!network.isTestnet,
-          gasPrice: cleanNumber(network.gasPrice),
           confirmationBlocks: network.confirmationBlocks || 1,
           status: network.status || 'active'
+        })
+        setNetworkMeta({
+          id: network.id,
+          wsUrl: network.wsUrl || null,
+          createdAt: network.createdAt,
+          updatedAt: network.updatedAt,
+          coinsCount: network.coinsCount || 0,
+          supportedCoins: network.supportedCoins || []
         })
       } else {
         setError('Network not found')
@@ -101,7 +101,7 @@ export default function NetworkForm() {
 
     try {
       await deleteNetwork(token, parseInt(id))
-      navigate('/admin/crypto/networks')
+      navigate('/admin/networks')
     } catch (e) {
       const message = e?.message || 'Failed to delete network'
       setErrorMessage(message)
@@ -184,16 +184,9 @@ export default function NetworkForm() {
         }
       }
 
-      // Gas Price - must be numeric string if provided
-      if (formData.gasPrice && formData.gasPrice.trim()) {
-        if (!/^\d+(\.\d+)?$/.test(formData.gasPrice.trim())) {
-          throw new Error('Gas price must be a valid number')
-        }
-      }
-
       // Status validation
-      if (formData.status && !['active', 'inactive', 'maintenance'].includes(formData.status)) {
-        throw new Error('Status must be active, inactive, or maintenance')
+      if (formData.status && !['active', 'inactive', 'maintenance', 'deprecated'].includes(formData.status)) {
+        throw new Error('Status must be active, inactive, maintenance, or deprecated')
       }
 
       const payload = {
@@ -205,7 +198,6 @@ export default function NetworkForm() {
         explorerUrl: formData.explorerUrl?.trim() || undefined,
         apiUrl: formData.apiUrl?.trim() || undefined,
         isTestnet: formData.isTestnet,
-        gasPrice: formData.gasPrice?.trim() || undefined,
         confirmationBlocks: formData.confirmationBlocks !== '' && formData.confirmationBlocks !== null && formData.confirmationBlocks !== undefined
           ? parseInt(formData.confirmationBlocks) 
           : 1,
@@ -219,7 +211,7 @@ export default function NetworkForm() {
         await createNetwork(token, payload)
         toast.success(t('crypto.networkCreateSuccess', { defaultValue: 'Network created successfully' }))
       }
-      navigate('/admin/crypto/networks')
+      navigate('/admin/networks')
     } catch (e) {
       const message = e?.message || (isEdit ? 'Failed to update network' : 'Failed to create network')
       setErrorMessage(message)
@@ -249,7 +241,7 @@ export default function NetworkForm() {
         <button 
           type="button" 
           className="btn btn-icon btn-label-secondary me-3"
-          onClick={() => navigate('/app/crypto/networks')}
+          onClick={() => navigate('/admin/networks')}
         >
           <i className="bx bx-arrow-back"></i>
         </button>
@@ -315,8 +307,8 @@ export default function NetworkForm() {
                       value={formData.symbol}
                       onChange={handleChange}
                       placeholder="ETH"
-                      maxLength={10}
-                      pattern="[A-Z0-9]+"
+                      maxLength={20}
+                      pattern="[A-Za-z0-9]+"
                       required
                       disabled={isEdit}
                       style={{ textTransform: 'uppercase' }}
@@ -376,7 +368,8 @@ export default function NetworkForm() {
                       name="confirmationBlocks"
                       value={formData.confirmationBlocks}
                       onChange={handleChange}
-                      min="0"
+                      min="1"
+                      max="1000"
                       required
                     />
                     <small className="text-muted">{t('crypto.confirmationBlocksHelp', { defaultValue: 'Number of blocks for confirmation' })}</small>
@@ -433,26 +426,6 @@ export default function NetworkForm() {
                     <small className="text-muted">{t('crypto.apiUrlHelp', { defaultValue: 'External API endpoint (e.g., Etherscan API)' })}</small>
                   </div>
 
-                  {/* Gas Price */}
-                  <div className="col-md-6">
-                    <label className="form-label" htmlFor="gasPrice">
-                      {t('crypto.gasPrice', { defaultValue: 'Gas Price' })}
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-lg"
-                      id="gasPrice"
-                      name="gasPrice"
-                      value={formData.gasPrice}
-                      onChange={handleChange}
-                      placeholder="20000000000"
-                      pattern="^\d+(\.\d+)?$"
-                      maxLength={50}
-                      title="Enter a valid number (e.g., 20000000000 or 20000000000.5)"
-                    />
-                    <small className="text-muted">{t('crypto.gasPriceHelp', { defaultValue: 'Default gas price in wei' })}</small>
-                  </div>
-
                   {/* Status */}
                   <div className="col-md-6">
                     <label className="form-label" htmlFor="status">
@@ -468,6 +441,7 @@ export default function NetworkForm() {
                       <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>
                       <option value="inactive">{t('crypto.inactive', { defaultValue: 'Inactive' })}</option>
                       <option value="maintenance">{t('crypto.maintenance', { defaultValue: 'Maintenance' })}</option>
+                      <option value="deprecated">{t('crypto.deprecated', { defaultValue: 'Deprecated' })}</option>
                     </select>
                   </div>
 
@@ -509,7 +483,7 @@ export default function NetworkForm() {
                         <button 
                           type="button" 
                           className="btn btn-lg btn-label-secondary"
-                          onClick={() => navigate('/app/crypto/networks')}
+                          onClick={() => navigate('/admin/networks')}
                           disabled={loading}
                         >
                           {t('actions.cancel', { defaultValue: 'Cancel' })}
@@ -539,6 +513,67 @@ export default function NetworkForm() {
             </div>
           </div>
         </div>
+        {/* Read-only info panel (edit mode only) */}
+        {isEdit && networkMeta && (
+          <div className="col-12 col-xl-4">
+            <div className="card mb-4">
+              <h5 className="card-header">{t('crypto.networkInfo', { defaultValue: 'Network Info' })}</h5>
+              <div className="card-body">
+                <ul className="list-unstyled mb-0">
+                  <li className="d-flex justify-content-between mb-3">
+                    <span className="text-muted">ID</span>
+                    <span className="fw-medium">#{networkMeta.id}</span>
+                  </li>
+                  {networkMeta.wsUrl && (
+                    <li className="mb-3">
+                      <span className="text-muted d-block mb-1">WebSocket URL</span>
+                      <code className="small" style={{ wordBreak: 'break-all' }}>{networkMeta.wsUrl}</code>
+                    </li>
+                  )}
+                  <li className="d-flex justify-content-between mb-3">
+                    <span className="text-muted">{t('crypto.coinsCount', { defaultValue: 'Supported Coins' })}</span>
+                    <span className="badge bg-label-primary">{networkMeta.coinsCount}</span>
+                  </li>
+                  {networkMeta.createdAt && (
+                    <li className="d-flex justify-content-between mb-3">
+                      <span className="text-muted">{t('common.createdAt', { defaultValue: 'Created' })}</span>
+                      <span className="small">{new Date(networkMeta.createdAt).toLocaleString()}</span>
+                    </li>
+                  )}
+                  {networkMeta.updatedAt && (
+                    <li className="d-flex justify-content-between mb-3">
+                      <span className="text-muted">{t('common.updatedAt', { defaultValue: 'Updated' })}</span>
+                      <span className="small">{new Date(networkMeta.updatedAt).toLocaleString()}</span>
+                    </li>
+                  )}
+                </ul>
+
+                {/* Supported Coins List */}
+                {networkMeta.supportedCoins.length > 0 && (
+                  <>
+                    <hr />
+                    <h6 className="mb-3">{t('crypto.supportedCoins', { defaultValue: 'Supported Coins' })}</h6>
+                    <div className="list-group list-group-flush">
+                      {networkMeta.supportedCoins.map((coin) => (
+                        <div key={coin.id} className="list-group-item px-0 d-flex justify-content-between align-items-center">
+                          <div>
+                            <span className="fw-medium">{coin.coinSymbol}</span>
+                            <small className="text-muted d-block">{coin.coinName}</small>
+                          </div>
+                          <div className="text-end">
+                            <span className={`badge bg-label-${coin.status === 'active' ? 'success' : 'secondary'} me-1`}>{coin.status}</span>
+                            {coin.depositEnabled && <span className="badge bg-label-info me-1">Deposit</span>}
+                            {coin.withdrawEnabled && <span className="badge bg-label-warning">Withdraw</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <DeleteConfirmModal

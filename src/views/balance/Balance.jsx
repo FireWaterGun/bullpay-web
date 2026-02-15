@@ -246,13 +246,13 @@ export default function Balance() {
             {fiat.amount} {fiat.currency}
           </div>
           <div className="d-flex gap-2 flex-wrap mt-3">
-            {/* <button type="button" className="btn btn-outline-primary" onClick={() => navigate('/app/balance/withdrawals')}>
+            {/* <button type="button" className="btn btn-outline-primary" onClick={() => navigate('/wallet/withdrawals')}>
               <i className="bx bx-export me-1"></i>{t('balance.withdraw', { defaultValue: 'Withdraw' })}
             </button> */}
             <button
               type="button"
               className="btn btn-outline-primary"
-              onClick={() => navigate("/app/invoices/create")}
+              onClick={() => navigate("/invoices/create")}
             >
               <i className="bx bx-receipt me-1"></i>
               {t("actions.createInvoice", { defaultValue: "Create Invoice" })}
@@ -363,7 +363,7 @@ export default function Balance() {
                               type="button"
                               onClick={() =>
                                 navigate(
-                                  `/app/balance/withdraw/${encodeURIComponent(
+                                  `/wallet/withdraw/${encodeURIComponent(
                                     String(b.coinNetworkId)
                                   )}`
                                 )

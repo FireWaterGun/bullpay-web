@@ -96,7 +96,7 @@ export default function NetworkList() {
             <button 
               type="button" 
               className="btn btn-primary"
-                onClick={() => navigate('/admin/crypto/networks/create')}
+                onClick={() => navigate('/admin/networks/create')}
               >
               <i className="bx bx-plus me-1"></i>
               {t('actions.create', { defaultValue: 'Create' })}
@@ -209,7 +209,7 @@ export default function NetworkList() {
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       <button
                         className="btn btn-sm btn-icon"
-                        onClick={() => navigate(`/admin/crypto/networks/${network.id}`)}
+                        onClick={() => navigate(`/admin/networks/${network.id}`)}
                         title={t('actions.edit', { defaultValue: 'Edit' })}
                       >
                         <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>

@@ -426,7 +426,7 @@ export default function SystemLedgerList() {
                         const purposeLabel = getPurposeLabel(metadata)
 
                         return (
-                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/ledger/system/${entry.id}`)}>
+                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/system-ledger/system/${entry.id}`)}>
                             <td>
                               <span className="fw-semibold text-primary">{entry.id}</span>
                             </td>
@@ -514,7 +514,7 @@ export default function SystemLedgerList() {
                                 className="btn btn-sm btn-icon btn-outline-primary"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  navigate(`/admin/ledger/system/${entry.id}`)
+                                  navigate(`/admin/system-ledger/system/${entry.id}`)
                                 }}
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >

@@ -409,7 +409,7 @@ export default function SweepTransactions() {
                       </tr>
                     ) : (
                       sweeps.map((sweep) => (
-                        <tr key={sweep.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/sweep/transactions/${sweep.id}`)}>
+                        <tr key={sweep.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/sweeps/transactions/${sweep.id}`)}>
                           <td>
                             <span className="fw-semibold text-primary">{sweep.id}</span>
                           </td>

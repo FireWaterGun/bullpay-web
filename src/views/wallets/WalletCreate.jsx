@@ -209,7 +209,7 @@ export default function WalletCreate() {
       }
       await createWallet(payload, token)
       if (returnTo && typeof returnTo === 'string') navigate(returnTo, { replace: true })
-      else navigate('/app/balance/withdrawals')
+      else navigate('/wallet/withdrawals')
     } catch (e) {
       setError(typeof e?.message === 'string' ? e.message : 'Failed to save')
     } finally {

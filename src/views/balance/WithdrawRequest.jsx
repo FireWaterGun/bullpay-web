@@ -344,7 +344,7 @@ export default function WithdrawRequest() {
     setSuccessOpen(false)
     // Wait for modal to fully close and cleanup before navigating
     setTimeout(() => {
-      navigate('/app/balance/withdrawals', { replace: true })
+      navigate('/wallet/withdrawals', { replace: true })
     }, 300)
   }
 
@@ -378,7 +378,7 @@ export default function WithdrawRequest() {
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => navigate('/app/settings')}
+                onClick={() => navigate('/settings')}
               >
                 <i className="bx bx-lock me-2"></i>
                 {t('balance.setup2FA', { defaultValue: 'Setup 2FA' })}
@@ -399,8 +399,8 @@ export default function WithdrawRequest() {
                     type="button"
                     className="btn btn-primary"
                     onClick={() =>
-                      navigate('/app/balance/new-address', {
-                        state: { returnTo: `/app/balance/withdraw/${encodeURIComponent(coinNetworkId)}` }
+                      navigate('/wallet/new-address', {
+                        state: { returnTo: `/wallet/withdraw/${encodeURIComponent(coinNetworkId)}` }
                       })
                     }
                   >

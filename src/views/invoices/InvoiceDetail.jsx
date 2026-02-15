@@ -542,7 +542,7 @@ export default function InvoiceDetail() {
                       <i className="bx bx-link-external me-1"></i>
                       {t("invoices.viewOnExplorer") || "View on Explorer"}
                     </a>
-                    <NavLink to="/app/invoices" className="btn btn-outline-secondary">
+                    <NavLink to="/invoices" className="btn btn-outline-secondary">
                       <i className="bx bx-list-ul me-1"></i>
                       {t("nav.history") || "All invoices"}
                     </NavLink>

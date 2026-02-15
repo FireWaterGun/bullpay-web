@@ -33,7 +33,7 @@ export default function LoginPage() {
       // API returns user data in res.data.user
       const user = res?.data?.user || res?.user || { email }
       login(user, token)
-      navigate('/app', { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {}
       setFieldErrors(details)

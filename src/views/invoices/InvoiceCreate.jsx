@@ -302,7 +302,7 @@ export default function InvoiceCreate() {
       );
       const id = invoice.id || invoice.invoice?.id || invoice.data?.invoice?.id
       toast.success(t('invoice.createSuccess', { defaultValue: 'Invoice created successfully' }));
-      navigate(`/app/invoices/${id}`);
+      navigate(`/invoices/${id}`);
     } catch (e) {
       setError(typeof e?.message === "string" ? e.message : "Failed to create");
     } finally {
