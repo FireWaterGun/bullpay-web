@@ -131,7 +131,6 @@ export default function SupportedCryptoForm() {
     withdrawEnabled: true,
     minWithdrawAmount: '',
     maxWithdrawAmount: '',
-    depositFee: '0',
     withdrawFee: '',
     dailyWithdrawLimitUsd: '',
     status: 'active'
@@ -189,7 +188,6 @@ export default function SupportedCryptoForm() {
           withdrawEnabled: coinNetwork.withdrawEnabled ?? true,
           minWithdrawAmount: cleanNumber(coinNetwork.minWithdrawAmount),
           maxWithdrawAmount: cleanNumber(coinNetwork.maxWithdrawAmount),
-          depositFee: cleanNumber(coinNetwork.depositFee) || '0',
           withdrawFee: cleanNumber(coinNetwork.withdrawFee),
           dailyWithdrawLimitUsd: cleanNumber(coinNetwork.dailyWithdrawLimitUsd),
           status: coinNetwork.status || 'active'
@@ -215,7 +213,7 @@ export default function SupportedCryptoForm() {
   // DECIMAL(32,18) — crypto amounts: max 14 integer + 18 decimal digits
   const cryptoAmountFields = new Set([
     'minWithdrawAmount', 'maxWithdrawAmount',
-    'depositFee', 'withdrawFee'
+    'withdrawFee'
   ])
   // DECIMAL(16,2) — USD amounts: max 14 integer + 2 decimal digits
   const usdAmountFields = new Set(['dailyWithdrawLimitUsd'])
@@ -250,7 +248,7 @@ export default function SupportedCryptoForm() {
       }
 
       // Validate crypto amount fields — DECIMAL(32,18): max 14 integer + 18 decimal
-      const cryptoFields = ['minWithdrawAmount', 'maxWithdrawAmount', 'depositFee', 'withdrawFee']
+      const cryptoFields = ['minWithdrawAmount', 'maxWithdrawAmount', 'withdrawFee']
       const cryptoPattern = /^\d{1,14}(\.\d{1,18})?$/
       for (const field of cryptoFields) {
         if (formData[field] && !cryptoPattern.test(formData[field])) {
@@ -264,13 +262,11 @@ export default function SupportedCryptoForm() {
 
       let data
       if (isEdit) {
-        // PUT: only send editable fields
+        // PUT: only send editable fields (contractAddress is not editable via API)
         data = {
-          ...(formData.contractAddress !== undefined && { contractAddress: formData.contractAddress || null }),
           withdrawEnabled: formData.withdrawEnabled,
           ...(formData.minWithdrawAmount && { minWithdrawAmount: formData.minWithdrawAmount }),
           ...(formData.maxWithdrawAmount && { maxWithdrawAmount: formData.maxWithdrawAmount }),
-          depositFee: formData.depositFee || '0',
           ...(formData.withdrawFee && { withdrawFee: formData.withdrawFee }),
           ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
           status: formData.status || 'active'
@@ -285,7 +281,6 @@ export default function SupportedCryptoForm() {
           withdrawEnabled: formData.withdrawEnabled,
           minWithdrawAmount: formData.minWithdrawAmount,
           maxWithdrawAmount: formData.maxWithdrawAmount,
-          depositFee: formData.depositFee || '0',
           withdrawFee: formData.withdrawFee,
           ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
           status: formData.status || 'active'
@@ -520,25 +515,6 @@ export default function SupportedCryptoForm() {
                     : t('crypto.coinNetworkDecimalsHelp', { defaultValue: 'Override coin decimals if needed' })
                   }
                 </small>
-              </div>
-
-              {/* Deposit Fee */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.depositFee', { defaultValue: 'Deposit Fee' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="depositFee"
-                  name="depositFee"
-                  value={formData.depositFee}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="0"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
               </div>
 
               <div className="col-md-6">
