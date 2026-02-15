@@ -303,24 +303,24 @@ export default function PlatformLedgerList() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">Account Type</label>
-                  <select className="form-select form-select-sm" value={accountTypeFilter} onChange={(e) => setAccountTypeFilter(e.target.value)}>
+                  <label className="form-label">Account Type</label>
+                  <select className="form-select" value={accountTypeFilter} onChange={(e) => setAccountTypeFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="revenue">Revenue</option>
                     <option value="expense">Expense</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">Entry Type</label>
-                  <select className="form-select form-select-sm" value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
+                  <label className="form-label">Entry Type</label>
+                  <select className="form-select" value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="credit">Credit</option>
                     <option value="debit">Debit</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">Entry Code</label>
-                  <select className="form-select form-select-sm" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
+                  <label className="form-label">Entry Code</label>
+                  <select className="form-select" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="WF">WF - Withdrawal Fee</option>
                     <option value="FR">FR - Fee Refund</option>
@@ -332,8 +332,8 @@ export default function PlatformLedgerList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">State</label>
-                  <select className="form-select form-select-sm" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
+                  <label className="form-label">State</label>
+                  <select className="form-select" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="committed">Committed</option>
                     <option value="settled">Settled</option>
@@ -341,15 +341,15 @@ export default function PlatformLedgerList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">Coin Network ID</label>
-                  <input type="number" className="form-control form-control-sm" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                  <label className="form-label">Coin Network ID</label>
+                  <input type="number" className="form-control" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">Tx Hash</label>
-                  <input type="text" className="form-control form-control-sm" placeholder="Tx Hash" value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+                  <label className="form-label">Tx Hash</label>
+                  <input type="text" className="form-control" placeholder="Tx Hash" value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
+                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
                   <LocaleDateRangePicker
                     startDate={startDateFilter}
                     endDate={endDateFilter}
@@ -363,11 +363,11 @@ export default function PlatformLedgerList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
                   <i className="bx bx-reset me-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>

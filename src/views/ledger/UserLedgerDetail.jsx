@@ -462,7 +462,7 @@ export default function UserLedgerDetail() {
                     </h5>
                   </div>
                   <div className="card-body">
-                    <pre className="mb-0 p-3 bg-light rounded" style={{ fontSize: '0.8rem', maxHeight: '300px', overflow: 'auto' }}>
+                    <pre className="mb-0 p-3 rounded" style={{ fontSize: '0.8rem', maxHeight: '300px', overflow: 'auto', backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
                       {JSON.stringify(metadata, null, 2)}
                     </pre>
                   </div>

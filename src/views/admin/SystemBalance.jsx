@@ -160,64 +160,32 @@ export default function SystemBalance() {
         <div className="col-12">
           {/* Stats Cards */}
           <div className="row g-4 mb-4">
-            <div className="col-md-3 col-sm-6">
+            <div className="col-md-6 col-sm-6">
               <div className="card">
                 <div className="card-body">
                   <div className="d-flex align-items-center">
                     <div className="flex-shrink-0 me-3">
-                      <i className="bx bxs-wallet bx-lg text-primary"></i>
+                      <i className="bx bxs-gas-pump bx-lg text-warning"></i>
                     </div>
                     <div>
-                      <small className="text-muted d-block">{t('admin.totalWallets', { defaultValue: 'Total Wallets' })}</small>
-                      <h4 className="mb-0">{stats?.totalWallets || 0}</h4>
+                      <small className="text-muted d-block">{t('admin.gasPurposeWallets', { defaultValue: 'Gas Purpose Wallets' })}</small>
+                      <h4 className="mb-0">{stats?.gasPurposeWallets || 0}</h4>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="col-md-3 col-sm-6">
+            <div className="col-md-6 col-sm-6">
               <div className="card">
                 <div className="card-body">
                   <div className="d-flex align-items-center">
                     <div className="flex-shrink-0 me-3">
-                      <i className="bx bxs-check-circle bx-lg text-success"></i>
+                      <i className="bx bxs-bank bx-lg text-primary"></i>
                     </div>
                     <div>
-                      <small className="text-muted d-block">{t('admin.activeWallets', { defaultValue: 'Active Wallets' })}</small>
-                      <h4 className="mb-0">{stats?.activeWallets || 0}</h4>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-3 col-sm-6">
-              <div className="card">
-                <div className="card-body">
-                  <div className="d-flex align-items-center">
-                    <div className="flex-shrink-0 me-3">
-                      <i className="bx bxs-hot bx-lg text-warning"></i>
-                    </div>
-                    <div>
-                      <small className="text-muted d-block">{t('admin.hotWallets', { defaultValue: 'Hot Wallets' })}</small>
-                      <h4 className="mb-0">{stats?.hotWallets || 0}</h4>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-3 col-sm-6">
-              <div className="card">
-                <div className="card-body">
-                  <div className="d-flex align-items-center">
-                    <div className="flex-shrink-0 me-3">
-                      <i className="bx bxs-shield bx-lg text-info"></i>
-                    </div>
-                    <div>
-                      <small className="text-muted d-block">{t('admin.coldWallets', { defaultValue: 'Cold Wallets' })}</small>
-                      <h4 className="mb-0">{stats?.coldWallets || 0}</h4>
+                      <small className="text-muted d-block">{t('admin.treasuryPurposeWallets', { defaultValue: 'Treasury Purpose Wallets' })}</small>
+                      <h4 className="mb-0">{stats?.treasuryPurposeWallets || 0}</h4>
                     </div>
                   </div>
                 </div>
@@ -400,7 +368,7 @@ export default function SystemBalance() {
                             </td>
                             <td className="text-center">
                               <button
-                                onClick={() => navigate(`/admin/system-wallet/wallet/${wallet.systemWallet?.id}/transactions`)}
+                                onClick={() => navigate(`/admin/system-ledger/system?walletId=${wallet.systemWallet?.id}`)}
                                 className="btn btn-sm btn-icon btn-text-secondary me-1"
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >

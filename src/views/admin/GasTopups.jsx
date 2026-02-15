@@ -107,7 +107,7 @@ export default function GasTopups() {
   const initStatus = searchParams.get('status') || ''
   const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
   const initSweepId = searchParams.get('sweepId') || ''
-  const initFromAddress = searchParams.get('fromAddress') || ''
+  const initTxHash = searchParams.get('txHash') || ''
   const initDateFrom = searchParams.get('dateFrom') || ''
   const initDateTo = searchParams.get('dateTo') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
@@ -121,7 +121,7 @@ export default function GasTopups() {
   const [statusFilter, setStatusFilter] = useState(initStatus)
   const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
   const [sweepIdFilter, setSweepIdFilter] = useState(initSweepId)
-  const [fromAddressFilter, setFromAddressFilter] = useState(initFromAddress)
+  const [txHashFilter, setTxHashFilter] = useState(initTxHash)
   const [dateFromFilter, setDateFromFilter] = useState(initDateFrom)
   const [dateToFilter, setDateToFilter] = useState(initDateTo)
 
@@ -131,7 +131,7 @@ export default function GasTopups() {
     if (initStatus) f.status = initStatus
     if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
     if (initSweepId) f.sweepId = Number(initSweepId)
-    if (initFromAddress) f.fromAddress = initFromAddress
+    if (initTxHash) f.txHash = initTxHash
     if (initDateFrom) f.dateFrom = initDateFrom
     if (initDateTo) f.dateTo = initDateTo
     return f
@@ -153,7 +153,7 @@ export default function GasTopups() {
       status: statusFilter || undefined,
       coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
       sweepId: sweepIdFilter ? Number(sweepIdFilter) : undefined,
-      fromAddress: fromAddressFilter || undefined,
+      txHash: txHashFilter || undefined,
       dateFrom: dateFromFilter || undefined,
       dateTo: dateToFilter || undefined,
     }
@@ -166,7 +166,7 @@ export default function GasTopups() {
     setStatusFilter('')
     setCoinNetworkIdFilter('')
     setSweepIdFilter('')
-    setFromAddressFilter('')
+    setTxHashFilter('')
     setDateFromFilter('')
     setDateToFilter('')
     setAppliedFilters({})
@@ -278,8 +278,8 @@ export default function GasTopups() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">Status</label>
-                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <label className="form-label">Status</label>
+                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
@@ -289,19 +289,19 @@ export default function GasTopups() {
                   </select>
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">Coin Network ID</label>
-                  <input type="number" className="form-control form-control-sm" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                  <label className="form-label">Coin Network ID</label>
+                  <input type="number" className="form-control" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">Sweep ID</label>
-                  <input type="number" className="form-control form-control-sm" placeholder="Sweep ID" value={sweepIdFilter} onChange={(e) => setSweepIdFilter(e.target.value)} />
+                  <label className="form-label">Sweep ID</label>
+                  <input type="number" className="form-control" placeholder="Sweep ID" value={sweepIdFilter} onChange={(e) => setSweepIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">From Address</label>
-                  <input type="text" className="form-control form-control-sm" placeholder="From Address" value={fromAddressFilter} onChange={(e) => setFromAddressFilter(e.target.value)} />
+                  <label className="form-label">Tx Hash</label>
+                  <input type="text" className="form-control" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">Date Range</label>
+                  <label className="form-label">Date Range</label>
                   <LocaleDateRangePicker
                     startDate={dateFromFilter}
                     endDate={dateToFilter}
@@ -315,11 +315,11 @@ export default function GasTopups() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
                   <i className="bx bx-reset me-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>

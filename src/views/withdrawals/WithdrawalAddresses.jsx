@@ -335,8 +335,8 @@ export default function WithdrawalAddresses() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">Status</label>
-                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <label className="form-label">Status</label>
+                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="pending_verification">Pending Verification</option>
                     <option value="active">Active</option>
@@ -345,24 +345,16 @@ export default function WithdrawalAddresses() {
                   </select>
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">User ID</label>
-                  <input type="number" className="form-control form-control-sm" placeholder="User ID" value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+                  <label className="form-label">User ID</label>
+                  <input type="number" className="form-control" placeholder="User ID" value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">Coin Network ID</label>
-                  <input type="number" className="form-control form-control-sm" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                  <label className="form-label">Coin Network ID</label>
+                  <input type="number" className="form-control" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">Flagged</label>
-                  <select className="form-select form-select-sm" value={isFlaggedFilter} onChange={(e) => setIsFlaggedFilter(e.target.value)}>
-                    <option value="">All</option>
-                    <option value="true">Flagged</option>
-                    <option value="false">Not Flagged</option>
-                  </select>
-                </div>
-                <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">Verified</label>
-                  <select className="form-select form-select-sm" value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
+                  <label className="form-label">Verified</label>
+                  <select className="form-select" value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="true">Verified</option>
                     <option value="false">Not Verified</option>
@@ -370,11 +362,11 @@ export default function WithdrawalAddresses() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
                   <i className="bx bx-reset me-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>
@@ -396,7 +388,6 @@ export default function WithdrawalAddresses() {
                       <th>Address</th>
                       <th className="text-center">Status</th>
                       <th className="text-center">Verified</th>
-                      <th className="text-center">Flagged</th>
                       <th className="text-center">Actions</th>
                       <th>Created</th>
                     </tr>
@@ -404,7 +395,7 @@ export default function WithdrawalAddresses() {
                   <tbody>
                     {addresses.length === 0 ? (
                       <tr>
-                        <td colSpan="10" className="text-center text-muted py-4">
+                        <td colSpan="9" className="text-center text-muted py-4">
                           No withdrawal addresses found
                         </td>
                       </tr>
@@ -461,13 +452,6 @@ export default function WithdrawalAddresses() {
                                 <i className="bx bx-check-circle text-success" style={{ fontSize: '1.1rem' }}></i>
                               ) : (
                                 <i className="bx bx-x-circle text-muted" style={{ fontSize: '1.1rem' }}></i>
-                              )}
-                            </td>
-                            <td className="text-center">
-                              {isFlagged ? (
-                                <i className="bx bxs-flag-alt text-danger" style={{ fontSize: '1.1rem' }} title={addr.flagReason || 'Flagged'}></i>
-                              ) : (
-                                <span className="text-muted">-</span>
                               )}
                             </td>
                             <td className="text-center">

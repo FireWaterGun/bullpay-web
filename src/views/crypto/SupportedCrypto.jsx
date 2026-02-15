@@ -234,28 +234,23 @@ export default function SupportedCrypto() {
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="card">
         <div className="card-header">
-          <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
             <div>
-              <h5 className="mb-0">{t('nav.coinNetworks', { defaultValue: 'Coin Networks' })}</h5>
-              <p className="text-muted small mb-0 mt-1">{t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}</p>
+              <h4 className="mb-1">
+                <i className="bx bx-link me-2"></i>
+                {t('nav.coinNetworks', { defaultValue: 'Coin Networks' })}
+              </h4>
+              <p className="text-muted mb-0">{t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}</p>
             </div>
-            <button
-              type="button"
-              className="btn btn-primary"
-                onClick={() => navigate('/admin/coin-networks/create')}
-              >
-              <i className="bx bx-plus me-1"></i>
-              {t('crypto.addCoinNetwork', { defaultValue: 'Add Coin-Network' })}
-            </button>
           </div>
 
           {/* Filters */}
           <div className="row g-3 align-items-end">
             <div className="col-md-3 col-sm-6">
-              <label className="form-label small mb-1">{t('filter.search', { defaultValue: 'Search' })}</label>
+              <label className="form-label">{t('filter.search', { defaultValue: 'Search' })}</label>
               <input
                 type="text"
-                className="form-control form-control-sm"
+                className="form-control"
                 placeholder={t('crypto.searchSupported', { defaultValue: 'Search by coin or network...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
@@ -263,11 +258,11 @@ export default function SupportedCrypto() {
               />
             </div>
             <div className="col-auto d-flex gap-2">
-              <button className="btn btn-primary btn-sm" onClick={handleApplyFilter} disabled={loading}>
+              <button className="btn btn-primary" onClick={handleApplyFilter} disabled={loading}>
                 <i className="bx bx-filter-alt me-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
               </button>
-              <button className="btn btn-outline-secondary btn-sm" onClick={handleResetFilter} disabled={loading}>
+              <button className="btn btn-outline-secondary" onClick={handleResetFilter} disabled={loading}>
                 <i className="bx bx-reset me-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </button>

@@ -228,7 +228,7 @@ export default function LocaleDateRangePicker({
     <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-block', ...style }} className={className}>
       {/* Input */}
       <div
-        className="form-control form-control-sm d-flex align-items-center gap-1"
+        className="form-control d-flex align-items-center gap-1"
         style={{ cursor: 'pointer', minWidth: 220, userSelect: 'none' }}
         onClick={() => setOpen(!open)}
       >

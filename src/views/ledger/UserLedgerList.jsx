@@ -296,16 +296,16 @@ export default function UserLedgerList() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.entryType', { defaultValue: 'Entry Type' })}</label>
-                  <select className="form-select form-select-sm" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.entryType', { defaultValue: 'Entry Type' })}</label>
+                  <select className="form-select" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="credit">{t('filter.credit', { defaultValue: 'Credit' })}</option>
                     <option value="debit">{t('filter.debit', { defaultValue: 'Debit' })}</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.entryCode', { defaultValue: 'Entry Code' })}</label>
-                  <select className="form-select form-select-sm" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.entryCode', { defaultValue: 'Entry Code' })}</label>
+                  <select className="form-select" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="DP">DP - Deposit</option>
                     <option value="WA">WA - Wallet Actual</option>
@@ -317,8 +317,8 @@ export default function UserLedgerList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.state', { defaultValue: 'State' })}</label>
-                  <select className="form-select form-select-sm" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.state', { defaultValue: 'State' })}</label>
+                  <select className="form-select" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="committed">{t('filter.committed', { defaultValue: 'Committed' })}</option>
                     <option value="settled">{t('filter.settled', { defaultValue: 'Settled' })}</option>
@@ -326,15 +326,15 @@ export default function UserLedgerList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.userId', { defaultValue: 'User ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.userId', { defaultValue: 'User ID' })}</label>
+                  <input type="number" className="form-control" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
+                  <input type="number" className="form-control" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
+                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
                   <LocaleDateRangePicker
                     startDate={startDateFilter}
                     endDate={endDateFilter}
@@ -348,11 +348,11 @@ export default function UserLedgerList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
                   <i className="bx bx-reset me-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>

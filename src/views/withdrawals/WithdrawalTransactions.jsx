@@ -338,8 +338,8 @@ export default function WithdrawalTransactions() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
+                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
                     <option value="waiting_for_gas">{t('status.waiting_for_gas', { defaultValue: 'Waiting for Gas' })}</option>
@@ -350,24 +350,24 @@ export default function WithdrawalTransactions() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.userId', { defaultValue: 'User ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.userId', { defaultValue: 'User ID' })}</label>
+                  <input type="number" className="form-control" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
+                  <input type="number" className="form-control" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.search', { defaultValue: 'Search' })}</label>
-                  <input type="text" className="form-control form-control-sm" placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })} value={searchFilter} onChange={(e) => setSearchFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.search', { defaultValue: 'Search' })}</label>
+                  <input type="text" className="form-control" placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })} value={searchFilter} onChange={(e) => setSearchFilter(e.target.value)} />
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
                   <i className="bx bx-reset me-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>

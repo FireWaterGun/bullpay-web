@@ -240,8 +240,8 @@ export default function AdminInvoiceList() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
+                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
                     <option value="paid">{t('status.paid', { defaultValue: 'Paid' })}</option>
@@ -250,15 +250,15 @@ export default function AdminInvoiceList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.userId', { defaultValue: 'User ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.userId', { defaultValue: 'User ID' })}</label>
+                  <input type="number" className="form-control" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.merchantId', { defaultValue: 'Merchant ID' })}</label>
-                  <input type="number" className="form-control form-control-sm" placeholder={t('filter.merchantId', { defaultValue: 'Merchant ID' })} value={merchantIdFilter} onChange={(e) => setMerchantIdFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.merchantId', { defaultValue: 'Merchant ID' })}</label>
+                  <input type="number" className="form-control" placeholder={t('filter.merchantId', { defaultValue: 'Merchant ID' })} value={merchantIdFilter} onChange={(e) => setMerchantIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
+                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
                   <LocaleDateRangePicker
                     startDate={fromDateFilter}
                     endDate={toDateFilter}
@@ -271,8 +271,8 @@ export default function AdminInvoiceList() {
                   />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-select form-select-sm" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
+                  <select className="form-select" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="created_at">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
                     <option value="amount">{t('filter.amount', { defaultValue: 'Amount' })}</option>
@@ -281,8 +281,8 @@ export default function AdminInvoiceList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
-                  <select className="form-select form-select-sm" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
+                  <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
                     <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
@@ -290,11 +290,11 @@ export default function AdminInvoiceList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
                   <i className="bx bx-reset me-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>

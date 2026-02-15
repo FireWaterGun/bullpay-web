@@ -1,0 +1,26 @@
+/* Override Sneat theme modal btn-close positioning */
+.modal .btn-close {
+  transform: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.modal .btn-close:hover,
+.modal .btn-close:focus,
+.modal .btn-close:active {
+  transform: none !important;
+  opacity: 0.75;
+}
+.modal .modal-header .btn-close {
+  position: relative !important;
+  inset-block-start: auto !important;
+  inset-inline-end: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0.5rem !important;
+}
+.modal .modal-header .btn-close:hover,
+.modal .modal-header .btn-close:focus,
+.modal .modal-header .btn-close:active {
+  transform: none !important;
+}

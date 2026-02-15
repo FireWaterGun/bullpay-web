@@ -293,18 +293,18 @@ export default function UserList() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.search', { defaultValue: 'Search' })}</label>
+                  <label className="form-label">{t('filter.search', { defaultValue: 'Search' })}</label>
                   <input
                     type="text"
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder={t('admin.users.searchPlaceholder', { defaultValue: 'Email, name...' })}
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
                   />
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select form-select-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
+                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     {STATUS_OPTIONS.map(s => (
                       <option key={s} value={s}>{formatRoleLabel(s)}</option>
@@ -312,8 +312,8 @@ export default function UserList() {
                   </select>
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">{t('admin.users.role', { defaultValue: 'Role' })}</label>
-                  <select className="form-select form-select-sm" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+                  <label className="form-label">{t('admin.users.role', { defaultValue: 'Role' })}</label>
+                  <select className="form-select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
                     <option value="">{t('admin.users.allRoles', { defaultValue: 'All Roles' })}</option>
                     {ROLE_OPTIONS.map(r => (
                       <option key={r} value={r}>{formatRoleLabel(r)}</option>
@@ -321,7 +321,7 @@ export default function UserList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label small mb-1">{t('admin.users.registeredDate', { defaultValue: 'Registered Date' })}</label>
+                  <label className="form-label">{t('admin.users.createdDate', { defaultValue: 'Created Date' })}</label>
                   <LocaleDateRangePicker
                     startDate={dateFromFilter}
                     endDate={dateToFilter}
@@ -334,24 +334,22 @@ export default function UserList() {
                   />
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label small mb-1">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-select form-select-sm" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+                  <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
+                  <select className="form-select" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="createdAt">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
-                    <option value="email">{t('admin.users.email', { defaultValue: 'Email' })}</option>
                     <option value="lastLoginAt">{t('admin.users.lastLogin', { defaultValue: 'Last Login' })}</option>
                     <option value="status">{t('filter.status', { defaultValue: 'Status' })}</option>
                     <option value="role">{t('admin.users.role', { defaultValue: 'Role' })}</option>
-                    <option value="fullName">{t('admin.users.fullName', { defaultValue: 'Full Name' })}</option>
                   </select>
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
                   <i className="bx bx-reset me-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>
@@ -530,7 +528,7 @@ export default function UserList() {
               </div>
               <div className="modal-body">
                 {/* User info */}
-                <div className="bg-light rounded p-3 mb-3">
+                <div className="rounded p-3 mb-3" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
                   <div className="row g-2">
                     <div className="col-6">
                       <small className="text-muted d-block">User ID</small>

@@ -176,7 +176,7 @@ export default function IncomeStatement() {
                   {!showCustom ? (
                     <>
                       <select
-                        className="form-select form-select-sm"
+                        className="form-select"
                         value={datePreset}
                         onChange={(e) => setDatePreset(e.target.value)}
                         style={{ width: 'auto' }}

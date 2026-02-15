@@ -119,6 +119,15 @@ export default function AdminSettings() {
     try {
       const data = await getSettingCategories(token)
       setCategories(data)
+      // If no category selected yet, default to first category from API
+      const list = data?.categories || data || []
+      if (!searchParams.get('category') && list.length > 0) {
+        const first = list[0]
+        setCategoryFilter(first)
+        const f = { ...appliedFilters, category: first }
+        setAppliedFilters(f)
+        syncSearchParams(f, currentPage)
+      }
     } catch (error) {
       console.error('Failed to load categories:', error)
     }
@@ -287,24 +296,30 @@ export default function AdminSettings() {
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h4 className="mb-0 fw-bold">{t('admin.settings.title', { defaultValue: 'System Settings' })}</h4>
-          <small className="text-muted">{t('admin.settings.description', { defaultValue: 'View and manage system configuration settings' })}</small>
-        </div>
-        <button className="btn btn-primary btn-sm" onClick={() => { loadSettings(); loadCategories() }} disabled={loading}>
-          <i className="bx bx-refresh me-1"></i>{t('actions.refresh', { defaultValue: 'Refresh' })}
-        </button>
-      </div>
-
       {/* Filters */}
       <div className="card mb-4">
+        <div className="card-header">
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 className="mb-1">
+                <i className="bx bx-cog me-2"></i>
+                {t('admin.settings.title', { defaultValue: 'System Settings' })}
+              </h4>
+              <p className="text-muted mb-0">
+                {t('admin.settings.description', { defaultValue: 'View and manage system configuration settings' })}
+              </p>
+            </div>
+            <button className="btn btn-primary" onClick={() => { loadSettings(); loadCategories() }} disabled={loading}>
+              <i className="bx bx-refresh me-1"></i>
+              {t('actions.refresh', { defaultValue: 'Refresh' })}
+            </button>
+          </div>
+        </div>
         <div className="card-body">
           <div className="row g-3">
             <div className="col-md-3 col-sm-6">
-              <label className="form-label small mb-1">{t('admin.settings.category', { defaultValue: 'Category' })}</label>
-              <select className="form-select form-select-sm" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+              <label className="form-label">{t('admin.settings.category', { defaultValue: 'Category' })}</label>
+              <select className="form-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
                 <option value="">{t('admin.settings.allCategories', { defaultValue: 'All Categories' })}</option>
                 {categoryList.map(c => (
                   <option key={c} value={c}>{formatLabel(c)}</option>
@@ -312,8 +327,8 @@ export default function AdminSettings() {
               </select>
             </div>
             <div className="col-md-3 col-sm-6">
-              <label className="form-label small mb-1">{t('admin.settings.scope', { defaultValue: 'Scope' })}</label>
-              <select className="form-select form-select-sm" value={scopeFilter} onChange={(e) => setScopeFilter(e.target.value)}>
+              <label className="form-label">{t('admin.settings.scope', { defaultValue: 'Scope' })}</label>
+              <select className="form-select" value={scopeFilter} onChange={(e) => setScopeFilter(e.target.value)}>
                 <option value="">{t('admin.settings.allScopes', { defaultValue: 'All Scopes' })}</option>
                 {SCOPE_OPTIONS.map(s => (
                   <option key={s} value={s}>{formatLabel(s)}</option>
@@ -322,11 +337,11 @@ export default function AdminSettings() {
             </div>
           </div>
           <div className="d-flex gap-2 mt-3">
-            <button className="btn btn-primary btn-sm" onClick={applyFilters} disabled={loading}>
+            <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
               <i className="bx bx-filter-alt me-1"></i>
               {t('filter.apply', { defaultValue: 'Apply Filters' })}
             </button>
-            <button className="btn btn-outline-secondary btn-sm" onClick={resetFilters} disabled={loading}>
+            <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
               <i className="bx bx-reset me-1"></i>
               {t('filter.reset', { defaultValue: 'Reset' })}
             </button>
@@ -339,12 +354,8 @@ export default function AdminSettings() {
         <div className="card"><div className="card-body text-center text-muted py-5">{t('admin.settings.noSettings', { defaultValue: 'No settings found' })}</div></div>
       ) : (
         <>
-          <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="mb-3">
             <small className="text-muted">{settings.length} settings</small>
-            <div className="btn-group btn-group-sm">
-              <button className="btn btn-outline-secondary" onClick={expandAll}><i className="bx bx-expand-alt me-1"></i>Expand</button>
-              <button className="btn btn-outline-secondary" onClick={collapseAll}><i className="bx bx-collapse-alt me-1"></i>Collapse</button>
-            </div>
           </div>
 
           {groupedSettings.map(group => {
@@ -447,14 +458,14 @@ export default function AdminSettings() {
                                         {isEditing ? (
                                           <div className="d-flex align-items-center gap-2">
                                             {s.dataType === 'boolean' ? (
-                                              <select className="form-select form-select-sm" value={editValue} onChange={e => setEditValue(e.target.value)} disabled={saving} autoFocus style={{ maxWidth: 120 }}>
+                                              <select className="form-select" value={editValue} onChange={e => setEditValue(e.target.value)} disabled={saving} autoFocus style={{ maxWidth: 120 }}>
                                                 <option value="true">true</option>
                                                 <option value="false">false</option>
                                               </select>
                                             ) : (
                                               <input
                                                 type={s.dataType === 'integer' || s.dataType === 'decimal' ? 'number' : 'text'}
-                                                className="form-control form-control-sm"
+                                                className="form-control"
                                                 value={editValue}
                                                 onChange={e => setEditValue(e.target.value)}
                                                 onKeyDown={e => { if (e.key === 'Enter') saveInline(s); if (e.key === 'Escape') cancelEdit() }}

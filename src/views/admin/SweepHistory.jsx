@@ -35,8 +35,8 @@ export default function SweepHistory() {
               {/* Filters */}
               <div className="row g-3 mb-4">
                 <div className="col-md-3">
-                  <label className="form-label small">{t('admin.sweep.coin', { defaultValue: 'Coin' })}</label>
-                  <select className="form-select form-select-sm">
+                  <label className="form-label">{t('admin.sweep.coin', { defaultValue: 'Coin' })}</label>
+                  <select className="form-select">
                     <option value="">{t('crypto.allCoins', { defaultValue: 'All Coins' })}</option>
                     <option value="BTC">BTC</option>
                     <option value="ETH">ETH</option>
@@ -44,8 +44,8 @@ export default function SweepHistory() {
                   </select>
                 </div>
                 <div className="col-md-3">
-                  <label className="form-label small">{t('admin.sweep.network', { defaultValue: 'Network' })}</label>
-                  <select className="form-select form-select-sm">
+                  <label className="form-label">{t('admin.sweep.network', { defaultValue: 'Network' })}</label>
+                  <select className="form-select">
                     <option value="">{t('crypto.allNetworks', { defaultValue: 'All Networks' })}</option>
                     <option value="Ethereum">Ethereum</option>
                     <option value="BSC">BSC</option>
@@ -53,8 +53,8 @@ export default function SweepHistory() {
                   </select>
                 </div>
                 <div className="col-md-3">
-                  <label className="form-label small">{t('admin.sweep.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select form-select-sm">
+                  <label className="form-label">{t('admin.sweep.status', { defaultValue: 'Status' })}</label>
+                  <select className="form-select">
                     <option value="">{t('invoices.allStatus', { defaultValue: 'All Status' })}</option>
                     <option value="pending">{t('admin.sweep.pending', { defaultValue: 'Pending' })}</option>
                     <option value="completed">{t('admin.sweep.completed', { defaultValue: 'Completed' })}</option>
@@ -62,8 +62,8 @@ export default function SweepHistory() {
                   </select>
                 </div>
                 <div className="col-md-3">
-                  <label className="form-label small">{t('admin.sweep.dateRange', { defaultValue: 'Date Range' })}</label>
-                  <select className="form-select form-select-sm">
+                  <label className="form-label">{t('admin.sweep.dateRange', { defaultValue: 'Date Range' })}</label>
+                  <select className="form-select">
                     <option value="today">{t('admin.sweep.today', { defaultValue: 'Today' })}</option>
                     <option value="week">{t('admin.sweep.thisWeek', { defaultValue: 'This Week' })}</option>
                     <option value="month">{t('admin.sweep.thisMonth', { defaultValue: 'This Month' })}</option>

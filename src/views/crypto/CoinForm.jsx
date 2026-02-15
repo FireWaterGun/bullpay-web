@@ -262,6 +262,7 @@ export default function CoinForm() {
                       value={formData.type}
                       onChange={handleChange}
                       required
+                      disabled={isEdit}
                     >
                       <option value="native">{t('crypto.native', { defaultValue: 'Native' })}</option>
                       <option value="token">{t('crypto.token', { defaultValue: 'Token' })}</option>
@@ -284,6 +285,7 @@ export default function CoinForm() {
                       min="0"
                       max="18"
                       required
+                      disabled={isEdit}
                     />
                     <small className="text-muted">{t('crypto.decimalsHelp', { defaultValue: 'Number of decimal places (0-18)' })}</small>
                   </div>

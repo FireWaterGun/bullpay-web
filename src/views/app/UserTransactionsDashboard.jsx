@@ -108,12 +108,12 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
 
   return (
-    <div className="col-sm-6 col-xl-3">
+    <div className="col-6 col-xl-3">
       <div className="card h-100">
         <div className="card-body">
           <div className="d-flex align-items-start justify-content-between">
             <div className="content-left">
-              <span className="text-muted d-block mb-1">{title}</span>
+              <span className="text-muted form-label">{title}</span>
               <h3 className={`mb-0${valueColor ? ` text-${valueColor}` : ''}`} style={{ fontSize: '1.75rem' }}>{value}</h3>
               {change !== undefined && change !== null && !isNaN(numChange) && (
                 <small className={changeColor} style={{ fontSize: '0.8rem' }}>
@@ -484,7 +484,7 @@ export default function UserTransactionsDashboard() {
           {!showCustom ? (
             <>
               <select
-                className="form-select form-select-sm"
+                className="form-select"
                 value={datePreset}
                 onChange={(e) => setDatePreset(e.target.value)}
                 style={{ width: 'auto' }}

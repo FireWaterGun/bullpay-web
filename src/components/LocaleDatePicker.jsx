@@ -136,7 +136,7 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
     <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-block', ...style }} className={className}>
       {/* Input */}
       <div
-        className="form-control form-control-sm d-flex align-items-center gap-1"
+        className="form-control d-flex align-items-center gap-1"
         style={{ cursor: 'pointer', minWidth: 130, userSelect: 'none' }}
         onClick={() => setOpen(!open)}
       >

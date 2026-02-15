@@ -147,6 +147,36 @@ button:focus-visible {
   z-index: 99999 !important;
 }
 
+/* Fix btn-close in modals - override Sneat theme positioning */
+.modal .modal-header .btn-close {
+  position: relative !important;
+  inset-block-start: auto !important;
+  inset-inline-end: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0.5rem !important;
+  margin: 0 !important;
+}
+.modal .modal-header .btn-close:hover,
+.modal .modal-header .btn-close:focus,
+.modal .modal-header .btn-close:active {
+  transform: none !important;
+  opacity: 0.75;
+  border-color: transparent !important;
+}
+.modal .btn-close {
+  transform: none !important;
+  background-color: transparent !important;
+  border: none !important;
+}
+.modal .btn-close:hover,
+.modal .btn-close:focus,
+.modal .btn-close:active {
+  transform: none !important;
+}
+
 /* Prevent layout shift */
 body {
   overflow-x: hidden;

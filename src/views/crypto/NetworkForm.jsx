@@ -328,6 +328,7 @@ export default function NetworkForm() {
                       value={formData.type}
                       onChange={handleChange}
                       required
+                      disabled={isEdit}
                     >
                       <option value="mainnet">Mainnet</option>
                       <option value="testnet">Testnet</option>

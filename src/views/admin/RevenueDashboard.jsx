@@ -178,12 +178,12 @@ function SummaryCard({ title, value, change, changeLabel, icon, color = 'primary
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
   
   return (
-    <div className="col-sm-6 col-xl-3">
+    <div className="col-6 col-xl-3">
       <div className="card h-100">
         <div className="card-body">
           <div className="d-flex align-items-start justify-content-between">
             <div className="content-left">
-              <span className="text-muted d-block mb-1">{title}</span>
+              <span className="form-label">{title}</span>
               <div className="d-flex align-items-center">
                 <h4 className={`mb-0 me-2${valueColor ? ` text-${valueColor}` : ''}`}>{value}</h4>
                 {change !== undefined && change !== null && (
@@ -527,7 +527,7 @@ export default function RevenueDashboard() {
           {!showCustom ? (
             <>
               <select
-                className="form-select form-select-sm"
+                className="form-select"
                 value={datePreset}
                 onChange={(e) => setDatePreset(e.target.value)}
                 style={{ width: 'auto' }}
