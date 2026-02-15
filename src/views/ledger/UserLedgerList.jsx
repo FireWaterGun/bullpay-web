@@ -392,7 +392,7 @@ export default function UserLedgerList() {
                         const isCredit = entry.entryType === 'credit'
 
                         return (
-                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/system-ledger/user/${entry.id}`)}>
+                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/user-ledger/${entry.id}`)}>
                             <td>
                               <span className="fw-semibold text-primary">{entry.id}</span>
                             </td>
@@ -467,7 +467,7 @@ export default function UserLedgerList() {
                                 className="btn btn-sm btn-icon btn-outline-primary"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  navigate(`/admin/system-ledger/user/${entry.id}`)
+                                  navigate(`/admin/user-ledger/${entry.id}`)
                                 }}
                                 title={t('actions.view', { defaultValue: 'View' })}
                               >

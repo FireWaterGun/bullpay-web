@@ -49,7 +49,7 @@ function RootHandler() {
     } else if (isAuthenticated) {
       // Redirect to appropriate dashboard based on role
       if (isAdmin) {
-        navigate('/admin/revenue', { replace: true })
+        navigate('/admin/dashboard', { replace: true })
       } else {
         navigate('/dashboard', { replace: true })
       }

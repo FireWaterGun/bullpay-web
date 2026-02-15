@@ -651,73 +651,53 @@ export default function DashboardLayout() {
           <div className="menu-inner-shadow"></div>
           <ul className="menu-inner py-1">
             {isAdmin ? (
-              <>
-                {/* Admin menu — filtered by navigation permissions */}
-                {/* canShow: if navigation not yet loaded, show all (fallback); if loaded, check hasMenu */}
-                {(!navigation || hasMenu('admin-revenue')) && (
-                  <MenuGroup base="/admin/revenue" icon="bx-bar-chart-alt-2" label={t('admin.revenueDashboard', { defaultValue: 'Revenue' })}>
-                    <SubItem to="/admin/revenue" end label={t('admin.revenueDashboard', { defaultValue: 'Dashboard' })} />
-                    <SubItem to="/admin/revenue/income-statement" end label={t('admin.pnl.incomeStatement', { defaultValue: 'Income Statement' })} />
-                    <SubItem to="/admin/revenue/revenue-expenses" end label={t('admin.pnl.platformLedger', { defaultValue: 'Revenue & Expenses' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('wallet') || hasPermission('wallet.view')) && (
-                  <MenuGroup base="/admin/system-wallet" icon="bx-wallet" label={t('admin.systemWallet', { defaultValue: 'System Wallet' })}>
-                    <SubItem to="/admin/system-wallet/balance" end label={t('admin.balance', { defaultValue: 'Balance' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('admin-withdrawals')) && (
-                  <MenuGroup base="/admin/withdrawals" icon="bx-money-withdraw" label={t('admin.withdrawal.menuTitle', { defaultValue: 'Withdrawal' })} badge={pendingWithdrawalCount}>
-                    <SubItem to="/admin/withdrawals/transactions" end label={t('admin.withdrawal.transactions', { defaultValue: 'Transactions' })} />
-                    <SubItem to="/admin/withdrawals/addresses" end label={t('admin.withdrawal.walletAddresses', { defaultValue: 'Wallet Addresses' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('admin-sweeps')) && (
-                  <MenuGroup base="/admin/sweeps" icon="bx-transfer" label={t('admin.sweep.menuTitle', { defaultValue: 'Sweep' })}>
-                    <SubItem to="/admin/sweeps/transactions" end label={t('admin.sweep.transactions', { defaultValue: 'Transactions' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('admin-gas-topups')) && (
-                  <MenuItem to="/admin/wallet-gas-topups" end icon="bx-gas-pump" label={t('admin.gasTopup.menuTitle', { defaultValue: 'Gas Topup' })} />
-                )}
-                {(!navigation || hasMenu('admin-users')) && (
-                  <MenuGroup base="/admin/users" icon="bx-group" label={t('admin.users.menuTitle', { defaultValue: 'User Management' })}>
-                    <SubItem to="/admin/users" end label={t('admin.users.listUsers', { defaultValue: 'List Users' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('admin-ledgers')) && (
-                  <MenuGroup base="/admin/system-ledger" icon="bx-book" label={t('admin.ledger.menuTitle', { defaultValue: 'Ledger' })}>
-                    <SubItem to="/admin/system-ledger/system" end label={t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })} />
-                    <SubItem to="/admin/system-ledger/user" end label={t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('invoices') || hasPermission('invoice.view')) && (
-                  <MenuGroup base="/admin/invoices" icon="bx-receipt" label={t('admin.invoices.menuTitle', { defaultValue: 'Invoices' })}>
-                    <SubItem to="/admin/invoices" end label={t('admin.invoices.transactions', { defaultValue: 'Transactions' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('invoices') || hasPermission('invoice.view')) && (
-                  <MenuGroup base="/admin/payments" icon="bx-transfer-alt" label={t('admin.payments.menuTitle', { defaultValue: 'Payments' })}>
-                    <SubItem to="/admin/payments" end label={t('admin.payments.transactions', { defaultValue: 'Transactions' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('admin-settings') || hasMenu('admin-coins') || hasMenu('admin-networks')) && (
-                  <MenuGroup base="/admin/settings" icon="bx-cog" label={t('nav.settings', { defaultValue: 'Settings' })} matchPaths={['/admin/settings', '/admin/coins', '/admin/networks', '/admin/coin-networks']}>
-                    {(!navigation || hasMenu('admin-settings')) && (
-                      <SubItem to="/admin/settings" end label={t('admin.settings.system', { defaultValue: 'System' })} />
-                    )}
-                    {(!navigation || hasMenu('admin-coins')) && (
-                      <SubItem to="/admin/coins" end label={t('nav.coins', { defaultValue: 'Coins' })} />
-                    )}
-                    {(!navigation || hasMenu('admin-networks')) && (
-                      <SubItem to="/admin/networks" end label={t('nav.networks', { defaultValue: 'Networks' })} />
-                    )}
-                    {(!navigation || hasMenu('admin-coins') || hasMenu('admin-networks')) && (
-                      <SubItem to="/admin/coin-networks" end={true} label={t('nav.coinNetworks', { defaultValue: 'Coin Networks' })} />
-                    )}
-                  </MenuGroup>
-                )}
-              </>
+              (() => {
+                // API paths match app routes directly — no mapping needed
+                // Group key → icon
+                const iconMap = {
+                  'admin-dashboard': 'bx-bar-chart-alt-2',
+                  'admin-reporting': 'bx-book',
+                  'admin-user-management': 'bx-group',
+                  'admin-financial': 'bx-receipt',
+                  'admin-assets': 'bx-coin-stack',
+                  'admin-operations': 'bx-transfer',
+                  'admin-system': 'bx-cog',
+                }
+                // Group key → badge
+                const badgeMap = {
+                  'admin-financial': pendingWithdrawalCount,
+                  'admin-operations': pendingWithdrawalCount,
+                }
+
+                const menus = navigation?.menus || []
+                if (!menus.length) return null
+
+                return menus.map(group => {
+                  const children = group.children || []
+                  const icon = iconMap[group.key] || 'bx-menu'
+                  const badge = badgeMap[group.key]
+                  const childPaths = children.map(c => c.path)
+
+                  if (!children.length) {
+                    return <MenuItem key={group.key} to={group.path} end icon={icon} label={group.label} />
+                  }
+
+                  return (
+                    <MenuGroup
+                      key={group.key}
+                      base={group.path}
+                      icon={icon}
+                      label={group.label}
+                      matchPaths={[...new Set([group.path, ...childPaths])]}
+                      badge={badge}
+                    >
+                      {children.map(child => (
+                        <SubItem key={child.key} to={child.path} end label={child.label} />
+                      ))}
+                    </MenuGroup>
+                  )
+                })
+              })()
             ) : (
               <>
                 {/* User menu — filtered by navigation permissions */}
@@ -967,18 +947,20 @@ export default function DashboardLayout() {
               <Routes>
                 {isAdmin ? (
                   <>
-                    {/* Admin routes — paths match API NAVIGATION_TREE */}
-                    <Route path="admin" element={<Navigate to="/admin/revenue" replace />} />
-                    <Route path="admin/revenue" element={<RevenueDashboard />} />
-                    <Route path="admin/revenue/income-statement" element={<IncomeStatement />} />
-                    <Route path="admin/revenue/revenue-expenses" element={<PlatformLedgerList />} />
-                    <Route path="admin/revenue/revenue-expenses/:id" element={<PlatformLedgerDetail />} />
-                    <Route path="admin/system-wallet/balance" element={<SystemBalance />} />
-                    <Route path="admin/system-wallet/wallet/:walletId/transactions" element={<WalletTransaction />} />
-                    <Route path="admin/withdrawals/transactions" element={<WithdrawalTransactions />} />
+                    {/* Admin routes — paths match API /me/navigation */}
+                    <Route path="admin" element={<Navigate to="/admin/dashboard" replace />} />
+                    <Route path="admin/dashboard" element={<RevenueDashboard />} />
+                    <Route path="admin/income-statement" element={<IncomeStatement />} />
+                    <Route path="admin/revenue-expenses" element={<PlatformLedgerList />} />
+                    <Route path="admin/revenue-expenses/:id" element={<PlatformLedgerDetail />} />
+                    <Route path="admin/platform-ledger" element={<PlatformLedgerList />} />
+                    <Route path="admin/platform-ledger/:id" element={<PlatformLedgerDetail />} />
+                    <Route path="admin/system-wallets" element={<SystemBalance />} />
+                    <Route path="admin/system-wallets/wallet/:walletId/transactions" element={<WalletTransaction />} />
+                    <Route path="admin/withdrawals" element={<WithdrawalTransactions />} />
                     <Route path="admin/withdrawals/addresses" element={<WithdrawalAddresses />} />
-                    <Route path="admin/sweeps/transactions" element={<SweepTransactions />} />
-                    <Route path="admin/sweeps/transactions/:id" element={<SweepDetail />} />
+                    <Route path="admin/sweeps" element={<SweepTransactions />} />
+                    <Route path="admin/sweeps/:id" element={<SweepDetail />} />
                     <Route path="admin/wallet-gas-topups" element={<GasTopups />} />
                     <Route path="admin/wallet-gas-topups/:id" element={<GasTopupDetail />} />
                     <Route path="admin/users" element={<UserList />} />
@@ -993,11 +975,10 @@ export default function DashboardLayout() {
                     <Route path="admin/coin-networks" element={<SupportedCrypto />} />
                     <Route path="admin/coin-networks/create" element={<SupportedCryptoForm />} />
                     <Route path="admin/coin-networks/:id" element={<SupportedCryptoForm />} />
-                    <Route path="admin/system-ledger/transactions" element={<LedgerTransactions />} />
-                    <Route path="admin/system-ledger/system" element={<SystemLedgerList />} />
-                    <Route path="admin/system-ledger/system/:id" element={<SystemLedgerDetail />} />
-                    <Route path="admin/system-ledger/user" element={<UserLedgerList />} />
-                    <Route path="admin/system-ledger/user/:id" element={<UserLedgerDetail />} />
+                    <Route path="admin/system-ledger" element={<SystemLedgerList />} />
+                    <Route path="admin/system-ledger/:id" element={<SystemLedgerDetail />} />
+                    <Route path="admin/user-ledger" element={<UserLedgerList />} />
+                    <Route path="admin/user-ledger/:id" element={<UserLedgerDetail />} />
                     <Route path="admin/invoices" element={<AdminInvoiceList />} />
                     <Route path="admin/invoices/:id" element={<AdminInvoiceDetail />} />
                     <Route path="admin/payments" element={<AdminPaymentList />} />
@@ -1009,7 +990,16 @@ export default function DashboardLayout() {
                     <Route path="admin/settings/withdrawal/defaults" element={<WithdrawalDefaults />} />
                     <Route path="admin/settings/withdrawal/overrides" element={<WithdrawalOverrides />} />
                     <Route path="admin/settings/withdrawal/policy" element={<WithdrawalPolicy />} />
-                    <Route path="*" element={<Navigate to="/admin/revenue" replace />} />
+                    {/* Redirects from old paths */}
+                    <Route path="admin/revenue" element={<Navigate to="/admin/dashboard" replace />} />
+                    <Route path="admin/revenue/income-statement" element={<Navigate to="/admin/income-statement" replace />} />
+                    <Route path="admin/revenue/revenue-expenses" element={<Navigate to="/admin/revenue-expenses" replace />} />
+                    <Route path="admin/system-wallet/balance" element={<Navigate to="/admin/system-wallets" replace />} />
+                    <Route path="admin/withdrawals/transactions" element={<Navigate to="/admin/withdrawals" replace />} />
+                    <Route path="admin/sweeps/transactions" element={<Navigate to="/admin/sweeps" replace />} />
+                    <Route path="admin/system-ledger/system" element={<Navigate to="/admin/system-ledger" replace />} />
+                    <Route path="admin/system-ledger/user" element={<Navigate to="/admin/user-ledger" replace />} />
+                    <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
                   </>
                 ) : (
                   <>
