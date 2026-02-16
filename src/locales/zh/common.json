@@ -891,6 +891,26 @@
       "disable2FAWarning": "此操作将禁用该用户的双因素认证。用户需要重新设置。",
       "registeredDate": "注册日期"
     },
+    "merchants": {
+      "title": "商户",
+      "description": "管理商户账户和状态",
+      "name": "名称",
+      "email": "邮箱",
+      "commission": "佣金",
+      "webhook": "Webhook",
+      "noMerchants": "未找到商户",
+      "loadError": "加载商户失败",
+      "activate": "激活",
+      "suspend": "暂停",
+      "activateTitle": "激活商户",
+      "suspendTitle": "暂停商户",
+      "activateConfirm": "确定要激活此商户吗？",
+      "suspendConfirm": "确定要暂停此商户吗？商户将无法使用相关功能。",
+      "activateSuccess": "商户激活成功",
+      "suspendSuccess": "商户暂停成功",
+      "actionError": "操作失败，请重试。",
+      "noActions": "无可用操作"
+    },
     "settings": {
       "systemSettings": "系统设置",
       "title": "系统设置",

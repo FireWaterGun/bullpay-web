@@ -858,6 +858,26 @@
       "disable2FAWarning": "This will disable two-factor authentication for this user. They will need to set it up again.",
       "registeredDate": "Registered Date"
     },
+    "merchants": {
+      "title": "Merchants",
+      "description": "Manage merchant accounts and status",
+      "name": "Name",
+      "email": "Email",
+      "commission": "Commission",
+      "webhook": "Webhook",
+      "noMerchants": "No merchants found",
+      "loadError": "Failed to load merchants",
+      "activate": "Activate",
+      "suspend": "Suspend",
+      "activateTitle": "Activate Merchant",
+      "suspendTitle": "Suspend Merchant",
+      "activateConfirm": "Are you sure you want to activate this merchant?",
+      "suspendConfirm": "Are you sure you want to suspend this merchant? They will lose access to merchant features.",
+      "activateSuccess": "Merchant activated successfully",
+      "suspendSuccess": "Merchant suspended successfully",
+      "actionError": "Action failed. Please try again.",
+      "noActions": "No actions available"
+    },
     "settings": {
       "systemSettings": "System Settings",
       "title": "System Settings",
