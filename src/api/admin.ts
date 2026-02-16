@@ -1476,6 +1476,76 @@ export async function getIncomeStatement(
   return response?.data || response
 }
 
+// ── Merchants ──────────────────────────────────────────
+
+/**
+ * List merchants with filters (Admin only)
+ */
+export async function getMerchants(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/merchants${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || data?.merchants || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.currentPage || meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Activate a merchant (Admin only)
+ * @param token - Auth token
+ * @param id - Merchant ID
+ */
+export async function activateMerchant(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/merchants/${id}/activate`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * Suspend a merchant (Admin only)
+ * @param token - Auth token
+ * @param id - Merchant ID
+ */
+export async function suspendMerchant(token: string, id: number) {
+  const response = await apiFetch(`/api/v1/admin/merchants/${id}/suspend`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
 // ── User Management ──────────────────────────────────────────
 
 /**

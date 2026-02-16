@@ -56,6 +56,7 @@ import WithdrawalPolicy from '../admin/WithdrawalPolicy'
 import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
 import WithdrawalAddresses from '../withdrawals/WithdrawalAddresses'
 import UserList from '../admin/UserList'
+import MerchantList from '../admin/MerchantList'
 import AdminSettings from '../admin/AdminSettings'
 import LedgerTransactions from '../ledger/LedgerTransactions'
 import SystemLedgerList from '../ledger/SystemLedgerList'
@@ -964,6 +965,7 @@ export default function DashboardLayout() {
                     <Route path="admin/wallet-gas-topups" element={<GasTopups />} />
                     <Route path="admin/wallet-gas-topups/:id" element={<GasTopupDetail />} />
                     <Route path="admin/users" element={<UserList />} />
+                    <Route path="admin/merchants" element={<MerchantList />} />
                     <Route path="admin/settings" element={<AdminSettings />} />
                     <Route path="admin/coins" element={<CoinList />} />
                     <Route path="admin/coins/create" element={<CoinForm />} />
