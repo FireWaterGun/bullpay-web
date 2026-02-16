@@ -57,6 +57,7 @@ import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
 import WithdrawalAddresses from '../withdrawals/WithdrawalAddresses'
 import UserList from '../admin/UserList'
 import MerchantList from '../admin/MerchantList'
+import MerchantSettings from '../merchant/MerchantSettings'
 import AdminSettings from '../admin/AdminSettings'
 import LedgerTransactions from '../ledger/LedgerTransactions'
 import SystemLedgerList from '../ledger/SystemLedgerList'
@@ -717,6 +718,7 @@ export default function DashboardLayout() {
                     <SubItem to="/invoices/create" end={true} label={t('nav.create')} />
                   </MenuGroup>
                 )}
+                <MenuItem to="/merchant" icon="bx-store" label={t('nav.merchant', { defaultValue: 'Merchant' })} />
                 <MenuItem to="/settings" icon="bx-cog" label={t('nav.settings')} />
               </>
             )}
@@ -1017,6 +1019,7 @@ export default function DashboardLayout() {
                     <Route path="invoices/:id" element={<InvoiceDetail />} />
                     <Route path="invoices/:id/pay" element={<InvoicePayment />} />
                     <Route path="settings" element={<Settings />} />
+                    <Route path="merchant" element={<MerchantSettings />} />
                     <Route path="wallets" element={<Navigate to="/wallet/withdrawals" replace />} />
                     <Route path="wallets/create" element={<WalletCreate />} />
                     <Route path="wallets/:id/edit" element={<WalletEdit />} />
