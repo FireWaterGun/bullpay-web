@@ -103,9 +103,9 @@ export default function MyLedgerDetail() {
   }
 
   function stateBadge(state) {
-    if (state === 'settled') return <span className="badge bg-label-success">{t('userLedger.settled', { defaultValue: 'Settled' })}</span>
-    if (state === 'committed') return <span className="badge bg-label-warning">{t('userLedger.committed', { defaultValue: 'Committed' })}</span>
-    if (state === 'reversed') return <span className="badge bg-label-danger">{t('userLedger.reversed', { defaultValue: 'Reversed' })}</span>
+    if (state === 'settled') return <span className="badge bg-label-secondary">{t('userLedger.settled', { defaultValue: 'Settled' })}</span>
+    if (state === 'committed') return <span className="badge bg-label-secondary">{t('userLedger.committed', { defaultValue: 'Committed' })}</span>
+    if (state === 'reversed') return <span className="badge bg-label-secondary">{t('userLedger.reversed', { defaultValue: 'Reversed' })}</span>
     return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
   }
 
