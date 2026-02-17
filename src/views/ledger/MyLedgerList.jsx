@@ -205,11 +205,11 @@ export default function MyLedgerList() {
     return '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   }
 
-  function stateBadge(state) {
-    if (state === 'settled') return <span className="badge bg-label-secondary">{t('userLedger.settled', { defaultValue: 'Settled' })}</span>
-    if (state === 'committed') return <span className="badge bg-label-secondary">{t('userLedger.committed', { defaultValue: 'Committed' })}</span>
-    if (state === 'reversed') return <span className="badge bg-label-secondary">{t('userLedger.reversed', { defaultValue: 'Reversed' })}</span>
-    return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
+  function stateText(state) {
+    if (state === 'settled') return t('userLedger.settled', { defaultValue: 'Settled' })
+    if (state === 'committed') return t('userLedger.committed', { defaultValue: 'Committed' })
+    if (state === 'reversed') return t('userLedger.reversed', { defaultValue: 'Reversed' })
+    return state || 'N/A'
   }
 
   if (loading && entries.length === 0) {
@@ -353,7 +353,7 @@ export default function MyLedgerList() {
                                 <span className="text-muted">-</span>
                               )}
                             </td>
-                            <td>{stateBadge(entry.state)}</td>
+                            <td>{stateText(entry.state)}</td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
                               <span className="fw-medium">
                                 {isCredit ? '+' : '-'}{formatAmount(entry.amount)}

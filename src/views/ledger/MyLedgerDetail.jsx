@@ -102,11 +102,11 @@ export default function MyLedgerDetail() {
     return '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   }
 
-  function stateBadge(state) {
-    if (state === 'settled') return <span className="badge bg-label-secondary">{t('userLedger.settled', { defaultValue: 'Settled' })}</span>
-    if (state === 'committed') return <span className="badge bg-label-secondary">{t('userLedger.committed', { defaultValue: 'Committed' })}</span>
-    if (state === 'reversed') return <span className="badge bg-label-secondary">{t('userLedger.reversed', { defaultValue: 'Reversed' })}</span>
-    return <span className="badge bg-label-secondary">{state || 'N/A'}</span>
+  function stateText(state) {
+    if (state === 'settled') return t('userLedger.settled', { defaultValue: 'Settled' })
+    if (state === 'committed') return t('userLedger.committed', { defaultValue: 'Committed' })
+    if (state === 'reversed') return t('userLedger.reversed', { defaultValue: 'Reversed' })
+    return state || 'N/A'
   }
 
   function copyToClipboard(text) {
@@ -173,7 +173,7 @@ export default function MyLedgerDetail() {
                           {ENTRY_CODE_LABELS[entry.entryCode] || entry.entryCode}
                         </span>
                       )}
-                      {stateBadge(entry.state)}
+                      {stateText(entry.state)}
                     </div>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ export default function MyLedgerDetail() {
                       )}
                       <tr>
                         <td className="text-muted">{t('userLedger.state', { defaultValue: 'State' })}</td>
-                        <td>{stateBadge(entry.state)}</td>
+                        <td>{stateText(entry.state)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('userLedger.amount', { defaultValue: 'Amount' })}</td>
