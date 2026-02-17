@@ -97,7 +97,7 @@ export default function MyLedgerList() {
   const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
   const initEntryCode = searchParams.get('entryCode') || ''
   const initState = searchParams.get('state') || ''
-  const initDatePreset = searchParams.get('datePreset') || ''
+  const initDatePreset = searchParams.get('datePreset') || 'last7'
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [loading, setLoading] = useState(false)
@@ -117,12 +117,10 @@ export default function MyLedgerList() {
     if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
     if (initEntryCode) f.entryCode = initEntryCode
     if (initState) f.state = initState
-    if (initDatePreset) {
-      f.datePreset = initDatePreset
-      const range = getDateRange(initDatePreset)
-      if (range.startDate) f.startDate = range.startDate
-      if (range.endDate) f.endDate = range.endDate
-    }
+    f.datePreset = initDatePreset
+    const range = getDateRange(initDatePreset)
+    if (range.startDate) f.startDate = range.startDate
+    if (range.endDate) f.endDate = range.endDate
     return f
   })
 
