@@ -11,7 +11,8 @@
     "networks": "เครือข่าย",
     "supportedCrypto": "คริปโตที่รองรับ",
     "coinNetworks": "เหรียญและเครือข่าย",
-    "merchant": "Merchant"
+    "merchant": "Merchant",
+    "ledger": "บัญชีแยกประเภท"
   },
   "user": {
     "billing": "การเรียกเก็บเงิน",
@@ -1314,5 +1315,41 @@
     "created": "วันที่สร้าง",
     "confirmed": "ยืนยันแล้ว",
     "expires": "หมดอายุ"
+  },
+  "userLedger": {
+    "title": "บัญชีแยกประเภท",
+    "description": "ดูรายการบัญชีและประวัติธุรกรรมของคุณ",
+    "loadError": "ไม่สามารถโหลดรายการบัญชีได้",
+    "noEntries": "ไม่พบรายการบัญชี",
+    "entryDetail": "รายละเอียดรายการ",
+    "notFound": "ไม่พบรายการบัญชี",
+    "type": "ประเภท",
+    "coin": "เหรียญ",
+    "code": "รหัส",
+    "state": "สถานะ",
+    "amount": "จำนวน",
+    "txHash": "แฮชธุรกรรม",
+    "createdAt": "วันที่สร้าง",
+    "credit": "เครดิต",
+    "debit": "เดบิต",
+    "settled": "ชำระแล้ว",
+    "committed": "บันทึกแล้ว",
+    "reversed": "ย้อนกลับ",
+    "details": "รายละเอียด",
+    "transaction": "ธุรกรรม",
+    "timestamps": "เวลา",
+    "usdRate": "อัตรา USD",
+    "viewExplorer": "ดูบน Explorer",
+    "committedAt": "บันทึกเมื่อ",
+    "settledAt": "ชำระเมื่อ",
+    "reversedAt": "ย้อนกลับเมื่อ",
+    "updatedAt": "อัพเดตเมื่อ",
+    "code.DP": "ฝากเงิน",
+    "code.WA": "จำนวนถอน",
+    "code.WF": "ค่าธรรมเนียมถอน",
+    "code.WR": "ย้อนกลับการถอน",
+    "code.FR": "รายได้ค่าธรรมเนียม",
+    "code.XI": "โอนเข้าภายใน",
+    "code.XO": "โอนออกภายใน"
   }
 }

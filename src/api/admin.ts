@@ -1627,9 +1627,8 @@ export async function changeUserStatus(token: string, id: number, status: string
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body,
   })
   return response?.data || response
 }
@@ -1642,9 +1641,8 @@ export async function changeUserRole(token: string, id: number, role: string) {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ role }),
+    body: { role },
   })
   return response?.data || response
 }
@@ -1657,9 +1655,8 @@ export async function resetUserPassword(token: string, id: number, newPassword: 
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ newPassword }),
+    body: { newPassword },
   })
   return response?.data || response
 }

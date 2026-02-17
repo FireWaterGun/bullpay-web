@@ -11,7 +11,8 @@
     "networks": "网络",
     "supportedCrypto": "支持的加密货币",
     "coinNetworks": "代币网络",
-    "merchant": "商户"
+    "merchant": "商户",
+    "ledger": "账本"
   },
   "user": {
     "billing": "账单",
@@ -1287,5 +1288,41 @@
     "created": "创建时间",
     "confirmed": "确认时间",
     "expires": "过期时间"
+  },
+  "userLedger": {
+    "title": "我的账本",
+    "description": "查看您的账本记录和交易历史",
+    "loadError": "无法加载账本记录",
+    "noEntries": "未找到账本记录",
+    "entryDetail": "账本记录",
+    "notFound": "未找到账本记录",
+    "type": "类型",
+    "coin": "币种",
+    "code": "代码",
+    "state": "状态",
+    "amount": "金额",
+    "txHash": "交易哈希",
+    "createdAt": "创建时间",
+    "credit": "贷方",
+    "debit": "借方",
+    "settled": "已结算",
+    "committed": "已提交",
+    "reversed": "已撤销",
+    "details": "详情",
+    "transaction": "交易",
+    "timestamps": "时间戳",
+    "usdRate": "USD 汇率",
+    "viewExplorer": "在浏览器查看",
+    "committedAt": "提交时间",
+    "settledAt": "结算时间",
+    "reversedAt": "撤销时间",
+    "updatedAt": "更新时间",
+    "code.DP": "充值",
+    "code.WA": "提款金额",
+    "code.WF": "提款费用",
+    "code.WR": "提款撤销",
+    "code.FR": "费用收入",
+    "code.XI": "内部转入",
+    "code.XO": "内部转出"
   }
 }

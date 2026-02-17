@@ -71,6 +71,8 @@ import AdminPaymentDetail from '../admin/AdminPaymentDetail'
 import PlatformLedgerList from '../ledger/PlatformLedgerList'
 import PlatformLedgerDetail from '../ledger/PlatformLedgerDetail'
 import IncomeStatement from '../ledger/IncomeStatement'
+import MyLedgerList from '../ledger/MyLedgerList'
+import MyLedgerDetail from '../ledger/MyLedgerDetail'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
 
@@ -718,6 +720,7 @@ export default function DashboardLayout() {
                     <SubItem to="/invoices/create" end={true} label={t('nav.create')} />
                   </MenuGroup>
                 )}
+                <MenuItem to="/ledger" icon="bx-book-content" label={t('nav.ledger', { defaultValue: 'Ledger' })} />
                 <MenuItem to="/merchant" icon="bx-store" label={t('nav.merchant', { defaultValue: 'Merchant' })} />
                 <MenuItem to="/settings" icon="bx-cog" label={t('nav.settings')} />
               </>
@@ -1020,6 +1023,8 @@ export default function DashboardLayout() {
                     <Route path="invoices/:id/pay" element={<InvoicePayment />} />
                     <Route path="settings" element={<Settings />} />
                     <Route path="merchant" element={<MerchantSettings />} />
+                    <Route path="ledger" element={<MyLedgerList />} />
+                    <Route path="ledger/:id" element={<MyLedgerDetail />} />
                     <Route path="wallets" element={<Navigate to="/wallet/withdrawals" replace />} />
                     <Route path="wallets/create" element={<WalletCreate />} />
                     <Route path="wallets/:id/edit" element={<WalletEdit />} />

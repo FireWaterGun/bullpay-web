@@ -11,7 +11,8 @@
     "networks": "Networks",
     "supportedCrypto": "Supported Crypto",
     "coinNetworks": "Coin Networks",
-    "merchant": "Merchant"
+    "merchant": "Merchant",
+    "ledger": "Ledger"
   },
   "user": {
     "billing": "Billing",
@@ -1253,5 +1254,41 @@
     "created": "Created",
     "confirmed": "Confirmed",
     "expires": "Expires"
+  },
+  "userLedger": {
+    "title": "My Ledger",
+    "description": "View your ledger entries and transaction history",
+    "loadError": "Failed to load ledger entries",
+    "noEntries": "No ledger entries found",
+    "entryDetail": "Ledger Entry",
+    "notFound": "Ledger entry not found",
+    "type": "Type",
+    "coin": "Coin",
+    "code": "Code",
+    "state": "State",
+    "amount": "Amount",
+    "txHash": "Tx Hash",
+    "createdAt": "Created",
+    "credit": "Credit",
+    "debit": "Debit",
+    "settled": "Settled",
+    "committed": "Committed",
+    "reversed": "Reversed",
+    "details": "Details",
+    "transaction": "Transaction",
+    "timestamps": "Timestamps",
+    "usdRate": "USD Rate",
+    "viewExplorer": "View on Explorer",
+    "committedAt": "Committed",
+    "settledAt": "Settled",
+    "reversedAt": "Reversed",
+    "updatedAt": "Updated",
+    "code.DP": "Deposit",
+    "code.WA": "Withdrawal Amount",
+    "code.WF": "Withdrawal Fee",
+    "code.WR": "Withdrawal Reversal",
+    "code.FR": "Fee Revenue",
+    "code.XI": "Internal Transfer In",
+    "code.XO": "Internal Transfer Out"
   }
 }
