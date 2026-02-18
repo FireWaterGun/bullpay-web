@@ -455,10 +455,7 @@ export default function UserTransactionsDashboard() {
     const withdrawal = byCoinData.reduce((sum, item) => sum + parseFloat(item.withdrawalUsd || 0), 0)
     const fee = byCoinData.reduce((sum, item) => sum + parseFloat(item.feeUsd || 0), 0)
     const netFlow = byCoinData.reduce((sum, item) => {
-      const api = item.netFlowUsd != null ? parseFloat(item.netFlowUsd) : 0
-      const d = parseFloat(item.depositUsd || 0)
-      const w = parseFloat(item.withdrawalUsd || 0)
-      return sum + (api !== 0 ? api : d - w)
+      return sum + parseFloat(item.netFlowUsd || 0)
     }, 0)
     return { deposit, withdrawal, fee, netFlow }
   }, [byCoinData])
@@ -650,8 +647,7 @@ export default function UserTransactionsDashboard() {
                             const deposit = parseFloat(item.depositUsd || 0)
                             const withdrawal = parseFloat(item.withdrawalUsd || 0)
                             const fee = parseFloat(item.feeUsd || 0)
-                            const apiNetFlow = item.netFlowUsd != null ? parseFloat(item.netFlowUsd) : 0
-                            const netFlow = apiNetFlow !== 0 ? apiNetFlow : (deposit - withdrawal)
+                            const netFlow = parseFloat(item.netFlowUsd || 0)
 
                             return (
                               <tr key={index}>
