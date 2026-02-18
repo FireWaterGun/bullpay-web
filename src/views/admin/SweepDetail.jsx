@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getSweepById } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { formatUsd } from '../../utils/format'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '')
@@ -132,14 +133,6 @@ export default function SweepDetail() {
     }
   }
 
-  function formatUsd(val) {
-    if (!val && val !== 0) return '$0.00'
-    const num = parseFloat(val)
-    if (Math.abs(num) < 0.01 && num !== 0) {
-      return '$' + num.toFixed(8).replace(/0+$/, '').replace(/\.$/, '.00')
-    }
-    return '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
 
   function statusBadgeClass(s) {
     const v = String(s || '').toUpperCase()

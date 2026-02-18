@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '../../api/admin'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
+import { formatUsdAuto, formatPercent as formatPercentShared, formatChange } from '../../utils/format'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -105,29 +106,8 @@ function CoinImg({ symbol, networkSymbol, networkName, size = 24 }) {
   )
 }
 
-function formatCurrency(value, decimals) {
-  if (value === null || value === undefined) return '$0.00'
-  const num = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(num)) return '$0.00'
-  // Auto-detect decimals: use more decimals for small values
-  if (decimals === undefined) {
-    const abs = Math.abs(num)
-    if (abs === 0) decimals = 2
-    else if (abs < 0.01) decimals = 8
-    else if (abs < 1) decimals = 4
-    else decimals = 2
-  }
-  const prefix = num < 0 ? '-$' : '$'
-  const minD = Math.min(2, decimals)
-  return prefix + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: minD, maximumFractionDigits: Math.max(minD, decimals) })
-}
-
-function formatPercent(value, decimals = 1) {
-  if (value === null || value === undefined) return '0%'
-  const num = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(num)) return '0%'
-  return num.toFixed(decimals) + '%'
-}
+const formatCurrency = formatUsdAuto
+const formatPercent = formatPercentShared
 
 function getDateRange(preset) {
   const now = new Date()
@@ -189,7 +169,7 @@ function SummaryCard({ title, value, change, changeLabel, icon, color = 'primary
                 {change !== undefined && change !== null && (
                   <small className={changeColor}>
                     <i className={`bx ${changeIcon}`}></i>
-                    {isPositive ? '+' : ''}{typeof change === 'number' ? change.toFixed(1) : change}{changeLabel || '%'}
+                    {typeof change === 'number' ? formatChange(change) : change}{changeLabel && changeLabel !== '%' ? changeLabel : ''}
                   </small>
                 )}
               </div>

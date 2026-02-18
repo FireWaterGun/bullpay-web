@@ -7,6 +7,7 @@ import { useUserInvoiceEvents, useSystemNotifications } from '../../hooks/useInv
 import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
 import { getPaymentStats, getSystemWalletStats, getWithdrawals } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { formatUsd } from '../../utils/format'
 import { getBalancesWithFiat } from '../../api/balance.ts'
 import {
   getNotifications,
@@ -314,7 +315,7 @@ export default function DashboardLayout() {
       
       setFiatBalance({
         currency: stats?.fiat?.currency || 'USD',
-        amount: totalUSD.toFixed(2)
+        amount: totalUSD === 0 ? '0' : totalUSD.toFixed(2)
       })
     } catch (error) {
       console.error('Failed to load system wallet stats:', error)
@@ -745,7 +746,7 @@ export default function DashboardLayout() {
                   <div className="nav-link d-flex align-items-center" style={{ cursor: 'default' }}>
                     <i className="bx bxs-wallet-alt me-2 text-primary" style={{ fontSize: '1.25rem' }}></i>
                     <span className="d-none d-md-inline" style={{ fontSize: '1.05rem' }}>
-                      ${parseFloat(fiatBalance.amount || 0).toFixed(2)}
+                      {formatUsd(fiatBalance.amount)}
                     </span>
                   </div>
                 </li>

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { listCoins } from "../../api/coins";
 import { getBalancesWithFiat } from "../../api/balance";
 import { MOCK_COINS, MOCK_BALANCE_DATA } from "./mockBalanceData";
+import { formatCoinAmount } from '../../utils/format'
 
 // Coin asset helpers (reuse logic similar to wallet list)
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -338,7 +339,7 @@ export default function Balance() {
                     <div className="d-flex align-items-center gap-5">
                       {Number.isFinite(usdVal) ? (
                         <div className="text-muted small me-2 me-md-3">
-                          {usdVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                          {formatCoinAmount(usdVal, 2)} USD
                         </div>
                       ) : null}
                       <div className="text-end me-2 me-md-3">

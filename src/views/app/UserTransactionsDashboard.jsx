@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '../../api/userTransactions.ts'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
+import { formatUsd as formatUsdShared, formatUsdSigned, formatChange } from '../../utils/format'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -55,20 +56,8 @@ function CoinImg({ symbol, networkSymbol, networkName, size = 24 }) {
   )
 }
 
-function formatCurrency(value) {
-  if (value === null || value === undefined) return '$0.00'
-  const num = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(num)) return '$0.00'
-  const prefix = num < 0 ? '-$' : num > 0 ? '+$' : '$'
-  return prefix + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
-
-function formatCurrencyPlain(value) {
-  if (value === null || value === undefined) return '$0.00'
-  const num = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(num)) return '$0.00'
-  return '$' + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
+const formatCurrency = formatUsdSigned
+const formatCurrencyPlain = formatUsdShared
 
 function getDateRange(preset) {
   const now = new Date()
@@ -118,7 +107,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
               {change !== undefined && change !== null && !isNaN(numChange) && (
                 <small className={changeColor} style={{ fontSize: '0.8rem' }}>
                   <i className={`bx ${changeIcon}`}></i>
-                  {isPositive ? '+' : ''}{numChange.toFixed(1)}% {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
+                  {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
                 </small>
               )}
             </div>

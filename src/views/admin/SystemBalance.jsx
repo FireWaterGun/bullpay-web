@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getSystemWalletStats } from '../../api/admin.ts'
-import { formatAmount } from '../../utils/format'
+import { formatAmount, formatUsd, formatCoinAmount } from '../../utils/format'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 
 // Coin asset helpers
@@ -232,7 +232,7 @@ export default function SystemBalance() {
                     const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
                     return sum + usdValue
                   }, 0)
-                  return totalUSD.toLocaleString(undefined, {
+                  return totalUSD === 0 ? '0' : totalUSD.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                   })
@@ -367,10 +367,7 @@ export default function SystemBalance() {
                                 return (
                                   <>
                                     <span className="fw-medium" title={`Raw: ${wallet.confirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
-                                      {parseFloat(val).toLocaleString(undefined, {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 8
-                                      })}
+                                      {formatCoinAmount(val)}
                                     </span>
                                     <small className="text-muted ms-1">{coinSymbol}</small>
                                   </>
@@ -383,10 +380,7 @@ export default function SystemBalance() {
                                 return (
                                   <>
                                     <span className="fw-medium" title={`Raw: ${wallet.unconfirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
-                                      {parseFloat(val).toLocaleString(undefined, {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 8
-                                      })}
+                                      {formatCoinAmount(val)}
                                     </span>
                                     <small className="text-muted ms-1">{coinSymbol}</small>
                                   </>
@@ -395,19 +389,13 @@ export default function SystemBalance() {
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
                               <span className="fw-medium" title={`Raw: ${wallet.totalBalanceRaw || '0'}\nDecimals: ${decimals}`}>
-                                {parseFloat(decimalBalance).toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 8
-                                })}
+                                {formatCoinAmount(decimalBalance)}
                               </span>
                               <small className="text-muted ms-1">{coinSymbol}</small>
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
                               <span className="fw-medium">
-                                ${usdValue.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2
-                                })}
+                                {formatUsd(usdValue)}
                               </span>
                             </td>
                             <td className="text-center">

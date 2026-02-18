@@ -9,6 +9,7 @@ import {
   regenerateKey,
   updateWebhook,
 } from '../../api/merchant.ts'
+import { formatCommission } from '../../utils/format'
 
 function statusBadgeClass(status) {
   const s = String(status || '').toLowerCase()
@@ -428,7 +429,7 @@ export default function MerchantSettings() {
                 <li className="d-flex align-items-center mb-3">
                   <i className="bx bx-trending-up text-muted me-2"></i>
                   <span className="fw-medium me-1">{t('merchant.commissionRate', { defaultValue: 'Commission' })}:</span>
-                  <span>{merchant?.commissionRate ? `${(parseFloat(merchant.commissionRate) * 100).toFixed(2)}%` : '-'}</span>
+                  <span>{merchant?.commissionRate ? formatCommission(merchant.commissionRate) : '-'}</span>
                 </li>
                 <li className="d-flex align-items-center mb-3">
                   <i className="bx bx-calendar text-muted me-2"></i>

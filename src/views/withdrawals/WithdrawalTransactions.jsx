@@ -6,6 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getWithdrawals, approveWithdrawal, rejectWithdrawal } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
+import { formatUsd } from '../../utils/format'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -441,7 +442,7 @@ export default function WithdrawalTransactions() {
                         </td>
                         <td className="text-end text-nowrap">
                           {withdrawal.amountUsd ? (
-                            <span className="fw-medium">${Number(withdrawal.amountUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="fw-medium">{formatUsd(withdrawal.amountUsd)}</span>
                           ) : (
                             <span className="text-muted">-</span>
                           )}

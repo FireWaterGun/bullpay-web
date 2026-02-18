@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getPaymentStats } from '../../api/admin.ts'
+import { formatUsd, formatCoinAmount } from '../../utils/format'
 
 export default function Dashboard() {
   const { t } = useTranslation()
@@ -270,17 +271,11 @@ export default function Dashboard() {
                                 </td>
                                 <td className="text-end">
                                   <span className="fw-medium">
-                                    {parseFloat(totalVolume).toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 8
-                                    })}
+                                    {formatCoinAmount(totalVolume)}
                                   </span>
                                 </td>
                                 <td className="text-end text-muted">
-                                  {parseFloat(avgAmount).toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 8
-                                  })}
+                                  {formatCoinAmount(avgAmount)}
                                 </td>
                               </tr>
                             )
@@ -323,10 +318,7 @@ export default function Dashboard() {
                             </div>
                             <div className="text-end">
                               <div className="fw-medium">
-                                ${parseFloat(user.totalAmountUsd || user.totalAmount || 0).toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2
-                                })}
+                                {formatUsd(user.totalAmountUsd || user.totalAmount || 0)}
                               </div>
                             </div>
                           </div>
@@ -437,10 +429,7 @@ export default function Dashboard() {
                                     <span style={{ width: '40%', color: isToday ? 'rgba(255,255,255,0.95)' : '#384551' }}>{currency}</span>
                                     <span style={{ width: '25%', textAlign: 'center', color: isToday ? 'rgba(255,255,255,0.8)' : '#566a7f' }}>{data.count}</span>
                                     <span style={{ width: '35%', textAlign: 'right', fontWeight: 500 }}>
-                                      {parseFloat(data.volume).toLocaleString(undefined, {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 4
-                                      })}
+                                      {formatCoinAmount(data.volume, 4)}
                                     </span>
                                   </div>
                                 ))}

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getIncomeStatement } from '../../api/admin.ts'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
+import { formatUsdAuto as formatUsd, formatPercent } from '../../utils/format'
 
 function getDateRange(preset) {
   const now = new Date()
@@ -106,25 +107,6 @@ export default function IncomeStatement() {
     }
   }
 
-  function formatUsd(val) {
-    if (val === null || val === undefined) return '$0.00'
-    const num = typeof val === 'string' ? parseFloat(val) : val
-    if (isNaN(num)) return '$0.00'
-    let decimals
-    const abs = Math.abs(num)
-    if (abs === 0) decimals = 2
-    else if (abs < 0.01) decimals = 8
-    else if (abs < 1) decimals = 4
-    else decimals = 2
-    const prefix = num < 0 ? '-$' : '$'
-    const minD = Math.min(2, decimals)
-    return prefix + Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: minD, maximumFractionDigits: Math.max(minD, decimals) })
-  }
-
-  function formatPercent(val) {
-    if (!val && val !== 0) return '0.00%'
-    return parseFloat(val).toFixed(2) + '%'
-  }
 
   // Extract report data safely (matches actual API response structure)
   const revenue = report?.revenue || {}

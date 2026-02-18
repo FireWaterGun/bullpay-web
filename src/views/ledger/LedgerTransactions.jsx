@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getLedgerEntries } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { formatCoinAmount } from '../../utils/format'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -312,19 +313,13 @@ export default function LedgerTransactions() {
                           <td style={{ whiteSpace: 'nowrap' }}>
                             <span>
                               {(entry.type === 'deposit' || entry.type === 'payment_received' || entry.type === 'conversion_in') ? '+' : '-'}
-                              {parseFloat(entry.amountDecimal || entry.amount || 0).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 8
-                              })}
+                              {formatCoinAmount(entry.amountDecimal || entry.amount || 0)}
                               {' '}{entry.coinNetwork?.coin?.symbol || ''}
                             </span>
                           </td>
                           <td style={{ whiteSpace: 'nowrap' }}>
                             <span>
-                              {entry.balanceDecimal ? parseFloat(entry.balanceDecimal).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 8
-                              }) : '-'}
+                              {entry.balanceDecimal ? formatCoinAmount(entry.balanceDecimal) : '-'}
                               {entry.balanceDecimal && entry.coinNetwork?.coin?.symbol ? ` ${entry.coinNetwork.coin.symbol}` : ''}
                             </span>
                           </td>

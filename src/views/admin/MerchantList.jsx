@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getMerchants, activateMerchant, suspendMerchant } from '../../api/admin.ts'
+import { formatCommission } from '../../utils/format'
 
 const STATUS_OPTIONS = ['active', 'suspended', 'pending']
 
@@ -249,10 +250,7 @@ export default function MerchantList() {
                               </span>
                             </td>
                             <td className="text-end text-nowrap">
-                              {merchant.commissionRate
-                                ? `${(parseFloat(merchant.commissionRate) * 100).toFixed(2)}%`
-                                : '-'
-                              }
+                              {merchant.commissionRate ? formatCommission(merchant.commissionRate) : '-'}
                             </td>
                             <td className="text-center">
                               {merchant.hasWebhook ? (

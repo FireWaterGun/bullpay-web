@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getUserLedgerEntry } from '../../api/admin.ts'
+import { formatUsd } from '../../utils/format'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
   const sym = String(symbol || '')
@@ -129,14 +130,6 @@ export default function UserLedgerDetail() {
     return str || '0'
   }
 
-  function formatUsd(val) {
-    if (!val && val !== 0) return '$0.00'
-    const num = parseFloat(val)
-    if (Math.abs(num) < 0.01 && num !== 0) {
-      return '$' + num.toFixed(8).replace(/0+$/, '').replace(/\.$/, '.00')
-    }
-    return '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
 
   function stateBadge(state) {
     if (state === 'settled') return <span>Settled</span>

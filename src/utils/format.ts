@@ -10,6 +10,136 @@ export function trimTrailingZerosDecimal(input: string): string {
   return s
 }
 
+// ---------------------------------------------------------------------------
+// Currency / number formatters
+// ---------------------------------------------------------------------------
+
+/** Strip trailing zeros from a formatted number string: "1,234.50" → "1,234.5", "100.00" → "100" */
+function trimNum(s: string): string {
+  if (!s.includes('.')) return s
+  return s.replace(/(\.[0-9]*?[1-9])0+$/, '$1').replace(/\.0+$/, '')
+}
+
+/**
+ * Format a value as USD — plain (no sign prefix). Strips trailing zeros.
+ *   formatUsd(1234.5)   → "$1,234.5"
+ *   formatUsd(100)      → "$100"
+ *   formatUsd(0.00123)  → "$0.00123"
+ *   formatUsd(0)        → "$0"
+ */
+export function formatUsd(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return '$0'
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num) || num === 0) return '$0'
+
+  const abs = Math.abs(num)
+  if (abs < 0.01) {
+    return '$' + trimNum(abs.toFixed(8))
+  }
+  return '$' + trimNum(abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+}
+
+/**
+ * Format a value as USD with +/- sign prefix. Strips trailing zeros.
+ *   formatUsdSigned(100)  → "+$100"
+ *   formatUsdSigned(-50.5) → "-$50.5"
+ *   formatUsdSigned(0)    → "$0"
+ */
+export function formatUsdSigned(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return '$0'
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num) || num === 0) return '$0'
+
+  const prefix = num < 0 ? '-$' : '+$'
+  const abs = Math.abs(num)
+  return prefix + trimNum(abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+}
+
+/**
+ * Format a value as USD with auto-detect decimals for very small / large values.
+ * Used in Revenue Dashboard & Income Statement where precision matters.
+ *   formatUsdAuto(0.00045) → "$0.00045"
+ *   formatUsdAuto(0.5)     → "$0.5"
+ *   formatUsdAuto(-1234)   → "-$1,234"
+ */
+export function formatUsdAuto(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return '$0'
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num) || num === 0) return '$0'
+
+  const abs = Math.abs(num)
+  let decimals: number
+  if (abs < 0.01) decimals = 8
+  else if (abs < 1) decimals = 4
+  else decimals = 2
+
+  const prefix = num < 0 ? '-$' : '$'
+  const minD = Math.min(2, decimals)
+  return prefix + trimNum(abs.toLocaleString('en-US', {
+    minimumFractionDigits: minD,
+    maximumFractionDigits: Math.max(minD, decimals),
+  }))
+}
+
+/**
+ * Format a percentage value. Strips trailing zeros.
+ *   formatPercent(12.50)  → "12.5%"
+ *   formatPercent(0)      → "0%"
+ *   formatPercent(null)   → "0%"
+ */
+export function formatPercent(value: string | number | null | undefined, decimals: number = 2): string {
+  if (value === null || value === undefined) return '0%'
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num) || num === 0) return '0%'
+  return parseFloat(num.toFixed(decimals)) + '%'
+}
+
+/**
+ * Format a commission rate (0-1 range) as percentage. Strips trailing zeros.
+ *   formatCommission(0.015) → "1.5%"
+ *   formatCommission(0.01)  → "1%"
+ *   formatCommission(0)     → "0%"
+ */
+export function formatCommission(rate: string | number | null | undefined): string {
+  if (rate === null || rate === undefined) return '-'
+  const num = typeof rate === 'string' ? parseFloat(rate) : rate
+  if (!Number.isFinite(num) || num === 0) return '0%'
+  const pct = num * 100
+  return parseFloat(pct.toFixed(2)) + '%'
+}
+
+/**
+ * Format a coin/crypto amount for display. Strips trailing zeros. Zero shows as "0".
+ *   formatCoinAmount(1234.5)  → "1,234.5"
+ *   formatCoinAmount(100)     → "100"
+ *   formatCoinAmount(0)       → "0"
+ */
+export function formatCoinAmount(value: string | number | null | undefined, maxDecimals: number = 8): string {
+  if (value === null || value === undefined) return '0'
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num) || num === 0) return '0'
+  return trimNum(num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: maxDecimals }))
+}
+
+/**
+ * Format a change percentage for KPI cards. Strips trailing zeros.
+ *   formatChange(12.3)  → "+12.3%"
+ *   formatChange(-5)    → "-5%"
+ *   formatChange(0)     → "+0%"
+ */
+export function formatChange(value: string | number | null | undefined, decimals: number = 1): string {
+  if (value === null || value === undefined) return '+0%'
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num)) return '+0%'
+  const prefix = num >= 0 ? '+' : ''
+  if (num === 0) return '+0%'
+  return prefix + parseFloat(num.toFixed(decimals)) + '%'
+}
+
+// ---------------------------------------------------------------------------
+// Legacy / general formatters
+// ---------------------------------------------------------------------------
+
 export function formatAmount(value: string | number | null | undefined): string {
   if (value === null || value === undefined) return '-'
   let s = typeof value === 'number' ? value.toString() : String(value).trim()

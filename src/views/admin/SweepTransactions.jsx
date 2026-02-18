@@ -6,6 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getSweeps, forceSweep } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
+import { formatUsd } from '../../utils/format'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -460,7 +461,7 @@ export default function SweepTransactions() {
                           </td>
                           <td className="text-end text-nowrap">
                             {sweep.amountUsd ? (
-                              <span className="fw-medium">${Number(sweep.amountUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                              <span className="fw-medium">{formatUsd(sweep.amountUsd)}</span>
                             ) : (
                               <span className="text-muted">-</span>
                             )}

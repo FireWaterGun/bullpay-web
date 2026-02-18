@@ -6,6 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getSystemWallet, getSystemWalletLedger } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
+import { formatUsd } from '../../utils/format'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -230,14 +231,6 @@ export default function WalletTransaction() {
     return str || '0'
   }
 
-  function formatUsd(val) {
-    if (!val && val !== 0) return '$0.00'
-    const num = parseFloat(val)
-    if (Math.abs(num) < 0.01 && num !== 0) {
-      return '$' + num.toFixed(8).replace(/0+$/, '').replace(/\.$/, '.00')
-    }
-    return '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
 
   function parseMetadata(entry) {
     try {
