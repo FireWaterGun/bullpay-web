@@ -6,7 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getWithdrawals, approveWithdrawal, rejectWithdrawal } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
-import { formatUsd } from '../../utils/format'
+import { formatUsd, formatCoinAmount } from '../../utils/format'
 
 // Coin asset helpers
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -189,22 +189,11 @@ export default function WithdrawalTransactions() {
     }
   }
 
-  function formatAmount(amountRaw, decimals = 18, maxFrac = 8, keepTrailingZeros = false) {
-    if (!amountRaw) return keepTrailingZeros ? '0.' + '0'.repeat(maxFrac) : '0'
+  function formatAmount(amountRaw, decimals = 18) {
+    if (!amountRaw) return '0'
     try {
       const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
-      const num = Number(value)
-      if (!Number.isFinite(num)) return value
-      
-      // Limit decimal places
-      let result = num.toFixed(maxFrac)
-      
-      // Remove trailing zeros only if not explicitly keeping them
-      if (!keepTrailingZeros) {
-        result = result.replace(/\.?0+$/, '')
-      }
-      
-      return result
+      return formatCoinAmount(value)
     } catch (e) {
       return amountRaw.toString()
     }

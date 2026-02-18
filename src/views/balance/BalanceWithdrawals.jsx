@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { listCoins } from '../../api/coins'
 import { listWallets } from '../../api/wallets'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { formatCoinAmount } from '../../utils/format'
 import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
 
 function getCoinAssetCandidates(symbol, logoUrl) {
@@ -135,22 +136,11 @@ function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
   )
 }
 
-function formatAmount(amountRaw, decimals = 18, maxFrac = 4, keepTrailingZeros = false) {
-  if (!amountRaw) return keepTrailingZeros ? '0.0000' : '0'
+function formatAmount(amountRaw, decimals = 18) {
+  if (!amountRaw) return '0'
   try {
     const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
-    const num = Number(value)
-    if (!Number.isFinite(num)) return value
-    
-    // Limit decimal places
-    let result = num.toFixed(maxFrac)
-    
-    // Remove trailing zeros only if not explicitly keeping them
-    if (!keepTrailingZeros) {
-      result = result.replace(/\.?0+$/, '')
-    }
-    
-    return result
+    return formatCoinAmount(value)
   } catch (e) {
     return amountRaw.toString()
   }

@@ -270,7 +270,7 @@ function SimpleBarChart({ data, height = 300, locale = 'en-US', t }) {
                   whiteSpace: 'nowrap',
                 }}
               >
-                ${v.toLocaleString('en-US', { maximumFractionDigits: 8 })}
+                {formatUsdAuto(v)}
               </div>
             ))}
           </div>

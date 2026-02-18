@@ -232,11 +232,8 @@ export default function SystemBalance() {
                     const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
                     return sum + usdValue
                   }, 0)
-                  return totalUSD === 0 ? '0' : totalUSD.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })
-                })()} {stats?.fiat?.currency || 'USD'}
+                  return formatUsd(totalUSD)
+                })()}
               </div>
               <div className="mt-3">
                 <span className="badge bg-label-primary">

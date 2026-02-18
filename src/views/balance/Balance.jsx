@@ -136,10 +136,7 @@ function getNetworkLabel(n, coin) {
 }
 
 function fmtAmount(x) {
-  const n = Number(x);
-  if (!Number.isFinite(n)) return "0";
-  const s = n.toLocaleString(undefined, { maximumFractionDigits: 8 });
-  return s;
+  return formatCoinAmount(x)
 }
 
 export default function Balance() {

@@ -206,7 +206,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                   whiteSpace: 'nowrap',
                 }}
               >
-                ${v.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                {formatCurrencyPlain(v)}
               </div>
             ))}
           </div>
@@ -257,7 +257,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                       rx={2}
                       fill="#696cff"
                     >
-                      <title>Deposit: ${dep.toLocaleString('en-US', { maximumFractionDigits: 2 })}</title>
+                      <title>Deposit: {formatCurrencyPlain(dep)}</title>
                     </rect>
                     {/* Withdrawal bar */}
                     <rect
@@ -268,7 +268,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                       rx={2}
                       fill="url(#withdrawalPattern)"
                     >
-                      <title>Withdrawal: ${wth.toLocaleString('en-US', { maximumFractionDigits: 2 })}</title>
+                      <title>Withdrawal: {formatCurrencyPlain(wth)}</title>
                     </rect>
                   </g>
                 )
@@ -288,7 +288,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                 const cy = yPos(item.netFlow || 0)
                 return (
                   <circle key={i} cx={cx} cy={cy} r={3} fill="#03c3ec" stroke="#fff" strokeWidth="1.5">
-                    <title>Net Flow: ${(item.netFlow || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</title>
+                    <title>Net Flow: {formatCurrencyPlain(item.netFlow || 0)}</title>
                   </circle>
                 )
               })}
@@ -454,7 +454,12 @@ export default function UserTransactionsDashboard() {
     const deposit = byCoinData.reduce((sum, item) => sum + parseFloat(item.depositUsd || 0), 0)
     const withdrawal = byCoinData.reduce((sum, item) => sum + parseFloat(item.withdrawalUsd || 0), 0)
     const fee = byCoinData.reduce((sum, item) => sum + parseFloat(item.feeUsd || 0), 0)
-    const netFlow = byCoinData.reduce((sum, item) => sum + parseFloat(item.netFlowUsd || (parseFloat(item.depositUsd || 0) - parseFloat(item.withdrawalUsd || 0))), 0)
+    const netFlow = byCoinData.reduce((sum, item) => {
+      const api = item.netFlowUsd != null ? parseFloat(item.netFlowUsd) : 0
+      const d = parseFloat(item.depositUsd || 0)
+      const w = parseFloat(item.withdrawalUsd || 0)
+      return sum + (api !== 0 ? api : d - w)
+    }, 0)
     return { deposit, withdrawal, fee, netFlow }
   }, [byCoinData])
 
@@ -645,7 +650,8 @@ export default function UserTransactionsDashboard() {
                             const deposit = parseFloat(item.depositUsd || 0)
                             const withdrawal = parseFloat(item.withdrawalUsd || 0)
                             const fee = parseFloat(item.feeUsd || 0)
-                            const netFlow = parseFloat(item.netFlowUsd || 0) || (deposit - withdrawal)
+                            const apiNetFlow = item.netFlowUsd != null ? parseFloat(item.netFlowUsd) : 0
+                            const netFlow = apiNetFlow !== 0 ? apiNetFlow : (deposit - withdrawal)
 
                             return (
                               <tr key={index}>

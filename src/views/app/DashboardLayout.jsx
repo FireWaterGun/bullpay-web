@@ -256,7 +256,7 @@ export default function DashboardLayout() {
   const [theme, setTheme] = useState('light') // 'light' | 'dark' | 'system'
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
   const { user, logout, isAdmin, token, hasMenu, hasPermission, navigation } = useAuth()
-  const [fiatBalance, setFiatBalance] = useState({ currency: 'USD', amount: '0.00' })
+  const [fiatBalance, setFiatBalance] = useState({ currency: 'USD', amount: '0' })
 
   // Notifications state
   const [notifications, setNotifications] = useState([])
@@ -315,7 +315,7 @@ export default function DashboardLayout() {
       
       setFiatBalance({
         currency: stats?.fiat?.currency || 'USD',
-        amount: totalUSD === 0 ? '0' : totalUSD.toFixed(2)
+        amount: String(totalUSD)
       })
     } catch (error) {
       console.error('Failed to load system wallet stats:', error)
@@ -328,7 +328,7 @@ export default function DashboardLayout() {
       if (data?.fiat) {
         setFiatBalance({
           currency: data.fiat.currency || 'USD',
-          amount: data.fiat.amount || '0.00'
+          amount: data.fiat.amount || '0'
         })
       }
     } catch (error) {

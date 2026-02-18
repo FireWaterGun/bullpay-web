@@ -330,7 +330,7 @@ export default function UserLedgerDetail() {
                       <tr>
                         <td className="text-muted">USD Rate</td>
                         <td>
-                          {entry.usdRate ? `$${parseFloat(entry.usdRate).toLocaleString()}` : 'N/A'}
+                          {entry.usdRate ? formatUsd(entry.usdRate) : 'N/A'}
                           {entry.rateSource && <small className="text-muted ms-1">({entry.rateSource})</small>}
                         </td>
                       </tr>

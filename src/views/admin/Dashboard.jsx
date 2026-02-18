@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getPaymentStats } from '../../api/admin.ts'
-import { formatUsd, formatCoinAmount } from '../../utils/format'
+import { formatUsd, formatCoinAmount, formatPercent } from '../../utils/format'
 
 export default function Dashboard() {
   const { t } = useTranslation()
@@ -139,7 +139,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <h4 className="mb-1" style={{ fontWeight: 700, fontSize: '1.75rem' }}>
-                    {overview.successRate || 0}%
+                    {formatPercent(overview.successRate || 0)}
                   </h4>
                   <p className="text-muted mb-0" style={{ fontSize: '0.875rem', fontWeight: 500 }}>
                     {t('admin.dashboard.successRate', { defaultValue: 'Success Rate' })}
@@ -179,7 +179,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <h4 className="mb-1" style={{ fontWeight: 700, fontSize: '1.75rem' }}>
-                    ${overview.fiat?.amount || '0.00'}
+                    {formatUsd(overview.fiat?.amount || 0)}
                   </h4>
                   <p className="text-muted mb-0" style={{ fontSize: '0.875rem', fontWeight: 500 }}>
                     {t('admin.dashboard.fiatVolume', { defaultValue: 'Fiat Volume' })} ({overview.fiat?.currency || 'USD'})

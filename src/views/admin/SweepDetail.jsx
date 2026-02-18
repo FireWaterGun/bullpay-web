@@ -331,7 +331,7 @@ export default function SweepDetail() {
                         <tr>
                           <td className="text-muted">USD Rate</td>
                           <td>
-                            ${parseFloat(sweep.usdRate).toLocaleString()}
+                            {formatUsd(sweep.usdRate)}
                             {sweep.rateSource && <small className="text-muted ms-1">({sweep.rateSource})</small>}
                           </td>
                         </tr>

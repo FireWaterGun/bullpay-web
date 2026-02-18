@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getGasTopups } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { formatCoinAmount } from '../../utils/format'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 
 // Coin asset helpers
@@ -196,11 +197,7 @@ export default function GasTopups() {
     if (!amountRaw) return '0'
     try {
       const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
-      const num = Number(value)
-      if (!Number.isFinite(num)) return value
-      let result = num.toFixed(8)
-      result = result.replace(/\.?0+$/, '')
-      return result
+      return formatCoinAmount(value)
     } catch (e) {
       return amountRaw.toString()
     }

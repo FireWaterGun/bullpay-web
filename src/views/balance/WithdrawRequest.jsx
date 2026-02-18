@@ -9,22 +9,10 @@ import ConfirmModal from '../../components/ConfirmModal'
 import Verify2FAModal from '../../components/Verify2FAModal'
 import use2FAStatus from '../../hooks/use2FAStatus'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { formatCoinAmount } from '../../utils/format'
 
-function fmtAmount(x, maxFrac = 4) {
-  const n = Number(x)
-  if (!Number.isFinite(n)) return '0'
-
-  // Use toFixed to limit decimals precisely
-  let result = n.toFixed(maxFrac)
-
-  // Remove trailing zeros and unnecessary decimal point
-  result = result.replace(/\.?0+$/, '')
-
-  // Add thousands separator
-  const parts = result.split('.')
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-
-  return parts.join('.')
+function fmtAmount(x) {
+  return formatCoinAmount(x)
 }
 
 function fromRaw(rawValue, decimals) {
