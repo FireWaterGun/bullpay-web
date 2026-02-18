@@ -465,7 +465,7 @@ export default function UserTransactionsDashboard() {
     const deposit = byCoinData.reduce((sum, item) => sum + parseFloat(item.depositUsd || 0), 0)
     const withdrawal = byCoinData.reduce((sum, item) => sum + parseFloat(item.withdrawalUsd || 0), 0)
     const fee = byCoinData.reduce((sum, item) => sum + parseFloat(item.feeUsd || 0), 0)
-    const netFlow = deposit - withdrawal
+    const netFlow = byCoinData.reduce((sum, item) => sum + parseFloat(item.netFlowUsd || (parseFloat(item.depositUsd || 0) - parseFloat(item.withdrawalUsd || 0))), 0)
     return { deposit, withdrawal, fee, netFlow }
   }, [byCoinData])
 
@@ -580,13 +580,11 @@ export default function UserTransactionsDashboard() {
           />
           <SummaryCard
             title={t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}
-            value={formatCurrencyPlain(
-              (parseFloat(current.totalDepositUsd || 0) - parseFloat(current.totalWithdrawalUsd || 0))
-            )}
+            value={formatCurrencyPlain(current.netFlowUsd)}
             change={changes.netFlowPercent}
             icon="bx-line-chart"
             color="info"
-            valueColor={(() => { const nf = parseFloat(current.totalDepositUsd || 0) - parseFloat(current.totalWithdrawalUsd || 0); return nf > 0 ? 'success' : nf < 0 ? 'danger' : undefined })()}
+            valueColor={(() => { const nf = parseFloat(current.netFlowUsd || 0); return nf > 0 ? 'success' : nf < 0 ? 'danger' : undefined })()}
             t={t}
           />
         </div>
@@ -658,7 +656,7 @@ export default function UserTransactionsDashboard() {
                             const deposit = parseFloat(item.depositUsd || 0)
                             const withdrawal = parseFloat(item.withdrawalUsd || 0)
                             const fee = parseFloat(item.feeUsd || 0)
-                            const netFlow = deposit - withdrawal
+                            const netFlow = parseFloat(item.netFlowUsd || 0) || (deposit - withdrawal)
 
                             return (
                               <tr key={index}>
