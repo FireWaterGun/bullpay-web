@@ -227,14 +227,6 @@ export default function IncomeStatement() {
           {/* Report with data */}
           {report && hasData && (
             <>
-              {/* Title Card */}
-              <div className="card mb-4">
-                <div className="card-body text-center py-4">
-                  <h5 className="fw-bold mb-1">INCOME STATEMENT</h5>
-                  <h6 className="text-muted mb-0">Period: {fromDate} to {toDate}</h6>
-                </div>
-              </div>
-
               <div className="row">
                 {/* Revenue Section */}
                 <div className="col-md-6 mb-4">

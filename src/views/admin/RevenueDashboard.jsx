@@ -372,7 +372,7 @@ function SimpleBarChart({ data, height = 300, locale = 'en-US', t }) {
             </div>
             <div className="d-flex align-items-center gap-2">
               <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
-              <small>{t ? t('admin.profit', { defaultValue: 'Profit' }) : 'Profit'}</small>
+              <small>{t ? t('admin.operatingProfit', { defaultValue: 'Operating Profit' }) : 'Operating Profit'}</small>
             </div>
           </div>
         </div>
@@ -457,7 +457,7 @@ export default function RevenueDashboard() {
           date: item.date,
           revenue: parseFloat(item.revenueUsd || 0),
           cost: parseFloat(item.costUsd || 0),
-          profit: parseFloat(item.profitUsd || 0),
+          profit: parseFloat(item.operatingProfitUsd || 0),
         }))
         setDailyData(chartData)
       } catch (e) {
@@ -486,6 +486,7 @@ export default function RevenueDashboard() {
     cost: parseFloat(summary?.totalCostUsd || 0),
     adjustmentNet: parseFloat(summary?.totalAdjustmentNetUsd || 0),
     profit: parseFloat(summary?.grossProfitUsd || 0),
+    operatingProfit: parseFloat(summary?.grossProfitUsd || 0),
     margin: parseFloat(summary?.profitMarginPercent || 0),
   }), [summary])
 
@@ -580,14 +581,7 @@ export default function RevenueDashboard() {
           color="danger"
         />
         <SummaryCard
-          title={t('admin.adjustment', { defaultValue: 'Adjustment' })}
-          value={loadingSummary ? '...' : formatCurrency(summary?.totalAdjustmentNetUsd)}
-          icon="bx-transfer-alt"
-          color={parseFloat(summary?.totalAdjustmentNetUsd || 0) > 0 ? 'success' : parseFloat(summary?.totalAdjustmentNetUsd || 0) < 0 ? 'danger' : 'secondary'}
-          valueColor={parseFloat(summary?.totalAdjustmentNetUsd || 0) > 0 ? 'success' : parseFloat(summary?.totalAdjustmentNetUsd || 0) < 0 ? 'danger' : undefined}
-        />
-        <SummaryCard
-          title={t('admin.profit', { defaultValue: 'Profit' })}
+          title={t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}
           value={loadingSummary ? '...' : formatCurrency(summary?.grossProfitUsd)}
           icon="bx-dollar-circle"
           color={parseFloat(summary?.grossProfitUsd || 0) > 0 ? 'success' : parseFloat(summary?.grossProfitUsd || 0) < 0 ? 'danger' : 'warning'}
@@ -649,15 +643,14 @@ export default function RevenueDashboard() {
                         <th className="text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
                         <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
                         <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.cost', { defaultValue: 'Cost' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.adjustment', { defaultValue: 'Adjustment' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.profit', { defaultValue: 'Profit' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}</th>
                         <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.margin', { defaultValue: 'Margin' })}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {byCoinData.length === 0 ? (
                         <tr>
-                          <td colSpan="6" className="text-center text-muted py-4">
+                          <td colSpan="5" className="text-center text-muted py-4">
                             {t('common.noData', { defaultValue: 'No data available' })}
                           </td>
                         </tr>
@@ -666,8 +659,7 @@ export default function RevenueDashboard() {
                           {byCoinData.map((item, index) => {
                             const revenue = parseFloat(item.revenueUsd || 0)
                             const cost = parseFloat(item.costUsd || 0)
-                            const adjNet = parseFloat(item.adjustmentNetUsd || 0)
-                            const profit = parseFloat(item.profitUsd || 0)
+                            const profit = parseFloat(item.operatingProfitUsd || 0)
                             const margin = parseFloat(item.marginPercent || 0)
                             
                             return (
@@ -683,9 +675,6 @@ export default function RevenueDashboard() {
                                 </td>
                                 <td className="text-end">{formatCurrency(revenue)}</td>
                                 <td className="text-end">{formatCurrency(cost)}</td>
-                                <td className={`text-end ${adjNet > 0 ? 'text-success' : adjNet < 0 ? 'text-danger' : ''}`}>
-                                  {formatCurrency(adjNet)}
-                                </td>
                                 <td className={`text-end ${profit > 0 ? 'text-success' : profit < 0 ? 'text-danger' : ''}`}>
                                   {formatCurrency(profit)}
                                 </td>
@@ -698,9 +687,6 @@ export default function RevenueDashboard() {
                             <td>{t('common.total', { defaultValue: 'TOTAL' })}</td>
                             <td className="text-end">{formatCurrency(totals.revenue)}</td>
                             <td className="text-end">{formatCurrency(totals.cost)}</td>
-                            <td className={`text-end ${totals.adjustmentNet > 0 ? 'text-success' : totals.adjustmentNet < 0 ? 'text-danger' : ''}`}>
-                              {formatCurrency(totals.adjustmentNet)}
-                            </td>
                             <td className={`text-end ${totals.profit > 0 ? 'text-success' : totals.profit < 0 ? 'text-danger' : ''}`}>
                               {formatCurrency(totals.profit)}
                             </td>
