@@ -12,6 +12,7 @@ import { PusherProvider } from '../context/PusherContext'
 import { ToastProvider } from '../context/ToastContext'
 import InvoicePayment from '../views/invoices/InvoicePayment'
 import InvoicePaymentV2 from '../views/invoices/InvoicePaymentV2'
+import PaySelect from '../views/invoices/PaySelect'
 import VerifyEmailPage from '../views/auth/VerifyEmailPage'
 
 function ProtectedRoute({ children, requireAdmin = false }) {
@@ -77,6 +78,7 @@ export default function AppRouter() {
               <Route path="/forgot" element={<ForgotPage />} />
               <Route path="/forgot-complete" element={<ForgotCompletePage />} />
               {/* Public payment routes (no auth required) */}
+              <Route path="/pay-select/:code" element={<PaySelect />} />
               <Route path="/pay/:id" element={<InvoicePaymentV2 />} />
               <Route path="/pay-v2/:id" element={<InvoicePayment />} />
               <Route path="/verify" element={<VerifyEmailPage />} />

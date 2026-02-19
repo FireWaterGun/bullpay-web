@@ -198,7 +198,13 @@ export async function getPublicInvoiceQr(code: string): Promise<PublicInvoiceQrR
 // or { invoice: {...} }
 // ---------------------------------------------
 export interface PublicInvoiceStatusResult {
-  invoice: InvoiceRecord
+  status: string
+  amountRequired: string | null
+  amountReceived: string | null
+  expiresAt: string | null
+  paidAt: string | null
+  updatedAt: string | null
+  [key: string]: any
 }
 
 export async function getPublicInvoiceStatus(code: string): Promise<PublicInvoiceStatusResult> {
@@ -207,6 +213,87 @@ export async function getPublicInvoiceStatus(code: string): Promise<PublicInvoic
     method: 'GET',
     headers: { 'x-request-id': requestId() },
   })
-  const invoice = res?.data?.invoice ?? res?.invoice ?? res?.data ?? {}
-  return { invoice }
+  const data = res?.data ?? res
+  return data as PublicInvoiceStatusResult
+}
+
+// ---------------------------------------------
+// Public payment (no auth required)
+// GET /api/v1/pay/:paymentId
+// ---------------------------------------------
+export interface PublicPaymentNetwork {
+  networkSymbol: string
+  networkName: string
+  coinSymbol: string
+  confirmations: number
+}
+
+export interface PublicPaymentResult {
+  paymentId: string
+  status: string
+  amount: string
+  coinSymbol: string
+  networkSymbol: string | null
+  description: string
+  merchantName: string
+  expiresAt: string
+  paidAt: string | null
+  hasInvoice: boolean
+  successUrl?: string
+  cancelUrl?: string
+  availableNetworks: PublicPaymentNetwork[]
+  paymentAddress?: string
+  [key: string]: any
+}
+
+export async function getPublicPayment(paymentId: string): Promise<PublicPaymentResult> {
+  if (!paymentId) throw new Error('Missing payment ID')
+  const res = await apiFetch<any>(`/api/v1/pay/${encodeURIComponent(paymentId)}`, {
+    method: 'GET',
+    headers: { 'x-request-id': requestId() },
+  })
+  const data = res?.data ?? res
+  return data as PublicPaymentResult
+}
+
+// ---------------------------------------------
+// Payment status (no auth required)
+// GET /api/v1/pay/:paymentId/status
+// ---------------------------------------------
+export interface PublicPaymentStatusResult {
+  paymentId: string
+  status: string
+  paidAt: string | null
+  hasInvoice: boolean
+  successUrl?: string
+  [key: string]: any
+}
+
+export async function getPublicPaymentStatus(paymentId: string): Promise<PublicPaymentStatusResult> {
+  if (!paymentId) throw new Error('Missing payment ID')
+  const res = await apiFetch<any>(`/api/v1/pay/${encodeURIComponent(paymentId)}/status`, {
+    method: 'GET',
+    headers: { 'x-request-id': requestId() },
+  })
+  const data = res?.data ?? res
+  return data as PublicPaymentStatusResult
+}
+
+// ---------------------------------------------
+// Select network for a payment (no auth required)
+// POST /api/v1/pay/:paymentId/select-network
+// ---------------------------------------------
+export async function selectPaymentNetwork(
+  paymentId: string,
+  networkSymbol: string
+): Promise<PublicPaymentResult> {
+  if (!paymentId) throw new Error('Missing payment ID')
+  if (!networkSymbol) throw new Error('Missing network symbol')
+  const res = await apiFetch<any>(`/api/v1/pay/${encodeURIComponent(paymentId)}/select-network`, {
+    method: 'POST',
+    headers: { 'x-request-id': requestId() },
+    body: { networkSymbol },
+  })
+  const data = res?.data ?? res
+  return data as PublicPaymentResult
 }

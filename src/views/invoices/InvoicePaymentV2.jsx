@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { QRCodeSVG as QRCode } from 'qrcode.react'
-import { getPublicInvoice, getPublicInvoiceQr, getPublicInvoiceStatus } from '../../api/invoices'
+import { getPublicInvoice, getPublicInvoiceQr, getPublicInvoiceStatus, getPublicPayment, getPublicPaymentStatus, selectPaymentNetwork } from '../../api/invoices'
 import { formatAmount, formatDateTime } from '../../utils/format'
 import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
@@ -99,7 +99,73 @@ export default function InvoicePaymentV2() {
   const pollRef = useRef(null)
   const abortRef = useRef(null)
 
+  // Payment mode: detect pay_ prefix
+  const isPaymentMode = publicCode?.startsWith('pay_')
+  const [paymentData, setPaymentData] = useState(null)
+  const [selectedNetwork, setSelectedNetwork] = useState(null)
+  const [selectingNetwork, setSelectingNetwork] = useState(false)
+  const needsNetworkSelection = isPaymentMode && paymentData && !paymentData.networkSymbol
+  const [redirectCountdown, setRedirectCountdown] = useState(null)
+
   const ACTIVE_INTERVAL = 6000
+
+  // Map payment API data to invoice-like structure for shared UI
+  const mapPaymentToInvoice = useCallback((data) => {
+    return {
+      id: data.paymentId,
+      invoiceId: data.paymentId,
+      publicCode: data.paymentId,
+      status: (data.status || '').toLowerCase(),
+      expiryAt: data.expiresAt,
+      amount: data.amount,
+      description: data.description,
+      paymentAddress: data.paymentAddress || null,
+      paidAt: data.paidAt,
+      paidAmount: data.paidAmount,
+      merchantName: data.merchantName,
+      symbol: data.coinSymbol,
+      coin: data.coinSymbol ? { symbol: data.coinSymbol, name: data.coinSymbol } : undefined,
+      network: data.networkSymbol
+        ? { symbol: data.networkSymbol, name: data.networkName || data.networkSymbol }
+        : null,
+      networkName: data.networkName || data.networkSymbol || '',
+      successUrl: data.successUrl,
+    }
+  }, [])
+
+  // Load payment data (pay_ prefix) — full load for initial, status API for polling
+  const loadPayment = useCallback(async (initial = false) => {
+    if (!publicCode) return
+    if (initial) setLoading(true)
+    setError('')
+    setErrorCode('')
+    try {
+      if (initial) {
+        const data = await getPublicPayment(publicCode)
+        setPaymentData(data)
+        setInvoice(mapPaymentToInvoice(data))
+      } else {
+        // Poll with lightweight status endpoint
+        const statusData = await getPublicPaymentStatus(publicCode)
+        setInvoice(prev => prev ? {
+          ...prev,
+          status: (statusData.status || '').toLowerCase(),
+          paidAt: statusData.paidAt || prev.paidAt,
+          successUrl: statusData.successUrl || prev.successUrl,
+        } : prev)
+        setPaymentData(prev => prev ? {
+          ...prev,
+          status: statusData.status,
+          paidAt: statusData.paidAt,
+        } : prev)
+      }
+    } catch (e) {
+      if (e?.name === 'AbortError') return
+      setError(e?.message || 'Failed to load payment')
+    } finally {
+      if (initial) setLoading(false)
+    }
+  }, [publicCode, mapPaymentToInvoice])
 
   const loadInvoice = useCallback(async (initial = false) => {
     if (!publicCode) return
@@ -107,37 +173,44 @@ export default function InvoicePaymentV2() {
     setError('')
     setErrorCode('')
     try {
-      if (abortRef.current) abortRef.current.abort()
-      const controller = new AbortController()
-      abortRef.current = controller
-      
-      // Use /public/invoices/:code for initial load, /qr for polling
-      const { invoice: inv, qr: qrData } = initial 
-        ? await getPublicInvoice(publicCode)
-        : await getPublicInvoiceQr(publicCode)
-      
-      const mapped = {
-        id: inv.invoiceId ?? inv.id,
-        invoiceId: inv.invoiceId ?? inv.id,
-        publicCode: inv.publicCode,
-        status: (inv.status || '').toLowerCase(),
-        expiryAt: inv.expiresAt || inv.expiryAt,
-        amount: qrData?.amount ?? inv.amount,
-        description: inv.description,
-        paymentAddress: qrData?.address || inv.paymentAddress,
-        createdAt: inv.createdAt || inv.created_at,
-        paidAmount: inv.paidAmount || inv.paid_amount,
-        paidAt: inv.paidAt || inv.paid_at,
-        decimals: inv.decimals,
-        // Store coin and network objects from new API response
-        coin: inv.coin,
-        network: inv.network,
-        // Keep backward compatibility
-        symbol: qrData?.symbol || inv.coin?.symbol || inv.symbol,
-        networkName: qrData?.network || inv.network?.name || inv.network,
+      if (initial) {
+        if (abortRef.current) abortRef.current.abort()
+        const controller = new AbortController()
+        abortRef.current = controller
+        
+        const { invoice: inv, qr: qrData } = await getPublicInvoice(publicCode)
+        
+        const mapped = {
+          id: inv.invoiceId ?? inv.id,
+          invoiceId: inv.invoiceId ?? inv.id,
+          publicCode: inv.publicCode,
+          status: (inv.status || '').toLowerCase(),
+          expiryAt: inv.expiresAt || inv.expiryAt,
+          amount: qrData?.amount ?? inv.amount,
+          description: inv.description,
+          paymentAddress: qrData?.address || inv.paymentAddress,
+          createdAt: inv.createdAt || inv.created_at,
+          paidAmount: inv.paidAmount || inv.paid_amount,
+          paidAt: inv.paidAt || inv.paid_at,
+          decimals: inv.decimals,
+          coin: inv.coin,
+          network: inv.network,
+          symbol: qrData?.symbol || inv.coin?.symbol || inv.symbol,
+          networkName: qrData?.network || inv.network?.name || inv.network,
+        }
+        setInvoice(mapped)
+        setQr(qrData)
+      } else {
+        // Poll with lightweight status endpoint
+        const statusData = await getPublicInvoiceStatus(publicCode)
+        setInvoice(prev => prev ? {
+          ...prev,
+          status: (statusData.status || '').toLowerCase(),
+          paidAt: statusData.paidAt || prev.paidAt,
+          paidAmount: statusData.amountReceived || prev.paidAmount,
+          expiryAt: statusData.expiresAt || prev.expiryAt,
+        } : prev)
       }
-      setInvoice(mapped)
-      setQr(qrData)
     } catch (e) {
       if (e?.name === 'AbortError') return
       if (e?.code === 'BIZ_1200') {
@@ -153,12 +226,18 @@ export default function InvoicePaymentV2() {
   }, [publicCode])
 
   useEffect(() => {
-    loadInvoice(true)
-  }, [loadInvoice])
+    if (isPaymentMode) {
+      loadPayment(true)
+    } else {
+      loadInvoice(true)
+    }
+  }, [isPaymentMode, loadPayment, loadInvoice])
 
   useEffect(() => {
     if (!invoice || errorCode === 'BIZ_1200') return
-    const isPaid = invoice.status === 'paid'
+    // Don't poll if we need network selection
+    if (needsNetworkSelection) return
+    const isPaid = invoice.status === 'paid' || invoice.status === 'completed'
     if (isPaid) {
       if (pollRef.current) {
         clearInterval(pollRef.current)
@@ -166,11 +245,12 @@ export default function InvoicePaymentV2() {
       }
       return
     }
-    pollRef.current = setInterval(() => loadInvoice(false), ACTIVE_INTERVAL)
+    const pollFn = isPaymentMode ? () => loadPayment(false) : () => loadInvoice(false)
+    pollRef.current = setInterval(pollFn, ACTIVE_INTERVAL)
     return () => {
       if (pollRef.current) clearInterval(pollRef.current)
     }
-  }, [invoice, loadInvoice, errorCode])
+  }, [invoice, loadInvoice, loadPayment, errorCode, isPaymentMode, needsNetworkSelection])
 
   // Subscribe to Pusher events for real-time updates
   useInvoiceEvents(invoice?.invoiceId || invoice?.id, {
@@ -245,10 +325,28 @@ export default function InvoicePaymentV2() {
   const remainingMs = expiryMs ? Math.max(0, expiryMs - now) : undefined
   const isExpired = expiryMs ? remainingMs === 0 : false
 
-  const isPaid = invoice?.status === 'paid' || (Number(invoice?.paidAmount) || 0) >= (Number(invoice?.amount) || 0)
+  const isPaid = invoice?.status === 'paid' || invoice?.status === 'completed' || (Number(invoice?.paidAmount) || 0) >= (Number(invoice?.amount) || 0)
   const hasPartial = !isPaid && (Number(invoice?.paidAmount) || 0) > 0
 
   const currentStep = isPaid ? 3 : hasPartial ? 2 : 1
+
+  // Auto-redirect countdown when paid + successUrl
+  const redirectTimerRef = useRef(null)
+  useEffect(() => {
+    if (!isPaid || !invoice?.successUrl) return
+    let count = 5
+    setRedirectCountdown(count)
+    redirectTimerRef.current = setInterval(() => {
+      count -= 1
+      if (count <= 0) {
+        clearInterval(redirectTimerRef.current)
+        window.location.href = invoice.successUrl
+        return
+      }
+      setRedirectCountdown(count)
+    }, 1000)
+    return () => clearInterval(redirectTimerRef.current)
+  }, [isPaid, invoice?.successUrl])
 
   function statusClass(s) {
     const v = (s || "").toLowerCase()
@@ -274,11 +372,15 @@ export default function InvoicePaymentV2() {
     }
   }
 
+  const rawStatus = (invoice?.status || '').toLowerCase()
+  const normalizedStatus = rawStatus === 'waiting' ? 'pending' : rawStatus === 'completed' ? 'paid' : rawStatus
   const uiStatus = errorCode === 'BIZ_1200'
     ? 'cancelled'
-    : (isExpired && !isPaid ? 'expired' : (invoice?.status || '').toLowerCase())
+    : isExpired && !isPaid
+      ? 'expired'
+      : normalizedStatus
 
-  const paymentValue = useMemo(() => qr?.address || '', [qr?.address])
+  const paymentValue = useMemo(() => qr?.address || invoice?.paymentAddress || '', [qr?.address, invoice?.paymentAddress])
 
   function formatDuration(ms) {
     if (ms === undefined) return "-"
@@ -309,6 +411,23 @@ export default function InvoicePaymentV2() {
   }
 
   const isExpiredUnpaid = isExpired && !isPaid
+
+  // Handle network selection for payment mode
+  const handleConfirmNetwork = async () => {
+    if (!selectedNetwork || !publicCode) return
+    setSelectingNetwork(true)
+    try {
+      const data = await selectPaymentNetwork(publicCode, selectedNetwork)
+      // Use the response directly — it contains paymentAddress, networkSymbol etc.
+      setPaymentData(data)
+      setInvoice(mapPaymentToInvoice(data))
+      setSelectedNetwork(null)
+    } catch (e) {
+      setError(e?.message || 'Failed to select network')
+    } finally {
+      setSelectingNetwork(false)
+    }
+  }
 
   return (
     <div className="min-vh-100 position-relative overflow-hidden" style={{
@@ -481,12 +600,185 @@ export default function InvoicePaymentV2() {
 
                     {/* Card Body */}
                     <div className="card-body p-3 p-md-4">
+
+                      {/* ===== Network Selection UI (payment mode, no network yet) ===== */}
+                      {needsNetworkSelection ? (
+                        <div>
+                          {/* Merchant & Payment Info */}
+                          {paymentData?.merchantName && (
+                            <div className="text-center mb-2">
+                              <span className="small text-uppercase fw-semibold" style={{ color: '#64748b', letterSpacing: '1px', fontSize: '0.7rem' }}>
+                                {t('payment.merchant', { defaultValue: 'Merchant' })}
+                              </span>
+                              <div className="fw-bold" style={{ fontSize: '1rem', color: '#1e293b' }}>
+                                {paymentData.merchantName}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Amount & Coin */}
+                          <div className="mb-3 p-3 rounded-3 text-center" style={{
+                            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05))',
+                            border: '1px solid rgba(139, 92, 246, 0.15)'
+                          }}>
+                            <div className="d-flex align-items-center justify-content-center gap-3 mb-2">
+                              <CoinImg symbol={paymentData?.coinSymbol} size={40} />
+                              <div>
+                                <div style={{
+                                  fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px',
+                                  background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                                  backgroundClip: 'text', lineHeight: 1.2
+                                }}>
+                                  {paymentData?.amount} {paymentData?.coinSymbol}
+                                </div>
+                              </div>
+                            </div>
+                            {paymentData?.description && (
+                              <div className="small" style={{ color: '#64748b' }}>{paymentData.description}</div>
+                            )}
+                          </div>
+
+                          {/* Timer */}
+                          {!isPaid && remainingMs !== undefined && (
+                            <div className="text-center mb-3 p-2 rounded-3" style={{
+                              background: remainingMs <= 60_000
+                                ? 'rgba(239, 68, 68, 0.1)'
+                                : remainingMs <= 5 * 60_000
+                                  ? 'rgba(245, 158, 11, 0.1)'
+                                  : 'rgba(139, 92, 246, 0.08)',
+                              border: '1px solid rgba(139, 92, 246, 0.15)'
+                            }}>
+                              <div className="d-flex align-items-center justify-content-center gap-2">
+                                <i className="bx bx-time" style={{ color: '#8b5cf6', fontSize: 16 }}></i>
+                                <span className="small fw-semibold" style={{ color: '#64748b', fontSize: '0.75rem' }}>
+                                  {t('payment.timeRemaining', { defaultValue: 'Time Remaining' })}
+                                </span>
+                                <span className="fw-bold" style={{
+                                  color: remainingMs <= 60_000 ? '#ef4444' : '#8b5cf6',
+                                  fontSize: '1.1rem', letterSpacing: '2px'
+                                }}>
+                                  {formatDuration(remainingMs)}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Select Network Label */}
+                          <div className="mb-2">
+                            <span className="small text-uppercase fw-bold" style={{
+                              color: '#64748b', letterSpacing: '1.5px', fontSize: '0.7rem'
+                            }}>
+                              {t('payment.selectNetwork', { defaultValue: 'Select Network' })}
+                            </span>
+                          </div>
+
+                          {/* Network List */}
+                          <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+                            <div className="d-flex flex-column gap-2">
+                              {(paymentData?.availableNetworks || []).map((net) => {
+                                const isSelected = selectedNetwork === net.networkSymbol
+                                return (
+                                  <div
+                                    key={net.networkSymbol}
+                                    className="d-flex align-items-center gap-3 p-3 rounded-3"
+                                    style={{
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                      background: isSelected
+                                        ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.12))'
+                                        : 'rgba(255, 255, 255, 0.6)',
+                                      border: isSelected
+                                        ? '2px solid rgba(139, 92, 246, 0.4)'
+                                        : '1px solid rgba(139, 92, 246, 0.1)',
+                                      boxShadow: isSelected
+                                        ? '0 4px 16px rgba(139, 92, 246, 0.15)'
+                                        : '0 1px 3px rgba(0, 0, 0, 0.04)',
+                                    }}
+                                    onClick={() => setSelectedNetwork(net.networkSymbol)}
+                                  >
+                                    <NetworkIcon networkSymbol={net.networkSymbol} size={32} />
+                                    <div className="flex-grow-1">
+                                      <div className="fw-bold" style={{ fontSize: '0.95rem', color: '#1e293b' }}>
+                                        {net.networkName}
+                                      </div>
+                                      <div className="small" style={{ color: '#64748b', fontSize: '0.75rem' }}>
+                                        {net.networkSymbol} · {net.confirmations} {t('payment.confirmations', { defaultValue: 'confirmations' })}
+                                      </div>
+                                    </div>
+                                    <div style={{ flexShrink: 0 }}>
+                                      {isSelected ? (
+                                        <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
+                                          width: 28, height: 28,
+                                          background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                                          boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)'
+                                        }}>
+                                          <i className="bx bx-check text-white" style={{ fontSize: 18 }}></i>
+                                        </div>
+                                      ) : (
+                                        <div className="rounded-circle" style={{
+                                          width: 28, height: 28,
+                                          border: '2px solid #e2e8f0'
+                                        }}></div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Error */}
+                          {error && (
+                            <div className="alert alert-danger mt-3 mb-0 py-2 small">{error}</div>
+                          )}
+
+                          {/* Confirm Button */}
+                          <div className="mt-3">
+                            <button
+                              className="btn w-100 py-3 fw-bold"
+                              disabled={!selectedNetwork || selectingNetwork}
+                              onClick={handleConfirmNetwork}
+                              style={{
+                                background: selectedNetwork
+                                  ? 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)'
+                                  : '#e2e8f0',
+                                color: selectedNetwork ? 'white' : '#94a3b8',
+                                border: 'none',
+                                borderRadius: 12,
+                                fontSize: '1rem',
+                                letterSpacing: '0.5px',
+                                transition: 'all 0.3s ease',
+                                boxShadow: selectedNetwork
+                                  ? '0 8px 24px rgba(139, 92, 246, 0.4)'
+                                  : 'none',
+                              }}
+                            >
+                              {selectingNetwork ? (
+                                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                              ) : (
+                                <i className="bx bx-check-circle me-2"></i>
+                              )}
+                              {t('payment.confirmNetwork', { defaultValue: 'Continue with Selected Network' })}
+                            </button>
+                          </div>
+
+                        </div>
+                      ) : (
+                      /* ===== Normal Invoice / Payment UI (network already selected) ===== */
+                      <div>
                       {/* Invoice Info & Chain */}
                       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 gap-md-3 mb-3">
                         {/* Left - Invoice */}
                         <div className="order-1">
-                          <div className="small mb-1" style={{ color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem', fontWeight: '600' }}>{t("invoices.invoice")}</div>
-                          <div className="fw-bold" style={{ fontSize: '1.1rem', letterSpacing: '-0.5px', color: '#1e293b' }}>#{invoice.invoiceNumber || invoice.publicCode || invoice.id}</div>
+                          <div className="small mb-1" style={{ color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem', fontWeight: '600' }}>
+                            {isPaymentMode ? (t("payment.payment", { defaultValue: "Payment" })) : t("invoices.invoice")}
+                          </div>
+                          <div className="fw-bold" style={{ fontSize: '1.1rem', letterSpacing: '-0.5px', color: '#1e293b' }}>
+                            {isPaymentMode
+                              ? (invoice.publicCode || invoice.id)
+                              : `#${invoice.invoiceNumber || invoice.publicCode || invoice.id}`}
+                          </div>
                         </div>
                         
                         {/* Right - Chain */}
@@ -568,14 +860,15 @@ export default function InvoicePaymentV2() {
                         </div>
                       )}
 
-                      {/* QR Code & Amount Section - Combined */}
+                      {/* QR Code & Amount Section */}
                       {!isExpiredUnpaid && (
                         <div className="mb-3 p-4 rounded-4" style={{
                           background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05))',
                           border: '1px solid rgba(139, 92, 246, 0.15)'
                         }}>
                           <div className="row g-4 align-items-center">
-                            {/* QR Code - Left Side */}
+                            {/* QR Code - Left Side (hidden when paid) */}
+                            {!isPaid && (
                             <div className="col-12 col-md-6 text-center">
                               <div className="d-inline-block position-relative">
                                 <div className="position-relative p-3 rounded-4" style={{
@@ -614,9 +907,10 @@ export default function InvoicePaymentV2() {
                                 </span>
                               </div>
                             </div>
+                            )}
 
-                            {/* Amount - Right Side */}
-                            <div className="col-12 col-md-6 text-center">
+                            {/* Amount */}
+                            <div className={`${isPaid ? 'col-12' : 'col-12 col-md-6'} text-center`}>
                               <div className="small mb-3" style={{
                                 color: '#64748b',
                                 textTransform: 'uppercase',
@@ -665,7 +959,7 @@ export default function InvoicePaymentV2() {
                                   }}>
                                     {formatAmount(invoice.amount)}
                                   </div>
-                                  {invoice.amount != null && (
+                                  {invoice.amount != null && !isPaid && (
                                     <button
                                       type="button"
                                       className="btn btn-sm"
@@ -724,7 +1018,7 @@ export default function InvoicePaymentV2() {
                       )}
 
                       {/* Payment Address */}
-                      {!isExpiredUnpaid && (
+                      {!isExpiredUnpaid && !isPaid && (
                         <div className="mb-3">
                           <div className="small mb-2" style={{
                             color: '#64748b',
@@ -998,6 +1292,34 @@ export default function InvoicePaymentV2() {
                           50% { transform: scale(1.1); }
                         }
                       `}</style>
+
+                      {/* Success Redirect Button with Countdown */}
+                      {isPaid && invoice?.successUrl && (
+                        <div className="mt-3">
+                          <a
+                            href={invoice.successUrl}
+                            className="btn w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+                            style={{
+                              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: 12,
+                              fontSize: '1rem',
+                              letterSpacing: '0.5px',
+                              boxShadow: '0 8px 24px rgba(16, 185, 129, 0.4)',
+                              textDecoration: 'none',
+                              transition: 'all 0.3s ease',
+                            }}
+                          >
+                            <i className="bx bx-check-circle" style={{ fontSize: 20 }}></i>
+                            {redirectCountdown != null
+                              ? `${t('payment.backToMerchant', { defaultValue: 'Redirecting' })} (${redirectCountdown}s)`
+                              : t('payment.backToMerchant', { defaultValue: 'Continue' })}
+                          </a>
+                        </div>
+                      )}
+                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
