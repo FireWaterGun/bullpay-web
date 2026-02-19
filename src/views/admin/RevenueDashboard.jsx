@@ -485,7 +485,7 @@ export default function RevenueDashboard() {
     revenue: parseFloat(summary?.totalRevenueUsd || 0),
     cost: parseFloat(summary?.totalCostUsd || 0),
     adjustmentNet: parseFloat(summary?.totalAdjustmentNetUsd || 0),
-    profit: parseFloat(summary?.grossProfitUsd || 0),
+    profit: parseFloat(summary?.operatingProfitUsd || 0),
     margin: parseFloat(summary?.profitMarginPercent || 0),
   }), [summary])
 
@@ -581,10 +581,10 @@ export default function RevenueDashboard() {
         />
         <SummaryCard
           title={t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}
-          value={loadingSummary ? '...' : formatCurrency(summary?.grossProfitUsd)}
+          value={loadingSummary ? '...' : formatCurrency(summary?.operatingProfitUsd)}
           icon="bx-dollar-circle"
-          color={parseFloat(summary?.grossProfitUsd || 0) > 0 ? 'success' : parseFloat(summary?.grossProfitUsd || 0) < 0 ? 'danger' : 'warning'}
-          valueColor={parseFloat(summary?.grossProfitUsd || 0) > 0 ? 'success' : parseFloat(summary?.grossProfitUsd || 0) < 0 ? 'danger' : undefined}
+          color={parseFloat(summary?.operatingProfitUsd || 0) > 0 ? 'success' : parseFloat(summary?.operatingProfitUsd || 0) < 0 ? 'danger' : 'warning'}
+          valueColor={parseFloat(summary?.operatingProfitUsd || 0) > 0 ? 'success' : parseFloat(summary?.operatingProfitUsd || 0) < 0 ? 'danger' : undefined}
         />
         <SummaryCard
           title={t('admin.margin', { defaultValue: 'Margin' })}
