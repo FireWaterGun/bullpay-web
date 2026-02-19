@@ -486,7 +486,6 @@ export default function RevenueDashboard() {
     cost: parseFloat(summary?.totalCostUsd || 0),
     adjustmentNet: parseFloat(summary?.totalAdjustmentNetUsd || 0),
     profit: parseFloat(summary?.grossProfitUsd || 0),
-    operatingProfit: parseFloat(summary?.grossProfitUsd || 0),
     margin: parseFloat(summary?.profitMarginPercent || 0),
   }), [summary])
 
@@ -732,10 +731,6 @@ export default function RevenueDashboard() {
                     <span className="text-muted">|</span>
                     <span className="fw-medium mx-3">
                       {summary?.counts?.gasTopups || 0} gas topups
-                    </span>
-                    <span className="text-muted">|</span>
-                    <span className="fw-medium ms-3">
-                      {summary?.counts?.adjustments || 0} adjustments
                     </span>
                   </div>
                 </div>
