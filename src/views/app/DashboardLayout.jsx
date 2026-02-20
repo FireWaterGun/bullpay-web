@@ -77,7 +77,6 @@ import MyLedgerList from '../ledger/MyLedgerList'
 import MyLedgerDetail from '../ledger/MyLedgerDetail'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
-import AdminRoles from '../admin/AdminRoles'
 
 function MenuItem({ to, icon, label, end }) {
   const location = useLocation()
@@ -987,7 +986,6 @@ export default function DashboardLayout() {
                     <Route path="admin/settings/withdrawal/defaults" element={<WithdrawalDefaults />} />
                     <Route path="admin/settings/withdrawal/overrides" element={<WithdrawalOverrides />} />
                     <Route path="admin/settings/withdrawal/policy" element={<WithdrawalPolicy />} />
-                    <Route path="admin/roles" element={<AdminRoles />} />
                     {/* Redirects from old paths */}
                     <Route path="admin/revenue" element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="admin/revenue/income-statement" element={<Navigate to="/admin/income-statement" replace />} />
