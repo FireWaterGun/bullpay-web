@@ -312,45 +312,6 @@ export default function WithdrawalDetail() {
                         <td className="text-muted">{t('withdrawal.status', { defaultValue: 'Status' })}</td>
                         <td><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
                       </tr>
-                      <tr>
-                        <td className="text-muted">{t('withdrawal.amount', { defaultValue: 'Amount' })}</td>
-                        <td>
-                          <span className="fw-bold">
-                            {withdrawal.amount || formatAmount(withdrawal.amountRaw, decimals)} {coinSymbol}
-                          </span>
-                        </td>
-                      </tr>
-                      {withdrawal.totalFee && (
-                        <tr>
-                          <td className="text-muted">{t('withdrawal.totalFee', { defaultValue: 'Total Fee' })}</td>
-                          <td>
-                            <span className="fw-medium">
-                              {withdrawal.totalFee} {coinSymbol}
-                            </span>
-                          </td>
-                        </tr>
-                      )}
-                      {withdrawal.networkFeeAmount && withdrawal.networkFeeAmount !== '0.000000000000000000' && (
-                        <tr>
-                          <td className="text-muted">{t('withdrawal.networkFee', { defaultValue: 'Network Fee' })}</td>
-                          <td>
-                            <span className="text-muted">{withdrawal.networkFeeAmount}</span>
-                            {withdrawal.networkFeeUsd && parseFloat(withdrawal.networkFeeUsd) > 0 && (
-                              <small className="text-muted ms-2">({formatUsd(withdrawal.networkFeeUsd)})</small>
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                      {withdrawal.totalAmount && (
-                        <tr>
-                          <td className="text-muted">{t('withdrawal.totalAmount', { defaultValue: 'Total Amount' })}</td>
-                          <td>
-                            <span className="fw-bold text-primary">
-                              {withdrawal.totalAmount} {coinSymbol}
-                            </span>
-                          </td>
-                        </tr>
-                      )}
                       {withdrawal.amountUsd && (
                         <tr>
                           <td className="text-muted">{t('withdrawal.amountUsd', { defaultValue: 'Amount USD' })}</td>
@@ -374,6 +335,48 @@ export default function WithdrawalDetail() {
                       </tr>
                     </tbody>
                   </table>
+
+                  {/* Fee Breakdown */}
+                  <div className="border rounded-3 p-3 mt-2">
+                    <div className="small text-muted mb-2">{t('balance.feeBreakdown', { defaultValue: 'Fee Breakdown' })}</div>
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="small">{t('balance.withdrawAmount', { defaultValue: 'Withdraw amount' })}</span>
+                      <span className="small fw-medium">{withdrawal.totalAmount || withdrawal.amount} {coinSymbol}</span>
+                    </div>
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="small">{t('balance.networkFee', { defaultValue: 'Network fee' })}</span>
+                      <span className="small">{withdrawal.networkFeeAmount && withdrawal.networkFeeAmount !== '0.000000000000000000' ? `${withdrawal.networkFeeAmount}` : formatAmount(withdrawal.networkFeeRaw, decimals)} {coinSymbol}</span>
+                    </div>
+                    {(() => {
+                      const totalFeeNum = parseFloat(withdrawal.totalFee || 0)
+                      const networkFeeNum = parseFloat(withdrawal.networkFeeAmount || 0)
+                      const platformFee = totalFeeNum - networkFeeNum
+                      if (platformFee > 0) {
+                        return (
+                          <div className="d-flex justify-content-between mb-2">
+                            <span className="small">{t('balance.platformFee', { defaultValue: 'Platform fee' })}</span>
+                            <span className="small">{platformFee.toFixed(Math.max((withdrawal.totalFee || '').split('.')[1]?.length || 2, 2))} {coinSymbol}</span>
+                          </div>
+                        )
+                      }
+                      return null
+                    })()}
+                    <div className="d-flex justify-content-between mb-2 pt-2 border-top">
+                      <span className="small">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
+                      <div className="text-end">
+                        <div className="small fw-medium">{withdrawal.totalFee || formatAmount(withdrawal.totalFeeRaw, decimals)} {coinSymbol}</div>
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between mb-0 pt-2 border-top">
+                      <span className="small text-muted">{t('balance.youReceive', { defaultValue: 'You receive' })}</span>
+                      <div className="text-end">
+                        <div className="fw-semibold">{withdrawal.amount || formatAmount(withdrawal.amountRaw, decimals)} {coinSymbol}</div>
+                        {withdrawal.amountUsd && (
+                          <div className="text-muted" style={{ fontSize: '0.75rem' }}>≈ {formatUsd(withdrawal.amountUsd)}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
