@@ -131,6 +131,19 @@ export interface FeeEstimate {
   }
 }
 
+export async function getWithdrawalById(id: number | string, token?: unknown) {
+  const authHeader = toAuthHeader(token)
+  const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawals/${id}`, {
+    method: 'GET',
+    headers: {
+      'x-request-id': requestId(),
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+  })
+  const payload = res?.data ?? res
+  return payload?.withdrawal ?? payload
+}
+
 export async function estimateWithdrawalFee(coinNetworkId: number | string, amount: string | number, token?: unknown): Promise<FeeEstimate | null> {
   const authHeader = toAuthHeader(token)
   const qs = new URLSearchParams()

@@ -466,7 +466,7 @@ export default function BalanceWithdrawals() {
                     const key = it.id
                     return (
                       <tr key={it.id}>
-            <td className="cell-fit"><span className="font-monospace">{it.id}</span></td>
+            <td className="cell-fit"><a href={`/wallet/withdrawals/${it.id}`} onClick={(e) => { e.preventDefault(); navigate(`/wallet/withdrawals/${it.id}`) }} className="font-monospace fw-semibold text-primary" style={{ cursor: 'pointer', textDecoration: 'none' }}>{it.id}</a></td>
                         <td>
                           <span className="text-muted">
                             {networkSym || sym}
@@ -495,26 +495,13 @@ export default function BalanceWithdrawals() {
                           <span className="text-muted small">{new Date(it.createdAt).toLocaleString()}</span>
                         </td>
                         <td className="text-center">
-                          {it.txHash ? (
-                            <a
-                              href={`${network?.explorerUrl || 'https://etherscan.io'}/tx/${it.txHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn btn-sm btn-icon btn-outline-primary"
-                              title="View Transaction"
-                            >
-                              <i className="bx bx-link-external"></i>
-                            </a>
-                          ) : (
-                            <a
-                              href={`${network?.explorerUrl || 'https://etherscan.io'}/address/${it.toAddress}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn btn-sm btn-icon btn-outline-primary"
-                              title="View Address">
-                              <i className="bx bx-link-external"></i>
-                            </a>
-                          )}
+                          <button
+                            className="btn btn-sm btn-icon btn-outline-primary"
+                            onClick={() => navigate(`/wallet/withdrawals/${it.id}`)}
+                            title={t('actions.view', { defaultValue: 'View' })}
+                          >
+                            <i className="bx bx-show"></i>
+                          </button>
                         </td>
                       </tr>
                     )

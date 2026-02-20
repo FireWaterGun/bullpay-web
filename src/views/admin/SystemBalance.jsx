@@ -220,20 +220,7 @@ export default function SystemBalance() {
             </div>
             <div className="card-body">
               <div className="display-3 fw-bold text-dark">
-                {(() => {
-                  const totalUSD = (stats?.balanceDetails || []).reduce((sum, wallet) => {
-                    const coinSymbol = wallet.systemWallet?.coinNetwork?.coin?.symbol
-                    const decimals = wallet.decimals || wallet.systemWallet?.coinNetwork?.decimals || 18
-                    const decimalBalance = AmountNormalizer.fromRawSimple(
-                      wallet.totalBalanceRaw || '0',
-                      decimals
-                    )
-                    const rate = stats.fiat?.rates?.[coinSymbol] || 0
-                    const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
-                    return sum + usdValue
-                  }, 0)
-                  return formatUsd(totalUSD)
-                })()}
+                {formatUsd(stats?.fiat?.totalValueUsd || 0)}
               </div>
               <div className="mt-3">
                 <span className="badge bg-label-primary">

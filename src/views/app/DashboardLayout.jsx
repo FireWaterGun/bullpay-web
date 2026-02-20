@@ -35,6 +35,7 @@ import Balance from '../balance/Balance'
 import BalanceAccount from '../balance/BalanceAccount'
 import BalanceWithdrawals from '../balance/BalanceWithdrawals'
 import WithdrawRequest from '../balance/WithdrawRequest'
+import WithdrawalDetail from '../balance/WithdrawalDetail'
 import Dashboard from '../admin/Dashboard'
 import RevenueDashboard from '../admin/RevenueDashboard'
 import SystemBalance from '../admin/SystemBalance'
@@ -76,6 +77,7 @@ import MyLedgerList from '../ledger/MyLedgerList'
 import MyLedgerDetail from '../ledger/MyLedgerDetail'
 import EVMFeePolicy from '../admin/EVMFeePolicy'
 import NetworkFees from '../admin/NetworkFees'
+import AdminRoles from '../admin/AdminRoles'
 
 function MenuItem({ to, icon, label, end }) {
   const location = useLocation()
@@ -300,22 +302,9 @@ export default function DashboardLayout() {
   async function loadPaymentStats() {
     try {
       const stats = await getSystemWalletStats(token, 'USD')
-      // Calculate total USD from system wallet balances
-      const totalUSD = (stats?.balanceDetails || []).reduce((sum, wallet) => {
-        const coinSymbol = wallet.systemWallet?.coinNetwork?.coin?.symbol
-        const decimals = wallet.decimals || wallet.systemWallet?.coinNetwork?.decimals || 18
-        const decimalBalance = AmountNormalizer.fromRawSimple(
-          wallet.totalBalanceRaw || '0',
-          decimals
-        )
-        const rate = stats.fiat?.rates?.[coinSymbol] || 0
-        const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
-        return sum + usdValue
-      }, 0)
-      
       setFiatBalance({
         currency: stats?.fiat?.currency || 'USD',
-        amount: String(totalUSD)
+        amount: stats?.fiat?.totalValueUsd || '0'
       })
     } catch (error) {
       console.error('Failed to load system wallet stats:', error)
@@ -998,6 +987,7 @@ export default function DashboardLayout() {
                     <Route path="admin/settings/withdrawal/defaults" element={<WithdrawalDefaults />} />
                     <Route path="admin/settings/withdrawal/overrides" element={<WithdrawalOverrides />} />
                     <Route path="admin/settings/withdrawal/policy" element={<WithdrawalPolicy />} />
+                    <Route path="admin/roles" element={<AdminRoles />} />
                     {/* Redirects from old paths */}
                     <Route path="admin/revenue" element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="admin/revenue/income-statement" element={<Navigate to="/admin/income-statement" replace />} />
@@ -1015,6 +1005,7 @@ export default function DashboardLayout() {
                     <Route path="dashboard" element={<UserTransactionsDashboard />} />
                     <Route path="wallet" element={<BalanceAccount />} />
                     <Route path="wallet/withdrawals" element={<BalanceWithdrawals />} />
+                    <Route path="wallet/withdrawals/:id" element={<WithdrawalDetail />} />
                     <Route path="wallet/withdraw/:coinNetworkId" element={<WithdrawRequest />} />
                     <Route path="wallet/new-address" element={<WalletCreate />} />
                     <Route path="wallet/verify-address" element={<WalletVerify />} />
