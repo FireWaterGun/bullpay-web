@@ -6,6 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getMyLedgerEntries } from '../../api/userLedger.ts'
 import { formatUsd } from '../../utils/format'
 import CoinImg from '../../components/CoinImg'
+import { listCoins } from '../../api/coins.ts'
 
 const ENTRY_CODE_LABELS = {
   'DP': 'Deposit',
@@ -66,6 +67,7 @@ export default function MyLedgerList() {
   const [entries, setEntries] = useState([])
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
+  const [coinNetworks, setCoinNetworks] = useState([])
 
   // Filter states (draft — applied on "Apply")
   const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
@@ -89,6 +91,10 @@ export default function MyLedgerList() {
   useEffect(() => {
     loadEntries()
   }, [currentPage, appliedFilters])
+
+  useEffect(() => {
+    listCoins(token).then(setCoinNetworks).catch(() => {})
+  }, [])
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -226,8 +232,53 @@ export default function MyLedgerList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })}</label>
-                  <input type="number" className="form-control" placeholder={t('filter.coinNetworkId', { defaultValue: 'Coin Network ID' })} value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
+                  <label className="form-label">{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</label>
+                  <div className="dropdown">
+                    <button
+                      className="btn btn-outline-secondary dropdown-toggle w-100 d-flex align-items-center justify-content-between"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{ textAlign: 'left' }}
+                    >
+                      {coinNetworkIdFilter ? (() => {
+                        const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
+                        if (!cn) return 'All'
+                        const sym = (cn.coin?.symbol || '').toUpperCase()
+                        const net = (cn.network?.symbol || '').toUpperCase()
+                        return (
+                          <span className="d-flex align-items-center gap-2">
+                            <CoinImg symbol={sym} networkSymbol={net} size={22} />
+                            <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
+                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
+                          </span>
+                        )
+                      })() : <span className="text-muted">All</span>}
+                    </button>
+                    <ul className="dropdown-menu w-100" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+                      <li>
+                        <button className="dropdown-item" onClick={() => setCoinNetworkIdFilter('')}>
+                          <span className="text-muted">All</span>
+                        </button>
+                      </li>
+                      <li><hr className="dropdown-divider" /></li>
+                      {coinNetworks.map((cn) => {
+                        const sym = (cn.coin?.symbol || '').toUpperCase()
+                        const net = (cn.network?.symbol || '').toUpperCase()
+                        return (
+                          <li key={cn.id}>
+                            <button className="dropdown-item d-flex align-items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
+                              <CoinImg symbol={sym} networkSymbol={net} size={28} />
+                              <div>
+                                <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
+                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{net}</div>
+                              </div>
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
                 </div>
                 <div className="col-md-3 col-sm-6">
                   <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
