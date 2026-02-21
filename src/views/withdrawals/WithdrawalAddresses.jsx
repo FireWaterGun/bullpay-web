@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
@@ -8,97 +8,16 @@ import {
   flagWithdrawalAddress,
   unflagWithdrawalAddress,
   forceVerifyWithdrawalAddress,
+  deleteWithdrawalAddress,
 } from '../../api/admin.ts'
-
-// Coin asset helpers
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ symbol, networkSymbol, size = 28 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, null),
-    [symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 16
-
-  return (
-    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
+import { copyToClipboard as copyText } from '../../utils/clipboard'
 
 export default function WithdrawalAddresses() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initStatus = searchParams.get('status') || ''
@@ -192,12 +111,10 @@ export default function WithdrawalAddresses() {
     }
   }
 
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-    }).catch(() => {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    })
+  async function handleCopy(text) {
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+    else toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
   }
 
   function formatDate(dateString) {
@@ -245,6 +162,8 @@ export default function WithdrawalAddresses() {
         return { title: 'Remove Flag', btnClass: 'btn-success', btnLabel: 'Unflag', icon: 'bx-check-circle' }
       case 'forceVerify':
         return { title: 'Force Verify', btnClass: 'btn-info', btnLabel: 'Verify', icon: 'bx-shield-quarter' }
+      case 'delete':
+        return { title: 'Permanent Delete', btnClass: 'btn-danger', btnLabel: 'Delete Permanently', icon: 'bx-trash' }
       default:
         return { title: '', btnClass: '', btnLabel: '', icon: '' }
     }
@@ -275,6 +194,10 @@ export default function WithdrawalAddresses() {
         case 'forceVerify':
           await forceVerifyWithdrawalAddress(token, selectedAddress.id, actionReason.trim(), skipLockPeriod)
           toast.success('Address force verified successfully')
+          break
+        case 'delete':
+          await deleteWithdrawalAddress(token, selectedAddress.id, actionReason.trim())
+          toast.success('Address permanently deleted')
           break
       }
 
@@ -353,6 +276,14 @@ export default function WithdrawalAddresses() {
                   <input type="number" className="form-control" placeholder="Coin Network ID" value={coinNetworkIdFilter} onChange={(e) => setCoinNetworkIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-2 col-sm-6">
+                  <label className="form-label">Flagged</label>
+                  <select className="form-select" value={isFlaggedFilter} onChange={(e) => setIsFlaggedFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="true">Flagged</option>
+                    <option value="false">Not Flagged</option>
+                  </select>
+                </div>
+                <div className="col-md-2 col-sm-6">
                   <label className="form-label">Verified</label>
                   <select className="form-select" value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
                     <option value="">All</option>
@@ -388,6 +319,9 @@ export default function WithdrawalAddresses() {
                       <th>Address</th>
                       <th className="text-center">Status</th>
                       <th className="text-center">Verified</th>
+                      <th className="text-center">Flagged</th>
+                      <th className="text-end">Usage</th>
+                      <th className="text-end">Withdrawn</th>
                       <th className="text-center">Actions</th>
                       <th>Created</th>
                     </tr>
@@ -395,30 +329,30 @@ export default function WithdrawalAddresses() {
                   <tbody>
                     {addresses.length === 0 ? (
                       <tr>
-                        <td colSpan="9" className="text-center text-muted py-4">
+                        <td colSpan="12" className="text-center text-muted py-4">
                           No withdrawal addresses found
                         </td>
                       </tr>
                     ) : (
                       addresses.map((addr) => {
-                        const coinSymbol = (addr.coinNetwork?.coin?.symbol || addr.coinSymbol || '').toUpperCase()
-                        const networkSymbol = (addr.coinNetwork?.network?.symbol || addr.networkSymbol || '').toUpperCase()
-                        const networkName = addr.coinNetwork?.network?.name || addr.networkName || ''
+                        const coinSymbol = (addr.coinSymbol || '').toUpperCase()
+                        const networkSymbol = (addr.networkSymbol || '').toUpperCase()
                         const isPending = addr.status === 'pending_verification'
-                        const isFlagged = addr.isFlagged
+                        const isFlagged = !!addr.isFlagged
+                        const isVerified = !!addr.isVerified
 
                         return (
-                          <tr key={addr.id}>
+                          <tr key={addr.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/withdrawal-addresses/${addr.id}`)}>
                             <td>
                               <span className="fw-semibold text-primary">{addr.id}</span>
                             </td>
                             <td className="text-center">{addr.userId}</td>
                             <td>
                               <div className="d-flex align-items-center">
-                                <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} />
+                                <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={28} className="me-2" />
                                 <div>
                                   <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{coinSymbol}</div>
-                                  <div className="text-muted" style={{ fontSize: '0.75rem' }}>{networkName || networkSymbol}</div>
+                                  <div className="text-muted" style={{ fontSize: '0.75rem' }}>{networkSymbol}</div>
                                 </div>
                               </div>
                             </td>
@@ -426,14 +360,14 @@ export default function WithdrawalAddresses() {
                               <span className="text-muted" style={{ fontSize: '0.85rem' }}>{addr.label || '-'}</span>
                             </td>
                             <td>
-                              <div className="d-flex align-items-center gap-1">
-                                <span style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                              <div className="d-flex align-items-center gap-1" style={{ whiteSpace: 'nowrap' }}>
+                                <span style={{ fontSize: '0.8rem' }}>
                                   {addr.address || 'N/A'}
                                 </span>
                                 {addr.address && (
                                   <button
                                     className="btn btn-sm p-0 border-0 text-muted"
-                                    onClick={() => copyToClipboard(addr.address)}
+                                    onClick={(e) => { e.stopPropagation(); handleCopy(addr.address) }}
                                     title="Copy address"
                                     style={{ flexShrink: 0 }}
                                   >
@@ -448,14 +382,27 @@ export default function WithdrawalAddresses() {
                               </span>
                             </td>
                             <td className="text-center">
-                              {addr.isVerified ? (
+                              {isVerified ? (
                                 <i className="bx bx-check-circle text-success" style={{ fontSize: '1.1rem' }}></i>
                               ) : (
                                 <i className="bx bx-x-circle text-muted" style={{ fontSize: '1.1rem' }}></i>
                               )}
                             </td>
                             <td className="text-center">
-                              <div className="dropdown">
+                              {isFlagged ? (
+                                <span className="badge bg-label-warning"><i className="bx bx-flag me-1"></i>Flagged</span>
+                              ) : (
+                                <span className="text-muted">—</span>
+                              )}
+                            </td>
+                            <td className="text-end">
+                              <span className="fw-medium">{addr.usageCount ?? 0}</span>
+                            </td>
+                            <td className="text-end">
+                              <span className="fw-medium">{addr.totalWithdrawn || '0'}</span>
+                            </td>
+                            <td className="text-center">
+                              <div className="dropdown" onClick={(e) => e.stopPropagation()}>
                                 <button
                                   className="btn btn-sm btn-outline-secondary dropdown-toggle"
                                   type="button"
@@ -479,12 +426,22 @@ export default function WithdrawalAddresses() {
                                       </button>
                                     </li>
                                   )}
-                                  {isPending && (
+                                  {!isVerified && (
                                     <li>
                                       <button className="dropdown-item" onClick={() => openActionModal('forceVerify', addr)}>
                                         <i className="bx bx-shield-quarter me-2 text-info"></i>Force Verify
                                       </button>
                                     </li>
+                                  )}
+                                  {addr.status !== 'deleted' && (
+                                    <>
+                                      <li><hr className="dropdown-divider" /></li>
+                                      <li>
+                                        <button className="dropdown-item text-danger" onClick={() => openActionModal('delete', addr)}>
+                                          <i className="bx bx-trash me-2"></i>Delete Permanently
+                                        </button>
+                                      </li>
+                                    </>
                                   )}
                                 </ul>
                               </div>

@@ -5,41 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { getWallet, updateWallet, deleteWallet } from '../../api/wallets'
 import ConfirmModal from '../../components/ConfirmModal'
 import { listCoins, getCoinNetworksBySymbol } from '../../api/coins'
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    // USDT and network-specific variants
-    usdt: ['usdterc20', 'tether'],
-    usdttrc20: ['usdt', 'tether'],
-    usdterc20: ['usdt', 'tether'],
-    usdtbsc: ['usdt', 'tether'],
-    usdtbep20: ['usdt', 'tether'],
-    usdte: ['usdt', 'tether'],
-    usdtton: ['usdtton', 'usdt', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
-  const candidates = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, size = 36 }) {
-  const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => getCoinAssetCandidates(symbol, coin?.logoUrl), [coin?.logoUrl, symbol])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  return <img src={src} alt={symbol} width={size} height={size} className="rounded" onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))} />
-}
+import CoinImg from '../../components/CoinImg'
 
 export default function WalletEdit() {
   const { id } = useParams()
@@ -169,7 +135,7 @@ export default function WalletEdit() {
                       <div className="col-6 col-md-4 col-lg-3" key={sym}>
                         <div role="button" className={`card h-100 border-2 ${isActive ? 'border-primary bg-label-primary' : ''}`} onClick={() => setSelectedCoin(sym)}>
                           <div className="card-body d-flex align-items-center gap-2">
-                            <CoinImg coin={coinMetaBySymbol[sym] || group.coin} symbol={sym} />
+                            <CoinImg coin={coinMetaBySymbol[sym] || group.coin} symbol={sym} size={36} imgClassName="rounded" />
                             <div className="fw-bold">{sym}</div>
                           </div>
                         </div>

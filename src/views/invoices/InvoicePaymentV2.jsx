@@ -8,81 +8,7 @@ import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
 import { useToastContext } from '../../context/ToastContext'
 
-// Network icon component
-function NetworkIcon({ networkSymbol, size = 24 }) {
-  const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => {
-    const sym = String(networkSymbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-    const aliases = {
-      eth: ['ethereum'],
-      bsc: ['binance', 'bnb'],
-      matic: ['polygon'],
-      polygon: ['polygon', 'matic'],
-      arbitrum: ['arbitrum'],
-      optimism: ['optimism'],
-      avalanche: ['avalanche', 'avax'],
-      fantom: ['fantom', 'ftm'],
-      base: ['base'],
-      tron: ['tron', 'trx'],
-    }
-    const names = [sym, ...(aliases[sym] || [])]
-    const exts = ['svg', 'png']
-    const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/networks/${n}.${ext}`))
-    const byCoinFallback = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-    const arr = [...byAssets, ...byCoinFallback, '/assets/img/coins/default.svg']
-    return Array.from(new Set(arr))
-  }, [networkSymbol])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  return (
-    <img
-      src={src}
-      alt={networkSymbol}
-      width={size}
-      height={size}
-      className="rounded-circle"
-      style={{ objectFit: 'cover' }}
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-    />
-  )
-}
-
-// Coin image component
-function CoinImg({ symbol, logoUrl, size = 32 }) {
-  const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => {
-    const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-    const aliases = {
-      btc: ['bitcoin'],
-      eth: ['ethereum'],
-      doge: ['dogecoin'],
-      sol: ['solana'],
-      matic: ['polygon'],
-      pol: ['polygon'],
-      ada: ['cardano'],
-      xmr: ['monero'],
-      zec: ['zcash'],
-      usdt: ['usdterc20', 'tether'],
-    }
-    const names = [sym, ...(aliases[sym] || [])]
-    if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-    const exts = ['svg', 'png']
-    const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-    const arr = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
-    return Array.from(new Set(arr))
-  }, [symbol, logoUrl])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      className="rounded-circle"
-      style={{ objectFit: 'cover' }}
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-    />
-  )
-}
+import CoinImg, { NetworkIcon } from '../../components/CoinImg'
 
 export default function InvoicePaymentV2() {
   const { t } = useTranslation()
@@ -255,7 +181,6 @@ export default function InvoicePaymentV2() {
   // Subscribe to Pusher events for real-time updates
   useInvoiceEvents(invoice?.invoiceId || invoice?.id, {
     onPaymentReceived: (data) => {
-      console.log('Payment received via Pusher:', data)
       playNotificationSound('success')
       // Show toast notification
       toast.success({
@@ -268,7 +193,6 @@ export default function InvoicePaymentV2() {
       setTimeout(() => loadInvoice(false), 1000)
     },
     onStatusChanged: (data) => {
-      console.log('Status changed via Pusher:', data)
       // Check if it's a payment completion notification
       if (data.type === 'invoice_completed' || data.status === 'paid') {
         playNotificationSound('success')
@@ -286,7 +210,6 @@ export default function InvoicePaymentV2() {
       setTimeout(() => loadInvoice(false), 1000)
     },
     onUpdated: (data) => {
-      console.log('Invoice updated via Pusher:', data)
       // Show toast notification
       toast.info({
         title: data.title || t('payment.invoiceUpdated') || 'Invoice Updated',
@@ -296,7 +219,6 @@ export default function InvoicePaymentV2() {
       setTimeout(() => loadInvoice(false), 1000)
     },
     onPaymentCompleted: (data) => {
-      console.log('Payment completed via Pusher:', data)
       playNotificationSound('success')
       toast.success({
         title: data.title || t('payment.paymentReceived') || 'Payment Completed',
@@ -622,7 +544,7 @@ export default function InvoicePaymentV2() {
                             border: '1px solid rgba(139, 92, 246, 0.15)'
                           }}>
                             <div className="d-flex align-items-center justify-content-center gap-3 mb-2">
-                              <CoinImg symbol={paymentData?.coinSymbol} size={40} />
+                              <CoinImg symbol={paymentData?.coinSymbol} size={40} imgClassName="rounded-circle" />
                               <div>
                                 <div style={{
                                   fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px',
@@ -893,7 +815,7 @@ export default function InvoicePaymentV2() {
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                   }}>
-                                    <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={28} />
+                                    <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={28} imgClassName="rounded-circle" />
                                   </div>
                                 </div>
                               </div>
@@ -927,7 +849,7 @@ export default function InvoicePaymentV2() {
                               }}>
                                 {/* Coin Icon and Name */}
                                 <div className="d-flex align-items-center justify-content-center gap-3 mb-3">
-                                  <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={48} />
+                                  <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={48} imgClassName="rounded-circle" />
                                   <div className="text-start">
                                     <div style={{
                                       fontSize: '1.25rem',

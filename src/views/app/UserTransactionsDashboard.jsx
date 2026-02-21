@@ -4,57 +4,11 @@ import { useAuth } from '../../context/AuthContext'
 import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '../../api/userTransactions.ts'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
 import { formatUsd as formatUsdShared, formatUsdSigned, formatChange } from '../../utils/format'
+import CoinImg from '../../components/CoinImg'
 
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'], eth: ['ethereum'], doge: ['dogecoin'], sol: ['solana'],
-    matic: ['polygon'], ada: ['cardano'], xmr: ['monero'], zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-  const candidates = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
-  return Array.from(new Set(candidates))
-}
-
-function networkNameToSymbol(name) {
-  const map = {
-    'bnb smart chain': 'bnb', 'bsc': 'bnb', 'optimism': 'op', 'polygon': 'matic',
-    'ethereum': 'eth', 'arbitrum': 'arb', 'avalanche': 'avax', 'base': 'base',
-    'solana': 'sol', 'tron': 'trx',
-  }
-  return map[String(name || '').toLowerCase()] || null
-}
-
-function CoinImg({ symbol, networkSymbol, networkName, size = 24 }) {
-  const resolvedNetworkSymbol = networkSymbol || networkNameToSymbol(networkName)
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(() => getCoinAssetCandidates(symbol, null), [symbol])
-  const networkCandidates = useMemo(() => getCoinAssetCandidates(resolvedNetworkSymbol, null), [resolvedNetworkSymbol])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 14
-
-  return (
-    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
-      <img src={src} alt={symbol} width={size} height={size} style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))} />
-      {resolvedNetworkSymbol && resolvedNetworkSymbol !== symbol?.toLowerCase() &&
-       !(symbol === 'POL' && resolvedNetworkSymbol === 'matic') && (
-        <div className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{ bottom: -2, right: -2, width: badgeSize, height: badgeSize, backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '1px' }}>
-          <img src={netSrc} alt={resolvedNetworkSymbol} width={badgeSize - 2} height={badgeSize - 2}
-            className="rounded-circle" style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))} />
-        </div>
-      )}
-    </div>
-  )
-}
+const summaryValueStyle = { fontSize: '1.75rem' }
+const changeTextStyle = { fontSize: '0.8rem' }
+const tableHeaderStyle = { fontSize: '0.8rem' }
 
 const formatCurrency = formatUsdSigned
 const formatCurrencyPlain = formatUsdShared
@@ -103,9 +57,9 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
           <div className="d-flex align-items-start justify-content-between">
             <div className="content-left">
               <span className="text-muted form-label">{title}</span>
-              <h3 className={`mb-0${valueColor ? ` text-${valueColor}` : ''}`} style={{ fontSize: '1.75rem' }}>{value}</h3>
+              <h3 className={`mb-0${valueColor ? ` text-${valueColor}` : ''}`} style={summaryValueStyle}>{value}</h3>
               {change !== undefined && change !== null && !isNaN(numChange) && (
-                <small className={changeColor} style={{ fontSize: '0.8rem' }}>
+                <small className={changeColor} style={changeTextStyle}>
                   <i className={`bx ${changeIcon}`}></i>
                   {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
                 </small>
@@ -393,48 +347,49 @@ export default function UserTransactionsDashboard() {
   const loadData = async () => {
     if (!token || !dateRange.from || !dateRange.to) return
     setError('')
-
-    // Load summary
     setLoadingSummary(true)
-    try {
-      const res = await getUserTransactionSummary(token, dateRange.from, dateRange.to)
-      setSummary(res)
-    } catch (e) {
-      console.error('Failed to load transaction summary:', e)
-      setError(e?.message || 'Failed to load summary')
-    } finally {
-      setLoadingSummary(false)
-    }
-
-    // Load daily
     setLoadingDaily(true)
-    try {
-      const res = await getUserTransactionDaily(token, dateRange.from, dateRange.to)
+    setLoadingByCoin(true)
+
+    const [summaryResult, dailyResult, byCoinResult] = await Promise.allSettled([
+      getUserTransactionSummary(token, dateRange.from, dateRange.to),
+      getUserTransactionDaily(token, dateRange.from, dateRange.to),
+      getUserTransactionByCoin(token, dateRange.from, dateRange.to),
+    ])
+
+    // Summary
+    if (summaryResult.status === 'fulfilled') {
+      setSummary(summaryResult.value)
+    } else {
+      console.error('Failed to load transaction summary:', summaryResult.reason)
+      setError(summaryResult.reason?.message || 'Failed to load summary')
+    }
+    setLoadingSummary(false)
+
+    // Daily
+    if (dailyResult.status === 'fulfilled') {
+      const res = dailyResult.value
       const items = res?.items || res || []
-      const chartData = items.map(item => ({
+      setDailyData(items.map(item => ({
         date: item.date,
         deposit: parseFloat(item.depositUsd || 0),
         withdrawal: parseFloat(item.withdrawalUsd || 0),
         netFlow: parseFloat(item.netFlowUsd || 0),
-      }))
-      setDailyData(chartData)
+      })))
       setDailyMeta(res?.meta || null)
-    } catch (e) {
-      console.error('Failed to load daily data:', e)
-    } finally {
-      setLoadingDaily(false)
+    } else {
+      console.error('Failed to load daily data:', dailyResult.reason)
     }
+    setLoadingDaily(false)
 
-    // Load by coin
-    setLoadingByCoin(true)
-    try {
-      const byCoinRes = await getUserTransactionByCoin(token, dateRange.from, dateRange.to)
-      setByCoinData(byCoinRes?.items || byCoinRes || [])
-    } catch (e) {
-      console.error('Failed to load by-coin data:', e)
-    } finally {
-      setLoadingByCoin(false)
+    // By coin
+    if (byCoinResult.status === 'fulfilled') {
+      const res = byCoinResult.value
+      setByCoinData(res?.items || res || [])
+    } else {
+      console.error('Failed to load by-coin data:', byCoinResult.reason)
     }
+    setLoadingByCoin(false)
   }
 
   useEffect(() => {
@@ -627,11 +582,11 @@ export default function UserTransactionsDashboard() {
                   <table className="table table-hover mb-0">
                     <thead className="table-light">
                       <tr>
-                        <th className="text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('userDashboard.deposits', { defaultValue: 'Deposits' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('userDashboard.feesCollected', { defaultValue: 'Fees' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted text-nowrap" style={{ fontSize: '0.8rem' }}>{t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}</th>
+                        <th className="text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('userDashboard.deposits', { defaultValue: 'Deposits' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('userDashboard.feesCollected', { defaultValue: 'Fees' })}</th>
+                        <th className="text-end text-uppercase fw-semibold text-muted text-nowrap" style={tableHeaderStyle}>{t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -653,7 +608,7 @@ export default function UserTransactionsDashboard() {
                               <tr key={index}>
                                 <td>
                                   <div className="d-flex align-items-center">
-                                    <CoinImg symbol={item.coinSymbol} size={24} />
+                                    <CoinImg symbol={item.coinSymbol} size={24} className="me-2" />
                                     <span className="fw-medium">{item.coinSymbol}</span>
                                     {item.networkName && (
                                       <small className="text-muted ms-1">/ {item.networkName}</small>

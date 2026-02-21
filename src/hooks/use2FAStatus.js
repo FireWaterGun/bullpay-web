@@ -34,9 +34,6 @@ export default function use2FAStatus() {
 
     try {
       const res = await get2FAStatus(token);
-      console.log('use2FAStatus - API response:', res);
-      console.log('use2FAStatus - res.data:', res?.data);
-      console.log('use2FAStatus - res.enabled:', res?.enabled);
       setStatus(res.data || res);
     } catch (err) {
       console.error("Failed to fetch 2FA status:", err);

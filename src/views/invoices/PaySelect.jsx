@@ -4,68 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { getPublicInvoice } from '../../api/invoices'
 import { listCoins } from '../../api/coins'
 
-// Coin image component (same as InvoicePaymentV2)
-function CoinImg({ symbol, logoUrl, size = 32 }) {
-  const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => {
-    const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-    const aliases = {
-      btc: ['bitcoin'], eth: ['ethereum'], doge: ['dogecoin'], sol: ['solana'],
-      matic: ['polygon'], pol: ['polygon'], ada: ['cardano'], xmr: ['monero'],
-      zec: ['zcash'], usdt: ['usdterc20', 'tether'],
-    }
-    const names = [sym, ...(aliases[sym] || [])]
-    if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-    const exts = ['svg', 'png']
-    const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-    const arr = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
-    return Array.from(new Set(arr))
-  }, [symbol, logoUrl])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      className="rounded-circle"
-      style={{ objectFit: 'cover' }}
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-    />
-  )
-}
-
-// Network icon component (same as InvoicePaymentV2)
-function NetworkIcon({ networkSymbol, size = 20 }) {
-  const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => {
-    const sym = String(networkSymbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-    const aliases = {
-      eth: ['ethereum'], bsc: ['binance', 'bnb'], matic: ['polygon'],
-      polygon: ['polygon', 'matic'], arbitrum: ['arbitrum'], optimism: ['optimism'],
-      avalanche: ['avalanche', 'avax'], fantom: ['fantom', 'ftm'],
-      base: ['base'], tron: ['tron', 'trx'],
-    }
-    const names = [sym, ...(aliases[sym] || [])]
-    const exts = ['svg', 'png']
-    const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/networks/${n}.${ext}`))
-    const byCoinFallback = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-    const arr = [...byAssets, ...byCoinFallback, '/assets/img/coins/default.svg']
-    return Array.from(new Set(arr))
-  }, [networkSymbol])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  return (
-    <img
-      src={src}
-      alt={networkSymbol}
-      width={size}
-      height={size}
-      className="rounded-circle"
-      style={{ objectFit: 'cover' }}
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-    />
-  )
-}
+import CoinImg, { NetworkIcon } from '../../components/CoinImg'
 
 export default function PaySelect() {
   const { t } = useTranslation()
@@ -402,7 +341,7 @@ export default function PaySelect() {
                                     >
                                       {/* Coin Icon */}
                                       <div className="position-relative" style={{ flexShrink: 0 }}>
-                                        <CoinImg symbol={group.symbol} logoUrl={group.logoUrl} size={40} />
+                                        <CoinImg symbol={group.symbol} logoUrl={group.logoUrl} size={40} imgClassName="rounded-circle" />
                                         {netSymbol && (
                                           <div className="position-absolute" style={{
                                             bottom: -2, right: -2,

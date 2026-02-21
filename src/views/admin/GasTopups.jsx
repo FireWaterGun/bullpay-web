@@ -7,91 +7,8 @@ import { getGasTopups } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import { formatCoinAmount } from '../../utils/format'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
-
-// Coin asset helpers
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ symbol, networkSymbol, size = 28 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, null),
-    [symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 16
-
-  return (
-    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
+import { copyToClipboard as copyText } from '../../utils/clipboard'
 
 export default function GasTopups() {
   const { t, i18n } = useTranslation()
@@ -203,12 +120,9 @@ export default function GasTopups() {
     }
   }
 
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-    }).catch(() => {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    })
+  async function handleCopy(text) {
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
   function formatDate(dateString) {
@@ -366,7 +280,7 @@ export default function GasTopups() {
                             </td>
                             <td>
                               <div className="d-flex align-items-center">
-                                <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} />
+                                <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={28} className="me-2" />
                                 <div>
                                   <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{coinSymbol}</div>
                                   <div className="text-muted" style={{ fontSize: '0.75rem' }}>{networkName || networkSymbol}</div>
@@ -401,7 +315,7 @@ export default function GasTopups() {
                                   <span className="me-2">{topup.txHash}</span>
                                   <button
                                     className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => copyToClipboard(topup.txHash)}
+                                    onClick={() => handleCopy(topup.txHash)}
                                     title="Copy tx hash"
                                   >
                                     <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
@@ -417,7 +331,7 @@ export default function GasTopups() {
                                   <span className="me-2">{topup.fromAddress}</span>
                                   <button
                                     className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => copyToClipboard(topup.fromAddress)}
+                                    onClick={() => handleCopy(topup.fromAddress)}
                                     title="Copy address"
                                   >
                                     <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
@@ -433,7 +347,7 @@ export default function GasTopups() {
                                   <span className="me-2">{topup.toAddress}</span>
                                   <button
                                     className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => copyToClipboard(topup.toAddress)}
+                                    onClick={() => handleCopy(topup.toAddress)}
                                     title="Copy address"
                                   >
                                     <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>

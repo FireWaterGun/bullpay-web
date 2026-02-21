@@ -7,134 +7,9 @@ import { listCoins } from '../../api/coins'
 import { listWallets } from '../../api/wallets'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import { formatCoinAmount } from '../../utils/format'
+import { copyToClipboard } from '../../utils/clipboard'
 import { useUserInvoiceEvents } from '../../hooks/useInvoiceEvents'
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-    usdc: ['usd-coin'],
-    bnb: ['binance'],
-    bsc: ['binance'],
-    trx: ['tron'],
-    arb: ['arbitrum'],
-    op: ['optimism'],
-    base: ['base'],
-    ln: ['lightning'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const [showFallback, setShowFallback] = useState(false)
-  const logoUrl = coin?.logoUrl || coin?.logo_url
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, logoUrl).filter(c => !c.includes('default.svg')),
-    [logoUrl, symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 18
-
-  const handleError = () => {
-    if (idx + 1 < candidates.length) {
-      setIdx(i => i + 1)
-    } else {
-      setShowFallback(true)
-    }
-  }
-
-  const getAvatarColor = (text) => {
-    const colors = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD']
-    const colorIndex = text.charCodeAt(0) % colors.length
-    return colors[colorIndex]
-  }
-
-  if (candidates.length === 0 || showFallback) {
-    return (
-      <div className="position-relative me-3">
-        <div
-          style={{
-            width: size,
-            height: size,
-            borderRadius: '8px',
-            backgroundColor: getAvatarColor(symbol || 'C'),
-            color: '#fff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: size * 0.5,
-            fontWeight: 'bold'
-          }}
-        >
-          {(symbol || 'C').charAt(0).toUpperCase()}
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="position-relative me-3" style={{ width: size, height: size }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={handleError}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 function formatAmount(amountRaw, decimals = 18) {
   if (!amountRaw) return '0'
@@ -241,7 +116,6 @@ export default function BalanceWithdrawals() {
   const userIdentifier = user?.id || user?.userId || user?.email
   useUserInvoiceEvents(userIdentifier, {
     onWithdrawalCompleted: () => {
-      console.log('[BalanceWithdrawals] 💸 Withdrawal completed, reloading list...')
       loadWithdrawals()
     }
   })
@@ -260,14 +134,10 @@ export default function BalanceWithdrawals() {
   const [copiedMap, setCopiedMap] = useState({})
   async function copyAddress(text, key) {
     if (!text) return
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text)
-      }
+    const ok = await copyToClipboard(text)
+    if (ok) {
       setCopiedMap(m => ({ ...m, [key]: true }))
       setTimeout(() => setCopiedMap(m => ({ ...m, [key]: false })), 1500)
-    } catch {
-      // ignore
     }
   }
 
@@ -367,7 +237,7 @@ export default function BalanceWithdrawals() {
                           </td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} />
+                              <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} className="me-3" showFallback />
                               <div>
                                 <div>{coinSym}</div>
                                 <small className="text-muted">{networkName}</small>
@@ -474,7 +344,7 @@ export default function BalanceWithdrawals() {
                         </td>
                         <td>
                           <div className="d-flex align-items-center">
-                            <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} />
+                            <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} className="me-3" showFallback />
                             <div>
                               <div>{sym}</div>
                               <small className="text-muted">{networkName}</small>

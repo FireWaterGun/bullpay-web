@@ -2,9 +2,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import Turnstile from 'react-turnstile'
 import { forgotPasswordApi } from '../../api/auth.ts'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 
 export default function ForgotPage() {
   const navigate = useNavigate()

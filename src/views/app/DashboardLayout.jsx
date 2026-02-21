@@ -1,248 +1,70 @@
-import { Routes, Route, NavLink, Navigate, useNavigate, useMatch, useResolvedPath, useLocation } from 'react-router-dom'
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { useUserInvoiceEvents, useSystemNotifications } from '../../hooks/useInvoiceEvents'
 import { notifyPaymentReceived, playNotificationSound, initAudioContext } from '../../utils/notification'
-import { getPaymentStats, getSystemWalletStats, getWithdrawals } from '../../api/admin.ts'
-import { AmountNormalizer } from '../../utils/amount_normalizer'
+import { getSystemWalletStats, getWithdrawals } from '../../api/admin.ts'
 import { formatUsd } from '../../utils/format'
 import { getBalancesWithFiat } from '../../api/balance.ts'
-import {
-  getNotifications,
-  getUnreadCount,
-  markAsRead,
-  markAllAsRead,
-  getNotificationIcon,
-  getNotificationColor,
-  formatNotificationTime
-} from '../../api/notifications.ts'
-
-// Remove inline page components and import split components
-import DashboardHome from './DashboardHome'
-import UserTransactionsDashboard from './UserTransactionsDashboard'
-import Settings from './Settings'
-import WalletCreate from '../wallets/WalletCreate'
-import WalletList from '../wallets/WalletList'
-import WalletEdit from '../wallets/WalletEdit'
-import WalletVerify from '../wallets/WalletVerify'
-import InvoiceList from '../invoices/InvoiceList'
-import InvoiceCreate from '../invoices/InvoiceCreate'
-import InvoiceDetail from '../invoices/InvoiceDetail'
-import InvoicePayment from '../invoices/InvoicePayment'
-import Balance from '../balance/Balance'
-import BalanceAccount from '../balance/BalanceAccount'
-import BalanceWithdrawals from '../balance/BalanceWithdrawals'
-import WithdrawRequest from '../balance/WithdrawRequest'
-import WithdrawalDetail from '../balance/WithdrawalDetail'
-import Dashboard from '../admin/Dashboard'
-import RevenueDashboard from '../admin/RevenueDashboard'
-import SystemBalance from '../admin/SystemBalance'
-import WalletTransaction from '../admin/WalletTransaction'
-import CoinList from '../crypto/CoinList'
-import CoinForm from '../crypto/CoinForm'
-import NetworkList from '../crypto/NetworkList'
-import NetworkForm from '../crypto/NetworkForm'
-import SupportedCrypto from '../crypto/SupportedCrypto'
-import SupportedCryptoForm from '../crypto/SupportedCryptoForm'
-import Sweep from '../admin/Sweep'
-import SweepOverrides from '../admin/SweepOverrides'
-import SweepTransactions from '../admin/SweepTransactions'
-import GasTopups from '../admin/GasTopups'
-import GasTopupDetail from '../admin/GasTopupDetail'
-import SweepDetail from '../admin/SweepDetail'
-import WithdrawalDefaults from '../admin/WithdrawalDefaults'
-import WithdrawalOverrides from '../admin/WithdrawalOverrides'
-import WithdrawalPolicy from '../admin/WithdrawalPolicy'
-import WithdrawalTransactions from '../withdrawals/WithdrawalTransactions'
-import WithdrawalAddresses from '../withdrawals/WithdrawalAddresses'
-import UserList from '../admin/UserList'
-import MerchantList from '../admin/MerchantList'
-import MerchantSettings from '../merchant/MerchantSettings'
-import AdminSettings from '../admin/AdminSettings'
-import LedgerTransactions from '../ledger/LedgerTransactions'
-import SystemLedgerList from '../ledger/SystemLedgerList'
-import SystemLedgerDetail from '../ledger/SystemLedgerDetail'
-import UserLedgerList from '../ledger/UserLedgerList'
-import UserLedgerDetail from '../ledger/UserLedgerDetail'
-import AdminInvoiceList from '../admin/AdminInvoiceList'
-import AdminInvoiceDetail from '../admin/AdminInvoiceDetail'
-import AdminPaymentList from '../admin/AdminPaymentList'
-import AdminPaymentDetail from '../admin/AdminPaymentDetail'
-import PlatformLedgerList from '../ledger/PlatformLedgerList'
-import PlatformLedgerDetail from '../ledger/PlatformLedgerDetail'
-import IncomeStatement from '../ledger/IncomeStatement'
-import MyLedgerList from '../ledger/MyLedgerList'
-import MyLedgerDetail from '../ledger/MyLedgerDetail'
-import EVMFeePolicy from '../admin/EVMFeePolicy'
-import NetworkFees from '../admin/NetworkFees'
-
-function MenuItem({ to, icon, label, end }) {
-  const location = useLocation()
-  const resolved = useResolvedPath(to)
-  const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
-  const remaining = location.pathname.slice(resolved.pathname.length)
-  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/') && /^\/\d+/.test(remaining)
-  const isActive = !!exactMatch || isDetailMatch
-  return (
-    <li className={`menu-item ${isActive ? 'active' : ''}`}>
-      <NavLink to={to} end={end} className="menu-link" onClick={(e) => { /* close handled at aside */ }}>
-        <i className={`menu-icon bx ${icon}`}></i>
-        <div>{label}</div>
-      </NavLink>
-    </li>
-  )
-}
-
-function SubItem({ to, label, end }) {
-  const location = useLocation()
-  const resolved = useResolvedPath(to)
-  const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
-  const remaining = location.pathname.slice(resolved.pathname.length)
-  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/') && /^\/\d+/.test(remaining)
-  const isActive = !!exactMatch || isDetailMatch
-  return (
-    <li className={`menu-item ${isActive ? 'active' : ''}`}>
-      <NavLink to={to} end={end} className="menu-link">
-        <div>{label}</div>
-      </NavLink>
-    </li>
-  )
-}
-
-function SubMenuGroup({ base, label, children }) {
-  const resolved = useResolvedPath(base)
-  const match = useMatch({ path: `${resolved.pathname}/*`, end: false })
-  const [open, setOpen] = useState(!!match)
-  const isActive = !!match
-  const toggle = (e) => { e.preventDefault(); setOpen((v) => !v) }
-  const subRef = useRef(null)
-
-  useEffect(() => {
-    setOpen(!!match)
-  }, [match])
-
-  useEffect(() => {
-    const sub = subRef.current
-    if (!sub) return
-
-    if (open) {
-      sub.style.maxHeight = '2000px'
-    } else {
-      sub.style.maxHeight = '0px'
-    }
-  }, [open])
-
-  return (
-    <li className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`}>
-      <a href="#" onClick={toggle} className="menu-link menu-toggle">
-        <div>{label}</div>
-      </a>
-      <ul className="menu-sub" ref={subRef} style={{
-        maxHeight: open ? '2000px' : '0px',
-        overflow: 'hidden',
-        transition: 'max-height 0.3s ease-in-out'
-      }}>
-        {children}
-      </ul>
-    </li>
-  )
-}
-
-function MenuGroup({ base, icon, label, children, matchPaths, badge }) {
-  const location = useLocation()
-  const resolved = useResolvedPath(base)
-
-  // Check if current path matches base or any of the matchPaths
-  const isMatched = matchPaths
-    ? matchPaths.some(path => location.pathname.startsWith(path))
-    : location.pathname.startsWith(resolved.pathname) && location.pathname !== resolved.pathname
-
-  const [open, setOpen] = useState(isMatched)
-  const isActive = isMatched
-  const toggle = (e) => { e.preventDefault(); setOpen((v) => !v) }
-  const isCollapsed = typeof document !== 'undefined' && document.documentElement.classList.contains('layout-menu-collapsed')
-  const handleEnter = () => { if (isCollapsed) setOpen(true) }
-  const handleLeave = () => { if (isCollapsed) setOpen(false) }
-  // Keep group in sync with route when not collapsed
-  useEffect(() => { if (!isCollapsed) setOpen(isMatched) }, [isMatched, isCollapsed])
-
-  // Smooth collapse/expand (match Sneat .3s ease-in-out)
-  const subRef = useRef(null)
-  const liRef = useRef(null)
-  const prevOpen = useRef(open)
-
-  useEffect(() => {
-    const sub = subRef.current
-    const li = liRef.current
-    if (!sub) return
-
-    // Ensure transition style
-    sub.style.overflow = 'hidden'
-    sub.style.transition = 'max-height 0.3s ease-in-out'
-
-    const wasOpen = prevOpen.current
-    prevOpen.current = open
-
-    if (open) {
-      // Use a large value to accommodate nested menus
-      requestAnimationFrame(() => { sub.style.maxHeight = '3000px' })
-    } else {
-      if (wasOpen && li) li.classList.add('menu-item-closing')
-      requestAnimationFrame(() => { sub.style.maxHeight = '0px' })
-    }
-  }, [open])
-
-  useEffect(() => {
-    // Remove the closing class after transition ends
-    const sub = subRef.current
-    const li = liRef.current
-    if (!sub || !li) return
-    const onEnd = (e) => { if (e.propertyName === 'max-height') li.classList.remove('menu-item-closing') }
-    sub.addEventListener('transitionend', onEnd)
-    return () => sub.removeEventListener('transitionend', onEnd)
-  }, [])
-
-  useEffect(() => {
-    // Keep maxHeight large to accommodate nested menus
-    const el = subRef.current
-    if (!el) return
-    const handle = () => { if (open) el.style.maxHeight = '3000px' }
-    window.addEventListener('resize', handle)
-    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(handle) : null
-    if (ro) ro.observe(el)
-    return () => { window.removeEventListener('resize', handle); if (ro) ro.disconnect() }
-  }, [open])
-
-  return (
-    <li ref={liRef} className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-      <a href="#" className="menu-link menu-toggle" onClick={(e) => { e.preventDefault(); toggle(e) }} aria-expanded={open} aria-controls={`${label}-submenu`}>
-        <i className={`menu-icon bx ${icon}`}></i>
-        <div data-i18n={label}>{label}</div>
-        {badge > 0 && (
-          <span
-            className="badge rounded-pill bg-danger"
-            style={{
-              fontSize: '0.65rem',
-              lineHeight: '1',
-              padding: '3px 6px',
-              minWidth: '18px',
-              textAlign: 'center',
-              position: 'absolute',
-              right: '38px',
-            }}
-          >
-            {badge > 99 ? '99+' : badge}
-          </span>
-        )}
-      </a>
-      <ul id={`${label}-submenu`} className="menu-sub" ref={subRef} style={{ maxHeight: open ? '3000px' : 0, overflow: 'hidden' }}>
-        {children}
-      </ul>
-    </li>
-  )
-}
+// Layout components (eager — always visible)
+import { MenuItem, SubItem, MenuGroup } from './SidebarMenu'
+import NotificationDropdown from './NotificationDropdown'
+// Page components (lazy — loaded on navigation)
+const UserTransactionsDashboard = lazy(() => import('./UserTransactionsDashboard'))
+const Settings = lazy(() => import('./Settings'))
+const WalletCreate = lazy(() => import('../wallets/WalletCreate'))
+const WalletEdit = lazy(() => import('../wallets/WalletEdit'))
+const WalletVerify = lazy(() => import('../wallets/WalletVerify'))
+const InvoiceList = lazy(() => import('../invoices/InvoiceList'))
+const InvoiceCreate = lazy(() => import('../invoices/InvoiceCreate'))
+const InvoiceDetail = lazy(() => import('../invoices/InvoiceDetail'))
+const InvoicePayment = lazy(() => import('../invoices/InvoicePayment'))
+const BalanceAccount = lazy(() => import('../balance/BalanceAccount'))
+const BalanceWithdrawals = lazy(() => import('../balance/BalanceWithdrawals'))
+const WithdrawRequest = lazy(() => import('../balance/WithdrawRequest'))
+const WithdrawalDetail = lazy(() => import('../balance/WithdrawalDetail'))
+const RevenueDashboard = lazy(() => import('../admin/RevenueDashboard'))
+const SystemBalance = lazy(() => import('../admin/SystemBalance'))
+const WalletTransaction = lazy(() => import('../admin/WalletTransaction'))
+const CoinList = lazy(() => import('../crypto/CoinList'))
+const CoinForm = lazy(() => import('../crypto/CoinForm'))
+const NetworkList = lazy(() => import('../crypto/NetworkList'))
+const NetworkForm = lazy(() => import('../crypto/NetworkForm'))
+const SupportedCrypto = lazy(() => import('../crypto/SupportedCrypto'))
+const SupportedCryptoForm = lazy(() => import('../crypto/SupportedCryptoForm'))
+const Sweep = lazy(() => import('../admin/Sweep'))
+const SweepOverrides = lazy(() => import('../admin/SweepOverrides'))
+const SweepTransactions = lazy(() => import('../admin/SweepTransactions'))
+const GasTopups = lazy(() => import('../admin/GasTopups'))
+const GasTopupDetail = lazy(() => import('../admin/GasTopupDetail'))
+const SweepDetail = lazy(() => import('../admin/SweepDetail'))
+const WithdrawalDefaults = lazy(() => import('../admin/WithdrawalDefaults'))
+const WithdrawalOverrides = lazy(() => import('../admin/WithdrawalOverrides'))
+const WithdrawalPolicy = lazy(() => import('../admin/WithdrawalPolicy'))
+const WithdrawalTransactions = lazy(() => import('../withdrawals/WithdrawalTransactions'))
+const WithdrawalAddresses = lazy(() => import('../withdrawals/WithdrawalAddresses'))
+const WithdrawalAddressDetail = lazy(() => import('../withdrawals/WithdrawalAddressDetail'))
+const UserList = lazy(() => import('../admin/UserList'))
+const MerchantList = lazy(() => import('../admin/MerchantList'))
+const MerchantSettings = lazy(() => import('../merchant/MerchantSettings'))
+const AdminSettings = lazy(() => import('../admin/AdminSettings'))
+const SystemLedgerList = lazy(() => import('../ledger/SystemLedgerList'))
+const SystemLedgerDetail = lazy(() => import('../ledger/SystemLedgerDetail'))
+const UserLedgerList = lazy(() => import('../ledger/UserLedgerList'))
+const UserLedgerDetail = lazy(() => import('../ledger/UserLedgerDetail'))
+const AdminInvoiceList = lazy(() => import('../admin/AdminInvoiceList'))
+const AdminInvoiceDetail = lazy(() => import('../admin/AdminInvoiceDetail'))
+const AdminPaymentList = lazy(() => import('../admin/AdminPaymentList'))
+const AdminPaymentDetail = lazy(() => import('../admin/AdminPaymentDetail'))
+const PlatformLedgerList = lazy(() => import('../ledger/PlatformLedgerList'))
+const PlatformLedgerDetail = lazy(() => import('../ledger/PlatformLedgerDetail'))
+const IncomeStatement = lazy(() => import('../ledger/IncomeStatement'))
+const MyLedgerList = lazy(() => import('../ledger/MyLedgerList'))
+const MyLedgerDetail = lazy(() => import('../ledger/MyLedgerDetail'))
+const EVMFeePolicy = lazy(() => import('../admin/EVMFeePolicy'))
+const NetworkFees = lazy(() => import('../admin/NetworkFees'))
 
 export default function DashboardLayout() {
   const navigate = useNavigate()
@@ -256,13 +78,11 @@ export default function DashboardLayout() {
   const LANG_STORAGE_KEY = 'ui_lang'
   const [theme, setTheme] = useState('light') // 'light' | 'dark' | 'system'
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
-  const { user, logout, isAdmin, token, hasMenu, hasPermission, navigation } = useAuth()
+  const { user, logout, isAdmin, token, hasMenu, navigation } = useAuth()
   const [fiatBalance, setFiatBalance] = useState({ currency: 'USD', amount: '0' })
 
-  // Notifications state
-  const [notifications, setNotifications] = useState([])
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [notificationsLoading, setNotificationsLoading] = useState(false)
+  // Ref to trigger notification refresh from Pusher callbacks
+  const notificationRefreshRef = useRef(null)
 
   // Pending withdrawal count for badge
   const [pendingWithdrawalCount, setPendingWithdrawalCount] = useState(0)
@@ -324,75 +144,14 @@ export default function DashboardLayout() {
     }
   }
 
-  // Load notifications
-  async function loadNotifications() {
-    if (!token) return
-
-    try {
-      setNotificationsLoading(true)
-      const [notifData, count] = await Promise.all([
-        getNotifications({ limit: 10, includeRead: false }, token),
-        getUnreadCount(token)
-      ])
-
-      setNotifications(notifData.items || [])
-      setUnreadCount(count)
-    } catch (error) {
-      console.error('Failed to load notifications:', error)
-    } finally {
-      setNotificationsLoading(false)
-    }
-  }
-
-  // Mark notification as read
-  async function handleMarkAsRead(notificationId) {
-    try {
-      await markAsRead([notificationId], token)
-      setNotifications(prev => prev.map(n =>
-        n.id === notificationId ? { ...n, isRead: true } : n
-      ))
-      setUnreadCount(prev => Math.max(0, prev - 1))
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error)
-    }
-  }
-
-  // Mark all as read
-  async function handleMarkAllAsRead() {
-    try {
-      await markAllAsRead(token)
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
-      setUnreadCount(0)
-    } catch (error) {
-      console.error('Failed to mark all as read:', error)
-    }
-  }
-
-  // Load notifications on mount
-  useEffect(() => {
-    if (token) {
-      loadNotifications()
-    }
-  }, [token])
-
-  // Log subscription info
-  useEffect(() => {
-    console.log('[DashboardLayout] 👤 User data:', user);
-    console.log('[DashboardLayout] 📋 User identifier:', userIdentifier);
-    if (userIdentifier) {
-      console.log('[DashboardLayout] 🔔 Will subscribe to channel: user.' + userIdentifier + '.invoices');
-    } else {
-      console.warn('[DashboardLayout] ⚠️ No user identifier found, cannot subscribe to Pusher');
-    }
-  }, [user, userIdentifier]);
+  const refreshNotifications = useCallback(() => {
+    notificationRefreshRef.current?.()
+  }, [])
 
   // Memoize Pusher event callbacks to prevent unnecessary re-subscriptions
-  const pusherCallbacks = useMemo(() => {
-    console.log('[DashboardLayout] 🔧 Creating Pusher callbacks');
-    return {
+  const pusherCallbacks = useMemo(() => ({
       onInvoiceCreated: (data) => {
-        console.log('[DashboardLayout] Event: invoice.created', data);
-        loadNotifications();
+        refreshNotifications();
         playNotificationSound('info');
         toast.info({
           title: 'New Invoice',
@@ -400,9 +159,7 @@ export default function DashboardLayout() {
         });
       },
       onInvoiceUpdated: (data) => {
-        console.log('[DashboardLayout] Event: invoice.updated', data);
-        loadNotifications();
-
+        refreshNotifications();
         playNotificationSound('info');
         toast.info({
           title: 'Invoice Updated',
@@ -410,8 +167,6 @@ export default function DashboardLayout() {
         });
       },
       onStatusChanged: (data) => {
-        console.log('[DashboardLayout] Event: invoice.status.changed', data);
-        // Check if it's a payment completion notification
         if (data.type === 'invoice_completed' || data.status === 'paid') {
           playNotificationSound('success');
           const invoiceData = {
@@ -431,10 +186,9 @@ export default function DashboardLayout() {
             body: data.body || `Invoice status changed to ${data.status}`
           });
         }
-        loadNotifications();
+        refreshNotifications();
       },
       onPaymentReceived: (data) => {
-        console.log('[DashboardLayout] Event: payment.received', data);
         playNotificationSound('success');
         const invoiceData = {
           id: data.invoiceId,
@@ -446,10 +200,9 @@ export default function DashboardLayout() {
           body: data.body || 'Payment has been received'
         });
         notifyPaymentReceived(invoiceData);
-        loadNotifications();
+        refreshNotifications();
       },
       onPaymentCompleted: (data) => {
-        console.log('[DashboardLayout] Event: payment_completed', data);
         playNotificationSound('success');
         const invoiceData = {
           id: data.metadata?.referenceId,
@@ -461,35 +214,31 @@ export default function DashboardLayout() {
           body: data.message || 'Payment has been completed successfully'
         });
         notifyPaymentReceived(invoiceData);
-        loadNotifications();
+        refreshNotifications();
       },
       onWithdrawalCompleted: (data) => {
-        console.log('[DashboardLayout] Event: withdrawal_completed', data);
         playNotificationSound('success');
         toast.success({
           title: data.title || 'Withdrawal Completed',
           body: data.message || 'Withdrawal has been completed successfully'
         });
-        loadNotifications();
+        refreshNotifications();
         loadPendingWithdrawalCount();
       }
-    };
-  }, []); // Empty array - create once and never change
+  }), []); // Empty array - create once and never change
 
   // Subscribe to Pusher events for real-time updates (global for all dashboard pages)
-  console.log('[DashboardLayout] 🔌 Calling useUserInvoiceEvents with userId:', userIdentifier);
   useUserInvoiceEvents(userIdentifier, pusherCallbacks);
 
   // Subscribe to system notifications for admin users (sweep_completed)
   useSystemNotifications(isAdmin, {
     onSweepCompleted: (data) => {
-      console.log('[DashboardLayout] 🧹 Sweep completed event:', data);
       playNotificationSound('success');
       toast.success({
         title: data.title || 'Sweep Completed',
         body: data.message || 'Sweep has been completed successfully'
       });
-      loadNotifications();
+      refreshNotifications();
     }
   });
 
@@ -791,93 +540,7 @@ export default function DashboardLayout() {
                 {/* /Theme Switcher */}
 
                 {/* Notifications */}
-                <li className="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-0">
-                  <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
-                    <span className="position-relative d-inline-block">
-                      <i className="icon-base bx bx-bell icon-md"></i>
-                      {unreadCount > 0 && <span className="badge-dot-notifications"></span>}
-                    </span>
-                  </a>
-                  <ul className="dropdown-menu dropdown-menu-end p-0">
-                    <li className="dropdown-menu-header border-bottom">
-                      <div className="dropdown-header d-flex align-items-center py-3">
-                        <h6 className="mb-0 me-auto">
-                          {t('notifications.title', { defaultValue: 'Notifications' })}
-                          {unreadCount > 0 && <span className="badge bg-primary ms-2">{unreadCount}</span>}
-                        </h6>
-                        <div className="dropdown-notifications-actions">
-                          <a
-                            href="#"
-                            className="dropdown-notifications-read"
-                            onClick={(e) => { e.preventDefault(); handleMarkAllAsRead() }}
-                            title={t('notifications.markAllRead', { defaultValue: 'Mark all as read' })}
-                          >
-                            <i className="bx bx-check-double"></i>
-                          </a>
-                        </div>
-                      </div>
-                    </li>
-                    <li className="dropdown-notifications-list scrollable-container">
-                      {notificationsLoading ? (
-                        <div className="d-flex align-items-center justify-content-center py-4" style={{ minHeight: '150px' }}>
-                          <div className="spinner-border spinner-border-sm text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      ) : notifications.length === 0 ? (
-                        <div className="d-flex flex-column align-items-center justify-content-center py-4 text-muted w-100" style={{ minHeight: '150px' }}>
-                          <i className="bx bx-bell-off mb-2" style={{ fontSize: '2rem' }}></i>
-                          <small>{t('notifications.noNotifications', { defaultValue: 'No notifications' })}</small>
-                        </div>
-                      ) : (
-                        <ul className="list-group list-group-flush">
-                          {notifications.map((notif) => (
-                            <li
-                              key={notif.id}
-                              className={`list-group-item list-group-item-action dropdown-notifications-item ${notif.isRead ? '' : 'unread'}`}
-                              onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}
-                              style={{ cursor: notif.isRead ? 'default' : 'pointer' }}
-                            >
-                              <div className="d-flex position-relative">
-                                <div className="flex-shrink-0 me-3">
-                                  <div className="avatar">
-                                    <span className={`avatar-initial rounded-circle bg-label-${getNotificationColor(notif.type)}`}>
-                                      <i className={`bx ${getNotificationIcon(notif.type)}`}></i>
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="flex-grow-1">
-                                  <h6 className="small mb-0">
-                                    {notif.title}
-                                  </h6>
-                                  <small className="mb-1 d-block text-body">{notif.message}</small>
-                                  <small className="text-muted" style={{ opacity: 0.5, fontSize: '0.75rem' }}>{formatNotificationTime(notif.createdAt)}</small>
-                                </div>
-                                {!notif.isRead && (
-                                  <div className="position-absolute" style={{ top: '50%', right: '16px', transform: 'translateY(-50%)' }}>
-                                    <span style={{
-                                      display: 'inline-block',
-                                      width: '10px',
-                                      height: '10px',
-                                      borderRadius: '50%',
-                                      backgroundColor: '#5f61e6'
-                                    }}></span>
-                                  </div>
-                                )}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                    <li className="dropdown-menu-footer border-top">
-                      <a href="#" className="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center" onClick={(e) => { e.preventDefault(); loadNotifications() }}>
-                        <i className="bx bx-refresh me-2"></i>
-                        {t('notifications.refresh', { defaultValue: 'Refresh' })}
-                      </a>
-                    </li>
-                  </ul>
-                </li>
+                <NotificationDropdown refreshRef={notificationRefreshRef} />
                 {/* /Notifications */}
 
                 {/* User */}
@@ -938,6 +601,7 @@ export default function DashboardLayout() {
             </div>
           </nav>
           <div className="content-wrapper">
+            <Suspense fallback={<div className="d-flex justify-content-center align-items-center py-5"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div></div>}>
             <div>
               <Routes>
                 {isAdmin ? (
@@ -954,6 +618,8 @@ export default function DashboardLayout() {
                     <Route path="admin/system-wallets/wallet/:walletId/transactions" element={<WalletTransaction />} />
                     <Route path="admin/withdrawals" element={<WithdrawalTransactions />} />
                     <Route path="admin/withdrawals/addresses" element={<WithdrawalAddresses />} />
+                    <Route path="admin/withdrawal-addresses" element={<WithdrawalAddresses />} />
+                    <Route path="admin/withdrawal-addresses/:id" element={<WithdrawalAddressDetail />} />
                     <Route path="admin/sweeps" element={<SweepTransactions />} />
                     <Route path="admin/sweeps/:id" element={<SweepDetail />} />
                     <Route path="admin/wallet-gas-topups" element={<GasTopups />} />
@@ -1019,6 +685,8 @@ export default function DashboardLayout() {
                     <Route path="wallets/create" element={<WalletCreate />} />
                     <Route path="wallets/:id/edit" element={<WalletEdit />} />
                     <Route path="wallets/verify" element={<WalletVerify />} />
+                    {/* Legacy paths that still need to work */}
+                    <Route path="app/balance/verify-address" element={<WalletVerify />} />
                     {/* Redirects from old paths */}
                     <Route path="app" element={<Navigate to="/dashboard" replace />} />
                     <Route path="app/*" element={<Navigate to="/dashboard" replace />} />
@@ -1027,6 +695,7 @@ export default function DashboardLayout() {
                 )}
               </Routes>
             </div>
+            </Suspense>
             <footer className="content-footer footer bg-footer-theme">
               <div className="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div className="mb-2 mb-md-0">© {new Date().getFullYear()} Bull Pay</div>

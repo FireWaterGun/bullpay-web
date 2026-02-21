@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
@@ -6,90 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getSystemWalletStats } from '../../api/admin.ts'
 import { formatAmount, formatUsd, formatCoinAmount } from '../../utils/format'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
-
-// Coin asset helpers
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
-    [coin?.logoUrl, symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 18
-  
-  return (
-    <div className="position-relative me-3" style={{ width: size, height: size }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol && 
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div 
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 export default function SystemBalance() {
   const { t } = useTranslation()
@@ -291,7 +208,7 @@ export default function SystemBalance() {
                             </td>
                             <td>
                               <div className="d-flex align-items-center">
-                                <CoinImg coin={coin} symbol={coinSymbol} networkSymbol={networkSymbol} size={32} />
+                                <CoinImg coin={coin} symbol={coinSymbol} networkSymbol={networkSymbol} size={32} className="me-3" />
                                 <div>
                                   <div>{coinSymbol || 'N/A'}</div>
                                   <small className="text-muted">{networkName || 'N/A'}</small>

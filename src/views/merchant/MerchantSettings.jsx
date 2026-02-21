@@ -10,6 +10,7 @@ import {
   updateWebhook,
 } from '../../api/merchant.ts'
 import { formatCommission } from '../../utils/format'
+import { copyToClipboard as copyText } from '../../utils/clipboard'
 
 function statusBadgeClass(status) {
   const s = String(status || '').toLowerCase()
@@ -32,11 +33,9 @@ function CredentialAlert({ credentials, warning, onDismiss, t }) {
   const [copiedKey, setCopiedKey] = useState(false)
   const [copiedSecret, setCopiedSecret] = useState(false)
 
-  function copyToClipboard(text, setter) {
-    navigator.clipboard.writeText(text).then(() => {
-      setter(true)
-      setTimeout(() => setter(false), 2000)
-    })
+  async function handleCopy(text, setter) {
+    const ok = await copyText(text)
+    if (ok) { setter(true); setTimeout(() => setter(false), 2000) }
   }
 
   return (
@@ -60,7 +59,7 @@ function CredentialAlert({ credentials, warning, onDismiss, t }) {
                 <label className="form-label fw-semibold mb-1">API Key</label>
                 <div className="input-group">
                   <input type="text" className="form-control font-monospace" value={credentials.apiKey} readOnly style={{ fontSize: '0.85rem' }} />
-                  <button className="btn btn-outline-secondary" onClick={() => copyToClipboard(credentials.apiKey, setCopiedKey)}>
+                  <button className="btn btn-outline-secondary" onClick={() => handleCopy(credentials.apiKey, setCopiedKey)}>
                     <i className={`bx ${copiedKey ? 'bx-check' : 'bx-copy'} me-1`}></i>
                     {copiedKey ? t('merchant.copied', { defaultValue: 'Copied!' }) : 'Copy'}
                   </button>
@@ -72,7 +71,7 @@ function CredentialAlert({ credentials, warning, onDismiss, t }) {
                 <label className="form-label fw-semibold mb-1">API Secret</label>
                 <div className="input-group">
                   <input type="text" className="form-control font-monospace" value={credentials.apiSecret} readOnly style={{ fontSize: '0.85rem' }} />
-                  <button className="btn btn-outline-secondary" onClick={() => copyToClipboard(credentials.apiSecret, setCopiedSecret)}>
+                  <button className="btn btn-outline-secondary" onClick={() => handleCopy(credentials.apiSecret, setCopiedSecret)}>
                     <i className={`bx ${copiedSecret ? 'bx-check' : 'bx-copy'} me-1`}></i>
                     {copiedSecret ? t('merchant.copied', { defaultValue: 'Copied!' }) : 'Copy'}
                   </button>
@@ -469,9 +468,9 @@ export default function MerchantSettings() {
                           {apiKey && (
                             <button
                               className="btn btn-sm btn-icon btn-text-secondary ms-2 flex-shrink-0"
-                              onClick={() => {
-                                navigator.clipboard.writeText(apiKey)
-                                toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
+                              onClick={async () => {
+                                const ok = await copyText(apiKey)
+                                if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
                               }}
                             >
                               <i className="bx bx-copy"></i>

@@ -4,107 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '../../api/admin'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
 import { formatUsdAuto, formatPercent as formatPercentShared, formatChange } from '../../utils/format'
-
-// Coin asset helpers
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function networkNameToSymbol(name) {
-  const map = {
-    'bnb smart chain': 'bnb',
-    'bsc': 'bnb',
-    'optimism': 'op',
-    'polygon': 'matic',
-    'ethereum': 'eth',
-    'arbitrum': 'arb',
-    'avalanche': 'avax',
-    'base': 'base',
-    'solana': 'sol',
-    'tron': 'trx',
-  }
-  return map[String(name || '').toLowerCase()] || null
-}
-
-function CoinImg({ symbol, networkSymbol, networkName, size = 24 }) {
-  const resolvedNetworkSymbol = networkSymbol || networkNameToSymbol(networkName)
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, null),
-    [symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(resolvedNetworkSymbol, null),
-    [resolvedNetworkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 14
-
-  return (
-    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {resolvedNetworkSymbol && resolvedNetworkSymbol !== symbol?.toLowerCase() &&
-       !(symbol === 'POL' && resolvedNetworkSymbol === 'matic') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '1px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={resolvedNetworkSymbol}
-            width={badgeSize - 2}
-            height={badgeSize - 2}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 const formatCurrency = formatUsdAuto
 const formatPercent = formatPercentShared
@@ -665,7 +565,7 @@ export default function RevenueDashboard() {
                               <tr key={index}>
                                 <td>
                                   <div className="d-flex align-items-center">
-                                    <CoinImg symbol={item.coinSymbol} size={24} />
+                                    <CoinImg symbol={item.coinSymbol} size={24} className="me-2" />
                                     <span className="fw-medium">{item.coinSymbol}</span>
                                     {item.networkName && (
                                       <small className="text-muted ms-1">/ {item.networkName}</small>

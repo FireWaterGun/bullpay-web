@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
@@ -6,90 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getUserLedgerEntries } from '../../api/admin.ts'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 import { formatUsd } from '../../utils/format'
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ symbol, networkSymbol, size = 24 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, null),
-    [symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 16
-
-  return (
-    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 export default function UserLedgerList() {
   const { t, i18n } = useTranslation()
@@ -207,38 +124,12 @@ export default function UserLedgerList() {
     return `${day}/${month}/${year} ${hours}:${minutes}`
   }
 
-  const entryCodeLabels = {
-    'SP': 'Settlement Payment',
-    'SC': 'Sweep Cost',
-    'SG': 'Sweep Gas',
-    'WA': 'Wallet Actual',
-    'WF': 'Wallet Fee',
-    'WG': 'Wallet Gas',
-    'WD': 'Withdrawal',
-    'DP': 'Deposit',
-    'FE': 'Fee',
-    'AJ': 'Adjustment',
-  }
-
   function stateBadge(state) {
     if (state === 'settled') return <span>Settled</span>
     if (state === 'committed') return <span>Committed</span>
     if (state === 'pending') return <span>Pending</span>
     if (state === 'reversed') return <span>Reversed</span>
     return <span className="text-muted">{state || 'N/A'}</span>
-  }
-
-  function truncateHash(hash) {
-    if (!hash) return ''
-    if (hash.length <= 16) return hash
-    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
-  }
-
-  function copyToClipboard(text, e) {
-    e.stopPropagation()
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-    })
   }
 
   function formatAmount(val) {
@@ -404,6 +295,7 @@ export default function UserLedgerList() {
                                   symbol={entry.coinSymbol}
                                   networkSymbol={entry.networkSymbol}
                                   size={24}
+                                  className="me-2"
                                 />
                                 <div>
                                   <div className="fw-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
@@ -424,8 +316,8 @@ export default function UserLedgerList() {
                               {stateBadge(entry.state)}
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className={`fw-medium ${isCredit ? 'text-success' : 'text-danger'}`}>
-                                {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
+                              <span className={`fw-medium ${entry.state === 'reversed' ? '' : (isCredit ? 'text-success' : 'text-danger')}`}>
+                                {entry.state === 'reversed' ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)}
                               </span>
                             </td>
                             <td className="text-end" style={{ whiteSpace: 'nowrap' }}>

@@ -8,41 +8,7 @@ import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
 import { useToastContext } from '../../context/ToastContext'
 
-// Coin image component
-function CoinImg({ symbol, logoUrl, size = 32 }) {
-  const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => {
-    const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-    const aliases = {
-      btc: ['bitcoin'],
-      eth: ['ethereum'],
-      doge: ['dogecoin'],
-      sol: ['solana'],
-      matic: ['polygon'],
-      ada: ['cardano'],
-      xmr: ['monero'],
-      zec: ['zcash'],
-      usdt: ['usdterc20', 'tether'],
-    }
-    const names = [sym, ...(aliases[sym] || [])]
-    if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-    const exts = ['svg', 'png']
-    const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-    const arr = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
-    return Array.from(new Set(arr))
-  }, [symbol, logoUrl])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      className="rounded"
-      onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-    />
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 export default function InvoicePayment() {
   const { t } = useTranslation()
@@ -141,7 +107,6 @@ export default function InvoicePayment() {
   // Subscribe to Pusher events for real-time updates
   useInvoiceEvents(invoice?.invoiceId || invoice?.id, {
     onPaymentReceived: (data) => {
-      console.log('Payment received via Pusher:', data)
       playNotificationSound('success')
       // Show toast notification
       toast.success({
@@ -154,7 +119,6 @@ export default function InvoicePayment() {
       setTimeout(() => refreshStatus(), 1000)
     },
     onStatusChanged: (data) => {
-      console.log('Status changed via Pusher:', data)
       // Check if it's a payment completion notification
       if (data.type === 'invoice_completed' || data.status === 'paid') {
         playNotificationSound('success')
@@ -172,7 +136,6 @@ export default function InvoicePayment() {
       setTimeout(() => refreshStatus(), 1000)
     },
     onUpdated: (data) => {
-      console.log('Invoice updated via Pusher:', data)
       // Show toast notification
       toast.info({
         title: data.title || 'Invoice Updated',
@@ -182,7 +145,6 @@ export default function InvoicePayment() {
       setTimeout(() => refreshStatus(), 1000)
     },
     onPaymentCompleted: (data) => {
-      console.log('Payment completed via Pusher:', data)
       playNotificationSound('success')
       toast.success({
         title: data.title || 'Payment Completed',
@@ -360,7 +322,7 @@ export default function InvoicePayment() {
                       </span>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={40} />
+                      <CoinImg symbol={coinSym} logoUrl={cn?.coin?.logoUrl} size={40} imgClassName="rounded" />
                       <div className="text-start">
                         <div className="fw-semibold">{coinSym}</div>
                         <div className="small text-muted">{networkName || 'Network'}</div>

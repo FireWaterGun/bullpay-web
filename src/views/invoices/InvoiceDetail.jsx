@@ -1,98 +1,11 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { NavLink, useParams, useNavigate } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
 import { useInvoiceEvents } from "../../hooks/useInvoiceEvents";
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-    usdc: ['usd-coin'],
-    bnb: ['binance'],
-    bsc: ['binance'],
-    trx: ['tron'],
-    arb: ['arbitrum'],
-    op: ['optimism'],
-    base: ['base'],
-    ln: ['lightning'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, networkSymbol, size = 40 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl),
-    [coin?.logoUrl, symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 20
-
-  return (
-    <div className="position-relative me-2" style={{ width: size, height: size }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 function CountdownTimer({ expiryAt }) {
   const { t } = useTranslation();
@@ -176,7 +89,6 @@ function CountdownTimer({ expiryAt }) {
 export default function InvoiceDetail() {
   const { t } = useTranslation();
   const { id } = useParams();
-  const navigate = useNavigate();
   const { token } = useAuth();
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -203,53 +115,15 @@ export default function InvoiceDetail() {
 
   // Subscribe to invoice events
   useInvoiceEvents(id, {
-    onPaymentReceived: (data) => {
-      console.log('💰 Payment received, reloading invoice data...');
-      loadInvoice();
-    },
-    onStatusChanged: (data) => {
-      console.log('🔄 Status changed, reloading invoice data...');
-      loadInvoice();
-    },
-    onUpdated: (data) => {
-      console.log('📝 Invoice updated, reloading invoice data...');
-      loadInvoice();
-    },
-    onPaymentCompleted: (data) => {
-      console.log('✅ Payment completed, reloading invoice data...');
-      loadInvoice();
-    },
+    onPaymentReceived: () => loadInvoice(),
+    onStatusChanged: () => loadInvoice(),
+    onUpdated: () => loadInvoice(),
+    onPaymentCompleted: () => loadInvoice(),
   });
 
   useEffect(() => {
-    let mounted = true;
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const invoiceRes = await getInvoice(id, token);
-        console.log('📋 Invoice loaded:', invoiceRes);
-        console.log('💰 Payments array:', invoiceRes?.payments);
-        console.log('📊 Payments count:', Array.isArray(invoiceRes?.payments) ? invoiceRes.payments.length : 'Not an array');
-        if (mounted) {
-          setInvoice(invoiceRes);
-        }
-      } catch (e) {
-        if (mounted)
-          setError(
-            typeof e?.message === "string"
-              ? e.message
-              : "Failed to load invoice"
-          );
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [id, token]);
+    loadInvoice();
+  }, [loadInvoice]);
 
   // Note: Pusher subscription is handled globally in DashboardLayout
   // No need to subscribe here to avoid duplicate notifications
@@ -384,7 +258,7 @@ export default function InvoiceDetail() {
                     <div className="col-md-3">
                       <label className="form-label">{t("invoices.coin") || "Coin"}</label>
                       <div className="d-flex align-items-center">
-                        <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} size={32} />
+                        <CoinImg coin={cn?.coin} symbol={coinSym} networkSymbol={networkSym} size={32} className="me-2" />
                         <div>
                           <div className="fw-medium">{coinSym}</div>
                           <div className="text-muted small">{networkName}</div>

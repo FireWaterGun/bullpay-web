@@ -138,9 +138,7 @@ export default function EVMFeePolicy() {
         return
       }
       
-      for (const update of updates) {
-        await updateSweepSetting(token, update.key, update.value)
-      }
+      await Promise.all(updates.map(u => updateSweepSetting(token, u.key, u.value)))
       
       const updatedSettings = updates.map(u => {
         const keyName = u.key.replace('evm.fee_policy.', '').replace(/_/g, ' ')

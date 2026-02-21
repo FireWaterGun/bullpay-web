@@ -1,19 +1,21 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
-import LandingPage from '../views/landing/LandingPage'
-import LoginPage from '../views/auth/LoginPage'
-import RegisterPage from '../views/auth/RegisterPage'
-import ForgotPage from '../views/auth/ForgotPage'
-import ForgotCompletePage from '../views/auth/ForgotCompletePage'
-import RegisterCompletePage from '../views/auth/RegisterCompletePage'
+import { lazy, Suspense, useEffect } from 'react'
+import ErrorBoundary from '../components/ErrorBoundary'
 import DashboardLayout from '../views/app/DashboardLayout'
 import { AuthProvider, useAuth } from '../context/AuthContext'
 import { PusherProvider } from '../context/PusherContext'
 import { ToastProvider } from '../context/ToastContext'
-import InvoicePayment from '../views/invoices/InvoicePayment'
-import InvoicePaymentV2 from '../views/invoices/InvoicePaymentV2'
-import PaySelect from '../views/invoices/PaySelect'
-import VerifyEmailPage from '../views/auth/VerifyEmailPage'
+// Public pages (lazy — only loaded when needed)
+const LandingPage = lazy(() => import('../views/landing/LandingPage'))
+const LoginPage = lazy(() => import('../views/auth/LoginPage'))
+const RegisterPage = lazy(() => import('../views/auth/RegisterPage'))
+const ForgotPage = lazy(() => import('../views/auth/ForgotPage'))
+const ForgotCompletePage = lazy(() => import('../views/auth/ForgotCompletePage'))
+const RegisterCompletePage = lazy(() => import('../views/auth/RegisterCompletePage'))
+const VerifyEmailPage = lazy(() => import('../views/auth/VerifyEmailPage'))
+const InvoicePayment = lazy(() => import('../views/invoices/InvoicePayment'))
+const InvoicePaymentV2 = lazy(() => import('../views/invoices/InvoicePaymentV2'))
+const PaySelect = lazy(() => import('../views/invoices/PaySelect'))
 
 function ProtectedRoute({ children, requireAdmin = false }) {
   const { isAuthenticated, isReady, isAdmin, user } = useAuth()
@@ -65,10 +67,12 @@ function RootHandler() {
 
 export default function AppRouter() {
   return (
+    <ErrorBoundary>
     <AuthProvider>
       <ToastProvider>
         <PusherProvider>
           <BrowserRouter>
+            <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<RootHandler />} />
               <Route path="/landing" element={<LandingPage />} />
@@ -87,9 +91,11 @@ export default function AppRouter() {
               {/* Protected routes — single DashboardLayout instance handles all authenticated paths */}
               <Route path="/*" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>} />
             </Routes>
+            </Suspense>
           </BrowserRouter>
         </PusherProvider>
       </ToastProvider>
     </AuthProvider>
+    </ErrorBoundary>
   )
 }

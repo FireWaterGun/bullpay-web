@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, Link, useNavigate } from 'react-router-dom'
-import { verifyEmailApi } from '../../api/auth'
+import { verifyEmailApi } from '../../api/auth.ts'
 import { useAuth } from '../../context/AuthContext'
 
 export default function VerifyEmailPage() {

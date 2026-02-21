@@ -10,6 +10,7 @@ import {
   resetUserPassword,
   disableUser2FA,
 } from '../../api/admin.ts'
+import { copyToClipboard } from '../../utils/clipboard'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 
 const STATUS_OPTIONS = ['active', 'inactive', 'suspended', 'pending']
@@ -163,12 +164,9 @@ export default function UserList() {
     }
   }
 
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-    }).catch(() => {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    })
+  async function handleCopy(text) {
+    const ok = await copyToClipboard(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
   function openModal(type, user) {
@@ -393,7 +391,7 @@ export default function UserList() {
                               <span className="me-2">{user.email}</span>
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                onClick={() => copyToClipboard(user.email)}
+                                onClick={() => handleCopy(user.email)}
                                 title="Copy email"
                               >
                                 <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>

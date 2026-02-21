@@ -1,94 +1,12 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getSystemLedgerEntry } from '../../api/admin.ts'
 import { formatUsd } from '../../utils/format'
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ symbol, networkSymbol, size = 32 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, null),
-    [symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 18
-
-  return (
-    <div className="position-relative me-3" style={{ width: size, height: size, flexShrink: 0 }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
+import { copyToClipboard as copyText } from '../../utils/clipboard'
 
 export default function SystemLedgerDetail() {
   const { t } = useTranslation()
@@ -131,19 +49,17 @@ export default function SystemLedgerDetail() {
   }
 
   function stateBadge(state) {
-    if (state === 'settled') return <span>Settled</span>
-    if (state === 'committed') return <span>Committed</span>
-    if (state === 'pending') return <span>Pending</span>
-    if (state === 'reversed') return <span>Reversed</span>
+    if (state === 'settled') return <span className="badge bg-label-success">Settled</span>
+    if (state === 'committed') return <span className="badge bg-label-info">Committed</span>
+    if (state === 'pending') return <span className="badge bg-label-warning">Pending</span>
+    if (state === 'reversed') return <span className="badge bg-label-secondary">Reversed</span>
     return <span className="text-muted">{state || 'N/A'}</span>
   }
 
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-    }).catch(() => {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    })
+  async function handleCopy(text) {
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
+    else toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
   }
 
   if (loading) {
@@ -289,7 +205,7 @@ export default function SystemLedgerDetail() {
                         <td className="text-muted">{t('admin.ledger.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="d-flex align-items-center">
-                            <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} />
+                            <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="me-3" />
                             <div>
                               <span className="fw-medium">{entry.coinSymbol || 'N/A'}</span>
                               {entry.networkName && (
@@ -402,7 +318,7 @@ export default function SystemLedgerDetail() {
                               )}
                               <button
                                 className="btn btn-sm btn-outline-secondary"
-                                onClick={() => copyToClipboard(entry.txHash)}
+                                onClick={() => handleCopy(entry.txHash)}
                                 style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
                               >
                                 <i className="bx bx-copy me-1"></i>Copy

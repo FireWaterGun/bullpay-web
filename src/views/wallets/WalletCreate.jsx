@@ -4,98 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { listCoins } from '../../api/coins'
 import { createWallet } from '../../api/wallets'
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-    usdttrc20: ['usdt', 'tether'],
-    usdterc20: ['usdt', 'tether'],
-    usdtbsc: ['usdt', 'tether'],
-    usdtbep20: ['usdt', 'tether'],
-    usdte: ['usdt', 'tether'],
-    usdtton: ['usdtton', 'usdt', 'tether'],
-    usdc: ['usd-coin'],
-    bnb: ['binance'],
-    bsc: ['binance'],
-    trx: ['tron'],
-    arb: ['arbitrum'],
-    op: ['optimism'],
-    base: ['base'],
-    ln: ['lightning'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
-  const candidates = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, size = 36 }) {
-  const [idx, setIdx] = useState(0)
-  const [showFallback, setShowFallback] = useState(false)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl).filter(c => !c.includes('default.svg')),
-    [coin?.logoUrl, symbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  
-  const handleError = () => {
-    if (idx + 1 < candidates.length) {
-      setIdx(i => i + 1)
-    } else {
-      setShowFallback(true)
-    }
-  }
-  
-  const getAvatarColor = (text) => {
-    const colors = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD']
-    const colorIndex = text.charCodeAt(0) % colors.length
-    return colors[colorIndex]
-  }
-  
-  if (candidates.length === 0 || showFallback) {
-    return (
-      <div
-        style={{
-          width: size,
-          height: size,
-          borderRadius: '8px',
-          backgroundColor: getAvatarColor(symbol || 'C'),
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: size * 0.5,
-          fontWeight: 'bold'
-        }}
-      >
-        {(symbol || 'C').charAt(0).toUpperCase()}
-      </div>
-    )
-  }
-  
-  return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      className="rounded"
-      onError={handleError}
-    />
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 const NETWORK_LABELS = { 1: 'Bitcoin', 2: 'Lightning', 10: 'Ethereum', 11: 'ERC-20', 20: 'BSC (BEP-20)', 21: 'BEP-20', 30: 'TRON (TRC-20)', 31: 'TRC-20', 40: 'Polygon', 50: 'Solana', 60: 'TON', 61: 'TON (Jetton)', 70: 'Base', 80: 'Arbitrum', 90: 'Optimism', 100: 'Avalanche C-Chain' }
 function getNetworkLabel(n, coin) {
@@ -247,7 +156,7 @@ export default function WalletCreate() {
                         }}
                       >
                         <div className="card-body d-flex align-items-center gap-3">
-                          <CoinImg coin={group.coin} symbol={sym} />
+                          <CoinImg coin={group.coin} symbol={sym} size={36} showFallback imgClassName="rounded" />
                           <div>
                             <div className="fw-bold">{sym}</div>
                             <div className="text-muted small">{group.coin?.name || ''}</div>

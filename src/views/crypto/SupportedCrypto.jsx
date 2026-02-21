@@ -4,167 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getCoinNetworks } from '../../api/admin.ts'
-
-// Coin asset helpers
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-    usdc: ['usd-coin'],
-    bnb: ['binance'],
-    bsc: ['binance'],
-    trx: ['tron'],
-    arb: ['arbitrum'],
-    op: ['optimism'],
-    base: ['base'],
-    ln: ['lightning'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, networkSymbol, size = 40 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const [showCoinFallback, setShowCoinFallback] = useState(false)
-  const [showNetFallback, setShowNetFallback] = useState(false)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl).filter(c => !c.includes('default.svg')),
-    [coin?.logoUrl, symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null).filter(c => !c.includes('default.svg')),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 20
-  
-  const handleCoinError = () => {
-    if (idx + 1 < candidates.length) {
-      setIdx(i => i + 1)
-    } else {
-      setShowCoinFallback(true)
-    }
-  }
-  
-  const handleNetError = () => {
-    if (netIdx + 1 < networkCandidates.length) {
-      setNetIdx(i => i + 1)
-    } else {
-      setShowNetFallback(true)
-    }
-  }
-  
-  // ไม่แสดง network badge ถ้าไปถึง default icon แล้ว (ไม่มี icon)
-  const isNetworkIconAvailable = networkCandidates.length > 0 && !showNetFallback
-  const showNetworkBadge = networkSymbol && 
-                           networkSymbol !== symbol && 
-                           !(symbol === 'POL' && networkSymbol === 'MATIC') &&
-                           isNetworkIconAvailable
-  
-  const getAvatarColor = (text) => {
-    const colors = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD']
-    const colorIndex = text.charCodeAt(0) % colors.length
-    return colors[colorIndex]
-  }
-  
-  return (
-    <div className="position-relative me-3" style={{ width: size, height: size }}>
-      {candidates.length === 0 || showCoinFallback ? (
-        <div
-          style={{
-            width: size,
-            height: size,
-            borderRadius: '8px',
-            backgroundColor: getAvatarColor(symbol || 'C'),
-            color: '#fff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: size * 0.5,
-            fontWeight: 'bold'
-          }}
-        >
-          {(symbol || 'C').charAt(0).toUpperCase()}
-        </div>
-      ) : (
-        <img
-          src={src}
-          alt={symbol}
-          width={size}
-          height={size}
-          style={{ objectFit: 'cover', borderRadius: '8px' }}
-          onError={handleCoinError}
-        />
-      )}
-      {showNetworkBadge && (
-        <div 
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          {networkCandidates.length === 0 || showNetFallback ? (
-            <div
-              className="rounded-circle"
-              style={{
-                width: badgeSize - 4,
-                height: badgeSize - 4,
-                backgroundColor: getAvatarColor(networkSymbol || 'N'),
-                color: '#fff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: (badgeSize - 4) * 0.6,
-                fontWeight: 'bold'
-              }}
-            >
-              {(networkSymbol || 'N').charAt(0).toUpperCase()}
-            </div>
-          ) : (
-            <img
-              src={netSrc}
-              alt={networkSymbol}
-              width={badgeSize - 4}
-              height={badgeSize - 4}
-              className="rounded-circle"
-              style={{ objectFit: 'cover' }}
-              onError={handleNetError}
-            />
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
+import { copyToClipboard as copyText } from '../../utils/clipboard'
 
 export default function SupportedCrypto() {
   const { t } = useTranslation()
@@ -312,11 +153,13 @@ export default function SupportedCrypto() {
                   <tr key={coinNetwork.id}>
                     <td style={{ verticalAlign: 'middle' }}>
                       <div className="d-flex align-items-center">
-                        <CoinImg 
+                        <CoinImg
                           coin={coinNetwork.coin}
                           symbol={coinNetwork.coin?.symbol}
                           networkSymbol={coinNetwork.network?.symbol}
                           size={40}
+                          className="me-3"
+                          showFallback
                         />
                         <div>
                           <div className="fw-medium">{coinNetwork.coin?.name || 'N/A'}</div>
@@ -340,9 +183,9 @@ export default function SupportedCrypto() {
                           </code>
                           <button
                             className="btn btn-sm btn-icon btn-outline-secondary"
-                            onClick={() => {
-                              navigator.clipboard.writeText(coinNetwork.contractAddress)
-                              toast.success(t('actions.copied', { defaultValue: 'Copied' }))
+                            onClick={async () => {
+                              const ok = await copyText(coinNetwork.contractAddress)
+                              if (ok) toast.success(t('actions.copied', { defaultValue: 'Copied' }))
                             }}
                             title={t('actions.copy', { defaultValue: 'Copy' })}
                           >

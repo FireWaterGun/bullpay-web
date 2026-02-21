@@ -127,9 +127,7 @@ export default function Sweep() {
       }
       
       // บันทึกเฉพาะที่เปลี่ยน
-      for (const update of updates) {
-        await updateSweepSetting(token, update.key, update.value)
-      }
+      await Promise.all(updates.map(u => updateSweepSetting(token, u.key, u.value)))
       
       // แสดงรายละเอียดการอัปเดต
       const updatedSettings = updates.map(u => {

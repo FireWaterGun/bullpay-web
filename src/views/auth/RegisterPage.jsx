@@ -36,7 +36,7 @@ export default function RegisterPage() {
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
   const theme = 'light'
 
-  const { register, handleSubmit, formState: { errors, isValid }, setError: setFormError, watch } = useForm({
+  const { register, handleSubmit, formState: { errors, isValid }, setError: setFormError } = useForm({
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' }

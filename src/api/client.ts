@@ -1,3 +1,5 @@
+import { extractToken } from '../utils/authToken'
+
 const BASE_URL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3339'
 
 export interface ApiErrorDetails {
@@ -111,4 +113,25 @@ export async function apiFetch<T = any>(path: string, { method = 'GET', headers 
   }
 
   return (data ?? raw) as T
+}
+
+/**
+ * Convert a raw token input (string, object, etc.) into a `Bearer <token>` header value.
+ * Returns `undefined` when the input cannot be resolved to a valid token.
+ */
+export function toAuthHeader(input?: unknown): string | undefined {
+  if (!input) return undefined
+  let token: string | undefined = typeof input === 'string' ? input : extractToken(input)
+  if (!token) return undefined
+  const t = token.trim()
+  if (t === '[object Object]') return undefined
+  if (t.startsWith('{') || t.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(t)
+      token = extractToken(parsed)
+    } catch {
+      return undefined
+    }
+  }
+  return token ? `Bearer ${token}` : undefined
 }

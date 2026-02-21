@@ -10,10 +10,9 @@ import Verify2FAModal from '../../components/Verify2FAModal'
 import use2FAStatus from '../../hooks/use2FAStatus'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import { formatCoinAmount } from '../../utils/format'
+import { copyToClipboard } from '../../utils/clipboard'
+import CoinImg from '../../components/CoinImg'
 
-function fmtAmount(x) {
-  return formatCoinAmount(x)
-}
 
 function fromRaw(rawValue, decimals) {
   if (!rawValue || !decimals) return '0'
@@ -23,97 +22,6 @@ function fromRaw(rawValue, decimals) {
   } catch {
     return '0'
   }
-}
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-    usdc: ['usd-coin'],
-    bnb: ['binance'],
-    bsc: ['binance'],
-    trx: ['tron'],
-    arb: ['arbitrum'],
-    op: ['optimism'],
-    base: ['base'],
-    ln: ['lightning'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, networkSymbol, size = 40 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  // Support logoUrl from coin object
-  const logoUrl = coin?.logoUrl || coin?.logo_url
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, logoUrl),
-    [logoUrl, symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 20
-
-  return (
-    <div className="position-relative" style={{ width: size, height: size, display: 'inline-block' }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        className="rounded"
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-        !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-          <div
-            className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-            style={{
-              bottom: -2,
-              right: -2,
-              width: badgeSize,
-              height: badgeSize,
-              backgroundColor: 'white',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              padding: '2px'
-            }}
-          >
-            <img
-              src={netSrc}
-              alt={networkSymbol}
-              width={badgeSize - 4}
-              height={badgeSize - 4}
-              className="rounded-circle"
-              style={{ objectFit: 'cover' }}
-              onError={() => setNetIdx(i => (i + 1 < networkCandidates.length ? i + 1 : i))}
-            />
-          </div>
-        )}
-    </div>
-  )
 }
 
 export default function WithdrawRequest() {
@@ -142,11 +50,6 @@ export default function WithdrawRequest() {
   // Check if user has 2FA enabled
   const { isEnabled: is2FAEnabled, isLoading: is2FALoading, status: twoFAStatus } = use2FAStatus()
   
-  // Debug log - remove after testing
-  useEffect(() => {
-    console.log('2FA Status:', { is2FAEnabled, is2FALoading, twoFAStatus })
-  }, [is2FAEnabled, is2FALoading, twoFAStatus])
-
   useEffect(() => {
     let mounted = true
       ; (async () => {
@@ -401,7 +304,7 @@ export default function WithdrawRequest() {
                     <div className="text-muted small mb-1">{t('balance.from', { defaultValue: 'From' })}</div>
                     <div className="d-flex align-items-center justify-content-between border rounded-3 p-3">
                       <div className="d-flex align-items-center">
-                        <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} />
+                        <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} size={40} imgClassName="rounded" />
                         <div className="ms-3">
                           <div className="fw-semibold">{sym}</div>
                           <div className="text-muted small">{networkLabel}</div>
@@ -452,7 +355,7 @@ export default function WithdrawRequest() {
                       </button>
                     </div>
                     <div className="text-muted small mt-2">
-                      {t('balance.balance', { defaultValue: 'Balance' })}: {fmtAmount(available)} {sym}
+                      {t('balance.balance', { defaultValue: 'Balance' })}: {formatCoinAmount(available)} {sym}
                     </div>
                     {amountError && (
                       <div className="text-danger small mt-1">
@@ -469,20 +372,20 @@ export default function WithdrawRequest() {
                         <div className="small text-muted mb-2">{t('balance.feeBreakdown', { defaultValue: 'Fee Breakdown' })}</div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="small">{t('balance.withdrawAmount', { defaultValue: 'Withdraw amount' })}</span>
-                          <span className="small fw-medium">{feeEstimate.display?.grossAmount || feeEstimate.display?.amount || `${fmtAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
+                          <span className="small fw-medium">{feeEstimate.display?.grossAmount || feeEstimate.display?.amount || `${formatCoinAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="small">{t('balance.networkFee', { defaultValue: 'Network fee' })}</span>
-                          <span className="small">{feeEstimate.display?.baseFee || `${fmtAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
+                          <span className="small">{feeEstimate.display?.baseFee || `${formatCoinAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="small">{t('balance.platformFee', { defaultValue: 'Platform fee' })} ({feeEstimate.display?.percentFeeText || `${feeEstimate.feePercentage}%`})</span>
-                          <span className="small">{feeEstimate.display?.percentFee || `${fmtAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
+                          <span className="small">{feeEstimate.display?.percentFee || `${formatCoinAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2 pt-2 border-top">
                           <span className="small">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
                           <div className="text-end">
-                            <div className="small fw-medium">{feeEstimate.display?.totalFee || `${fmtAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
+                            <div className="small fw-medium">{feeEstimate.display?.totalFee || `${formatCoinAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
                             {feeEstimate.displayUsd?.totalFeeUsd && (
                               <div className="text-muted" style={{ fontSize: '0.75rem' }}>≈ {feeEstimate.displayUsd.totalFeeUsd}</div>
                             )}
@@ -502,7 +405,7 @@ export default function WithdrawRequest() {
                               ></i>
                             </span>
                             <div className="text-end">
-                              <div className="fw-semibold">{feeEstimate.display?.netAmount || `${fmtAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
+                              <div className="fw-semibold">{feeEstimate.display?.netAmount || `${formatCoinAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
                               {feeEstimate.displayUsd?.netAmountUsd && (
                                 <div className="text-muted" style={{ fontSize: '0.75rem' }}>≈ {feeEstimate.displayUsd.netAmountUsd}</div>
                               )}
@@ -560,17 +463,15 @@ export default function WithdrawRequest() {
 
 // Success modal
 // Show a simple success message and navigate back to withdrawals on close or confirm
-; (() => { })
-
 export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address, networkName, t }) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = () => {
-    if (address) {
-      navigator.clipboard.writeText(address).then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      }).catch(() => { })
+  const handleCopy = async () => {
+    if (!address) return
+    const ok = await copyToClipboard(address)
+    if (ok) {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     }
   }
 

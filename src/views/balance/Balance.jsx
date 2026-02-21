@@ -6,102 +6,7 @@ import { listCoins } from "../../api/coins";
 import { getBalancesWithFiat } from "../../api/balance";
 import { MOCK_COINS, MOCK_BALANCE_DATA } from "./mockBalanceData";
 import { formatCoinAmount } from '../../utils/format'
-
-// Coin asset helpers (reuse logic similar to wallet list)
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
-  const aliases = {
-    btc: ["bitcoin"],
-    eth: ["ethereum"],
-    doge: ["dogecoin"],
-    sol: ["solana"],
-    matic: ["polygon"],
-    pol: ["polygon"],
-    ada: ["cardano"],
-    xmr: ["monero"],
-    zec: ["zcash"],
-    usdt: ["usdterc20", "tether"],
-    usdc: ["usd-coin"],
-    bnb: ["binance"],
-    bsc: ["binance"],
-    trx: ["tron"],
-    arb: ["arbitrum"],
-    op: ["optimism"],
-    base: ["base"],
-    ln: ["lightning"],
-  };
-  const names = [sym, ...(aliases[sym] || [])];
-  if (sym.startsWith("usdt") && !names.includes("usdt")) names.push("usdt");
-  const exts = ["svg", "png"];
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  );
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    "/assets/img/coins/default.svg",
-  ];
-  return Array.from(new Set(candidates));
-}
-
-function CoinImg({ coin, symbol, networkSymbol, size = 32 }) {
-  const [idx, setIdx] = useState(0);
-  const [netIdx, setNetIdx] = useState(0);
-  // Support logoUrl from coin object
-  const logoUrl = coin?.logoUrl || coin?.logo_url
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, logoUrl),
-    [logoUrl, symbol]
-  );
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  );
-  const src = candidates[Math.min(idx, candidates.length - 1)];
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)];
-  // Use fixed size for badge instead of percentage for consistency
-  const badgeSize = 18;
-  
-  return (
-    <div className="position-relative me-3" style={{ width: size, height: size }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol && 
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div 
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
+import CoinImg from '../../components/CoinImg'
 
 const NETWORK_LABELS = {
   1: "Bitcoin",
@@ -133,10 +38,6 @@ function getNetworkLabel(n, coin) {
   if (sym === "BTC") return id === 2 ? "Lightning" : "Bitcoin";
   if (sym === "ETH" && n?.contractAddress) return "ERC-20";
   return `Network #${n?.networkId ?? id ?? "-"}`;
-}
-
-function fmtAmount(x) {
-  return formatCoinAmount(x)
 }
 
 export default function Balance() {
@@ -311,7 +212,7 @@ export default function Balance() {
                   getNetworkLabel(cn, coin);
                 
                 // Support new structure: availableBalance first, then totalBalance or confirmedBalance, fallback to balance
-                const amount = fmtAmount(b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0);
+                const amount = formatCoinAmount(b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0);
                 const amtNum = Number(b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0) || 0;
                 
                 // Use valueUsd from API if available, otherwise calculate from rate
@@ -326,7 +227,7 @@ export default function Balance() {
                       <div className="text-muted fw-medium me-3" style={{ minWidth: '80px' }}>
                         {networkSym || coinSym}
                       </div>
-                      <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} />
+                      <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} className="me-3" />
                       <div className="ms-2">
                         <div className="fw-medium">{coinSym}</div>
                         <div className="text-muted small">{networkName}</div>

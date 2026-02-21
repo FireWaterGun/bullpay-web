@@ -12,101 +12,7 @@ import {
 } from '../../api/admin.ts'
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal'
 import { useToastContext } from '../../context/ToastContext'
-
-// Coin asset helpers (same as SupportedCrypto.jsx)
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-    usdc: ['usd-coin'],
-    bnb: ['binance'],
-    bsc: ['binance'],
-    trx: ['tron'],
-    arb: ['arbitrum'],
-    op: ['optimism'],
-    base: ['base'],
-    ln: ['lightning'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, size = 40 }) {
-  const [idx, setIdx] = useState(0)
-  const [showFallback, setShowFallback] = useState(false)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, coin?.logoUrl).filter(c => !c.includes('default.svg')),
-    [coin?.logoUrl, symbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  
-  const handleError = () => {
-    if (idx + 1 < candidates.length) {
-      setIdx(i => i + 1)
-    } else {
-      setShowFallback(true)
-    }
-  }
-  
-  // ถ้าไม่มี candidates เลย แสดง fallback ทันที
-  if (candidates.length === 0 || showFallback) {
-    const initial = (symbol || 'C').charAt(0).toUpperCase()
-    const colors = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD']
-    const colorIndex = initial.charCodeAt(0) % colors.length
-    const bgColor = colors[colorIndex]
-    
-    return (
-      <div
-        style={{
-          width: size,
-          height: size,
-          borderRadius: '8px',
-          backgroundColor: bgColor,
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: size * 0.5,
-          fontWeight: 'bold'
-        }}
-      >
-        {initial}
-      </div>
-    )
-  }
-  
-  return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      style={{ objectFit: 'cover', borderRadius: '8px' }}
-      onError={handleError}
-    />
-  )
-}
+import CoinImg from '../../components/CoinImg'
 
 export default function SupportedCryptoForm() {
   const { t } = useTranslation()
@@ -401,7 +307,7 @@ export default function SupportedCryptoForm() {
                           style={isEdit ? { cursor: 'default' } : {}}
                         >
                           <div className="card-body d-flex align-items-center gap-3 p-3">
-                            <CoinImg coin={coin} symbol={coin.symbol} size={40} />
+                            <CoinImg coin={coin} symbol={coin.symbol} size={40} showFallback />
                             <div className="flex-grow-1 min-width-0">
                               <div className="fw-bold">{coin.symbol}</div>
                               <div className="text-muted small text-truncate">{coin.name}</div>

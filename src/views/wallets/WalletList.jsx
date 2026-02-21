@@ -5,37 +5,8 @@ import { useAuth } from '../../context/AuthContext'
 import { listWallets, deleteWallet } from '../../api/wallets'
 import { listCoins } from '../../api/coins'
 import ConfirmModal from '../../components/ConfirmModal'
-
-// Coin asset helpers (reused logic from invoice/wallet pages)
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'], eth: ['ethereum'], doge: ['dogecoin'], sol: ['solana'], matic: ['polygon'], ada: ['cardano'], xmr: ['monero'], zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'], usdttrc20: ['usdt', 'tether'], usdterc20: ['usdt', 'tether'], usdtbsc: ['usdt', 'tether'], usdtbep20: ['usdt', 'tether'], usdte: ['usdt', 'tether'], usdtton: ['usdtton', 'usdt', 'tether'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap(n => exts.map(ext => `/assets/img/coins/${n}.${ext}`))
-  const candidates = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ coin, symbol, size = 28 }) {
-  const [idx, setIdx] = useState(0)
-  const candidates = useMemo(() => getCoinAssetCandidates(symbol, coin?.logoUrl), [coin?.logoUrl, symbol])
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  return (
-    <img
-      src={src}
-      alt={symbol}
-      width={size}
-      height={size}
-      className="rounded me-3 align-text-bottom"
-      onError={() => setIdx(i => (i + 1 < candidates.length ? i + 1 : i))}
-    />
-  )
-}
+import CoinImg from '../../components/CoinImg'
+import { copyToClipboard } from '../../utils/clipboard'
 
 const NETWORK_LABELS = { 1: 'Bitcoin', 2: 'Lightning', 10: 'Ethereum', 11: 'ERC-20', 20: 'BSC (BEP-20)', 21: 'BEP-20', 30: 'TRON (TRC-20)', 31: 'TRC-20', 40: 'Polygon', 50: 'Solana', 60: 'TON', 61: 'TON (Jetton)', 70: 'Base', 80: 'Arbitrum', 90: 'Optimism', 100: 'Avalanche C-Chain' }
 function getNetworkLabel(n, coin) {
@@ -61,7 +32,7 @@ export default function WalletList({ titleKey, titleDefault, showCreate = true, 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [coins, setCoins] = useState([])
-  const [copiedId, setCopiedId] = useState(null)
+  const [copied, setCopied] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeleteId, setPendingDeleteId] = useState(null)
@@ -116,26 +87,12 @@ export default function WalletList({ titleKey, titleDefault, showCreate = true, 
     return () => { mounted = false }
   }, [token])
 
-  async function copyAddress(text, id) {
-    if (!text || text === '-') return
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text)
-      } else {
-        const ta = document.createElement('textarea')
-        ta.value = text
-        ta.style.position = 'fixed'
-        ta.style.opacity = '0'
-        document.body.appendChild(ta)
-        ta.focus()
-        ta.select()
-        document.execCommand('copy')
-        document.body.removeChild(ta)
-      }
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 1500)
-    } catch {
-      // swallow
+  async function copyAddress(addr) {
+    if (!addr) return
+    const ok = await copyToClipboard(addr)
+    if (ok) {
+      setCopied(addr)
+      setTimeout(() => setCopied(null), 1500)
     }
   }
 
@@ -214,7 +171,7 @@ export default function WalletList({ titleKey, titleDefault, showCreate = true, 
                       <tr key={w.id || idx}>
                         <td>
                           <div className="d-flex align-items-center">
-                            <CoinImg coin={coinMeta} symbol={coinSym} />
+                            <CoinImg coin={coinMeta} symbol={coinSym} size={28} imgClassName="rounded me-3 align-text-bottom" />
                             <div>
                               <div className="fw-medium">
                                 {coinSym}
@@ -229,12 +186,12 @@ export default function WalletList({ titleKey, titleDefault, showCreate = true, 
                           <button
                             type="button"
                             className="btn btn-icon btn-sm btn-outline-secondary ms-2 align-middle"
-                            onClick={() => copyAddress(addr, w.id || idx)}
+                            onClick={() => copyAddress(addr)}
                             disabled={!w.address}
-                            aria-label={copiedId === (w.id || idx) ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
-                            title={copiedId === (w.id || idx) ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
+                            aria-label={copied === addr ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
+                            title={copied === addr ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
                           >
-                            <i className={`bx ${copiedId === (w.id || idx) ? 'bx-check text-success' : 'bx-copy'}`}></i>
+                            <i className={`bx ${copied === addr ? 'bx-check text-success' : 'bx-copy'}`}></i>
                           </button>
                         </td>
                         {showActions && (

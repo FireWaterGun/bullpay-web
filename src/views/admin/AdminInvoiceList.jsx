@@ -6,98 +6,8 @@ import { useToastContext } from '../../context/ToastContext'
 import { getAdminInvoices } from '../../api/admin.ts'
 import { formatAmount } from '../../utils/format'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
-
-function getCoinAssetCandidates(symbol, logoUrl) {
-  const sym = String(symbol || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-  const aliases = {
-    btc: ['bitcoin'],
-    eth: ['ethereum'],
-    doge: ['dogecoin'],
-    sol: ['solana'],
-    matic: ['polygon'],
-    pol: ['polygon'],
-    ada: ['cardano'],
-    xmr: ['monero'],
-    zec: ['zcash'],
-    usdt: ['usdterc20', 'tether'],
-    usdc: ['usd-coin'],
-    bnb: ['binance'],
-    bsc: ['binance'],
-    trx: ['tron'],
-    arb: ['arbitrum'],
-    op: ['optimism'],
-    base: ['base'],
-    ln: ['lightning'],
-  }
-  const names = [sym, ...(aliases[sym] || [])]
-  if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
-  const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`)
-  )
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
-  return Array.from(new Set(candidates))
-}
-
-function CoinImg({ symbol, networkSymbol, size = 24 }) {
-  const [idx, setIdx] = useState(0)
-  const [netIdx, setNetIdx] = useState(0)
-  const candidates = useMemo(
-    () => getCoinAssetCandidates(symbol, null),
-    [symbol]
-  )
-  const networkCandidates = useMemo(
-    () => getCoinAssetCandidates(networkSymbol, null),
-    [networkSymbol]
-  )
-  const src = candidates[Math.min(idx, candidates.length - 1)]
-  const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
-  const badgeSize = 16
-
-  return (
-    <div className="position-relative me-2" style={{ width: size, height: size, flexShrink: 0 }}>
-      <img
-        src={src}
-        alt={symbol}
-        width={size}
-        height={size}
-        style={{ objectFit: 'cover' }}
-        onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
-      />
-      {networkSymbol && networkSymbol !== symbol &&
-       !(symbol === 'POL' && networkSymbol === 'MATIC') && (
-        <div
-          className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            bottom: -2,
-            right: -2,
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            padding: '2px'
-          }}
-        >
-          <img
-            src={netSrc}
-            alt={networkSymbol}
-            width={badgeSize - 4}
-            height={badgeSize - 4}
-            className="rounded-circle"
-            style={{ objectFit: 'cover' }}
-            onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
+import CoinImg from '../../components/CoinImg'
+import { copyToClipboard as copyText } from '../../utils/clipboard'
 
 export default function AdminInvoiceList() {
   const { t, i18n } = useTranslation()
@@ -194,12 +104,9 @@ export default function AdminInvoiceList() {
     return 'badge bg-label-secondary'
   }
 
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-    }).catch(() => {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    })
+  async function handleCopy(text) {
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
   if (loading && invoices.length === 0) {
@@ -352,6 +259,7 @@ export default function AdminInvoiceList() {
                                   symbol={coinSymbol}
                                   networkSymbol={networkSymbol}
                                   size={24}
+                                  className="me-2"
                                 />
                                 <div>
                                   <div className="fw-medium" style={{ lineHeight: 1.2 }}>{coinSymbol || '-'}</div>
@@ -386,7 +294,7 @@ export default function AdminInvoiceList() {
                                   </span>
                                   <button
                                     className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => copyToClipboard(invoice.paymentAddress)}
+                                    onClick={() => handleCopy(invoice.paymentAddress)}
                                     title="Copy address"
                                   >
                                     <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
