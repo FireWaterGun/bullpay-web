@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import CoinImg from '../../components/CoinImg'
+import CoinImg, { NetworkIcon } from '../../components/CoinImg'
 
 const NETWORK_LABELS = {
   1: "Bitcoin",
@@ -108,9 +108,10 @@ export default function CoinNetworkSelector({
                   <button
                     type="button"
                     key={n.id}
-                    className={`btn ${selected ? "btn-primary" : "btn-outline-secondary"}`}
+                    className={`btn d-inline-flex align-items-center gap-2 ${selected ? "btn-primary" : "btn-outline-secondary"}`}
                     onClick={() => setCoinNetworkId(String(n.id))}
                   >
+                    <NetworkIcon networkSymbol={n.network?.symbol || ''} size={18} />
                     {label}
                   </button>
                 );
