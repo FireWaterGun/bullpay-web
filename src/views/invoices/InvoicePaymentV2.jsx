@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { NetworkIcon } from '../../components/CoinImg'
 import useInvoicePayment, { formatDuration } from './payment/useInvoicePayment'
+import { isSafeRedirectUrl } from '../../utils/url'
 import NetworkSelectionPanel from './payment/NetworkSelectionPanel'
 import PaymentQRSection from './payment/PaymentQRSection'
 import PaymentProgressSteps from './payment/PaymentProgressSteps'
@@ -314,7 +315,7 @@ export default function InvoicePaymentV2() {
                       <PaymentProgressSteps isPaid={isPaid} isExpiredUnpaid={isExpiredUnpaid} currentStep={currentStep} />
 
                       {/* Success Redirect */}
-                      {isPaid && invoice?.successUrl && (
+                      {isPaid && invoice?.successUrl && isSafeRedirectUrl(invoice.successUrl) && (
                         <div className="mt-3">
                           <a href={invoice.successUrl} className="btn w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2" style={{
                             background: 'linear-gradient(135deg, var(--bs-success) 0%, color-mix(in srgb, var(--bs-success), #000 20%) 100%)',

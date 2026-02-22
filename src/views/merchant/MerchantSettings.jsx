@@ -9,10 +9,10 @@ import {
   updateWebhook,
 } from '../../api/merchant.ts'
 import { formatCommission, formatDate } from '../../utils/format'
-import { copyToClipboard as copyText } from '../../utils/clipboard'
 import CredentialAlert from './CredentialAlert'
 import RegisterForm from './RegisterForm'
 import ConfirmActionModal from './ConfirmActionModal'
+import ApiCredentialsCard from './ApiCredentialsCard'
 
 function statusBadgeClass(status) {
   const s = String(status || '').toLowerCase()
@@ -236,57 +236,14 @@ export default function MerchantSettings() {
         {/* ─── Right Column: Credentials + Webhook + Actions ─── */}
         <div className="col-xl-8 col-lg-7">
           {/* API Credentials */}
-          <div className="card mb-4">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h6 className="mb-0">{t('merchant.apiCredentials', { defaultValue: 'API Credentials' })}</h6>
-            </div>
-            <div className="card-body">
-              <div className="table-responsive">
-                <table className="table table-borderless mb-0">
-                  <tbody>
-                    <tr>
-                      <td className="ps-0" style={{ width: 110 }}><span className="fw-medium">API Key</span></td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="font-monospace" style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}>{apiKey || '-'}</span>
-                          {apiKey && (
-                            <button
-                              className="btn btn-sm btn-icon btn-text-secondary ms-2 flex-shrink-0"
-                              onClick={async () => {
-                                const ok = await copyText(apiKey)
-                                if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
-                              }}
-                            >
-                              <i className="bx bx-copy"></i>
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="ps-0"><span className="fw-medium">API Secret</span></td>
-                      <td>
-                        <span className="font-monospace" style={{ fontSize: '0.85rem' }}>{apiSecretMasked || '••••••••'}</span>
-                        <small className="text-muted ms-2">
-                          <i className="bx bx-lock-alt" style={{ fontSize: '0.75rem' }}></i> {t('merchant.secretMasked', { defaultValue: 'masked' })}
-                        </small>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-outline-primary btn-sm" onClick={() => openModal('rotate-secret')}>
-                  <i className="bx bx-refresh me-1"></i>
-                  {t('merchant.rotateSecret', { defaultValue: 'Rotate Secret' })}
-                </button>
-                <button className="btn btn-outline-danger btn-sm" onClick={() => openModal('regenerate-key')}>
-                  <i className="bx bx-reset me-1"></i>
-                  {t('merchant.regenerateKey', { defaultValue: 'Regenerate Key & Secret' })}
-                </button>
-              </div>
-            </div>
-          </div>
+          <ApiCredentialsCard
+            apiKey={apiKey}
+            apiSecretMasked={apiSecretMasked}
+            onRotate={() => openModal('rotate-secret')}
+            onRegenerate={() => openModal('regenerate-key')}
+            toast={toast}
+            t={t}
+          />
 
           {/* Webhook */}
           <div className="card mb-4">

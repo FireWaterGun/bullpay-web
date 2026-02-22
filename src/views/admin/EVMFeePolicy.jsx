@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import useEVMFeePolicy from './useEVMFeePolicy'
 import ChainSettingsTable from './ChainSettingsTable'
 import { ChainSettingModal, DeleteConfirmModal } from './EVMFeePolicyModals'
+import ConfirmResetModal from '../../components/ConfirmResetModal'
 
 export default function EVMFeePolicy() {
   const { t } = useTranslation()
@@ -20,6 +21,9 @@ export default function EVMFeePolicy() {
     handleSave,
     handleInputChange,
     handleReset,
+    showResetConfirm,
+    setShowResetConfirm,
+    confirmReset,
     validateNumberInput,
     hasChanges,
     handleEditChain,
@@ -317,6 +321,15 @@ export default function EVMFeePolicy() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={confirmDelete}
       />
+
+      {showResetConfirm && (
+        <ConfirmResetModal
+          title={t('actions.confirm', { defaultValue: 'Confirm' })}
+          message={t('admin.evm.resetConfirm', { defaultValue: 'Are you sure you want to reset all settings?' })}
+          onConfirm={confirmReset}
+          onClose={() => setShowResetConfirm(false)}
+        />
+      )}
     </div>
   )
 }

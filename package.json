@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "check:bp": "node scripts/check-best-practices.js"
+    "check:bp": "node scripts/check-best-practices.js",
+    "check:security": "node scripts/check-security.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

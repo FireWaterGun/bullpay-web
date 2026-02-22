@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { extractToken } from '../utils/authToken'
 import { getNavigation } from '../api/navigation.ts'
+import useIdleLogout from '../hooks/useIdleLogout'
 
 const AuthContext = createContext(null)
 const STORAGE_USER_KEY = 'auth_user'
@@ -99,6 +100,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(STORAGE_TOKEN_KEY)
     localStorage.removeItem(STORAGE_NAV_KEY)
   }, [])
+
+  // Idle auto-logout (30 min inactivity)
+  useIdleLogout(logout, !!token)
 
   // Permission helpers
   const hasPermission = useCallback((permission) => {

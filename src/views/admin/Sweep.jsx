@@ -5,6 +5,7 @@ import { getSweepSettings, updateSweepSetting } from '../../api/admin'
 import { useToastContext } from '../../context/ToastContext'
 import SweepScanningSettings from './SweepScanningSettings'
 import SweepReconciliationSettings from './SweepReconciliationSettings'
+import ConfirmResetModal from '../../components/ConfirmResetModal'
 
 export default function Sweep() {
   const { t } = useTranslation()
@@ -177,10 +178,15 @@ export default function Sweep() {
     }
   }
 
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
+
   function handleReset() {
-    if (confirm(t('admin.sweep.resetConfirm', { defaultValue: 'Are you sure you want to reset all settings to their current saved values?' }))) {
-      loadSettings()
-    }
+    setShowResetConfirm(true)
+  }
+
+  function confirmReset() {
+    setShowResetConfirm(false)
+    loadSettings()
   }
 
   if (loadingData) {
@@ -378,6 +384,15 @@ export default function Sweep() {
           </div>
         </div>
       </div>
+
+      {showResetConfirm && (
+        <ConfirmResetModal
+          title={t('actions.confirm', { defaultValue: 'Confirm' })}
+          message={t('admin.sweep.resetConfirm', { defaultValue: 'Are you sure you want to reset all settings to their current saved values?' })}
+          onConfirm={confirmReset}
+          onClose={() => setShowResetConfirm(false)}
+        />
+      )}
     </div>
   )
 }

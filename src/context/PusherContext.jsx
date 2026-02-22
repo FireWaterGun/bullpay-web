@@ -72,7 +72,7 @@ export function PusherProvider({ children }) {
     const pusherConfig = {
       cluster,
       forceTLS,
-      enabledTransports: ['ws', 'wss'],
+      enabledTransports: forceTLS ? ['wss'] : ['ws', 'wss'],
       authorizer,
     };
 

@@ -19,6 +19,7 @@ void i18n
     supportedLngs: ['en', 'th', 'zh'],
     defaultNS: 'common',
     ns: ['common'],
+    // React handles XSS protection via JSX escaping — this is the recommended react-i18next setting
     interpolation: { escapeValue: false },
     detection: {
       // order of detection

@@ -7,11 +7,17 @@ export default defineConfig({
   server: {
     port: 3334,
     strictPort: true,
-    host: true,
+    host: '127.0.0.1',
   },
   preview: {
     port: 3334,
     strictPort: true,
-    host: true,
+    host: '127.0.0.1',
+  },
+  build: {
+    sourcemap: false,
+  },
+  esbuild: {
+    drop: ['console', 'debugger'],
   },
 })

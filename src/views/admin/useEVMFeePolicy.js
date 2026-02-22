@@ -40,6 +40,9 @@ export default function useEVMFeePolicy() {
     bumpMultiplierReplacement: ''
   })
 
+  // Reset confirm modal
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
+
   // Modal states
   const [showChainModal, setShowChainModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -178,9 +181,12 @@ export default function useEVMFeePolicy() {
   }
 
   function handleReset() {
-    if (confirm(t('admin.evm.resetConfirm', { defaultValue: 'Are you sure you want to reset all settings?' }))) {
-      loadSettings()
-    }
+    setShowResetConfirm(true)
+  }
+
+  function confirmReset() {
+    setShowResetConfirm(false)
+    loadSettings()
   }
 
   function validateNumberInput(e) {
@@ -327,6 +333,9 @@ export default function useEVMFeePolicy() {
     handleSave,
     handleInputChange,
     handleReset,
+    showResetConfirm,
+    setShowResetConfirm,
+    confirmReset,
     validateNumberInput,
     hasChanges,
     countChanges,

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../../context/AuthContext'
 import { updateSweepSetting } from '../../../api/admin'
 import { useToastContext } from '../../../context/ToastContext'
+import ConfirmResetModal from '../../../components/ConfirmResetModal'
 
 export default function GasSettingsForm({ gasSettings, setGasSettings }) {
   const { t } = useTranslation()
@@ -12,6 +13,7 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
   const [showModal, setShowModal] = useState(false)
   const [formData, setFormData] = useState({})
 
+  const [deleteConfirmNetwork, setDeleteConfirmNetwork] = useState(null)
   const [showGasNetworkForm, setShowGasNetworkForm] = useState(false)
   const [editingGasNetwork, setEditingGasNetwork] = useState(null)
   const [gasNetworkFormData, setGasNetworkFormData] = useState({ network: '', minNative: '' })
@@ -77,7 +79,13 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
   }
 
   async function handleDeleteGasNetwork(network) {
-    if (!confirm(t('admin.withdrawal.confirmDelete', { defaultValue: 'Are you sure you want to delete this?' }))) return
+    setDeleteConfirmNetwork(network)
+  }
+
+  async function confirmDeleteGasNetwork() {
+    const network = deleteConfirmNetwork
+    setDeleteConfirmNetwork(null)
+    if (!network) return
 
     try {
       setLoading(true)
@@ -339,6 +347,16 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
             </div>
           </div>
         </>
+      )}
+
+      {deleteConfirmNetwork && (
+        <ConfirmResetModal
+          title={t('actions.confirm', { defaultValue: 'Confirm Delete' })}
+          message={t('admin.withdrawal.confirmDelete', { defaultValue: 'Are you sure you want to delete this?' })}
+          confirmLabel={t('actions.delete', { defaultValue: 'Delete' })}
+          onConfirm={confirmDeleteGasNetwork}
+          onClose={() => setDeleteConfirmNetwork(null)}
+        />
       )}
     </>
   )

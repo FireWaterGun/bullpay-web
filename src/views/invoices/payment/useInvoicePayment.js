@@ -6,8 +6,10 @@ import { useInvoiceEvents } from '../../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../../utils/notification'
 import { useToastContext } from '../../../context/ToastContext'
 import { copyToClipboard } from '../../../utils/clipboard'
+import { isSafeRedirectUrl } from '../../../utils/url'
 
 const ACTIVE_INTERVAL = 6000
+const MAX_POLL_COUNT = 600 // ~1 hour at 6s intervals
 
 export default function useInvoicePayment() {
   const { t } = useTranslation()
@@ -22,6 +24,7 @@ export default function useInvoicePayment() {
   const [copied, setCopied] = useState(false)
   const [copiedAmt, setCopiedAmt] = useState(false)
   const pollRef = useRef(null)
+  const pollCountRef = useRef(0)
   const abortRef = useRef(null)
 
   // Payment mode: detect pay_ prefix
@@ -165,8 +168,17 @@ export default function useInvoicePayment() {
       }
       return
     }
-    const pollFn = isPaymentMode ? () => loadPayment(false) : () => loadInvoice(false)
-    pollRef.current = setInterval(pollFn, ACTIVE_INTERVAL)
+    const basePollFn = isPaymentMode ? () => loadPayment(false) : () => loadInvoice(false)
+    pollCountRef.current = 0
+    pollRef.current = setInterval(() => {
+      pollCountRef.current += 1
+      if (pollCountRef.current >= MAX_POLL_COUNT) {
+        clearInterval(pollRef.current)
+        pollRef.current = null
+        return
+      }
+      basePollFn()
+    }, ACTIVE_INTERVAL)
     return () => {
       if (pollRef.current) clearInterval(pollRef.current)
     }
@@ -243,7 +255,9 @@ export default function useInvoicePayment() {
       count -= 1
       if (count <= 0) {
         clearInterval(redirectTimerRef.current)
-        window.location.href = invoice.successUrl
+        if (isSafeRedirectUrl(invoice.successUrl)) {
+          window.location.href = invoice.successUrl
+        }
         return
       }
       setRedirectCountdown(count)

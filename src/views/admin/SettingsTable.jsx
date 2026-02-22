@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { formatLabel, getColor } from './settingsUtils'
+import { formatLabel, getColor, getColorRgb } from './settingsUtils'
 
 export default function SettingsTable({
   groupedSettings,
@@ -16,15 +16,16 @@ export default function SettingsTable({
 }) {
   const { t } = useTranslation()
 
-  return groupedSettings.map(group => {
+  return groupedSettings.map((group, groupIdx) => {
     const expanded = expandedGroups.has(group.network)
-    const color = getColor(group.network)
+    const color = getColor(group.network, groupIdx)
+    const colorRgb = getColorRgb(group.network, groupIdx)
     return (
       <div className="card mb-4 overflow-hidden" key={group.network} style={{ borderLeft: `4px solid ${color}` }}>
         {/* Network header */}
         <div
           className="card-header d-flex align-items-center justify-content-between py-3"
-          style={{ cursor: 'pointer', background: expanded ? 'var(--bs-body-bg)' : 'var(--bs-tertiary-bg)' }}
+          style={{ cursor: 'pointer', background: 'var(--bs-card-bg)' }}
           onClick={() => toggleGroup(group.network)}
         >
           <div className="d-flex align-items-center gap-2">
@@ -67,14 +68,14 @@ export default function SettingsTable({
                         {/* Sub-group header row */}
                         {sg.name && (
                           <tr
-                            style={{ cursor: 'pointer', background: `${color}10` }}
+                            style={{ cursor: 'pointer', background: `rgba(${colorRgb}, 0.08)` }}
                             onClick={() => toggleGroup(sgKey)}
                           >
                             <td colSpan="5" style={{ padding: '10px 16px', borderBottom: '2px solid var(--bs-border-color)' }}>
                               <div className="d-flex align-items-center gap-2">
                                 <i className={`bx ${sgOpen ? 'bx-chevron-down' : 'bx-chevron-right'}`} style={{ fontSize: '1rem', color }}></i>
                                 <span className="fw-bold" style={{ fontSize: '0.9rem', color }}>{formatLabel(sg.name)}</span>
-                                <span className="badge rounded-pill" style={{ background: `${color}20`, color, fontSize: '0.7rem' }}>
+                                <span className="badge rounded-pill" style={{ background: `rgba(${colorRgb}, 0.15)`, color, fontSize: '0.7rem' }}>
                                   {sg.items.length} {t('admin.settings.items', { defaultValue: 'items' })}
                                 </span>
                               </div>

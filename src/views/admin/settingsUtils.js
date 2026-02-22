@@ -5,12 +5,29 @@ export function formatLabel(str) {
   return String(str || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 }
 
-const KNOWN_COLORS = { ETH: '#627eea', BSC: '#f3ba2f', POL: '#8247e5' }
-const COLOR_PALETTE = ['#697a8d', '#20c997', '#e83e8c', '#fd7e14', '#0dcaf0', '#6610f2', '#d63384', '#198754', '#0d6efd', '#dc3545']
-export function getColor(name) {
-  const upper = (name || '').toUpperCase()
-  if (KNOWN_COLORS[upper]) return KNOWN_COLORS[upper]
-  let hash = 0
-  for (let i = 0; i < upper.length; i++) hash = upper.charCodeAt(i) + ((hash << 5) - hash)
-  return COLOR_PALETTE[Math.abs(hash) % COLOR_PALETTE.length]
+const THEME_COLORS = [
+  'var(--bs-primary)',
+  'var(--bs-success)',
+  'var(--bs-info)',
+  'var(--bs-warning)',
+  'var(--bs-danger)',
+  'var(--bs-dark)',
+  'var(--bs-secondary)',
+]
+const THEME_COLORS_RGB = [
+  'var(--bs-primary-rgb)',
+  'var(--bs-success-rgb)',
+  'var(--bs-info-rgb)',
+  'var(--bs-warning-rgb)',
+  'var(--bs-danger-rgb)',
+  'var(--bs-dark-rgb)',
+  'var(--bs-secondary-rgb)',
+]
+
+export function getColor(name, idx = 0) {
+  return THEME_COLORS[idx % THEME_COLORS.length]
+}
+
+export function getColorRgb(name, idx = 0) {
+  return THEME_COLORS_RGB[idx % THEME_COLORS_RGB.length]
 }

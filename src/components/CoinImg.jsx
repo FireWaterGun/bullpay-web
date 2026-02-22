@@ -146,11 +146,16 @@ export default function CoinImg({
   }
 
   // ------ Network badge candidates ------
-  const networkCandidates = useMemo(
+  const networkCandidatesRaw = useMemo(
     () => getCoinAssetCandidates(resolvedNetworkSymbol, null),
     [resolvedNetworkSymbol],
   )
+  const networkCandidates = useMemo(
+    () => networkCandidatesRaw.filter((c) => !c.includes('default.svg')),
+    [networkCandidatesRaw],
+  )
   const [netIdx, setNetIdx] = useState(0)
+  const [netExhausted, setNetExhausted] = useState(false)
   const netSrc = networkCandidates[Math.min(netIdx, networkCandidates.length - 1)]
 
   // Decide badge size: explicit prop, or auto based on main size
@@ -162,7 +167,9 @@ export default function CoinImg({
     resolvedNetworkSymbol &&
     resolvedNetworkSymbol !== symbol &&
     resolvedNetworkSymbol !== symbol?.toLowerCase() &&
-    !(symbol === 'POL' && (resolvedNetworkSymbol === 'MATIC' || resolvedNetworkSymbol === 'matic'))
+    !(symbol === 'POL' && (resolvedNetworkSymbol === 'MATIC' || resolvedNetworkSymbol === 'matic')) &&
+    !netExhausted &&
+    networkCandidates.length > 0
 
   // ------ Letter fallback avatar ------
   if (showFallback && (candidates.length === 0 || coinExhausted)) {
@@ -238,7 +245,13 @@ export default function CoinImg({
           height={badgeSize - badgePadding * 2}
           className="rounded-circle"
           style={objectFitCover}
-          onError={() => setNetIdx((i) => (i + 1 < networkCandidates.length ? i + 1 : i))}
+          onError={() => {
+            if (netIdx + 1 < networkCandidates.length) {
+              setNetIdx((i) => i + 1)
+            } else {
+              setNetExhausted(true)
+            }
+          }}
         />
       </div>
     </div>
