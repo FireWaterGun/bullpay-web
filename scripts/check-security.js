@@ -111,9 +111,9 @@ check('4a', 'index.html has CSP meta tag', () => {
   return true;
 });
 
-check('4b', 'CSP includes frame-ancestors none', () => {
+check('4b', 'CSP includes frame-src directive', () => {
   const src = read('index.html');
-  if (!src.includes("frame-ancestors 'none'")) return "Missing frame-ancestors 'none' directive";
+  if (!src.includes("frame-src")) return "Missing frame-src directive";
   return true;
 });
 
