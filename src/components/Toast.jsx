@@ -1,16 +1,16 @@
 import { useEffect, useState, useMemo } from 'react';
 
 const TYPE_STYLES = {
-  success: { bgLight: '#d1fae5', icon: 'bx-check-circle', iconColor: '#10b981' },
-  error:   { bgLight: '#fee2e2', icon: 'bx-error-circle', iconColor: '#ef4444' },
-  warning: { bgLight: '#fef3c7', icon: 'bx-error',        iconColor: '#f59e0b' },
-  info:    { bgLight: '#dbeafe', icon: 'bx-info-circle',   iconColor: '#3b82f6' },
+  success: { bgLight: 'rgba(var(--bs-success-rgb), 0.15)', icon: 'bx-check-circle', iconColor: 'var(--bs-success)' },
+  error:   { bgLight: 'rgba(var(--bs-danger-rgb), 0.15)',  icon: 'bx-error-circle', iconColor: 'var(--bs-danger)' },
+  warning: { bgLight: 'rgba(var(--bs-warning-rgb), 0.15)', icon: 'bx-error',        iconColor: 'var(--bs-warning)' },
+  info:    { bgLight: 'rgba(var(--bs-info-rgb), 0.15)',    icon: 'bx-info-circle',   iconColor: 'var(--bs-info)' },
 };
 
-const DEFAULT_TYPE_STYLE = { bgLight: '#e0e7ff', icon: 'bx-bell', iconColor: '#6366f1' };
+const DEFAULT_TYPE_STYLE = { bgLight: 'rgba(var(--bs-primary-rgb), 0.15)', icon: 'bx-bell', iconColor: 'var(--bs-primary)' };
 
 const toastStyle = {
-  backgroundColor: '#fff',
+  backgroundColor: 'var(--bs-body-bg)',
   borderRadius: '12px',
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
   minWidth: '320px',
@@ -28,9 +28,9 @@ const iconBoxBase = {
   flexShrink: 0,
 };
 
-const titleStyle = { fontSize: '0.95rem', fontWeight: 600, color: '#1f2937' };
+const titleStyle = { fontSize: '0.95rem', fontWeight: 600, color: 'var(--bs-heading-color)' };
 const closeStyle = { fontSize: '0.7rem', flexShrink: 0 };
-const bodyTextStyle = { color: '#6b7280', fontSize: '0.875rem', lineHeight: '1.4' };
+const bodyTextStyle = { color: 'var(--bs-secondary-color)', fontSize: '0.875rem', lineHeight: '1.4' };
 
 const containerStyle = {
   position: 'fixed',

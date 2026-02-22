@@ -1,0 +1,173 @@
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { useToastContext } from '../context/ToastContext'
+import { useUserInvoiceEvents, useSystemNotifications } from './useInvoiceEvents'
+import { notifyPaymentReceived, playNotificationSound } from '../utils/notification'
+import { getSystemWalletStats, getWithdrawals } from '../api/admin.ts'
+import { getBalancesWithFiat } from '../api/balance.ts'
+
+export default function useDashboardData() {
+  const { user, isAdmin, token } = useAuth()
+  const toast = useToastContext()
+
+  const [fiatBalance, setFiatBalance] = useState({ currency: 'USD', amount: '0' })
+  const [pendingWithdrawalCount, setPendingWithdrawalCount] = useState(0)
+  const notificationRefreshRef = useRef(null)
+
+  const userIdentifier = user?.id || user?.userId || user?.email
+
+  // Listen for withdrawal status changes (approve/reject) to refresh badge
+  useEffect(() => {
+    const handler = () => { if (isAdmin && token) loadPendingWithdrawalCount() }
+    window.addEventListener('withdrawal-status-changed', handler)
+    return () => window.removeEventListener('withdrawal-status-changed', handler)
+  }, [isAdmin, token])
+
+  // Load payment stats for admin users
+  useEffect(() => {
+    if (token) {
+      if (isAdmin) {
+        loadPaymentStats()
+        loadPendingWithdrawalCount()
+      } else {
+        loadUserBalance()
+      }
+    }
+  }, [isAdmin, token])
+
+  async function loadPendingWithdrawalCount() {
+    try {
+      if (!token) return
+      const data = await getWithdrawals(token, { status: 'pending', page: 1, limit: 1 })
+      setPendingWithdrawalCount(data?.pagination?.total ?? 0)
+    } catch (error) {
+      console.error('Failed to load pending withdrawal count:', error)
+    }
+  }
+
+  async function loadPaymentStats() {
+    try {
+      const stats = await getSystemWalletStats(token, 'USD')
+      setFiatBalance({
+        currency: stats?.fiat?.currency || 'USD',
+        amount: stats?.fiat?.totalValueUsd || '0'
+      })
+    } catch (error) {
+      console.error('Failed to load system wallet stats:', error)
+    }
+  }
+
+  async function loadUserBalance() {
+    try {
+      const data = await getBalancesWithFiat(token, 'USD')
+      if (data?.fiat) {
+        setFiatBalance({
+          currency: data.fiat.currency || 'USD',
+          amount: data.fiat.amount || '0'
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load user balance:', error)
+    }
+  }
+
+  const refreshNotifications = useCallback(() => {
+    notificationRefreshRef.current?.()
+  }, [])
+
+  // Memoize Pusher event callbacks to prevent unnecessary re-subscriptions
+  const pusherCallbacks = useMemo(() => ({
+    onInvoiceCreated: (data) => {
+      refreshNotifications();
+      playNotificationSound('info');
+      toast.info({
+        title: 'New Invoice',
+        body: data.body || 'A new invoice has been created'
+      });
+    },
+    onInvoiceUpdated: (data) => {
+      refreshNotifications();
+      playNotificationSound('info');
+      toast.info({
+        title: 'Invoice Updated',
+        body: data.body || 'An invoice has been updated'
+      });
+    },
+    onStatusChanged: (data) => {
+      if (data.type === 'invoice_completed' || data.status === 'paid') {
+        playNotificationSound('success');
+        const invoiceData = {
+          id: data.invoiceId,
+          invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
+          ...data
+        };
+        toast.success({
+          title: 'Invoice Paid',
+          body: data.body || 'Invoice has been paid successfully'
+        });
+        notifyPaymentReceived(invoiceData);
+      } else {
+        playNotificationSound('info');
+        toast.info({
+          title: 'Status Changed',
+          body: data.body || `Invoice status changed to ${data.status}`
+        });
+      }
+      refreshNotifications();
+    },
+    onPaymentReceived: (data) => {
+      playNotificationSound('success');
+      const invoiceData = {
+        id: data.invoiceId,
+        invoiceNumber: data.title?.replace(/^.*#/, '') || data.invoiceId,
+        ...data
+      };
+      toast.success({
+        title: 'Payment Received',
+        body: data.body || 'Payment has been received'
+      });
+      notifyPaymentReceived(invoiceData);
+      refreshNotifications();
+    },
+    onPaymentCompleted: (data) => {
+      playNotificationSound('success');
+      const invoiceData = {
+        id: data.metadata?.referenceId,
+        ...data.metadata,
+        ...data
+      };
+      toast.success({
+        title: data.title || 'Payment Completed',
+        body: data.message || 'Payment has been completed successfully'
+      });
+      notifyPaymentReceived(invoiceData);
+      refreshNotifications();
+    },
+    onWithdrawalCompleted: (data) => {
+      playNotificationSound('success');
+      toast.success({
+        title: data.title || 'Withdrawal Completed',
+        body: data.message || 'Withdrawal has been completed successfully'
+      });
+      refreshNotifications();
+      loadPendingWithdrawalCount();
+    }
+  }), []); // Empty array - create once and never change
+
+  // Subscribe to Pusher events for real-time updates (global for all dashboard pages)
+  useUserInvoiceEvents(userIdentifier, pusherCallbacks);
+
+  // Subscribe to system notifications for admin users (sweep_completed)
+  useSystemNotifications(isAdmin, {
+    onSweepCompleted: (data) => {
+      playNotificationSound('success');
+      toast.success({
+        title: data.title || 'Sweep Completed',
+        body: data.message || 'Sweep has been completed successfully'
+      });
+      refreshNotifications();
+    }
+  });
+
+  return { fiatBalance, pendingWithdrawalCount, notificationRefreshRef }
+}

@@ -8,24 +8,19 @@ let audioContextInitialized = false;
  */
 export async function initAudioContext() {
   if (audioContextInitialized) {
-    console.log('[Notification] Audio context already initialized');
     return;
   }
   
   try {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      console.log('[Notification] Audio context created');
     }
     
     if (audioContext.state === 'suspended') {
-      console.log('[Notification] Resuming suspended audio context...');
       await audioContext.resume();
-      console.log('[Notification] ✅ Audio context resumed and ready!');
     }
     
     audioContextInitialized = true;
-    console.log('[Notification] ✅ Audio context initialized (state:', audioContext.state + ')');
   } catch (err) {
     console.warn('[Notification] ❌ Failed to initialize audio context:', err);
   }
@@ -59,18 +54,13 @@ export async function playNotificationSound(type = 'success') {
     
     // Try to resume audio context if suspended
     if (ctx.state === 'suspended') {
-      console.log('[Notification] Audio context suspended, attempting to resume...');
       try {
         await ctx.resume();
-        console.log('[Notification] ✅ Audio context resumed successfully!');
       } catch (err) {
-        console.warn('[Notification] ❌ Failed to resume audio context:', err);
-        console.log('[Notification] User interaction required for audio. Please click anywhere on the page.');
+        console.warn('[Notification] Failed to resume audio context:', err);
         return;
       }
     }
-    
-    console.log('[Notification] 🔊 Playing', type, 'sound');
     
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();

@@ -12,6 +12,9 @@ import {
 } from '../../api/admin.ts'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
+import { formatDate } from '../../utils/format'
+import AddressActionModal from './AddressActionModal'
+import AddressAuditLog from './AddressAuditLog'
 
 export default function WithdrawalAddressDetail() {
   const { t } = useTranslation()
@@ -23,7 +26,6 @@ export default function WithdrawalAddressDetail() {
   const [loading, setLoading] = useState(true)
   const [address, setAddress] = useState(null)
 
-  // Action modal states
   const [showActionModal, setShowActionModal] = useState(false)
   const [actionType, setActionType] = useState('')
   const [actionReason, setActionReason] = useState('')
@@ -38,7 +40,6 @@ export default function WithdrawalAddressDetail() {
     try {
       setLoading(true)
       const res = await getWithdrawalAddressById(token, parseInt(id))
-      // API returns { address: { id, userId, address: "0x...", ... } }
       const addr = res?.address && typeof res.address === 'object' ? res.address : res
       setAddress(addr)
     } catch (error) {
@@ -47,18 +48,6 @@ export default function WithdrawalAddressDetail() {
     } finally {
       setLoading(false)
     }
-  }
-
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    const seconds = String(date.getSeconds()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
   }
 
   async function handleCopy(text) {
@@ -176,22 +165,18 @@ export default function WithdrawalAddressDetail() {
 
   const coinSymbol = (address.coinSymbol || '').toUpperCase()
   const networkSymbol = (address.networkSymbol || '').toUpperCase()
-  const isPending = address.status === 'pending_verification'
   const isFlagged = !!address.isFlagged
   const isVerified = !!address.isVerified
-  const actionConfig = getActionConfig()
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="row">
         <div className="col-12">
-          {/* Back Button */}
           <button onClick={() => navigate('/admin/withdrawal-addresses')} className="btn btn-outline-secondary mb-3">
             <i className="bx bx-arrow-back me-2"></i>
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
 
-          {/* Header Card */}
           <div className="card mb-4">
             <div className="card-header">
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -214,7 +199,6 @@ export default function WithdrawalAddressDetail() {
           </div>
 
           <div className="row">
-            {/* Details */}
             <div className="col-lg-8">
               <div className="card mb-4">
                 <div className="card-header">
@@ -286,41 +270,9 @@ export default function WithdrawalAddressDetail() {
                 </div>
               </div>
 
-              {/* Audit Log */}
-              {address.auditLogs && address.auditLogs.length > 0 && (
-                <div className="card mb-4">
-                  <div className="card-header">
-                    <h5 className="mb-0"><i className="bx bx-history me-2"></i>Audit Log</h5>
-                  </div>
-                  <div className="card-body p-0">
-                    <div className="table-responsive">
-                      <table className="table table-sm mb-0">
-                        <thead>
-                          <tr>
-                            <th>Action</th>
-                            <th>Admin</th>
-                            <th>Reason</th>
-                            <th>Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {address.auditLogs.map((log, idx) => (
-                            <tr key={idx}>
-                              <td><span className="fw-medium">{log.action}</span></td>
-                              <td>{log.adminId || log.performedBy || '—'}</td>
-                              <td className="text-muted" style={{ maxWidth: 300, whiteSpace: 'normal' }}>{log.reason || '—'}</td>
-                              <td className="text-nowrap">{formatDate(log.createdAt || log.timestamp)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <AddressAuditLog auditLogs={address.auditLogs} />
             </div>
 
-            {/* Status & Actions Sidebar */}
             <div className="col-lg-4">
               <div className="card mb-4">
                 <div className="card-header">
@@ -358,7 +310,6 @@ export default function WithdrawalAddressDetail() {
                 </div>
               </div>
 
-              {/* Actions Card */}
               {address.status !== 'deleted' && (
                 <div className="card mb-4">
                   <div className="card-header">
@@ -391,100 +342,19 @@ export default function WithdrawalAddressDetail() {
         </div>
       </div>
 
-      {/* Action Modal */}
       {showActionModal && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !actionLoading && setShowActionModal(false)}>
-          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className={`bx ${actionConfig.icon} me-2`}></i>
-                  {actionConfig.title}
-                </h5>
-                <button type="button" className="btn-close" onClick={() => setShowActionModal(false)} disabled={actionLoading}></button>
-              </div>
-              <div className="modal-body">
-                <div className="card mb-3" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
-                  <div className="card-body py-2 px-3">
-                    <div className="row g-2">
-                      <div className="col-6">
-                        <small className="text-muted d-block">Address ID</small>
-                        <strong>#{address.id}</strong>
-                      </div>
-                      <div className="col-6">
-                        <small className="text-muted d-block">User ID</small>
-                        <strong>{address.userId}</strong>
-                      </div>
-                      <div className="col-12">
-                        <small className="text-muted d-block">Address</small>
-                        <code style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>{address.address}</code>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {actionType === 'delete' && (
-                  <div className="alert alert-danger d-flex align-items-center mb-3" role="alert">
-                    <i className="bx bx-error-circle me-2" style={{ fontSize: '1.25rem' }}></i>
-                    <div>This action is <strong>irreversible</strong>. The address will be permanently deleted.</div>
-                  </div>
-                )}
-
-                <div className="mb-3">
-                  <label className="form-label">Reason <span className="text-danger">*</span></label>
-                  <textarea
-                    className="form-control"
-                    rows="3"
-                    placeholder="Enter reason (minimum 10 characters)..."
-                    value={actionReason}
-                    onChange={(e) => setActionReason(e.target.value)}
-                    disabled={actionLoading}
-                  ></textarea>
-                  <small className="text-muted">{actionReason.trim().length}/500 characters</small>
-                </div>
-
-                {actionType === 'forceVerify' && (
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="skipLockPeriodDetail"
-                      checked={skipLockPeriod}
-                      onChange={(e) => setSkipLockPeriod(e.target.checked)}
-                      disabled={actionLoading}
-                    />
-                    <label className="form-check-label" htmlFor="skipLockPeriodDetail">
-                      Skip lock period
-                    </label>
-                  </div>
-                )}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowActionModal(false)} disabled={actionLoading}>
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className={`btn ${actionConfig.btnClass}`}
-                  onClick={handleAction}
-                  disabled={actionLoading || actionReason.trim().length < 10}
-                >
-                  {actionLoading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-1"></span>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <i className={`bx ${actionConfig.icon} me-1`}></i>
-                      {actionConfig.btnLabel}
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AddressActionModal
+          selectedAddress={address}
+          actionType={actionType}
+          actionConfig={getActionConfig()}
+          actionReason={actionReason}
+          setActionReason={setActionReason}
+          skipLockPeriod={skipLockPeriod}
+          setSkipLockPeriod={setSkipLockPeriod}
+          actionLoading={actionLoading}
+          onAction={handleAction}
+          onClose={() => setShowActionModal(false)}
+        />
       )}
     </div>
   )

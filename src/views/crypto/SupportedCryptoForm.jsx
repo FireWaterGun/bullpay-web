@@ -2,17 +2,19 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
-import { 
-  getCoinNetworkById, 
-  createCoinNetwork, 
-  updateCoinNetwork, 
+import {
+  getCoinNetworkById,
+  createCoinNetwork,
+  updateCoinNetwork,
   deleteCoinNetwork,
   getCoins,
   getNetworks
 } from '../../api/admin.ts'
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal'
 import { useToastContext } from '../../context/ToastContext'
-import CoinImg from '../../components/CoinImg'
+import CoinSelector from './CoinSelector'
+import NetworkSelector from './NetworkSelector'
+import ConfigurationForm from './ConfigurationForm'
 
 export default function SupportedCryptoForm() {
   const { t } = useTranslation()
@@ -77,7 +79,7 @@ export default function SupportedCryptoForm() {
     setError('')
     try {
       const coinNetwork = await getCoinNetworkById(token, parseInt(id))
-      
+
       if (coinNetwork) {
         // ฟังก์ชันตัด trailing zeros
         const cleanNumber = (value) => {
@@ -85,7 +87,7 @@ export default function SupportedCryptoForm() {
           const num = parseFloat(value)
           return isNaN(num) ? '' : num.toString()
         }
-        
+
         setFormData({
           coinId: coinNetwork.coinId?.toString() || '',
           networkId: coinNetwork.networkId?.toString() || '',
@@ -213,7 +215,7 @@ export default function SupportedCryptoForm() {
 
   async function handleDelete() {
     if (!isEdit || !id) return
-    
+
     setLoading(true)
     setError('')
     setShowDeleteConfirm(false)
@@ -246,8 +248,8 @@ export default function SupportedCryptoForm() {
     <div className="container-xxl flex-grow-1 container-p-y">
       {/* Header */}
       <div className="d-flex align-items-center mb-4">
-        <button 
-          type="button" 
+        <button
+          type="button"
           className="btn btn-icon btn-outline-secondary me-3"
           onClick={() => navigate('/admin/coin-networks')}
         >
@@ -255,7 +257,7 @@ export default function SupportedCryptoForm() {
         </button>
         <div>
           <h4 className="mb-1">
-            {isEdit 
+            {isEdit
               ? t('crypto.editCoinNetwork', { defaultValue: 'Edit Coin-Network' })
               : t('crypto.createCoinNetwork', { defaultValue: 'Add Coin-Network' })
             }
@@ -278,302 +280,28 @@ export default function SupportedCryptoForm() {
 
       <div className="row">
         <div className="col-12">
-            {/* Step 1: Select/Display Coin Card */}
-            <div className="card mb-4">
-              <div className="card-header">
-                <h5 className="mb-0">
-                  <span className="badge bg-primary rounded-pill me-2">1</span>
-                  {isEdit ? t('crypto.coin', { defaultValue: 'Coin' }) : t('crypto.selectCoin', { defaultValue: 'Select a coin' })}
-                  <span className="text-danger ms-1">*</span>
-                </h5>
-              </div>
-              <div className="card-body">
-                <div className="row g-3">
-                  {(isEdit ? coins.filter(c => c.id === parseInt(formData.coinId)) : coins).map(coin => {
-                    const isActive = formData.coinId === String(coin.id)
-                    return (
-                      <div className="col-6 col-sm-4 col-md-3" key={coin.id}>
-                        <div
-                          role="button"
-                          className={`card h-100 border-2 rounded-3 overflow-hidden ${isActive ? 'border-primary bg-label-primary shadow-sm' : 'border-2'}`}
-                          onClick={() => {
-                            if (!isEdit) {
-                              setFormData(prev => ({
-                                ...prev,
-                                coinId: String(coin.id)
-                              }))
-                            }
-                          }}
-                          style={isEdit ? { cursor: 'default' } : {}}
-                        >
-                          <div className="card-body d-flex align-items-center gap-3 p-3">
-                            <CoinImg coin={coin} symbol={coin.symbol} size={40} showFallback />
-                            <div className="flex-grow-1 min-width-0">
-                              <div className="fw-bold">{coin.symbol}</div>
-                              <div className="text-muted small text-truncate">{coin.name}</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                  {coins.length === 0 && (
-                    <div className="col-12 text-muted">{t('common.noData', { defaultValue: 'No data' })}</div>
-                  )}
-                </div>
-              </div>
-            </div>
+            <CoinSelector
+              coins={coins}
+              formData={formData}
+              setFormData={setFormData}
+              isEdit={isEdit}
+            />
 
-            {/* Step 2: Select/Display Network Card */}
-            <div className="card mb-4">
-              <div className="card-header">
-                <h5 className="mb-0">
-                  <span className="badge bg-primary rounded-pill me-2">2</span>
-                  {isEdit ? t('crypto.network', { defaultValue: 'Network' }) : t('crypto.selectNetwork', { defaultValue: 'Select a network' })}
-                  <span className="text-danger ms-1">*</span>
-                </h5>
-              </div>
-              <div className="card-body">
-                {formData.coinId ? (
-                  <div className="d-flex flex-wrap gap-2">
-                    {(isEdit ? networks.filter(n => n.id === parseInt(formData.networkId)) : networks).map(network => {
-                      const selected = formData.networkId === String(network.id)
-                      return (
-                        <button
-                          type="button"
-                          key={network.id}
-                          className={`btn ${selected ? 'btn-primary' : 'btn-outline-secondary'}`}
-                          onClick={() => {
-                            if (!isEdit) {
-                              setFormData(prev => ({
-                                ...prev,
-                                networkId: String(network.id)
-                              }))
-                            }
-                          }}
-                          style={isEdit ? { cursor: 'default' } : {}}
-                        >
-                          {network.symbol} - {network.name}
-                        </button>
-                      )
-                    })}
-                    {networks.length === 0 && (
-                      <div className="text-muted small">{t('common.noData', { defaultValue: 'No data' })}</div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-muted">{t('crypto.selectCoinFirst', { defaultValue: 'Please select a coin first' })}</div>
-                )}
-              </div>
-            </div>
+            <NetworkSelector
+              networks={networks}
+              formData={formData}
+              setFormData={setFormData}
+              isEdit={isEdit}
+            />
 
-            {/* Step 3: Configuration Card */}
-            <div className="card mb-4">
-              <div className="card-header">
-                <h5 className="mb-0">
-                  <span className="badge bg-primary rounded-pill me-2">3</span>
-                  {t('crypto.configuration', { defaultValue: 'Configuration' })}
-                </h5>
-              </div>
-              <div className="card-body">
-                <form onSubmit={handleSubmit}>
-                  <div className="row g-4">
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.contractAddress', { defaultValue: 'Contract Address' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="contractAddress"
-                  name="contractAddress"
-                  value={formData.contractAddress}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="0x..."
-                />
-                <small className="text-muted">
-                  {t('crypto.contractAddressHelp', { defaultValue: 'Leave empty for native coins' })}
-                </small>
-              </div>
-
-              {/* Decimals */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.decimals', { defaultValue: 'Decimals' })}
-                </label>
-                <input
-                  type="number"
-                  className="form-control form-control-lg"
-                  id="decimals"
-                  name="decimals"
-                  value={formData.decimals}
-                  onChange={handleChange}
-                  disabled={loading || isEdit}
-                  min="0"
-                  max="18"
-                  placeholder="18"
-                />
-                <small className="text-muted">
-                  {isEdit
-                    ? t('crypto.decimalsReadOnly', { defaultValue: 'Decimals cannot be changed after creation' })
-                    : t('crypto.coinNetworkDecimalsHelp', { defaultValue: 'Override coin decimals if needed' })
-                  }
-                </small>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.minWithdrawAmount', { defaultValue: 'Min Withdraw Amount' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="minWithdrawAmount"
-                  name="minWithdrawAmount"
-                  value={formData.minWithdrawAmount}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="20"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
-              </div>
-
-              {/* Max Withdraw Amount */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.maxWithdrawAmount', { defaultValue: 'Max Withdraw Amount' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="maxWithdrawAmount"
-                  name="maxWithdrawAmount"
-                  value={formData.maxWithdrawAmount}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="50000"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
-              </div>
-
-              {/* Withdraw Fee */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.withdrawFee', { defaultValue: 'Withdraw Fee' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="withdrawFee"
-                  name="withdrawFee"
-                  value={formData.withdrawFee}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="5"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
-              </div>
-
-              {/* Daily Withdraw Limit USD */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.dailyWithdrawLimitUsd', { defaultValue: 'Daily Withdraw Limit (USD)' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="dailyWithdrawLimitUsd"
-                  name="dailyWithdrawLimitUsd"
-                  value={formData.dailyWithdrawLimitUsd}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="10000.00"
-                  pattern="^\d+(\.\d{1,2})?$"
-                  maxLength={17}
-                />
-                <small className="text-muted">
-                  {t('crypto.dailyWithdrawLimitUsdHelp', { defaultValue: 'Maximum daily withdrawal limit in USD. Leave empty for no limit.' })}
-                </small>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.status', { defaultValue: 'Status' })} <span className="text-danger">*</span>
-                </label>
-                <select
-                  className="form-select form-select-lg"
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  required
-                  disabled={loading}
-                >
-                  <option value="active">{t('crypto.statusActive', { defaultValue: 'Active' })}</option>
-                  <option value="inactive">{t('crypto.statusInactive', { defaultValue: 'Inactive' })}</option>
-                  <option value="maintenance">{t('crypto.statusMaintenance', { defaultValue: 'Maintenance' })}</option>
-                </select>
-                <small className="text-muted">
-                  {t('crypto.statusHelp', { defaultValue: 'Current status of this coin-network pair' })}
-                </small>
-              </div>
-
-              {/* Withdraw Toggle */}
-              <div className="col-md-6">
-                <div className="d-flex align-items-center justify-content-between p-3 border rounded">
-                  <div>
-                    <h6 className="mb-1">{t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</h6>
-                    <small className="text-muted">{t('crypto.allowWithdrawals', { defaultValue: 'Allow users to withdraw' })}</small>
-                  </div>
-                  <div className="form-check form-switch form-switch-lg m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name="withdrawEnabled"
-                      id="withdrawEnabled"
-                      checked={formData.withdrawEnabled}
-                      onChange={handleChange}
-                      disabled={loading}
-                    />
-                    <label className="form-check-label" htmlFor="withdrawEnabled"></label>
-                  </div>
-                </div>
-              </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                <div className="d-flex gap-2 justify-content-end mt-5">
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={() => navigate('/admin/coin-networks')}
-                    disabled={loading}
-                  >
-                    <i className="bx bx-x me-1"></i>
-                    {t('actions.cancel', { defaultValue: 'Cancel' })}
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={loading || !formData.coinId || !formData.networkId}
-                  >
-                    <i className={`bx ${loading ? 'bx-loader-alt bx-spin' : 'bx-save'} me-1`}></i>
-                    {loading 
-                      ? t('common.saving', { defaultValue: 'Saving...' })
-                      : isEdit 
-                        ? t('actions.update', { defaultValue: 'Update' })
-                        : t('actions.create', { defaultValue: 'Create' })
-                    }
-                  </button>
-                </div>
-                </form>
-              </div>
-            </div>
+            <ConfigurationForm
+              formData={formData}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              loading={loading}
+              isEdit={isEdit}
+              onCancel={() => navigate('/admin/coin-networks')}
+            />
 
           {/* Delete Button Card - Hidden */}
           {false && isEdit && (

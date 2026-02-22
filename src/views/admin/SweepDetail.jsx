@@ -8,6 +8,8 @@ import { AmountNormalizer } from '../../utils/amount_normalizer'
 import { formatUsd } from '../../utils/format'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
+import SweepMetadataCard from './SweepMetadataCard'
+import SweepTransactionCard, { SweepTimestampsCard } from './SweepTransactionCard'
 
 export default function SweepDetail() {
   const { t } = useTranslation()
@@ -35,11 +37,6 @@ export default function SweepDetail() {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    return new Date(dateString).toLocaleString()
-  }
-
   function formatAmount(amountRaw, decimals, coinSymbol, networkSymbol) {
     if (!amountRaw || !decimals) return '0'
     try {
@@ -50,7 +47,6 @@ export default function SweepDetail() {
       return amount.toString()
     }
   }
-
 
   function statusBadgeClass(s) {
     const v = String(s || '').toUpperCase()
@@ -83,7 +79,7 @@ export default function SweepDetail() {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
-          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
+          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">Sweep transaction not found</p>
           <button className="btn btn-primary" onClick={() => navigate(-1)}>
             {t('actions.back', { defaultValue: 'Back' })}
@@ -93,13 +89,11 @@ export default function SweepDetail() {
     )
   }
 
-  // Support both nested coinNetwork object and flat fields
   const coinSymbol = (sweep.coinNetwork?.coin?.symbol || sweep.coinSymbol || '').toUpperCase()
   const networkSymbol = (sweep.coinNetwork?.network?.symbol || sweep.networkSymbol || '').toUpperCase()
   const networkName = sweep.coinNetwork?.network?.name || sweep.networkName || ''
   const explorerUrl = sweep.coinNetwork?.network?.explorerUrl || sweep.explorerUrl || null
 
-  // Parse metadata
   let metadata = {}
   try {
     metadata = typeof sweep.metadata === 'string' ? JSON.parse(sweep.metadata) : sweep.metadata || {}
@@ -111,7 +105,6 @@ export default function SweepDetail() {
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="row">
         <div className="col-12">
-          {/* Back Button */}
           <button
             onClick={() => navigate(-1)}
             className="btn btn-outline-secondary mb-3"
@@ -120,7 +113,6 @@ export default function SweepDetail() {
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
 
-          {/* Header */}
           <div className="card mb-4">
             <div className="card-body">
               <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -174,7 +166,6 @@ export default function SweepDetail() {
           </div>
 
           <div className="row">
-            {/* Sweep Details */}
             <div className="col-md-6">
               <div className="card mb-4">
                 <div className="card-header">
@@ -272,256 +263,15 @@ export default function SweepDetail() {
                 </div>
               </div>
 
-              {/* Metadata / Invoice Info */}
-              {metadata && Object.keys(metadata).length > 0 && (
-                <div className="card mb-4">
-                  <div className="card-header">
-                    <h5 className="mb-0">
-                      <i className="bx bx-info-circle me-2"></i>
-                      Metadata
-                    </h5>
-                  </div>
-                  <div className="card-body">
-                    <table className="table table-borderless">
-                      <tbody>
-                        {metadata.strategy && (
-                          <tr>
-                            <td className="text-muted" style={{ width: '40%' }}>Strategy</td>
-                            <td>{metadata.strategy}</td>
-                          </tr>
-                        )}
-                        {metadata.invoiceNumber && (
-                          <tr>
-                            <td className="text-muted">Invoice</td>
-                            <td>
-                              <code>{metadata.invoiceNumber}</code>
-                              {metadata.invoiceStatus && (
-                                <span className="badge bg-label-secondary ms-2">{metadata.invoiceStatus}</span>
-                              )}
-                            </td>
-                          </tr>
-                        )}
-                        {metadata.paymentCount != null && (
-                          <tr>
-                            <td className="text-muted">Payment Count</td>
-                            <td>{metadata.paymentCount}</td>
-                          </tr>
-                        )}
-                        {metadata.paymentIds && (
-                          <tr>
-                            <td className="text-muted">Payment IDs</td>
-                            <td>{metadata.paymentIds.join(', ')}</td>
-                          </tr>
-                        )}
-                        {metadata.ledgerEntryIds && (
-                          <tr>
-                            <td className="text-muted">Ledger Entry IDs</td>
-                            <td>{metadata.ledgerEntryIds.join(', ')}</td>
-                          </tr>
-                        )}
-                        {metadata.note && (
-                          <tr>
-                            <td className="text-muted">Note</td>
-                            <td>{metadata.note}</td>
-                          </tr>
-                        )}
-                        {metadata.retryCount != null && (
-                          <tr>
-                            <td className="text-muted">Retry Count</td>
-                            <td>{metadata.retryCount}</td>
-                          </tr>
-                        )}
-                        {metadata.jobName && (
-                          <tr>
-                            <td className="text-muted">Job</td>
-                            <td><code>{metadata.jobName}</code></td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+              <SweepMetadataCard metadata={metadata} />
             </div>
 
-            {/* Transaction & Addresses */}
             <div className="col-md-6">
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-link me-2"></i>
-                    Transaction
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Tx Hash</td>
-                        <td>
-                          {sweep.txHash ? (
-                            <>
-                              <code className="text-break" style={{ fontSize: '0.75rem' }}>{sweep.txHash}</code>
-                              <div className="d-flex gap-1 mt-2">
-                                {explorerUrl && (
-                                  <a
-                                    href={`${explorerUrl}/tx/${sweep.txHash}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                  >
-                                    <i className="bx bx-link-external me-1"></i>Explorer
-                                  </a>
-                                )}
-                                <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handleCopy(sweep.txHash)}
-                                >
-                                  <i className="bx bx-copy me-1"></i>Copy
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <span className="text-muted">-</span>
-                          )}
-                        </td>
-                      </tr>
-                      {sweep.blockNumber && (
-                        <tr>
-                          <td className="text-muted">Block Number</td>
-                          <td>{sweep.blockNumber}</td>
-                        </tr>
-                      )}
-                      {sweep.gasFee && (
-                        <tr>
-                          <td className="text-muted">Gas Fee</td>
-                          <td>{sweep.gasFee}</td>
-                        </tr>
-                      )}
-                      {sweep.networkFeeRaw && (
-                        <tr>
-                          <td className="text-muted">Network Fee (Raw)</td>
-                          <td><code style={{ fontSize: '0.8rem' }}>{sweep.networkFeeRaw}</code></td>
-                        </tr>
-                      )}
-                      {sweep.networkFeeUsd && (
-                        <tr>
-                          <td className="text-muted">Network Fee (USD)</td>
-                          <td>{formatUsd(sweep.networkFeeUsd)}</td>
-                        </tr>
-                      )}
-                      <tr>
-                        <td className="text-muted">From Address</td>
-                        <td>
-                          {sweep.fromAddress ? (
-                            <>
-                              <code className="text-break" style={{ fontSize: '0.75rem' }}>{sweep.fromAddress}</code>
-                              <div className="d-flex gap-1 mt-2">
-                                {explorerUrl && (
-                                  <a
-                                    href={`${explorerUrl}/address/${sweep.fromAddress}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                  >
-                                    <i className="bx bx-link-external me-1"></i>Explorer
-                                  </a>
-                                )}
-                                <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handleCopy(sweep.fromAddress)}
-                                >
-                                  <i className="bx bx-copy me-1"></i>Copy
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted">To Address</td>
-                        <td>
-                          {sweep.toAddress ? (
-                            <>
-                              <code className="text-break" style={{ fontSize: '0.75rem' }}>{sweep.toAddress}</code>
-                              <div className="d-flex gap-1 mt-2">
-                                {explorerUrl && (
-                                  <a
-                                    href={`${explorerUrl}/address/${sweep.toAddress}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                  >
-                                    <i className="bx bx-link-external me-1"></i>Explorer
-                                  </a>
-                                )}
-                                <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handleCopy(sweep.toAddress)}
-                                >
-                                  <i className="bx bx-copy me-1"></i>Copy
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Timestamps */}
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-time me-2"></i>
-                    Timestamps
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Created</td>
-                        <td>{formatDate(sweep.createdAt)}</td>
-                      </tr>
-                      {sweep.completedAt && (
-                        <tr>
-                          <td className="text-muted">Completed</td>
-                          <td>{formatDate(sweep.completedAt)}</td>
-                        </tr>
-                      )}
-                      {sweep.updatedAt && (
-                        <tr>
-                          <td className="text-muted">Updated</td>
-                          <td>{formatDate(sweep.updatedAt)}</td>
-                        </tr>
-                      )}
-                      {metadata.lastAttemptAt && (
-                        <tr>
-                          <td className="text-muted">Last Attempt</td>
-                          <td>{formatDate(metadata.lastAttemptAt)}</td>
-                        </tr>
-                      )}
-                      {metadata.failedAt && (
-                        <tr>
-                          <td className="text-muted">Failed At</td>
-                          <td className="text-danger">{formatDate(metadata.failedAt)}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <SweepTransactionCard sweep={sweep} explorerUrl={explorerUrl} onCopy={handleCopy} />
+              <SweepTimestampsCard sweep={sweep} metadata={metadata} />
             </div>
           </div>
 
-          {/* Failure Reason (if failed) */}
           {failureReason && (
             <div className="card mb-4">
               <div className="card-header">

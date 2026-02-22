@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getPlatformLedgerEntry } from '../../api/admin.ts'
-import { formatUsd } from '../../utils/format'
+import { formatUsd, formatDateTime as formatDate } from '../../utils/format'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
 
@@ -32,11 +32,6 @@ export default function PlatformLedgerDetail() {
     } finally {
       setLoading(false)
     }
-  }
-
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    return new Date(dateString).toLocaleString()
   }
 
   function formatAmount(val) {
@@ -88,7 +83,7 @@ export default function PlatformLedgerDetail() {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
-          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
+          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">{t('admin.platformLedger.notFound', { defaultValue: 'Platform ledger entry not found' })}</p>
           <button className="btn btn-primary" onClick={() => navigate(-1)}>
             {t('actions.back', { defaultValue: 'Back' })}

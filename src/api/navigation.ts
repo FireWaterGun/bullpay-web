@@ -1,4 +1,5 @@
 import { apiFetch } from './client'
+import { requestId } from '../utils/requestId'
 
 export interface NavigationMenu {
   key: string
@@ -22,6 +23,7 @@ export async function getNavigation(token: string): Promise<NavigationResponse> 
   const data = await apiFetch('/api/v1/me/navigation', {
     method: 'GET',
     headers: {
+      'x-request-id': requestId(),
       Authorization: `Bearer ${token}`,
     },
   })

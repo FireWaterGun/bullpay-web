@@ -18,7 +18,7 @@ export function MenuItem({ to, icon, label, end }) {
   )
 }
 
-export function SubItem({ to, label, end }) {
+export function SubItem({ to, label, end, badge }) {
   const location = useLocation()
   const resolved = useResolvedPath(to)
   const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
@@ -27,8 +27,13 @@ export function SubItem({ to, label, end }) {
   const isActive = !!exactMatch || isDetailMatch
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
-      <NavLink to={to} end={end} className="menu-link">
+      <NavLink to={to} end={end} className="menu-link" style={{ position: 'relative' }}>
         <div>{label}</div>
+        {badge > 0 && (
+          <span className="badge rounded-pill bg-danger" style={subBadgeStyle}>
+            {badge > 99 ? '99+' : badge}
+          </span>
+        )}
       </NavLink>
     </li>
   )
@@ -69,13 +74,33 @@ export function SubMenuGroup({ base, label, children }) {
 }
 
 const badgeStyle = {
-  fontSize: '0.65rem',
+  fontSize: '0.6rem',
   lineHeight: '1',
-  padding: '3px 6px',
-  minWidth: '18px',
-  textAlign: 'center',
+  padding: '0',
+  width: '20px',
+  height: '20px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: '50%',
   position: 'absolute',
   right: '38px',
+}
+
+const subBadgeStyle = {
+  fontSize: '0.55rem',
+  lineHeight: '1',
+  padding: '0',
+  width: '18px',
+  height: '18px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: '50%',
+  position: 'absolute',
+  right: '15px',
+  top: '50%',
+  transform: 'translateY(-50%)',
 }
 
 export function MenuGroup({ base, icon, label, children, matchPaths, badge }) {

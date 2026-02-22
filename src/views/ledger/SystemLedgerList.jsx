@@ -1,19 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getSystemLedgerEntries } from '../../api/admin.ts'
-import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
-import { formatUsd } from '../../utils/format'
-import CoinImg from '../../components/CoinImg'
 import { listCoins } from '../../api/coins.ts'
+import SystemLedgerFilters from './SystemLedgerFilters'
+import SystemLedgerTable from './SystemLedgerTable'
 
 export default function SystemLedgerList() {
   const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
-  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const locale = useMemo(() => {
@@ -21,7 +19,6 @@ export default function SystemLedgerList() {
     return map[i18n.language] || 'en-US'
   }, [i18n.language])
 
-  // Restore filters from URL on mount
   const initType = searchParams.get('type') || ''
   const initWalletId = searchParams.get('walletId') || ''
   const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
@@ -38,7 +35,6 @@ export default function SystemLedgerList() {
   const [currentPage, setCurrentPage] = useState(initPage)
   const [coinNetworks, setCoinNetworks] = useState([])
 
-  // Filter states (draft — applied on "Apply")
   const [typeFilter, setTypeFilter] = useState(initType)
   const [walletIdFilter, setWalletIdFilter] = useState(initWalletId)
   const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
@@ -48,7 +44,6 @@ export default function SystemLedgerList() {
   const [startDateFilter, setStartDateFilter] = useState(initStartDate)
   const [endDateFilter, setEndDateFilter] = useState(initEndDate)
 
-  // Applied filters (sent to API) — initialize from URL params
   const [appliedFilters, setAppliedFilters] = useState(() => {
     const f = {}
     if (initType) f.type = initType
@@ -125,74 +120,6 @@ export default function SystemLedgerList() {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}`
-  }
-
-  // Entry code labels
-  const entryCodeLabels = {
-    'SP': 'Settlement Payment',
-    'SC': 'Sweep Cost',
-    'SG': 'Sweep Gas',
-    'WA': 'Wallet Actual',
-    'WF': 'Wallet Fee',
-    'WG': 'Wallet Gas',
-    'WD': 'Withdrawal',
-    'DP': 'Deposit',
-    'FE': 'Fee',
-    'AJ': 'Adjustment',
-  }
-
-  function parseMetadata(entry) {
-    try {
-      return typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
-    } catch { return {} }
-  }
-
-  function getPurposeLabel(metadata) {
-    if (!metadata) return null
-    const purposeMap = {
-      'payment_received': 'Payment Received',
-      'merchant_credit': 'Merchant Credit',
-      'native_coin_sweep_cost': 'Sweep Cost',
-      'gas_topup_for_token_sweep': 'Gas Top-up',
-      'token_sweep_cost': 'Token Sweep Cost',
-    }
-    return purposeMap[metadata.purpose] || purposeMap[metadata.type] || metadata.purpose || metadata.type || null
-  }
-
-  function stateBadge(state) {
-    if (state === 'settled') return <span>Settled</span>
-    if (state === 'committed') return <span>Committed</span>
-    if (state === 'pending') return <span>Pending</span>
-    if (state === 'reversed') return <span>Reversed</span>
-    return <span className="text-muted">{state || 'N/A'}</span>
-  }
-
-  function truncateHash(hash) {
-    if (!hash) return ''
-    if (hash.length <= 16) return hash
-    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
-  }
-
-  function formatAmount(val) {
-    if (!val && val !== 0) return '0'
-    // Use the string value directly, just trim trailing zeros
-    let str = String(val)
-    if (str.includes('.')) {
-      str = str.replace(/0+$/, '').replace(/\.$/, '')
-    }
-    return str || '0'
-  }
-
-
   if (loading && entries.length === 0) {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
@@ -209,7 +136,6 @@ export default function SystemLedgerList() {
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="row">
         <div className="col-12">
-          {/* Header */}
           <div className="card mb-4">
             <div className="card-header">
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -229,297 +155,41 @@ export default function SystemLedgerList() {
               </div>
             </div>
             <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.entryType', { defaultValue: 'Entry Type' })}</label>
-                  <select className="form-select" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-                    <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="credit">{t('filter.credit', { defaultValue: 'Credit' })}</option>
-                    <option value="debit">{t('filter.debit', { defaultValue: 'Debit' })}</option>
-                  </select>
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.entryCode', { defaultValue: 'Entry Code' })}</label>
-                  <select className="form-select" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
-                    <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="WA">WA - Wallet Actual</option>
-                    <option value="WF">WF - Wallet Fee</option>
-                    <option value="WG">WG - Wallet Gas</option>
-                    <option value="SP">SP - Settlement Payment</option>
-                    <option value="SG">SG - Sweep Gas</option>
-                    <option value="SC">SC - Sweep Cost</option>
-                    <option value="XI">XI - Internal In</option>
-                    <option value="XO">XO - Internal Out</option>
-                  </select>
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.state', { defaultValue: 'State' })}</label>
-                  <select className="form-select" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
-                    <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="committed">{t('filter.committed', { defaultValue: 'Committed' })}</option>
-                    <option value="settled">{t('filter.settled', { defaultValue: 'Settled' })}</option>
-                    <option value="reversed">{t('filter.reversed', { defaultValue: 'Reversed' })}</option>
-                  </select>
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.walletId', { defaultValue: 'Wallet ID' })}</label>
-                  <input type="number" className="form-control" placeholder={t('filter.walletId', { defaultValue: 'Wallet ID' })} value={walletIdFilter} onChange={(e) => setWalletIdFilter(e.target.value)} />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</label>
-                  <div className="dropdown">
-                    <button
-                      className="form-select d-flex align-items-center justify-content-between"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      style={{ textAlign: 'left' }}
-                    >
-                      {coinNetworkIdFilter ? (() => {
-                        const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
-                        if (!cn) return 'All'
-                        const sym = (cn.coin?.symbol || '').toUpperCase()
-                        const net = (cn.network?.symbol || '').toUpperCase()
-                        return (
-                          <span className="d-flex align-items-center gap-2">
-                            <CoinImg symbol={sym} networkSymbol={net} size={22} />
-                            <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
-                          </span>
-                        )
-                      })() : <span className="text-muted">All</span>}
-                    </button>
-                    <ul className="dropdown-menu w-100" style={{ maxHeight: '280px', overflowY: 'auto' }}>
-                      <li>
-                        <button className="dropdown-item" onClick={() => setCoinNetworkIdFilter('')}>
-                          <span className="text-muted">All</span>
-                        </button>
-                      </li>
-                      <li><hr className="dropdown-divider" /></li>
-                      {coinNetworks.map((cn) => {
-                        const sym = (cn.coin?.symbol || '').toUpperCase()
-                        const net = (cn.network?.symbol || '').toUpperCase()
-                        return (
-                          <li key={cn.id}>
-                            <button className="dropdown-item d-flex align-items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
-                              <CoinImg symbol={sym} networkSymbol={net} size={28} />
-                              <div>
-                                <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
-                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{net}</div>
-                              </div>
-                            </button>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </div>
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.txHash', { defaultValue: 'Tx Hash' })}</label>
-                  <input type="text" className="form-control" placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })} value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
-                  <LocaleDateRangePicker
-                    startDate={startDateFilter}
-                    endDate={endDateFilter}
-                    onChangeStart={setStartDateFilter}
-                    onChangeEnd={setEndDateFilter}
-                    locale={locale}
-                    placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
-                    t={t}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-              </div>
-              <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt me-1"></i>
-                  {t('filter.apply', { defaultValue: 'Apply Filters' })}
-                </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
-                  <i className="bx bx-reset me-1"></i>
-                  {t('filter.reset', { defaultValue: 'Reset' })}
-                </button>
-              </div>
+              <SystemLedgerFilters
+                locale={locale}
+                loading={loading}
+                coinNetworks={coinNetworks}
+                typeFilter={typeFilter}
+                setTypeFilter={setTypeFilter}
+                entryCodeFilter={entryCodeFilter}
+                setEntryCodeFilter={setEntryCodeFilter}
+                stateFilter={stateFilter}
+                setStateFilter={setStateFilter}
+                walletIdFilter={walletIdFilter}
+                setWalletIdFilter={setWalletIdFilter}
+                coinNetworkIdFilter={coinNetworkIdFilter}
+                setCoinNetworkIdFilter={setCoinNetworkIdFilter}
+                txHashFilter={txHashFilter}
+                setTxHashFilter={setTxHashFilter}
+                startDateFilter={startDateFilter}
+                setStartDateFilter={setStartDateFilter}
+                endDateFilter={endDateFilter}
+                setEndDateFilter={setEndDateFilter}
+                onApply={applyFilters}
+                onReset={resetFilters}
+              />
             </div>
           </div>
 
-          {/* Table */}
-          <div className="card">
-            <div className="card-body">
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover" style={{ minWidth: '1200px' }}>
-                  <thead>
-                    <tr style={{ whiteSpace: 'nowrap' }}>
-                      <th>ID</th>
-                      <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-                      <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
-                      <th>Code</th>
-                      <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-                      <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end">USD</th>
-                      <th>Purpose</th>
-                      <th>Tx Hash</th>
-                      <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {entries.length === 0 ? (
-                      <tr>
-                        <td colSpan="11" className="text-center text-muted py-4">
-                          {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
-                        </td>
-                      </tr>
-                    ) : (
-                      entries.map((entry) => {
-                        const isCredit = entry.entryType === 'credit'
-                        const metadata = parseMetadata(entry)
-                        const networkSymbol = metadata?.networkSymbol || ''
-                        const purposeLabel = getPurposeLabel(metadata)
-
-                        return (
-                          <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/system-ledger/${entry.id}`)}>
-                            <td>
-                              <span className="fw-semibold text-primary">{entry.id}</span>
-                            </td>
-                            <td>
-                              <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
-                                <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
-                                {isCredit ? 'Credit' : 'Debit'}
-                              </span>
-                            </td>
-                            <td style={{ whiteSpace: 'nowrap' }}>
-                              <div className="d-flex align-items-center">
-                                <CoinImg
-                                  symbol={entry.coinSymbol}
-                                  networkSymbol={entry.networkSymbol}
-                                  size={24}
-                                  className="me-2"
-                                />
-                                <div>
-                                  <div className="fw-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
-                                  {entry.networkName && (
-                                    <small className="text-muted" style={{ fontSize: '0.75rem' }}>{entry.networkName}</small>
-                                  )}
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              {entry.entryCode ? (
-                                <span className="fw-medium">{entry.entryCode}</span>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              {stateBadge(entry.state)}
-                            </td>
-                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className={`fw-medium ${entry.state === 'reversed' ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
-                                {entry.state === 'reversed' ? '' : (isCredit ? '-' : '+')}{formatAmount(entry.amount)}
-                              </span>
-                            </td>
-                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
-                            </td>
-                            <td>
-                              <div>
-                                {purposeLabel && (
-                                  <div className="fw-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
-                                )}
-                                {metadata?.invoiceNumber && (
-                                  <small className="badge bg-label-primary">{metadata.invoiceNumber}</small>
-                                )}
-                                {metadata?.sweepId && !metadata?.invoiceNumber && (
-                                  <small className="text-muted">Sweep #{metadata.sweepId}</small>
-                                )}
-                                {!purposeLabel && !metadata?.invoiceNumber && !metadata?.sweepId && (
-                                  <span className="text-muted">-</span>
-                                )}
-                              </div>
-                            </td>
-                            <td>
-                              {entry.txHash ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2">{entry.txHash}</span>
-                                  {entry.explorerUrl && (
-                                    <a
-                                      href={`${entry.explorerUrl}/tx/${entry.txHash}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                      onClick={(e) => e.stopPropagation()}
-                                      title="View on explorer"
-                                    >
-                                      <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                                    </a>
-                                  )}
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              <span style={{ whiteSpace: 'nowrap' }}>{formatDate(entry.createdAt)}</span>
-                            </td>
-                            <td>
-                              <button
-                                className="btn btn-sm btn-icon btn-outline-primary"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  navigate(`/admin/system-ledger/${entry.id}`)
-                                }}
-                                title={t('actions.view', { defaultValue: 'View' })}
-                              >
-                                <i className="bx bx-show"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        )
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
-                    {t('invoices.showingEntries', {
-                      start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                      end: Math.min(pagination.page * pagination.limit, pagination.total),
-                      total: pagination.total,
-                      defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                    })}
-                  </div>
-                  <div className="btn-group">
-                    <button
-                      className="btn btn-outline-secondary btn-sm"
-                      disabled={!pagination.hasPrev || loading}
-                      onClick={() => { setCurrentPage(currentPage - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
-                    >
-                      <i className="bx bx-chevron-left"></i>
-                      {t('actions.prev', { defaultValue: 'Previous' })}
-                    </button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled>
-                      {pagination.page} / {pagination.totalPages}
-                    </button>
-                    <button
-                      className="btn btn-outline-secondary btn-sm"
-                      disabled={!pagination.hasNext || loading}
-                      onClick={() => { setCurrentPage(currentPage + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
-                    >
-                      {t('actions.next', { defaultValue: 'Next' })}
-                      <i className="bx bx-chevron-right"></i>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <SystemLedgerTable
+            entries={entries}
+            loading={loading}
+            pagination={pagination}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            syncSearchParams={syncSearchParams}
+            appliedFilters={appliedFilters}
+          />
         </div>
       </div>
     </div>

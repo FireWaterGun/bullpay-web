@@ -138,7 +138,7 @@ export default function SupportedCrypto() {
                 <tr>
                   <td colSpan="5" className="text-center py-6">
                     <div className="d-flex flex-column align-items-center justify-content-center">
-                      <i className="bx bx-coin-stack mb-3" style={{ fontSize: '3rem', color: '#a1acb8' }}></i>
+                      <i className="bx bx-coin-stack mb-3" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
                       <p className="text-muted mb-0">
                         {searchQuery 
                           ? t('crypto.noSupportedFound', { defaultValue: 'No supported crypto found' })

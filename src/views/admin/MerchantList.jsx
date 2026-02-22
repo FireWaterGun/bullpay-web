@@ -4,25 +4,9 @@ import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getMerchants, activateMerchant, suspendMerchant } from '../../api/admin.ts'
-import { formatCommission } from '../../utils/format'
-
-const STATUS_OPTIONS = ['active', 'suspended', 'pending']
-
-function statusBadgeClass(status) {
-  const s = String(status || '').toLowerCase()
-  if (s === 'active') return 'badge bg-label-success'
-  if (s === 'suspended') return 'badge bg-label-danger'
-  if (s === 'pending') return 'badge bg-label-warning'
-  return 'badge bg-label-secondary'
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '-'
-  const d = new Date(dateStr)
-  if (isNaN(d.getTime())) return '-'
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
+import { formatCommission, formatDate } from '../../utils/format'
+import { STATUS_OPTIONS, statusBadgeClass } from './merchantListHelpers'
+import MerchantConfirmModal from './MerchantConfirmModal'
 
 export default function MerchantList() {
   const { t } = useTranslation()
@@ -343,80 +327,13 @@ export default function MerchantList() {
 
       {/* Confirm Modal */}
       {showModal && selectedMerchant && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !modalLoading && closeModal()}>
-          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className={`bx ${modalAction === 'activate' ? 'bx-check-circle text-primary' : 'bx-block text-danger'} me-2`}></i>
-                  {modalAction === 'activate'
-                    ? t('admin.merchants.activateTitle', { defaultValue: 'Activate Merchant' })
-                    : t('admin.merchants.suspendTitle', { defaultValue: 'Suspend Merchant' })
-                  }
-                </h5>
-                <button type="button" className="btn-close" onClick={closeModal} disabled={modalLoading}></button>
-              </div>
-              <div className="modal-body">
-                <div className="rounded p-3 mb-3" style={{ backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <small className="text-muted d-block">Merchant ID</small>
-                      <strong>{selectedMerchant.id}</strong>
-                    </div>
-                    <div className="col-6">
-                      <small className="text-muted d-block">{t('admin.merchants.name', { defaultValue: 'Name' })}</small>
-                      <strong>{selectedMerchant.name || '-'}</strong>
-                    </div>
-                    <div className="col-6">
-                      <small className="text-muted d-block">{t('table.status', { defaultValue: 'Status' })}</small>
-                      <span className={statusBadgeClass(selectedMerchant.status)}>
-                        {String(selectedMerchant.status || '').toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="col-6">
-                      <small className="text-muted d-block">{t('admin.merchants.email', { defaultValue: 'Email' })}</small>
-                      <span>{selectedMerchant.email || '-'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {modalAction === 'activate' ? (
-                  <div className="alert alert-primary py-2 mb-0" role="alert">
-                    <i className="bx bx-check-circle me-1"></i>
-                    {t('admin.merchants.activateConfirm', { defaultValue: 'Are you sure you want to activate this merchant?' })}
-                  </div>
-                ) : (
-                  <div className="alert alert-danger py-2 mb-0" role="alert">
-                    <i className="bx bx-error me-1"></i>
-                    {t('admin.merchants.suspendConfirm', { defaultValue: 'Are you sure you want to suspend this merchant? They will lose access to merchant features.' })}
-                  </div>
-                )}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-outline-secondary" onClick={closeModal} disabled={modalLoading}>
-                  {t('actions.cancel', { defaultValue: 'Cancel' })}
-                </button>
-                <button
-                  type="button"
-                  className={`btn ${modalAction === 'activate' ? 'btn-primary' : 'btn-danger'}`}
-                  onClick={handleConfirm}
-                  disabled={modalLoading}
-                >
-                  {modalLoading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-1"></span>
-                      {t('invoices.loading', { defaultValue: 'Loading...' })}
-                    </>
-                  ) : (
-                    modalAction === 'activate'
-                      ? t('admin.merchants.activate', { defaultValue: 'Activate' })
-                      : t('admin.merchants.suspend', { defaultValue: 'Suspend' })
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <MerchantConfirmModal
+          merchant={selectedMerchant}
+          action={modalAction}
+          loading={modalLoading}
+          onConfirm={handleConfirm}
+          onClose={closeModal}
+        />
       )}
     </div>
   )

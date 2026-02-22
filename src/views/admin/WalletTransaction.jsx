@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getSystemWallet, getSystemWalletLedger } from '../../api/admin.ts'
-import { AmountNormalizer } from '../../utils/amount_normalizer'
-import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
-import { formatUsd } from '../../utils/format'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
-import CoinImg from '../../components/CoinImg'
+import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
+import WalletInfoCard from './WalletInfoCard'
+import WalletLedgerTable from './WalletLedgerTable'
 
 export default function WalletTransaction() {
   const { t, i18n } = useTranslation()
@@ -30,7 +29,6 @@ export default function WalletTransaction() {
   const [wallet, setWallet] = useState(null)
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1)
 
-  // Filter states (draft — applied on "Apply")
   const initState = searchParams.get('state') || ''
   const initEntryType = searchParams.get('entryType') || ''
   const initEntryCode = searchParams.get('entryCode') || ''
@@ -128,45 +126,6 @@ export default function WalletTransaction() {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}`
-  }
-
-  function formatAmount(val) {
-    if (!val && val !== 0) return '0'
-    let str = String(val)
-    if (str.includes('.')) {
-      str = str.replace(/0+$/, '').replace(/\.$/, '')
-    }
-    return str || '0'
-  }
-
-
-  function parseMetadata(entry) {
-    try {
-      return typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
-    } catch { return {} }
-  }
-
-  function getPurposeLabel(metadata) {
-    if (!metadata) return null
-    const purposeMap = {
-      'payment_received': 'Payment Received',
-      'merchant_credit': 'Merchant Credit',
-      'native_coin_sweep_cost': 'Sweep Cost',
-      'gas_topup_for_token_sweep': 'Gas Top-up',
-      'token_sweep_cost': 'Token Sweep Cost',
-    }
-    return purposeMap[metadata.purpose] || purposeMap[metadata.type] || metadata.purpose || metadata.type || null
-  }
-
   async function handleCopy(text, e) {
     if (e) e.stopPropagation()
     const ok = await copyText(text)
@@ -191,7 +150,6 @@ export default function WalletTransaction() {
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="row">
         <div className="col-12">
-          {/* Back Button */}
           <button
             onClick={() => navigate('/admin/system-wallets')}
             className="btn btn-outline-secondary mb-3"
@@ -200,132 +158,14 @@ export default function WalletTransaction() {
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
 
-          {/* Wallet Info Header */}
-          <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                  <h4 className="mb-1">
-                    <i className="bx bx-wallet me-2"></i>
-                    {wallet?.walletName || t('admin.ledger.title', { defaultValue: 'Wallet Transactions' })}
-                  </h4>
-                  <p className="text-muted mb-0">
-                    {wallet?.networkName || ''} &middot; {wallet?.purpose || ''} &middot; {wallet?.walletType || ''}
-                  </p>
-                </div>
-                <button className="btn btn-primary" onClick={loadLedger} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  {t('actions.refresh', { defaultValue: 'Refresh' })}
-                </button>
-              </div>
-            </div>
-            <div className="card-body">
-              {/* Wallet Details */}
-              {wallet && (
-                <div className="row g-3 mb-3">
-                  <div className="col-md-4">
-                    <small className="text-muted d-block mb-1">
-                      <i className="bx bx-id-card me-1"></i>Wallet ID
-                    </small>
-                    <span className="fw-semibold">{wallet.id}</span>
-                  </div>
-                  <div className="col-md-4">
-                    <small className="text-muted d-block mb-1">
-                      <i className="bx bx-category me-1"></i>Purpose
-                    </small>
-                    <span className="badge bg-label-info text-capitalize">{wallet.purpose || 'N/A'}</span>
-                  </div>
-                  <div className="col-md-4">
-                    <small className="text-muted d-block mb-1">
-                      <i className="bx bx-chip me-1"></i>Type
-                    </small>
-                    {wallet.walletType === 'hot' ? (
-                      <span className="badge bg-label-warning">
-                        <i className="bx bx-hot me-1"></i>Hot
-                      </span>
-                    ) : (
-                      <span className="badge bg-label-info">
-                        <i className="bx bx-shield me-1"></i>Cold
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-12">
-                    <small className="text-muted d-block mb-1">
-                      <i className="bx bx-wallet me-1"></i>Address
-                    </small>
-                    <div className="d-flex align-items-center gap-2">
-                      <code className="text-primary" style={{ fontSize: '0.875rem', wordBreak: 'break-all' }}>
-                        {wallet.address || 'N/A'}
-                      </code>
-                      {wallet.address && (
-                        <button
-                          onClick={(e) => handleCopy(wallet.address, e)}
-                          className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                          title="Copy"
-                        >
-                          <i className="bx bx-copy" style={{ fontSize: '1rem' }}></i>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <small className="text-muted d-block mb-1">
-                      <i className="bx bx-check-circle me-1"></i>Status
-                    </small>
-                    {wallet.status === 'active' ? (
-                      <span className="badge bg-label-success">Active</span>
-                    ) : (
-                      <span className="badge bg-label-secondary">{wallet.status || 'N/A'}</span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Assets */}
-              {assets.length > 0 && (
-                <>
-                  <hr className="my-3" />
-                  <h6 className="mb-3">
-                    <i className="bx bx-coin-stack me-1"></i>
-                    Assets ({assets.length})
-                  </h6>
-                  <div className="table-responsive">
-                    <table className="table table-sm">
-                      <thead>
-                        <tr style={{ whiteSpace: 'nowrap' }}>
-                          <th>Coin</th>
-                          <th>Network</th>
-                          <th className="text-end">Balance</th>
-                          <th className="text-end">USD Value</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {assets.map((asset, idx) => (
-                          <tr key={idx}>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <CoinImg symbol={asset.coinSymbol} networkSymbol={asset.networkSymbol} size={24} className="me-3" />
-                                <span className="fw-medium">{asset.coinSymbol || '-'}</span>
-                              </div>
-                            </td>
-                            <td>
-                              <span className="text-muted">{asset.networkName || asset.networkSymbol || '-'}</span>
-                            </td>
-                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              {formatAmount(asset.balance)} <span className="text-muted">{asset.coinSymbol}</span>
-                            </td>
-                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              {asset.fiatValue ? formatUsd(asset.fiatValue.amount) : '-'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+          <WalletInfoCard
+            wallet={wallet}
+            assets={assets}
+            t={t}
+            loading={loading}
+            onRefresh={loadLedger}
+            onCopy={handleCopy}
+          />
 
           {/* Filters */}
           <div className="card mb-4">
@@ -402,145 +242,8 @@ export default function WalletTransaction() {
           {/* Ledger Table */}
           <div className="card">
             <div className="card-body">
-              {loading ? (
-                <div className="text-center py-4">
-                  <div className="spinner-border spinner-border-sm text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : entries.length === 0 ? (
-                <div className="text-center py-5">
-                  <i className="bx bx-receipt" style={{ fontSize: '4rem', opacity: 0.3, color: '#666' }}></i>
-                  <h6 className="text-muted mt-3 mb-2">
-                    {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
-                  </h6>
-                  <p className="text-muted small mb-0">
-                    {t('admin.ledger.noEntriesDesc', { defaultValue: 'Try adjusting your filters to see more results' })}
-                  </p>
-                </div>
-              ) : (
-                <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                  <table className="table table-hover" style={{ minWidth: '1200px' }}>
-                    <thead>
-                      <tr style={{ whiteSpace: 'nowrap' }}>
-                        <th>ID</th>
-                        <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-                        <th>Coin</th>
-                        <th>Code</th>
-                        <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-                        <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
-                        <th className="text-end">USD</th>
-                        <th>Purpose</th>
-                        <th>Tx Hash</th>
-                        <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {entries.map((entry) => {
-                        const isCredit = entry.entryType === 'credit'
-                        const metadata = parseMetadata(entry)
-                        const purposeLabel = getPurposeLabel(metadata)
-                        const decimals = entry.decimals || 18
-                        const amount = entry.amount || AmountNormalizer.fromRawSimple(entry.amountRaw || '0', decimals)
+              <WalletLedgerTable entries={entries} loading={loading} t={t} />
 
-                        return (
-                          <tr key={entry.id}>
-                            <td>
-                              <span className="fw-semibold text-primary">{entry.id}</span>
-                            </td>
-                            <td>
-                              <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
-                                <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
-                                {isCredit ? 'Credit' : 'Debit'}
-                              </span>
-                            </td>
-                            <td style={{ whiteSpace: 'nowrap' }}>
-                              <div className="d-flex align-items-center">
-                                <CoinImg
-                                  symbol={entry.coinSymbol || metadata?.coin}
-                                  networkSymbol={entry.networkSymbol || metadata?.network}
-                                  size={24}
-                                  className="me-3"
-                                />
-                                <div>
-                                  <div className="fw-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || metadata?.coin || '-'}</div>
-                                  {(entry.networkName || metadata?.networkName) && (
-                                    <small className="text-muted" style={{ fontSize: '0.75rem' }}>{entry.networkName || metadata?.networkName}</small>
-                                  )}
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              {entry.entryCode ? (
-                                <span className="fw-medium">{entry.entryCode}</span>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              {entry.state === 'settled' ? <span className="badge bg-label-success">Settled</span>
-                                : entry.state === 'committed' ? <span className="badge bg-label-info">Committed</span>
-                                : entry.state === 'pending' ? <span className="badge bg-label-warning">Pending</span>
-                                : entry.state === 'reversed' ? <span className="badge bg-label-secondary">Reversed</span>
-                                : <span className="text-muted">{entry.state || 'N/A'}</span>}
-                            </td>
-                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className={`fw-medium ${isCredit ? 'text-danger' : 'text-success'}`}>
-                                {isCredit ? '-' : '+'}{formatAmount(amount)}
-                              </span>
-                            </td>
-                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                              <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
-                            </td>
-                            <td>
-                              <div>
-                                {purposeLabel && (
-                                  <div className="fw-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
-                                )}
-                                {metadata?.invoiceNumber && (
-                                  <small className="badge bg-label-primary">{metadata.invoiceNumber}</small>
-                                )}
-                                {metadata?.sweepId && !metadata?.invoiceNumber && (
-                                  <small className="text-muted">Sweep #{metadata.sweepId}</small>
-                                )}
-                                {!purposeLabel && !metadata?.invoiceNumber && !metadata?.sweepId && (
-                                  <span className="text-muted">-</span>
-                                )}
-                              </div>
-                            </td>
-                            <td>
-                              {entry.txHash ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2">{entry.txHash}</span>
-                                  {entry.explorerUrl && (
-                                    <a
-                                      href={`${entry.explorerUrl}/tx/${entry.txHash}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                      onClick={(e) => e.stopPropagation()}
-                                      title="View on explorer"
-                                    >
-                                      <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                                    </a>
-                                  )}
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              <span style={{ whiteSpace: 'nowrap' }}>{formatDate(entry.createdAt)}</span>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Pagination */}
               {pagination && pagination.total > 0 && (
                 <div className="d-flex justify-content-between align-items-center mt-4">
                   <div className="text-muted small">

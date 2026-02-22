@@ -1,4 +1,5 @@
 import { apiFetch } from './client'
+import { requestId } from '../utils/requestId'
 
 // ===== Types =====
 
@@ -48,6 +49,7 @@ export async function get2FAStatus(token: string): Promise<TwoFactorStatusRespon
   return apiFetch<TwoFactorStatusResponse>('/api/v1/user/2fa/status', {
     method: 'GET',
     headers: {
+      'x-request-id': requestId(),
       Authorization: `Bearer ${token}`,
     },
   })
@@ -61,6 +63,7 @@ export async function setup2FA(token: string): Promise<TwoFactorSetupResponse> {
   return apiFetch<TwoFactorSetupResponse>('/api/v1/user/2fa/setup', {
     method: 'POST',
     headers: {
+      'x-request-id': requestId(),
       Authorization: `Bearer ${token}`,
     },
   })
@@ -75,6 +78,7 @@ export async function enable2FA(token: string, totpCode: string): Promise<TwoFac
   return apiFetch<TwoFactorEnableResponse>('/api/v1/user/2fa/enable', {
     method: 'POST',
     headers: {
+      'x-request-id': requestId(),
       Authorization: `Bearer ${token}`,
     },
     body: { token: totpCode },
@@ -90,6 +94,7 @@ export async function verify2FA(token: string, code: string): Promise<TwoFactorV
   return apiFetch<TwoFactorVerifyResponse>('/api/v1/user/2fa/verify', {
     method: 'POST',
     headers: {
+      'x-request-id': requestId(),
       Authorization: `Bearer ${token}`,
     },
     body: { code },
@@ -105,6 +110,7 @@ export async function disable2FA(token: string, password: string): Promise<TwoFa
   return apiFetch<TwoFactorDisableResponse>('/api/v1/user/2fa/disable', {
     method: 'POST',
     headers: {
+      'x-request-id': requestId(),
       Authorization: `Bearer ${token}`,
     },
     body: { password },

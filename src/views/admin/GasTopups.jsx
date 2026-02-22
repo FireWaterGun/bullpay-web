@@ -4,12 +4,11 @@ import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getGasTopups } from '../../api/admin.ts'
-import { AmountNormalizer } from '../../utils/amount_normalizer'
-import { formatCoinAmount } from '../../utils/format'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
 import { listCoins } from '../../api/coins.ts'
+import GasTopupRow from './GasTopupRow'
 
 export default function GasTopups() {
   const { t, i18n } = useTranslation()
@@ -116,45 +115,9 @@ export default function GasTopups() {
     }
   }
 
-  function formatAmount(amountRaw, decimals = 18) {
-    if (!amountRaw) return '0'
-    try {
-      const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
-      return formatCoinAmount(value)
-    } catch (e) {
-      return amountRaw.toString()
-    }
-  }
-
   async function handleCopy(text) {
     const ok = await copyText(text)
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
-
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}`
-  }
-
-  function statusBadgeClass(s) {
-    const v = String(s || '').toLowerCase()
-    if (v === 'pending') return 'badge bg-label-warning'
-    if (v === 'processing') return 'badge bg-label-info'
-    if (v === 'completed') return 'badge bg-label-success'
-    if (v === 'failed') return 'badge bg-label-danger'
-    if (v === 'skipped') return 'badge bg-label-secondary'
-    return 'badge bg-label-secondary'
-  }
-
-  function truncateAddress(addr) {
-    if (!addr || addr.length <= 16) return addr || 'N/A'
-    return `${addr.slice(0, 8)}...${addr.slice(-6)}`
   }
 
   if (loading && topups.length === 0) {
@@ -318,110 +281,14 @@ export default function GasTopups() {
                         </td>
                       </tr>
                     ) : (
-                      topups.map((topup) => {
-                        const coinSymbol = (topup.coinNetwork?.coin?.symbol || topup.coinSymbol || '').toUpperCase()
-                        const networkSymbol = (topup.coinNetwork?.network?.symbol || topup.networkSymbol || '').toUpperCase()
-                        const networkName = topup.coinNetwork?.network?.name || topup.networkName || ''
-                        const decimals = topup.coinNetwork?.decimals || topup.decimals || 18
-
-                        return (
-                          <tr key={topup.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/admin/wallet-gas-topups/${topup.id}`)}>
-                            <td>
-                              <span className="fw-semibold text-primary">{topup.id}</span>
-                            </td>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={28} className="me-2" />
-                                <div>
-                                  <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{coinSymbol}</div>
-                                  <div className="text-muted" style={{ fontSize: '0.75rem' }}>{networkName || networkSymbol}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="text-center">
-                              {topup.sweepId ? (
-                                <span className="fw-semibold">{topup.sweepId}</span>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td className="text-end text-nowrap">
-                              <span className="fw-semibold">
-                                {formatAmount(topup.topupGasRaw, decimals)}
-                              </span>
-                            </td>
-                            <td className="text-end text-nowrap">
-                              <span className="text-muted">
-                                {formatAmount(topup.requiredGasRaw, decimals)}
-                              </span>
-                            </td>
-                            <td className="text-center text-nowrap">
-                              <span className={statusBadgeClass(topup.status)}>
-                                {String(topup.status || '').toUpperCase()}
-                              </span>
-                            </td>
-                            <td>
-                              {topup.txHash ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2">{topup.txHash}</span>
-                                  <button
-                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => handleCopy(topup.txHash)}
-                                    title="Copy tx hash"
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              {topup.fromAddress ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2">{topup.fromAddress}</span>
-                                  <button
-                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => handleCopy(topup.fromAddress)}
-                                    title="Copy address"
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              {topup.toAddress ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2">{topup.toAddress}</span>
-                                  <button
-                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => handleCopy(topup.toAddress)}
-                                    title="Copy address"
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td className="text-center">
-                              <span className={topup.retryCount > 0 ? 'text-warning fw-semibold' : 'text-muted'}>
-                                {topup.retryCount || 0}
-                              </span>
-                            </td>
-                            <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
-                              {formatDate(topup.createdAt)}
-                            </td>
-                            <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
-                              {topup.completedAt ? formatDate(topup.completedAt) : <span className="text-muted">-</span>}
-                            </td>
-                          </tr>
-                        )
-                      })
+                      topups.map((topup) => (
+                        <GasTopupRow
+                          key={topup.id}
+                          topup={topup}
+                          onCopy={handleCopy}
+                          onNavigate={(id) => navigate(`/admin/wallet-gas-topups/${id}`)}
+                        />
+                      ))
                     )}
                   </tbody>
                 </table>

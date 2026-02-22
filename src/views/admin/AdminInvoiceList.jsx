@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getAdminInvoices } from '../../api/admin.ts'
-import { formatAmount } from '../../utils/format'
+import { formatAmount, formatDate } from '../../utils/format'
 import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
@@ -81,17 +81,6 @@ export default function AdminInvoiceList() {
     } finally {
       setLoading(false)
     }
-  }
-
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}`
   }
 
   function statusBadgeClass(s) {

@@ -1,19 +1,16 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getAdminPayments } from '../../api/admin.ts'
-import { formatAmount } from '../../utils/format'
-import LocaleDateRangePicker from '../../components/LocaleDateRangePicker'
-import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
+import AdminPaymentFilters from './AdminPaymentFilters'
+import AdminPaymentRow from './AdminPaymentRow'
 
 export default function AdminPaymentList() {
   const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToastContext()
-  const navigate = useNavigate()
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
@@ -86,27 +83,6 @@ export default function AdminPaymentList() {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}`
-  }
-
-  function statusBadgeClass(s) {
-    const v = String(s || '').toLowerCase()
-    if (v === 'confirmed' || v === 'completed') return 'badge bg-label-success'
-    if (v === 'detecting' || v === 'pending') return 'badge bg-label-warning'
-    if (v === 'confirming' || v === 'processing') return 'badge bg-label-info'
-    if (v === 'failed' || v === 'unconfirmed') return 'badge bg-label-danger'
-    if (v === 'expired' || v === 'cancelled' || v === 'canceled') return 'badge bg-label-secondary'
-    return 'badge bg-label-secondary'
-  }
-
   async function handleCopy(text) {
     const ok = await copyText(text)
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
@@ -147,78 +123,28 @@ export default function AdminPaymentList() {
                 </button>
               </div>
             </div>
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                    <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
-                    <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
-                    <option value="detecting">{t('status.detecting', { defaultValue: 'Detecting' })}</option>
-                    <option value="confirming">{t('status.confirming', { defaultValue: 'Confirming' })}</option>
-                    <option value="confirmed">{t('status.confirmed', { defaultValue: 'Confirmed' })}</option>
-                    <option value="completed">{t('status.completed', { defaultValue: 'Completed' })}</option>
-                    <option value="expired">{t('status.expired', { defaultValue: 'Expired' })}</option>
-                    <option value="failed">{t('status.failed', { defaultValue: 'Failed' })}</option>
-                    <option value="refunded">{t('status.refunded', { defaultValue: 'Refunded' })}</option>
-                    <option value="unconfirmed">{t('status.unconfirmed', { defaultValue: 'Unconfirmed' })}</option>
-                  </select>
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.userId', { defaultValue: 'User ID' })}</label>
-                  <input type="number" className="form-control" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.invoiceId', { defaultValue: 'Invoice ID' })}</label>
-                  <input type="number" className="form-control" placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })} value={invoiceIdFilter} onChange={(e) => setInvoiceIdFilter(e.target.value)} />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.txHash', { defaultValue: 'Tx Hash' })}</label>
-                  <input type="text" className="form-control" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
-                  <LocaleDateRangePicker
-                    startDate={fromDateFilter}
-                    endDate={toDateFilter}
-                    onChangeStart={setFromDateFilter}
-                    onChangeEnd={setToDateFilter}
-                    locale={locale}
-                    placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
-                    t={t}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-select" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="created_at">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
-                    <option value="amount_raw">{t('filter.amount', { defaultValue: 'Amount' })}</option>
-                    <option value="status">{t('filter.status', { defaultValue: 'Status' })}</option>
-                    <option value="confirmations">{t('filter.confirmations', { defaultValue: 'Confirmations' })}</option>
-                  </select>
-                </div>
-                <div className="col-md-3 col-sm-6">
-                  <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
-                  <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
-                  </select>
-                </div>
-              </div>
-              <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt me-1"></i>
-                  {t('filter.apply', { defaultValue: 'Apply Filters' })}
-                </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
-                  <i className="bx bx-reset me-1"></i>
-                  {t('filter.reset', { defaultValue: 'Reset' })}
-                </button>
-              </div>
-            </div>
+            <AdminPaymentFilters
+              locale={locale}
+              loading={loading}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              userIdFilter={userIdFilter}
+              setUserIdFilter={setUserIdFilter}
+              invoiceIdFilter={invoiceIdFilter}
+              setInvoiceIdFilter={setInvoiceIdFilter}
+              txHashFilter={txHashFilter}
+              setTxHashFilter={setTxHashFilter}
+              fromDateFilter={fromDateFilter}
+              setFromDateFilter={setFromDateFilter}
+              toDateFilter={toDateFilter}
+              setToDateFilter={setToDateFilter}
+              sortByFilter={sortByFilter}
+              setSortByFilter={setSortByFilter}
+              sortOrderFilter={sortOrderFilter}
+              setSortOrderFilter={setSortOrderFilter}
+              onApply={applyFilters}
+              onReset={resetFilters}
+            />
           </div>
 
           {/* Table */}
@@ -252,148 +178,13 @@ export default function AdminPaymentList() {
                         </td>
                       </tr>
                     ) : (
-                      payments.map((payment) => {
-                        const coinSymbol = (payment.coin?.symbol || payment.coinSymbol || payment.invoice?.coin?.symbol || '').toUpperCase()
-                        const networkSymbol = (payment.network?.symbol || payment.networkSymbol || payment.invoice?.network?.symbol || '').toUpperCase()
-                        const networkName = payment.network?.name || payment.networkName || payment.invoice?.network?.name || ''
-                        const explorerUrl = payment.explorerUrl || payment.network?.explorerUrl || payment.invoice?.network?.explorerUrl || ''
-
-                        return (
-                          <tr key={payment.id}>
-                            <td>
-                              <span className="fw-semibold text-primary">{payment.id}</span>
-                            </td>
-                            <td className="text-center">
-                              <span className="fw-medium">{payment.userId || '-'}</span>
-                            </td>
-                            <td className="text-center">
-                              {payment.invoiceId ? (
-                                <button
-                                  className="btn btn-sm btn-text-primary p-0 fw-medium"
-                                  onClick={() => navigate(`/admin/invoices/${payment.invoiceId}`)}
-                                >
-                                  #{payment.invoiceId}
-                                </button>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td style={{ whiteSpace: 'nowrap' }}>
-                              <div className="d-flex align-items-center">
-                                <CoinImg
-                                  symbol={coinSymbol}
-                                  networkSymbol={networkSymbol}
-                                  size={24}
-                                  className="me-2"
-                                />
-                                <div>
-                                  <div className="fw-medium" style={{ lineHeight: 1.2 }}>{coinSymbol || '-'}</div>
-                                  {networkName && (
-                                    <small className="text-muted" style={{ fontSize: '0.75rem' }}>{networkName}</small>
-                                  )}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="text-end text-nowrap">
-                              <span className="fw-medium">
-                                {formatAmount(payment.amount)} {coinSymbol}
-                              </span>
-                            </td>
-                            <td className="text-end text-nowrap">
-                              {payment.amountUsd ? (
-                                <span className="fw-medium">${formatAmount(payment.amountUsd)}</span>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td className="text-nowrap text-center">
-                              <span className={statusBadgeClass(payment.status)}>
-                                {String(payment.status || '').toUpperCase()}
-                              </span>
-                            </td>
-                            <td className="text-center">
-                              {payment.confirmations != null ? (
-                                <span>{payment.confirmations}/{payment.requiredConfirmations ?? '-'}</span>
-                              ) : '-'}
-                            </td>
-                            <td>
-                              {payment.txHash ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                                    {payment.txHash}
-                                  </span>
-                                  {explorerUrl && (
-                                    <a
-                                      href={`${explorerUrl}/tx/${payment.txHash}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                      title="View on explorer"
-                                    >
-                                      <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                                    </a>
-                                  )}
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              {payment.fromAddress ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                                    {payment.fromAddress}
-                                  </span>
-                                  <button
-                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => handleCopy(payment.fromAddress)}
-                                    title="Copy address"
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              {payment.toAddress ? (
-                                <div className="d-flex align-items-center">
-                                  <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                                    {payment.toAddress}
-                                  </span>
-                                  <button
-                                    className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                    onClick={() => handleCopy(payment.toAddress)}
-                                    title="Copy address"
-                                  >
-                                    <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                  </button>
-                                </div>
-                              ) : (
-                                <span className="text-muted">-</span>
-                              )}
-                            </td>
-                            <td>
-                              <span style={{ whiteSpace: 'nowrap' }}>{formatDate(payment.createdAt || payment.created_at)}</span>
-                            </td>
-                            <td>
-                              <span style={{ whiteSpace: 'nowrap' }}>
-                                {payment.confirmedAt ? formatDate(payment.confirmedAt) : <span className="text-muted">-</span>}
-                              </span>
-                            </td>
-                            <td>
-                              <button
-                                className="btn btn-sm btn-icon btn-text-secondary"
-                                onClick={() => navigate(`/admin/payments/${payment.id}`)}
-                                title="View detail"
-                              >
-                                <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
-                            </td>
-                          </tr>
-                        )
-                      })
+                      payments.map((payment) => (
+                        <AdminPaymentRow
+                          key={payment.id}
+                          payment={payment}
+                          onCopy={handleCopy}
+                        />
+                      ))
                     )}
                   </tbody>
                 </table>

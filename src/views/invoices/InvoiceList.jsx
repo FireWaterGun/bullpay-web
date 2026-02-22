@@ -2,26 +2,47 @@ import { NavLink } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { listInvoices } from "../../api/invoices";
+import { listCoins } from "../../api/coins.ts";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
 import { useUserInvoiceEvents } from "../../hooks/useInvoiceEvents";
 import CoinImg from '../../components/CoinImg'
+import { copyToClipboard } from '../../utils/clipboard'
+import InvoiceFilterPanel from './InvoiceFilterPanel'
 
 export default function InvoiceList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Draft filter states (user changes these, applied on "Apply")
   const [status, setStatus] = useState("");
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState("");
+  const [startDateFilter, setStartDateFilter] = useState("");
+  const [endDateFilter, setEndDateFilter] = useState("");
+  // Coin networks for the dropdown
+  const [coinNetworks, setCoinNetworks] = useState([]);
+  // Applied filters (actually sent to API)
+  const [appliedFilters, setAppliedFilters] = useState({
+    status: "",
+    sortBy: "created_at",
+    sortOrder: "desc",
+    coinNetworkId: "",
+    dateFrom: "",
+    dateTo: "",
+  });
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
   const { token, user } = useAuth();
 
-  const [selected, setSelected] = useState(new Set());
-  const selectAllRef = useRef(null);
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language]);
+
   const [copiedId, setCopiedId] = useState(null);
 
   const totalPages = useMemo(
@@ -36,11 +57,6 @@ export default function InvoiceList() {
     () => Math.min(page * limit, total),
     [total, page, limit]
   );
-  const visibleIds = useMemo(() => items.map((it) => it.id), [items]);
-  const allSelected = useMemo(
-    () => visibleIds.length > 0 && visibleIds.every((id) => selected.has(id)),
-    [visibleIds, selected]
-  );
 
 
   async function load() {
@@ -51,9 +67,12 @@ export default function InvoiceList() {
         {
           page,
           limit,
-          sortBy,
-          sortOrder,
-          status,
+          sortBy: appliedFilters.sortBy,
+          sortOrder: appliedFilters.sortOrder,
+          status: appliedFilters.status,
+          coinNetworkId: appliedFilters.coinNetworkId || undefined,
+          dateFrom: appliedFilters.dateFrom || undefined,
+          dateTo: appliedFilters.dateTo || undefined,
         },
         token
       );
@@ -70,7 +89,11 @@ export default function InvoiceList() {
 
   useEffect(() => {
     load();
-  }, [page, limit, sortBy, sortOrder, status]);
+  }, [page, limit, appliedFilters]);
+
+  useEffect(() => {
+    listCoins(token).then(setCoinNetworks).catch(() => {});
+  }, []);
 
 
   // Subscribe to Pusher events for real-time invoice updates
@@ -97,39 +120,27 @@ export default function InvoiceList() {
     }
   });
 
-  useEffect(() => {
-    if (selectAllRef.current) {
-      const noneSelected = visibleIds.every((id) => !selected.has(id));
-      selectAllRef.current.indeterminate =
-        !allSelected && !noneSelected && selected.size > 0;
-    }
-  }, [visibleIds, selected, allSelected]);
 
-  function toggleAll() {
-    if (allSelected) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set([...selected, ...visibleIds]));
-    }
-  }
-  function toggleOne(id) {
-    const next = new Set(selected);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setSelected(next);
-  }
-
-  function applyFilters(e) {
-    e?.preventDefault();
+  function applyFilters() {
     setPage(1);
-    load();
+    setAppliedFilters({
+      status,
+      sortBy,
+      sortOrder,
+      coinNetworkId: coinNetworkIdFilter,
+      dateFrom: startDateFilter,
+      dateTo: endDateFilter,
+    });
   }
   function resetFilters() {
     setStatus("");
     setSortBy("created_at");
     setSortOrder("desc");
+    setCoinNetworkIdFilter("");
+    setStartDateFilter("");
+    setEndDateFilter("");
     setPage(1);
-    load();
+    setAppliedFilters({ status: "", sortBy: "created_at", sortOrder: "desc", coinNetworkId: "", dateFrom: "", dateTo: "" });
   }
 
   function shortAddr(addr) {
@@ -139,9 +150,9 @@ export default function InvoiceList() {
     return `${s.slice(0, 6)}...${s.slice(-6)}`;
   }
   async function handleCopy(addr, id) {
-    if (!addr || !navigator?.clipboard) return;
+    if (!addr) return;
     try {
-      await navigator.clipboard.writeText(addr);
+      await copyToClipboard(addr);
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 1500);
     } catch (e) {
@@ -154,63 +165,26 @@ export default function InvoiceList() {
       <div className="container-xxl flex-grow-1 container-p-y">
         {/* List */}
         <div className="card">
-          <div className="card-body">
-            <div id="invoiceFilters" className="collapse show mb-5">
-              <form onSubmit={applyFilters}>
-                {/* Filters: only status and sorting controls retained */}
-                  <div className="row g-3">
-                  <div className="col-sm-6 col-md-3">
-                    <label className="form-label">{t("invoices.status")}</label>
-                    <select
-                      className="form-select"
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <option value="">{t("invoices.allStatus")}</option>
-                      <option value="pending">{t("invoices.pending")}</option>
-                      <option value="paid">{t("invoices.paid")}</option>
-                      <option value="expired">{t("invoices.expired")}</option>
-                    </select>
-                  </div>
-                  <div className="col-sm-6 col-md-3">
-                    <label className="form-label">{t("invoices.sortBy")}</label>
-                    <select
-                      className="form-select"
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                    >
-                      <option value="created_at">{t("invoices.dateCreated")}</option>
-                      <option value="amount">{t("invoices.amount")}</option>
-                      <option value="expiry_at">{t("invoices.expiryAt") || "Expiry date"}</option>
-                      <option value="paid_at">{t("invoices.paidAt") || "Paid date"}</option>
-                    </select>
-                  </div>
-                  <div className="col-sm-6 col-md-3">
-                    <label className="form-label">{t("invoices.sortOrder")}</label>
-                    <select
-                      className="form-select"
-                      value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value)}
-                    >
-                      <option value="desc">{t("invoices.sortNewest")}</option>
-                      <option value="asc">{t("invoices.sortOldest")}</option>
-                    </select>
-                  </div>
-                </div>
-                  <div className="d-flex gap-2 mt-3">
-                    <button type="submit" className="btn btn-primary">
-                      {t("actions.applyFilters")}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      onClick={resetFilters}
-                    >
-                      {t("actions.reset")}
-                    </button>
-                  </div>
-              </form>
-            </div>
+          <InvoiceFilterPanel
+            statusFilter={status}
+            setStatusFilter={setStatus}
+            coinNetworkIdFilter={coinNetworkIdFilter}
+            setCoinNetworkIdFilter={setCoinNetworkIdFilter}
+            coinNetworks={coinNetworks}
+            startDateFilter={startDateFilter}
+            setStartDateFilter={setStartDateFilter}
+            endDateFilter={endDateFilter}
+            setEndDateFilter={setEndDateFilter}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            locale={locale}
+            loading={loading}
+            onApply={applyFilters}
+            onReset={resetFilters}
+          />
+          <div className="card-body pt-0">
 
             {error && <div className="alert alert-danger">{error}</div>}
             {loading ? (
@@ -220,18 +194,6 @@ export default function InvoiceList() {
                 <table className="invoice-list-table table border-top">
                   <thead>
                     <tr>
-                      <th className="cell-fit">
-                        <div className="form-check m-0">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            aria-label={t("invoices.selectAll") || "Select All"}
-                            ref={selectAllRef}
-                            checked={allSelected}
-                            onChange={toggleAll}
-                          />
-                        </div>
-                      </th>
                       <th className="cell-fit">{t("invoices.invoice") || "Invoice"}</th>
                       <th style={{ minWidth: '420px' }}>{t("invoices.paymentAddress") || "Payment Address"}</th>
                       <th>{t("invoices.chain") || "Chain"}</th>
@@ -245,24 +207,13 @@ export default function InvoiceList() {
                   <tbody>
                     {items.length === 0 && (
                       <tr>
-                        <td colSpan={9} className="text-center text-muted">
+                        <td colSpan={8} className="text-center text-muted">
                           {t("invoices.none")}
                         </td>
                       </tr>
                     )}
                     {items.map((it) => (
                       <tr key={it.id}>
-                        <td className="cell-fit">
-                          <div className="form-check m-0">
-                            <input
-                              type="checkbox"
-                              className="form-check-input"
-                              aria-label={`select invoice ${it.id}`}
-                              checked={selected.has(it.id)}
-                              onChange={() => toggleOne(it.id)}
-                            />
-                          </div>
-                        </td>
                         <td className="text-nowrap cell-fit">
                           <NavLink to={`/invoices/${it.id}`} className="text-dark">
                             {it.publicCode || it.code || it.id}

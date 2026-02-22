@@ -4,49 +4,21 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getIncomeStatement } from '../../api/admin.ts'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
-import { formatUsdAuto as formatUsd, formatPercent } from '../../utils/format'
+import { getDateRange } from './incomeStatementUtils'
+import IncomeStatementReport from './IncomeStatementReport'
 
-function getDateRange(preset) {
-  const now = new Date()
-  const to = now.toISOString().split('T')[0]
-  let from = to
-
-  switch (preset) {
-    case 'today':
-      from = to
-      break
-    case 'yesterday': {
-      const yesterday = new Date(now)
-      yesterday.setDate(yesterday.getDate() - 1)
-      from = yesterday.toISOString().split('T')[0]
-      break
-    }
-    case 'last7days': {
-      const last7 = new Date(now)
-      last7.setDate(last7.getDate() - 6)
-      from = last7.toISOString().split('T')[0]
-      break
-    }
-    case 'last30days': {
-      const last30 = new Date(now)
-      last30.setDate(last30.getDate() - 29)
-      from = last30.toISOString().split('T')[0]
-      break
-    }
-    case 'thisMonth': {
-      from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
-      break
-    }
-    case 'lastMonth': {
-      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-      from = lastMonth.toISOString().split('T')[0]
-      const endLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
-      return { from, to: endLastMonth.toISOString().split('T')[0] }
-    }
-    default:
-      from = to
-  }
-  return { from, to }
+function hasReportData(report) {
+  if (!report) return false
+  const revenue = report.revenue || {}
+  const expenses = report.expenses || {}
+  const adjustments = report.adjustments || {}
+  return (
+    (revenue.items?.length || 0) > 0 ||
+    (revenue.deductions?.length || 0) > 0 ||
+    (expenses.items?.length || 0) > 0 ||
+    (adjustments.increases?.length || 0) > 0 ||
+    (adjustments.decreases?.length || 0) > 0
+  )
 }
 
 export default function IncomeStatement() {
@@ -107,37 +79,7 @@ export default function IncomeStatement() {
     }
   }
 
-
-  // Extract report data safely (matches actual API response structure)
-  const revenue = report?.revenue || {}
-  const expenses = report?.expenses || {}
-
-  // Revenue items
-  const revenueItems = revenue?.items || []
-
-  // Deductions are nested inside revenue
-  const deductionItems = revenue?.deductions || []
-
-  // Expense items
-  const expenseItems = expenses?.items || []
-
-  // Use totals from API
-  const grossRevenue = revenue?.grossRevenueUsd || 0
-  const totalDeductions = revenue?.deductionsUsd || 0
-  const netRevenue = revenue?.netRevenueUsd || 0
-  const totalExpenses = expenses?.totalExpensesUsd || 0
-  const operatingIncome = report?.operatingIncomeUsd || 0
-  const netIncome = report?.netIncomeUsd || 0
-  const profitMargin = report?.profitMarginPercent || 0
-
-  // Adjustments
-  const adjustments = report?.adjustments || {}
-  const adjustIncrease = adjustments?.increases || []
-  const adjustDecrease = adjustments?.decreases || []
-  const netAdjustment = adjustments?.netAdjustmentUsd || 0
-
-  // Check if report has any actual data
-  const hasData = revenueItems.length > 0 || deductionItems.length > 0 || expenseItems.length > 0 || adjustIncrease.length > 0 || adjustDecrease.length > 0
+  const hasData = hasReportData(report)
 
   // Auto-load report when date range changes
   useEffect(() => {
@@ -225,206 +167,15 @@ export default function IncomeStatement() {
           </div>
 
           {/* Report with data */}
-          {report && hasData && (
-            <>
-              <div className="row">
-                {/* Revenue Section */}
-                <div className="col-md-6 mb-4">
-                  <div className="card h-100">
-                    <div className="card-header d-flex align-items-center">
-                      <i className="bx bx-trending-up text-success me-2 fs-4"></i>
-                      <h5 className="mb-0">REVENUE</h5>
-                    </div>
-                    <div className="card-body">
-                      <table className="table table-borderless mb-0">
-                        <tbody>
-                          {revenueItems.map((item, i) => (
-                            <tr key={i}>
-                              <td>
-                                <span className="badge bg-label-primary me-2">{item.code}</span>
-                                <span>{item.name || item.code}</span>
-                              </td>
-                              <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
-                            </tr>
-                          ))}
-
-                          {/* Deductions */}
-                          {deductionItems.length > 0 && (
-                            <>
-                              <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted fw-semibold">DEDUCTIONS</small></td></tr>
-                              {deductionItems.map((item, i) => (
-                                <tr key={`d-${i}`}>
-                                  <td>
-                                    <span className="badge bg-label-warning me-2">{item.code}</span>
-                                    <span>{item.name || item.code}</span>
-                                  </td>
-                                  <td className="text-end fw-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
-                                </tr>
-                              ))}
-                            </>
-                          )}
-
-                          <tr style={{ borderTop: '2px solid #e9ecef' }}>
-                            <td className="fw-bold">Net Revenue</td>
-                            <td className={`text-end fw-bold fs-5 ${parseFloat(netRevenue) === 0 ? 'text-muted' : 'text-success'}`} style={{ whiteSpace: 'nowrap' }}>{formatUsd(netRevenue)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Expenses Section */}
-                <div className="col-md-6 mb-4">
-                  <div className="card h-100">
-                    <div className="card-header d-flex align-items-center">
-                      <i className="bx bx-trending-down text-danger me-2 fs-4"></i>
-                      <h5 className="mb-0">EXPENSES</h5>
-                    </div>
-                    <div className="card-body">
-                      <table className="table table-borderless mb-0">
-                        <tbody>
-                          {expenseItems.map((item, i) => (
-                            <tr key={i}>
-                              <td>
-                                <span className="badge bg-label-danger me-2">{item.code}</span>
-                                <span>{item.name || item.code}</span>
-                              </td>
-                              <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
-                            </tr>
-                          ))}
-                          <tr style={{ borderTop: '2px solid #e9ecef' }}>
-                            <td className="fw-bold">Total Expenses</td>
-                            <td className={`text-end fw-bold fs-5 ${parseFloat(totalExpenses) === 0 ? 'text-muted' : 'text-danger'}`} style={{ whiteSpace: 'nowrap' }}>({formatUsd(totalExpenses)})</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Operating Income */}
-              <div className="card mb-4">
-                <div className="card-body">
-                  <div className="row align-items-center">
-                    <div className="col-md-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 p-3" style={{ backgroundColor: parseFloat(operatingIncome) === 0 ? 'rgba(168,170,174,0.1)' : parseFloat(operatingIncome) > 0 ? 'rgba(40, 199, 111, 0.1)' : 'rgba(234, 84, 85, 0.1)' }}>
-                          <i className={`bx ${parseFloat(operatingIncome) === 0 ? 'bx-minus-circle' : parseFloat(operatingIncome) > 0 ? 'bx-trending-up' : 'bx-trending-down'} fs-1`} style={{ color: parseFloat(operatingIncome) === 0 ? '#a8aaae' : parseFloat(operatingIncome) > 0 ? '#28c76f' : '#ea5455' }}></i>
-                        </div>
-                        <div>
-                          <h6 className="text-muted mb-1">OPERATING INCOME</h6>
-                          <h2 className={`mb-0 fw-bold ${parseFloat(operatingIncome) === 0 ? 'text-muted' : parseFloat(operatingIncome) > 0 ? 'text-success' : 'text-danger'}`}>
-                            {formatUsd(operatingIncome)}
-                          </h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 text-md-end mt-3 mt-md-0">
-                      <h6 className="text-muted mb-1">Profit Margin</h6>
-                      <h2 className={`mb-0 fw-bold ${parseFloat(profitMargin) === 0 ? 'text-muted' : parseFloat(profitMargin) > 0 ? 'text-success' : 'text-danger'}`}>
-                        {formatPercent(profitMargin)}
-                      </h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Adjustments Section (Non-operating) */}
-              {(adjustIncrease.length > 0 || adjustDecrease.length > 0) && (
-                <div className="card mb-4">
-                  <div className="card-header d-flex align-items-center">
-                    <i className="bx bx-transfer-alt text-info me-2 fs-4"></i>
-                    <h5 className="mb-0">ADJUSTMENTS <small className="text-muted fw-normal">(Non-operating)</small></h5>
-                  </div>
-                  <div className="card-body">
-                    <table className="table table-borderless mb-0">
-                      <tbody>
-                        {adjustIncrease.length > 0 && (
-                          <>
-                            <tr><td colSpan="2" className="pb-0 pt-0"><small className="text-muted fw-semibold">INCREASES</small></td></tr>
-                            {adjustIncrease.map((item, i) => (
-                              <tr key={`ai-${i}`}>
-                                <td>
-                                  <span className="badge bg-label-success me-2">{item.code}</span>
-                                  <span>{item.name || item.code}</span>
-                                  <small className="text-muted ms-2">({item.entries || 0} entries)</small>
-                                </td>
-                                <td className="text-end fw-medium text-success" style={{ whiteSpace: 'nowrap' }}>+{formatUsd(item.amountUsd)}</td>
-                              </tr>
-                            ))}
-                          </>
-                        )}
-                        {adjustDecrease.length > 0 && (
-                          <>
-                            <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted fw-semibold">DECREASES</small></td></tr>
-                            {adjustDecrease.map((item, i) => (
-                              <tr key={`ad-${i}`}>
-                                <td>
-                                  <span className="badge bg-label-danger me-2">{item.code}</span>
-                                  <span>{item.name || item.code}</span>
-                                  <small className="text-muted ms-2">({item.entries || 0} entries)</small>
-                                </td>
-                                <td className="text-end fw-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
-                              </tr>
-                            ))}
-                          </>
-                        )}
-                        <tr style={{ borderTop: '2px solid #e9ecef' }}>
-                          <td className="fw-bold">Net Adjustment</td>
-                          <td className={`text-end fw-bold fs-5 ${parseFloat(netAdjustment) === 0 ? 'text-muted' : parseFloat(netAdjustment) > 0 ? 'text-success' : 'text-danger'}`} style={{ whiteSpace: 'nowrap' }}>
-                            {parseFloat(netAdjustment) > 0 ? '+' : ''}{formatUsd(netAdjustment)}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* Net Income (Final) */}
-              <div className="card mb-4">
-                <div className="card-body">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="rounded-3 p-3" style={{ backgroundColor: parseFloat(netIncome) === 0 ? 'rgba(168,170,174,0.1)' : parseFloat(netIncome) > 0 ? 'rgba(40, 199, 111, 0.1)' : 'rgba(234, 84, 85, 0.1)' }}>
-                      <i className={`bx ${parseFloat(netIncome) === 0 ? 'bx-minus-circle' : parseFloat(netIncome) > 0 ? 'bx-wallet' : 'bx-error-circle'} fs-1`} style={{ color: parseFloat(netIncome) === 0 ? '#a8aaae' : parseFloat(netIncome) > 0 ? '#28c76f' : '#ea5455' }}></i>
-                    </div>
-                    <div>
-                      <h6 className="text-muted mb-1">NET INCOME</h6>
-                      <h2 className={`mb-0 fw-bold ${parseFloat(netIncome) === 0 ? 'text-muted' : parseFloat(netIncome) > 0 ? 'text-success' : 'text-danger'}`}>
-                        {formatUsd(netIncome)}
-                      </h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Counts */}
-              <div className="card mb-4">
-                <div className="card-body py-3">
-                  <div className="d-flex flex-wrap gap-4">
-                    {[...revenueItems, ...deductionItems, ...expenseItems, ...adjustIncrease, ...adjustDecrease].map((item, i) => (
-                      <div key={i} className="d-flex align-items-center gap-2">
-                        <span className="badge bg-label-secondary">{item.code}</span>
-                        <span className="text-muted">{item.name || item.code}:</span>
-                        <span className="fw-semibold">{item.entries || 0}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-            </>
-          )}
+          {report && hasData && <IncomeStatementReport report={report} />}
 
           {/* Empty state - no data for this period */}
           {report && !hasData && !loading && (
             <div className="card">
               <div className="card-body text-center py-5">
                 <div className="mb-3">
-                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(168,170,174,0.1)' }}>
-                    <i className="bx bx-bar-chart-alt-2" style={{ fontSize: '2.5rem', color: '#a8aaae' }}></i>
+                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(var(--bs-secondary-rgb), 0.1)' }}>
+                    <i className="bx bx-bar-chart-alt-2" style={{ fontSize: '2.5rem', color: 'var(--bs-secondary-color)' }}></i>
                   </div>
                 </div>
                 <h5 className="mb-2">No transactions found</h5>
@@ -440,8 +191,8 @@ export default function IncomeStatement() {
             <div className="card">
               <div className="card-body text-center py-5">
                 <div className="mb-3">
-                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(105,108,255,0.08)' }}>
-                    <i className="bx bx-line-chart" style={{ fontSize: '2.5rem', color: '#696cff' }}></i>
+                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(var(--bs-primary-rgb), 0.08)' }}>
+                    <i className="bx bx-line-chart" style={{ fontSize: '2.5rem', color: 'var(--bs-primary)' }}></i>
                   </div>
                 </div>
                 <h5 className="mb-2">Select a date range</h5>

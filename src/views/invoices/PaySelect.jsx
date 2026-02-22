@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { getPublicInvoice } from '../../api/invoices'
 import { listCoins } from '../../api/coins'
 
-import CoinImg, { NetworkIcon } from '../../components/CoinImg'
+import CoinNetworkList from './CoinNetworkList'
 
 export default function PaySelect() {
   const { t } = useTranslation()
@@ -109,7 +109,7 @@ export default function PaySelect() {
 
   return (
     <div className="min-vh-100 position-relative overflow-hidden d-flex flex-column" style={{
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)'
+      background: 'linear-gradient(135deg, var(--bs-body-bg) 0%, var(--bs-tertiary-bg) 100%)'
     }}>
       {/* Animated Gradient Background */}
       <div className="position-absolute w-100 h-100" style={{ zIndex: 0 }}>
@@ -141,13 +141,13 @@ export default function PaySelect() {
           <div className="d-flex justify-content-center align-items-center gap-3">
             <div className="position-relative">
               <div className="position-absolute w-100 h-100 rounded-circle" style={{
-                background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                background: 'linear-gradient(135deg, var(--bs-primary), var(--bs-info))',
                 filter: 'blur(20px)', opacity: 0.6,
                 animation: 'pulse 3s ease-in-out infinite'
               }}></div>
               <div className="position-relative d-flex align-items-center justify-content-center" style={{
                 width: 48, height: 48,
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                background: 'linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%)',
                 borderRadius: 16,
                 boxShadow: '0 8px 20px rgba(139, 92, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
               }}>
@@ -155,8 +155,8 @@ export default function PaySelect() {
               </div>
             </div>
             <div>
-              <h2 className="fw-bold mb-0" style={{ fontSize: '1.25rem', letterSpacing: '-0.5px', color: '#1e293b' }}>BULL PAY</h2>
-              <p className="mb-0" style={{ color: '#64748b', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Crypto Payment Gateway</p>
+              <h2 className="fw-bold mb-0" style={{ fontSize: '1.25rem', letterSpacing: '-0.5px', color: 'var(--bs-heading-color)' }}>BULL PAY</h2>
+              <p className="mb-0" style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Crypto Payment Gateway</p>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function PaySelect() {
         <div className="container">
           {loading ? (
             <div className="text-center py-5">
-              <div className="spinner-border" style={{ color: '#8b5cf6' }} role="status">
+              <div className="spinner-border" style={{ color: 'var(--bs-primary)' }} role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function PaySelect() {
             <div className="card border-0 shadow-lg mx-auto" style={{ maxWidth: 500, borderRadius: 12 }}>
               <div className="card-body text-center p-5">
                 <div className="mb-4">
-                  <i className="bx bx-error-circle" style={{ fontSize: 64, color: '#ef4444' }}></i>
+                  <i className="bx bx-error-circle" style={{ fontSize: 64, color: 'var(--bs-danger)' }}></i>
                 </div>
                 <h4 className="mb-3">{t('common.error', { defaultValue: 'Error' })}</h4>
                 <p className="text-muted">{error}</p>
@@ -220,7 +220,7 @@ export default function PaySelect() {
                   }}>
                     {/* Title Banner */}
                     <div className="position-relative overflow-hidden" style={{
-                      background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                      background: 'linear-gradient(135deg, var(--bs-primary), var(--bs-info))',
                       padding: '16px 24px'
                     }}>
                       <div className="position-absolute w-100 h-100" style={{
@@ -249,12 +249,12 @@ export default function PaySelect() {
                         }}>
                           {invoiceAmount && (
                             <div className="mb-1">
-                              <span className="small text-uppercase fw-semibold" style={{ color: '#64748b', letterSpacing: '1px', fontSize: '0.7rem' }}>
+                              <span className="small text-uppercase fw-semibold" style={{ color: 'var(--bs-secondary-color)', letterSpacing: '1px', fontSize: '0.7rem' }}>
                                 {t('invoices.amount', { defaultValue: 'Amount' })}
                               </span>
                               <div style={{
                                 fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px',
-                                background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+                                background: 'linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%)',
                                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                                 backgroundClip: 'text', lineHeight: 1.2
                               }}>
@@ -263,7 +263,7 @@ export default function PaySelect() {
                             </div>
                           )}
                           {invoiceDesc && (
-                            <div className="small" style={{ color: '#64748b' }}>{invoiceDesc}</div>
+                            <div className="small" style={{ color: 'var(--bs-secondary-color)' }}>{invoiceDesc}</div>
                           )}
                         </div>
                       )}
@@ -272,7 +272,7 @@ export default function PaySelect() {
                       <div className="mb-3 position-relative">
                         <i className="bx bx-search position-absolute" style={{
                           left: 12, top: '50%', transform: 'translateY(-50%)',
-                          color: '#94a3b8', fontSize: 18
+                          color: 'var(--bs-secondary-color)', fontSize: 18
                         }}></i>
                         <input
                           type="text"
@@ -291,124 +291,11 @@ export default function PaySelect() {
 
                       {/* Coin List */}
                       <div style={{ maxHeight: 420, overflowY: 'auto', margin: '0 -4px', padding: '0 4px' }}>
-                        {filteredGroups.length === 0 ? (
-                          <div className="text-center py-4">
-                            <i className="bx bx-coin" style={{ fontSize: 48, color: '#cbd5e1' }}></i>
-                            <p className="text-muted mt-2 mb-0 small">
-                              {t('payment.noCoinsFound', { defaultValue: 'No coins available' })}
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="d-flex flex-column gap-2">
-                            {filteredGroups.map((group) => (
-                              <div key={group.symbol}>
-                                {group.networks.map((cn) => {
-                                  const isSelected = selectedCoinId === cn.id
-                                  const netName = cn.network?.name || ''
-                                  const netSymbol = (cn.network?.symbol || '').toUpperCase()
-
-                                  return (
-                                    <div
-                                      key={cn.id}
-                                      className="d-flex align-items-center gap-3 p-3 rounded-3 mb-2"
-                                      style={{
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                        background: isSelected
-                                          ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.12))'
-                                          : 'rgba(255, 255, 255, 0.6)',
-                                        border: isSelected
-                                          ? '2px solid rgba(139, 92, 246, 0.4)'
-                                          : '1px solid rgba(139, 92, 246, 0.1)',
-                                        boxShadow: isSelected
-                                          ? '0 4px 16px rgba(139, 92, 246, 0.15)'
-                                          : '0 1px 3px rgba(0, 0, 0, 0.04)',
-                                        transform: isSelected ? 'scale(1.01)' : 'scale(1)',
-                                      }}
-                                      onClick={() => handleSelect(cn.id)}
-                                      onMouseEnter={(e) => {
-                                        if (!isSelected) {
-                                          e.currentTarget.style.background = 'rgba(139, 92, 246, 0.04)'
-                                          e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.25)'
-                                        }
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        if (!isSelected) {
-                                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.6)'
-                                          e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.1)'
-                                        }
-                                      }}
-                                    >
-                                      {/* Coin Icon */}
-                                      <div className="position-relative" style={{ flexShrink: 0 }}>
-                                        <CoinImg symbol={group.symbol} logoUrl={group.logoUrl} size={40} imgClassName="rounded-circle" />
-                                        {netSymbol && (
-                                          <div className="position-absolute" style={{
-                                            bottom: -2, right: -2,
-                                            background: 'white',
-                                            borderRadius: '50%',
-                                            padding: 2,
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                          }}>
-                                            <NetworkIcon networkSymbol={netSymbol} size={16} />
-                                          </div>
-                                        )}
-                                      </div>
-
-                                      {/* Coin Info */}
-                                      <div className="flex-grow-1 min-width-0">
-                                        <div className="d-flex align-items-center gap-2">
-                                          <span className="fw-bold" style={{
-                                            fontSize: '0.95rem', color: '#1e293b'
-                                          }}>{group.symbol}</span>
-                                          {group.isStableCoin ? (
-                                            <span className="badge rounded-pill" style={{
-                                              fontSize: '0.6rem',
-                                              background: 'linear-gradient(135deg, #10b981, #059669)',
-                                              color: 'white', fontWeight: 600
-                                            }}>Stable</span>
-                                          ) : null}
-                                        </div>
-                                        <div className="d-flex align-items-center gap-1">
-                                          <span className="small" style={{ color: '#64748b', fontSize: '0.8rem' }}>
-                                            {group.name}
-                                          </span>
-                                          {netName && (
-                                            <>
-                                              <span className="small" style={{ color: '#cbd5e1' }}>·</span>
-                                              <span className="small" style={{ color: '#8b5cf6', fontWeight: 600, fontSize: '0.75rem' }}>
-                                                {netName}
-                                              </span>
-                                            </>
-                                          )}
-                                        </div>
-                                      </div>
-
-                                      {/* Selection indicator */}
-                                      <div style={{ flexShrink: 0 }}>
-                                        {isSelected ? (
-                                          <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
-                                            width: 28, height: 28,
-                                            background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
-                                            boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)'
-                                          }}>
-                                            <i className="bx bx-check text-white" style={{ fontSize: 18 }}></i>
-                                          </div>
-                                        ) : (
-                                          <div className="rounded-circle" style={{
-                                            width: 28, height: 28,
-                                            border: '2px solid #e2e8f0'
-                                          }}></div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <CoinNetworkList
+                          filteredGroups={filteredGroups}
+                          selectedCoinId={selectedCoinId}
+                          onSelect={handleSelect}
+                        />
                       </div>
 
                       {/* Confirm Button */}
@@ -419,9 +306,9 @@ export default function PaySelect() {
                           onClick={handleConfirm}
                           style={{
                             background: selectedCoinId
-                              ? 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)'
-                              : '#e2e8f0',
-                            color: selectedCoinId ? 'white' : '#94a3b8',
+                              ? 'linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%)'
+                              : 'var(--bs-border-color)',
+                            color: selectedCoinId ? 'white' : 'var(--bs-secondary-color)',
                             border: 'none',
                             borderRadius: 12,
                             fontSize: '1rem',
@@ -449,15 +336,15 @@ export default function PaySelect() {
       <footer className="py-3 position-relative" style={{ zIndex: 1 }}>
         <div className="container text-center">
           <div className="mb-2" style={{
-            color: '#94a3b8', fontSize: '0.75rem', letterSpacing: '1px', fontWeight: '600'
+            color: 'var(--bs-secondary-color)', fontSize: '0.75rem', letterSpacing: '1px', fontWeight: '600'
           }}>{t('common.poweredBy', { defaultValue: 'Powered by' })}</div>
           <div className="mb-2" style={{
             fontSize: '1.1rem', fontWeight: '700',
-            background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+            background: 'linear-gradient(135deg, var(--bs-primary), var(--bs-info))',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text', letterSpacing: '1px'
           }}>BULL PAY</div>
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>
+          <div style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem' }}>
             {t('common.copyright', { year }) || `© ${year} · All rights reserved`}
           </div>
         </div>

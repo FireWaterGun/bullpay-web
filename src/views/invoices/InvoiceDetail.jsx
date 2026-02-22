@@ -1,90 +1,14 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getInvoice } from "../../api/invoices";
 import { useAuth } from "../../context/AuthContext";
 import { formatAmount, formatDateTime } from "../../utils/format";
 import { useInvoiceEvents } from "../../hooks/useInvoiceEvents";
 import CoinImg from '../../components/CoinImg'
-
-function CountdownTimer({ expiryAt }) {
-  const { t } = useTranslation();
-  const [timeLeft, setTimeLeft] = useState(null);
-
-  useEffect(() => {
-    if (!expiryAt) return;
-
-    const calculateTimeLeft = () => {
-      const now = new Date().getTime();
-      const expiry = new Date(expiryAt).getTime();
-      const diff = expiry - now;
-
-      if (diff <= 0) {
-        return { expired: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      return { expired: false, days, hours, minutes, seconds };
-    };
-
-    setTimeLeft(calculateTimeLeft());
-
-    const interval = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [expiryAt]);
-
-  if (!timeLeft) return null;
-
-  if (timeLeft.expired) {
-    return (
-      <div className="alert alert-danger mb-0">
-        <div className="d-flex align-items-center mb-2">
-          <i className="bx bx-time-five fs-5 me-2"></i>
-          <div className="fw-medium">{t('payment.expired') || 'Expired'}</div>
-        </div>
-        <small>{t('payment.expiredMessage') || 'This invoice has expired'}</small>
-      </div>
-    );
-  }
-
-  const pad = (n) => String(n).padStart(2, '0');
-
-  return (
-    <div className="alert alert-warning mb-0">
-      <div className="d-flex align-items-center mb-2">
-        <i className="bx bx-time-five fs-5 me-2"></i>
-        <div className="fw-medium">{t('payment.timeRemaining') || 'Time Remaining'}</div>
-      </div>
-      <div className="d-flex gap-3 justify-content-center">
-        {timeLeft.days > 0 && (
-          <div className="text-center">
-            <div className="fs-3 fw-bold">{pad(timeLeft.days)}</div>
-            <small className="text-muted">{t('time.days') || 'Days'}</small>
-          </div>
-        )}
-        <div className="text-center">
-          <div className="fs-3 fw-bold">{pad(timeLeft.hours)}</div>
-          <small className="text-muted">{t('time.hours') || 'Hours'}</small>
-        </div>
-        <div className="text-center">
-          <div className="fs-3 fw-bold">{pad(timeLeft.minutes)}</div>
-          <small className="text-muted">{t('time.minutes') || 'Minutes'}</small>
-        </div>
-        <div className="text-center">
-          <div className="fs-3 fw-bold">{pad(timeLeft.seconds)}</div>
-          <small className="text-muted">{t('time.seconds') || 'Seconds'}</small>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { statusClass } from "./invoiceDetailHelpers";
+import InvoicePaymentsTable from "./InvoicePaymentsTable";
+import InvoiceDetailActions from "./InvoiceDetailActions";
 
 export default function InvoiceDetail() {
   const { t } = useTranslation();
@@ -93,8 +17,6 @@ export default function InvoiceDetail() {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [copiedPublic, setCopiedPublic] = useState(false); // still used for fallback share copy
-  const [shareError, setShareError] = useState("");
 
   const loadInvoice = useCallback(async () => {
     setLoading(true);
@@ -127,76 +49,6 @@ export default function InvoiceDetail() {
 
   // Note: Pusher subscription is handled globally in DashboardLayout
   // No need to subscribe here to avoid duplicate notifications
-
-  const statusClass = (s) => {
-    const status = String(s || '').toLowerCase();
-    switch (status) {
-      case 'paid':
-      case 'completed':
-      case 'confirmed':
-        return "bg-label-success";
-      case 'pending':
-      case 'detecting':
-        return "bg-label-warning";
-      case 'confirming':
-        return "bg-label-info";
-      case 'expired':
-      case 'cancelled':
-        return "bg-label-secondary";
-      case 'failed':
-      case 'unconfirmed':
-        return "bg-label-danger";
-      case 'refunded':
-        return "bg-label-primary";
-      default:
-        return "bg-label-secondary";
-    }
-  };
-
-  // Removed print action per requirement
-
-  const buildPublicUrl = useCallback(() => {
-    if (!invoice?.publicCode) return '';
-    if (typeof window === 'undefined') return `/pay/${invoice.publicCode}`;
-    return `${window.location.origin}/pay/${invoice.publicCode}`;
-  }, [invoice?.publicCode]);
-
-  const handleOpenPublic = () => {
-    const url = buildPublicUrl();
-    if (!url) return;
-    try { window.open(url, '_blank', 'noopener'); } catch {}
-  };
-
-  const handleSharePublic = async () => {
-    setShareError("");
-    const url = buildPublicUrl();
-    if (!url) return;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: invoice?.invoiceNumber || 'Invoice',
-            text: t('invoices.shareText') || 'Invoice payment link',
-            url,
-        });
-      } catch (e) {
-        if (e && e.name !== 'AbortError') setShareError(t('actions.shareFailed') || 'Share failed');
-      }
-    } else {
-      // Fallback copy
-      try {
-        await navigator.clipboard.writeText(url);
-        setCopiedPublic(true);
-        setTimeout(()=> setCopiedPublic(false), 1500);
-      } catch {
-        setShareError(t('actions.shareNotSupported') || 'Share not supported');
-      }
-    }
-  };
-
-  const formatTxHash = (hash, startChars = 10, endChars = 8) => {
-    if (!hash || hash.length <= startChars + endChars) return hash;
-    return `${hash.substring(0, startChars)}...${hash.substring(hash.length - endChars)}`;
-  };
 
   // Extract coin and network info from invoice response
   const coinSym = (invoice?.coin?.symbol || "").toUpperCase();
@@ -291,7 +143,7 @@ export default function InvoiceDetail() {
                             className="btn btn-sm btn-outline-secondary"
                             href={`${explorer.replace(/\/$/, "")}/address/${invoice.paymentAddress}`}
                             target="_blank"
-                            rel="noreferrer"
+                            rel="noopener noreferrer"
                           >
                             <i className="bx bx-link-external"></i>
                           </a>
@@ -307,147 +159,18 @@ export default function InvoiceDetail() {
 
                   <div className="mt-4">
                     <h6 className="mb-2">{t("invoices.payments") || "Payments"}</h6>
-                    {!invoice.payments ? (
-                      <div className="alert alert-info">
-                        <i className="bx bx-info-circle me-2"></i>
-                        No payments data available (invoice.payments is undefined or null)
-                      </div>
-                    ) : !Array.isArray(invoice.payments) ? (
-                      <div className="alert alert-warning">
-                        <i className="bx bx-error me-2"></i>
-                        Payments data is not an array: {typeof invoice.payments}
-                      </div>
-                    ) : invoice.payments.length === 0 ? (
-                      <div className="alert alert-info">
-                        <i className="bx bx-info-circle me-2"></i>
-                        No payment transactions yet
-                      </div>
-                    ) : (
-                      <div className="table-responsive">
-                        <table className="table table-sm">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>{t("invoices.txHash") || "Tx Hash"}</th>
-                              <th>{t("invoices.amount") || "Amount"}</th>
-                              <th>{t("invoices.status") || "Status"}</th>
-                              <th>{t("invoices.date") || "Date"}</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {invoice.payments.map((p, idx) => (
-                              <tr key={p.id || idx}>
-                                <td>{idx + 1}</td>
-                                <td className="text-nowrap">
-                                  {p.txHash ? (
-                                    explorer ? (
-                                      <a 
-                                        href={`${explorer.replace(/\/$/, "")}/tx/${p.txHash}`} 
-                                        target="_blank" 
-                                        rel="noreferrer"
-                                        className="text-decoration-none"
-                                        title={p.txHash}
-                                      >
-                                        {formatTxHash(p.txHash)}
-                                      </a>
-                                    ) : (
-                                      <code className="small" title={p.txHash}>{formatTxHash(p.txHash)}</code>
-                                    )
-                                  ) : (
-                                    "-"
-                                  )}
-                                </td>
-                                <td className="text-nowrap">
-                                  {formatAmount(p.actualAmount || p.amount || 0)} {coinSym}
-                                </td>
-                                <td>
-                                  <span className={`badge text-capitalize ${statusClass(p.status)}`}>
-                                    {p.status ? t(`invoices.${p.status.toLowerCase()}`, { defaultValue: p.status }) : "-"}
-                                  </span>
-                                </td>
-                                <td className="text-nowrap">{formatDateTime(p.createdAt || p.created_at)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
+                    <InvoicePaymentsTable
+                      payments={invoice.payments}
+                      coinSym={coinSym}
+                      explorer={explorer}
+                    />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Right: Actions */}
-            <div className="col-12 col-lg-3">
-              {invoice.status === 'pending' && invoice.expiryAt && (
-                <div className="card mb-4">
-                  <div className="card-body">
-                    <CountdownTimer expiryAt={invoice.expiryAt} />
-                  </div>
-                </div>
-              )}
-              <div className="card mb-4">
-                <div className="card-body">
-                  <h6 className="mb-3">{t("invoices.actions") || "Actions"}</h6>
-                  <div className="d-grid gap-2">
-                    {/* Print button removed */}
-                    {invoice.publicCode && (
-                      <>
-                        <button type="button" className="btn btn-outline-primary" onClick={handleOpenPublic}>
-                          <i className="bx bx-link-alt me-1"></i>
-                          {t('actions.openPaymentLink') || 'Open payment page'}
-                        </button>
-                        <button type="button" className="btn btn-outline-info" onClick={handleSharePublic}>
-                          <i className="bx bx-share-alt me-1"></i>
-                          {t('actions.share') || 'Share'}
-                        </button>
-                      </>
-                    )}
-                    <a
-                      className="btn btn-outline-secondary"
-                      href={
-                        explorer && invoice.paymentAddress
-                          ? `${explorer.replace(/\/$/, "")}/address/${invoice.paymentAddress}`
-                          : undefined
-                      }
-                      target={explorer ? "_blank" : undefined}
-                      rel={explorer ? "noreferrer" : undefined}
-                    >
-                      <i className="bx bx-link-external me-1"></i>
-                      {t("invoices.viewOnExplorer") || "View on Explorer"}
-                    </a>
-                    <NavLink to="/invoices" className="btn btn-outline-secondary">
-                      <i className="bx bx-list-ul me-1"></i>
-                      {t("nav.history") || "All invoices"}
-                    </NavLink>
-                  </div>
-                  {shareError && <div className="alert alert-warning mt-3 py-2 mb-0 small">{shareError}</div>}
-                </div>
-              </div>
-              <div className="card">
-                <div className="card-body">
-                  {invoice.publicCode && (
-                    <>
-                      <small className="text-muted d-block mb-1">{t('invoices.publicCode') || 'Public Code'}</small>
-                      <div className="d-flex align-items-center mb-3 gap-2">
-                        <code>{invoice.publicCode}</code>
-                        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={handleOpenPublic} title={t('actions.openPaymentLink') || 'Open payment page'}>
-                          <i className="bx bx-link-alt"></i>
-                        </button>
-                      </div>
-                    </>
-                  )}
-                  <small className="text-muted d-block mb-1">{t("invoices.createdAt") || "Created"}</small>
-                  <div>{formatDateTime(invoice.createdAt || invoice.created_at)}</div>
-                  {invoice.expiryAt && (
-                    <>
-                      <small className="text-muted d-block mt-3 mb-1">{t("invoices.expiryAt") || "Expires"}</small>
-                      <div>{formatDateTime(invoice.expiryAt)}</div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
+            <InvoiceDetailActions invoice={invoice} explorer={explorer} />
           </div>
         )}
       </div>

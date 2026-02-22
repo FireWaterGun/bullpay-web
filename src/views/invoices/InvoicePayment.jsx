@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { QRCodeSVG as QRCode } from 'qrcode.react'
 import { getPublicInvoiceQr, getPublicInvoiceStatus } from '../../api/invoices'
-import { formatAmount, formatDateTime } from '../../utils/format'
 import { useInvoiceEvents } from '../../hooks/useInvoiceEvents'
 import { playNotificationSound } from '../../utils/notification'
 import { useToastContext } from '../../context/ToastContext'
-
 import CoinImg from '../../components/CoinImg'
+import { copyToClipboard } from '../../utils/clipboard'
+import PaymentProgressCard from './PaymentProgressCard'
+import PaymentDetailsSection from './PaymentDetailsSection'
+import PaymentQRCode from './PaymentQRCode'
 
 export default function InvoicePayment() {
   const { t } = useTranslation()
-  const { id: publicCode } = useParams() // route param is public invoice code
+  const { id: publicCode } = useParams()
   const toast = useToastContext()
   const [invoice, setInvoice] = useState(null)
   const [qr, setQr] = useState(null)
@@ -26,9 +27,7 @@ export default function InvoicePayment() {
   const pollRef = useRef(null)
   const abortRef = useRef(null)
 
-  // Poll interval (ms) - slower after paid/expired
-  const ACTIVE_INTERVAL = 6000 // faster for responsive status
-  const IDLE_INTERVAL = 20000 // (reserved if want slower after paid)
+  const ACTIVE_INTERVAL = 6000
 
   const loadInvoice = useCallback(async (initial = false) => {
     if (!publicCode) return
@@ -36,14 +35,10 @@ export default function InvoicePayment() {
   setError('')
   setErrorCode('')
     try {
-      // Cancel any in-flight
       if (abortRef.current) abortRef.current.abort()
       const controller = new AbortController()
       abortRef.current = controller
       const { invoice: inv, qr: qrData } = await getPublicInvoiceQr(publicCode)
-      // Map API fields to local shape expectations
-      // API gives: invoice.invoiceId, invoice.publicCode, invoice.status, invoice.expiresAt
-      // qr has: address, amount, expiresAt, raw
       const mapped = {
         id: inv.invoiceId ?? inv.id,
         invoiceId: inv.invoiceId ?? inv.id,
@@ -62,7 +57,7 @@ export default function InvoicePayment() {
       setQr(qrData)
     } catch (e) {
       if (e?.name === 'AbortError') return
-      if (e?.code === 'BIZ_1200') { // cancelled
+      if (e?.code === 'BIZ_1200') {
         setErrorCode(e.code)
         setError(t('payment.cancelledMessage') || 'Invoice cancelled')
       } else {
@@ -73,7 +68,6 @@ export default function InvoicePayment() {
     }
   }, [publicCode, t])
 
-  // Helper to compute expiry lazily for polling decision (must be before effect that uses it)
   const isExpiredRef = useCallback((inv) => {
     if (!inv?.expiryAt) return false
     const ms = new Date(inv.expiryAt).getTime() - Date.now()
@@ -104,44 +98,34 @@ export default function InvoicePayment() {
     }
   }, [publicCode, invoice])
 
-  // Subscribe to Pusher events for real-time updates
   useInvoiceEvents(invoice?.invoiceId || invoice?.id, {
     onPaymentReceived: (data) => {
       playNotificationSound('success')
-      // Show toast notification
       toast.success({
         title: 'Payment Received',
         body: data.body || 'Payment has been received'
       });
-      // Update invoice status immediately
       setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
-      // Refresh invoice data in background after delay
       setTimeout(() => refreshStatus(), 1000)
     },
     onStatusChanged: (data) => {
-      // Check if it's a payment completion notification
       if (data.type === 'invoice_completed' || data.status === 'paid') {
         playNotificationSound('success')
-        // Show toast notification
         toast.success({
           title: 'Invoice Paid',
           body: data.body || 'Invoice has been paid successfully'
         });
-        // Update invoice status immediately
         setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
       } else if (data.status) {
         setInvoice(prev => prev ? { ...prev, status: data.status } : prev)
       }
-      // Then refresh full data in background after delay
       setTimeout(() => refreshStatus(), 1000)
     },
     onUpdated: (data) => {
-      // Show toast notification
       toast.info({
         title: data.title || 'Invoice Updated',
         body: data.body || 'Invoice has been updated'
       })
-      // Refresh in background after delay
       setTimeout(() => refreshStatus(), 1000)
     },
     onPaymentCompleted: (data) => {
@@ -150,20 +134,16 @@ export default function InvoicePayment() {
         title: data.title || 'Payment Completed',
         body: data.message || 'Payment has been completed successfully'
       })
-      // Update invoice status immediately
       setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
-      // Refresh in background after delay
       setTimeout(() => refreshStatus(), 1000)
     }
   })
 
-  // Initial load + polling
   useEffect(() => {
     loadInvoice(true)
   }, [loadInvoice])
 
   useEffect(() => {
-    // adaptive polling (status only after first full QR load)
     if (!invoice) return
     const paid = invoice.status === 'paid'
     const expired = isExpiredRef(invoice)
@@ -172,13 +152,11 @@ export default function InvoicePayment() {
     return () => { if (pollRef.current) clearTimeout(pollRef.current) }
   }, [invoice, refreshStatus, isExpiredRef])
 
-  // Tick every second for countdown
   useEffect(() => {
     const iv = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(iv);
   }, []);
 
-  // Track viewport for responsive QR size
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth || 1024);
     window.addEventListener("resize", onResize);
@@ -188,7 +166,6 @@ export default function InvoicePayment() {
   const cn = invoice?.coinNetwork
   const coinSym = invoice?.symbol || qr?.symbol || cn?.coin?.symbol || cn?.symbol || ''
   const networkName = invoice?.network || qr?.network || cn?.network?.name || cn?.network || cn?.name || ''
-  const explorer = cn?.network?.explorerUrl || cn?.explorerUrl || ''
   const year = new Date().getFullYear();
 
   const expiryMs = useMemo(() => invoice?.expiryAt ? new Date(String(invoice.expiryAt)).getTime() : undefined, [invoice?.expiryAt])
@@ -224,12 +201,10 @@ export default function InvoicePayment() {
     }
   }
 
-  // Prefer UI-derived status over raw API status for display
   const uiStatus = errorCode === 'BIZ_1200'
     ? 'cancelled'
     : (isExpired && !isPaid ? 'expired' : (invoice?.status || '').toLowerCase());
 
-  // QR code must use only the public payment address (qr.address) per requirement
   const paymentValue = useMemo(() => qr?.address || '', [qr?.address])
 
   function formatDuration(ms) {
@@ -242,17 +217,16 @@ export default function InvoicePayment() {
     return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
   }
 
-  // Badge emphasis for countdown visibility
   const countdownBadgeClass = useMemo(() => {
     if (remainingMs == null) return 'bg-label-secondary';
-    if (remainingMs <= 60_000) return 'bg-label-danger'; // < 1 min
-    if (remainingMs <= 5 * 60_000) return 'bg-label-warning'; // < 5 min
+    if (remainingMs <= 60_000) return 'bg-label-danger';
+    if (remainingMs <= 5 * 60_000) return 'bg-label-warning';
     return 'bg-label-info';
   }, [remainingMs]);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(invoice?.paymentAddress || '')
+      await copyToClipboard(invoice?.paymentAddress || '')
       setCopied(true)
       setTimeout(() => setCopied(false), 1200)
     } catch {}
@@ -262,17 +236,14 @@ export default function InvoicePayment() {
     try {
       const val = invoice?.amount != null ? String(invoice.amount) : ''
       if (!val) return
-      await navigator.clipboard.writeText(val)
+      await copyToClipboard(val)
       setCopiedAmt(true)
       setTimeout(() => setCopiedAmt(false), 1200)
     } catch {}
   }
 
   const qrcodeSize = vw < 576 ? 168 : vw < 768 ? 192 : 208
-  const expiredIconSize = Math.min(qrcodeSize, 96)
   const isExpiredUnpaid = isExpired && !isPaid
-
-  // Progress and share removed to revert to previous layout
 
   return (
     <div className="content-wrapper d-flex flex-column min-vh-100">
@@ -313,9 +284,7 @@ export default function InvoicePayment() {
                         {t('invoices.invoice')} #{invoice.invoiceNumber || invoice.publicCode || invoice.id}
                       </small>
                       <span
-                        className={`badge rounded-pill text-capitalize ${statusClass(
-                          uiStatus
-                        )}`}
+                        className={`badge rounded-pill text-capitalize ${statusClass(uiStatus)}`}
                         style={{ width: 'fit-content' }}
                       >
                         {statusLabel(uiStatus)}
@@ -332,10 +301,7 @@ export default function InvoicePayment() {
                 </div>
                 <div className="card-body">
                   {isExpired && !isPaid && (
-                    <div
-                      className="alert alert-danger d-flex align-items-center"
-                      role="alert"
-                    >
+                    <div className="alert alert-danger d-flex align-items-center" role="alert">
                       <i className="bx bx-error-circle me-2"></i>
                       <div>
                         {t("payment.expiredMessage") ||
@@ -344,270 +310,34 @@ export default function InvoicePayment() {
                     </div>
                   )}
                   <div className="row g-3 g-md-4">
-                    <div className="col-12 d-flex justify-content-center">
-                      {isExpired && !isPaid ? (
-                        <div className="text-center"></div>
-                      ) : (
-                        <div className="text-center">
-                          <QRCode value={paymentValue} size={qrcodeSize} includeMargin={true} />
-                          <div className="mt-2 small text-muted">
-                            {t("payment.scanToPay") || "Scan to pay"}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="col-12">
-                      {!isExpired || isPaid ? (
-                        <div className="mb-3">
-                          <div className="text-muted small mb-1">
-                            {t("invoices.amount")}
-                          </div>
-                          <div className="d-flex align-items-center gap-2 flex-wrap">
-                            <div className="fs-4 fw-semibold">
-                              {formatAmount(invoice.amount)} <span >{coinSym}</span>
-                            </div>
-                            {invoice.amount != null && (
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-secondary"
-                                onClick={handleCopyAmount}
-                              >
-                                <i className="bx bx-copy"></i>
-                              </button>
-                            )}
-                            {copiedAmt && (
-                              <span className="badge bg-label-success">
-                                {t("actions.copy") || "Copy"}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ) : null}
-                      {!isExpired || isPaid ? (
-                        <div className="mb-3">
-                          <div className="text-muted small">
-                            {t("invoices.paymentAddress")}
-                          </div>
-                          <div className="d-flex align-items-center flex-wrap gap-2">
-                            <code className="text-break text-body">
-                              {invoice.paymentAddress || '-'}
-                            </code>
-                            {invoice.paymentAddress && (
-                              <>
-                                <button
-                                  type="button"
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={handleCopy}
-                                >
-                                  <i className="bx bx-copy"></i>
-                                </button>
-                                {copied && (
-                                  <span className="badge bg-label-success">
-                                    {t("actions.copy") || "Copy"}
-                                  </span>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ) : null}
-                      {!isPaid && (
-                        <div className="mb-3">
-                          <div className="text-muted small">
-                            {t("payment.timeRemaining")}
-                          </div>
-                          {expiryMs ? (
-                            <div className="d-flex align-items-center gap-2">
-                              <span
-                                className={`badge rounded-pill ${countdownBadgeClass} px-3 py-2 fs-5`}
-                                aria-live="polite"
-                              >
-                                <i className="bx bx-timer me-1"></i>
-                                {formatDuration(remainingMs)}
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="text-muted">-</div>
-                          )}
-                        </div>
-                      )}
-                      {invoice.description && (
-                        <div className="mb-1">
-                          <div className="text-muted small">
-                            {t("invoices.description")}
-                          </div>
-                          <div className="text-muted">
-                            {invoice.description}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <PaymentQRCode
+                      isExpired={isExpired}
+                      isPaid={isPaid}
+                      paymentValue={paymentValue}
+                      qrcodeSize={qrcodeSize}
+                    />
+                    <PaymentDetailsSection
+                      invoice={invoice}
+                      coinSym={coinSym}
+                      isPaid={isPaid}
+                      isExpired={isExpired}
+                      expiryMs={expiryMs}
+                      remainingMs={remainingMs}
+                      countdownBadgeClass={countdownBadgeClass}
+                      copied={copied}
+                      copiedAmt={copiedAmt}
+                      onCopyAddress={handleCopy}
+                      onCopyAmount={handleCopyAmount}
+                      formatDuration={formatDuration}
+                    />
                   </div>
                 </div>
               </div>
-              <div className="card mt-4">
-                <div className="card-header">
-                  <h6 className="mb-0">
-                    {t("payment.progress") || "Payment Progress"}
-                  </h6>
-                </div>
-                <div className="card-body">
-                  <div className="d-flex flex-column w-100">
-                    {/* Step 1 */}
-                    <div className="d-flex">
-                      <div className="d-flex flex-column align-items-center me-3">
-                        <span
-                          className={`d-inline-flex align-items-center justify-content-center rounded-circle border ${
-                            isExpiredUnpaid
-                              ? 'border-secondary opacity-75'
-                              : isPaid
-                                ? 'border-success'
-                                : currentStep >= 1
-                                  ? 'border-primary'
-                                  : 'border-secondary'
-                          } bg-white`}
-                          style={{ width: 36, height: 36 }}
-                        >
-                          <i
-                            className={`bx bx-coin-stack ${
-                              isExpiredUnpaid
-                                ? 'text-secondary'
-                                : isPaid
-                                  ? 'text-success'
-                                  : currentStep >= 1
-                                    ? 'text-primary'
-                                    : 'text-secondary'
-                            }`}
-                          ></i>
-                        </span>
-                        <div
-                          className={`vr my-2 align-self-center ${
-                            isExpiredUnpaid
-                              ? 'opacity-50'
-                              : isPaid
-                                ? 'opacity-75'
-                                : currentStep >= 2
-                                  ? 'opacity-50'
-                                  : 'opacity-25'
-                          }`}
-                          style={{ height: 14 }}
-                        ></div>
-                      </div>
-                      <div className="pt-1">
-                        <div
-                          className={`fw-semibold ${
-                            isExpiredUnpaid
-                              ? 'text-muted'
-                              : isPaid
-                                ? 'text-success'
-                                : currentStep === 1
-                                  ? 'text-body'
-                                  : 'text-muted'
-                          }`}
-                        >
-                          {t("payment.waiting") || "Waiting for payment"}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Step 2 (Expired lives here) */}
-                    <div className="d-flex">
-                      <div className="d-flex flex-column align-items-center me-3">
-                        <span
-                          className={`d-inline-flex align-items-center justify-content-center rounded-circle border ${
-                            isExpiredUnpaid
-                              ? 'border-danger'
-                              : isPaid
-                                ? 'border-success'
-                                : currentStep >= 2
-                                  ? 'border-primary'
-                                  : 'border-secondary'
-                          } bg-white`}
-                          style={{ width: 36, height: 36 }}
-                        >
-                          <i
-                            className={`bx ${
-                              isExpiredUnpaid
-                                ? 'bx-calendar-x text-danger'
-                                : isPaid
-                                  ? 'bx-time-five text-success'
-                                  : currentStep >= 2
-                                    ? 'bx-time-five text-primary'
-                                    : 'bx-time-five text-secondary'
-                            }`}
-                          ></i>
-                        </span>
-                        {!isExpiredUnpaid && (
-                          <div
-                            className={`vr my-2 align-self-center ${
-                              isPaid ? 'opacity-75' : currentStep >= 3 ? 'opacity-50' : 'opacity-25'
-                            }`}
-                            style={{ height: 14 }}
-                          ></div>
-                        )}
-                      </div>
-                      <div className="pt-1">
-                        <div
-                          className={`fw-semibold ${
-                            isExpiredUnpaid
-                              ? 'text-danger'
-                              : isPaid
-                                ? 'text-success'
-                                : currentStep === 2
-                                  ? 'text-body'
-                                  : 'text-muted'
-                          }`}
-                        >
-                          {isExpiredUnpaid
-                            ? t('payment.expired') || 'Expired'
-                            : t("payment.processing") || "Processing payment"}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Step 3 (Completed; hidden when expired) */}
-                    {!isExpiredUnpaid && (
-                      <div className="d-flex">
-                        <div className="d-flex flex-column align-items-center me-3">
-                          <span
-                            className={`d-inline-flex align-items-center justify-content-center rounded-circle border ${
-                              isPaid
-                                ? 'border-success'
-                                : currentStep >= 3
-                                  ? 'border-primary'
-                                  : 'border-secondary'
-                            } bg-white`}
-                            style={{ width: 36, height: 36 }}
-                          >
-                            <i
-                              className={`bx ${
-                                isPaid
-                                  ? 'bx-badge-check text-success'
-                                  : currentStep >= 3
-                                    ? 'bx-like text-primary'
-                                    : 'bx-like text-secondary'
-                              }`}
-                            ></i>
-                          </span>
-                        </div>
-                        <div className="pt-1">
-                          <div
-                            className={`fw-semibold ${
-                              isPaid
-                                ? 'text-success'
-                                : currentStep === 3
-                                  ? 'text-body'
-                                  : 'text-muted'
-                            }`}
-                          >
-                            {t('payment.completed') || 'Success!'}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <PaymentProgressCard
+                isPaid={isPaid}
+                isExpiredUnpaid={isExpiredUnpaid}
+                currentStep={currentStep}
+              />
             </div>
           </div>
         )}

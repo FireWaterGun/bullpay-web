@@ -3,14 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '../../api/userTransactions.ts'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
-import { formatUsd as formatUsdShared, formatUsdSigned, formatChange } from '../../utils/format'
-import CoinImg from '../../components/CoinImg'
+import { formatUsd as formatUsdShared, formatChange } from '../../utils/format'
+import DailyTrendChart from './DailyTrendChart'
+import TransactionByCoinTable from './TransactionByCoinTable'
 
 const summaryValueStyle = { fontSize: '1.75rem' }
 const changeTextStyle = { fontSize: '0.8rem' }
-const tableHeaderStyle = { fontSize: '0.8rem' }
 
-const formatCurrency = formatUsdSigned
 const formatCurrencyPlain = formatUsdShared
 
 function getDateRange(preset) {
@@ -73,232 +72,6 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
-  if (!data || data.length === 0) {
-    return (
-      <div className="d-flex align-items-center justify-content-center" style={{ height }}>
-        <span className="text-muted">No data available</span>
-      </div>
-    )
-  }
-
-  const allValues = data.flatMap(d => [d.deposit || 0, d.withdrawal || 0, d.netFlow || 0])
-  const rawMax = Math.max(...allValues, 0)
-  const rawMin = Math.min(...allValues, 0)
-
-  function niceScale(min, max, ticks = 5) {
-    const range = max - min || 1
-    const roughStep = range / ticks
-    const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
-    const nice = roughStep / mag
-    let step
-    if (nice <= 1.5) step = 1 * mag
-    else if (nice <= 3) step = 2 * mag
-    else if (nice <= 7) step = 5 * mag
-    else step = 10 * mag
-    const niceMin = Math.floor(min / step) * step
-    const niceMax = Math.ceil(max / step) * step
-    const labels = []
-    for (let v = niceMax; v >= niceMin; v -= step) {
-      labels.push(parseFloat(v.toFixed(10)))
-    }
-    return { min: niceMin, max: niceMax, labels, step }
-  }
-
-  const yScale = niceScale(rawMin, rawMax, 5)
-  const yRange = yScale.max - yScale.min || 1
-
-  const padTop = 16
-  const chartH = height - 60
-  const yAxisW = 60
-  const barAreaW = Math.max(data.length * 80, 400)
-  const barGroupW = barAreaW / data.length
-  const barW = Math.min(22, barGroupW * 0.28)
-
-  const yPos = (val) => padTop + (chartH - padTop) - ((val - yScale.min) / yRange) * (chartH - padTop)
-  const zeroY = yPos(0)
-
-  // Net flow line - smooth cubic bezier path
-  const netFlowPath = (() => {
-    const points = data.map((item, i) => ({
-      x: i * barGroupW + barGroupW / 2,
-      y: yPos(item.netFlow || 0),
-    }))
-    if (points.length < 2) return ''
-    let d = `M ${points[0].x},${points[0].y}`
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1]
-      const curr = points[i]
-      const tension = 0.3
-      const dx = curr.x - prev.x
-      const cp1x = prev.x + dx * tension
-      const cp2x = curr.x - dx * tension
-      d += ` C ${cp1x},${prev.y} ${cp2x},${curr.y} ${curr.x},${curr.y}`
-    }
-    return d
-  })()
-
-  return (
-    <div>
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{ display: 'flex', minWidth: yAxisW + barAreaW + 120 }}>
-          {/* Y-axis */}
-          <div style={{ width: yAxisW, flexShrink: 0, position: 'relative', height: chartH }}>
-            {yScale.labels.map((v, i) => (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v) - 8,
-                  right: 8,
-                  fontSize: '0.72rem',
-                  color: '#888',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {formatCurrencyPlain(v)}
-              </div>
-            ))}
-          </div>
-          {/* Chart area */}
-          <div style={{ position: 'relative', flex: 1, minWidth: barAreaW, height: chartH }}>
-            {/* Grid lines */}
-            {yScale.labels.map((v, i) => (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v),
-                  left: 0,
-                  right: 0,
-                  borderTop: v === 0 ? '1.5px solid #aaa' : '1px dashed #e5e5e5',
-                }}
-              />
-            ))}
-            {/* Bars + line */}
-            <svg width={barAreaW} height={chartH} style={{ position: 'absolute', top: 0, left: 0 }}>
-              <defs>
-                <pattern id="withdrawalPattern" patternUnits="userSpaceOnUse" width="4" height="4">
-                  <rect width="4" height="4" fill="#a8b8d8" />
-                  <circle cx="2" cy="2" r="1" fill="#8898b8" />
-                </pattern>
-              </defs>
-              {data.map((item, i) => {
-                const cx = i * barGroupW + barGroupW / 2
-                const dep = item.deposit || 0
-                const wth = item.withdrawal || 0
-
-                const depTop = yPos(Math.max(dep, 0))
-                const depBot = zeroY
-                const depH = Math.max(depBot - depTop, dep > 0 ? 2 : 0)
-
-                const wthTop = yPos(Math.max(wth, 0))
-                const wthBot = zeroY
-                const wthH = Math.max(wthBot - wthTop, wth > 0 ? 2 : 0)
-
-                return (
-                  <g key={i}>
-                    {/* Deposit bar */}
-                    <rect
-                      x={cx - barW - 1}
-                      y={depTop}
-                      width={barW}
-                      height={depH}
-                      rx={2}
-                      fill="#696cff"
-                    >
-                      <title>Deposit: {formatCurrencyPlain(dep)}</title>
-                    </rect>
-                    {/* Withdrawal bar */}
-                    <rect
-                      x={cx + 1}
-                      y={wthTop}
-                      width={barW}
-                      height={wthH}
-                      rx={2}
-                      fill="url(#withdrawalPattern)"
-                    >
-                      <title>Withdrawal: {formatCurrencyPlain(wth)}</title>
-                    </rect>
-                  </g>
-                )
-              })}
-              {/* Net flow line (smooth curve) */}
-              <path
-                d={netFlowPath}
-                fill="none"
-                stroke="#03c3ec"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {/* Net flow dots */}
-              {data.map((item, i) => {
-                const cx = i * barGroupW + barGroupW / 2
-                const cy = yPos(item.netFlow || 0)
-                return (
-                  <circle key={i} cx={cx} cy={cy} r={3} fill="#03c3ec" stroke="#fff" strokeWidth="1.5">
-                    <title>Net Flow: {formatCurrencyPlain(item.netFlow || 0)}</title>
-                  </circle>
-                )
-              })}
-            </svg>
-          </div>
-          {/* Legend */}
-          <div style={{ width: 110, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, backgroundColor: '#696cff', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>{t ? t('userDashboard.deposits', { defaultValue: 'Deposit' }) : 'Deposit'}</small>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(#a8b8d8 0% 25%, #8898b8 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>{t ? t('userDashboard.withdrawals', { defaultValue: 'Withdrawal' }) : 'Withdrawal'}</small>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
-              <small>{t ? t('userDashboard.netFlow', { defaultValue: 'Net Flow' }) : 'Net Flow'}</small>
-            </div>
-          </div>
-        </div>
-        {/* X-axis labels */}
-        <div style={{ display: 'flex', marginLeft: yAxisW, width: barAreaW }}>
-          {data.map((item, i) => (
-            <div key={i} style={{ width: barGroupW, textAlign: 'center', flexShrink: 0 }}>
-              <small className="text-muted" style={{ fontSize: '0.72rem' }}>
-                {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
-              </small>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Footer stats */}
-      {meta && (
-        <div className="mt-3 p-3 rounded" style={{ backgroundColor: 'rgba(105, 108, 255, 0.05)', border: '1px solid rgba(105, 108, 255, 0.1)' }}>
-          <div className="d-flex flex-wrap gap-3 align-items-center">
-            <div>
-              <i className="bx bx-calendar text-primary me-1"></i>
-              <small className="fw-medium">{meta.totalDays || 0} {t ? t('userDashboard.daysTotal', { defaultValue: 'days total' }) : 'days total'}</small>
-              <small className="text-muted mx-1">•</small>
-              <small>{meta.daysWithData || 0} {t ? t('userDashboard.daysWithData', { defaultValue: 'days with data' }) : 'days with data'}</small>
-            </div>
-            <div>
-              <small className="text-success">
-                <i className="bx bx-up-arrow-alt"></i>
-                {meta.daysPositiveFlow || 0} {t ? t('userDashboard.daysPositiveFlow', { defaultValue: 'days positive flow' }) : 'days positive flow'}
-              </small>
-              <small className="text-muted mx-1">•</small>
-              <small className="text-danger">
-                <i className="bx bx-down-arrow-alt"></i>
-                {meta.daysNegativeFlow || 0} {t ? t('userDashboard.daysNegative', { defaultValue: 'days negative' }) : 'days negative'}
-              </small>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -401,19 +174,6 @@ export default function UserTransactionsDashboard() {
   const previous = summary?.previous || {}
   const changes = summary?.changes || {}
   const counts = current?.counts || {}
-
-  const byCoinTotals = useMemo(() => {
-    if (!byCoinData || byCoinData.length === 0) {
-      return { deposit: 0, withdrawal: 0, fee: 0, netFlow: 0 }
-    }
-    const deposit = byCoinData.reduce((sum, item) => sum + parseFloat(item.depositUsd || 0), 0)
-    const withdrawal = byCoinData.reduce((sum, item) => sum + parseFloat(item.withdrawalUsd || 0), 0)
-    const fee = byCoinData.reduce((sum, item) => sum + parseFloat(item.feeUsd || 0), 0)
-    const netFlow = byCoinData.reduce((sum, item) => {
-      return sum + parseFloat(item.netFlowUsd || 0)
-    }, 0)
-    return { deposit, withdrawal, fee, netFlow }
-  }, [byCoinData])
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
@@ -564,84 +324,7 @@ export default function UserTransactionsDashboard() {
       {/* Section 3: Transaction by Coin */}
       <div className="row mb-4">
         <div className="col-12">
-          <div className="card">
-            <div className="card-header">
-              <h5 className="card-title mb-0">
-                {t('userDashboard.transactionByCoin', { defaultValue: 'Transaction by Coin' })}
-              </h5>
-            </div>
-            <div className="card-body p-0">
-              {loadingByCoin ? (
-                <div className="d-flex justify-content-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        <th className="text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('userDashboard.deposits', { defaultValue: 'Deposits' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={tableHeaderStyle}>{t('userDashboard.feesCollected', { defaultValue: 'Fees' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted text-nowrap" style={tableHeaderStyle}>{t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {byCoinData.length === 0 ? (
-                        <tr>
-                          <td colSpan="5" className="text-center text-muted py-4">
-                            {t('common.noData', { defaultValue: 'No data available' })}
-                          </td>
-                        </tr>
-                      ) : (
-                        <>
-                          {byCoinData.map((item, index) => {
-                            const deposit = parseFloat(item.depositUsd || 0)
-                            const withdrawal = parseFloat(item.withdrawalUsd || 0)
-                            const fee = parseFloat(item.feeUsd || 0)
-                            const netFlow = parseFloat(item.netFlowUsd || 0)
-
-                            return (
-                              <tr key={index}>
-                                <td>
-                                  <div className="d-flex align-items-center">
-                                    <CoinImg symbol={item.coinSymbol} size={24} className="me-2" />
-                                    <span className="fw-medium">{item.coinSymbol}</span>
-                                    {item.networkName && (
-                                      <small className="text-muted ms-1">/ {item.networkName}</small>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="text-end">{formatCurrencyPlain(deposit)}</td>
-                                <td className="text-end">{formatCurrencyPlain(withdrawal)}</td>
-                                <td className="text-end">{formatCurrencyPlain(fee)}</td>
-                                <td className={`text-end ${netFlow > 0 ? 'text-success' : netFlow < 0 ? 'text-danger' : ''}`}>
-                                  {formatCurrencyPlain(netFlow)}
-                                </td>
-                              </tr>
-                            )
-                          })}
-                          {/* Total row */}
-                          <tr className="table-light fw-semibold">
-                            <td className="text-body">{t('common.total', { defaultValue: 'TOTAL' })}</td>
-                            <td className="text-end text-body">{formatCurrencyPlain(byCoinTotals.deposit)}</td>
-                            <td className="text-end text-body">{formatCurrencyPlain(byCoinTotals.withdrawal)}</td>
-                            <td className="text-end text-body">{formatCurrencyPlain(byCoinTotals.fee)}</td>
-                            <td className={`text-end ${byCoinTotals.netFlow > 0 ? 'text-success' : byCoinTotals.netFlow < 0 ? 'text-danger' : ''}`}>
-                              {formatCurrencyPlain(byCoinTotals.netFlow)}
-                            </td>
-                          </tr>
-                        </>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
+          <TransactionByCoinTable byCoinData={byCoinData} loading={loadingByCoin} t={t} />
         </div>
       </div>
     </div>

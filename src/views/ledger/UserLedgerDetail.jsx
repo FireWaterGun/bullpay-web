@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getUserLedgerEntry } from '../../api/admin.ts'
-import { formatUsd } from '../../utils/format'
+import { formatUsd, formatDateTime as formatDate } from '../../utils/format'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
 
@@ -32,11 +32,6 @@ export default function UserLedgerDetail() {
     } finally {
       setLoading(false)
     }
-  }
-
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    return new Date(dateString).toLocaleString()
   }
 
   function formatAmount(val) {
@@ -79,7 +74,7 @@ export default function UserLedgerDetail() {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
-          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
+          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
           <button className="btn btn-primary" onClick={() => navigate(-1)}>
             {t('actions.back', { defaultValue: 'Back' })}
@@ -372,7 +367,7 @@ export default function UserLedgerDetail() {
                     </h5>
                   </div>
                   <div className="card-body">
-                    <pre className="mb-0 p-3 rounded" style={{ fontSize: '0.8rem', maxHeight: '300px', overflow: 'auto', backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
+                    <pre className="mb-0 p-3 rounded" style={{ fontSize: '0.8rem', maxHeight: '300px', overflow: 'auto', backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
                       {JSON.stringify(metadata, null, 2)}
                     </pre>
                   </div>

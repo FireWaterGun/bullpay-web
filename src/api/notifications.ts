@@ -1,6 +1,5 @@
-import { apiFetch } from './client'
+import { apiFetch, toAuthHeader } from './client'
 import { requestId } from '../utils/requestId'
-import { extractToken } from '../utils/authToken'
 
 export interface Notification {
   id: string
@@ -39,8 +38,7 @@ export async function getNotifications(
   token?: unknown
 ): Promise<NotificationsListResponse> {
   const { limit = 20, offset = 0, includeRead = false } = params
-  const authToken = extractToken(token)
-  const authHeader = authToken ? `Bearer ${authToken}` : undefined
+  const authHeader = toAuthHeader(token)
   
   const queryParams = new URLSearchParams({
     limit: String(limit),
@@ -75,8 +73,7 @@ export async function getNotifications(
 }
 
 export async function getUnreadCount(token?: unknown): Promise<number> {
-  const authToken = extractToken(token)
-  const authHeader = authToken ? `Bearer ${authToken}` : undefined
+  const authHeader = toAuthHeader(token)
 
   const res = await apiFetch<any>('/api/v1/user/notifications/unread-count', {
     method: 'GET',
@@ -94,8 +91,7 @@ export async function markAsRead(
   notificationIds: string[],
   token?: unknown
 ): Promise<void> {
-  const authToken = extractToken(token)
-  const authHeader = authToken ? `Bearer ${authToken}` : undefined
+  const authHeader = toAuthHeader(token)
 
   await apiFetch<any>('/api/v1/user/notifications/mark-as-read', {
     method: 'PATCH',
@@ -108,8 +104,7 @@ export async function markAsRead(
 }
 
 export async function markAllAsRead(token?: unknown): Promise<void> {
-  const authToken = extractToken(token)
-  const authHeader = authToken ? `Bearer ${authToken}` : undefined
+  const authHeader = toAuthHeader(token)
 
   await apiFetch<any>('/api/v1/user/notifications/mark-all-as-read', {
     method: 'PATCH',
@@ -124,8 +119,7 @@ export async function deleteNotifications(
   notificationIds: string[],
   token?: unknown
 ): Promise<void> {
-  const authToken = extractToken(token)
-  const authHeader = authToken ? `Bearer ${authToken}` : undefined
+  const authHeader = toAuthHeader(token)
 
   await apiFetch<any>('/api/v1/user/notifications', {
     method: 'DELETE',

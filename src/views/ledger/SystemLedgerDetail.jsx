@@ -7,6 +7,8 @@ import { getSystemLedgerEntry } from '../../api/admin.ts'
 import { formatUsd } from '../../utils/format'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
+import { formatAmount, stateBadge, entryCodeLabels, getPurposeLabel, parseMetadata } from './ledgerUtils'
+import { TransactionCard, TimestampsCard, MetadataCard } from './SystemLedgerDetailCards'
 
 export default function SystemLedgerDetail() {
   const { t } = useTranslation()
@@ -34,28 +36,6 @@ export default function SystemLedgerDetail() {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    return new Date(dateString).toLocaleString()
-  }
-
-  function formatAmount(val) {
-    if (!val && val !== 0) return '0'
-    let str = String(val)
-    if (str.includes('.')) {
-      str = str.replace(/0+$/, '').replace(/\.$/, '')
-    }
-    return str || '0'
-  }
-
-  function stateBadge(state) {
-    if (state === 'settled') return <span className="badge bg-label-success">Settled</span>
-    if (state === 'committed') return <span className="badge bg-label-info">Committed</span>
-    if (state === 'pending') return <span className="badge bg-label-warning">Pending</span>
-    if (state === 'reversed') return <span className="badge bg-label-secondary">Reversed</span>
-    return <span className="text-muted">{state || 'N/A'}</span>
-  }
-
   async function handleCopy(text) {
     const ok = await copyText(text)
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
@@ -78,7 +58,7 @@ export default function SystemLedgerDetail() {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
-          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
+          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
           <button className="btn btn-primary" onClick={() => navigate(-1)}>
             {t('actions.back', { defaultValue: 'Back' })}
@@ -90,36 +70,8 @@ export default function SystemLedgerDetail() {
 
   const isCredit = entry.entryType === 'credit'
   const isReversed = entry.state === 'reversed'
-
-  // Parse metadata
-  let metadata = {}
-  try {
-    metadata = typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
-  } catch (e) { /* ignore */ }
-
-  const networkSymbol = metadata?.networkSymbol || ''
-
-  // Entry code labels
-  const entryCodeLabels = {
-    'SP': 'Settlement Payment',
-    'SC': 'Sweep Cost',
-    'SG': 'Sweep Gas',
-    'WD': 'Withdrawal',
-    'DP': 'Deposit',
-    'FE': 'Fee',
-    'AJ': 'Adjustment',
-  }
-
-  const purposeMap = {
-    'payment_received': 'Payment Received',
-    'merchant_credit': 'Merchant Credit',
-    'native_coin_sweep_cost': 'Sweep Cost',
-    'gas_topup_for_token_sweep': 'Gas Top-up',
-    'token_sweep_cost': 'Token Sweep Cost',
-  }
-  const purposeLabel = purposeMap[metadata.purpose] || purposeMap[metadata.type] || metadata.purpose || metadata.type || null
-
-
+  const metadata = parseMetadata(entry)
+  const purposeLabel = getPurposeLabel(metadata)
   const explorerUrl = entry.explorerUrl || null
 
   return (
@@ -140,7 +92,6 @@ export default function SystemLedgerDetail() {
             <div className="card-body">
               <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div className="d-flex align-items-center gap-3">
-                  {/* Coin Icon */}
                   {entry.coinSymbol && (
                     <CoinImg
                       symbol={entry.coinSymbol}
@@ -276,141 +227,11 @@ export default function SystemLedgerDetail() {
               </div>
             </div>
 
-            {/* Transaction & Timestamps */}
+            {/* Transaction, Timestamps & Metadata */}
             <div className="col-md-6">
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-link me-2"></i>
-                    Transaction
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless">
-                    <tbody>
-                      {entry.reservationId && (
-                        <tr>
-                          <td className="text-muted" style={{ width: '40%' }}>Reservation ID</td>
-                          <td><code>{entry.reservationId}</code></td>
-                        </tr>
-                      )}
-                      {entry.relatedId && (
-                        <tr>
-                          <td className="text-muted">Related ID</td>
-                          <td>#{entry.relatedId}</td>
-                        </tr>
-                      )}
-                      {entry.txHash && (
-                        <tr>
-                          <td className="text-muted">Tx Hash</td>
-                          <td>
-                            <code className="text-break" style={{ fontSize: '0.75rem' }}>{entry.txHash}</code>
-                            <div className="d-flex gap-1 mt-2">
-                              {explorerUrl && (
-                                <a
-                                  href={`${explorerUrl}/tx/${entry.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-outline-primary"
-                                  style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
-                                >
-                                  <i className="bx bx-link-external me-1"></i>View on Explorer
-                                </a>
-                              )}
-                              <button
-                                className="btn btn-sm btn-outline-secondary"
-                                onClick={() => handleCopy(entry.txHash)}
-                                style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
-                              >
-                                <i className="bx bx-copy me-1"></i>Copy
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                      {metadata?.invoiceNumber && (
-                        <tr>
-                          <td className="text-muted">Invoice</td>
-                          <td><span className="badge bg-label-primary">{metadata.invoiceNumber}</span></td>
-                        </tr>
-                      )}
-                      {metadata?.sweepId && (
-                        <tr>
-                          <td className="text-muted">Sweep ID</td>
-                          <td>#{metadata.sweepId}</td>
-                        </tr>
-                      )}
-                      {metadata?.note && (
-                        <tr>
-                          <td className="text-muted">Note</td>
-                          <td className="text-muted" style={{ fontSize: '0.85rem' }}>{metadata.note}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Timestamps */}
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-time me-2"></i>
-                    Timestamps
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Created</td>
-                        <td>{formatDate(entry.createdAt)}</td>
-                      </tr>
-                      {entry.committedAt && (
-                        <tr>
-                          <td className="text-muted">Committed</td>
-                          <td>{formatDate(entry.committedAt)}</td>
-                        </tr>
-                      )}
-                      {entry.settledAt && (
-                        <tr>
-                          <td className="text-muted">Settled</td>
-                          <td>{formatDate(entry.settledAt)}</td>
-                        </tr>
-                      )}
-                      {entry.reversedAt && (
-                        <tr>
-                          <td className="text-muted">Reversed</td>
-                          <td>{formatDate(entry.reversedAt)}</td>
-                        </tr>
-                      )}
-                      {entry.updatedAt && (
-                        <tr>
-                          <td className="text-muted">Updated</td>
-                          <td>{formatDate(entry.updatedAt)}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Metadata card (if present) */}
-              {Object.keys(metadata).length > 0 && (
-                <div className="card mb-4">
-                  <div className="card-header">
-                    <h5 className="mb-0">
-                      <i className="bx bx-code-block me-2"></i>
-                      Metadata
-                    </h5>
-                  </div>
-                  <div className="card-body">
-                    <pre className="mb-0 p-3 rounded" style={{ fontSize: '0.8rem', maxHeight: '300px', overflow: 'auto', backgroundColor: '#f8f9fa', border: '1px solid #e3e3e3' }}>
-                      {JSON.stringify(metadata, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
+              <TransactionCard entry={entry} metadata={metadata} explorerUrl={explorerUrl} onCopy={handleCopy} />
+              <TimestampsCard entry={entry} />
+              <MetadataCard metadata={metadata} />
             </div>
           </div>
         </div>

@@ -137,6 +137,23 @@ export function formatChange(value: string | number | null | undefined, decimals
 }
 
 // ---------------------------------------------------------------------------
+// Date formatters
+// ---------------------------------------------------------------------------
+
+/**
+ * Format a date string as DD/MM/YYYY HH:mm
+ *   formatDate('2024-01-15T10:30:00Z') → "15/01/2024 10:30"
+ *   formatDate(null) → "N/A"
+ */
+export function formatDate(value: string | number | Date | null | undefined): string {
+  if (!value) return 'N/A'
+  const d = value instanceof Date ? value : new Date(String(value))
+  if (isNaN(d.getTime())) return 'N/A'
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+// ---------------------------------------------------------------------------
 // Legacy / general formatters
 // ---------------------------------------------------------------------------
 

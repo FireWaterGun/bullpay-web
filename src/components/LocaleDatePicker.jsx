@@ -156,11 +156,11 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
             zIndex: 1050,
             marginTop: 4,
             width: 280,
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--bs-body-bg)',
             borderRadius: 8,
             boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
             padding: 12,
-            border: '1px solid #e5e5e5',
+            border: '1px solid var(--bs-border-color)',
           }}
         >
           {/* Header: prev / month-year / next */}
@@ -186,8 +186,8 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
 
           {/* Weekday headers */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', marginBottom: 4 }}>
-            {weekDayHeaders.map((h, i) => (
-              <div key={i} style={{ fontSize: '0.75rem', fontWeight: 600, color: '#888', padding: '2px 0' }}>
+            {weekDayHeaders.map((h) => (
+              <div key={h} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--bs-secondary-color)', padding: '2px 0' }}>
                 {h}
               </div>
             ))}
@@ -202,7 +202,7 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
               const isClickable = item.current && item.date && !isDisabled
               return (
                 <div
-                  key={i}
+                  key={item.date || `empty-${i}`}
                   onClick={() => isClickable && selectDate(item.date)}
                   style={{
                     padding: '6px 2px',
@@ -210,11 +210,11 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
                     borderRadius: '50%',
                     fontSize: '0.85rem',
                     fontWeight: isSelected ? 600 : 400,
-                    color: !item.current || isDisabled ? '#ccc' : isSelected ? '#fff' : isToday ? '#696cff' : '#333',
-                    backgroundColor: isSelected ? '#696cff' : 'transparent',
+                    color: !item.current || isDisabled ? 'var(--bs-tertiary-color)' : isSelected ? 'var(--bs-white)' : isToday ? 'var(--bs-primary)' : 'var(--bs-body-color)',
+                    backgroundColor: isSelected ? 'var(--bs-primary)' : 'transparent',
                     transition: 'background-color 0.15s',
                   }}
-                  onMouseEnter={(e) => { if (isClickable && !isSelected) e.currentTarget.style.backgroundColor = '#f0f0f0' }}
+                  onMouseEnter={(e) => { if (isClickable && !isSelected) e.currentTarget.style.backgroundColor = 'var(--bs-tertiary-bg)' }}
                   onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent' }}
                 >
                   {item.day}
@@ -224,7 +224,7 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
           </div>
 
           {/* Footer: Clear / Today */}
-          <div className="d-flex justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid #eee' }}>
+          <div className="d-flex justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid var(--bs-border-color)' }}>
             <button
               type="button"
               className="btn btn-sm text-muted p-0"

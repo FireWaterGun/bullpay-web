@@ -1,0 +1,167 @@
+import { formatDate } from '../../utils/format'
+
+export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) {
+  return (
+    <>
+      <div className="card mb-4">
+        <div className="card-header">
+          <h5 className="mb-0">
+            <i className="bx bx-link me-2"></i>
+            Transaction
+          </h5>
+        </div>
+        <div className="card-body">
+          <table className="table table-borderless">
+            <tbody>
+              <tr>
+                <td className="text-muted" style={{ width: '40%' }}>Tx Hash</td>
+                <td>
+                  {topup.txHash ? (
+                    <>
+                      <code className="text-break" style={{ fontSize: '0.75rem' }}>{topup.txHash}</code>
+                      <div className="d-flex gap-1 mt-2">
+                        {explorerUrl && (
+                          <a
+                            href={`${explorerUrl}/tx/${topup.txHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-sm btn-outline-primary"
+                          >
+                            <i className="bx bx-link-external me-1"></i>Explorer
+                          </a>
+                        )}
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => onCopy(topup.txHash)}
+                        >
+                          <i className="bx bx-copy me-1"></i>Copy
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-muted">-</span>
+                  )}
+                </td>
+              </tr>
+              {topup.blockNumber && (
+                <tr>
+                  <td className="text-muted">Block Number</td>
+                  <td>{topup.blockNumber}</td>
+                </tr>
+              )}
+              {topup.gasUsedRaw && (
+                <tr>
+                  <td className="text-muted">Gas Used</td>
+                  <td><code style={{ fontSize: '0.8rem' }}>{topup.gasUsedRaw}</code></td>
+                </tr>
+              )}
+              {topup.gasPriceRaw && (
+                <tr>
+                  <td className="text-muted">Gas Price</td>
+                  <td><code style={{ fontSize: '0.8rem' }}>{topup.gasPriceRaw}</code></td>
+                </tr>
+              )}
+              <tr>
+                <td className="text-muted">From Address</td>
+                <td>
+                  {topup.fromAddress ? (
+                    <>
+                      <code className="text-break" style={{ fontSize: '0.75rem' }}>{topup.fromAddress}</code>
+                      <div className="d-flex gap-1 mt-2">
+                        {explorerUrl && (
+                          <a
+                            href={`${explorerUrl}/address/${topup.fromAddress}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-sm btn-outline-primary"
+                          >
+                            <i className="bx bx-link-external me-1"></i>Explorer
+                          </a>
+                        )}
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => onCopy(topup.fromAddress)}
+                        >
+                          <i className="bx bx-copy me-1"></i>Copy
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-muted">N/A</span>
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <td className="text-muted">To Address</td>
+                <td>
+                  {topup.toAddress ? (
+                    <>
+                      <code className="text-break" style={{ fontSize: '0.75rem' }}>{topup.toAddress}</code>
+                      <div className="d-flex gap-1 mt-2">
+                        {explorerUrl && (
+                          <a
+                            href={`${explorerUrl}/address/${topup.toAddress}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-sm btn-outline-primary"
+                          >
+                            <i className="bx bx-link-external me-1"></i>Explorer
+                          </a>
+                        )}
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => onCopy(topup.toAddress)}
+                        >
+                          <i className="bx bx-copy me-1"></i>Copy
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-muted">N/A</span>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="card mb-4">
+        <div className="card-header">
+          <h5 className="mb-0">
+            <i className="bx bx-time me-2"></i>
+            Timestamps
+          </h5>
+        </div>
+        <div className="card-body">
+          <table className="table table-borderless">
+            <tbody>
+              <tr>
+                <td className="text-muted" style={{ width: '40%' }}>Created</td>
+                <td>{formatDate(topup.createdAt)}</td>
+              </tr>
+              {topup.processingStartedAt && (
+                <tr>
+                  <td className="text-muted">Processing Started</td>
+                  <td>{formatDate(topup.processingStartedAt)}</td>
+                </tr>
+              )}
+              {topup.completedAt && (
+                <tr>
+                  <td className="text-muted">Completed</td>
+                  <td>{formatDate(topup.completedAt)}</td>
+                </tr>
+              )}
+              {topup.updatedAt && (
+                <tr>
+                  <td className="text-muted">Updated</td>
+                  <td>{formatDate(topup.updatedAt)}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  )
+}

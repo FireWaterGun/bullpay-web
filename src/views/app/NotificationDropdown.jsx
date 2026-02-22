@@ -154,5 +154,5 @@ const unreadDotStyle = {
   width: '10px',
   height: '10px',
   borderRadius: '50%',
-  backgroundColor: '#5f61e6',
+  backgroundColor: 'var(--bs-primary)',
 }

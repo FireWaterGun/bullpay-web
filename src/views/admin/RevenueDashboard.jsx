@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '../../api/admin'
 import LocaleDatePicker from '../../components/LocaleDatePicker'
-import { formatUsdAuto, formatPercent as formatPercentShared, formatChange } from '../../utils/format'
-import CoinImg from '../../components/CoinImg'
+import { formatUsdAuto, formatPercent as formatPercentShared } from '../../utils/format'
+import SummaryCard from './RevenueSummaryCard'
+import RevenueBarChart from './RevenueBarChart'
+import { RevenueByCoinTable, RevenueVolumeSummary } from './RevenueByCoinTable'
 
 const formatCurrency = formatUsdAuto
 const formatPercent = formatPercentShared
@@ -13,7 +15,7 @@ function getDateRange(preset) {
   const now = new Date()
   const to = now.toISOString().split('T')[0]
   let from = to
-  
+
   switch (preset) {
     case 'today':
       from = to
@@ -52,245 +54,6 @@ function getDateRange(preset) {
   return { from, to }
 }
 
-function SummaryCard({ title, value, change, changeLabel, icon, color = 'primary', valueColor }) {
-  const isPositive = change >= 0
-  const changeColor = isPositive ? 'text-success' : 'text-danger'
-  const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
-  
-  return (
-    <div className="col-6 col-xl">
-      <div className="card h-100">
-        <div className="card-body">
-          <div className="d-flex align-items-start justify-content-between">
-            <div className="content-left">
-              <span className="form-label">{title}</span>
-              <div className="d-flex align-items-center">
-                <h4 className={`mb-0 me-2${valueColor ? ` text-${valueColor}` : ''}`}>{value}</h4>
-                {change !== undefined && change !== null && (
-                  <small className={changeColor}>
-                    <i className={`bx ${changeIcon}`}></i>
-                    {typeof change === 'number' ? formatChange(change) : change}{changeLabel && changeLabel !== '%' ? changeLabel : ''}
-                  </small>
-                )}
-              </div>
-            </div>
-            <div className="avatar">
-              <span className={`avatar-initial rounded bg-label-${color}`}>
-                <i className={`bx ${icon} bx-sm`}></i>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function SimpleBarChart({ data, height = 300, locale = 'en-US', t }) {
-  if (!data || data.length === 0) {
-    return (
-      <div className="d-flex align-items-center justify-content-center" style={{ height }}>
-        <span className="text-muted">No data available</span>
-      </div>
-    )
-  }
-
-  const allValues = data.flatMap(d => [d.revenue || 0, d.cost || 0, d.profit || 0])
-  const rawMax = Math.max(...allValues, 0)
-  const rawMin = Math.min(...allValues, 0)
-
-  // Nice tick calculation
-  function niceScale(min, max, ticks = 5) {
-    const range = max - min || 1
-    const roughStep = range / ticks
-    const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
-    const nice = roughStep / mag
-    let step
-    if (nice <= 1.5) step = 1 * mag
-    else if (nice <= 3) step = 2 * mag
-    else if (nice <= 7) step = 5 * mag
-    else step = 10 * mag
-    const niceMin = Math.floor(min / step) * step
-    const niceMax = Math.ceil(max / step) * step
-    const labels = []
-    for (let v = niceMax; v >= niceMin; v -= step) {
-      labels.push(parseFloat(v.toFixed(10)))
-    }
-    return { min: niceMin, max: niceMax, labels, step }
-  }
-
-  const yScale = niceScale(rawMin, rawMax, 5)
-  const yRange = yScale.max - yScale.min || 1
-
-  const padTop = 16
-  const chartH = height - 60
-  const yAxisW = 60
-  const barAreaW = Math.max(data.length * 90, 400)
-  const barGroupW = barAreaW / data.length
-  const barW = Math.min(24, barGroupW * 0.3)
-
-  const yPos = (val) => padTop + (chartH - padTop) - ((val - yScale.min) / yRange) * (chartH - padTop)
-  const zeroY = yPos(0)
-
-  // Profit line - smooth cubic bezier path
-  const profitPath = (() => {
-    const points = data.map((item, i) => ({
-      x: i * barGroupW + barGroupW / 2,
-      y: yPos(item.profit || 0),
-    }))
-    if (points.length < 2) return ''
-    let d = `M ${points[0].x},${points[0].y}`
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1]
-      const curr = points[i]
-      const tension = 0.3
-      const dx = curr.x - prev.x
-      const cp1x = prev.x + dx * tension
-      const cp2x = curr.x - dx * tension
-      d += ` C ${cp1x},${prev.y} ${cp2x},${curr.y} ${curr.x},${curr.y}`
-    }
-    return d
-  })()
-
-  return (
-    <div>
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{ display: 'flex', minWidth: yAxisW + barAreaW + 120 }}>
-          {/* Y-axis */}
-          <div style={{ width: yAxisW, flexShrink: 0, position: 'relative', height: chartH }}>
-            {yScale.labels.map((v, i) => (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v) - 8,
-                  right: 8,
-                  fontSize: '0.72rem',
-                  color: '#888',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {formatUsdAuto(v)}
-              </div>
-            ))}
-          </div>
-          {/* Chart area */}
-          <div style={{ position: 'relative', flex: 1, minWidth: barAreaW, height: chartH }}>
-            {/* Grid lines */}
-            {yScale.labels.map((v, i) => (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v),
-                  left: 0,
-                  right: 0,
-                  borderTop: v === 0 ? '1.5px solid #aaa' : '1px dashed #e5e5e5',
-                }}
-              />
-            ))}
-            {/* Bars */}
-            <svg width={barAreaW} height={chartH} style={{ position: 'absolute', top: 0, left: 0 }}>
-              <defs>
-                <pattern id="costPattern" patternUnits="userSpaceOnUse" width="4" height="4">
-                  <rect width="4" height="4" fill="#a8b8d8" />
-                  <circle cx="2" cy="2" r="1" fill="#8898b8" />
-                </pattern>
-              </defs>
-              {data.map((item, i) => {
-                const cx = i * barGroupW + barGroupW / 2
-                const rev = item.revenue || 0
-                const cost = item.cost || 0
-
-                const revTop = yPos(Math.max(rev, 0))
-                const revBot = zeroY
-                const revH = Math.max(revBot - revTop, rev > 0 ? 2 : 0)
-
-                const costTop = yPos(Math.max(cost, 0))
-                const costBot = zeroY
-                const costH = Math.max(costBot - costTop, cost > 0 ? 2 : 0)
-
-                return (
-                  <g key={i}>
-                    {/* Revenue bar */}
-                    <rect
-                      x={cx - barW - 1}
-                      y={revTop}
-                      width={barW}
-                      height={revH}
-                      rx={2}
-                      fill="#696cff"
-                    >
-                      <title>Revenue: {formatCurrency(rev)}</title>
-                    </rect>
-                    {/* Cost bar */}
-                    <rect
-                      x={cx + 1}
-                      y={costTop}
-                      width={barW}
-                      height={costH}
-                      rx={2}
-                      fill="url(#costPattern)"
-                      stroke="#8898b8"
-                      strokeWidth="0.5"
-                    >
-                      <title>Cost: {formatCurrency(cost)}</title>
-                    </rect>
-                  </g>
-                )
-              })}
-              {/* Profit line (smooth curve) */}
-              <path
-                d={profitPath}
-                fill="none"
-                stroke="#03c3ec"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {/* Profit dots */}
-              {data.map((item, i) => {
-                const cx = i * barGroupW + barGroupW / 2
-                const cy = yPos(item.profit || 0)
-                return (
-                  <circle key={i} cx={cx} cy={cy} r={3} fill="#03c3ec" stroke="#fff" strokeWidth="1.5">
-                    <title>Profit: {formatCurrency(item.profit)}</title>
-                  </circle>
-                )
-              })}
-            </svg>
-          </div>
-          {/* Legend (right side) */}
-          <div style={{ width: 100, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, backgroundColor: '#696cff', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}</small>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(#a8b8d8 0% 25%, #8898b8 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
-              <small>{t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}</small>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
-              <small>{t ? t('admin.operatingProfit', { defaultValue: 'Operating Profit' }) : 'Operating Profit'}</small>
-            </div>
-          </div>
-        </div>
-        {/* X-axis labels */}
-        <div style={{ display: 'flex', marginLeft: yAxisW, width: barAreaW }}>
-          {data.map((item, i) => (
-            <div key={i} style={{ width: barGroupW, flexShrink: 0, textAlign: 'center' }}>
-              <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
-              </small>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function RevenueDashboard() {
   const { t, i18n } = useTranslation()
   const { token } = useAuth()
@@ -299,16 +62,16 @@ export default function RevenueDashboard() {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
     return map[i18n.language] || 'en-US'
   }, [i18n.language])
-  
+
   const [datePreset, setDatePreset] = useState('thisMonth')
   const [customFrom, setCustomFrom] = useState('')
   const [customTo, setCustomTo] = useState('')
   const [showCustom, setShowCustom] = useState(false)
-  
+
   const [summary, setSummary] = useState(null)
   const [dailyData, setDailyData] = useState([])
   const [byCoinData, setByCoinData] = useState([])
-  
+
   const [loadingSummary, setLoadingSummary] = useState(false)
   const [loadingDaily, setLoadingDaily] = useState(false)
   const [loadingByCoin, setLoadingByCoin] = useState(false)
@@ -335,7 +98,7 @@ export default function RevenueDashboard() {
 
     const loadData = async () => {
       setError('')
-      
+
       // Load summary
       setLoadingSummary(true)
       try {
@@ -511,7 +274,7 @@ export default function RevenueDashboard() {
                   </div>
                 </div>
               ) : (
-                <SimpleBarChart data={dailyData} height={280} locale={locale} t={t} />
+                <RevenueBarChart data={dailyData} height={280} locale={locale} t={t} />
               )}
             </div>
           </div>
@@ -519,125 +282,16 @@ export default function RevenueDashboard() {
       </div>
 
       {/* Revenue by Coin Table */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-header">
-              <h5 className="card-title mb-0">
-                {t('admin.revenueByCoin', { defaultValue: 'Revenue by Coin' })}
-              </h5>
-            </div>
-            <div className="card-body p-0">
-              {loadingByCoin ? (
-                <div className="d-flex justify-content-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        <th className="text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.cost', { defaultValue: 'Cost' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}</th>
-                        <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.margin', { defaultValue: 'Margin' })}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {byCoinData.length === 0 ? (
-                        <tr>
-                          <td colSpan="5" className="text-center text-muted py-4">
-                            {t('common.noData', { defaultValue: 'No data available' })}
-                          </td>
-                        </tr>
-                      ) : (
-                        <>
-                          {byCoinData.map((item, index) => {
-                            const revenue = parseFloat(item.revenueUsd || 0)
-                            const cost = parseFloat(item.costUsd || 0)
-                            const profit = parseFloat(item.operatingProfitUsd || 0)
-                            const margin = parseFloat(item.marginPercent || 0)
-                            
-                            return (
-                              <tr key={index}>
-                                <td>
-                                  <div className="d-flex align-items-center">
-                                    <CoinImg symbol={item.coinSymbol} size={24} className="me-2" />
-                                    <span className="fw-medium">{item.coinSymbol}</span>
-                                    {item.networkName && (
-                                      <small className="text-muted ms-1">/ {item.networkName}</small>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="text-end">{formatCurrency(revenue)}</td>
-                                <td className="text-end">{formatCurrency(cost)}</td>
-                                <td className={`text-end ${profit > 0 ? 'text-success' : profit < 0 ? 'text-danger' : ''}`}>
-                                  {formatCurrency(profit)}
-                                </td>
-                                <td className="text-end">{formatPercent(margin)}</td>
-                              </tr>
-                            )
-                          })}
-                          {/* Total row */}
-                          <tr className="table-light fw-bold">
-                            <td>{t('common.total', { defaultValue: 'TOTAL' })}</td>
-                            <td className="text-end">{formatCurrency(totals.revenue)}</td>
-                            <td className="text-end">{formatCurrency(totals.cost)}</td>
-                            <td className={`text-end ${totals.profit > 0 ? 'text-success' : totals.profit < 0 ? 'text-danger' : ''}`}>
-                              {formatCurrency(totals.profit)}
-                            </td>
-                            <td className="text-end">{formatPercent(totals.margin)}</td>
-                          </tr>
-                        </>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <RevenueByCoinTable
+        byCoinData={byCoinData}
+        totals={totals}
+        loading={loadingByCoin}
+        t={t}
+      />
 
       {/* Volume & Counts Summary */}
       {summary && (
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-body py-3">
-                <div className="d-flex flex-wrap justify-content-between gap-3">
-                  <div>
-                    <span className="text-muted me-2">{t('admin.volume', { defaultValue: 'Volume' })}:</span>
-                    <span className="fw-medium me-3">
-                      Sweep {formatCurrency(summary?.totalSweepVolumeUsd || 0)}
-                    </span>
-                    <span className="text-muted">|</span>
-                    <span className="fw-medium ms-3">
-                      Withdrawal {formatCurrency(summary?.totalWithdrawalVolumeUsd || 0)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-muted me-2">{t('admin.counts', { defaultValue: 'Counts' })}:</span>
-                    <span className="fw-medium me-3">
-                      {summary?.counts?.sweeps || 0} sweeps
-                    </span>
-                    <span className="text-muted">|</span>
-                    <span className="fw-medium mx-3">
-                      {summary?.counts?.withdrawals || 0} withdrawals
-                    </span>
-                    <span className="text-muted">|</span>
-                    <span className="fw-medium mx-3">
-                      {summary?.counts?.gasTopups || 0} gas topups
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <RevenueVolumeSummary summary={summary} t={t} />
       )}
     </div>
   )

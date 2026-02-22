@@ -248,15 +248,15 @@ export default function LocaleDateRangePicker({
             zIndex: 1050,
             marginTop: 4,
             width: 300,
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--bs-body-bg)',
             borderRadius: 8,
             boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
             padding: 12,
-            border: '1px solid #e5e5e5',
+            border: '1px solid var(--bs-border-color)',
           }}
         >
           {/* Hint */}
-          <div className="text-center mb-2" style={{ fontSize: '0.75rem', color: '#888' }}>
+          <div className="text-center mb-2" style={{ fontSize: '0.75rem', color: 'var(--bs-secondary-color)' }}>
             {pickHint}
           </div>
 
@@ -273,8 +273,8 @@ export default function LocaleDateRangePicker({
 
           {/* Weekday headers */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', marginBottom: 4 }}>
-            {weekDayHeaders.map((h, i) => (
-              <div key={i} style={{ fontSize: '0.75rem', fontWeight: 600, color: '#888', padding: '2px 0' }}>
+            {weekDayHeaders.map((h) => (
+              <div key={h} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--bs-secondary-color)', padding: '2px 0' }}>
                 {h}
               </div>
             ))}
@@ -291,29 +291,29 @@ export default function LocaleDateRangePicker({
               const isTodayCell = item.date === todayStr
 
               let bgColor = 'transparent'
-              let textColor = !item.current || isDisabled ? '#ccc' : '#333'
+              let textColor = !item.current || isDisabled ? 'var(--bs-tertiary-color)' : 'var(--bs-body-color)'
               let fontWeight = 400
               let borderRadius = '6px'
 
               if (rangeStart || rangeEnd) {
-                bgColor = '#696cff'
-                textColor = '#fff'
+                bgColor = 'var(--bs-primary)'
+                textColor = 'var(--bs-white)'
                 fontWeight = 600
                 borderRadius = rangeStart && rangeEnd ? '6px' : rangeStart ? '6px 0 0 6px' : '0 6px 6px 0'
               } else if (inRange) {
-                bgColor = 'rgba(105, 108, 255, 0.12)'
-                textColor = '#696cff'
+                bgColor = 'rgba(var(--bs-primary-rgb), 0.12)'
+                textColor = 'var(--bs-primary)'
                 borderRadius = '0'
               }
 
               if (!inRange && !rangeStart && !rangeEnd && isTodayCell && item.current) {
-                textColor = '#696cff'
+                textColor = 'var(--bs-primary)'
                 fontWeight = 600
               }
 
               return (
                 <div
-                  key={i}
+                  key={item.date || `empty-${i}`}
                   onClick={() => isClickable && handleDayClick(item.date)}
                   onMouseEnter={() => { if (isClickable && pickPhase === 'start') setHoverDate(item.date) }}
                   onMouseLeave={() => { if (pickPhase === 'start') setHoverDate(null) }}
@@ -335,7 +335,7 @@ export default function LocaleDateRangePicker({
           </div>
 
           {/* Footer */}
-          <div className="d-flex justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid #eee' }}>
+          <div className="d-flex justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid var(--bs-border-color)' }}>
             <button
               type="button"
               className="btn btn-sm text-muted p-0"

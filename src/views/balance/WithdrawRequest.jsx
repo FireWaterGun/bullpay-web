@@ -5,24 +5,14 @@ import { useAuth } from '../../context/AuthContext'
 import { listAllWallets } from '../../api/wallets'
 import { getBalancesWithFiat } from '../../api/balance'
 import { createWithdrawal, estimateWithdrawalFee } from '../../api/withdrawals'
-import ConfirmModal from '../../components/ConfirmModal'
 import Verify2FAModal from '../../components/Verify2FAModal'
 import use2FAStatus from '../../hooks/use2FAStatus'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import { formatCoinAmount } from '../../utils/format'
-import { copyToClipboard } from '../../utils/clipboard'
 import CoinImg from '../../components/CoinImg'
+import WithdrawFeeBreakdown from './WithdrawFeeBreakdown'
+import { SuccessModalWrapper, ErrorModalWrapper } from './WithdrawRequestModals'
 
-
-function fromRaw(rawValue, decimals) {
-  if (!rawValue || !decimals) return '0'
-  try {
-    // Return string directly from AmountNormalizer - no Number conversion to avoid precision loss
-    return AmountNormalizer.fromRawSimple(rawValue, decimals)
-  } catch {
-    return '0'
-  }
-}
 
 export default function WithdrawRequest() {
   const { t } = useTranslation()
@@ -47,21 +37,18 @@ export default function WithdrawRequest() {
   const [amountError, setAmountError] = useState('')
   const [show2FAModal, setShow2FAModal] = useState(false)
 
-  // Check if user has 2FA enabled
-  const { isEnabled: is2FAEnabled, isLoading: is2FALoading, status: twoFAStatus } = use2FAStatus()
-  
+  const { isEnabled: is2FAEnabled, isLoading: is2FALoading } = use2FAStatus()
+
   useEffect(() => {
     let mounted = true
       ; (async () => {
         try {
           setLoading(true)
-          // Call balance API with coinNetworkId to get coin and network data in one request
           const [balRes, walletList] = await Promise.all([
             getBalancesWithFiat(token, undefined, coinNetworkId),
             listAllWallets(token, 100, coinNetworkId),
           ])
           if (!mounted) return
-          // Get the first balance item (should be the only one since we filtered by coinNetworkId)
           const balanceItem = Array.isArray(balRes?.breakdown) && balRes.breakdown.length > 0
             ? balRes.breakdown[0]
             : null
@@ -76,12 +63,9 @@ export default function WithdrawRequest() {
     return () => { mounted = false }
   }, [token, coinNetworkId])
 
-  // Initialize Bootstrap tooltips
   useEffect(() => {
-    // Initialize all tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltips = Array.from(tooltipTriggerList).map(tooltipTriggerEl => {
-      // Check if bootstrap is available
       if (window.bootstrap && window.bootstrap.Tooltip) {
         return new window.bootstrap.Tooltip(tooltipTriggerEl, {
           delay: { show: 100, hide: 0 }
@@ -89,28 +73,24 @@ export default function WithdrawRequest() {
       }
       return null
     }).filter(Boolean)
-    
-    // Cleanup tooltips on unmount
+
     return () => {
       tooltips.forEach(tooltip => tooltip.dispose())
     }
   }, [feeEstimate])
 
-  // Extract coin and network info from balance response
   const coin = balance?.coin
   const network = balance?.network
   const sym = (coin?.symbol || 'COIN').toUpperCase()
   const networkSym = (network?.symbol || '').toUpperCase()
   const networkLabel = network?.name || 'Network'
 
-  // Get available balance from the balance object
   const available = useMemo(() => {
     if (!balance) return 0
     const decimals = Number(balance?.decimals || 8)
-    // Use only availableBalance
     const rawValue = balance?.availableBalanceRaw
     if (rawValue) {
-      return Number(fromRaw(rawValue, decimals))
+      return Number(AmountNormalizer.fromRawSimple(rawValue, decimals)) || 0
     }
     return Number(balance?.availableBalance || 0) || 0
   }, [balance])
@@ -127,7 +107,6 @@ export default function WithdrawRequest() {
     }
   }, [matchingWallets, address])
 
-  // Prefill amount from the selected wallet's balance if available
   const selectedWallet = useMemo(() => {
     if (address) return matchingWallets.find(w => (w.address || '') === address) || null
     return matchingWallets[0] || null
@@ -135,12 +114,9 @@ export default function WithdrawRequest() {
 
   const decimals = Number(balance?.decimals || 8)
   const amountNum = Number(amount) || 0
-  const outcome = Math.max(available - amountNum, 0)
 
-  // Require valid fee estimate and 2FA status loaded before allowing submission
   const canSubmit = amountNum > 0 && amountNum <= available && address.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee && !is2FALoading
 
-  // Execute the actual withdrawal
   const executeWithdrawal = async (twoFactorCode) => {
     if (!balance || !address || !amount || !selectedWallet?.id || !feeEstimate) return
     try {
@@ -164,18 +140,15 @@ export default function WithdrawRequest() {
   const onConfirm = async (e) => {
     e.preventDefault()
     if (!balance || !address || !amount || !selectedWallet?.id || !feeEstimate) return
-    
-    // If 2FA is enabled, show modal to collect code
+
     if (is2FAEnabled) {
       setShow2FAModal(true)
       return
     }
-    
-    // Otherwise, proceed directly
+
     await executeWithdrawal()
   }
 
-  // Handle 2FA code submission - pass code directly to withdrawal
   const handle2FASuccess = async (code) => {
     setShow2FAModal(false)
     await executeWithdrawal(code)
@@ -187,14 +160,12 @@ export default function WithdrawRequest() {
   }, [selectedWallet])
 
   useEffect(() => {
-    // Only prefill when the field is empty or zero to avoid overriding user input
     if (amount === '' || Number(amount) === 0) {
       const fill = walletAvailable > 0 ? walletAvailable : available
       if (fill > 0) setAmount(String(fill))
     }
   }, [walletAvailable, available])
 
-  // Estimate fee when amount changes
   useEffect(() => {
     if (!coinNetworkId || !amount || Number(amount) <= 0) {
       setFeeEstimate(null)
@@ -214,7 +185,6 @@ export default function WithdrawRequest() {
       } catch (e) {
         if (mounted) {
           setFeeEstimate(null)
-          // Extract error message from API response
           const errMsg = e?.error?.message || e?.message || 'Failed to estimate fee'
           setFeeError(errMsg)
         }
@@ -223,7 +193,7 @@ export default function WithdrawRequest() {
           setEstimatingFee(false)
         }
       }
-    }, 500) // Debounce 500ms
+    }, 500)
 
     return () => {
       mounted = false
@@ -233,7 +203,6 @@ export default function WithdrawRequest() {
 
   const closeSuccess = () => {
     setSuccessOpen(false)
-    // Wait for modal to fully close and cleanup before navigating
     setTimeout(() => {
       navigate('/wallet/withdrawals', { replace: true })
     }, 300)
@@ -254,7 +223,6 @@ export default function WithdrawRequest() {
         ) : !balance ? (
           <div className="alert alert-warning" role="alert">{t('common.noData') || 'Not found'}</div>
         ) : !is2FALoading && !is2FAEnabled ? (
-          // 2FA not enabled - show warning card
           <div className="card mx-auto" style={{ maxWidth: 520 }}>
             <div className="card-body text-center py-5">
               <div className="mb-4">
@@ -324,24 +292,23 @@ export default function WithdrawRequest() {
                   <div className="mb-3">
                     <label className="form-label">{t('balance.amount', { defaultValue: 'Amount' })}</label>
                     <div className="position-relative">
-                      <input 
-                        type="number" 
-                        min="0" 
+                      <input
+                        type="number"
+                        min="0"
                         max={available}
-                        step={1 / Math.pow(10, Math.min(decimals, 8))} 
-                        className="form-control form-control-lg" 
-                        value={amount} 
+                        step={1 / Math.pow(10, Math.min(decimals, 8))}
+                        className="form-control form-control-lg"
+                        value={amount}
                         onChange={(e) => {
                           const value = e.target.value
                           const numValue = Number(value)
-                          // Allow empty string or values within range
                           if (value === '' || (numValue >= 0 && numValue <= available)) {
                             setAmount(value)
                             setAmountError('')
                           } else if (numValue > available) {
                             setAmountError(t('balance.amountExceedsBalance', { defaultValue: 'Amount exceeds available balance' }))
                           }
-                        }} 
+                        }}
                         placeholder="0.0"
                         style={{ paddingRight: '80px' }}
                       />
@@ -365,56 +332,7 @@ export default function WithdrawRequest() {
                     )}
                   </div>
 
-                  {/* Fee breakdown */}
-                  {feeEstimate && (
-                    <div className="mb-3">
-                      <div className="border rounded-3 p-3">
-                        <div className="small text-muted mb-2">{t('balance.feeBreakdown', { defaultValue: 'Fee Breakdown' })}</div>
-                        <div className="d-flex justify-content-between mb-2">
-                          <span className="small">{t('balance.withdrawAmount', { defaultValue: 'Withdraw amount' })}</span>
-                          <span className="small fw-medium">{feeEstimate.display?.grossAmount || feeEstimate.display?.amount || `${formatCoinAmount(fromRaw(feeEstimate.amountRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
-                        </div>
-                        <div className="d-flex justify-content-between mb-2">
-                          <span className="small">{t('balance.networkFee', { defaultValue: 'Network fee' })}</span>
-                          <span className="small">{feeEstimate.display?.baseFee || `${formatCoinAmount(fromRaw(feeEstimate.baseFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
-                        </div>
-                        <div className="d-flex justify-content-between mb-2">
-                          <span className="small">{t('balance.platformFee', { defaultValue: 'Platform fee' })} ({feeEstimate.display?.percentFeeText || `${feeEstimate.feePercentage}%`})</span>
-                          <span className="small">{feeEstimate.display?.percentFee || `${formatCoinAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
-                        </div>
-                        <div className="d-flex justify-content-between mb-2 pt-2 border-top">
-                          <span className="small">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
-                          <div className="text-end">
-                            <div className="small fw-medium">{feeEstimate.display?.totalFee || `${formatCoinAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
-                            {feeEstimate.displayUsd?.totalFeeUsd && (
-                              <div className="text-muted" style={{ fontSize: '0.75rem' }}>≈ {feeEstimate.displayUsd.totalFeeUsd}</div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {feeEstimate && (
-                          <div className="d-flex justify-content-between mb-0 pt-2 border-top">
-                            <span className="small text-muted d-flex align-items-center">
-                              {t('balance.total', { defaultValue: 'Total' })}
-                              <i 
-                                className="bx bx-info-circle ms-1" 
-                                style={{ cursor: 'pointer' }}
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                data-bs-title={t('balance.totalTooltip', { defaultValue: 'Amount you will receive after fees' })}
-                              ></i>
-                            </span>
-                            <div className="text-end">
-                              <div className="fw-semibold">{feeEstimate.display?.netAmount || `${formatCoinAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
-                              {feeEstimate.displayUsd?.netAmountUsd && (
-                                <div className="text-muted" style={{ fontSize: '0.75rem' }}>≈ {feeEstimate.displayUsd.netAmountUsd}</div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <WithdrawFeeBreakdown feeEstimate={feeEstimate} sym={sym} t={t} />
 
                   {estimatingFee && !feeEstimate && (
                     <div className="mb-3 text-center">
@@ -447,8 +365,7 @@ export default function WithdrawRequest() {
       </div>
       <SuccessModalWrapper open={successOpen} onClose={closeSuccess} receiveAmount={feeEstimate?.display?.netAmount || amount} sym={sym} address={address} networkName={networkLabel} t={t} />
       <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
-      
-      {/* 2FA Verification Modal */}
+
       <Verify2FAModal
         show={show2FAModal}
         onClose={() => setShow2FAModal(false)}
@@ -458,124 +375,5 @@ export default function WithdrawRequest() {
         skipVerify={true}
       />
     </div>
-  )
-}
-
-// Success modal
-// Show a simple success message and navigate back to withdrawals on close or confirm
-export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address, networkName, t }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = async () => {
-    if (!address) return
-    const ok = await copyToClipboard(address)
-    if (ok) {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
-  }
-
-  if (!open) return null
-
-  return (
-    <>
-      {/* Modal backdrop */}
-      <div className="modal-backdrop fade show" style={{ opacity: 0.5 }}></div>
-      <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '600px' }}>
-          <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '16px' }}>
-            <div className="modal-body text-center px-4 py-5">
-              {/* Success Icon */}
-              <div className="my-4">
-                <div className="rounded-circle d-inline-flex align-items-center justify-content-center"
-                  style={{ width: '80px', height: '80px', backgroundColor: '#C6F432' }}>
-                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                    <path d="M8 20L17 29L32 11" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Amount Display */}
-              <div className="mb-3">
-                <div className="text-secondary" style={{ fontSize: '0.9rem' }}>
-                  {t('balance.recipientAmount', { defaultValue: 'Recipient Amount' })}
-                </div>
-                <div className="fw-bold" style={{ fontSize: '1.75rem' }}>
-                  {receiveAmount}
-                </div>
-              </div>
-
-              <p className="text-secondary mb-1" style={{ fontSize: '0.9rem' }}>
-                {t('balance.withdrawalNote', {
-                  defaultValue: 'Please note that you will receive an email once it is completed.'
-                })}
-              </p>
-              <p className="text-secondary mb-4" style={{ fontSize: '0.9rem' }}>
-                {t('balance.withdrawalProcessTime', {
-                  defaultValue: 'Withdrawals are typically processed within 24 hours.'
-                })}
-              </p>
-
-              {/* Details Section */}
-              <div className="text-start mb-4" style={{ borderRadius: '12px', padding: '20px', border: '1px solid #e9ecef' }}>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="text-secondary" style={{ fontSize: '0.9rem' }}>{t('balance.address', { defaultValue: 'Address' })}</span>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="font-monospace fw-medium" style={{ fontSize: '0.9rem' }}>{address || '-'}</span>
-                    <button 
-                      type="button" 
-                      className="btn btn-sm btn-link p-0" 
-                      onClick={handleCopy}
-                      title={copied ? t('common.copied', { defaultValue: 'Copied!' }) : t('common.copy', { defaultValue: 'Copy' })}
-                    >
-                      <i className={`bx ${copied ? 'bx-check text-success' : 'bx-copy'}`} style={{ fontSize: '1.1rem' }}></i>
-                    </button>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="text-secondary" style={{ fontSize: '0.9rem' }}>{t('balance.network', { defaultValue: 'Network' })}</span>
-                  <span className="fw-medium" style={{ fontSize: '0.9rem' }}>{networkName}</span>
-                </div>
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className="text-secondary" style={{ fontSize: '0.9rem' }}>{t('balance.coin', { defaultValue: 'Coin' })}</span>
-                  <span className="fw-medium" style={{ fontSize: '0.9rem' }}>{sym}</span>
-                </div>
-              </div>
-
-              {/* Button */}
-              <button
-                type="button"
-                className="btn btn-primary w-100 py-2 fw-semibold"
-                onClick={onClose}
-                style={{ borderRadius: '8px' }}
-              >
-                {t('actions.ok', { defaultValue: 'OK' })}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
-// Error modal
-export function ErrorModalWrapper({ open, onClose, message, t }) {
-  return (
-    <ConfirmModal
-      show={open}
-      title={t('balance.withdrawErrorTitle', { defaultValue: 'Withdrawal Failed' })}
-      message={(
-        <div>
-          {message || t('balance.withdrawErrorMsg', { defaultValue: 'Failed to process withdrawal request.' })}
-        </div>
-      )}
-      confirmText={t('actions.ok', { defaultValue: 'OK' })}
-      cancelText={t('actions.cancel', { defaultValue: 'Cancel' })}
-      onConfirm={onClose}
-      onCancel={onClose}
-      variant="basic"
-      confirmVariant="danger"
-    />
   )
 }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getLedgerEntries } from '../../api/admin.ts'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
-import { formatCoinAmount } from '../../utils/format'
+import { formatCoinAmount, formatDate } from '../../utils/format'
 import CoinImg from '../../components/CoinImg'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
 
@@ -70,18 +70,6 @@ export default function LedgerTransactions() {
     return typeMap[type.toLowerCase()] || String(type).replace(/_/g, ' ').toUpperCase()
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    
-    return `${day}/${month}/${year} ${hours}:${minutes}`
-  }
 
   function typeBadgeClass(type) {
     const v = String(type || '').toLowerCase()

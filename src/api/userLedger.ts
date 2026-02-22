@@ -13,6 +13,7 @@ export async function getMyLedgerEntries(
     entryType?: string
     entryCode?: string
     state?: string
+    txHash?: string
     startDate?: string
     endDate?: string
   } = {}
@@ -25,6 +26,7 @@ export async function getMyLedgerEntries(
   if (params.entryType) qp.append('entryType', params.entryType)
   if (params.entryCode) qp.append('entryCode', params.entryCode)
   if (params.state) qp.append('state', params.state)
+  if (params.txHash) qp.append('txHash', params.txHash)
   if (params.startDate) qp.append('startDate', params.startDate)
   if (params.endDate) qp.append('endDate', params.endDate)
 

@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next'
 import { useToastContext } from '../../context/ToastContext'
 import { getWithdrawalById } from '../../api/withdrawals'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
-import { formatCoinAmount, formatUsd } from '../../utils/format'
+import { formatCoinAmount, formatUsd, formatDate } from '../../utils/format'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
 import CoinImg from '../../components/CoinImg'
+import WithdrawalTransactionCard from './WithdrawalTransactionCard'
 
 export default function WithdrawalDetail() {
   const { t } = useTranslation()
@@ -46,17 +47,6 @@ export default function WithdrawalDetail() {
     }
   }
 
-  function formatDate(dateString) {
-    if (!dateString) return 'N/A'
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${day}/${month}/${year} ${hours}:${minutes}`
-  }
-
   async function handleCopy(text) {
     const ok = await copyText(text)
     if (ok) {
@@ -92,7 +82,7 @@ export default function WithdrawalDetail() {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
-          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: '#aaa' }}></i>
+          <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">{t('withdrawal.notFound', { defaultValue: 'Withdrawal not found' })}</p>
           <button className="btn btn-primary" onClick={() => navigate(-1)}>
             {t('actions.back', { defaultValue: 'Back' })}
@@ -294,116 +284,11 @@ export default function WithdrawalDetail() {
 
             {/* Transaction & Addresses */}
             <div className="col-md-6">
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0">
-                    <i className="bx bx-link me-2"></i>
-                    {t('withdrawal.transaction', { defaultValue: 'Transaction' })}
-                  </h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</td>
-                        <td>
-                          {withdrawal.txHash ? (
-                            <>
-                              <code className="text-break" style={{ fontSize: '0.75rem' }}>{withdrawal.txHash}</code>
-                              <div className="d-flex gap-1 mt-2">
-                                {explorerUrl && (
-                                  <a
-                                    href={`${explorerUrl}/tx/${withdrawal.txHash}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                  >
-                                    <i className="bx bx-link-external me-1"></i>Explorer
-                                  </a>
-                                )}
-                                <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handleCopy(withdrawal.txHash)}
-                                >
-                                  <i className="bx bx-copy me-1"></i>Copy
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <span className="text-muted">-</span>
-                          )}
-                        </td>
-                      </tr>
-                      {withdrawal.blockNumber && (
-                        <tr>
-                          <td className="text-muted">Block Number</td>
-                          <td>{withdrawal.blockNumber}</td>
-                        </tr>
-                      )}
-                      <tr>
-                        <td className="text-muted">{t('withdrawal.fromAddress', { defaultValue: 'From Address' })}</td>
-                        <td>
-                          {withdrawal.fromAddress ? (
-                            <>
-                              <code className="text-break" style={{ fontSize: '0.75rem' }}>{withdrawal.fromAddress}</code>
-                              <div className="d-flex gap-1 mt-2">
-                                {explorerUrl && (
-                                  <a
-                                    href={`${explorerUrl}/address/${withdrawal.fromAddress}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                  >
-                                    <i className="bx bx-link-external me-1"></i>Explorer
-                                  </a>
-                                )}
-                                <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handleCopy(withdrawal.fromAddress)}
-                                >
-                                  <i className="bx bx-copy me-1"></i>Copy
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted">{t('withdrawal.toAddress', { defaultValue: 'To Address' })}</td>
-                        <td>
-                          {withdrawal.toAddress ? (
-                            <>
-                              <code className="text-break" style={{ fontSize: '0.75rem' }}>{withdrawal.toAddress}</code>
-                              <div className="d-flex gap-1 mt-2">
-                                {explorerUrl && (
-                                  <a
-                                    href={`${explorerUrl}/address/${withdrawal.toAddress}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
-                                  >
-                                    <i className="bx bx-link-external me-1"></i>Explorer
-                                  </a>
-                                )}
-                                <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handleCopy(withdrawal.toAddress)}
-                                >
-                                  <i className="bx bx-copy me-1"></i>Copy
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <span className="text-muted">N/A</span>
-                          )}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <WithdrawalTransactionCard
+                withdrawal={withdrawal}
+                explorerUrl={explorerUrl}
+                onCopy={handleCopy}
+              />
 
               {/* Timestamps */}
               <div className="card mb-4">

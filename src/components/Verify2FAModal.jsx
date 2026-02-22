@@ -163,7 +163,7 @@ export default function Verify2FAModal({
               <div className="d-flex justify-content-center gap-2 mb-3" onPaste={handlePaste}>
                 {[0, 1, 2, 3, 4, 5].map((i) => (
                   <input
-                    key={i}
+                    key={`digit-${i}`}
                     ref={(el) => (inputRefs.current[i] = el)}
                     type="text"
                     inputMode="numeric"

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getSweepSettings, updateSweepSetting } from '../../api/admin'
 import { useToastContext } from '../../context/ToastContext'
+import SweepScanningSettings from './SweepScanningSettings'
+import SweepReconciliationSettings from './SweepReconciliationSettings'
 
 export default function Sweep() {
   const { t } = useTranslation()
@@ -315,175 +317,17 @@ export default function Sweep() {
                     </small>
                   </div>
 
-                  {/* Section: Scanning Settings */}
-                  <div className="col-12 mt-5">
-                    <hr className="my-4" />
-                    <h6 className="text-primary mb-4">
-                      {t('admin.sweep.scanningSettings', { defaultValue: 'Scanning Settings' })}
-                    </h6>
-                  </div>
+                  <SweepScanningSettings
+                    formData={formData}
+                    handleNestedChange={handleNestedChange}
+                    validateNumberInput={validateNumberInput}
+                  />
 
-                  {/* Max Discover Per Run */}
-                  <div className="col-md-4">
-                    <label htmlFor="maxDiscoverPerRun" className="form-label">
-                      {t('admin.sweep.maxDiscoverPerRun', { defaultValue: 'Max Discover/Run' })}
-                    </label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="maxDiscoverPerRun"
-                      placeholder="10"
-                      min="1"
-                      value={formData.batchProcessingLimits.maxDiscoverPerRun || ''}
-                      onChange={(e) => handleNestedChange('batchProcessingLimits', 'maxDiscoverPerRun', parseInt(e.target.value) || '')}
-                      onInput={validateNumberInput}
-                    />
-                    <small className="text-muted">
-                      {t('admin.sweep.maxDiscoverPerRunHelp', { defaultValue: 'Max wallets to discover' })}
-                    </small>
-                  </div>
-
-                  {/* Max Pending Per Run */}
-                  <div className="col-md-4">
-                    <label htmlFor="maxPendingPerRun" className="form-label">
-                      {t('admin.sweep.maxPendingPerRun', { defaultValue: 'Max Pending/Run' })}
-                    </label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="maxPendingPerRun"
-                      placeholder="50"
-                      min="1"
-                      value={formData.batchProcessingLimits.maxPendingPerRun || ''}
-                      onChange={(e) => handleNestedChange('batchProcessingLimits', 'maxPendingPerRun', parseInt(e.target.value) || '')}
-                      onInput={validateNumberInput}
-                    />
-                    <small className="text-muted">
-                      {t('admin.sweep.maxPendingPerRunHelp', { defaultValue: 'Max pending to process' })}
-                    </small>
-                  </div>
-
-                  {/* Max Unlock Per Run */}
-                  <div className="col-md-4">
-                    <label htmlFor="maxUnlockPerRun" className="form-label">
-                      {t('admin.sweep.maxUnlockPerRun', { defaultValue: 'Max Unlock/Run' })}
-                    </label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="maxUnlockPerRun"
-                      placeholder="100"
-                      min="1"
-                      value={formData.batchProcessingLimits.maxUnlockPerRun || ''}
-                      onChange={(e) => handleNestedChange('batchProcessingLimits', 'maxUnlockPerRun', parseInt(e.target.value) || '')}
-                      onInput={validateNumberInput}
-                    />
-                    <small className="text-muted">
-                      {t('admin.sweep.maxUnlockPerRunHelp', { defaultValue: 'Max wallets to unlock' })}
-                    </small>
-                  </div>
-
-                  {/* Section: Reconciliation Settings */}
-                  <div className="col-12 mt-5">
-                    <hr className="my-4" />
-                    <h6 className="text-primary mb-4">
-                      {t('admin.sweep.reconciliationSettings', { defaultValue: 'Reconciliation' })}
-                    </h6>
-                  </div>
-
-                  {/* Stale Minutes */}
-                  <div className="col-md-3">
-                    <label htmlFor="staleMinutes" className="form-label">
-                      {t('admin.sweep.staleMinutes', { defaultValue: 'Stale Minutes' })}
-                    </label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="staleMinutes"
-                      placeholder="2"
-                      min="1"
-                      value={formData.staleTransactionChecker.staleMinutes || ''}
-                      onChange={(e) => handleNestedChange('staleTransactionChecker', 'staleMinutes', parseInt(e.target.value) || '')}
-                      onInput={validateNumberInput}
-                    />
-                    <small className="text-muted">
-                      {t('admin.sweep.staleMinutesHelp', { defaultValue: 'When tx is stale' })}
-                    </small>
-                  </div>
-
-                  {/* Max Per Run */}
-                  <div className="col-md-3">
-                    <label htmlFor="reconciliationMaxPerRun" className="form-label">
-                      {t('admin.sweep.maxPerRun', { defaultValue: 'Max/Run' })}
-                    </label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="reconciliationMaxPerRun"
-                      placeholder="50"
-                      min="1"
-                      value={formData.staleTransactionChecker.maxPerRun || ''}
-                      onChange={(e) => handleNestedChange('staleTransactionChecker', 'maxPerRun', parseInt(e.target.value) || '')}
-                      onInput={validateNumberInput}
-                    />
-                    <small className="text-muted">
-                      {t('admin.sweep.maxPerRunHelp', { defaultValue: 'Batch size limit' })}
-                    </small>
-                  </div>
-
-                  {/* Jitter Min */}
-                  <div className="col-md-3">
-                    <label htmlFor="jitterMin" className="form-label">
-                      {t('admin.sweep.jitterMin', { defaultValue: 'Jitter Min (ms)' })}
-                    </label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="jitterMin"
-                      placeholder="5000"
-                      min="0"
-                      step="1000"
-                      value={formData.staleTransactionChecker.jitterMs?.min || ''}
-                      onChange={(e) => {
-                        const newJitterMs = { ...formData.staleTransactionChecker.jitterMs, min: parseInt(e.target.value) || 0 }
-                        setFormData(prev => ({
-                          ...prev,
-                          staleTransactionChecker: { ...prev.staleTransactionChecker, jitterMs: newJitterMs }
-                        }))
-                      }}
-                      onInput={validateNumberInput}
-                    />
-                    <small className="text-muted">
-                      {t('admin.sweep.jitterMinHelp', { defaultValue: 'Min delay' })}
-                    </small>
-                  </div>
-
-                  {/* Jitter Max */}
-                  <div className="col-md-3">
-                    <label htmlFor="jitterMax" className="form-label">
-                      {t('admin.sweep.jitterMax', { defaultValue: 'Jitter Max (ms)' })}
-                    </label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="jitterMax"
-                      placeholder="20000"
-                      min="0"
-                      step="1000"
-                      value={formData.staleTransactionChecker.jitterMs?.max || ''}
-                      onChange={(e) => {
-                        const newJitterMs = { ...formData.staleTransactionChecker.jitterMs, max: parseInt(e.target.value) || 0 }
-                        setFormData(prev => ({
-                          ...prev,
-                          staleTransactionChecker: { ...prev.staleTransactionChecker, jitterMs: newJitterMs }
-                        }))
-                      }}
-                      onInput={validateNumberInput}
-                    />
-                    <small className="text-muted">
-                      {t('admin.sweep.jitterMaxHelp', { defaultValue: 'Max delay' })}
-                    </small>
-                  </div>
+                  <SweepReconciliationSettings
+                    formData={formData}
+                    setFormData={setFormData}
+                    validateNumberInput={validateNumberInput}
+                  />
 
                   {/* Action Buttons */}
                   <div className="col-12 mt-5">

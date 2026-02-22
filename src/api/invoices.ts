@@ -11,6 +11,7 @@ export interface ListInvoicesParams {
   q?: string
   status?: string
   currency?: string
+  coinNetworkId?: number | string
   minAmount?: string | number
   maxAmount?: string | number
   dateFrom?: string // ISO or yyyy-mm-dd
@@ -37,6 +38,7 @@ export async function listInvoices(params: ListInvoicesParams = {}, token?: unkn
     q,
     status,
     currency,
+    coinNetworkId,
     minAmount,
     maxAmount,
     dateFrom,
@@ -51,6 +53,7 @@ export async function listInvoices(params: ListInvoicesParams = {}, token?: unkn
   if (q) qs.set('q', q)
   if (status) qs.set('status', status)
   if (currency) qs.set('currency', currency)
+  if (coinNetworkId !== undefined && coinNetworkId !== null && `${coinNetworkId}` !== '') qs.set('coinNetworkId', String(coinNetworkId))
   if (minAmount !== undefined && minAmount !== null && `${minAmount}` !== '') qs.set('minAmount', String(minAmount))
   if (maxAmount !== undefined && maxAmount !== null && `${maxAmount}` !== '') qs.set('maxAmount', String(maxAmount))
   if (dateFrom) qs.set('dateFrom', dateFrom)

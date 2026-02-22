@@ -9,7 +9,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:bp": "node scripts/check-best-practices.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

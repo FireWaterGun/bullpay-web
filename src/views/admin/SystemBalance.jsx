@@ -7,6 +7,7 @@ import { getSystemWalletStats } from '../../api/admin.ts'
 import { formatAmount, formatUsd, formatCoinAmount } from '../../utils/format'
 import { AmountNormalizer } from '../../utils/amount_normalizer'
 import CoinImg from '../../components/CoinImg'
+import { copyToClipboard } from '../../utils/clipboard'
 
 export default function SystemBalance() {
   const { t } = useTranslation()
@@ -20,7 +21,7 @@ export default function SystemBalance() {
 
   const copyAddress = async (address) => {
     try {
-      await navigator.clipboard.writeText(address)
+      await copyToClipboard(address)
       setCopiedAddress(address)
       setTimeout(() => setCopiedAddress(null), 2000)
       toast.success(t('actions.copied', { defaultValue: 'Address copied to clipboard' }))

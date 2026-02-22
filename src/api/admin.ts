@@ -748,6 +748,8 @@ export async function getWithdrawals(
     userId?: string
     coinNetworkId?: number
     search?: string
+    startDate?: string
+    endDate?: string
   } = {}
 ) {
   const queryParams = new URLSearchParams()
@@ -758,6 +760,8 @@ export async function getWithdrawals(
   if (params.userId) queryParams.append('userId', params.userId)
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
   if (params.search) queryParams.append('search', params.search)
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
 
   const queryString = queryParams.toString()
   const url = `/api/v1/admin/withdrawals${queryString ? `?${queryString}` : ''}`
@@ -962,6 +966,7 @@ export async function getUserLedgerEntries(
     coinNetworkId?: number
     entryCode?: string
     state?: string
+    txHash?: string
     startDate?: string
     endDate?: string
   } = {}
@@ -975,6 +980,7 @@ export async function getUserLedgerEntries(
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
   if (params.entryCode) queryParams.append('entryCode', params.entryCode)
   if (params.state) queryParams.append('state', params.state)
+  if (params.txHash) queryParams.append('txHash', params.txHash)
   if (params.startDate) queryParams.append('startDate', params.startDate)
   if (params.endDate) queryParams.append('endDate', params.endDate)
 
@@ -1782,6 +1788,105 @@ export async function upsertSetting(
       Authorization: `Bearer ${token}`,
     },
     body: payload,
+  })
+  return response?.data || response
+}
+
+// ============================================================
+// Admin Roles & Role Permissions (RBAC)
+// ============================================================
+
+/**
+ * Get all roles (Admin only)
+ */
+export async function getAdminRoles(token: string) {
+  const response = await apiFetch('/api/v1/admin/roles', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * Get role stats — user count per role (Admin only)
+ */
+export async function getAdminRoleStats(token: string) {
+  const response = await apiFetch('/api/v1/admin/roles/stats', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * Get resolved permissions for a role (Admin only)
+ * @param role - lowercase role name (e.g. 'admin', 'support_agent')
+ */
+export async function getRolePermissions(token: string, role: string) {
+  const response = await apiFetch(`/api/v1/admin/roles/${role}/permissions`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * Get permission overrides for a role (Admin only)
+ */
+export async function getRolePermissionOverrides(token: string, role: string) {
+  const response = await apiFetch(`/api/v1/admin/roles/${role}/permissions/overrides`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * Grant a permission to a role (Admin only)
+ */
+export async function grantRolePermission(token: string, role: string, permission: string, reason?: string) {
+  const body: Record<string, string> = { permission }
+  if (reason) body.reason = reason
+  const response = await apiFetch(`/api/v1/admin/roles/${role}/permissions/grant`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body,
+  })
+  return response?.data || response
+}
+
+/**
+ * Deny a permission for a role (Admin only)
+ */
+export async function denyRolePermission(token: string, role: string, permission: string, reason?: string) {
+  const body: Record<string, string> = { permission }
+  if (reason) body.reason = reason
+  const response = await apiFetch(`/api/v1/admin/roles/${role}/permissions/deny`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body,
+  })
+  return response?.data || response
+}
+
+/**
+ * Delete a single permission override (Admin only)
+ */
+export async function deleteRolePermissionOverride(token: string, role: string, overrideId: number) {
+  const response = await apiFetch(`/api/v1/admin/roles/${role}/permissions/overrides/${overrideId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * Reset all permission overrides for a role (Admin only)
+ */
+export async function resetRolePermissionOverrides(token: string, role: string) {
+  const response = await apiFetch(`/api/v1/admin/roles/${role}/permissions/overrides`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
   })
   return response?.data || response
 }

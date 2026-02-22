@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { getCoinById, createCoin, updateCoin, deleteCoin } from '../../api/admin.ts'
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal'
+import ErrorModal from '../../components/modals/ErrorModal'
 import { useToastContext } from '../../context/ToastContext'
 
 export default function CoinForm() {
@@ -386,37 +387,11 @@ export default function CoinForm() {
         itemDetails={`- ${formData.name}`}
       />
 
-      {/* Error Modal */}
-      {showErrorModal && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => setShowErrorModal(false)}>
-          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  {t('crypto.operationFailed', { defaultValue: 'Operation Failed' })}
-                </h5>
-                <button 
-                  type="button" 
-                  className="btn-close" 
-                  onClick={() => setShowErrorModal(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <p className="mb-0">{errorMessage}</p>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-primary" 
-                  onClick={() => setShowErrorModal(false)}
-                >
-                  {t('actions.close', { defaultValue: 'Close' })}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ErrorModal
+        show={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        message={errorMessage}
+      />
     </div>
   )
 }
