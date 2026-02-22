@@ -90,6 +90,7 @@ export default function UserLedgerDetail() {
   }
 
   const isCredit = entry.entryType === 'credit'
+  const isReversed = entry.state === 'reversed'
 
   // Parse metadata
   let metadata = {}
@@ -157,8 +158,8 @@ export default function UserLedgerDetail() {
                   </div>
                 </div>
                 <div className="text-end">
-                  <div className={`fs-4 fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
-                    {isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
+                  <div className={`fs-4 fw-bold ${isReversed ? '' : (isCredit ? 'text-success' : 'text-danger')}`}>
+                    {isReversed ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">
                     {formatUsd(entry.amountUsd)}
@@ -230,8 +231,8 @@ export default function UserLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
                         <td>
-                          <span className={`fw-bold ${isCredit ? 'text-success' : 'text-danger'}`}>
-                            {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
+                          <span className={`fw-bold ${isReversed ? '' : (isCredit ? 'text-success' : 'text-danger')}`}>
+                            {isReversed ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)}
                           </span>
                         </td>
                       </tr>

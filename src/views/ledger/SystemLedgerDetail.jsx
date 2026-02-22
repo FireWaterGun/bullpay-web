@@ -89,6 +89,7 @@ export default function SystemLedgerDetail() {
   }
 
   const isCredit = entry.entryType === 'credit'
+  const isReversed = entry.state === 'reversed'
 
   // Parse metadata
   let metadata = {}
@@ -166,8 +167,8 @@ export default function SystemLedgerDetail() {
                   </div>
                 </div>
                 <div className="text-end">
-                  <div className={`fs-4 fw-bold ${isCredit ? 'text-danger' : 'text-success'}`}>
-                    {isCredit ? '-' : '+'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
+                  <div className={`fs-4 fw-bold ${isReversed ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
+                    {isReversed ? '' : (isCredit ? '-' : '+')}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">
                     {formatUsd(entry.amountUsd)}
@@ -239,8 +240,8 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
                         <td>
-                          <span className={`fw-bold ${isCredit ? 'text-danger' : 'text-success'}`}>
-                            {isCredit ? '-' : '+'}{formatAmount(entry.amount)}
+                          <span className={`fw-bold ${isReversed ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
+                            {isReversed ? '' : (isCredit ? '-' : '+')}{formatAmount(entry.amount)}
                           </span>
                         </td>
                       </tr>

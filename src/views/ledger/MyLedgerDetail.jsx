@@ -97,6 +97,7 @@ export default function MyLedgerDetail() {
   }
 
   const isCredit = entry.entryType === 'credit'
+  const isReversed = entry.state === 'reversed'
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
@@ -131,8 +132,8 @@ export default function MyLedgerDetail() {
                   </div>
                 </div>
                 <div className="text-end">
-                  <div className="fs-4 fw-bold">
-                    {isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
+                  <div className={`fs-4 fw-bold ${isReversed ? '' : (isCredit ? 'text-success' : 'text-danger')}`}>
+                    {isReversed ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">{formatUsd(entry.amountUsd)}</div>
                   {entry.networkName && <small className="text-muted">{entry.networkName}</small>}
@@ -186,8 +187,8 @@ export default function MyLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('userLedger.amount', { defaultValue: 'Amount' })}</td>
                         <td>
-                          <span className="fw-bold">
-                            {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
+                          <span className={`fw-bold ${isReversed ? '' : (isCredit ? 'text-success' : 'text-danger')}`}>
+                            {isReversed ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)}
                           </span>
                         </td>
                       </tr>

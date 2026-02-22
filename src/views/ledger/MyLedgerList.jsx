@@ -235,7 +235,7 @@ export default function MyLedgerList() {
                   <label className="form-label">{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</label>
                   <div className="dropdown">
                     <button
-                      className="btn btn-outline-secondary dropdown-toggle w-100 d-flex align-items-center justify-content-between"
+                      className="form-select d-flex align-items-center justify-content-between"
                       type="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
