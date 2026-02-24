@@ -85,7 +85,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                   <span className="fw-semibold text-primary">{entry.id}</span>
                 </td>
                 <td>
-                  <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
+                  <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-danger' : 'bg-label-success')}`}>
                     <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
                     {isCredit ? 'Credit' : 'Debit'}
                   </span>

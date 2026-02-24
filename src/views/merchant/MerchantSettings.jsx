@@ -259,6 +259,7 @@ export default function MerchantSettings() {
               <p className="text-muted small mb-3">
                 {t('merchant.webhookDesc', { defaultValue: 'Set a callback URL to receive real-time payment notifications via webhook.' })}
               </p>
+
               {editingWebhook ? (
                 <>
                   <div className="input-group mb-3">
@@ -286,13 +287,42 @@ export default function MerchantSettings() {
                   </div>
                 </>
               ) : (
-                <button className="btn btn-outline-primary btn-sm" onClick={() => { setWebhookUrl(''); setEditingWebhook(true) }}>
-                  <i className="bx bx-edit me-1"></i>
-                  {merchant?.hasWebhook
-                    ? t('merchant.updateWebhook', { defaultValue: 'Update Webhook' })
-                    : t('merchant.setWebhook', { defaultValue: 'Set Webhook' })
-                  }
-                </button>
+                <>
+                  {merchant?.webhookUrl && (
+                    <div className="table-responsive mb-3">
+                      <table className="table table-borderless mb-0">
+                        <tbody>
+                          <tr>
+                            <td className="ps-0" style={{ width: 120, whiteSpace: 'nowrap' }}><span className="fw-medium">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</span></td>
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <span className="font-monospace text-break" style={{ fontSize: '0.85rem' }}>{merchant.webhookUrl}</span>
+                                <button
+                                  className="btn btn-sm btn-icon btn-text-secondary ms-1 flex-shrink-0"
+                                  onClick={async () => {
+                                    const { copyToClipboard: doCopy } = await import('../../utils/clipboard')
+                                    const ok = await doCopy(merchant.webhookUrl)
+                                    if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
+                                  }}
+                                  title="Copy"
+                                >
+                                  <i className="bx bx-copy"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  <button className="btn btn-outline-primary btn-sm" onClick={() => { setWebhookUrl(merchant?.webhookUrl || ''); setEditingWebhook(true) }}>
+                    <i className="bx bx-edit me-1"></i>
+                    {merchant?.hasWebhook
+                      ? t('merchant.updateWebhook', { defaultValue: 'Update' })
+                      : t('merchant.setWebhook', { defaultValue: 'Set Webhook URL' })
+                    }
+                  </button>
+                </>
               )}
             </div>
           </div>

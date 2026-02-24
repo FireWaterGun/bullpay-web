@@ -133,7 +133,7 @@ export default function UserLedgerDetail() {
                       {t('admin.ledger.userLedgerEntry', { defaultValue: 'User Ledger Entry' })} #{entry.id}
                     </h4>
                     <div className="d-flex align-items-center gap-2 flex-wrap">
-                      <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                      <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-success' : 'bg-label-danger')}`}>
                         <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </span>
@@ -205,7 +205,7 @@ export default function UserLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
                         <td>
-                          <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                          <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-success' : 'bg-label-danger')}`}>
                             {isCredit ? 'Credit' : 'Debit'}
                           </span>
                         </td>

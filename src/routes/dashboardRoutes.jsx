@@ -57,6 +57,10 @@ const EVMFeePolicy = lazy(() => import('../views/admin/EVMFeePolicy'))
 const NetworkFees = lazy(() => import('../views/admin/NetworkFees'))
 const AdminRoles = lazy(() => import('../views/admin/AdminRoles'))
 const RolePermissions = lazy(() => import('../views/admin/RolePermissions'))
+const TempWalletList = lazy(() => import('../views/admin/TempWalletList'))
+const TempWalletDetail = lazy(() => import('../views/admin/TempWalletDetail'))
+const TempWalletHistoryList = lazy(() => import('../views/admin/TempWalletHistoryList'))
+const TempWalletHistoryDetail = lazy(() => import('../views/admin/TempWalletHistoryDetail'))
 
 export function renderAdminRoutes() {
   return (
@@ -109,6 +113,10 @@ export function renderAdminRoutes() {
       <Route path="admin/settings/withdrawal/policy" element={<WithdrawalPolicy />} />
       <Route path="admin/roles" element={<AdminRoles />} />
       <Route path="admin/roles/:role" element={<RolePermissions />} />
+      <Route path="admin/temp-wallets" element={<TempWalletList />} />
+      <Route path="admin/temp-wallets/:id" element={<TempWalletDetail />} />
+      <Route path="admin/temp-wallet-histories" element={<TempWalletHistoryList />} />
+      <Route path="admin/temp-wallet-histories/:id" element={<TempWalletHistoryDetail />} />
       {/* Redirects from old paths */}
       <Route path="admin/revenue" element={<Navigate to="/admin/dashboard" replace />} />
       <Route path="admin/revenue/income-statement" element={<Navigate to="/admin/income-statement" replace />} />

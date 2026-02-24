@@ -137,7 +137,7 @@ export default function PlatformLedgerDetail() {
                       <span className={`badge ${entry.accountType === 'revenue' ? 'bg-label-success' : 'bg-label-warning'}`}>
                         {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
                       </span>
-                      <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                      <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-success' : 'bg-label-danger')}`}>
                         <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </span>
@@ -212,7 +212,7 @@ export default function PlatformLedgerDetail() {
                       <tr>
                         <td className="text-muted">Entry Type</td>
                         <td>
-                          <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                          <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-success' : 'bg-label-danger')}`}>
                             {isCredit ? 'Credit' : 'Debit'}
                           </span>
                         </td>

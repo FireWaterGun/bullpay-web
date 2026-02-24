@@ -94,15 +94,23 @@ export default function PaymentQRSection({
 
             {/* Amount Value */}
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <div style={{
-                fontSize: '2.5rem',
-                fontWeight: '900',
-                letterSpacing: '-2px',
-                color: 'var(--bs-primary)',
-                lineHeight: 1.1
-              }}>
-                {formatAmount(invoice.amount)}
-              </div>
+              {(() => {
+                const amtStr = formatAmount(invoice.amount)
+                const len = amtStr.length
+                const fontSize = len > 14 ? '1rem' : len > 11 ? '1.2rem' : len > 8 ? '1.5rem' : len > 5 ? '1.8rem' : '2.2rem'
+                return (
+                  <div style={{
+                    fontSize,
+                    fontWeight: '900',
+                    letterSpacing: '-1px',
+                    color: 'var(--bs-primary)',
+                    lineHeight: 1.2,
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {amtStr}
+                  </div>
+                )
+              })()}
               {invoice.amount != null && !isPaid && (
                 <button
                   type="button"

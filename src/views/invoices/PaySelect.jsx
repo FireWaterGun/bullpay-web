@@ -115,20 +115,20 @@ export default function PaySelect() {
       <div className="position-absolute w-100 h-100" style={{ zIndex: 0 }}>
         <div className="position-absolute" style={{
           width: '150%', height: '150%', top: '-25%', left: '-25%',
-          background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(59, 130, 246, 0.08) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 30% 30%, rgba(var(--bs-primary-rgb), 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(var(--bs-primary-rgb), 0.06) 0%, transparent 50%)',
           animation: 'gradientShift 15s ease infinite',
           filter: 'blur(60px)'
         }}></div>
         <div className="position-absolute rounded-circle" style={{
           width: 200, height: 200,
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.15) 0%, transparent 70%)',
           top: '10%', right: '15%',
           filter: 'blur(40px)',
           animation: 'float 20s ease-in-out infinite'
         }}></div>
         <div className="position-absolute rounded-circle" style={{
           width: 250, height: 250,
-          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.10) 0%, transparent 70%)',
           bottom: '15%', left: '10%',
           filter: 'blur(50px)',
           animation: 'float 25s ease-in-out infinite reverse'
@@ -141,15 +141,15 @@ export default function PaySelect() {
           <div className="d-flex justify-content-center align-items-center gap-3">
             <div className="position-relative">
               <div className="position-absolute w-100 h-100 rounded-circle" style={{
-                background: 'linear-gradient(135deg, var(--bs-primary), var(--bs-info))',
-                filter: 'blur(20px)', opacity: 0.6,
+                background: 'var(--bs-primary)',
+                filter: 'blur(20px)', opacity: 0.5,
                 animation: 'pulse 3s ease-in-out infinite'
               }}></div>
               <div className="position-relative d-flex align-items-center justify-content-center" style={{
                 width: 48, height: 48,
-                background: 'linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%)',
+                background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 25%) 100%)',
                 borderRadius: 16,
-                boxShadow: '0 8px 20px rgba(139, 92, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                boxShadow: '0 8px 20px rgba(var(--bs-primary-rgb), 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
               }}>
                 <i className="bx bx-wallet text-white" style={{ fontSize: 24 }}></i>
               </div>
@@ -207,7 +207,7 @@ export default function PaySelect() {
                 {/* Main Card */}
                 <div className="position-relative">
                   <div className="position-absolute w-100 h-100" style={{
-                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2))',
+                    background: 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.2), rgba(var(--bs-primary-rgb), 0.15))',
                     borderRadius: 12, filter: 'blur(30px)', opacity: 0.6
                   }}></div>
 
@@ -216,11 +216,11 @@ export default function PaySelect() {
                     background: 'rgba(255, 255, 255, 0.95)',
                     backdropFilter: 'blur(20px)',
                     boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-                    border: '1px solid rgba(139, 92, 246, 0.15)'
+                    border: '1px solid rgba(var(--bs-primary-rgb), 0.15)'
                   }}>
                     {/* Title Banner */}
                     <div className="position-relative overflow-hidden" style={{
-                      background: 'linear-gradient(135deg, var(--bs-primary), var(--bs-info))',
+                      background: 'linear-gradient(135deg, var(--bs-primary), color-mix(in srgb, var(--bs-primary), #000 25%))',
                       padding: '16px 24px'
                     }}>
                       <div className="position-absolute w-100 h-100" style={{
@@ -244,8 +244,8 @@ export default function PaySelect() {
                       {/* Invoice Info */}
                       {(invoiceAmount || invoiceDesc) && (
                         <div className="mb-3 p-3 rounded-3 text-center" style={{
-                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05))',
-                          border: '1px solid rgba(139, 92, 246, 0.15)'
+                          background: 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.05), rgba(var(--bs-primary-rgb), 0.08))',
+                          border: '1px solid rgba(var(--bs-primary-rgb), 0.15)'
                         }}>
                           {invoiceAmount && (
                             <div className="mb-1">
@@ -254,7 +254,7 @@ export default function PaySelect() {
                               </span>
                               <div style={{
                                 fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px',
-                                background: 'linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%)',
+                                background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 25%) 100%)',
                                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                                 backgroundClip: 'text', lineHeight: 1.2
                               }}>
@@ -282,8 +282,8 @@ export default function PaySelect() {
                           onChange={(e) => setSearchQuery(e.target.value)}
                           style={{
                             paddingLeft: 38, borderRadius: 10,
-                            border: '1px solid rgba(139, 92, 246, 0.2)',
-                            background: 'rgba(139, 92, 246, 0.03)',
+                            border: '1px solid rgba(var(--bs-primary-rgb), 0.2)',
+                            background: 'rgba(var(--bs-primary-rgb), 0.03)',
                             fontSize: '0.875rem'
                           }}
                         />
@@ -306,7 +306,7 @@ export default function PaySelect() {
                           onClick={handleConfirm}
                           style={{
                             background: selectedCoinId
-                              ? 'linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%)'
+                              ? 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 25%) 100%)'
                               : 'var(--bs-border-color)',
                             color: selectedCoinId ? 'white' : 'var(--bs-secondary-color)',
                             border: 'none',
@@ -315,7 +315,7 @@ export default function PaySelect() {
                             letterSpacing: '0.5px',
                             transition: 'all 0.3s ease',
                             boxShadow: selectedCoinId
-                              ? '0 8px 24px rgba(139, 92, 246, 0.4)'
+                              ? '0 8px 24px rgba(var(--bs-primary-rgb), 0.4)'
                               : 'none',
                           }}
                         >
@@ -340,9 +340,8 @@ export default function PaySelect() {
           }}>{t('common.poweredBy', { defaultValue: 'Powered by' })}</div>
           <div className="mb-2" style={{
             fontSize: '1.1rem', fontWeight: '700',
-            background: 'linear-gradient(135deg, var(--bs-primary), var(--bs-info))',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text', letterSpacing: '1px'
+            color: 'var(--bs-primary)',
+            letterSpacing: '1px'
           }}>BULL PAY</div>
           <div style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem' }}>
             {t('common.copyright', { year }) || `© ${year} · All rights reserved`}

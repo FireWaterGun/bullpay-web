@@ -1890,3 +1890,135 @@ export async function resetRolePermissionOverrides(token: string, role: string) 
   })
   return response?.data || response
 }
+
+// ─── Temp Wallets ───────────────────────────────────────────────────────────
+
+/**
+ * List temp wallets (Admin only, read-only)
+ */
+export async function getTempWallets(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    coinNetworkId?: number
+    userId?: number
+    address?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.address) queryParams.append('address', params.address)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/temp-wallets${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get temp wallet by ID (Admin only, read-only)
+ */
+export async function getTempWallet(token: string, id: number | string) {
+  const response = await apiFetch(`/api/v1/admin/temp-wallets/${id}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = response?.data || response
+  return data?.tempWallet || data?.wallet || data
+}
+
+/**
+ * List temp wallet usage histories (Admin only, read-only)
+ */
+export async function getTempWalletHistories(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    tempWalletId?: number
+    invoiceId?: number
+    userId?: number
+    coinNetworkId?: number
+    status?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.tempWalletId) queryParams.append('tempWalletId', String(params.tempWalletId))
+  if (params.invoiceId) queryParams.append('invoiceId', String(params.invoiceId))
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/temp-wallet-histories${queryString ? `?${queryString}` : ''}`
+
+  const response = await apiFetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = response?.data || response
+  const items = data?.items || []
+  const meta = data?.meta || data?.pagination || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get temp wallet history by ID (Admin only, read-only)
+ */
+export async function getTempWalletHistory(token: string, id: number | string) {
+  const response = await apiFetch(`/api/v1/admin/temp-wallet-histories/${id}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = response?.data || response
+  return data?.history || data?.tempWalletHistory || data
+}

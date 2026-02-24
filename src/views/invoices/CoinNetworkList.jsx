@@ -12,27 +12,27 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
         cursor: 'pointer',
         transition: 'all 0.2s ease',
         background: isSelected
-          ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.12))'
+          ? 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.12), rgba(var(--bs-primary-rgb), 0.18))'
           : 'rgba(255, 255, 255, 0.6)',
         border: isSelected
-          ? '2px solid rgba(139, 92, 246, 0.4)'
-          : '1px solid rgba(139, 92, 246, 0.1)',
+          ? '2px solid rgba(var(--bs-primary-rgb), 0.4)'
+          : '1px solid rgba(var(--bs-primary-rgb), 0.1)',
         boxShadow: isSelected
-          ? '0 4px 16px rgba(139, 92, 246, 0.15)'
+          ? '0 4px 16px rgba(var(--bs-primary-rgb), 0.15)'
           : '0 1px 3px rgba(0, 0, 0, 0.04)',
         transform: isSelected ? 'scale(1.01)' : 'scale(1)',
       }}
       onClick={() => onSelect(cn.id)}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          e.currentTarget.style.background = 'rgba(139, 92, 246, 0.04)'
-          e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.25)'
+          e.currentTarget.style.background = 'rgba(var(--bs-primary-rgb), 0.04)'
+          e.currentTarget.style.borderColor = 'rgba(var(--bs-primary-rgb), 0.25)'
         }
       }}
       onMouseLeave={(e) => {
         if (!isSelected) {
           e.currentTarget.style.background = 'rgba(255, 255, 255, 0.6)'
-          e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.1)'
+          e.currentTarget.style.borderColor = 'rgba(var(--bs-primary-rgb), 0.1)'
         }
       }}
     >
@@ -84,8 +84,8 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
         {isSelected ? (
           <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
             width: 28, height: 28,
-            background: 'linear-gradient(135deg, var(--bs-primary), var(--bs-info))',
-            boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)'
+            background: 'linear-gradient(135deg, var(--bs-primary), color-mix(in srgb, var(--bs-primary), #000 25%))',
+            boxShadow: '0 4px 12px rgba(var(--bs-primary-rgb), 0.4)'
           }}>
             <i className="bx bx-check text-white" style={{ fontSize: 18 }}></i>
           </div>

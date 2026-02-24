@@ -9,14 +9,19 @@ export function PusherProvider({ children }) {
   const [pusher, setPusher] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const pusherRef = useRef(null);
-  const tokenRef = useRef(token);
-
-  // Update token ref when token changes
-  useEffect(() => {
-    tokenRef.current = token;
-  }, [token]);
 
   useEffect(() => {
+    // Clean up any existing connection first
+    if (pusherRef.current) {
+      pusherRef.current.disconnect();
+      pusherRef.current = null;
+      setPusher(null);
+      setIsConnected(false);
+    }
+
+    // Don't create Pusher until we have a valid token
+    if (!token) return;
+
     const appKey = import.meta.env.VITE_PUSHER_APP_KEY;
     const cluster = import.meta.env.VITE_PUSHER_CLUSTER || 'ap1';
     const wsHost = import.meta.env.VITE_PUSHER_WS_HOST;
@@ -24,56 +29,54 @@ export function PusherProvider({ children }) {
     const forceTLS = import.meta.env.VITE_PUSHER_FORCE_TLS !== 'false';
 
     if (!appKey) {
-      console.warn('[PusherContext] App key not configured. Real-time updates disabled.');
+      console.warn('[Pusher] App key not configured. Real-time updates disabled.');
       return;
     }
 
-    // Custom authorizer to send JSON instead of form data
-    const authorizer = (channel) => ({
-      authorize: (socketId, callback) => {
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3339';
-        const authEndpoint = `${apiBaseUrl}/api/v1/pusher/auth`;
-        const currentToken = tokenRef.current;
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3339';
+    const authEndpoint = `${apiBaseUrl}/api/v1/pusher/auth`;
 
-        fetch(authEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${currentToken || ''}`
-          },
-          body: JSON.stringify({
-            socket_id: socketId,
-            channel_name: channel.name
-          })
-        })
-          .then(async response => {
-            if (!response.ok) {
-              const errorText = await response.text();
-              console.error('[PusherContext] Auth failed:', response.status, errorText);
-              throw new Error(`Auth failed: ${response.status} ${response.statusText}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            // Backend wraps response in {success, data} format
-            const authData = data.data || data;
-            if (!authData.auth) {
-              throw new Error('Invalid auth response from server');
-            }
-            callback(null, authData);
-          })
-          .catch(error => {
-            console.error('[PusherContext] Auth error:', error);
-            callback(error, null);
-          });
-      }
-    });
-
+    // pusher-js v8: use channelAuthorization.customHandler (replaces deprecated `authorizer`)
+    // `token` is captured directly from closure — no race condition
     const pusherConfig = {
       cluster,
       forceTLS,
-      enabledTransports: forceTLS ? ['wss'] : ['ws', 'wss'],
-      authorizer,
+      enabledTransports: forceTLS ? ['ws'] : ['ws', 'wss'],
+      channelAuthorization: {
+        customHandler: ({ socketId, channelName }, callback) => {
+          fetch(authEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              socket_id: socketId,
+              channel_name: channelName,
+            }),
+          })
+            .then(async (response) => {
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error('[Pusher] Auth failed:', response.status, errorText);
+                throw new Error(`Auth failed: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Backend may wrap response in {success, data} format
+              const authData = data.data || data;
+              if (!authData.auth) {
+                throw new Error('Invalid auth response: missing "auth" field');
+              }
+              callback(null, authData);
+            })
+            .catch((error) => {
+              console.error('[Pusher] Auth error:', error);
+              callback(error, null);
+            });
+        },
+      },
     };
 
     if (wsHost) {
@@ -90,6 +93,7 @@ export function PusherProvider({ children }) {
     setPusher(pusherInstance);
 
     pusherInstance.connection.bind('connected', () => {
+      console.warn('[Pusher] Connected, socketId:', pusherInstance.connection.socket_id);
       setIsConnected(true);
     });
 
@@ -98,7 +102,7 @@ export function PusherProvider({ children }) {
     });
 
     pusherInstance.connection.bind('error', (err) => {
-      console.error('[PusherContext] Connection error:', err);
+      console.error('[Pusher] Connection error:', err);
     });
 
     return () => {
@@ -107,7 +111,7 @@ export function PusherProvider({ children }) {
         pusherRef.current = null;
       }
     };
-  }, []);
+  }, [token]);
 
   const value = useMemo(() => ({ pusher, isConnected }), [pusher, isConnected]);
 

@@ -77,7 +77,7 @@ export default function PlatformLedgerTable({
                         {accountTypeBadge(entry.accountType)}
                       </td>
                       <td>
-                        <span className={`badge ${isCredit ? 'bg-label-success' : 'bg-label-danger'}`}>
+                        <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-success' : 'bg-label-danger')}`}>
                           <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
                           {isCredit ? 'Credit' : 'Debit'}
                         </span>

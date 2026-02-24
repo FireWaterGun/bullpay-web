@@ -133,10 +133,10 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
     isSubscribingRef.current = false;
 
     return () => {
-      if (channelRef.current && (!pusher || userIdRef.current !== userId)) {
+      if (channelRef.current) {
         const chName = `private-user.${userIdRef.current}.notifications`;
         channelRef.current.unbind_all();
-        pusher.unsubscribe(chName);
+        if (pusher) pusher.unsubscribe(chName);
         channelRef.current = null;
       }
     };

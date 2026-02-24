@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { NetworkIcon } from '../../components/CoinImg'
 import useInvoicePayment, { formatDuration } from './payment/useInvoicePayment'
 import { isSafeRedirectUrl } from '../../utils/url'
+import { formatAmount } from '../../utils/format'
 import NetworkSelectionPanel from './payment/NetworkSelectionPanel'
 import PaymentQRSection from './payment/PaymentQRSection'
 import PaymentProgressSteps from './payment/PaymentProgressSteps'
@@ -29,7 +30,7 @@ export default function InvoicePaymentV2() {
   } = useInvoicePayment()
 
   return (
-    <div className="min-vh-100 position-relative overflow-hidden" style={{
+    <div className="min-vh-100 position-relative" style={{ overflowX: 'hidden',
       background: 'linear-gradient(180deg, var(--bs-body-bg) 0%, var(--bs-tertiary-bg) 100%)'
     }}>
       {/* Subtle Background */}
@@ -110,34 +111,64 @@ export default function InvoicePaymentV2() {
                     boxShadow: '0 25px 50px rgba(var(--bs-black-rgb), 0.1), inset 0 1px 0 rgba(var(--bs-white-rgb), 0.8)',
                     border: '1px solid rgba(var(--bs-primary-rgb), 0.15)'
                   }}>
-                    {/* Status Banner */}
-                    <div className="position-relative overflow-hidden" style={{
-                      background: uiStatus === 'paid'
-                        ? 'linear-gradient(135deg, var(--bs-success), color-mix(in srgb, var(--bs-success), #000 20%))'
-                        : uiStatus === 'pending'
-                          ? 'linear-gradient(135deg, var(--bs-warning), color-mix(in srgb, var(--bs-warning), #000 20%))'
+                    {/* Status Banner (Step 2 / paid / expired) */}
+                    {!(isPaymentMode && needsNetworkSelection && !isPaid && !isExpiredUnpaid) && (
+                      <div className="position-relative overflow-hidden" style={{
+                        background: uiStatus === 'paid'
+                          ? 'linear-gradient(135deg, var(--bs-success), color-mix(in srgb, var(--bs-success), #000 20%))'
                           : uiStatus === 'expired'
                             ? 'linear-gradient(135deg, var(--bs-danger), color-mix(in srgb, var(--bs-danger), #000 20%))'
-                            : 'linear-gradient(135deg, var(--bs-secondary), color-mix(in srgb, var(--bs-secondary), #000 20%))',
-                      padding: '16px 24px'
-                    }}>
-                      <div className="position-absolute w-100 h-100" style={{
-                        background: 'linear-gradient(90deg, transparent, rgba(var(--bs-white-rgb),0.15), transparent)',
-                        animation: 'shimmer 3s infinite', zIndex: 0, top: 0, left: 0
-                      }}></div>
-                      <div className="text-center position-relative" style={{ zIndex: 1 }}>
-                        <div className="d-inline-flex align-items-center gap-2">
-                          <i className={`bx ${uiStatus === 'paid' ? 'bx-check-circle' : uiStatus === 'pending' ? 'bx-time-five' : uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'} text-white`} style={{ fontSize: 20 }}></i>
-                          <span className="fw-bold text-uppercase text-white" style={{ letterSpacing: '2px', fontSize: '0.875rem' }}>
-                            {statusLabel(uiStatus, t)}
-                          </span>
+                            : 'linear-gradient(135deg, var(--bs-warning), color-mix(in srgb, var(--bs-warning), #000 20%))',
+                        padding: '14px 20px'
+                      }}>
+                        <div className="position-absolute w-100 h-100" style={{
+                          background: 'linear-gradient(90deg, transparent, rgba(var(--bs-white-rgb),0.15), transparent)',
+                          animation: 'shimmer 3s infinite', zIndex: 0, top: 0, left: 0
+                        }}></div>
+                        <div className="text-center position-relative" style={{ zIndex: 1 }}>
+                          <div className="d-inline-flex align-items-center gap-2">
+                            <i className={`bx ${uiStatus === 'paid' ? 'bx-check-circle' : uiStatus === 'pending' ? 'bx-time-five' : uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'} text-white`} style={{ fontSize: 20 }}></i>
+                            <span className="fw-bold text-uppercase text-white" style={{ letterSpacing: '2px', fontSize: '0.875rem' }}>
+                              {statusLabel(uiStatus, t)}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Card Body */}
                     <div className="card-body p-3 p-md-4">
+
                       {needsNetworkSelection ? (
+                        <div>
+                          {/* Amount card */}
+                          <div className="text-center rounded-3 mb-4" style={{
+                            background: 'linear-gradient(135deg, var(--bs-primary), color-mix(in srgb, var(--bs-primary), #000 15%))',
+                            padding: '20px 16px',
+                          }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>
+                              {t('invoices.amount', { defaultValue: 'Amount to Pay' })}
+                            </div>
+                            <div className="d-flex align-items-baseline justify-content-center gap-2">
+                              <span style={{ fontSize: '2rem', fontWeight: 700, letterSpacing: '-1px', color: '#fff', lineHeight: 1 }}>
+                                {formatAmount(invoice.amount)}
+                              </span>
+                              <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'rgba(255,255,255,0.55)' }}>
+                                {coinSym}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Network section header */}
+                          <div className="d-flex align-items-center justify-content-between mb-2">
+                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--bs-heading-color)' }}>
+                              {t('payment.stepNetwork', { defaultValue: 'Select Network' })}
+                            </span>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--bs-secondary-color)' }}>
+                              {t('payment.step', { defaultValue: 'Step' })} 1/2
+                            </span>
+                          </div>
+
                         <NetworkSelectionPanel
                           paymentData={paymentData}
                           selectedNetwork={selectedNetwork}
@@ -148,6 +179,7 @@ export default function InvoicePaymentV2() {
                           remainingMs={remainingMs}
                           error={error}
                         />
+                        </div>
                       ) : (
                       <div>
                       {/* Invoice Info & Chain */}

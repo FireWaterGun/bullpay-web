@@ -104,7 +104,7 @@ export default function SystemLedgerDetail() {
                       {t('admin.ledger.systemLedgerEntry', { defaultValue: 'System Ledger Entry' })} #{entry.id}
                     </h4>
                     <div className="d-flex align-items-center gap-2 flex-wrap">
-                      <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
+                      <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-danger' : 'bg-label-success')}`}>
                         <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </span>
@@ -170,7 +170,7 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
                         <td>
-                          <span className={`badge ${isCredit ? 'bg-label-danger' : 'bg-label-success'}`}>
+                          <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-danger' : 'bg-label-success')}`}>
                             {isCredit ? 'Credit' : 'Debit'}
                           </span>
                         </td>
