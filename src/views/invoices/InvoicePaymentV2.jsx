@@ -47,31 +47,6 @@ export default function InvoicePaymentV2() {
         }}></div>
       </div>
 
-      {/* Header */}
-      <div className="position-relative" style={{ zIndex: 1 }}>
-        <div className="container py-2">
-          <div className="d-flex justify-content-center align-items-center gap-3">
-            <div className="position-relative">
-              <div className="position-absolute w-100 h-100 rounded-circle" style={{
-                background: 'var(--bs-primary)',
-                filter: 'blur(20px)', opacity: 0.4
-              }}></div>
-              <div className="position-relative d-flex align-items-center justify-content-center" style={{
-                width: 48, height: 48,
-                background: 'var(--bs-primary)',
-                borderRadius: 16,
-                boxShadow: '0 8px 20px rgba(var(--bs-primary-rgb), 0.3)'
-              }}>
-                <i className="bx bx-wallet text-white" style={{ fontSize: 24 }}></i>
-              </div>
-            </div>
-            <div>
-              <h2 className="fw-bold mb-0" style={{ fontSize: '1.25rem', letterSpacing: '-0.5px', color: 'var(--bs-heading-color)' }}>BULL PAY</h2>
-              <p className="mb-0" style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Crypto Payment Gateway</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <style>{`
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
@@ -79,7 +54,7 @@ export default function InvoicePaymentV2() {
       `}</style>
 
       {/* Main Content */}
-      <div className="flex-grow-1 d-flex align-items-center py-2">
+      <div className="flex-grow-1 d-flex align-items-center py-4 pt-5">
         <div className="container">
           {loading ? (
             <div className="text-center">
@@ -97,7 +72,7 @@ export default function InvoicePaymentV2() {
             <div className="text-center text-white">{t('invoices.notFound') || 'Not found'}</div>
           ) : (
             <div className="row justify-content-center position-relative" style={{ zIndex: 1 }}>
-              <div className="col-12 col-md-8 col-lg-5">
+              <div className="col-11 col-sm-8 col-md-7 col-lg-4">
                 <div className="position-relative">
                   {/* Card Glow */}
                   <div className="position-absolute w-100 h-100" style={{
@@ -142,30 +117,63 @@ export default function InvoicePaymentV2() {
                       {needsNetworkSelection ? (
                         <div>
                           {/* Amount card */}
-                          <div className="text-center rounded-3 mb-4" style={{
-                            background: 'linear-gradient(135deg, var(--bs-primary), color-mix(in srgb, var(--bs-primary), #000 15%))',
-                            padding: '20px 16px',
+                          <div className="text-center rounded-3 mb-4 position-relative overflow-hidden" style={{
+                            background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 50%, color-mix(in srgb, var(--bs-primary), #000 20%) 100%)',
+                            padding: '28px 16px',
                           }}>
-                            <div style={{ fontSize: '0.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>
-                              {t('invoices.amount', { defaultValue: 'Amount to Pay' })}
+                            {/* Decorative circles */}
+                            <div className="position-absolute rounded-circle" style={{ width: 120, height: 120, background: 'rgba(255,255,255,0.06)', top: -30, right: -20 }}></div>
+                            <div className="position-absolute rounded-circle" style={{ width: 80, height: 80, background: 'rgba(255,255,255,0.04)', bottom: -20, left: -10 }}></div>
+                            <div className="position-relative" style={{ zIndex: 1 }}>
+                              <div style={{ fontSize: '0.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(255,255,255,0.55)', marginBottom: 12 }}>
+                                {t('invoices.amount', { defaultValue: 'Amount' })}
+                              </div>
+                              <div className="d-flex align-items-baseline justify-content-center" style={{ gap: 6 }}>
+                                <span style={{ fontSize: '2.25rem', fontWeight: 700, letterSpacing: '-1px', color: '#fff', lineHeight: 1 }}>
+                                  {formatAmount(invoice.amount)}
+                                </span>
+                                <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>
+                                  {coinSym}
+                                </span>
+                              </div>
+                              {(invoice.fiatAmount || paymentData?.fiatAmount) && (
+                                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginTop: 8 }}>
+                                  ≈ ${invoice.fiatAmount || paymentData?.fiatAmount} {invoice.fiatCurrency || paymentData?.fiatCurrency || 'USD'}
+                                </div>
+                              )}
                             </div>
-                            <div className="d-flex align-items-baseline justify-content-center gap-2">
-                              <span style={{ fontSize: '2rem', fontWeight: 700, letterSpacing: '-1px', color: '#fff', lineHeight: 1 }}>
-                                {formatAmount(invoice.amount)}
+                          </div>
+
+                          {/* Step indicator */}
+                          <div className="d-flex align-items-center justify-content-between mb-4">
+                            <div className="d-flex align-items-center" style={{ gap: 8 }}>
+                              <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
+                                width: 26, height: 26, background: 'var(--bs-primary)', color: '#fff',
+                                fontSize: '0.7rem', fontWeight: 700,
+                              }}>1</div>
+                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--bs-heading-color)' }}>
+                                {t('payment.stepNetwork', { defaultValue: 'Network' })}
                               </span>
-                              <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'rgba(255,255,255,0.55)' }}>
-                                {coinSym}
+                            </div>
+                            <div style={{ flex: 1, height: 1, background: 'var(--bs-border-color)', margin: '0 16px' }}></div>
+                            <div className="d-flex align-items-center" style={{ gap: 8 }}>
+                              <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
+                                width: 26, height: 26, background: 'var(--bs-border-color)', color: 'var(--bs-secondary-color)',
+                                fontSize: '0.7rem', fontWeight: 700,
+                              }}>2</div>
+                              <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--bs-secondary-color)' }}>
+                                {t('payment.stepPayment', { defaultValue: 'Payment' })}
                               </span>
                             </div>
                           </div>
 
-                          {/* Network section header */}
-                          <div className="d-flex align-items-center justify-content-between mb-2">
-                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--bs-heading-color)' }}>
-                              {t('payment.stepNetwork', { defaultValue: 'Select Network' })}
+                          {/* Section header */}
+                          <div className="d-flex align-items-center justify-content-between mb-3">
+                            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--bs-heading-color)' }}>
+                              {t('payment.selectNetwork', { defaultValue: 'Select Network' })}
                             </span>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--bs-secondary-color)' }}>
-                              {t('payment.step', { defaultValue: 'Step' })} 1/2
+                            <span style={{ fontSize: '0.75rem', color: 'var(--bs-secondary-color)' }}>
+                              Step 1/2
                             </span>
                           </div>
 
@@ -182,66 +190,46 @@ export default function InvoicePaymentV2() {
                         </div>
                       ) : (
                       <div>
-                      {/* Invoice Info & Chain */}
-                      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 gap-md-3 mb-3">
-                        <div className="order-1">
-                          <div className="small mb-1" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem', fontWeight: '600' }}>
+                      {/* Payment ID & Network Badge */}
+                      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                          <div className="small mb-1" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: '600' }}>
                             {isPaymentMode ? (t("payment.payment", { defaultValue: "Payment" })) : t("invoices.invoice")}
                           </div>
-                          <div className="fw-bold" style={{ fontSize: '1.1rem', letterSpacing: '-0.5px', color: 'var(--bs-heading-color)' }}>
+                          <div className="text-break" style={{ fontSize: '0.85rem', color: 'var(--bs-secondary-color)' }}>
                             {isPaymentMode ? (invoice.publicCode || invoice.id) : `#${invoice.invoiceNumber || invoice.publicCode || invoice.id}`}
                           </div>
                         </div>
-                        <div className="order-2 text-center px-3 py-2 rounded-2" style={{
-                          background: 'rgba(var(--bs-primary-rgb), 0.1)',
-                          border: '1px solid rgba(var(--bs-primary-rgb), 0.25)'
+                        <div className="d-flex align-items-center gap-2 px-3 py-2 rounded-pill" style={{
+                          background: 'rgba(var(--bs-primary-rgb), 0.08)',
+                          border: '1px solid rgba(var(--bs-primary-rgb), 0.2)'
                         }}>
-                          <div className="small mb-1" style={{ fontSize: '0.6rem', color: 'var(--bs-secondary-color)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            {t("invoices.chain") || "Chain"}
-                          </div>
-                          <div className="d-flex align-items-center justify-content-center gap-2">
-                            <NetworkIcon networkSymbol={networkSym} size={24} />
-                            <div className="fw-bold" style={{ fontSize: '0.9rem', color: 'var(--bs-primary)', letterSpacing: '0.5px', fontWeight: '700' }}>
-                              {networkSym || 'N/A'}
-                            </div>
-                          </div>
+                          <NetworkIcon networkSymbol={networkSym} size={20} />
+                          <span className="fw-bold" style={{ fontSize: '0.75rem', color: 'var(--bs-heading-color)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            {networkSym || 'N/A'}
+                          </span>
                         </div>
                       </div>
 
-                      {/* Timer */}
+                      {/* Timer - horizontal row */}
                       {!isPaid && remainingMs !== undefined && (
-                        <div className="text-center mb-3 p-3 rounded-4" style={{
-                          background: remainingMs <= 60_000
-                            ? 'linear-gradient(135deg, rgba(var(--bs-danger-rgb), 0.15), rgba(var(--bs-danger-rgb), 0.15))'
-                            : remainingMs <= 5 * 60_000
-                              ? 'linear-gradient(135deg, rgba(var(--bs-warning-rgb), 0.15), rgba(var(--bs-warning-rgb), 0.15))'
-                              : 'rgba(var(--bs-primary-rgb), 0.1)',
-                          border: remainingMs <= 60_000
-                            ? '1px solid rgba(var(--bs-danger-rgb), 0.3)'
-                            : remainingMs <= 5 * 60_000
-                              ? '1px solid rgba(var(--bs-warning-rgb), 0.3)'
-                              : '1px solid rgba(var(--bs-primary-rgb), 0.3)'
+                        <div className="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3" style={{
+                          border: '1px solid var(--bs-border-color)',
                         }}>
-                          <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
-                            <div className="rounded-circle d-flex align-items-center justify-content-center" style={{
-                              width: 28, height: 28,
-                              background: remainingMs <= 60_000
-                                ? 'linear-gradient(135deg, var(--bs-danger), color-mix(in srgb, var(--bs-danger), #000 20%))'
-                                : remainingMs <= 5 * 60_000
-                                  ? 'linear-gradient(135deg, var(--bs-warning), color-mix(in srgb, var(--bs-warning), #000 20%))'
-                                  : 'var(--bs-primary)',
-                              animation: remainingMs <= 60_000 ? 'pulse 1.5s infinite' : 'none',
-                              boxShadow: '0 4px 12px rgba(var(--bs-black-rgb), 0.1)'
-                            }}>
-                              <i className="bx bx-time text-white" style={{ fontSize: 16 }}></i>
-                            </div>
-                            <span className="small" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: '0.7rem', fontWeight: '700' }}>
+                          <div className="d-flex align-items-center gap-2">
+                            <i className="bx bx-time" style={{
+                              fontSize: 20,
+                              color: remainingMs <= 60_000 ? 'var(--bs-danger)' : 'var(--bs-secondary-color)',
+                            }}></i>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--bs-secondary-color)' }}>
                               {t("payment.timeRemaining")}
                             </span>
                           </div>
                           <div style={{
-                            color: remainingMs <= 60_000 ? 'var(--bs-danger)' : 'var(--bs-warning)',
-                            fontWeight: '900', fontSize: '2.25rem', letterSpacing: '5px'
+                            fontWeight: 800,
+                            fontSize: '1.25rem',
+                            letterSpacing: '2px',
+                            color: remainingMs <= 60_000 ? 'var(--bs-danger)' : remainingMs <= 5 * 60_000 ? 'var(--bs-warning)' : 'var(--bs-primary)',
                           }}>
                             {formatDuration(remainingMs)}
                           </div>
@@ -271,30 +259,28 @@ export default function InvoicePaymentV2() {
 
                       {/* Payment Address */}
                       {!isExpiredUnpaid && !isPaid && (
-                        <div className="mb-3">
-                          <div className="small mb-2" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.75rem', fontWeight: '700' }}>
+                        <div className="mb-4">
+                          <div className="small mb-2" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.65rem', fontWeight: '700' }}>
                             {t("invoices.paymentAddress")}
                           </div>
-                          <div className="d-flex align-items-center gap-2 p-2 rounded-3" style={{
-                            background: 'rgba(var(--bs-primary-rgb), 0.05)',
-                            border: '1px solid rgba(var(--bs-primary-rgb), 0.15)',
-                            boxShadow: 'inset 0 1px 0 rgba(var(--bs-white-rgb), 0.5)'
+                          <div className="d-flex align-items-center gap-2 p-3 rounded-3" style={{
+                            border: '1px solid var(--bs-border-color)',
                           }}>
-                            <code className="flex-grow-1 text-break mb-0 fw-medium" style={{ fontSize: '0.75rem', color: 'var(--bs-primary)', background: 'none' }}>
+                            <code className="flex-grow-1 text-break mb-0" style={{ fontSize: '0.78rem', color: 'var(--bs-body-color)', background: 'none', fontWeight: 500 }}>
                               {invoice.paymentAddress || '-'}
                             </code>
                             {invoice.paymentAddress && (
-                              <button type="button" className="btn btn-sm flex-shrink-0" style={{
-                                background: copied
-                                  ? 'linear-gradient(135deg, var(--bs-success), color-mix(in srgb, var(--bs-success), #000 20%))'
-                                  : 'var(--bs-primary)',
-                                border: 'none', color: 'white', borderRadius: 8, width: 36, height: 36,
+                              <button type="button" className="btn btn-sm btn-icon flex-shrink-0" style={{
+                                width: 36, height: 36,
+                                border: '1px solid var(--bs-border-color)',
+                                borderRadius: 8,
+                                background: copied ? 'var(--bs-success)' : 'var(--bs-body-bg)',
+                                color: copied ? '#fff' : 'var(--bs-secondary-color)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                transition: 'all 0.3s ease',
-                                boxShadow: copied ? '0 4px 12px rgba(var(--bs-success-rgb), 0.4)' : '0 4px 12px rgba(var(--bs-primary-rgb), 0.4)',
-                                transform: copied ? 'scale(1.1)' : 'scale(1)'
+                                padding: 0,
+                                transition: 'all 0.2s ease',
                               }} onClick={handleCopy}>
-                                <i className={`bx ${copied ? 'bx-check' : 'bx-copy'}`} style={{ fontSize: 18 }}></i>
+                                <i className={`bx ${copied ? 'bx-check' : 'bx-copy'}`} style={{ fontSize: 16 }}></i>
                               </button>
                             )}
                           </div>
@@ -303,11 +289,10 @@ export default function InvoicePaymentV2() {
 
                       {/* Description */}
                       {invoice.description && (
-                        <div className="mb-3 p-2 rounded-3" style={{
-                          background: 'rgba(var(--bs-primary-rgb), 0.03)',
-                          border: '1px solid rgba(var(--bs-primary-rgb), 0.1)'
+                        <div className="mb-3 p-3 rounded-3" style={{
+                          border: '1px solid var(--bs-border-color)',
                         }}>
-                          <div className="small mb-2" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem', fontWeight: '700' }}>
+                          <div className="small mb-2" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: '700' }}>
                             {t("invoices.description")}
                           </div>
                           <div style={{ color: 'var(--bs-body-color)', lineHeight: 1.4, fontSize: '0.875rem' }}>{invoice.description}</div>
@@ -316,24 +301,22 @@ export default function InvoicePaymentV2() {
 
                       {/* Paid At Info */}
                       {isPaid && invoice.paidAt && (
-                        <div className="mb-3 p-3 rounded-4" style={{
-                          background: 'linear-gradient(135deg, rgba(var(--bs-success-rgb), 0.08), rgba(var(--bs-success-rgb), 0.08))',
+                        <div className="mb-3 p-3 rounded-3" style={{
+                          background: 'rgba(var(--bs-success-rgb), 0.06)',
                           border: '1px solid rgba(var(--bs-success-rgb), 0.2)'
                         }}>
                           <div className="d-flex align-items-center gap-2 mb-2">
                             <div className="rounded-circle d-flex align-items-center justify-content-center" style={{
-                              width: 28, height: 28,
-                              background: 'linear-gradient(135deg, var(--bs-success), color-mix(in srgb, var(--bs-success), #000 20%))',
-                              boxShadow: '0 4px 12px rgba(var(--bs-success-rgb), 0.3)'
+                              width: 28, height: 28, background: 'var(--bs-success)',
                             }}>
                               <i className="bx bx-check text-white" style={{ fontSize: 16 }}></i>
                             </div>
-                            <span className="small" style={{ color: 'var(--bs-success)', textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: '0.7rem', fontWeight: '700' }}>
+                            <span className="small" style={{ color: 'var(--bs-success)', textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: '0.65rem', fontWeight: '700' }}>
                               {t("payment.paidAt", { defaultValue: "Paid At" })}
                             </span>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <div className="fw-bold" style={{ color: 'var(--bs-success)', fontSize: '1.1rem', letterSpacing: '0.5px' }}>
+                            <div className="fw-bold" style={{ color: 'var(--bs-success)', fontSize: '1.1rem' }}>
                               {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(invoice.paidAt))}
                             </div>
                             <div className="fw-semibold" style={{ color: 'var(--bs-success)', fontSize: '0.9rem', letterSpacing: '1px' }}>
@@ -345,6 +328,33 @@ export default function InvoicePaymentV2() {
 
                       {/* Progress Steps */}
                       <PaymentProgressSteps isPaid={isPaid} isExpiredUnpaid={isExpiredUnpaid} currentStep={currentStep} />
+
+                      {/* Network Warning */}
+                      {!isPaid && !isExpiredUnpaid && coinSym && networkName && (
+                        <div className="d-flex align-items-start gap-2 p-3 rounded-3 mt-3" style={{
+                          background: 'rgba(var(--bs-warning-rgb), 0.08)',
+                          border: '1px solid rgba(var(--bs-warning-rgb), 0.25)',
+                        }}>
+                          <i className="bx bx-error flex-shrink-0" style={{ fontSize: 20, color: 'var(--bs-warning)', marginTop: 1 }}></i>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--bs-body-color)', lineHeight: 1.5 }}>
+                            {t("payment.networkWarning", {
+                              defaultValue: `Send only <b>${coinSym}</b> on <b>${networkName}</b> network. Using wrong network may result in permanent loss of funds.`,
+                              coin: coinSym,
+                              network: networkName,
+                              interpolation: { escapeValue: false }
+                            }).includes('<b>') ? (
+                              <span dangerouslySetInnerHTML={{ __html: t("payment.networkWarning", {
+                                defaultValue: `Send only <b>${coinSym}</b> on <b>${networkName}</b> network. Using wrong network may result in permanent loss of funds.`,
+                                coin: coinSym,
+                                network: networkName,
+                                interpolation: { escapeValue: false }
+                              }) }} />
+                            ) : (
+                              <span>Send only <b>{coinSym}</b> on <b>{networkName}</b> network. Using wrong network may result in permanent loss of funds.</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Success Redirect */}
                       {isPaid && invoice?.successUrl && isSafeRedirectUrl(invoice.successUrl) && (

@@ -56,6 +56,8 @@ export default function useInvoicePayment() {
         : null,
       networkName: data.networkName || data.networkSymbol || '',
       successUrl: data.successUrl,
+      fiatAmount: data.fiatAmount,
+      fiatCurrency: data.fiatCurrency,
     }
   }, [])
 

@@ -6,6 +6,7 @@ import { useToastContext } from '../../context/ToastContext'
 import { getTempWallet } from '../../api/admin.ts'
 import { formatDate } from '../../utils/format'
 import { copyToClipboard as copyText } from '../../utils/clipboard'
+import CoinImg from '../../components/CoinImg'
 
 function statusBadgeClass(s) {
   const v = String(s || '').toLowerCase()
@@ -93,8 +94,11 @@ export default function TempWalletDetail() {
                     {wallet.isExpired && (
                       <span className="badge bg-label-danger">EXPIRED</span>
                     )}
-                    {wallet.coinNetworkId && (
-                      <span className="badge bg-label-secondary">CN #{wallet.coinNetworkId}</span>
+                    {wallet.coinSymbol && (
+                      <span className="badge bg-label-primary d-inline-flex align-items-center gap-1">
+                        <CoinImg symbol={wallet.coinSymbol} networkSymbol={wallet.networkSymbol} size={16} />
+                        {wallet.coinSymbol} · {wallet.networkSymbol}
+                      </span>
                     )}
                     {wallet.invoiceId && (
                       <span className="badge bg-label-secondary">Invoice #{wallet.invoiceId}</span>
@@ -161,8 +165,20 @@ export default function TempWalletDetail() {
                         <td className="fw-medium">{wallet.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Coin Network ID</td>
-                        <td className="fw-medium">{wallet.coinNetworkId || '-'}</td>
+                        <td className="text-muted">Coin</td>
+                        <td>
+                          <div className="d-flex align-items-center gap-2">
+                            <CoinImg symbol={wallet.coinSymbol} networkSymbol={wallet.networkSymbol} size={28} />
+                            <div>
+                              <span className="fw-semibold">{wallet.coinSymbol || '-'}</span>
+                              <span className="text-muted ms-1" style={{ fontSize: '0.8rem' }}>on {wallet.networkName || wallet.networkSymbol || '-'}</span>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-muted">Decimals</td>
+                        <td className="fw-medium">{wallet.decimals ?? '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Address</td>
@@ -179,40 +195,38 @@ export default function TempWalletDetail() {
                               >
                                 <i className="bx bx-copy"></i>
                               </button>
+                              {wallet.explorerUrl && (
+                                <a
+                                  href={`${wallet.explorerUrl}/address/${wallet.address}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-icon btn-text-primary rounded-pill flex-shrink-0"
+                                  title="View on Explorer"
+                                >
+                                  <i className="bx bx-link-external"></i>
+                                </a>
+                              )}
                             </div>
                           ) : <span className="text-muted">-</span>}
                         </td>
                       </tr>
-                      {wallet.publicKey && (
-                        <tr>
-                          <td className="text-muted">Public Key</td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <code className="text-body me-2" style={{ fontSize: '0.75rem', wordBreak: 'break-all' }}>
-                                {wallet.publicKey}
-                              </code>
-                              <button
-                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
-                                onClick={() => handleCopy(wallet.publicKey)}
-                                title="Copy"
-                              >
-                                <i className="bx bx-copy"></i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
                       <tr>
                         <td className="text-muted">Reuse Count</td>
                         <td className="fw-medium">{wallet.reuseCount ?? 0}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Total Received (Raw)</td>
-                        <td><code style={{ fontSize: '0.8rem' }}>{wallet.totalReceivedRaw || '0'}</code></td>
+                        <td className="text-muted">Total Received</td>
+                        <td>
+                          <span className="fw-medium">{wallet.totalReceivedAmount || '0'}</span>
+                          <span className="text-muted ms-1" style={{ fontSize: '0.75rem' }}>{wallet.coinSymbol}</span>
+                        </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Total Swept (Raw)</td>
-                        <td><code style={{ fontSize: '0.8rem' }}>{wallet.totalSweptRaw || '0'}</code></td>
+                        <td className="text-muted">Total Swept</td>
+                        <td>
+                          <span className="fw-medium">{wallet.totalSweptAmount || '0'}</span>
+                          <span className="text-muted ms-1" style={{ fontSize: '0.75rem' }}>{wallet.coinSymbol}</span>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -222,31 +236,6 @@ export default function TempWalletDetail() {
 
             {/* Right Column */}
             <div className="col-md-6">
-              {/* Key & Provider */}
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h5 className="mb-0"><i className="bx bx-key me-2"></i>Key & Provider</h5>
-                </div>
-                <div className="card-body">
-                  <table className="table table-borderless mb-0">
-                    <tbody>
-                      <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Sign Provider ID</td>
-                        <td className="fw-medium">{wallet.signProviderId || '-'}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted">Provider Key Ref</td>
-                        <td className="fw-medium">{wallet.providerKeyRef || '-'}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted">Derivation Path</td>
-                        <td><code style={{ fontSize: '0.8rem' }}>{wallet.derivationPath || '-'}</code></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
               {/* Flags */}
               <div className="card mb-4">
                 <div className="card-header">
@@ -254,15 +243,20 @@ export default function TempWalletDetail() {
                 </div>
                 <div className="card-body">
                   <div className="d-flex flex-wrap gap-2">
+                    {wallet.isReusable != null && (
+                      wallet.isReusable
+                        ? <span className="badge bg-label-success">Reusable</span>
+                        : <span className="badge bg-label-secondary">Not Reusable</span>
+                    )}
                     {wallet.isAssigned && <span className="badge bg-label-info">Assigned</span>}
                     {wallet.isAvailable && <span className="badge bg-label-success">Available</span>}
                     {wallet.isExpired && <span className="badge bg-label-danger">Expired</span>}
                     {wallet.hasBeenUsed && <span className="badge bg-label-warning">Has Been Used</span>}
                     {wallet.needsSweeping && <span className="badge bg-label-primary">Needs Sweeping</span>}
-                    {wallet.shouldBeReleased && <span className="badge bg-label-secondary">Should Be Released</span>}
-                    {wallet.isReusable && <span className="badge bg-label-success">Reusable</span>}
-                    {!wallet.isAssigned && !wallet.isAvailable && !wallet.isExpired && !wallet.hasBeenUsed && !wallet.needsSweeping && !wallet.shouldBeReleased && !wallet.isReusable && (
-                      <span className="text-muted">No flags set</span>
+                    {wallet.timeToExpiry != null && (
+                      <span className="badge bg-label-warning">
+                        Expires in {Math.floor(wallet.timeToExpiry / 60000)}m
+                      </span>
                     )}
                   </div>
                 </div>
@@ -341,10 +335,13 @@ export default function TempWalletDetail() {
                             </td>
                           </tr>
                         )}
-                        {wallet.lastSweepAmountRaw && (
+                        {(wallet.lastSweepAmount || wallet.lastSweepAmountRaw) && (
                           <tr>
-                            <td className="text-muted">Sweep Amount (Raw)</td>
-                            <td><code style={{ fontSize: '0.8rem' }}>{wallet.lastSweepAmountRaw}</code></td>
+                            <td className="text-muted">Sweep Amount</td>
+                            <td>
+                              <span className="fw-medium">{wallet.lastSweepAmount || wallet.lastSweepAmountRaw}</span>
+                              <span className="text-muted ms-1" style={{ fontSize: '0.75rem' }}>{wallet.coinSymbol}</span>
+                            </td>
                           </tr>
                         )}
                         {wallet.lastTxHash && (
@@ -372,16 +369,21 @@ export default function TempWalletDetail() {
                             <td className="fw-medium">{wallet.lastBlockNumber}</td>
                           </tr>
                         )}
-                        {wallet.lastLeftoverTokenRaw && (
+                        {(wallet.lastLeftoverTokenAmount || wallet.lastLeftoverTokenRaw) && (
                           <tr>
-                            <td className="text-muted">Leftover Token (Raw)</td>
-                            <td><code style={{ fontSize: '0.8rem' }}>{wallet.lastLeftoverTokenRaw}</code></td>
+                            <td className="text-muted">Leftover Token</td>
+                            <td>
+                              <span className="fw-medium">{wallet.lastLeftoverTokenAmount || wallet.lastLeftoverTokenRaw}</span>
+                              <span className="text-muted ms-1" style={{ fontSize: '0.75rem' }}>{wallet.coinSymbol}</span>
+                            </td>
                           </tr>
                         )}
-                        {wallet.lastLeftoverNativeRaw && (
+                        {(wallet.lastLeftoverNativeAmount || wallet.lastLeftoverNativeRaw) && (
                           <tr>
-                            <td className="text-muted">Leftover Native (Raw)</td>
-                            <td><code style={{ fontSize: '0.8rem' }}>{wallet.lastLeftoverNativeRaw}</code></td>
+                            <td className="text-muted">Leftover Native</td>
+                            <td>
+                              <span className="fw-medium">{wallet.lastLeftoverNativeAmount || wallet.lastLeftoverNativeRaw}</span>
+                            </td>
                           </tr>
                         )}
                         {wallet.lastReason && (

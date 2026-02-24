@@ -105,7 +105,15 @@ export default function TempWalletList() {
       setLoading(true)
       const data = await getTempWallets(token, { page: currentPage, limit: 20, ...appliedFilters })
       setWallets(data.items || [])
-      setPagination(data.pagination || null)
+      const m = data.meta || data.pagination || null
+      setPagination(m ? {
+        total: m.total,
+        page: m.page,
+        limit: m.perPage || m.limit || 20,
+        totalPages: m.lastPage || m.totalPages || 1,
+        hasNext: m.hasNextPage ?? m.hasNext ?? false,
+        hasPrev: m.hasPrevPage ?? m.hasPrev ?? false,
+      } : null)
     } catch (error) {
       console.error('Failed to load temp wallets:', error)
       toast.error('Failed to load temp wallets')
@@ -267,10 +275,12 @@ export default function TempWalletList() {
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
                       <th className="text-center">{t('table.invoiceId', { defaultValue: 'Invoice' })}</th>
                       <th className="text-center">{t('table.userId', { defaultValue: 'User' })}</th>
-                      <th className="text-center">{t('table.coinNetworkId', { defaultValue: 'CN ID' })}</th>
+                      <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
                       <th>{t('table.address', { defaultValue: 'Address' })}</th>
                       <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
                       <th className="text-center">{t('admin.tempWallets.reuseCount', { defaultValue: 'Reuse' })}</th>
+                      <th className="text-end">{t('admin.tempWallets.totalReceived', { defaultValue: 'Received' })}</th>
+                      <th className="text-end">{t('admin.tempWallets.totalSwept', { defaultValue: 'Swept' })}</th>
                       <th>{t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' })}</th>
                       <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
                       <th>{t('table.created', { defaultValue: 'Created' })}</th>
@@ -280,7 +290,7 @@ export default function TempWalletList() {
                   <tbody>
                     {wallets.length === 0 ? (
                       <tr>
-                        <td colSpan="11" className="text-center text-muted py-4">
+                        <td colSpan="14" className="text-center text-muted py-4">
                           {t('admin.tempWallets.noWallets', { defaultValue: 'No temp wallets found' })}
                         </td>
                       </tr>
@@ -306,8 +316,14 @@ export default function TempWalletList() {
                           <td className="text-center">
                             <span className="fw-medium">{w.userId || '-'}</span>
                           </td>
-                          <td className="text-center">
-                            <span className="fw-medium">{w.coinNetworkId || '-'}</span>
+                          <td>
+                            <div className="d-flex align-items-center gap-2">
+                              <CoinImg symbol={w.coinSymbol} networkSymbol={w.networkSymbol} size={28} />
+                              <div>
+                                <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{w.coinSymbol || '-'}</div>
+                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{w.networkSymbol || '-'}</div>
+                              </div>
+                            </div>
                           </td>
                           <td>
                             {w.address ? (
@@ -337,6 +353,12 @@ export default function TempWalletList() {
                           </td>
                           <td className="text-center">
                             <span className="fw-medium">{w.reuseCount ?? 0}</span>
+                          </td>
+                          <td className="text-end text-nowrap">
+                            <span className="fw-medium">{w.totalReceivedAmount || '0'}</span>
+                          </td>
+                          <td className="text-end text-nowrap">
+                            <span className="fw-medium">{w.totalSweptAmount || '0'}</span>
                           </td>
                           <td>
                             <span style={{ whiteSpace: 'nowrap' }}>{formatDate(w.lastAssignedAt)}</span>
