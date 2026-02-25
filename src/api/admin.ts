@@ -2022,3 +2022,70 @@ export async function getTempWalletHistory(token: string, id: number | string) {
   const data = response?.data || response
   return data?.history || data?.tempWalletHistory || data
 }
+
+// ─── User Balances ───────────────────────────────────────────────
+
+/**
+ * Get user balances summary (Admin only)
+ */
+export async function getUserBalancesSummary(token: string) {
+  const response = await apiFetch('/api/v1/admin/user-balances/summary', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}
+
+/**
+ * List user balances (Admin only, paginated)
+ */
+export async function getUserBalances(
+  token: string,
+  params: {
+    page?: number
+    limit?: number
+    sortBy?: string
+    sortOrder?: string
+    minValueUsd?: number
+  } = {}
+) {
+  const query = new URLSearchParams()
+  if (params.page) query.set('page', String(params.page))
+  if (params.limit) query.set('limit', String(params.limit))
+  if (params.sortBy) query.set('sortBy', params.sortBy)
+  if (params.sortOrder) query.set('sortOrder', params.sortOrder)
+  if (params.minValueUsd != null) query.set('minValueUsd', String(params.minValueUsd))
+
+  const qs = query.toString()
+  const response = await apiFetch(`/api/v1/admin/user-balances${qs ? `?${qs}` : ''}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const raw = response?.data || response
+  const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : [])
+  const meta = response?.meta || raw?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.limit || meta.perPage || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
+      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+    }
+  }
+}
+
+/**
+ * Get user balance detail by userId (Admin only, real-time)
+ */
+export async function getUserBalanceDetail(token: string, userId: number | string) {
+  const response = await apiFetch(`/api/v1/admin/user-balances/${userId}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return response?.data || response
+}

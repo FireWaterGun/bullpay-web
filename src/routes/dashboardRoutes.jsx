@@ -59,6 +59,8 @@ const AdminRoles = lazy(() => import('../views/admin/AdminRoles'))
 const RolePermissions = lazy(() => import('../views/admin/RolePermissions'))
 const TempWalletList = lazy(() => import('../views/admin/TempWalletList'))
 const TempWalletDetail = lazy(() => import('../views/admin/TempWalletDetail'))
+const UserBalanceList = lazy(() => import('../views/admin/UserBalanceList'))
+const UserBalanceDetail = lazy(() => import('../views/admin/UserBalanceDetail'))
 const TempWalletHistoryList = lazy(() => import('../views/admin/TempWalletHistoryList'))
 const TempWalletHistoryDetail = lazy(() => import('../views/admin/TempWalletHistoryDetail'))
 
@@ -113,6 +115,8 @@ export function renderAdminRoutes() {
       <Route path="admin/settings/withdrawal/policy" element={<WithdrawalPolicy />} />
       <Route path="admin/roles" element={<AdminRoles />} />
       <Route path="admin/roles/:role" element={<RolePermissions />} />
+      <Route path="admin/user-balances" element={<UserBalanceList />} />
+      <Route path="admin/user-balances/:userId" element={<UserBalanceDetail />} />
       <Route path="admin/temp-wallets" element={<TempWalletList />} />
       <Route path="admin/temp-wallets/:id" element={<TempWalletDetail />} />
       <Route path="admin/temp-wallet-histories" element={<TempWalletHistoryList />} />
