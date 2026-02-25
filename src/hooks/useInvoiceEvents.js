@@ -69,6 +69,11 @@ export function useInvoiceEvents(invoiceId, callbacks = {}) {
  * @param {Function} callbacks.onPaymentReceived - Called when payment is received on any invoice
  * @param {Function} callbacks.onPaymentCompleted - Called when payment is completed
  * @param {Function} callbacks.onWithdrawalCompleted - Called when withdrawal is completed
+ * @param {Function} callbacks.onInvoiceExpired - Called when invoice expires
+ * @param {Function} callbacks.onWithdrawalApproved - Called when withdrawal is approved
+ * @param {Function} callbacks.onWithdrawalRejected - Called when withdrawal is rejected
+ * @param {Function} callbacks.onMerchantApproved - Called when merchant account is approved
+ * @param {Function} callbacks.onWithdrawalAddressApproved - Called when withdrawal address is approved
  */
 export function useUserInvoiceEvents(userId, callbacks = {}) {
   const { pusher, isConnected } = usePusher();
@@ -128,6 +133,26 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
 
     channel.bind('withdrawal_completed', (data) => {
       callbacksRef.current.onWithdrawalCompleted?.(data);
+    });
+
+    channel.bind('invoice_expired', (data) => {
+      callbacksRef.current.onInvoiceExpired?.(data);
+    });
+
+    channel.bind('withdrawal_approved', (data) => {
+      callbacksRef.current.onWithdrawalApproved?.(data);
+    });
+
+    channel.bind('withdrawal_rejected', (data) => {
+      callbacksRef.current.onWithdrawalRejected?.(data);
+    });
+
+    channel.bind('merchant_approved', (data) => {
+      callbacksRef.current.onMerchantApproved?.(data);
+    });
+
+    channel.bind('withdrawal_address_approved', (data) => {
+      callbacksRef.current.onWithdrawalAddressApproved?.(data);
     });
 
     isSubscribingRef.current = false;

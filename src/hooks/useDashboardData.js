@@ -151,6 +151,48 @@ export default function useDashboardData() {
       });
       refreshNotifications();
       loadPendingWithdrawalCount();
+    },
+    onInvoiceExpired: (data) => {
+      playNotificationSound('info');
+      toast.warning({
+        title: data.title || 'Invoice Expired',
+        body: data.message || 'An invoice has expired'
+      });
+      refreshNotifications();
+    },
+    onWithdrawalApproved: (data) => {
+      playNotificationSound('success');
+      toast.success({
+        title: data.title || 'Withdrawal Approved',
+        body: data.message || 'Your withdrawal has been approved'
+      });
+      refreshNotifications();
+      loadPendingWithdrawalCount();
+    },
+    onWithdrawalRejected: (data) => {
+      playNotificationSound('info');
+      toast.error({
+        title: data.title || 'Withdrawal Rejected',
+        body: data.message || data.metadata?.rejectionReason || 'Your withdrawal has been rejected'
+      });
+      refreshNotifications();
+      loadPendingWithdrawalCount();
+    },
+    onMerchantApproved: (data) => {
+      playNotificationSound('success');
+      toast.success({
+        title: data.title || 'Merchant Approved',
+        body: data.message || 'Your merchant account has been approved'
+      });
+      refreshNotifications();
+    },
+    onWithdrawalAddressApproved: (data) => {
+      playNotificationSound('success');
+      toast.success({
+        title: data.title || 'Address Approved',
+        body: data.message || 'Your withdrawal address has been approved'
+      });
+      refreshNotifications();
     }
   }), []); // Empty array - create once and never change
 
