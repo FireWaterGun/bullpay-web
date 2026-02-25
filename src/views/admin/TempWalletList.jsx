@@ -281,6 +281,9 @@ export default function TempWalletList() {
                       <th className="text-center">{t('admin.tempWallets.reuseCount', { defaultValue: 'Reuse' })}</th>
                       <th className="text-end">{t('admin.tempWallets.totalReceived', { defaultValue: 'Received' })}</th>
                       <th className="text-end">{t('admin.tempWallets.totalSwept', { defaultValue: 'Swept' })}</th>
+                      <th className="text-end">Last Sweep Amt</th>
+                      <th className="text-end">Leftover Native</th>
+                      <th className="text-end">Leftover Token</th>
                       <th>{t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' })}</th>
                       <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
                       <th>{t('table.created', { defaultValue: 'Created' })}</th>
@@ -290,7 +293,7 @@ export default function TempWalletList() {
                   <tbody>
                     {wallets.length === 0 ? (
                       <tr>
-                        <td colSpan="14" className="text-center text-muted py-4">
+                        <td colSpan="17" className="text-center text-muted py-4">
                           {t('admin.tempWallets.noWallets', { defaultValue: 'No temp wallets found' })}
                         </td>
                       </tr>
@@ -359,6 +362,15 @@ export default function TempWalletList() {
                           </td>
                           <td className="text-end text-nowrap">
                             <span className="fw-medium">{w.totalSweptAmount || '0'}</span>
+                          </td>
+                          <td className="text-end text-nowrap">
+                            <span className="fw-medium">{w.lastSweepAmount || '-'}</span>
+                          </td>
+                          <td className="text-end text-nowrap">
+                            <span className="fw-medium">{w.lastLeftoverNativeAmount || '-'}</span>
+                          </td>
+                          <td className="text-end text-nowrap">
+                            <span className="fw-medium">{w.lastLeftoverTokenAmount || '-'}</span>
                           </td>
                           <td>
                             <span style={{ whiteSpace: 'nowrap' }}>{formatDate(w.lastAssignedAt)}</span>

@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useToastContext } from '../../context/ToastContext'
 import { getAdminRoles, getAdminRoleStats } from '../../api/admin.ts'
-import { ROLE_ICON, ROLE_COLOR, formatRoleLabel } from '../../utils/roles'
+import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '../../utils/roles'
+import SummaryCard from './RevenueSummaryCard'
+
+const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user']
 
 export default function AdminRoles() {
   const { token } = useAuth()
@@ -13,6 +16,7 @@ export default function AdminRoles() {
   const [loading, setLoading] = useState(true)
   const [roles, setRoles] = useState([])
   const [stats, setStats] = useState(null)
+  const [requesterRole, setRequesterRole] = useState(null)
 
   useEffect(() => {
     loadData()
@@ -26,8 +30,10 @@ export default function AdminRoles() {
         getAdminRoleStats(token).catch(() => null),
       ])
 
+      // API: { roles: [{ value, name, canAssign }], requesterRole }
       const roleList = Array.isArray(rolesData) ? rolesData : (rolesData?.roles || [])
       setRoles(roleList)
+      setRequesterRole(rolesData?.requesterRole || null)
       setStats(statsData)
     } catch (error) {
       console.error('Failed to load roles:', error)
@@ -37,40 +43,42 @@ export default function AdminRoles() {
     }
   }
 
-  // Build lookup: role -> { count, percentage }
-  function getRoleStats(roleName) {
+  // Build lookup: role key -> { count, percentage }
+  function getRoleStats(roleKey) {
     if (!stats) return { count: 0, percentage: 0 }
-    const key = roleName.toLowerCase()
+    const key = roleKey.toLowerCase()
 
-    // New API format: { roleDistribution: [{ role, count, percentage }] }
     if (stats.roleDistribution && Array.isArray(stats.roleDistribution)) {
-      const entry = stats.roleDistribution.find(d => d.role === roleName || d.role === key)
-      if (entry) return { count: entry.count || 0, percentage: entry.percentage || 0 }
-    }
-
-    // Fallback: stats array format [{ role, count }]
-    if (Array.isArray(stats)) {
-      const entry = stats.find(s => s.role === roleName || s.role === key)
-      if (entry) return { count: entry.count || entry.userCount || 0, percentage: entry.percentage || 0 }
-    }
-
-    // Fallback: stats.stats array
-    if (stats.stats && Array.isArray(stats.stats)) {
-      const entry = stats.stats.find(s => s.role === roleName || s.role === key)
-      if (entry) return { count: entry.count || entry.userCount || 0, percentage: entry.percentage || 0 }
-    }
-
-    // Fallback: object { role: count }
-    if (typeof stats === 'object' && !Array.isArray(stats)) {
-      const val = stats[roleName] || stats[key]
-      if (typeof val === 'number') return { count: val, percentage: 0 }
+      const entry = stats.roleDistribution.find(d => d.role === key)
+      if (entry) return { count: entry.count || 0, percentage: parseFloat(entry.percentage) || 0 }
     }
 
     return { count: 0, percentage: 0 }
   }
 
+  // Extract role key from role object — API uses `value` field
+  function getRoleKey(role) {
+    if (typeof role === 'string') return role.toLowerCase()
+    return (role.value || role.name || role.role || '').toLowerCase()
+  }
+
+  function getRoleName(role) {
+    if (typeof role === 'string') return formatRoleLabel(role)
+    return role.name || formatRoleLabel(role.value || '')
+  }
+
   const totalUsers = stats?.totalUsers
     ?? (stats?.roleDistribution ? stats.roleDistribution.reduce((sum, d) => sum + (d.count || 0), 0) : null)
+
+  // Sort roles by hierarchy level (highest first)
+  const sortedRoles = [...roles].sort((a, b) => {
+    return (ROLE_LEVEL[getRoleKey(b)] || 0) - (ROLE_LEVEL[getRoleKey(a)] || 0)
+  })
+
+  // Build hierarchy from known order, filtered by existing roles
+  const hierarchyRoles = HIERARCHY_ORDER.filter(h =>
+    roles.some(r => getRoleKey(r) === h)
+  )
 
   if (loading) {
     return (
@@ -87,57 +95,84 @@ export default function AdminRoles() {
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       {/* Header */}
-      <div className="card mb-4">
-        <div className="card-header">
-          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-              <h4 className="mb-1">
-                <i className="bx bx-shield-alt-2 me-2"></i>
-                Roles & Permissions
-              </h4>
-              <p className="text-muted mb-0">Manage role-based access control (RBAC)</p>
-            </div>
-            <button className="btn btn-primary" onClick={loadData} disabled={loading}>
-              <i className="bx bx-refresh me-1"></i>
-              Refresh
-            </button>
-          </div>
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+          <h4 className="mb-1">
+            <i className="bx bx-shield-alt-2 text-primary me-2"></i>
+            Roles & Permissions
+          </h4>
+          <p className="text-muted mb-0">
+            Manage role-based access control (RBAC)
+            {requesterRole && (
+              <span className="ms-2">
+                — logged in as <span className={`badge bg-label-${ROLE_COLOR[requesterRole] || 'secondary'}`}>{formatRoleLabel(requesterRole)}</span>
+              </span>
+            )}
+          </p>
         </div>
+        <button className="btn btn-primary" onClick={loadData} disabled={loading}>
+          <i className="bx bx-refresh me-1"></i>
+          Refresh
+        </button>
       </div>
 
       {/* Summary Stats */}
-      {(totalUsers != null || roles.length > 0) && (
-        <div className="row mb-4">
-          {totalUsers != null && (
-            <div className="col-sm-6 col-lg-3">
-              <div className="card">
-                <div className="card-body">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="d-flex align-items-center justify-content-center rounded bg-label-primary" style={{ width: '42px', height: '42px' }}>
-                      <i className="bx bx-group" style={{ fontSize: '1.4rem' }}></i>
+      <div className="row g-4 mb-4">
+        <SummaryCard
+          title="Total Users"
+          value={totalUsers ?? '—'}
+          icon="bx-group"
+          color="primary"
+        />
+        <SummaryCard
+          title="Total Roles"
+          value={roles.length}
+          icon="bx-shield-alt-2"
+          color="info"
+        />
+      </div>
+
+      {/* Role Hierarchy */}
+      {hierarchyRoles.length > 0 && (
+        <div className="card mb-4">
+          <div className="card-body">
+            <h6 className="mb-3">
+              <i className="bx bx-sitemap me-2 text-muted"></i>
+              Role Hierarchy
+            </h6>
+            <div className="d-flex align-items-end gap-3 flex-wrap justify-content-center">
+              {hierarchyRoles.map((roleKey) => {
+                const level = ROLE_LEVEL[roleKey] || 1
+                const color = ROLE_COLOR[roleKey] || 'secondary'
+                const icon = ROLE_ICON[roleKey] || 'bx-user'
+                const rs = getRoleStats(roleKey)
+                const barHeight = 40 + level * 16
+
+                return (
+                  <div
+                    key={roleKey}
+                    className="text-center"
+                    style={{ cursor: 'pointer', minWidth: '100px', flex: '1 1 0' }}
+                    onClick={() => navigate(`/admin/roles/${roleKey}`)}
+                  >
+                    <div
+                      className={`d-flex flex-column align-items-center justify-content-end mx-auto rounded-top bg-label-${color}`}
+                      style={{ width: '100%', maxWidth: '120px', height: `${barHeight}px`, transition: 'opacity 0.2s' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+                    >
+                      <i className={`bx ${icon} mb-1`} style={{ fontSize: '1.25rem' }}></i>
+                      <span className={`badge bg-${color} mb-2`} style={{ fontSize: '0.65rem' }}>L{level}</span>
                     </div>
-                    <div>
-                      <h5 className="mb-0">{totalUsers}</h5>
-                      <small className="text-muted">Total Users</small>
+                    <div className="mt-2">
+                      <small className="fw-semibold d-block" style={{ fontSize: '0.75rem' }}>{formatRoleLabel(roleKey)}</small>
+                      <small className="text-muted" style={{ fontSize: '0.7rem' }}>
+                        {rs.count} {rs.count === 1 ? 'user' : 'users'} · {rs.percentage.toFixed(0)}%
+                      </small>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          )}
-          <div className="col-sm-6 col-lg-3">
-            <div className="card">
-              <div className="card-body">
-                <div className="d-flex align-items-center gap-3">
-                  <div className="d-flex align-items-center justify-content-center rounded bg-label-info" style={{ width: '42px', height: '42px' }}>
-                    <i className="bx bx-shield-alt-2" style={{ fontSize: '1.4rem' }}></i>
-                  </div>
-                  <div>
-                    <h5 className="mb-0">{roles.length}</h5>
-                    <small className="text-muted">Total Roles</small>
-                  </div>
-                </div>
-              </div>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -145,61 +180,90 @@ export default function AdminRoles() {
 
       {/* Role Cards */}
       <div className="row g-4">
-        {roles.map((role) => {
-          const roleName = typeof role === 'string' ? role : (role.name || role.role || '')
-          const roleKey = roleName.toLowerCase()
+        {sortedRoles.map((role) => {
+          const roleKey = getRoleKey(role)
+          const roleName = getRoleName(role)
           const color = ROLE_COLOR[roleKey] || 'secondary'
           const icon = ROLE_ICON[roleKey] || 'bx-user'
-          const description = typeof role === 'object' ? (role.description || '') : ''
-          const roleStats = getRoleStats(roleName)
-          const userCount = roleStats.count
-          const percentage = Number(roleStats.percentage) || 0
+          const level = ROLE_LEVEL[roleKey] || 0
+          const description = ROLE_DESCRIPTION[roleKey] || ''
+          const canAssign = typeof role === 'object' ? role.canAssign : undefined
+          const rs = getRoleStats(roleKey)
 
           return (
-            <div key={roleName} className="col-md-6 col-lg-4">
+            <div key={roleKey} className="col-md-6">
               <div
-                className="card h-100 border-0 shadow-sm"
-                style={{ cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s' }}
-                onClick={() => navigate(`/admin/roles/${roleKey}`)}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.12)' }}
+                className="card h-100"
+                style={{
+                  cursor: canAssign === false ? 'not-allowed' : 'pointer',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                  opacity: canAssign === false ? 0.6 : 1,
+                }}
+                onClick={() => canAssign !== false && navigate(`/admin/roles/${roleKey}`)}
+                onMouseEnter={(e) => { if (canAssign !== false) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)' } }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
               >
                 <div className="card-body">
-                  <div className="d-flex align-items-center gap-3 mb-3">
-                    <div
-                      className={`d-flex align-items-center justify-content-center rounded bg-label-${color}`}
-                      style={{ width: '48px', height: '48px', minWidth: '48px' }}
-                    >
-                      <i className={`bx ${icon}`} style={{ fontSize: '1.5rem' }}></i>
+                  {/* Role header */}
+                  <div className="d-flex align-items-start justify-content-between mb-2">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="avatar">
+                        <span className={`avatar-initial rounded bg-label-${color}`}>
+                          <i className={`bx ${icon} bx-sm`}></i>
+                        </span>
+                      </div>
+                      <div>
+                        <h5 className="mb-0">{roleName}</h5>
+                        <small className="text-muted">{roleKey}</small>
+                      </div>
                     </div>
-                    <div>
-                      <h5 className="mb-0">{formatRoleLabel(roleName)}</h5>
-                      {description && <small className="text-muted">{description}</small>}
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center justify-content-between mb-2">
                     <div className="d-flex align-items-center gap-2">
-                      <i className="bx bx-group text-muted"></i>
-                      <span className="text-muted">{userCount} users</span>
+                      {canAssign === false && (
+                        <span className="badge bg-label-danger" title="Cannot be assigned">
+                          <i className="bx bx-lock-alt" style={{ fontSize: '0.7rem' }}></i>
+                        </span>
+                      )}
+                      {level > 0 && (
+                        <span className={`badge bg-label-${color}`}>L{level}</span>
+                      )}
                     </div>
-                    {percentage > 0 && (
-                      <small className="text-muted fw-medium">{percentage.toFixed(1)}%</small>
-                    )}
                   </div>
-                  {percentage > 0 && (
-                    <div className="progress" style={{ height: '4px' }}>
-                      <div
-                        className={`progress-bar bg-${color}`}
-                        role="progressbar"
-                        style={{ width: `${Math.min(percentage, 100)}%` }}
-                      ></div>
-                    </div>
+
+                  {/* Description */}
+                  {description && (
+                    <p className="text-muted mb-3" style={{ fontSize: '0.85rem' }}>{description}</p>
                   )}
-                </div>
-                <div className={`card-footer bg-label-${color} bg-opacity-10 border-0`}>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <small className="fw-medium">Manage Permissions</small>
-                    <i className="bx bx-chevron-right"></i>
+
+                  {/* Stats */}
+                  <div className="d-flex align-items-center gap-4 mb-3">
+                    <div>
+                      <h4 className="mb-0">{rs.count}</h4>
+                      <small className="text-muted">Users</small>
+                    </div>
+                    <div className="flex-grow-1">
+                      <div className="d-flex justify-content-between mb-1">
+                        <small className="text-muted">Distribution</small>
+                        <small className={`fw-medium text-${color}`}>{rs.percentage.toFixed(1)}%</small>
+                      </div>
+                      <div className="progress" style={{ height: '6px' }}>
+                        <div
+                          className={`progress-bar bg-${color}`}
+                          role="progressbar"
+                          style={{ width: `${Math.max(rs.percentage, 2)}%`, transition: 'width 0.4s ease' }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer link */}
+                  <div className="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <small className={`fw-medium${canAssign === false ? ' text-muted' : ''}`}>
+                      {canAssign === false ? 'Restricted' : 'Manage Permissions'}
+                    </small>
+                    {canAssign === false
+                      ? <i className="bx bx-lock-alt text-muted"></i>
+                      : <i className={`bx bx-chevron-right text-${color}`}></i>
+                    }
                   </div>
                 </div>
               </div>

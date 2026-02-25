@@ -10,7 +10,8 @@ import {
   deleteRolePermissionOverride,
   resetRolePermissionOverrides,
 } from '../../api/admin.ts'
-import { ROLE_ICON, ROLE_COLOR, formatRoleLabel } from '../../utils/roles'
+import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '../../utils/roles'
+import SummaryCard from './RevenueSummaryCard'
 import PermissionActionModal from './PermissionActionModal'
 import ResetOverridesModal from './ResetOverridesModal'
 import PermissionGroupCard, { groupPermissions } from './PermissionGroupCard'
@@ -37,6 +38,8 @@ export default function RolePermissions() {
 
   const color = ROLE_COLOR[role] || 'secondary'
   const icon = ROLE_ICON[role] || 'bx-user'
+  const level = ROLE_LEVEL[role] || 0
+  const description = ROLE_DESCRIPTION[role] || ''
 
   useEffect(() => {
     loadData()
@@ -50,6 +53,7 @@ export default function RolePermissions() {
         getRolePermissionOverrides(token, role).catch(() => null),
       ])
 
+      // API: { role, permissions: [...], resolved: [{ permission, source, active }] }
       const resolved = Array.isArray(permsData) ? permsData
         : (permsData?.resolved || permsData?.permissions || [])
       setPermissions(resolved.map(p => {
@@ -80,7 +84,15 @@ export default function RolePermissions() {
   }, [overrides])
 
   let activeCount = 0
-  for (const p of permissions) { if (p.active) activeCount++ }
+  let defaultCount = 0
+  let grantedCount = 0
+  let deniedCount = 0
+  for (const p of permissions) {
+    if (p.active) activeCount++
+    if (p.source === 'default') defaultCount++
+    if (p.source === 'granted') grantedCount++
+    if (p.source === 'denied') deniedCount++
+  }
   const inactiveCount = permissions.length - activeCount
 
   const filteredPermissions = useMemo(() => {
@@ -113,9 +125,20 @@ export default function RolePermissions() {
   }, [permissions, searchQuery, filterType])
 
   const groupedPermissions = useMemo(() => groupPermissions(filteredPermissions), [filteredPermissions])
+  const groupCount = Object.keys(groupedPermissions).length
 
   function toggleGroup(groupKey) {
     setCollapsedGroups(prev => ({ ...prev, [groupKey]: !prev[groupKey] }))
+  }
+
+  function collapseAll() {
+    const all = {}
+    Object.keys(groupedPermissions).forEach(k => { all[k] = true })
+    setCollapsedGroups(all)
+  }
+
+  function expandAll() {
+    setCollapsedGroups({})
   }
 
   async function handleGrant(permission, reason) {
@@ -217,58 +240,86 @@ export default function RolePermissions() {
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
-      <button onClick={() => navigate('/admin/roles')} className="btn btn-outline-secondary mb-3">
-        <i className="bx bx-arrow-back me-2"></i>
-        Back to Roles
-      </button>
+      {/* Breadcrumb */}
+      <nav aria-label="breadcrumb" className="mb-3">
+        <ol className="breadcrumb mb-0">
+          <li className="breadcrumb-item">
+            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/admin/roles') }} className="text-muted">
+              <i className="bx bx-shield-alt-2 me-1"></i>Roles
+            </a>
+          </li>
+          <li className="breadcrumb-item active">{formatRoleLabel(role)}</li>
+        </ol>
+      </nav>
 
-      <div className="card mb-4">
-        <div className="card-body">
-          <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div className="d-flex align-items-center gap-3">
-              <div
-                className={`d-flex align-items-center justify-content-center rounded bg-label-${color}`}
-                style={{ width: '56px', height: '56px', minWidth: '56px' }}
-              >
-                <i className={`bx ${icon}`} style={{ fontSize: '1.75rem' }}></i>
-              </div>
-              <div>
-                <h4 className="mb-1">{formatRoleLabel(role)}</h4>
-                <div className="d-flex align-items-center gap-2 flex-wrap">
-                  <span className={`badge bg-label-${color}`}>{formatRoleLabel(role)}</span>
-                  <span className="badge bg-label-success">{activeCount} active</span>
-                  <span className="badge bg-label-secondary">{inactiveCount} inactive</span>
-                  {overrides.length > 0 && (
-                    <span className="badge bg-label-warning">{overrides.length} overrides</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="d-flex gap-2 flex-wrap">
-              <button className="btn btn-success btn-sm" onClick={() => openGrantModal()}>
-                <i className="bx bx-plus-circle me-1"></i>Grant
-              </button>
-              <button className="btn btn-danger btn-sm" onClick={() => openDenyModal()}>
-                <i className="bx bx-minus-circle me-1"></i>Deny
-              </button>
-              {overrides.length > 0 && (
-                <button className="btn btn-outline-warning btn-sm" onClick={() => setShowResetModal(true)}>
-                  <i className="bx bx-reset me-1"></i>Reset All
-                </button>
-              )}
-              <button className="btn btn-outline-secondary btn-sm" onClick={loadData} disabled={loading}>
-                <i className="bx bx-refresh me-1"></i>Refresh
-              </button>
-            </div>
+      {/* Header */}
+      <div className="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+        <div className="d-flex align-items-center gap-3">
+          <div className="avatar avatar-lg">
+            <span className={`avatar-initial rounded bg-label-${color}`}>
+              <i className={`bx ${icon}`} style={{ fontSize: '1.75rem' }}></i>
+            </span>
           </div>
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <h4 className="mb-0">{formatRoleLabel(role)}</h4>
+              {level > 0 && <span className={`badge bg-label-${color}`}>L{level}</span>}
+            </div>
+            {description && <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>{description}</p>}
+          </div>
+        </div>
+        <div className="d-flex gap-2 flex-wrap">
+          <button className="btn btn-success btn-sm" onClick={() => openGrantModal()}>
+            <i className="bx bx-plus-circle me-1"></i>Grant
+          </button>
+          <button className="btn btn-danger btn-sm" onClick={() => openDenyModal()}>
+            <i className="bx bx-minus-circle me-1"></i>Deny
+          </button>
+          {overrides.length > 0 && (
+            <button className="btn btn-outline-warning btn-sm" onClick={() => setShowResetModal(true)}>
+              <i className="bx bx-reset me-1"></i>Reset All
+            </button>
+          )}
+          <button className="btn btn-outline-secondary btn-sm" onClick={loadData} disabled={loading}>
+            <i className="bx bx-refresh me-1"></i>Refresh
+          </button>
         </div>
       </div>
 
+      {/* Summary Stats */}
+      <div className="row g-4 mb-4">
+        <SummaryCard
+          title="Total Permissions"
+          value={permissions.length}
+          icon="bx-lock-alt"
+          color="primary"
+        />
+        <SummaryCard
+          title="Active"
+          value={activeCount}
+          icon="bx-check-circle"
+          color="success"
+        />
+        <SummaryCard
+          title="Inactive"
+          value={inactiveCount}
+          icon="bx-x-circle"
+          color={inactiveCount > 0 ? 'danger' : 'secondary'}
+        />
+        <SummaryCard
+          title="Overrides"
+          value={overrides.length}
+          icon="bx-edit-alt"
+          color={overrides.length > 0 ? 'warning' : 'secondary'}
+        />
+      </div>
+
+      {/* Search & Filter Toolbar */}
       <div className="card mb-4">
-        <div className="card-body">
+        <div className="card-body py-3">
           <div className="row g-3 align-items-center">
-            <div className="col-md-6">
-              <div className="input-group">
+            <div className="col-md-5">
+              <div className="input-group input-group-merge">
                 <span className="input-group-text"><i className="bx bx-search"></i></span>
                 <input
                   type="text"
@@ -278,9 +329,9 @@ export default function RolePermissions() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {searchQuery && (
-                  <button className="btn btn-outline-secondary" onClick={() => setSearchQuery('')}>
+                  <span className="input-group-text" style={{ cursor: 'pointer' }} onClick={() => setSearchQuery('')}>
                     <i className="bx bx-x"></i>
-                  </button>
+                  </span>
                 )}
               </div>
             </div>
@@ -289,21 +340,28 @@ export default function RolePermissions() {
                 <option value="all">All ({permissions.length})</option>
                 <option value="active">Active ({activeCount})</option>
                 <option value="inactive">Inactive ({inactiveCount})</option>
-                <option value="granted">Granted (override)</option>
-                <option value="denied">Denied (override)</option>
-                <option value="default">Default</option>
+                <option value="granted">Granted ({grantedCount})</option>
+                <option value="denied">Denied ({deniedCount})</option>
+                <option value="default">Default ({defaultCount})</option>
               </select>
             </div>
-            <div className="col-md-3 text-end">
-              <span className="text-muted">
-                Showing {filteredPermissions.length} of {permissions.length}
-              </span>
+            <div className="col-md-4 d-flex align-items-center justify-content-end gap-2">
+              <small className="text-muted me-2">
+                {filteredPermissions.length} of {permissions.length} · {groupCount} groups
+              </small>
+              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={expandAll} title="Expand all">
+                <i className="bx bx-expand-vertical"></i>
+              </button>
+              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={collapseAll} title="Collapse all">
+                <i className="bx bx-collapse-vertical"></i>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {Object.keys(groupedPermissions).length === 0 ? (
+      {/* Permission Groups */}
+      {groupCount === 0 ? (
         <div className="card">
           <div className="card-body text-center py-5">
             <i className="bx bx-shield-x text-muted" style={{ fontSize: '3rem' }}></i>
@@ -316,6 +374,7 @@ export default function RolePermissions() {
             key={group}
             group={group}
             perms={perms}
+            color={color}
             isCollapsed={collapsedGroups[group]}
             overrideMap={overrideMap}
             actionLoading={actionLoading}
