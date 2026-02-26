@@ -5,7 +5,7 @@ export interface NavigationMenu {
   key: string
   label: string
   path: string
-  permission: string
+  requiredPermissions?: string[]
   children?: NavigationMenu[]
 }
 

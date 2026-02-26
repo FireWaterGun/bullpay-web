@@ -180,14 +180,16 @@ export default function AdminRoles() {
 
       {/* Role Cards */}
       <div className="row g-4">
-        {sortedRoles.map((role) => {
+        {sortedRoles.filter((role) => {
+          const canAssign = typeof role === 'object' ? role.canAssign : undefined
+          return canAssign !== false
+        }).map((role) => {
           const roleKey = getRoleKey(role)
           const roleName = getRoleName(role)
           const color = ROLE_COLOR[roleKey] || 'secondary'
           const icon = ROLE_ICON[roleKey] || 'bx-user'
           const level = ROLE_LEVEL[roleKey] || 0
           const description = ROLE_DESCRIPTION[roleKey] || ''
-          const canAssign = typeof role === 'object' ? role.canAssign : undefined
           const rs = getRoleStats(roleKey)
 
           return (
@@ -195,12 +197,11 @@ export default function AdminRoles() {
               <div
                 className="card h-100"
                 style={{
-                  cursor: canAssign === false ? 'not-allowed' : 'pointer',
+                  cursor: 'pointer',
                   transition: 'transform 0.15s, box-shadow 0.15s',
-                  opacity: canAssign === false ? 0.6 : 1,
                 }}
-                onClick={() => canAssign !== false && navigate(`/admin/roles/${roleKey}`)}
-                onMouseEnter={(e) => { if (canAssign !== false) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)' } }}
+                onClick={() => navigate(`/admin/roles/${roleKey}`)}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)' }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
               >
                 <div className="card-body">
@@ -218,11 +219,6 @@ export default function AdminRoles() {
                       </div>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      {canAssign === false && (
-                        <span className="badge bg-label-danger" title="Cannot be assigned">
-                          <i className="bx bx-lock-alt" style={{ fontSize: '0.7rem' }}></i>
-                        </span>
-                      )}
                       {level > 0 && (
                         <span className={`badge bg-label-${color}`}>L{level}</span>
                       )}
@@ -257,13 +253,8 @@ export default function AdminRoles() {
 
                   {/* Footer link */}
                   <div className="d-flex align-items-center justify-content-between pt-2 border-top">
-                    <small className={`fw-medium${canAssign === false ? ' text-muted' : ''}`}>
-                      {canAssign === false ? 'Restricted' : 'Manage Permissions'}
-                    </small>
-                    {canAssign === false
-                      ? <i className="bx bx-lock-alt text-muted"></i>
-                      : <i className={`bx bx-chevron-right text-${color}`}></i>
-                    }
+                    <small className="fw-medium">Manage Permissions</small>
+                    <i className={`bx bx-chevron-right text-${color}`}></i>
                   </div>
                 </div>
               </div>

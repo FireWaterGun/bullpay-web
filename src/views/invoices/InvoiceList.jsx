@@ -165,6 +165,13 @@ export default function InvoiceList() {
       <div className="container-xxl flex-grow-1 container-p-y">
         {/* List */}
         <div className="card">
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <h5 className="mb-0">{t("invoices.title", { defaultValue: "Invoices" })}</h5>
+            <NavLink to="/invoices/create" className="btn btn-primary">
+              <i className="bx bx-plus me-1"></i>
+              {t("invoices.create", { defaultValue: "Create Invoice" })}
+            </NavLink>
+          </div>
           <InvoiceFilterPanel
             statusFilter={status}
             setStatusFilter={setStatus}

@@ -5,8 +5,7 @@ export function MenuItem({ to, icon, label, end }) {
   const location = useLocation()
   const resolved = useResolvedPath(to)
   const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
-  const remaining = location.pathname.slice(resolved.pathname.length)
-  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/') && /^\/\d+/.test(remaining)
+  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/')
   const isActive = !!exactMatch || isDetailMatch
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
@@ -22,8 +21,7 @@ export function SubItem({ to, label, end, badge }) {
   const location = useLocation()
   const resolved = useResolvedPath(to)
   const exactMatch = useMatch({ path: resolved.pathname, end: !!end })
-  const remaining = location.pathname.slice(resolved.pathname.length)
-  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/') && /^\/\d+/.test(remaining)
+  const isDetailMatch = location.pathname.startsWith(resolved.pathname + '/')
   const isActive = !!exactMatch || isDetailMatch
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>

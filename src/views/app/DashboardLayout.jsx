@@ -199,27 +199,44 @@ export default function DashboardLayout() {
                 })
               })()
             ) : (
-              <>
-                {/* User menu — filtered by navigation permissions */}
-                {(!navigation || hasMenu('dashboard')) && (
-                  <MenuItem to="/dashboard" end icon="bx-home" label={t('nav.dashboard')} />
-                )}
-                {(!navigation || hasMenu('wallet')) && (
-                  <MenuGroup base="/wallet" icon="bx-wallet" label={t('nav.balance', { defaultValue: 'Balance' })}>
-                    <SubItem to="/wallet" end label={t('balance.account', { defaultValue: 'Account' })} />
-                    <SubItem to="/wallet/withdrawals" end={true} label={t('balance.withdrawals', { defaultValue: 'Withdrawals' })} />
-                  </MenuGroup>
-                )}
-                {(!navigation || hasMenu('invoices')) && (
-                  <MenuGroup base="/invoices" icon="bx-file" label={t('nav.invoice')}>
-                    <SubItem to="/invoices" end label={t('nav.history')} />
-                    <SubItem to="/invoices/create" end={true} label={t('nav.create')} />
-                  </MenuGroup>
-                )}
-                <MenuItem to="/ledger" icon="bx-book-content" label={t('nav.ledger', { defaultValue: 'Ledger' })} />
-                <MenuItem to="/merchant" icon="bx-store" label={t('nav.merchant', { defaultValue: 'Merchant' })} />
-                <MenuItem to="/settings" icon="bx-cog" label={t('nav.settings')} />
-              </>
+              (() => {
+                const iconMap = {
+                  'dashboard': 'bx-home',
+                  'wallet': 'bx-wallet',
+                  'invoices': 'bx-file',
+                  'transactions': 'bx-transfer',
+                  'settings': 'bx-cog',
+                  'ledger': 'bx-book-content',
+                  'merchant': 'bx-store',
+                }
+
+                const menus = navigation?.menus || []
+                if (!menus.length) return null
+
+                return menus.map(group => {
+                  const children = group.children || []
+                  const icon = iconMap[group.key] || 'bx-menu'
+                  const childPaths = children.map(c => c.path)
+
+                  if (!children.length) {
+                    return <MenuItem key={group.key} to={group.path} end icon={icon} label={group.label} />
+                  }
+
+                  return (
+                    <MenuGroup
+                      key={group.key}
+                      base={group.path}
+                      icon={icon}
+                      label={group.label}
+                      matchPaths={[...new Set([group.path, ...childPaths])]}
+                    >
+                      {children.map(child => (
+                        <SubItem key={child.key} to={child.path} end label={child.label} />
+                      ))}
+                    </MenuGroup>
+                  )
+                })
+              })()
             )}
           </ul>
         </aside>

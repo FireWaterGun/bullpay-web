@@ -63,6 +63,10 @@ const UserBalanceList = lazy(() => import('../views/admin/UserBalanceList'))
 const UserBalanceDetail = lazy(() => import('../views/admin/UserBalanceDetail'))
 const TempWalletHistoryList = lazy(() => import('../views/admin/TempWalletHistoryList'))
 const TempWalletHistoryDetail = lazy(() => import('../views/admin/TempWalletHistoryDetail'))
+const MerchantWebhookLogList = lazy(() => import('../views/admin/MerchantWebhookLogList'))
+const MerchantWebhookLogDetail = lazy(() => import('../views/admin/MerchantWebhookLogDetail'))
+const AuditLogList = lazy(() => import('../views/admin/AuditLogList'))
+const AuditLogDetail = lazy(() => import('../views/admin/AuditLogDetail'))
 
 export function renderAdminRoutes() {
   return (
@@ -121,6 +125,10 @@ export function renderAdminRoutes() {
       <Route path="admin/temp-wallets/:id" element={<TempWalletDetail />} />
       <Route path="admin/temp-wallet-histories" element={<TempWalletHistoryList />} />
       <Route path="admin/temp-wallet-histories/:id" element={<TempWalletHistoryDetail />} />
+      <Route path="admin/merchant-webhook-logs" element={<MerchantWebhookLogList />} />
+      <Route path="admin/merchant-webhook-logs/:id" element={<MerchantWebhookLogDetail />} />
+      <Route path="admin/audit-logs" element={<AuditLogList />} />
+      <Route path="admin/audit-logs/:id" element={<AuditLogDetail />} />
       {/* Redirects from old paths */}
       <Route path="admin/revenue" element={<Navigate to="/admin/dashboard" replace />} />
       <Route path="admin/revenue/income-statement" element={<Navigate to="/admin/income-statement" replace />} />
@@ -150,8 +158,12 @@ export function renderUserRoutes() {
       <Route path="invoices/create" element={<InvoiceCreate />} />
       <Route path="invoices/:id" element={<InvoiceDetail />} />
       <Route path="invoices/:id/pay" element={<InvoicePayment />} />
+      <Route path="transactions" element={<UserTransactionsDashboard />} />
       <Route path="settings" element={<Settings />} />
+      <Route path="2fa" element={<Settings />} />
       <Route path="merchant" element={<MerchantSettings />} />
+      <Route path="withdrawals" element={<BalanceWithdrawals />} />
+      <Route path="withdrawals/:id" element={<WithdrawalDetail />} />
       <Route path="ledger" element={<MyLedgerList />} />
       <Route path="ledger/:id" element={<MyLedgerDetail />} />
       <Route path="wallets" element={<Navigate to="/wallet/withdrawals" replace />} />

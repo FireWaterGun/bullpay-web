@@ -720,12 +720,12 @@ export async function getSweepById(token: string, sweepId: number) {
 }
 
 /**
- * Force a sweep transaction (Admin only)
+ * Retry a failed sweep transaction (Admin only)
  * @param token - Auth token
  * @param sweepId - Sweep transaction ID
  */
 export async function forceSweep(token: string, sweepId: number) {
-  const data = await apiFetch(`/api/v1/admin/sweeps/${sweepId}/force`, {
+  const data = await apiFetch(`/api/v1/admin/sweeps/${sweepId}/retry`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
