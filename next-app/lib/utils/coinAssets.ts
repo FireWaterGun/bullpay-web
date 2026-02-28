@@ -5,6 +5,8 @@
  * duplicated across 35+ view files.
  */
 
+import { coinImageExists } from './coinImageManifest'
+
 const COIN_ALIASES: Record<string, string[]> = {
   btc: ['bitcoin'],
   eth: ['ethereum'],
@@ -29,12 +31,16 @@ const COIN_ALIASES: Record<string, string[]> = {
   arb: ['arbitrum'],
   op: ['optimism'],
   base: ['base'],
-  ln: ['lightning'],
+  ln: ['lightning', 'btc'],
+  lightning: ['btc'],
+  segwitbtc: ['segwit', 'btc'],
+  manta: ['mantanetwork'],
 }
 
 /**
  * Returns an ordered list of candidate image paths for a given coin symbol.
- * The list is de-duplicated and always ends with the default fallback icon.
+ * Only includes paths for images that actually exist in the manifest,
+ * plus any external logoUrl and the default fallback.
  */
 export function getCoinAssetCandidates(
   symbol: string | null | undefined,
@@ -50,9 +56,9 @@ export function getCoinAssetCandidates(
   if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
 
   const exts = ['svg', 'png']
-  const byAssets = names.flatMap((n) =>
-    exts.map((ext) => `/assets/img/coins/${n}.${ext}`),
-  )
+  const byAssets = names
+    .flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
+    .filter(coinImageExists)
 
   const candidates = [
     ...byAssets,

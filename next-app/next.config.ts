@@ -23,18 +23,16 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Redirect legacy Vite SPA routes during migration
-  // Uncomment as you migrate pages from Vite → Next.js
-  // async redirects() {
-  //   const vitaBase = 'http://localhost:3334'
-  //   return [
-  //     {
-  //       source: '/dashboard/:path*',
-  //       destination: `${vitaBase}/dashboard/:path*`,
-  //       permanent: false,
-  //     },
-  //   ]
-  // },
+  // Redirect legacy paths (Vite SPA used /app/ prefix)
+  async redirects() {
+    return [
+      {
+        source: '/app/balance/verify-address',
+        destination: '/wallet/verify-address',
+        permanent: true,
+      },
+    ]
+  },
 
   // Sass support for Sneat custom styles
   sassOptions: {

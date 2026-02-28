@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { getCoinAssetCandidates } from '@/lib/utils/coinAssets'
+import { coinImageExists } from '@/lib/utils/coinImageManifest'
 
 // ---------------------------------------------------------------------------
 // Static inline-style constants (hoisted out of render)
@@ -64,7 +65,8 @@ function getNetworkAssetCandidates(networkSymbol) {
   const exts = ['svg', 'png']
   const byNetworks = names.flatMap((n) => exts.map((ext) => `/assets/img/networks/${n}.${ext}`))
   const byCoinFallback = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-  const arr = [...byNetworks, ...byCoinFallback, '/assets/img/coins/default.svg']
+  const arr = [...byNetworks, ...byCoinFallback].filter(coinImageExists)
+  arr.push('/assets/img/coins/default.svg')
   return Array.from(new Set(arr))
 }
 

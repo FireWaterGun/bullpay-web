@@ -7,6 +7,7 @@ import { Turnstile } from 'react-turnstile'
 import { loginApi } from '@/lib/api/auth'
 import { useAuth } from '@/app/providers'
 import { extractToken } from '@/lib/utils/authToken'
+import { ADMIN_ROLES } from '@/lib/constants'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -33,7 +34,9 @@ export default function LoginPage() {
       const token = extractToken(res)
       const user = (res as any)?.user || { email }
       login(token!, user)
-      router.replace('/dashboard')
+      const role = user?.role || ''
+      const isAdminUser = ADMIN_ROLES.includes(role as (typeof ADMIN_ROLES)[number])
+      router.replace(isAdminUser ? '/admin/dashboard' : '/dashboard')
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {}
       setFieldErrors(details)
