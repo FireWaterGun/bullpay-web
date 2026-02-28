@@ -1,26 +1,46 @@
-/* Override Sneat theme modal btn-close positioning */
-.modal .btn-close {
+/* Sidebar menu scroll fix */
+.layout-menu.menu-vertical {
+  overflow: visible !important;
+}
+.layout-menu.menu-vertical .menu-inner {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: calc(100vh - 80px) !important;
+}
+
+/* Modal close button fix — matches original index.html */
+.modal .modal-header {
+  position: relative !important;
+}
+.modal .modal-header .btn-close {
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  inset-block-start: 1rem !important;
+  inset-inline-end: 1rem !important;
   transform: none !important;
+  box-shadow: none !important;
   background-color: transparent !important;
   border: none !important;
+  margin: 0 !important;
+  padding: 0.5rem !important;
+  z-index: 1;
+}
+.modal .btn-close {
+  transform: none !important;
   box-shadow: none !important;
+  background-color: transparent !important;
+  border: none !important;
 }
 .modal .btn-close:hover,
 .modal .btn-close:focus,
-.modal .btn-close:active {
-  transform: none !important;
-  opacity: 0.75;
-}
-.modal .modal-header .btn-close {
-  position: relative !important;
-  inset-block-start: auto !important;
-  inset-inline-end: auto !important;
-  transform: none !important;
-  margin: 0 !important;
-  padding: 0.5rem !important;
-}
+.modal .btn-close:active,
 .modal .modal-header .btn-close:hover,
 .modal .modal-header .btn-close:focus,
 .modal .modal-header .btn-close:active {
   transform: none !important;
+  opacity: 0.75;
+}
+.modal .modal-content {
+  overflow: hidden;
 }

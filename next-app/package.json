@@ -1,0 +1,38 @@
+{
+  "name": "bullpay-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3335",
+    "build": "next build",
+    "start": "next start -p 3335",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.1",
+    "bignumber.js": "^9.3.1",
+    "ethers": "^6.15.0",
+    "i18next": "^25.3.2",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "next": "^16.1.6",
+    "pusher-js": "^8.4.0",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-hook-form": "^7.62.0",
+    "react-i18next": "^15.6.1",
+    "react-turnstile": "^1.1.5",
+    "zod": "^4.0.15"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.4",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^16.1.6",
+    "sass": "^1.90.0",
+    "typescript": "^5.6.3"
+  }
+}

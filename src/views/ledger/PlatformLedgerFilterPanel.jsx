@@ -28,6 +28,7 @@ export default function PlatformLedgerFilterPanel({
             <option value="">All</option>
             <option value="revenue">Revenue</option>
             <option value="expense">Expense</option>
+            <option value="adjustment">Adjustment</option>
           </select>
         </div>
         <div className="col-md-3 col-sm-6">
