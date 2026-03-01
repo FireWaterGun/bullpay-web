@@ -1,0 +1,338 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import Link from 'next/link'
+import { useAuth } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import { getSystemWalletStats } from '@/lib/api/admin'
+import { formatAmount, formatUsd, formatCoinAmount } from '@/lib/utils/format'
+import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
+import CoinImg from '@/components/CoinImg'
+import { copyToClipboard } from '@/lib/utils/clipboard'
+import { logger } from '@/lib/utils/logger'
+
+export default function SystemBalance() {
+  const { t } = useTranslation()
+  const { token } = useAuth()
+  const toast = useToast()
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [copiedAddress, setCopiedAddress] = useState(null)
+
+  const copyAddress = async (address) => {
+    try {
+      await copyToClipboard(address)
+      setCopiedAddress(address)
+      setTimeout(() => setCopiedAddress(null), 2000)
+      toast.success(t('actions.copied', { defaultValue: 'Address copied to clipboard' }))
+    } catch (err) {
+      logger.error('Failed to copy:', err)
+      toast.error(t('actions.copyFailed', { defaultValue: 'Failed to copy address' }))
+    }
+  }
+
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  async function loadStats() {
+    setLoading(true)
+    setError('')
+    try {
+      // Send USD currency for total balance
+      const res = await getSystemWalletStats(token, 'USD')
+      setStats(res)
+    } catch (e) {
+      setError(typeof e?.message === 'string' ? e.message : 'Failed to load system wallet stats')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container-xxl flex-grow-1 container-p-y">
+        <div className="text-center py-6">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">{t('invoices.loading')}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container-xxl flex-grow-1 container-p-y">
+        <div className="alert alert-danger" role="alert">
+          <i className="bx bx-error-circle me-2"></i>
+          {error}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="row">
+        <div className="col-12">
+          {/* Stats Cards */}
+          <div className="row g-4 mb-4">
+            <div className="col-md-4 col-sm-6">
+              <div className="card">
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0 me-3">
+                      <i className="bx bxs-wallet bx-lg text-info"></i>
+                    </div>
+                    <div>
+                      <small className="text-muted d-block">{t('admin.totalWallets', { defaultValue: 'Total Wallets' })}</small>
+                      <h4 className="mb-0">{stats?.totalWallets || 0}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4 col-sm-6">
+              <div className="card">
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0 me-3">
+                      <i className="bx bxs-gas-pump bx-lg text-warning"></i>
+                    </div>
+                    <div>
+                      <small className="text-muted d-block">{t('admin.gasPurposeWallets', { defaultValue: 'Gas Purpose Wallets' })}</small>
+                      <h4 className="mb-0">{stats?.gasPurposeWallets || 0}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4 col-sm-6">
+              <div className="card">
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0 me-3">
+                      <i className="bx bxs-bank bx-lg text-primary"></i>
+                    </div>
+                    <div>
+                      <small className="text-muted d-block">{t('admin.treasuryPurposeWallets', { defaultValue: 'Treasury Purpose Wallets' })}</small>
+                      <h4 className="mb-0">{stats?.treasuryPurposeWallets || 0}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Total Balance Card */}
+          <div className="card mb-4">
+            <div className="card-header">
+              <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+                <div>
+                  <h4 className="card-title mb-1 fs-3">{t('admin.systemBalance', { defaultValue: 'System Balance' })}</h4>
+                </div>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="display-3 fw-bold text-dark">
+                {formatUsd(stats?.fiat?.totalValueUsd || 0)}
+              </div>
+              <div className="mt-3">
+                <span className="badge bg-label-primary">
+                  <i className="bx bx-wallet me-1"></i>
+                  {stats?.walletsWithFunds || 0} {t('admin.walletsWithFunds', { defaultValue: 'wallets with funds' })}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Wallet Details Table */}
+          <div className="card">
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <h5 className="mb-0">{t('admin.walletDetails', { defaultValue: 'Wallet Details' })}</h5>
+              <span className="badge bg-label-primary">
+                {stats?.balanceDetails?.length || 0} {t('admin.wallets', { defaultValue: 'wallets' })}
+              </span>
+            </div>
+            <div className="card-body">
+              {!stats?.balanceDetails || stats.balanceDetails.length === 0 ? (
+                <div className="d-flex flex-column align-items-center justify-content-center py-6">
+                  <i className="bx bx-wallet text-muted mb-3" style={{ fontSize: '3rem' }}></i>
+                  <p className="text-muted mb-0">{t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })}</p>
+                </div>
+              ) : (
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="table table-hover" style={{ minWidth: '1600px' }}>
+                    <thead>
+                      <tr>
+                        <th>{t('invoices.chain') || 'Chain'}</th>
+                        <th style={{ minWidth: '180px' }}>{t('balance.col.coin')}</th>
+                        <th>{t('admin.address', { defaultValue: 'Address' })}</th>
+                        <th>{t('admin.purpose', { defaultValue: 'Purpose' })}</th>
+                        <th>{t('admin.type', { defaultValue: 'Type' })}</th>
+                        <th>{t('invoices.statusCol')}</th>
+                        <th className="text-end" style={{ minWidth: '200px', whiteSpace: 'nowrap' }}>{t('admin.confirmedBalance', { defaultValue: 'Confirmed' })}</th>
+                        <th className="text-end" style={{ minWidth: '200px', whiteSpace: 'nowrap' }}>{t('admin.unconfirmedBalance', { defaultValue: 'Unconfirmed' })}</th>
+                        <th className="text-end" style={{ minWidth: '200px', whiteSpace: 'nowrap' }}>{t('admin.totalBalance', { defaultValue: 'Total Balance' })}</th>
+                        <th className="text-end" style={{ minWidth: '140px', whiteSpace: 'nowrap' }}>{t('admin.valueUSD', { defaultValue: 'Value (USD)' })}</th>
+                        <th className="text-center" style={{ minWidth: '120px' }}>{t('invoices.actions')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.balanceDetails.map((wallet) => {
+                        const coin = wallet.systemWallet?.coinNetwork?.coin
+                        const coinSymbol = coin?.symbol
+                        const network = wallet.systemWallet?.coinNetwork?.network
+                        const networkSymbol = network?.symbol
+                        const networkName = network?.name
+                        const address = wallet.systemWallet?.address || ''
+                        
+                        // Get decimals and convert raw balance to decimal
+                        const decimals = wallet.decimals || wallet.systemWallet?.coinNetwork?.decimals || 18
+                        const decimalBalance = AmountNormalizer.fromRawSimple(
+                          wallet.totalBalanceRaw || '0',
+                          decimals
+                        )
+                        
+                        const rate = stats.fiat?.rates?.[coinSymbol] || 0
+                        const usdValue = parseFloat(decimalBalance) * parseFloat(rate)
+                        
+                        return (
+                          <tr key={wallet.id}>
+                            <td>
+                              <span className="text-muted">
+                                {(networkSymbol || '').toUpperCase() || 'N/A'}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <CoinImg coin={coin} symbol={coinSymbol} networkSymbol={networkSymbol} size={32} className="me-3" />
+                                <div>
+                                  <div>{coinSymbol || 'N/A'}</div>
+                                  <small className="text-muted">{networkName || 'N/A'}</small>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="d-flex align-items-center gap-2">
+                                <span className="text-truncate" style={{ maxWidth: '400px' }}>
+                                  {address || 'N/A'}
+                                </span>
+                                {address && (
+                                  <button
+                                    onClick={() => copyAddress(address)}
+                                    className="btn btn-sm btn-icon btn-text-secondary"
+                                    title={t('actions.copy', { defaultValue: 'Copy' })}
+                                  >
+                                    {copiedAddress === address ? (
+                                      <i className="bx bx-check text-success" style={{ fontSize: '1.25rem' }}></i>
+                                    ) : (
+                                      <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <span className="text-capitalize">
+                                {wallet.systemWallet?.purpose || 'N/A'}
+                              </span>
+                            </td>
+                            <td>
+                              {wallet.systemWallet?.walletType === 'hot' ? (
+                                <span className="badge bg-label-warning">
+                                  <i className="bx bx-hot me-1"></i>
+                                  {t('admin.hot', { defaultValue: 'Hot' })}
+                                </span>
+                              ) : (
+                                <span className="badge bg-label-info">
+                                  <i className="bx bx-shield me-1"></i>
+                                  {t('admin.cold', { defaultValue: 'Cold' })}
+                                </span>
+                              )}
+                            </td>
+                            <td>
+                              {wallet.systemWallet?.status === 'active' ? (
+                                <span className="badge bg-label-success">{t('admin.active', { defaultValue: 'Active' })}</span>
+                              ) : (
+                                <span className="badge bg-label-secondary">
+                                  {wallet.systemWallet?.status}
+                                </span>
+                              )}
+                            </td>
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                              {(() => {
+                                const val = AmountNormalizer.fromRawSimple(wallet.confirmedBalanceRaw || '0', decimals)
+                                return (
+                                  <>
+                                    <span className="fw-medium" title={`Raw: ${wallet.confirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
+                                      {formatCoinAmount(val)}
+                                    </span>
+                                    <small className="text-muted ms-1">{coinSymbol}</small>
+                                  </>
+                                )
+                              })()}
+                            </td>
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                              {(() => {
+                                const val = AmountNormalizer.fromRawSimple(wallet.unconfirmedBalanceRaw || '0', decimals)
+                                return (
+                                  <>
+                                    <span className="fw-medium" title={`Raw: ${wallet.unconfirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
+                                      {formatCoinAmount(val)}
+                                    </span>
+                                    <small className="text-muted ms-1">{coinSymbol}</small>
+                                  </>
+                                )
+                              })()}
+                            </td>
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                              <span className="fw-medium" title={`Raw: ${wallet.totalBalanceRaw || '0'}\nDecimals: ${decimals}`}>
+                                {formatCoinAmount(decimalBalance)}
+                              </span>
+                              <small className="text-muted ms-1">{coinSymbol}</small>
+                            </td>
+                            <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                              <span className="fw-medium">
+                                {formatUsd(usdValue)}
+                              </span>
+                            </td>
+                            <td className="text-center">
+                              <Link
+                                href={`/admin/system-ledger?walletId=${wallet.systemWallet?.id}`}
+                                className="btn btn-sm btn-icon btn-text-secondary me-1"
+                                title={t('actions.view', { defaultValue: 'View' })}
+                              >
+                                <i className="bx bx-receipt" style={{ fontSize: '1.25rem' }}></i>
+                              </Link>
+                              {wallet.systemWallet?.coinNetwork?.network?.explorerUrl && wallet.systemWallet?.address && (
+                                <a
+                                  href={`${wallet.systemWallet.coinNetwork.network.explorerUrl}/address/${wallet.systemWallet.address}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-icon btn-text-secondary"
+                                  title={t('invoices.viewOnExplorer')}
+                                >
+                                  <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
+                                </a>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

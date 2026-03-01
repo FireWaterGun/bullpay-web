@@ -1,0 +1,344 @@
+'use client'
+
+import { useState, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSearchParams as useNextSearchParams } from 'next/navigation'
+import { useAuth } from '@/app/providers'
+import { useTranslation } from 'react-i18next'
+import { useToast } from '@/app/providers'
+import { getGasTopups } from '@/lib/api/admin'
+import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
+import CoinImg from '@/components/CoinImg'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { listCoins } from '@/lib/api/coins'
+import GasTopupRow from '@/components/admin/GasTopupRow'
+import { logger } from '@/lib/utils/logger'
+
+export default function GasTopups() {
+  const { t, i18n } = useTranslation()
+  const { token } = useAuth()
+  const toast = useToast()
+  const searchParams = useNextSearchParams()
+  const router = useRouter()
+
+  const locale = useMemo(() => {
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
+
+  const initStatus = searchParams.get('status') || ''
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
+  const initSweepId = searchParams.get('sweepId') || ''
+  const initTxHash = searchParams.get('txHash') || ''
+  const initDateFrom = searchParams.get('dateFrom') || ''
+  const initDateTo = searchParams.get('dateTo') || ''
+  const initPage = parseInt(searchParams.get('page')) || 1
+
+  const [loading, setLoading] = useState(false)
+  const [topups, setTopups] = useState([])
+  const [pagination, setPagination] = useState(null)
+  const [currentPage, setCurrentPage] = useState(initPage)
+  const [coinNetworks, setCoinNetworks] = useState([])
+
+  // Filter states
+  const [statusFilter, setStatusFilter] = useState(initStatus)
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
+  const [sweepIdFilter, setSweepIdFilter] = useState(initSweepId)
+  const [txHashFilter, setTxHashFilter] = useState(initTxHash)
+  const [dateFromFilter, setDateFromFilter] = useState(initDateFrom)
+  const [dateToFilter, setDateToFilter] = useState(initDateTo)
+
+  // Applied filters
+  const [appliedFilters, setAppliedFilters] = useState(() => {
+    const f = {}
+    if (initStatus) f.status = initStatus
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
+    if (initSweepId) f.sweepId = Number(initSweepId)
+    if (initTxHash) f.txHash = initTxHash
+    if (initDateFrom) f.dateFrom = initDateFrom
+    if (initDateTo) f.dateTo = initDateTo
+    return f
+  })
+
+  useEffect(() => {
+    loadTopups()
+  }, [currentPage, appliedFilters])
+
+  useEffect(() => {
+    listCoins(token).then(setCoinNetworks).catch(() => {})
+  }, [])
+
+  function syncSearchParams(filters, page) {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
+    if (page > 1) params.set('page', page)
+    window.history.replaceState(null, '', `?${params.toString()}`)
+  }
+
+  function applyFilters() {
+    const f = {
+      status: statusFilter || undefined,
+      coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
+      sweepId: sweepIdFilter ? Number(sweepIdFilter) : undefined,
+      txHash: txHashFilter || undefined,
+      dateFrom: dateFromFilter || undefined,
+      dateTo: dateToFilter || undefined,
+    }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
+  }
+
+  function resetFilters() {
+    setStatusFilter('')
+    setCoinNetworkIdFilter('')
+    setSweepIdFilter('')
+    setTxHashFilter('')
+    setDateFromFilter('')
+    setDateToFilter('')
+    setAppliedFilters({})
+    setCurrentPage(1)
+    window.history.replaceState(null, '', window.location.pathname)
+  }
+
+  async function loadTopups() {
+    try {
+      setLoading(true)
+      const data = await getGasTopups(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters,
+      })
+      setTopups(data.items || [])
+      setPagination(data.pagination || null)
+    } catch (error) {
+      logger.error('Failed to load gas topups:', error)
+      toast.error(t('gasTopup.loadError', { defaultValue: 'Failed to load gas topups' }))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleCopy(text) {
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+  }
+
+  if (loading && topups.length === 0) {
+    return (
+      <div className="container-xxl flex-grow-1 container-p-y">
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="row">
+        <div className="col-12">
+          {/* Header */}
+          <div className="card mb-4">
+            <div className="card-header">
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                  <h4 className="mb-1">
+                    <i className="bx bx-gas-pump me-2"></i>
+                    Gas Topups
+                  </h4>
+                  <p className="text-muted mb-0">
+                    View gas topup transactions created by the system
+                  </p>
+                </div>
+                <button className="btn btn-primary" onClick={loadTopups} disabled={loading}>
+                  <i className="bx bx-refresh me-1"></i>
+                  {t('actions.refresh', { defaultValue: 'Refresh' })}
+                </button>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row g-3">
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label">Status</label>
+                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="completed">Completed</option>
+                    <option value="failed">Failed</option>
+                    <option value="skipped">Skipped</option>
+                  </select>
+                </div>
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label">Coin / Network</label>
+                  <div className="dropdown">
+                    <button
+                      className="form-select d-flex align-items-center justify-content-between"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{ textAlign: 'left' }}
+                    >
+                      {coinNetworkIdFilter ? (() => {
+                        const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
+                        if (!cn) return 'All'
+                        const sym = (cn.coin?.symbol || '').toUpperCase()
+                        const net = (cn.network?.symbol || '').toUpperCase()
+                        return (
+                          <span className="d-flex align-items-center gap-2">
+                            <CoinImg symbol={sym} networkSymbol={net} size={22} />
+                            <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
+                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
+                          </span>
+                        )
+                      })() : <span className="text-muted">All</span>}
+                    </button>
+                    <ul className="dropdown-menu w-100" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+                      <li>
+                        <button className="dropdown-item" onClick={() => setCoinNetworkIdFilter('')}>
+                          <span className="text-muted">All</span>
+                        </button>
+                      </li>
+                      <li><hr className="dropdown-divider" /></li>
+                      {coinNetworks.map((cn) => {
+                        const sym = (cn.coin?.symbol || '').toUpperCase()
+                        const net = (cn.network?.symbol || '').toUpperCase()
+                        return (
+                          <li key={cn.id}>
+                            <button className="dropdown-item d-flex align-items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
+                              <CoinImg symbol={sym} networkSymbol={net} size={28} />
+                              <div>
+                                <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
+                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{net}</div>
+                              </div>
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                </div>
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label">Sweep ID</label>
+                  <input type="number" className="form-control" placeholder="Sweep ID" value={sweepIdFilter} onChange={(e) => setSweepIdFilter(e.target.value)} />
+                </div>
+                <div className="col-md-2 col-sm-6">
+                  <label className="form-label">Tx Hash</label>
+                  <input type="text" className="form-control" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+                </div>
+                <div className="col-md-3 col-sm-6">
+                  <label className="form-label">Date Range</label>
+                  <LocaleDateRangePicker
+                    startDate={dateFromFilter}
+                    endDate={dateToFilter}
+                    onChangeStart={setDateFromFilter}
+                    onChangeEnd={setDateToFilter}
+                    locale={locale}
+                    placeholder="Select date range"
+                    t={t}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+              <div className="d-flex gap-2 mt-3">
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
+                  <i className="bx bx-filter-alt me-1"></i>
+                  {t('filter.apply', { defaultValue: 'Apply Filters' })}
+                </button>
+                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset me-1"></i>
+                  {t('filter.reset', { defaultValue: 'Reset' })}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="card">
+            <div className="card-body">
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table table-hover">
+                  <thead>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th>Coin</th>
+                      <th className="text-center">Sweep ID</th>
+                      <th className="text-end">Topup Gas</th>
+                      <th className="text-end">Required Gas</th>
+                      <th className="text-center">Status</th>
+                      <th>Tx Hash</th>
+                      <th>From Address</th>
+                      <th>To Address</th>
+                      <th className="text-center">Retry</th>
+                      <th>Created</th>
+                      <th>Completed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topups.length === 0 ? (
+                      <tr>
+                        <td colSpan="12" className="text-center text-muted py-4">
+                          {t('admin.gasTopup.noTopups', { defaultValue: 'No gas topups found' })}
+                        </td>
+                      </tr>
+                    ) : (
+                      topups.map((topup) => (
+                        <GasTopupRow
+                          key={topup.id}
+                          topup={topup}
+                          onCopy={handleCopy}
+                          onNavigate={(id) => router.push(`/admin/wallet-gas-topups/${id}`)}
+                        />
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {pagination && pagination.total > 0 && (
+                <div className="d-flex justify-content-between align-items-center mt-4">
+                  <div className="text-muted small">
+                    {t('invoices.showingEntries', {
+                      start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
+                      end: Math.min(pagination.page * pagination.limit, pagination.total),
+                      total: pagination.total,
+                      defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+                    })}
+                  </div>
+                  <div className="btn-group">
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled={!pagination.hasPrev || loading}
+                      onClick={() => { setCurrentPage(currentPage - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
+                    >
+                      <i className="bx bx-chevron-left"></i>
+                      {t('actions.prev', { defaultValue: 'Previous' })}
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled
+                    >
+                      {pagination.page} / {pagination.totalPages}
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      disabled={!pagination.hasNext || loading}
+                      onClick={() => { setCurrentPage(currentPage + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
+                    >
+                      {t('actions.next', { defaultValue: 'Next' })}
+                      <i className="bx bx-chevron-right"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

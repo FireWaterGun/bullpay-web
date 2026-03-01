@@ -71,19 +71,9 @@ window.templateName = document.documentElement.getAttribute('data-template');
 
 if (typeof TemplateCustomizer !== 'undefined') {
   window.templateCustomizer = new TemplateCustomizer({
-    displayCustomizer: true,
-    lang: localStorage.getItem('templateCustomizer-' + templateName + '--Lang') || 'en', // Set default language here
-    // defaultPrimaryColor: '#D11BB4',
-    // defaultSkin: 1,
-  defaultTheme: 'light',
-    // defaultSemiDark: true,
-    // defaultContentLayout: 'wide',
-    // defaultHeaderType: 'static',
-    // defaultMenuCollapsed: true,
-    // defaultNavbarType: 'static',
-    // defaultTextDir: 'rtl',
-    // defaultFooterFixed: false,
-    // defaultShowDropdownOnHover: false,
+    displayCustomizer: false,
+    lang: localStorage.getItem('templateCustomizer-' + templateName + '--Lang') || 'en',
+    defaultTheme: 'light',
     controls: [
       'color',
       'theme',
@@ -96,4 +86,24 @@ if (typeof TemplateCustomizer !== 'undefined') {
       'rtl'
     ]
   });
+}
+
+// Fallback: provide minimal mock so main.js/helpers.js don't fall through
+// to system dark mode detection when TemplateCustomizer is not loaded
+if (!window.templateCustomizer) {
+  window.templateCustomizer = {
+    _getSetting: function(key) { return key === 'Theme' ? 'light' : null; },
+    _setSetting: function() {},
+    setLang: function() {},
+    setRtl: function() {},
+    setColor: function() {},
+    settings: {
+      defaultStyle: 'light',
+      defaultTheme: 'light',
+      defaultPrimaryColor: '#696cff',
+      defaultMenuCollapsed: false,
+      semiDark: false,
+      lang: 'en'
+    }
+  };
 }
