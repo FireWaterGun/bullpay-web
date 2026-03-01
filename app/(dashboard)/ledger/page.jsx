@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
@@ -41,6 +41,10 @@ function getDateRange(preset) {
 }
 
 export default function MyLedgerList() {
+  return <Suspense><MyLedgerListContent /></Suspense>
+}
+
+function MyLedgerListContent() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToast()
@@ -170,9 +174,8 @@ export default function MyLedgerList() {
                     {t('userLedger.description', { defaultValue: 'View your ledger entries and transaction history' })}
                   </p>
                 </div>
-                <button className="btn btn-primary" onClick={loadEntries} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  {t('actions.refresh', { defaultValue: 'Refresh' })}
+                <button className="btn btn-icon btn-text-secondary" onClick={loadEntries} disabled={loading}>
+                  <i className="bx bx-refresh"></i>
                 </button>
               </div>
             </div>

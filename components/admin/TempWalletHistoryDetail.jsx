@@ -103,8 +103,8 @@ export default function TempWalletHistoryDetail() {
                     )}
                   </div>
                 </div>
-                <button className="btn btn-primary" onClick={loadHistory} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>Refresh
+                <button className="btn btn-icon btn-text-secondary" onClick={loadHistory} disabled={loading}>
+                  <i className="bx bx-refresh"></i>
                 </button>
               </div>
             </div>

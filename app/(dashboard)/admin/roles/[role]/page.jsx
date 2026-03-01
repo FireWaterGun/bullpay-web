@@ -283,8 +283,8 @@ export default function RolePermissions() {
               <i className="bx bx-reset me-1"></i>Reset All
             </button>
           )}
-          <button className="btn btn-outline-secondary btn-sm" onClick={loadData} disabled={loading}>
-            <i className="bx bx-refresh me-1"></i>Refresh
+          <button className="btn btn-icon btn-text-secondary" onClick={loadData} disabled={loading}>
+            <i className="bx bx-refresh"></i>
           </button>
         </div>
       </div>

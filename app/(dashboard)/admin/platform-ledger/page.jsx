@@ -151,9 +151,8 @@ export default function PlatformLedgerList() {
                     {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
                   </p>
                 </div>
-                <button className="btn btn-primary" onClick={loadEntries} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  {t('actions.refresh', { defaultValue: 'Refresh' })}
+                <button className="btn btn-icon btn-text-secondary" onClick={loadEntries} disabled={loading}>
+                  <i className="bx bx-refresh"></i>
                 </button>
               </div>
             </div>

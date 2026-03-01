@@ -1,6 +1,14 @@
 import type { Metadata, Viewport } from 'next'
+import { Public_Sans } from 'next/font/google'
 import Script from 'next/script'
 import { AppProviders } from './providers'
+
+const publicSans = Public_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="layout-wide customizer-hide"
+      className={`layout-wide customizer-hide ${publicSans.className}`}
       dir="ltr"
       data-skin="default"
       data-bs-theme="light"
@@ -38,18 +46,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-          rel="stylesheet"
-        />
-
         {/* Core CSS — must match index.html order exactly */}
         <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
         <link rel="stylesheet" href="/assets/vendor/libs/pickr/pickr-themes.css" />

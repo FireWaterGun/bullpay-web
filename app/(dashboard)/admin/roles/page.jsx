@@ -113,9 +113,8 @@ export default function AdminRoles() {
             )}
           </p>
         </div>
-        <button className="btn btn-primary" onClick={loadData} disabled={loading}>
-          <i className="bx bx-refresh me-1"></i>
-          Refresh
+        <button className="btn btn-icon btn-text-secondary" onClick={loadData} disabled={loading}>
+          
         </button>
       </div>
 

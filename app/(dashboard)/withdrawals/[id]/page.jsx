@@ -64,22 +64,53 @@ export default function WithdrawalDetailPage() {
     )
   }
 
-  const coinSymbol = withdrawal.coinSymbol || withdrawal.coin?.symbol || ''
-  const networkSymbol = withdrawal.networkSymbol || withdrawal.network?.symbol || ''
+  const coinSymbol = withdrawal.symbol || withdrawal.coinNetwork?.coin?.symbol || ''
+  const networkSymbol = withdrawal.coinNetwork?.network?.symbol || ''
+  const explorerUrl = withdrawal.coinNetwork?.network?.explorerUrl || ''
+  const toAddress = withdrawal.toAddress || withdrawal.address || withdrawal.withdrawalAddress?.address || ''
+  const fromAddress = withdrawal.fromAddress || ''
+  const totalFee = withdrawal.totalFee || withdrawal.fee || ''
+  const totalAmount = withdrawal.totalAmount || ''
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="d-flex align-items-center mb-4">
-        <button className="btn btn-text-secondary me-2" onClick={() => router.back()}>
-          <i className="bx bx-arrow-back"></i>
-        </button>
-        <div>
-          <h4 className="fw-bold mb-0">
-            {t('withdrawals.detail', { defaultValue: 'Withdrawal' })} #{withdrawal.id}
-          </h4>
-          <span className={statusBadgeClass(withdrawal.status)}>
-            {formatStatusLabel(withdrawal.status)}
-          </span>
+      <button
+        onClick={() => router.back()}
+        className="btn btn-outline-secondary mb-3"
+      >
+        <i className="bx bx-arrow-back me-2"></i>
+        {t('actions.back', { defaultValue: 'Back' })}
+      </button>
+
+      <div className="card mb-4">
+        <div className="card-body">
+          <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div className="d-flex align-items-center gap-3">
+              <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} />
+              <div>
+                <h4 className="mb-1">
+                  {t('withdrawals.detail', { defaultValue: 'Withdrawal' })} #{withdrawal.id}
+                </h4>
+                <div className="d-flex align-items-center gap-2 flex-wrap">
+                  <span className={statusBadgeClass(withdrawal.status)}>
+                    {formatStatusLabel(withdrawal.status)}
+                  </span>
+                  {coinSymbol && (
+                    <span className="badge bg-label-secondary">{coinSymbol}</span>
+                  )}
+                  {networkSymbol && networkSymbol !== coinSymbol && (
+                    <span className="badge bg-label-info">{networkSymbol}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            {totalAmount && (
+              <div className="text-end">
+                <h4 className="mb-0">{formatCoinAmount(totalAmount)}</h4>
+                {withdrawal.amountUsd && <small className="text-muted">${Number(withdrawal.amountUsd).toFixed(2)}</small>}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -87,7 +118,7 @@ export default function WithdrawalDetailPage() {
         <div className="col-lg-8">
           <div className="card mb-3">
             <div className="card-header">
-              <h6 className="mb-0">{t('withdrawals.details', { defaultValue: 'Withdrawal Details' })}</h6>
+              <h6 className="mb-0"><i className="bx bx-detail me-2"></i>{t('withdrawals.details', { defaultValue: 'Details' })}</h6>
             </div>
             <div className="card-body">
               <div className="table-responsive">
@@ -99,24 +130,35 @@ export default function WithdrawalDetailPage() {
                         <div className="d-flex align-items-center gap-2">
                           <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} />
                           <span>{coinSymbol}</span>
-                          {networkSymbol && <small className="text-muted">({networkSymbol})</small>}
+                          {networkSymbol && networkSymbol !== coinSymbol && <small className="text-muted">({networkSymbol})</small>}
                         </div>
                       </td>
                     </tr>
                     <tr>
-                      <td className="text-muted">{t('withdrawals.amount', { defaultValue: 'Amount' })}</td>
-                      <td className="fw-semibold fs-5">{formatCoinAmount(withdrawal.amountDecimal || withdrawal.amount || 0)} {coinSymbol}</td>
+                      <td className="text-muted">{t('withdrawals.totalAmount', { defaultValue: 'Total Amount' })}</td>
+                      <td>{formatCoinAmount(totalAmount || withdrawal.amount || 0)} {coinSymbol}</td>
                     </tr>
-                    {withdrawal.fee && (
+                    {totalFee && (
                       <tr>
                         <td className="text-muted">{t('withdrawals.fee', { defaultValue: 'Fee' })}</td>
-                        <td>{formatCoinAmount(withdrawal.feeDecimal || withdrawal.fee || 0)} {coinSymbol}</td>
+                        <td>{formatCoinAmount(totalFee)} {coinSymbol}</td>
                       </tr>
                     )}
-                    {withdrawal.netAmount && (
+                    <tr>
+                      <td className="text-muted">{t('withdrawals.netAmount', { defaultValue: 'Net Amount' })}</td>
+                      <td className="text-success fw-semibold">{formatCoinAmount(withdrawal.amount || 0)} {coinSymbol}</td>
+                    </tr>
+                    {fromAddress && (
                       <tr>
-                        <td className="text-muted">{t('withdrawals.netAmount', { defaultValue: 'Net Amount' })}</td>
-                        <td className="text-success fw-semibold">{formatCoinAmount(withdrawal.netAmountDecimal || withdrawal.netAmount || 0)} {coinSymbol}</td>
+                        <td className="text-muted">{t('withdrawals.fromAddress', { defaultValue: 'From Address' })}</td>
+                        <td>
+                          <div className="d-flex align-items-center gap-1">
+                            <span className="font-monospace small text-break">{fromAddress}</span>
+                            <button className="btn btn-sm btn-icon btn-text-secondary flex-shrink-0" onClick={() => handleCopy(fromAddress)}>
+                              <i className="bx bx-copy"></i>
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     )}
                     <tr>
@@ -124,10 +166,10 @@ export default function WithdrawalDetailPage() {
                       <td>
                         <div className="d-flex align-items-center gap-1">
                           <span className="font-monospace small text-break">
-                            {withdrawal.address || withdrawal.withdrawalAddress?.address || '-'}
+                            {toAddress || '-'}
                           </span>
-                          {(withdrawal.address || withdrawal.withdrawalAddress?.address) && (
-                            <button className="btn btn-sm btn-icon btn-text-secondary flex-shrink-0" onClick={() => handleCopy(withdrawal.address || withdrawal.withdrawalAddress?.address)}>
+                          {toAddress && (
+                            <button className="btn btn-sm btn-icon btn-text-secondary flex-shrink-0" onClick={() => handleCopy(toAddress)}>
                               <i className="bx bx-copy"></i>
                             </button>
                           )}
@@ -143,6 +185,11 @@ export default function WithdrawalDetailPage() {
                             <button className="btn btn-sm btn-icon btn-text-secondary flex-shrink-0" onClick={() => handleCopy(withdrawal.txHash)}>
                               <i className="bx bx-copy"></i>
                             </button>
+                            {explorerUrl && (
+                              <a href={`${explorerUrl}/tx/${withdrawal.txHash}`} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-icon btn-text-primary flex-shrink-0">
+                                <i className="bx bx-link-external"></i>
+                              </a>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -153,9 +200,15 @@ export default function WithdrawalDetailPage() {
                         <td>{withdrawal.memo}</td>
                       </tr>
                     )}
+                    {withdrawal.failureReason && (
+                      <tr>
+                        <td className="text-muted">{t('withdrawals.reason', { defaultValue: 'Failure Reason' })}</td>
+                        <td className="text-danger">{withdrawal.failureReason}</td>
+                      </tr>
+                    )}
                     {withdrawal.rejectReason && (
                       <tr>
-                        <td className="text-muted">{t('withdrawals.reason', { defaultValue: 'Reject Reason' })}</td>
+                        <td className="text-muted">{t('withdrawals.rejectReason', { defaultValue: 'Reject Reason' })}</td>
                         <td className="text-danger">{withdrawal.rejectReason}</td>
                       </tr>
                     )}
@@ -169,7 +222,7 @@ export default function WithdrawalDetailPage() {
         <div className="col-lg-4">
           <div className="card">
             <div className="card-body">
-              <h6 className="mb-3">{t('withdrawals.timeline', { defaultValue: 'Timeline' })}</h6>
+              <h6 className="mb-3"><i className="bx bx-time-five me-2"></i>{t('withdrawals.timeline', { defaultValue: 'Timeline' })}</h6>
               <ul className="list-unstyled mb-0">
                 <li className="d-flex justify-content-between mb-2">
                   <span className="text-muted">{t('withdrawals.created', { defaultValue: 'Created' })}</span>

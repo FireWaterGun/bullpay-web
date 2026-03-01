@@ -230,9 +230,8 @@ export default function AdminUsersPage() {
                     {t('admin.users.description', { defaultValue: 'Manage users, roles, and access' })}
                   </p>
                 </div>
-                <button className="btn btn-primary" onClick={loadUsers} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  {t('actions.refresh', { defaultValue: 'Refresh' })}
+                <button className="btn btn-icon btn-text-secondary" onClick={loadUsers} disabled={loading}>
+                  <i className="bx bx-refresh"></i>
                 </button>
               </div>
             </div>
@@ -294,7 +293,7 @@ export default function AdminUsersPage() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>

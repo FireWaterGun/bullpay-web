@@ -106,9 +106,8 @@ export default function AdminPaymentDetail() {
                     </div>
                   </div>
                 </div>
-                <button className="btn btn-primary" onClick={loadPayment} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  Refresh
+                <button className="btn btn-icon btn-text-secondary" onClick={loadPayment} disabled={loading}>
+                  
                 </button>
               </div>
             </div>

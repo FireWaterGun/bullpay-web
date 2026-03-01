@@ -68,7 +68,7 @@ export default function TempWalletDetail() {
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">Temp wallet not found</p>
-          <button className="btn btn-primary" onClick={() => router.back()}>Back</button>
+          <button className="btn btn-icon btn-text-secondary" onClick={() => router.back()}>Back</button>
         </div>
       </div>
     )
@@ -117,8 +117,8 @@ export default function TempWalletDetail() {
                     <i className="bx bx-history me-1"></i>
                     View Histories
                   </Link>
-                  <button className="btn btn-primary" onClick={loadWallet} disabled={loading}>
-                    <i className="bx bx-refresh me-1"></i>Refresh
+                  <button className="btn btn-icon btn-text-secondary" onClick={loadWallet} disabled={loading}>
+                    <i className="bx bx-refresh"></i>
                   </button>
                 </div>
               </div>

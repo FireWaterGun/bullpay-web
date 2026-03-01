@@ -65,7 +65,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
-      if (savedTheme) setTheme(savedTheme)
+      if (savedTheme === 'light' || savedTheme === 'dark') setTheme(savedTheme)
       const savedLang = localStorage.getItem(LANG_STORAGE_KEY)
       if (savedLang) {
         const parsed = JSON.parse(savedLang)
@@ -84,23 +84,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   // Apply theme
   useEffect(() => {
-    const apply = () => {
-      const html = document.documentElement
-      const applied = theme === 'system'
-        ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-        : theme
-      html.setAttribute('data-bs-theme', applied)
-    }
-    apply()
+    document.documentElement.setAttribute('data-bs-theme', theme)
     try { localStorage.setItem(THEME_STORAGE_KEY, theme) } catch { }
-
-    let mq: MediaQueryList | undefined
-    if (theme === 'system' && window.matchMedia) {
-      mq = window.matchMedia('(prefers-color-scheme: dark)')
-      const listener = () => apply()
-      mq.addEventListener('change', listener)
-      return () => { mq!.removeEventListener('change', listener) }
-    }
   }, [theme])
 
   // Apply language

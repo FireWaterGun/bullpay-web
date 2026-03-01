@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +15,10 @@ import WithdrawalTxModals from '@/components/admin/WithdrawalTxModals'
 import { logger } from '@/lib/utils/logger'
 
 export default function WithdrawalTransactions() {
+  return <Suspense><WithdrawalTransactionsContent /></Suspense>
+}
+
+function WithdrawalTransactionsContent() {
   const { t, i18n } = useTranslation()
   const { token } = useAuth()
   const toast = useToast()

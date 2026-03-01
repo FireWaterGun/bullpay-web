@@ -103,9 +103,8 @@ export default function AdminInvoiceDetail() {
                     </div>
                   </div>
                 </div>
-                <button className="btn btn-primary" onClick={loadInvoice} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  Refresh
+                <button className="btn btn-icon btn-text-secondary" onClick={loadInvoice} disabled={loading}>
+                  
                 </button>
               </div>
             </div>

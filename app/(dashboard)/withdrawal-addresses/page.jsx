@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
@@ -10,6 +10,10 @@ import AddressTable from '@/components/balance/AddressTable'
 import AddressActionModal from '@/components/balance/AddressActionModal'
 
 export default function WithdrawalAddressesPage() {
+  return <Suspense><WithdrawalAddressesContent /></Suspense>
+}
+
+function WithdrawalAddressesContent() {
   const searchParams = useSearchParams()
   const { t } = useTranslation()
   const { token } = useAuth()

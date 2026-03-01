@@ -124,9 +124,8 @@ export default function AuditLogDetail() {
                     </div>
                   </div>
                 </div>
-                <button className="btn btn-primary" onClick={loadLog} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  Refresh
+                <button className="btn btn-icon btn-text-secondary" onClick={loadLog} disabled={loading}>
+                  
                 </button>
               </div>
             </div>

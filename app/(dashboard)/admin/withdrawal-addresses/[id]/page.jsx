@@ -228,8 +228,8 @@ export default function WithdrawalAddressDetail() {
                   </div>
                 </div>
                 <div className="d-flex gap-2 flex-wrap">
-                  <button className="btn btn-outline-primary btn-sm" onClick={loadAddress} disabled={loading}>
-                    <i className="bx bx-refresh me-1"></i>Refresh
+                  <button className="btn btn-icon btn-text-secondary" onClick={loadAddress} disabled={loading}>
+                    <i className="bx bx-refresh"></i>
                   </button>
                 </div>
               </div>

@@ -39,9 +39,8 @@ export default function WithdrawalTxFilters({
               {t('withdrawal.transactionsDesc', { defaultValue: 'View all withdrawal transactions and their status' })}
             </p>
           </div>
-          <button className="btn btn-primary" onClick={onRefresh} disabled={loading}>
-            <i className="bx bx-refresh me-1"></i>
-            {t('actions.refresh', { defaultValue: 'Refresh' })}
+          <button className="btn btn-icon btn-text-secondary" onClick={onRefresh} disabled={loading}>
+            <i className="bx bx-refresh"></i>
           </button>
         </div>
       </div>

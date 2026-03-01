@@ -26,8 +26,6 @@ export default function NavbarContent({ fiatBalance, notificationRefreshRef, the
   const { t, i18n } = useTranslation()
   const { user, logout, isAdmin } = useAuth()
 
-  const themeIcon = theme === 'dark' ? 'bx-moon' : theme === 'system' ? 'bx-desktop' : 'bx-sun'
-
   const initials = String(user?.fullName || user?.name || user?.email || 'U')
     .split(/\s+|@/)
     .filter(Boolean)
@@ -70,30 +68,16 @@ export default function NavbarContent({ fiatBalance, notificationRefreshRef, the
           </ul>
         </li>
 
-        {/* Theme Switcher */}
-        <li className="nav-item dropdown me-2 me-xl-0">
-          <a className="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
-            <i className={`icon-base bx ${themeIcon} icon-md theme-icon-active`}></i>
-            <span className="d-none ms-2" id="nav-theme-text">Toggle theme</span>
+        {/* Theme Toggle */}
+        <li className="nav-item me-2 me-xl-0">
+          <a
+            className="nav-link"
+            href="#"
+            onClick={(e) => { e.preventDefault(); setTheme(theme === 'dark' ? 'light' : 'dark') }}
+            title={theme === 'dark' ? t('theme.light') : t('theme.dark')}
+          >
+            <i className={`icon-base bx ${theme === 'dark' ? 'bx-sun' : 'bx-moon'} icon-md`}></i>
           </a>
-          <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="nav-theme-text">
-            {[
-              { value: 'light', label: t('theme.light'), icon: 'bx-sun' },
-              { value: 'dark', label: t('theme.dark'), icon: 'bx-moon' },
-              { value: 'system', label: t('theme.system'), icon: 'bx-desktop' },
-            ].map(opt => (
-              <li key={opt.value}>
-                <button
-                  type="button"
-                  className={`dropdown-item align-items-center ${theme === opt.value ? 'active' : ''}`}
-                  aria-pressed={theme === opt.value}
-                  onClick={() => setTheme(opt.value)}
-                >
-                  <span><i className={`icon-base bx ${opt.icon} icon-md me-3`} data-icon={opt.label.toLowerCase()}></i>{opt.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
         </li>
 
         {/* Notifications */}

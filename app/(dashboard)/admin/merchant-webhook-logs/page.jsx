@@ -152,9 +152,8 @@ export default function MerchantWebhookLogList() {
                   </h4>
                   <p className="text-muted mb-0">View and monitor webhook delivery attempts to merchants</p>
                 </div>
-                <button className="btn btn-primary" onClick={loadLogs} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>
-                  Refresh
+                <button className="btn btn-icon btn-text-secondary" onClick={loadLogs} disabled={loading}>
+                  
                 </button>
               </div>
             </div>
@@ -231,7 +230,7 @@ export default function MerchantWebhookLogList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
@@ -8,6 +8,10 @@ import { useAuth, useToast } from '@/app/providers'
 import { verifyWalletAddress } from '@/lib/api/wallets'
 
 export default function WalletVerify() {
+  return <Suspense><WalletVerifyContent /></Suspense>
+}
+
+function WalletVerifyContent() {
   const searchParams = useSearchParams()
   const { t } = useTranslation()
   const { token } = useAuth()

@@ -53,7 +53,7 @@ export default function UserBalanceDetailPage() {
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">User balance not found</p>
-          <button className="btn btn-primary" onClick={() => router.back()}>Back</button>
+          <button className="btn btn-icon btn-text-secondary" onClick={() => router.back()}>Back</button>
         </div>
       </div>
     )
@@ -83,8 +83,8 @@ export default function UserBalanceDetailPage() {
                     </span>
                   )}
                 </div>
-                <button className="btn btn-primary" onClick={loadDetail} disabled={loading}>
-                  <i className="bx bx-refresh me-1"></i>Refresh
+                <button className="btn btn-icon btn-text-secondary" onClick={loadDetail} disabled={loading}>
+                  <i className="bx bx-refresh"></i>
                 </button>
               </div>
             </div>
