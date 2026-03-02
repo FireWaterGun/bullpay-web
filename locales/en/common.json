@@ -41,7 +41,8 @@
     "merchants": "Merchants",
     "rolesPermissions": "Roles & Permissions",
     "auditLogs": "Audit Logs",
-    "webhookLogs": "Webhook Logs"
+    "webhookLogs": "Webhook Logs",
+    "myAccount": "My Account"
   },
   "user": {
     "billing": "Billing",

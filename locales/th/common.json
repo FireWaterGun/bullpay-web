@@ -41,7 +41,8 @@
     "merchants": "ร้านค้า",
     "rolesPermissions": "บทบาทและสิทธิ์",
     "auditLogs": "บันทึกการตรวจสอบ",
-    "webhookLogs": "บันทึก Webhook"
+    "webhookLogs": "บันทึก Webhook",
+    "myAccount": "บัญชีของฉัน"
   },
   "user": {
     "billing": "การเรียกเก็บเงิน",

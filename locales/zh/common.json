@@ -41,7 +41,8 @@
     "merchants": "商户",
     "rolesPermissions": "角色与权限",
     "auditLogs": "审计日志",
-    "webhookLogs": "Webhook日志"
+    "webhookLogs": "Webhook日志",
+    "myAccount": "我的账户"
   },
   "user": {
     "billing": "账单",

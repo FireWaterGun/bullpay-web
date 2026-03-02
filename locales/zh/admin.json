@@ -1154,5 +1154,20 @@
   "valueUSD": "价值 (USD)",
   "wallet": {
     "loadError": "Failed to load wallet details"
+  },
+  "account": {
+    "title": "我的账户",
+    "description": "管理您的管理员账户安全",
+    "passwordTitle": "修改密码",
+    "passwordDescription": "为了安全起见，修改密码后您将从所有设备上注销。",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "requirements": "至少8个字符，包含大写字母、小写字母、数字和特殊字符。",
+    "changeButton": "修改密码",
+    "changing": "修改中...",
+    "changeSuccess": "密码修改成功，请重新登录。",
+    "changeFailed": "密码修改失败，请重试。",
+    "incorrectCurrent": "当前密码不正确"
   }
 }

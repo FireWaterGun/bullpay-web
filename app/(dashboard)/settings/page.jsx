@@ -3,36 +3,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dynamic from 'next/dynamic'
 import { useAuth, useToast } from '@/app/providers'
 import { get2FAStatus } from '@/lib/api/twoFactor'
 import { changePasswordApi } from '@/lib/api/auth'
+import { changePasswordSchema } from '@/lib/validations/change-password'
 const Setup2FAModal = dynamic(() => import('@/components/TwoFactorModals').then(m => m.Setup2FAModal), { ssr: false })
 const Disable2FAModal = dynamic(() => import('@/components/TwoFactorModals').then(m => m.Disable2FAModal), { ssr: false })
 import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
-
-const newPasswordSchema = z.string()
-  .min(8, 'Password must be at least 8 characters')
-  .max(128, 'Password must be at most 128 characters')
-  .regex(/[a-z]/, 'At least one lowercase letter')
-  .regex(/[A-Z]/, 'At least one uppercase letter')
-  .regex(/[0-9]/, 'At least one number')
-  .regex(/[^A-Za-z0-9]/, 'At least one special character')
-
-const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: newPasswordSchema,
-  newPasswordConfirmation: z.string().min(1, 'Please confirm your new password'),
-}).refine((data) => data.newPassword === data.newPasswordConfirmation, {
-  message: 'Passwords do not match',
-  path: ['newPasswordConfirmation'],
-}).refine((data) => data.currentPassword !== data.newPassword, {
-  message: 'New password must be different from current password',
-  path: ['newPassword'],
-})
 
 export default function SettingsPage() {
   const { t } = useTranslation()

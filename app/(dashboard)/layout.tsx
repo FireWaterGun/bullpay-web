@@ -176,6 +176,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       'admin-system': 'nav.settings',
       'admin-audit-logs': 'nav.auditLogs',
       'admin-merchant-webhook-logs': 'nav.webhookLogs',
+      'admin-account': 'nav.myAccount',
     }
     return keyMap[key] ? t(keyMap[key], { defaultValue: fallback }) : fallback
   }
