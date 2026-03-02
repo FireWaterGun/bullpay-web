@@ -1,29 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import NextImage from 'next/image'
 import Link from 'next/link'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getCoins } from '@/lib/api/admin'
-
-// Coin color mapping
-function getCoinColor(symbol, darker = false) {
-  const colors = {
-    BTC: darker ? '#E17F00' : '#F7931A',
-    ETH: darker ? '#5F7AA0' : '#627EEA',
-    USDT: darker ? '#1BA27A' : '#26A17B',
-    USDC: darker ? '#1F7FBF' : '#2775CA',
-    BNB: darker ? '#D4A000' : '#F3BA2F',
-    MATIC: darker ? '#6B21A8' : '#8247E5',
-    POL: darker ? '#6B21A8' : '#8247E5',
-    SOL: darker ? '#8C3FD9' : '#9945FF',
-    TRX: darker ? '#C91E1E' : '#FF060A',
-    ADA: darker ? '#0033AD' : '#0033AD',
-    DOT: darker ? '#D81B60' : '#E6007A',
-  }
-  return colors[symbol] || (darker ? '#6366F1' : '#818CF8')
-}
+import CoinImg from '@/components/CoinImg'
 
 export default function CoinList() {
   const { t } = useAdminTranslation()
@@ -31,7 +13,6 @@ export default function CoinList() {
   const [coins, setCoins] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [coinImages, setCoinImages] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
   const [pagination, setPagination] = useState({
@@ -42,57 +23,6 @@ export default function CoinList() {
     hasNext: false,
     hasPrev: false
   })
-
-  // Add version parameter to bypass Cloudflare cache
-  function addVersionParam(url) {
-    if (!url) return url
-    const separator = url.includes('?') ? '&' : '?'
-    return `${url}${separator}v=040`
-  }
-
-  // Try to load an image URL
-  function tryLoadImage(url) {
-    return new Promise((resolve) => {
-      if (!url) {
-        resolve(false)
-        return
-      }
-      
-      const img = new Image()
-      img.onload = () => resolve(true)
-      img.onerror = () => resolve(false)
-      img.crossOrigin = 'anonymous'
-      img.referrerPolicy = 'no-referrer'
-      img.src = url
-    })
-  }
-
-  // Try to find a working image for a coin
-  async function findCoinImage(coin) {
-    // Try 1: External logoUrl with version param
-    if (coin.logoUrl) {
-      const externalUrl = addVersionParam(coin.logoUrl)
-      const loaded = await tryLoadImage(externalUrl)
-      if (loaded) {
-        return { id: coin.id, url: externalUrl, type: 'external' }
-      }
-    }
-
-    // Try 2: Local assets - try multiple extensions
-    const symbol = coin.symbol.toLowerCase()
-    const extensions = ['svg', 'png']
-    
-    for (const ext of extensions) {
-      const localUrl = `/assets/img/coins/${symbol}.${ext}`
-      const loaded = await tryLoadImage(localUrl)
-      if (loaded) {
-        return { id: coin.id, url: localUrl, type: 'local' }
-      }
-    }
-
-    // Try 3: Use gradient badge (no URL)
-    return { id: coin.id, url: null, type: 'gradient' }
-  }
 
   useEffect(() => {
     loadCoins()
@@ -127,17 +57,6 @@ export default function CoinList() {
         hasNext: paginationData.hasNext || false,
         hasPrev: paginationData.hasPrev || false
       })
-      
-      // Find working images for all coins
-      const imagePromises = coinList.map(coin => findCoinImage(coin))
-      const results = await Promise.all(imagePromises)
-      
-      // Store image URLs by coin ID
-      const imageMap = {}
-      results.forEach(result => {
-        imageMap[result.id] = { url: result.url, type: result.type }
-      })
-      setCoinImages(imageMap)
       
     } catch (e) {
       setError(e?.message || 'Failed to load coins')
@@ -233,32 +152,13 @@ export default function CoinList() {
                     <tr key={coin.id}>
                       <td style={{ verticalAlign: 'middle' }}>
                         <div className="d-flex align-items-center">
-                          {coinImages[coin.id]?.url ? (
-                            <NextImage
-                              src={coinImages[coin.id].url}
-                              alt={coin.symbol}
-                              width={40}
-                              height={40}
-                              className="me-3"
-                              style={{ objectFit: 'contain' }}
-                            />
-                          ) : (
-                            <div 
-                              className="me-3 rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                              style={{
-                                width: 40,
-                                height: 40,
-                                background: `linear-gradient(135deg, ${getCoinColor(coin.symbol)} 0%, ${getCoinColor(coin.symbol, true)} 100%)`,
-                                color: 'white',
-                                fontSize: '0.875rem',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                                letterSpacing: '-0.5px'
-                              }}
-                              title={coin.name}
-                            >
-                              {coin.symbol.substring(0, 3)}
-                            </div>
-                          )}
+                          <CoinImg
+                            symbol={coin.symbol}
+                            logoUrl={coin.logoUrl}
+                            size={40}
+                            className="me-3"
+                            showFallback
+                          />
                           <div>
                             <div className="fw-medium">{coin.name || 'N/A'}</div>
                           </div>
