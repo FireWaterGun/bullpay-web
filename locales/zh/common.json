@@ -286,6 +286,19 @@
       "tooManyAttempts": "尝试次数过多，请在{{seconds}}秒后重试",
       "backupCodesDownloadTitle": "BullPay 2FA 备份码",
       "backupCodesKeepSafe": "请妥善保管这些备份码，每个码只能使用一次。"
+    },
+    "password": {
+      "title": "修改密码",
+      "description": "为安全考虑，更改密码后您将从所有设备中注销。",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码",
+      "requirements": "至少8个字符，包含大写字母、小写字母、数字和特殊字符。",
+      "changeButton": "修改密码",
+      "changing": "正在修改...",
+      "changeSuccess": "密码修改成功，请重新登录。",
+      "changeFailed": "密码修改失败，请重试。",
+      "incorrectCurrent": "当前密码不正确"
     }
   },
   "2fa": {

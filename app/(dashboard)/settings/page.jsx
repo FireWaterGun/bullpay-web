@@ -2,22 +2,66 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import dynamic from 'next/dynamic'
 import { useAuth, useToast } from '@/app/providers'
 import { get2FAStatus } from '@/lib/api/twoFactor'
+import { changePasswordApi } from '@/lib/api/auth'
 const Setup2FAModal = dynamic(() => import('@/components/TwoFactorModals').then(m => m.Setup2FAModal), { ssr: false })
 const Disable2FAModal = dynamic(() => import('@/components/TwoFactorModals').then(m => m.Disable2FAModal), { ssr: false })
 import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 
+const newPasswordSchema = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(128, 'Password must be at most 128 characters')
+  .regex(/[a-z]/, 'At least one lowercase letter')
+  .regex(/[A-Z]/, 'At least one uppercase letter')
+  .regex(/[0-9]/, 'At least one number')
+  .regex(/[^A-Za-z0-9]/, 'At least one special character')
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: newPasswordSchema,
+  newPasswordConfirmation: z.string().min(1, 'Please confirm your new password'),
+}).refine((data) => data.newPassword === data.newPasswordConfirmation, {
+  message: 'Passwords do not match',
+  path: ['newPasswordConfirmation'],
+}).refine((data) => data.currentPassword !== data.newPassword, {
+  message: 'New password must be different from current password',
+  path: ['newPassword'],
+})
+
 export default function SettingsPage() {
   const { t } = useTranslation()
-  const { token } = useAuth()
+  const { token, logout } = useAuth()
   const toast = useToast()
   const [twoFAStatus, setTwoFAStatus] = useState(null)
   const [loading, setLoading] = useState(true)
   const [showSetupModal, setShowSetupModal] = useState(false)
   const [showDisableModal, setShowDisableModal] = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset: resetForm,
+    setError: setFormError,
+  } = useForm({
+    resolver: zodResolver(changePasswordSchema),
+    mode: 'onChange',
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      newPasswordConfirmation: '',
+    },
+  })
 
   const fetchStatus = useCallback(async () => {
     if (!token) return
@@ -38,6 +82,41 @@ export default function SettingsPage() {
 
   const is2FAEnabled = twoFAStatus?.enabled && twoFAStatus?.verified
 
+  const onChangePassword = async (formData) => {
+    setChangingPassword(true)
+    try {
+      const res = await changePasswordApi(token, {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+        newPasswordConfirmation: formData.newPasswordConfirmation,
+      })
+
+      if (res?.success || res?.status === 'success') {
+        toast.success(
+          t('settings.password.changeSuccess', {
+            defaultValue: 'Password changed successfully. Please log in again.',
+          })
+        )
+        resetForm()
+        // Server revoked all tokens, log out client side
+        setTimeout(() => logout(), 1500)
+      } else {
+        const errorMsg = res?.error?.message || res?.message || 'Password change failed'
+        // Map known API errors to form fields
+        if (errorMsg.toLowerCase().includes('current password')) {
+          setFormError('currentPassword', { message: t('settings.password.incorrectCurrent', { defaultValue: 'Current password is incorrect' }) })
+        } else {
+          toast.error(errorMsg)
+        }
+      }
+    } catch (err) {
+      logger.error('Failed to change password:', err)
+      toast.error(t('settings.password.changeFailed', { defaultValue: 'Failed to change password. Please try again.' }))
+    } finally {
+      setChangingPassword(false)
+    }
+  }
+
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       <div>
@@ -53,13 +132,14 @@ export default function SettingsPage() {
         </div>
 
         {/* Security Section */}
-        <div className="card">
+        <div className="card mb-4">
           <div className="card-header">
             <h6 className="mb-0">
               {t('settings.security.title', { defaultValue: 'Security' })}
             </h6>
           </div>
           <div className="card-body">
+            {/* 2FA Row */}
             <div className="d-flex align-items-start justify-content-between">
               <div className="d-flex align-items-start">
                 <div
@@ -137,6 +217,130 @@ export default function SettingsPage() {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Change Password Section */}
+        <div className="card">
+          <div className="card-header">
+            <h6 className="mb-0">
+              <i className="bx bx-key me-2"></i>
+              {t('settings.password.title', { defaultValue: 'Change Password' })}
+            </h6>
+          </div>
+          <div className="card-body">
+            <p className="text-muted mb-4">
+              {t('settings.password.description', {
+                defaultValue: 'For security, you\'ll be logged out of all devices after changing your password.',
+              })}
+            </p>
+            <form onSubmit={handleSubmit(onChangePassword)} noValidate>
+              <div className="row">
+                <div className="col-md-6">
+                  {/* Current Password */}
+                  <div className="mb-4">
+                    <label className="form-label" htmlFor="currentPassword">
+                      {t('settings.password.currentPassword', { defaultValue: 'Current Password' })}
+                    </label>
+                    <div className="input-group input-group-merge">
+                      <input
+                        type={showCurrentPassword ? 'text' : 'password'}
+                        id="currentPassword"
+                        className={`form-control ${errors.currentPassword ? 'is-invalid' : ''}`}
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        {...register('currentPassword')}
+                      />
+                      <span
+                        className="input-group-text cursor-pointer"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      >
+                        <i className={`bx ${showCurrentPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                      </span>
+                    </div>
+                    {errors.currentPassword && (
+                      <div className="invalid-feedback d-block">{errors.currentPassword.message}</div>
+                    )}
+                  </div>
+
+                  {/* New Password */}
+                  <div className="mb-4">
+                    <label className="form-label" htmlFor="newPassword">
+                      {t('settings.password.newPassword', { defaultValue: 'New Password' })}
+                    </label>
+                    <div className="input-group input-group-merge">
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        id="newPassword"
+                        className={`form-control ${errors.newPassword ? 'is-invalid' : ''}`}
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        {...register('newPassword')}
+                      />
+                      <span
+                        className="input-group-text cursor-pointer"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        <i className={`bx ${showNewPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                      </span>
+                    </div>
+                    {errors.newPassword && (
+                      <div className="invalid-feedback d-block">{errors.newPassword.message}</div>
+                    )}
+                    <div className="form-text">
+                      {t('settings.password.requirements', {
+                        defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.',
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Confirm New Password */}
+                  <div className="mb-4">
+                    <label className="form-label" htmlFor="newPasswordConfirmation">
+                      {t('settings.password.confirmPassword', { defaultValue: 'Confirm New Password' })}
+                    </label>
+                    <div className="input-group input-group-merge">
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        id="newPasswordConfirmation"
+                        className={`form-control ${errors.newPasswordConfirmation ? 'is-invalid' : ''}`}
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        {...register('newPasswordConfirmation')}
+                      />
+                      <span
+                        className="input-group-text cursor-pointer"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                      </span>
+                    </div>
+                    {errors.newPasswordConfirmation && (
+                      <div className="invalid-feedback d-block">{errors.newPasswordConfirmation.message}</div>
+                    )}
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={changingPassword || !isValid}
+                  >
+                    {changingPassword ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        {t('settings.password.changing', { defaultValue: 'Changing...' })}
+                      </>
+                    ) : (
+                      <>
+                        <i className="bx bx-check me-1"></i>
+                        {t('settings.password.changeButton', { defaultValue: 'Change Password' })}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

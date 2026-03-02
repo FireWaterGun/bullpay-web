@@ -51,3 +51,17 @@ export async function verifyEmailApi({ token, email }: VerifyEmailParams) {
     body: { token, email },
   })
 }
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+  newPasswordConfirmation: string
+}
+
+export async function changePasswordApi(token: string | null, body: ChangePasswordRequest) {
+  return apiFetch('/api/v1/auth/change-password', {
+    method: 'POST',
+    token,
+    body,
+  })
+}
