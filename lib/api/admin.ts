@@ -1660,3 +1660,27 @@ export async function getUserBalances(
 export async function getUserBalanceDetail(token: string | null, userId: number | string) {
   return apiFetch(`/api/v1/admin/user-balances/${userId}`, { token })
 }
+
+// ── System Balance Adjustment ────────────────────────────────────
+
+/**
+ * Adjust system wallet balance (XI/XO) — super_admin only
+ */
+export async function adjustSystemBalance(
+  token: string | null,
+  params: {
+    walletId: number
+    coinNetworkId: number
+    direction: 'in' | 'out'
+    amount: string
+    reason: string
+    txHash?: string | null
+    relatedId?: number | null
+  }
+) {
+  return apiFetch('/api/v1/admin/system-balance/adjust', {
+    token,
+    method: 'POST',
+    body: params,
+  })
+}

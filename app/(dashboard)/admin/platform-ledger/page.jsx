@@ -9,15 +9,19 @@ import { getPlatformLedgerEntries } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
 import PlatformLedgerFilterPanel from '@/components/ledger/PlatformLedgerFilterPanel'
 import PlatformLedgerTable from '@/components/ledger/PlatformLedgerTable'
+import AdjustmentModal from '@/components/ledger/AdjustmentModal'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function PlatformLedgerList() {
   const { t, i18n } = useAdminTranslation()
-  const { token } = useAuth()
+  const { token, navigation } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
+
+  const isSuperAdmin = navigation?.role === 'super_admin'
+  const [showAdjustModal, setShowAdjustModal] = useState(false)
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
@@ -129,6 +133,20 @@ export default function PlatformLedgerList() {
     return <PageSpinner />
   }
 
+  function handleAdjustmentResult(result) {
+    if (result === 'in') {
+      toast.success(t('admin.adjustment.successIncrease', { defaultValue: 'Balance increased (XI) successfully' }))
+      loadEntries()
+    } else if (result === 'out') {
+      toast.success(t('admin.adjustment.successDecrease', { defaultValue: 'Balance decreased (XO) successfully' }))
+      loadEntries()
+    } else if (result === 'error:insufficient') {
+      toast.error(t('admin.adjustment.insufficientBalance', { defaultValue: 'Insufficient confirmed balance for this adjustment' }))
+    } else if (result === 'error') {
+      toast.error(t('admin.adjustment.error', { defaultValue: 'Failed to apply adjustment' }))
+    }
+  }
+
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="row">
@@ -145,7 +163,18 @@ export default function PlatformLedgerList() {
                     {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadEntries} loading={loading} />
+                <div className="d-flex align-items-center gap-2">
+                  {isSuperAdmin && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setShowAdjustModal(true)}
+                    >
+                      <i className="bx bx-transfer-alt me-1"></i>
+                      {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
+                    </button>
+                  )}
+                  <RefreshButton onClick={loadEntries} loading={loading} />
+                </div>
               </div>
             </div>
             <PlatformLedgerFilterPanel
@@ -176,6 +205,14 @@ export default function PlatformLedgerList() {
           />
         </div>
       </div>
+
+      {showAdjustModal && (
+        <AdjustmentModal
+          t={t}
+          onClose={() => setShowAdjustModal(false)}
+          onSuccess={handleAdjustmentResult}
+        />
+      )}
     </div>
   )
 }
