@@ -9,6 +9,7 @@ import {
   regenerateKey,
   updateWebhook,
 } from '@/lib/api/merchant'
+import { get2FAStatus } from '@/lib/api/twoFactor'
 import { formatCommission, formatDate } from '@/lib/utils/format'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import CredentialAlert from '@/components/merchant/CredentialAlert'
@@ -75,10 +76,25 @@ export default function MerchantPage() {
   const [showModal, setShowModal] = useState(false)
   const [modalAction, setModalAction] = useState('')
   const [modalLoading, setModalLoading] = useState(false)
+  const [modalError, setModalError] = useState('')
+
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false)
 
   useEffect(() => {
     loadProfile()
+    load2FAStatus()
   }, [])
+
+  async function load2FAStatus() {
+    if (!token) return
+    try {
+      const res = await get2FAStatus(token)
+      setIs2FAEnabled(res?.enabled === true)
+    } catch {
+      // Non-critical — if we can't fetch status, 2FA fields won't show
+      setIs2FAEnabled(false)
+    }
+  }
 
   async function loadProfile() {
     if (!token) return
@@ -113,6 +129,7 @@ export default function MerchantPage() {
 
   function openModal(action) {
     setModalAction(action)
+    setModalError('')
     setShowModal(true)
   }
 
@@ -120,18 +137,20 @@ export default function MerchantPage() {
     if (modalLoading) return
     setShowModal(false)
     setModalAction('')
+    setModalError('')
   }
 
-  async function handleModalConfirm() {
+  async function handleModalConfirm({ password, totpCode } = {}) {
     try {
       setModalLoading(true)
+      setModalError('')
       if (modalAction === 'rotate-secret') {
-        const result = await rotateSecret(token)
+        const result = await rotateSecret(token, { password, totpCode })
         setNewCredentials({ apiSecret: result.apiSecret })
         setCredentialWarning(result.warning || '')
         toast.success( t('merchant.rotateSuccess', { defaultValue: 'API secret rotated successfully' }))
       } else if (modalAction === 'regenerate-key') {
-        const result = await regenerateKey(token)
+        const result = await regenerateKey(token, { password, totpCode })
         setNewCredentials({ apiKey: result.apiKey, apiSecret: result.apiSecret })
         setApiKey(result.apiKey || '')
         setCredentialWarning(result.warning || '')
@@ -139,25 +158,111 @@ export default function MerchantPage() {
       }
       closeModal()
     } catch (error) {
-      toast.error( error?.message || t('merchant.actionError', { defaultValue: 'Action failed. Please try again.' }))
+      const code = error?.code || error?.data?.error?.code || error?.data?.code
+      const apiMsg = error?.data?.error?.message || error?.message
+      const details = error?.data?.error?.details || error?.details || {}
+
+      if (code === 'TWO_FACTOR_REQUIRED') {
+        setIs2FAEnabled(true)
+        setModalError(t('merchant.twoFactorRequired', { defaultValue: 'Please enter your password and 2FA code' }))
+        return
+      }
+
+      if (code === 'PASSWORD_REQUIRED') {
+        setModalError(t('merchant.passwordRequired', { defaultValue: 'Please enter your password' }))
+        return
+      }
+
+      if (code === 'INVALID_PASSWORD') {
+        setModalError(t('merchant.invalidPassword', { defaultValue: 'Invalid password' }))
+        return
+      }
+
+      if (code === 'INVALID_2FA_CODE') {
+        const retryAfter = details?.retryAfterSeconds
+        const remaining = details?.remainingAttempts
+        if (retryAfter) {
+          setModalError(t('merchant.tooManyAttempts', { defaultValue: 'Too many attempts. Try again in {{seconds}} seconds', seconds: retryAfter }))
+        } else if (remaining !== undefined) {
+          setModalError(t('merchant.invalidCodeRemaining', { defaultValue: 'Invalid code. {{count}} attempts remaining', count: remaining }))
+        } else {
+          setModalError(t('merchant.invalid2FACode', { defaultValue: 'Invalid 2FA code' }))
+        }
+        return
+      }
+
+      setModalError(apiMsg || t('merchant.actionError', { defaultValue: 'Action failed. Please try again.' }))
     } finally {
       setModalLoading(false)
     }
   }
+
+  const [webhookTotpCode, setWebhookTotpCode] = useState('')
+  const [webhookPassword, setWebhookPassword] = useState('')
+  const [webhookShowPassword, setWebhookShowPassword] = useState(false)
+  const [webhookError, setWebhookError] = useState('')
 
   async function handleWebhookSave() {
     if (!webhookUrl) {
       toast.error( t('merchant.webhookRequired', { defaultValue: 'Webhook URL is required' }))
       return
     }
+    if (!webhookPassword.trim()) {
+      setWebhookError(t('merchant.passwordRequired', { defaultValue: 'Please enter your password' }))
+      return
+    }
+    if (is2FAEnabled && !webhookTotpCode.trim()) {
+      setWebhookError(t('merchant.totpRequiredForWebhook', { defaultValue: 'Please enter your 2FA code' }))
+      return
+    }
     try {
       setWebhookLoading(true)
-      await updateWebhook(token, webhookUrl)
-      toast('success', t('merchant.webhookSuccess', { defaultValue: 'Webhook URL updated successfully' }))
+      setWebhookError('')
+      await updateWebhook(token, webhookUrl, {
+        password: webhookPassword.trim(),
+        ...(is2FAEnabled && webhookTotpCode.trim() && { totpCode: webhookTotpCode.trim() }),
+      })
+      toast.success(t('merchant.webhookSuccess', { defaultValue: 'Webhook URL updated successfully' }))
       setEditingWebhook(false)
+      setWebhookTotpCode('')
+      setWebhookPassword('')
+      setWebhookError('')
       loadProfile()
     } catch (error) {
-      toast.error( error?.message || t('merchant.webhookError', { defaultValue: 'Failed to update webhook URL' }))
+      const code = error?.code || error?.data?.error?.code || error?.data?.code
+      const apiMsg = error?.data?.error?.message || error?.message
+      const details = error?.data?.error?.details || error?.details || {}
+
+      if (code === 'TWO_FACTOR_REQUIRED') {
+        setIs2FAEnabled(true)
+        setWebhookError(t('merchant.twoFactorRequired', { defaultValue: 'Please enter your password and 2FA code' }))
+        return
+      }
+
+      if (code === 'PASSWORD_REQUIRED') {
+        setWebhookError(t('merchant.passwordRequired', { defaultValue: 'Please enter your password' }))
+        return
+      }
+
+      if (code === 'INVALID_PASSWORD') {
+        setWebhookError(t('merchant.invalidPassword', { defaultValue: 'Invalid password' }))
+        return
+      }
+
+      if (code === 'INVALID_2FA_CODE') {
+        const retryAfter = details?.retryAfterSeconds
+        const remaining = details?.remainingAttempts
+        if (retryAfter) {
+          setWebhookError(t('merchant.tooManyAttempts', { defaultValue: 'Too many attempts. Try again in {{seconds}} seconds', seconds: retryAfter }))
+        } else if (remaining !== undefined) {
+          setWebhookError(t('merchant.invalidCodeRemaining', { defaultValue: 'Invalid code. {{count}} attempts remaining', count: remaining }))
+        } else {
+          setWebhookError(t('merchant.invalid2FACode', { defaultValue: 'Invalid 2FA code' }))
+        }
+        return
+      }
+
+      setWebhookError(apiMsg || t('merchant.webhookError', { defaultValue: 'Failed to update webhook URL' }))
     } finally {
       setWebhookLoading(false)
     }
@@ -338,6 +443,60 @@ export default function MerchantPage() {
                       autoFocus
                     />
                   </div>
+                  {/* 2FA code for webhook update (Level 2 — password + TOTP) */}
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold small" htmlFor="webhook-password">
+                      <i className="bx bx-lock-alt me-1"></i>
+                      {t('merchant.enterPassword', { defaultValue: 'Password' })}
+                    </label>
+                    <div className="input-group">
+                      <input
+                        id="webhook-password"
+                        type={webhookShowPassword ? 'text' : 'password'}
+                        className="form-control"
+                        value={webhookPassword}
+                        onChange={(e) => setWebhookPassword(e.target.value)}
+                        placeholder={t('merchant.passwordPlaceholder', { defaultValue: 'Enter your current password' })}
+                        disabled={webhookLoading}
+                        autoComplete="current-password"
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() => setWebhookShowPassword(!webhookShowPassword)}
+                        tabIndex={-1}
+                      >
+                        <i className={`bx ${webhookShowPassword ? 'bx-hide' : 'bx-show'}`}></i>
+                      </button>
+                    </div>
+                  </div>
+                  {is2FAEnabled && (
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold small" htmlFor="webhook-totp">
+                        <i className="bx bx-shield me-1"></i>
+                        {t('merchant.enter2FACode', { defaultValue: '2FA Code' })}
+                      </label>
+                      <input
+                        id="webhook-totp"
+                        type="text"
+                        className="form-control"
+                        value={webhookTotpCode}
+                        onChange={(e) => setWebhookTotpCode(e.target.value.replace(/[^0-9A-Za-z]/g, '').slice(0, 8))}
+                        placeholder={t('merchant.totpPlaceholder', { defaultValue: 'Enter 6-digit code from authenticator' })}
+                        disabled={webhookLoading}
+                        maxLength={8}
+                        autoComplete="one-time-code"
+                        inputMode="numeric"
+                      />
+                    </div>
+                  )}
+                  {/* Webhook error */}
+                  {webhookError && (
+                    <div className="alert alert-danger py-2 mb-3 small" role="alert">
+                      <i className="bx bx-error-circle me-1"></i>
+                      {webhookError}
+                    </div>
+                  )}
                   <div className="d-flex gap-2">
                     <button className="btn btn-primary btn-sm" onClick={handleWebhookSave} disabled={webhookLoading}>
                       {webhookLoading ? (
@@ -346,7 +505,7 @@ export default function MerchantPage() {
                         <><i className="bx bx-check me-1"></i>{t('merchant.save', { defaultValue: 'Save' })}</>
                       )}
                     </button>
-                    <button className="btn btn-outline-secondary btn-sm" onClick={() => setEditingWebhook(false)} disabled={webhookLoading}>
+                    <button className="btn btn-outline-secondary btn-sm" onClick={() => { setEditingWebhook(false); setWebhookTotpCode(''); setWebhookPassword(''); setWebhookError('') }} disabled={webhookLoading}>
                       {t('actions.cancel', { defaultValue: 'Cancel' })}
                     </button>
                   </div>
@@ -452,8 +611,10 @@ export default function MerchantPage() {
         <ConfirmActionModal
           action={modalAction}
           loading={modalLoading}
+          is2FAEnabled={is2FAEnabled}
           onConfirm={handleModalConfirm}
           onClose={closeModal}
+          error={modalError}
           t={t}
         />
       )}

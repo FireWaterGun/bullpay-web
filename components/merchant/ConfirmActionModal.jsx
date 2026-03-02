@@ -1,10 +1,41 @@
 'use client'
 
-export default function ConfirmActionModal({ action, loading, onConfirm, onClose, t }) {
+import { useState, useEffect, useRef } from 'react'
+
+export default function ConfirmActionModal({ action, loading, is2FAEnabled, onConfirm, onClose, error, t }) {
+  const [password, setPassword] = useState('')
+  const [totpCode, setTotpCode] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const passwordRef = useRef(null)
+  const totpRef = useRef(null)
+
+  // Password is always required for Level 2 actions (rotate-secret, regenerate-key)
+  // 2FA is only required when 2FA is enabled
+  const needsPassword = true
+  const needs2FA = is2FAEnabled
+
+  // Focus first input on mount
+  useEffect(() => {
+    if (passwordRef.current) {
+      passwordRef.current.focus()
+    }
+  }, [])
+
+  const canSubmit = !loading && (!needsPassword || password.trim()) && (!needs2FA || totpCode.trim())
+
+  function handleSubmit(e) {
+    e?.preventDefault()
+    if (!canSubmit) return
+    onConfirm({
+      ...(needsPassword && { password }),
+      ...(needs2FA && { totpCode: totpCode.trim() }),
+    })
+  }
+
   return (
     <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !loading && onClose()}>
       <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content">
+        <form className="modal-content" onSubmit={handleSubmit}>
           <div className="modal-header">
             <h5 className="modal-title">
               {action === 'rotate-secret'
@@ -15,15 +46,76 @@ export default function ConfirmActionModal({ action, loading, onConfirm, onClose
             <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
           </div>
           <div className="modal-body">
+            {/* Action warning */}
             {action === 'rotate-secret' ? (
-              <div className="alert alert-primary py-2 mb-0" role="alert">
+              <div className="alert alert-primary py-2 mb-3" role="alert">
                 <i className="bx bx-info-circle me-1"></i>
                 {t('merchant.rotateConfirm', { defaultValue: 'This will generate a new API secret. Your API key will remain the same. The old secret will stop working immediately.' })}
               </div>
             ) : (
-              <div className="alert alert-danger py-2 mb-0" role="alert">
+              <div className="alert alert-danger py-2 mb-3" role="alert">
                 <i className="bx bx-error me-1"></i>
                 {t('merchant.regenerateConfirm', { defaultValue: 'This will generate a new API key AND secret. All existing credentials will be invalidated immediately.' })}
+              </div>
+            )}
+
+            {/* Password field — always required for Level 2 actions */}
+            <div className="mb-3">
+              <label className="form-label fw-semibold small" htmlFor="merchant-action-password">
+                <i className="bx bx-lock-alt me-1"></i>
+                {t('merchant.enterPassword', { defaultValue: 'Password' })}
+              </label>
+              <div className="input-group">
+                <input
+                  ref={passwordRef}
+                  id="merchant-action-password"
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={t('merchant.passwordPlaceholder', { defaultValue: 'Enter your current password' })}
+                  disabled={loading}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  <i className={`bx ${showPassword ? 'bx-hide' : 'bx-show'}`}></i>
+                </button>
+              </div>
+            </div>
+
+            {/* TOTP field — only when 2FA is enabled */}
+            {is2FAEnabled && (
+              <div className="mb-2">
+                <label className="form-label fw-semibold small" htmlFor="merchant-action-totp">
+                  <i className="bx bx-shield me-1"></i>
+                  {t('merchant.enter2FACode', { defaultValue: '2FA Code' })}
+                </label>
+                <input
+                  ref={totpRef}
+                  id="merchant-action-totp"
+                  type="text"
+                  className="form-control"
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/[^0-9A-Za-z]/g, '').slice(0, 8))}
+                  placeholder={t('merchant.totpPlaceholder', { defaultValue: 'Enter 6-digit code from authenticator' })}
+                  disabled={loading}
+                  maxLength={8}
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                />
+              </div>
+            )}
+
+            {/* Error message */}
+            {error && (
+              <div className="alert alert-danger py-2 mb-0 mt-3 small" role="alert">
+                <i className="bx bx-error-circle me-1"></i>
+                {error}
               </div>
             )}
           </div>
@@ -32,10 +124,9 @@ export default function ConfirmActionModal({ action, loading, onConfirm, onClose
               {t('actions.cancel', { defaultValue: 'Cancel' })}
             </button>
             <button
-              type="button"
+              type="submit"
               className={`btn ${action === 'rotate-secret' ? 'btn-primary' : 'btn-danger'}`}
-              onClick={onConfirm}
-              disabled={loading}
+              disabled={!canSubmit}
             >
               {loading ? (
                 <><span className="spinner-border spinner-border-sm me-1"></span>{t('merchant.processing', { defaultValue: 'Processing...' })}</>
@@ -46,7 +137,7 @@ export default function ConfirmActionModal({ action, loading, onConfirm, onClose
               )}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   )
