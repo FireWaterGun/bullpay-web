@@ -37,7 +37,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
         <div className="mb-3">
           <label className="form-label fw-semibold small mb-1">
             <i className="bx bx-fingerprint me-1 text-muted"></i>
-            API Key
+            {t('merchant.apiKey', { defaultValue: 'API Key' })}
           </label>
           <div className="input-group">
             <span className="input-group-text" style={{ background: 'var(--bs-gray-100)' }}>
@@ -55,7 +55,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
                 <button
                   className="btn btn-outline-secondary"
                   onClick={() => setShowApiKey(v => !v)}
-                  title={showApiKey ? 'Hide' : 'Reveal'}
+                  title={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })}
                   style={{ borderColor: 'var(--bs-border-color)' }}
                 >
                   <i className={`bx ${showApiKey ? 'bx-hide' : 'bx-show'}`}></i>
@@ -86,7 +86,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
         <div className="mb-4">
           <label className="form-label fw-semibold small mb-1">
             <i className="bx bx-lock-alt me-1 text-muted"></i>
-            API Secret
+            {t('merchant.apiSecret', { defaultValue: 'API Secret' })}
           </label>
           <div className="input-group">
             <span className="input-group-text" style={{ background: 'var(--bs-gray-100)' }}>

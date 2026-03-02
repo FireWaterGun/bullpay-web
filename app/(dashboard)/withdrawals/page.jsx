@@ -179,7 +179,7 @@ export default function WithdrawalsPage() {
                     <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
                     <th className="text-nowrap cell-fit">{t('common.status', { defaultValue: 'Status' })}</th>
                     <th className="text-nowrap text-end cell-fit">{t('common.createdAt', { defaultValue: 'Created at' })}</th>
-                    <th className="text-center cell-fit">Action</th>
+                    <th className="text-center cell-fit">{t('actions.action', { defaultValue: 'Action' })}</th>
                   </tr>
                 </thead>
                 <tbody>

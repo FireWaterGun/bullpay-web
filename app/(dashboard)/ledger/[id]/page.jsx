@@ -22,6 +22,10 @@ const ENTRY_CODE_LABELS = {
   'XO': 'Internal Transfer Out',
 }
 
+function getEntryCodeLabel(code, t) {
+  return t(`userLedger.code.${code}`, { defaultValue: ENTRY_CODE_LABELS[code] || code })
+}
+
 export default function MyLedgerDetail() {
   const { t } = useTranslation()
   const { token } = useAuth()
@@ -113,7 +117,7 @@ export default function MyLedgerDetail() {
                     <div className="d-flex align-items-center gap-2 flex-wrap">
                       {entry.entryCode && (
                         <span className="badge bg-label-secondary">
-                          {ENTRY_CODE_LABELS[entry.entryCode] || entry.entryCode}
+                          {getEntryCodeLabel(entry.entryCode, t)}
                         </span>
                       )}
                       {stateText(entry.state)}
@@ -165,7 +169,7 @@ export default function MyLedgerDetail() {
                           <td className="text-muted">{t('userLedger.code', { defaultValue: 'Entry Code' })}</td>
                           <td>
                             <span className="fw-medium font-monospace">{entry.entryCode}</span>
-                            <span className="text-muted ms-2">({ENTRY_CODE_LABELS[entry.entryCode] || entry.entryCode})</span>
+                            <span className="text-muted ms-2">({getEntryCodeLabel(entry.entryCode, t)})</span>
                           </td>
                         </tr>
                       )}
@@ -212,7 +216,7 @@ export default function MyLedgerDetail() {
                     <table className="table table-borderless">
                       <tbody>
                         <tr>
-                          <td className="text-muted" style={{ width: '40%' }}>Tx Hash</td>
+                          <td className="text-muted" style={{ width: '40%' }}>{t('userLedger.txHash', { defaultValue: 'Tx Hash' })}</td>
                           <td>
                             <span className="font-monospace text-break" style={{ fontSize: '0.75rem' }}>{entry.txHash}</span>
                             <div className="d-flex gap-1 mt-2">
@@ -224,7 +228,7 @@ export default function MyLedgerDetail() {
                               )}
                               <button className="btn btn-sm btn-outline-secondary" onClick={() => copyToClipboard(entry.txHash)}
                                 style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>
-                                <i className="bx bx-copy me-1"></i>Copy
+                                <i className="bx bx-copy me-1"></i>{t('actions.copy', { defaultValue: 'Copy' })}
                               </button>
                             </div>
                           </td>

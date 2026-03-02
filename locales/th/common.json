@@ -27,8 +27,8 @@
     "revenueDashboard": "แดชบอร์ดรายได้",
     "incomeStatement": "งบกำไรขาดทุน",
     "revenueExpense": "รายได้และค่าใช้จ่าย",
-    "systemLedger": "บัญชีระบบ",
-    "userLedger": "บัญชีผู้ใช้",
+    "systemLedger": "บัญชีแยกประเภทระบบ",
+    "userLedger": "บัญชีแยกประเภทผู้ใช้",
     "systemWallets": "กระเป๋าระบบ",
     "userBalances": "ยอดคงเหลือผู้ใช้",
     "withdrawalWallets": "กระเป๋าถอนเงิน",
@@ -135,7 +135,8 @@
     "shareFailed": "แชร์ไม่สำเร็จ",
     "shareNotSupported": "อุปกรณ์ไม่รองรับการแชร์",
     "actions": "การดำเนินการ",
-    "copyFailed": "คัดลอกไม่สำเร็จ"
+    "copyFailed": "คัดลอกไม่สำเร็จ",
+    "action": "จัดการ"
   },
   "invoices": {
     "title": "ประวัติใบแจ้งหนี้",
@@ -197,7 +198,12 @@
     "sortOldest": "เก่าที่สุดก่อน",
     "loadFailed": "ไม่สามารถโหลดใบแจ้งหนี้ได้",
     "publicCode": "รหัสสาธารณะ",
-    "shareText": "ลิงก์การชำระเงินของใบแจ้งหนี้"
+    "shareText": "ลิงก์การชำระเงินของใบแจ้งหนี้",
+    "descriptionPlaceholder": "คำอธิบาย",
+    "memoPlaceholder": "บันทึกช่วยจำ",
+    "noPaymentsData": "ไม่มีข้อมูลการชำระเงิน",
+    "paymentsNotArray": "รูปแบบข้อมูลการชำระเงินไม่ถูกต้อง",
+    "noPaymentTransactions": "ยังไม่มีรายการชำระเงิน"
   },
   "invoice": {
     "createTitle": "สร้างใบแจ้งหนี้",
@@ -251,7 +257,14 @@
       "enterCode": "ใส่รหัส 6 หลักจากแอป Authenticator เพื่อยืนยันการตั้งค่า",
       "enterPassword": "ใส่รหัสผ่านของคุณเพื่อยืนยัน",
       "errorInvalidCode": "กรุณาใส่รหัส 6 หลักที่ถูกต้อง",
-      "errorPasswordRequired": "กรุณาใส่รหัสผ่าน"
+      "errorPasswordRequired": "กรุณาใส่รหัสผ่าน",
+      "failedSetup": "ไม่สามารถตั้งค่า 2FA ได้",
+      "failedEnable": "ไม่สามารถเปิดใช้งาน 2FA ได้",
+      "failedDisable": "ไม่สามารถปิดการใช้งาน 2FA ได้",
+      "retryIn": "ลองอีกครั้งใน {{seconds}} วินาที",
+      "tooManyAttempts": "ลองมากเกินไป กรุณาลองอีกครั้งใน {{seconds}} วินาที",
+      "backupCodesDownloadTitle": "รหัสสำรอง 2FA ของ BullPay",
+      "backupCodesKeepSafe": "เก็บรหัสเหล่านี้ไว้ในที่ปลอดภัย แต่ละรหัสใช้ได้เพียงครั้งเดียว"
     }
   },
   "2fa": {
@@ -309,7 +322,8 @@
     "coin": "เหรียญ",
     "require2FATitle": "ต้องเปิดใช้งานการยืนยันตัวตนสองขั้นตอน",
     "require2FADesc": "เพื่อความปลอดภัยของคุณ กรุณาเปิดใช้งานการยืนยันตัวตนสองขั้นตอน (2FA) ก่อนทำการถอนเงิน",
-    "setup2FA": "ตั้งค่า 2FA"
+    "setup2FA": "ตั้งค่า 2FA",
+    "max": "สูงสุด"
   },
   "theme": {
     "light": "สว่าง",
@@ -336,7 +350,8 @@
     "amountTooSmall": "จำนวนเงินต้องไม่น้อยกว่า {{min}}",
     "amountTooLarge": "จำนวนเงินต้องไม่เกิน {{max}}",
     "expiryHoursTooSmall": "ชั่วโมงต้องไม่น้อยกว่า 1",
-    "expiryHoursTooLarge": "ชั่วโมงต้องไม่เกิน 168"
+    "expiryHoursTooLarge": "ชั่วโมงต้องไม่เกิน 168",
+    "invalidNetworkSelection": "เลือกเครือข่ายไม่ถูกต้อง"
   },
   "status": {
     "all": "ทั้งหมด",
@@ -392,7 +407,8 @@
     "manage": "จัดการ",
     "copy": "คัดลอก",
     "download": "ดาวน์โหลด",
-    "password": "รหัสผ่าน"
+    "password": "รหัสผ่าน",
+    "all": "ทั้งหมด"
   },
   "wallet": {
     "loading": "กำลังโหลดกระเป๋า...",
@@ -445,7 +461,8 @@
       "noToken": "ไม่พบโทเคนสำหรับการยืนยัน",
       "goToWallets": "ไปที่กระเป๋าเงิน",
       "addNewAddress": "เพิ่มที่อยู่ใหม่"
-    }
+    },
+    "networksCount": "{{count}} เครือข่าย"
   },
   "dashboard": {
     "congrats": "ยินดีด้วย John! 🎉",
@@ -546,7 +563,13 @@
     "daysTotal": "วันทั้งหมด",
     "daysWithData": "วันที่มีข้อมูล",
     "daysPositiveFlow": "วันที่เงินไหลเข้า",
-    "daysNegative": "วันที่เงินไหลออก"
+    "daysNegative": "วันที่เงินไหลออก",
+    "deposit": "ฝากเงิน",
+    "withdrawal": "ถอนเงิน",
+    "chartDeposit": "ฝาก: {{value}}",
+    "chartWithdrawal": "ถอน: {{value}}",
+    "chartNetFlow": "กระแสเงินสุทธิ: {{value}}",
+    "noDataAvailable": "ไม่มีข้อมูล"
   },
   "admin": {
     "revenueDashboard": "แดชบอร์ดรายได้",
@@ -1325,7 +1348,17 @@
     "tip1": "อย่าเปิดเผย API Secret ต่อสาธารณะ",
     "tip2": "เปลี่ยน Secret เป็นระยะ",
     "tip3": "ใช้ HTTPS สำหรับ Webhook URL",
-    "tip4": "การสร้าง Key ใหม่จะทำให้ข้อมูลรับรองเดิมใช้งานไม่ได้"
+    "tip4": "การสร้าง Key ใหม่จะทำให้ข้อมูลรับรองเดิมใช้งานไม่ได้",
+    "apiKey": "API Key",
+    "apiSecret": "API Secret",
+    "hide": "ซ่อน",
+    "reveal": "แสดง",
+    "status": {
+      "active": "ใช้งาน",
+      "suspended": "ถูกระงับ",
+      "pending": "รอดำเนินการ",
+      "unknown": "ไม่ทราบ"
+    }
   },
   "table": {
     "id": "รหัส",
@@ -1379,6 +1412,8 @@
     "code.WR": "ย้อนกลับการถอน",
     "code.FR": "รายได้ค่าธรรมเนียม",
     "code.XI": "โอนเข้าภายใน",
-    "code.XO": "โอนออกภายใน"
+    "code.XO": "โอนออกภายใน",
+    "id": "ID",
+    "usd": "USD"
   }
 }

@@ -76,7 +76,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
           setSetupData(res);
           setStep(1);
         } catch (err) {
-          setError(err?.message || "Failed to setup 2FA");
+          setError(err?.message || t("settings.2fa.failedSetup", { defaultValue: "Failed to setup 2FA" }));
         } finally {
           setLoading(false);
         }
@@ -112,7 +112,9 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
 
   const handleDownloadBackupCodes = () => {
     if (!setupData?.backupCodes) return;
-    const text = `BullPay 2FA Backup Codes\n${"=".repeat(30)}\n\n${setupData.backupCodes.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n\nKeep these codes safe. Each code can only be used once.`;
+    const title = t("settings.2fa.backupCodesDownloadTitle", { defaultValue: "BullPay 2FA Backup Codes" });
+    const footer = t("settings.2fa.backupCodesKeepSafe", { defaultValue: "Keep these codes safe. Each code can only be used once." });
+    const text = `${title}\n${"=".repeat(30)}\n\n${setupData.backupCodes.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n\n${footer}`;
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -166,7 +168,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
           seconds: retryAfter
         }));
       } else {
-        setError(err?.message || "Failed to enable 2FA");
+        setError(err?.message || t("settings.2fa.failedEnable", { defaultValue: "Failed to enable 2FA" }));
       }
       setTotpCode("");
     } finally {
@@ -250,7 +252,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                           type="button"
                           className="btn btn-outline-secondary"
                           onClick={handleCopySecret}
-                          title="Copy"
+                          title={t("actions.copy", { defaultValue: "Copy" })}
                         >
                           <i className={`bx ${copiedSecret ? "bx-check" : "bx-copy"}`}></i>
                         </button>

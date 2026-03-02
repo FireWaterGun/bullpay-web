@@ -314,7 +314,7 @@ export default function WithdrawRequest() {
                         onClick={() => setAmount(String(available))}
                         style={{ fontSize: '0.875rem' }}
                       >
-                        Max
+                        {t('balance.max', { defaultValue: 'Max' })}
                       </button>
                     </div>
                     <div className="text-muted small mt-2">

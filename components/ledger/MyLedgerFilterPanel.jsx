@@ -53,7 +53,7 @@ export default function MyLedgerFilterPanel({
             >
               {coinNetworkIdFilter ? (() => {
                 const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
-                if (!cn) return 'All'
+                if (!cn) return t('common.all', { defaultValue: 'All' })
                 const sym = (cn.coin?.symbol || '').toUpperCase()
                 const net = (cn.network?.symbol || '').toUpperCase()
                 return (
@@ -63,12 +63,12 @@ export default function MyLedgerFilterPanel({
                     <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
                   </span>
                 )
-              })() : <span className="text-muted">All</span>}
+              })() : <span className="text-muted">{t('common.all', { defaultValue: 'All' })}</span>}
             </button>
             <ul className="dropdown-menu w-100" style={{ maxHeight: '280px', overflowY: 'auto' }}>
               <li>
                 <button className="dropdown-item" onClick={() => setCoinNetworkIdFilter('')}>
-                  <span className="text-muted">All</span>
+                  <span className="text-muted">{t('common.all', { defaultValue: 'All' })}</span>
                 </button>
               </li>
               <li><hr className="dropdown-divider" /></li>

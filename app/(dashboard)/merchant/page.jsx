@@ -27,12 +27,12 @@ function statusBadgeClass(status) {
   return 'badge bg-label-secondary'
 }
 
-function statusMeta(status) {
+function statusMeta(status, t) {
   const s = String(status || '').toLowerCase()
-  if (s === 'active') return { icon: 'bx-check-shield', color: 'success', label: 'Active' }
-  if (s === 'suspended') return { icon: 'bx-block', color: 'danger', label: 'Suspended' }
-  if (s === 'pending') return { icon: 'bx-time-five', color: 'warning', label: 'Pending' }
-  return { icon: 'bx-help-circle', color: 'secondary', label: status || 'Unknown' }
+  if (s === 'active') return { icon: 'bx-check-shield', color: 'success', label: t('merchant.status.active', { defaultValue: 'Active' }) }
+  if (s === 'suspended') return { icon: 'bx-block', color: 'danger', label: t('merchant.status.suspended', { defaultValue: 'Suspended' }) }
+  if (s === 'pending') return { icon: 'bx-time-five', color: 'warning', label: t('merchant.status.pending', { defaultValue: 'Pending' }) }
+  return { icon: 'bx-help-circle', color: 'secondary', label: t('merchant.status.unknown', { defaultValue: status || 'Unknown' }) }
 }
 
 function StatTile({ icon, label, value, color = 'primary' }) {
@@ -176,7 +176,7 @@ export default function MerchantPage() {
   }
 
   const status = String(merchant?.status || '').toLowerCase()
-  const sMeta = statusMeta(merchant?.status)
+  const sMeta = statusMeta(merchant?.status, t)
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
@@ -261,7 +261,7 @@ export default function MerchantPage() {
           <div className="row g-3">
             <StatTile
               icon={sMeta.icon}
-              label={t('merchant.status', { defaultValue: 'Status' })}
+              label={t('common.status', { defaultValue: 'Status' })}
               value={sMeta.label}
               color={sMeta.color}
             />

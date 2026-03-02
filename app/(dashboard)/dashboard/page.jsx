@@ -266,7 +266,7 @@ export default function UserTransactionsDashboard() {
       {loadingSummary ? (
         <div className="d-flex justify-content-center py-5 mb-4">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t('common.loading', { defaultValue: 'Loading...' })}</span>
           </div>
         </div>
       ) : (
@@ -321,7 +321,7 @@ export default function UserTransactionsDashboard() {
               {loadingDaily ? (
                 <div className="d-flex justify-content-center py-5">
                   <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{t('common.loading', { defaultValue: 'Loading...' })}</span>
                   </div>
                 </div>
               ) : (

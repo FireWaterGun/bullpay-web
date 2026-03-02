@@ -148,7 +148,8 @@
     "saving": "保存中...",
     "deleting": "删除中...",
     "add": "添加",
-    "actions": "操作"
+    "actions": "操作",
+    "action": "操作"
   },
   "invoices": {
     "title": "发票历史",
@@ -210,7 +211,12 @@
     "sortOldest": "最旧优先",
     "loadFailed": "加载发票失败",
     "publicCode": "公开代码",
-    "shareText": "发票支付链接"
+    "shareText": "发票支付链接",
+    "descriptionPlaceholder": "描述",
+    "memoPlaceholder": "备注",
+    "noPaymentsData": "没有付款数据",
+    "paymentsNotArray": "付款数据格式错误",
+    "noPaymentTransactions": "暂无支付记录"
   },
   "invoice": {
     "createTitle": "创建发票",
@@ -264,7 +270,14 @@
       "enterCode": "输入验证器应用中的6位数代码以验证设置",
       "enterPassword": "输入您的密码以确认",
       "errorInvalidCode": "请输入有效的6位数代码",
-      "errorPasswordRequired": "请输入密码"
+      "errorPasswordRequired": "请输入密码",
+      "failedSetup": "设置2FA失败",
+      "failedEnable": "启用2FA失败",
+      "failedDisable": "禁用2FA失败",
+      "retryIn": "{{seconds}}秒后重试",
+      "tooManyAttempts": "尝试次数过多，请在{{seconds}}秒后重试",
+      "backupCodesDownloadTitle": "BullPay 2FA 备份码",
+      "backupCodesKeepSafe": "请妥善保管这些备份码，每个码只能使用一次。"
     }
   },
   "2fa": {
@@ -322,7 +335,8 @@
     "coin": "币种",
     "require2FATitle": "需要双重认证",
     "require2FADesc": "为了您的安全，请在提现前启用双重认证（2FA）。",
-    "setup2FA": "设置 2FA"
+    "setup2FA": "设置 2FA",
+    "max": "最大"
   },
   "theme": {
     "light": "浅色",
@@ -349,7 +363,8 @@
     "amountTooSmall": "金额不得少于 {{min}}",
     "amountTooLarge": "金额不得超过 {{max}}",
     "expiryHoursTooSmall": "小时数不得少于 1",
-    "expiryHoursTooLarge": "小时数不得超过 168"
+    "expiryHoursTooLarge": "小时数不得超过 168",
+    "invalidNetworkSelection": "网络选择无效"
   },
   "update": "更新",
   "saving": "保存中...",
@@ -381,7 +396,9 @@
     "manage": "管理",
     "copy": "复制",
     "download": "下载",
-    "password": "密码"
+    "password": "密码",
+    "all": "全部",
+    "status": "状态"
   },
   "wallet": {
     "loading": "正在加载钱包...",
@@ -434,7 +451,8 @@
       "noToken": "缺少验证令牌",
       "goToWallets": "前往钱包",
       "addNewAddress": "添加新地址"
-    }
+    },
+    "networksCount": "{{count}} 个网络"
   },
   "dashboard": {
     "congrats": "恭喜你 John! 🎉",
@@ -535,7 +553,13 @@
     "daysTotal": "天总计",
     "daysWithData": "天有数据",
     "daysPositiveFlow": "天正流入",
-    "daysNegative": "天负流出"
+    "daysNegative": "天负流出",
+    "deposit": "存款",
+    "withdrawal": "提款",
+    "chartDeposit": "存款: {{value}}",
+    "chartWithdrawal": "提款: {{value}}",
+    "chartNetFlow": "净流量: {{value}}",
+    "noDataAvailable": "暂无数据"
   },
   "admin": {
     "revenueDashboard": "收入仪表板",
@@ -1298,7 +1322,17 @@
     "tip1": "切勿公开分享 API Secret",
     "tip2": "定期更换 Secret",
     "tip3": "Webhook URL 请使用 HTTPS",
-    "tip4": "重新生成 Key 将使所有现有凭证失效"
+    "tip4": "重新生成 Key 将使所有现有凭证失效",
+    "apiKey": "API Key",
+    "apiSecret": "API Secret",
+    "hide": "隐藏",
+    "reveal": "显示",
+    "status": {
+      "active": "活跃",
+      "suspended": "已暂停",
+      "pending": "待审核",
+      "unknown": "未知"
+    }
   },
   "table": {
     "id": "编号",
@@ -1352,6 +1386,8 @@
     "code.WR": "提款撤销",
     "code.FR": "费用收入",
     "code.XI": "内部转入",
-    "code.XO": "内部转出"
+    "code.XO": "内部转出",
+    "id": "ID",
+    "usd": "USD"
   }
 }

@@ -32,7 +32,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
       onSuccess?.();
       handleClose();
     } catch (err) {
-      setError(err?.message || "Failed to disable 2FA");
+      setError(err?.message || t("settings.2fa.failedDisable", { defaultValue: "Failed to disable 2FA" }));
     } finally {
       setLoading(false);
     }

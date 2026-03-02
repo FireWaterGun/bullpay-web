@@ -88,7 +88,7 @@ export default function InvoiceDetailPage() {
                     <h5 className="mb-1 d-flex align-items-center gap-2">
                       <span>{invoice.publicCode || invoice.code || invoice.id}</span>
                       <span className={`badge rounded-pill d-inline-flex align-items-center px-3 text-capitalize ${statusClass(invoice.status)}`}>
-                        {invoice.status || '-'}
+                        {invoice.status ? t(`invoices.${invoice.status.toLowerCase()}`, { defaultValue: invoice.status }) : '-'}
                       </span>
                       <RefreshButton onClick={loadInvoice} loading={loading} />
                     </h5>

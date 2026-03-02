@@ -16,6 +16,10 @@ const ENTRY_CODE_LABELS = {
   'XO': 'Internal Transfer Out',
 }
 
+function getEntryCodeLabel(code, t) {
+  return t ? t(`userLedger.code.${code}`, { defaultValue: ENTRY_CODE_LABELS[code] || code }) : (ENTRY_CODE_LABELS[code] || code)
+}
+
 function formatAmount(val) {
   if (!val && val !== 0) return '0'
   let str = String(val)
@@ -49,12 +53,12 @@ export default function MyLedgerTable({
           <table className="table table-hover" style={{ minWidth: '900px' }}>
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>ID</th>
+                <th>{t('userLedger.id', { defaultValue: 'ID' })}</th>
                 <th>{t('userLedger.coin', { defaultValue: 'Coin' })}</th>
                 <th>{t('userLedger.code', { defaultValue: 'Code' })}</th>
                 <th>{t('userLedger.state', { defaultValue: 'State' })}</th>
                 <th className="text-end">{t('userLedger.amount', { defaultValue: 'Amount' })}</th>
-                <th className="text-end">USD</th>
+                <th className="text-end">{t('userLedger.usd', { defaultValue: 'USD' })}</th>
                 <th>{t('userLedger.txHash', { defaultValue: 'Tx Hash' })}</th>
                 <th>{t('userLedger.createdAt', { defaultValue: 'Created' })}</th>
                 <th></th>
@@ -89,7 +93,7 @@ export default function MyLedgerTable({
                       </td>
                       <td>
                         {entry.entryCode ? (
-                          <span className="fw-medium" title={ENTRY_CODE_LABELS[entry.entryCode] || entry.entryCode}>{entry.entryCode}</span>
+                          <span className="me-2" title={getEntryCodeLabel(entry.entryCode, t)}>{entry.entryCode}</span>
                         ) : (
                           <span className="text-muted">-</span>
                         )}
@@ -110,7 +114,7 @@ export default function MyLedgerTable({
                             {entry.explorerUrl && (
                               <a href={`${entry.explorerUrl}/tx/${entry.txHash}`} target="_blank" rel="noopener noreferrer"
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                                onClick={(e) => e.stopPropagation()} title="View on explorer">
+                                onClick={(e) => e.stopPropagation()} title={t('userLedger.viewExplorer', { defaultValue: 'View on Explorer' })}>
                                 <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                               </a>
                             )}

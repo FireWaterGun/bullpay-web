@@ -11,7 +11,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
     return (
       <div className="alert alert-info">
         <i className="bx bx-info-circle me-2"></i>
-        No payments data available (invoice.payments is undefined or null)
+        {t('invoices.noPaymentsData', { defaultValue: 'No payments data available' })}
       </div>
     )
   }
@@ -20,7 +20,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
     return (
       <div className="alert alert-warning">
         <i className="bx bx-error me-2"></i>
-        Payments data is not an array: {typeof payments}
+        {t('invoices.paymentsNotArray', { defaultValue: 'Payments data format error' })}
       </div>
     )
   }
@@ -29,7 +29,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
     return (
       <div className="alert alert-info">
         <i className="bx bx-info-circle me-2"></i>
-        No payment transactions yet
+        {t('invoices.noPaymentTransactions', { defaultValue: 'No payment transactions yet' })}
       </div>
     )
   }

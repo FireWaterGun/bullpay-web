@@ -273,7 +273,7 @@ export default function InvoiceList() {
                                 : "bg-label-secondary"
                             }`}
                           >
-                            {it.status || "-"}
+                            {it.status ? t(`invoices.${it.status.toLowerCase()}`, { defaultValue: it.status }) : "-"}
                           </span>
                         </td>
                         <td className="text-nowrap">{formatDateTime(it.createdAt || it.created_at)}</td>

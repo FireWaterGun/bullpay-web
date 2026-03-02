@@ -30,24 +30,24 @@ export default function CredentialAlert({ credentials, warning, onDismiss, t }) 
 
             {credentials.apiKey && (
               <div className="mb-3">
-                <label className="form-label fw-semibold mb-1">API Key</label>
+                <label className="form-label fw-semibold mb-1">{t('merchant.apiKey', { defaultValue: 'API Key' })}</label>
                 <div className="input-group">
                   <input type="text" className="form-control font-monospace" value={credentials.apiKey} readOnly style={{ fontSize: '0.85rem' }} />
                   <button className="btn btn-outline-secondary" onClick={() => handleCopy(credentials.apiKey, setCopiedKey)}>
                     <i className={`bx ${copiedKey ? 'bx-check' : 'bx-copy'} me-1`}></i>
-                    {copiedKey ? t('merchant.copied', { defaultValue: 'Copied!' }) : 'Copy'}
+                    {copiedKey ? t('merchant.copied', { defaultValue: 'Copied!' }) : t('actions.copy', { defaultValue: 'Copy' })}
                   </button>
                 </div>
               </div>
             )}
             {credentials.apiSecret && (
               <div className="mb-0">
-                <label className="form-label fw-semibold mb-1">API Secret</label>
+                <label className="form-label fw-semibold mb-1">{t('merchant.apiSecret', { defaultValue: 'API Secret' })}</label>
                 <div className="input-group">
                   <input type="text" className="form-control font-monospace" value={credentials.apiSecret} readOnly style={{ fontSize: '0.85rem' }} />
                   <button className="btn btn-outline-secondary" onClick={() => handleCopy(credentials.apiSecret, setCopiedSecret)}>
                     <i className={`bx ${copiedSecret ? 'bx-check' : 'bx-copy'} me-1`}></i>
-                    {copiedSecret ? t('merchant.copied', { defaultValue: 'Copied!' }) : 'Copy'}
+                    {copiedSecret ? t('merchant.copied', { defaultValue: 'Copied!' }) : t('actions.copy', { defaultValue: 'Copy' })}
                   </button>
                 </div>
               </div>

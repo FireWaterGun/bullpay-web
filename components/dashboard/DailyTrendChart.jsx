@@ -6,7 +6,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
       <div className="d-flex align-items-center justify-content-center" style={{ height }}>
-        <span className="text-muted">No data available</span>
+        <span className="text-muted">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
       </div>
     )
   }
@@ -128,10 +128,10 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                 return (
                   <g key={item.date || i}>
                     <rect x={cx - barW - 1} y={depTop} width={barW} height={depH} rx={2} fill="#696cff">
-                      <title>Deposit: {formatUsd(dep)}</title>
+                      <title>{t ? t('userDashboard.chartDeposit', { value: formatUsd(dep), defaultValue: `Deposit: ${formatUsd(dep)}` }) : `Deposit: ${formatUsd(dep)}`}</title>
                     </rect>
                     <rect x={cx + 1} y={wthTop} width={barW} height={wthH} rx={2} fill="url(#withdrawalPattern)">
-                      <title>Withdrawal: {formatUsd(wth)}</title>
+                      <title>{t ? t('userDashboard.chartWithdrawal', { value: formatUsd(wth), defaultValue: `Withdrawal: ${formatUsd(wth)}` }) : `Withdrawal: ${formatUsd(wth)}`}</title>
                     </rect>
                   </g>
                 )
@@ -144,7 +144,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                 const cy = yPos(item.netFlow || 0)
                 return (
                   <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" stroke="#fff" strokeWidth="1.5">
-                    <title>Net Flow: {formatUsd(item.netFlow || 0)}</title>
+                    <title>{t ? t('userDashboard.chartNetFlow', { value: formatUsd(item.netFlow || 0), defaultValue: `Net Flow: ${formatUsd(item.netFlow || 0)}` }) : `Net Flow: ${formatUsd(item.netFlow || 0)}`}</title>
                   </circle>
                 )
               })}

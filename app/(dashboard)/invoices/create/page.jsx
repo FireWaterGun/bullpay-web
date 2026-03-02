@@ -141,7 +141,7 @@ export default function InvoiceCreatePage() {
     }
 
     if (!selectedNetwork?.network?.symbol) {
-      setError('Invalid network selection')
+      setError(t('validation.invalidNetworkSelection', { defaultValue: 'Invalid network selection' }))
       return
     }
 
@@ -252,7 +252,7 @@ export default function InvoiceCreatePage() {
                 <label className="form-label">{t('invoices.description')}</label>
                 <input
                   className="form-control"
-                  placeholder="Description"
+                  placeholder={t('invoices.descriptionPlaceholder', { defaultValue: 'Description' })}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -261,7 +261,7 @@ export default function InvoiceCreatePage() {
                 <label className="form-label">{t('invoices.note')}</label>
                 <input
                   className="form-control"
-                  placeholder="Memo"
+                  placeholder={t('invoices.memoPlaceholder', { defaultValue: 'Memo' })}
                   value={memo}
                   onChange={(e) => setMemo(e.target.value)}
                 />

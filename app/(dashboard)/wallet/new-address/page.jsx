@@ -153,7 +153,7 @@ export default function WalletNewAddressPage() {
                           <div className="fw-bold">{sym}</div>
                           <div className="text-muted small">{group.coin?.name || ''}</div>
                           {networksCount > 1 && (
-                            <div className="text-muted small">{networksCount} networks</div>
+                            <div className="text-muted small">{t('wallet.networksCount', { count: networksCount, defaultValue: '{{count}} networks' })}</div>
                           )}
                         </div>
                       </div>

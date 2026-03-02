@@ -148,7 +148,8 @@
     "saving": "Saving...",
     "deleting": "Deleting...",
     "close": "Close",
-    "add": "Add"
+    "add": "Add",
+    "action": "Action"
   },
   "invoices": {
     "title": "Invoice History",
@@ -210,7 +211,12 @@
     "sortOldest": "Oldest First",
     "loadFailed": "Failed to load invoice",
     "publicCode": "Public Code",
-    "shareText": "Invoice payment link"
+    "shareText": "Invoice payment link",
+    "descriptionPlaceholder": "Description",
+    "memoPlaceholder": "Memo",
+    "noPaymentsData": "No payments data available",
+    "paymentsNotArray": "Payments data format error",
+    "noPaymentTransactions": "No payment transactions yet"
   },
   "invoice": {
     "createTitle": "Create Invoice",
@@ -264,7 +270,14 @@
       "enterCode": "Enter the 6-digit code from your authenticator app to verify setup",
       "enterPassword": "Enter your password to confirm",
       "errorInvalidCode": "Please enter a valid 6-digit code",
-      "errorPasswordRequired": "Password is required"
+      "errorPasswordRequired": "Password is required",
+      "failedSetup": "Failed to setup 2FA",
+      "failedEnable": "Failed to enable 2FA",
+      "failedDisable": "Failed to disable 2FA",
+      "retryIn": "Retry in {{seconds}}s",
+      "tooManyAttempts": "Too many attempts. Please try again in {{seconds}} seconds",
+      "backupCodesDownloadTitle": "BullPay 2FA Backup Codes",
+      "backupCodesKeepSafe": "Keep these codes safe. Each code can only be used once."
     }
   },
   "2fa": {
@@ -322,7 +335,8 @@
     "coin": "Coin",
     "require2FATitle": "Two-Factor Authentication Required",
     "require2FADesc": "For your security, please enable Two-Factor Authentication (2FA) before making withdrawals.",
-    "setup2FA": "Setup 2FA"
+    "setup2FA": "Setup 2FA",
+    "max": "Max"
   },
   "theme": {
     "light": "Light",
@@ -349,7 +363,8 @@
     "amountTooSmall": "Amount must be at least {{min}}",
     "amountTooLarge": "Amount must not exceed {{max}}",
     "expiryHoursTooSmall": "Hours must be at least 1",
-    "expiryHoursTooLarge": "Hours must not exceed 168"
+    "expiryHoursTooLarge": "Hours must not exceed 168",
+    "invalidNetworkSelection": "Invalid network selection"
   },
   "update": "Update",
   "saving": "Saving...",
@@ -378,7 +393,11 @@
     "manage": "Manage",
     "copy": "Copy",
     "download": "Download",
-    "password": "Password"
+    "password": "Password",
+    "copiedToClipboard": "Copied!",
+    "copyFailed": "Failed to copy",
+    "all": "All",
+    "status": "Status"
   },
   "wallet": {
     "loading": "Loading wallet...",
@@ -431,7 +450,8 @@
       "noToken": "Verification token is missing",
       "goToWallets": "Go to Wallets",
       "addNewAddress": "Add New Address"
-    }
+    },
+    "networksCount": "{{count}} networks"
   },
   "dashboard": {
     "congrats": "Congratulations John! 🎉",
@@ -532,7 +552,13 @@
     "daysTotal": "days total",
     "daysWithData": "days with data",
     "daysPositiveFlow": "days positive flow",
-    "daysNegative": "days negative"
+    "daysNegative": "days negative",
+    "deposit": "Deposit",
+    "withdrawal": "Withdrawal",
+    "chartDeposit": "Deposit: {{value}}",
+    "chartWithdrawal": "Withdrawal: {{value}}",
+    "chartNetFlow": "Net Flow: {{value}}",
+    "noDataAvailable": "No data available"
   },
   "admin": {
     "revenueDashboard": "Revenue Dashboard",
@@ -1264,7 +1290,17 @@
     "tip1": "Never share your API Secret publicly",
     "tip2": "Rotate your secret periodically",
     "tip3": "Use HTTPS for webhook URLs",
-    "tip4": "Regenerating key invalidates all existing credentials"
+    "tip4": "Regenerating key invalidates all existing credentials",
+    "apiKey": "API Key",
+    "apiSecret": "API Secret",
+    "hide": "Hide",
+    "reveal": "Reveal",
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "pending": "Pending",
+      "unknown": "Unknown"
+    }
   },
   "table": {
     "id": "ID",
@@ -1318,6 +1354,8 @@
     "code.WR": "Withdrawal Reversal",
     "code.FR": "Fee Revenue",
     "code.XI": "Internal Transfer In",
-    "code.XO": "Internal Transfer Out"
+    "code.XO": "Internal Transfer Out",
+    "id": "ID",
+    "usd": "USD"
   }
 }
