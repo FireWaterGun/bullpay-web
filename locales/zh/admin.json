@@ -1206,6 +1206,16 @@
     "changing": "修改中...",
     "changeSuccess": "密码修改成功，请重新登录。",
     "changeFailed": "密码修改失败，请重试。",
-    "incorrectCurrent": "当前密码不正确"
+    "incorrectCurrent": "当前密码不正确",
+    "twoFactorTitle": "两步验证",
+    "twoFactorLabel": "身份验证器应用",
+    "twoFactorEnabled": "已启用",
+    "twoFactorDisabled": "未启用",
+    "twoFactorSince": "自",
+    "twoFactorDescription": "增加额外的安全层。登录时需要从身份验证器应用获取验证码。",
+    "enable2FA": "启用 2FA",
+    "disable2FA": "停用 2FA",
+    "twoFactorEnableSuccess": "2FA 启用成功！",
+    "twoFactorDisableSuccess": "2FA 已停用。"
   }
 }

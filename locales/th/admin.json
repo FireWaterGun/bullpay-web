@@ -1217,6 +1217,16 @@
     "changing": "กำลังเปลี่ยน...",
     "changeSuccess": "เปลี่ยนรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบอีกครั้ง",
     "changeFailed": "เปลี่ยนรหัสผ่านไม่สำเร็จ กรุณาลองอีกครั้ง",
-    "incorrectCurrent": "รหัสผ่านปัจจุบันไม่ถูกต้อง"
+    "incorrectCurrent": "รหัสผ่านปัจจุบันไม่ถูกต้อง",
+    "twoFactorTitle": "การยืนยันตัวตนสองขั้นตอน",
+    "twoFactorLabel": "แอปยืนยันตัวตน",
+    "twoFactorEnabled": "เปิดใช้งาน",
+    "twoFactorDisabled": "ปิดใช้งาน",
+    "twoFactorSince": "ตั้งแต่",
+    "twoFactorDescription": "เพิ่มความปลอดภัยอีกชั้น คุณจะต้องกรอกรหัสจากแอปยืนยันตัวตนทุกครั้งที่เข้าสู่ระบบ",
+    "enable2FA": "เปิด 2FA",
+    "disable2FA": "ปิด 2FA",
+    "twoFactorEnableSuccess": "เปิดใช้งาน 2FA สำเร็จ!",
+    "twoFactorDisableSuccess": "ปิดใช้งาน 2FA สำเร็จ"
   }
 }

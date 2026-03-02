@@ -98,7 +98,7 @@ export default function SettingsPage() {
       <div>
         {/* Page Header */}
         <div className="card mb-4">
-          <div className="card-body d-flex justify-content-between align-items-start">
+          <div className="card-body d-flex justify-content-between align-items-center">
             <div>
               <h5 className="mb-1">{t('settings.title', { defaultValue: 'Settings' })}</h5>
               <small className="text-muted d-block">

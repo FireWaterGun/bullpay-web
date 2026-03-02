@@ -1194,6 +1194,16 @@
     "changing": "Changing...",
     "changeSuccess": "Password changed successfully. Please log in again.",
     "changeFailed": "Failed to change password. Please try again.",
-    "incorrectCurrent": "Current password is incorrect"
+    "incorrectCurrent": "Current password is incorrect",
+    "twoFactorTitle": "Two-Factor Authentication",
+    "twoFactorLabel": "Authenticator App",
+    "twoFactorEnabled": "Enabled",
+    "twoFactorDisabled": "Disabled",
+    "twoFactorSince": "Since",
+    "twoFactorDescription": "Add an extra layer of security. You'll need a code from your authenticator app when you sign in.",
+    "enable2FA": "Enable 2FA",
+    "disable2FA": "Disable 2FA",
+    "twoFactorEnableSuccess": "2FA enabled successfully!",
+    "twoFactorDisableSuccess": "2FA disabled successfully."
   }
 }
