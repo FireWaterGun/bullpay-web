@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 /**
  * Reusable override table for coin or network sweep overrides.
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
  * @param {Function} props.onEdit - Called with (key, config) when the edit button is clicked
  */
 export default function SweepOverrideTable({ overrides, type, loading, onEdit }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   const isCoin = type === 'coin'
 

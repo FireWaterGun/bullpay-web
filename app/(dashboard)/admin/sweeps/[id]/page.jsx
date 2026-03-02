@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getSweepById } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
@@ -16,7 +16,7 @@ import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function SweepDetail() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth, useToast } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getUserBalanceDetail } from '@/lib/api/admin'
 import { formatDate } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
@@ -14,7 +14,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function UserBalanceDetailPage() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { id: userId } = useParams()
   const { token } = useAuth()
   const toast = useToast()

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { formatLabel } from '@/components/admin/settingsUtils'
 
 export default function SettingEditModal({
@@ -12,7 +12,7 @@ export default function SettingEditModal({
   onClose,
   onSave,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   if (!modalSetting) return null
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import {
   getSettings,
@@ -17,7 +17,7 @@ import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminSettings() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
 

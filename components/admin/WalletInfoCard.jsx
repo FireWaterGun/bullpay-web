@@ -3,7 +3,7 @@
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import RefreshButton from '@/components/RefreshButton'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0'

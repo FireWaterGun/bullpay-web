@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAuditLogs } from '@/lib/api/auditLogs'
 import { formatDate } from '@/lib/utils/format'
@@ -34,7 +34,7 @@ const SORT_BY_OPTIONS = [
 ]
 
 export default function AuditLogList() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
 

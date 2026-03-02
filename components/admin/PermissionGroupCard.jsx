@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 const GROUP_ICONS = {
   dashboard: 'bx-tachometer',
@@ -33,7 +33,7 @@ function getPermAction(permName) {
 }
 
 export default function PermissionGroupCard({ group, perms, color = 'primary', isCollapsed, overrideMap, actionLoading, onToggle, onDeny, onGrant, onRevert }) {
-  const { t } = useTranslation('common')
+  const { t } = useAdminTranslation()
   const activeInGroup = perms.filter(p => p.active).length
   const groupIcon = getGroupIcon(group)
 

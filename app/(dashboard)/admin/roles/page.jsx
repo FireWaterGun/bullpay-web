@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getAdminRoles, getAdminRoleStats } from '@/lib/api/admin'
 import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
@@ -18,7 +18,7 @@ export default function AdminRoles() {
   const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()
-  const { t } = useTranslation('common')
+  const { t } = useAdminTranslation()
 
   const [loading, setLoading] = useState(true)
   const [roles, setRoles] = useState([])

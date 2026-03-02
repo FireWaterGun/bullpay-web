@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth, useToast } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import {
   getWithdrawalAddressById,
   flagWithdrawalAddress,
@@ -57,7 +57,7 @@ function AddressAuditLogTable({ auditLogs }) {
 }
 
 export default function WithdrawalAddressDetail() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAdminInvoices } from '@/lib/api/admin'
 import { formatAmount, formatDate } from '@/lib/utils/format'
@@ -15,7 +15,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminInvoiceList() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
 

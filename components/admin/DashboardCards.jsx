@@ -1,7 +1,7 @@
 'use client'
 
 import { formatCoinAmount } from '@/lib/utils/format'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 const cardStyle = {
   borderRadius: '0.75rem',

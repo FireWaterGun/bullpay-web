@@ -1,9 +1,9 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function SweepReconciliationSettings({ formData, setFormData, validateNumberInput }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   function handleNestedChange(field, nestedField, value) {
     setFormData(prev => ({

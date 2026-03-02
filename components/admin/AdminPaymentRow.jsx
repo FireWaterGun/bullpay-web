@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { formatAmount, formatDate } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
 
@@ -16,7 +16,7 @@ export function statusBadgeClass(s) {
 }
 
 export default function AdminPaymentRow({ payment, onCopy }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   const coinSymbol = (payment.coin?.symbol || payment.coinSymbol || payment.invoice?.coin?.symbol || '').toUpperCase()
   const networkSymbol = (payment.network?.symbol || payment.networkSymbol || payment.invoice?.network?.symbol || '').toUpperCase()

@@ -1,13 +1,13 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 /**
  * Form fields for the network create/edit form.
  * Renders all input fields inside a Bootstrap row grid.
  */
 export default function NetworkFormFields({ formData, handleChange, isEdit, loading, onCancel }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   return (
     <div className="row g-4">

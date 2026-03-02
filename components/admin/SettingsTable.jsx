@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { formatLabel, getColor, getColorRgb } from '@/components/admin/settingsUtils'
 
 export default function SettingsTable({
@@ -16,7 +16,7 @@ export default function SettingsTable({
   cancelEdit,
   openAdvancedModal,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   return groupedSettings.map((group, groupIdx) => {
     const expanded = expandedGroups.has(group.network)

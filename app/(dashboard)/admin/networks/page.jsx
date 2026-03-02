@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getNetworks } from '@/lib/api/admin'
 
@@ -72,7 +72,7 @@ async function findNetworkImage(network) {
 }
 
 export default function NetworkList() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const [networks, setNetworks] = useState([])
   const [loading, setLoading] = useState(true)

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getWebhookLog, retryWebhook } from '@/lib/api/merchantWebhookLogs'
 import { formatDate } from '@/lib/utils/format'
@@ -20,7 +20,7 @@ const EVENT_OPTIONS = [
 ]
 
 export default function MerchantWebhookLogDetail() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { id } = useParams()
   const { token, hasPermission } = useAuth()
   const toast = useToast()

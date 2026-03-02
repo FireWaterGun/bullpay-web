@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { updateSweepSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
@@ -10,7 +10,7 @@ const ConfirmResetModal = dynamic(() => import('@/components/ConfirmResetModal')
 import { logger } from '@/lib/utils/logger'
 
 export default function GasSettingsForm({ gasSettings, setGasSettings }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const [loading, setLoading] = useState(false)

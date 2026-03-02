@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getWithdrawals, approveWithdrawal, rejectWithdrawal } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { formatCoinAmount } from '@/lib/utils/format'
@@ -20,7 +20,7 @@ export default function WithdrawalTransactions() {
 }
 
 function WithdrawalTransactionsContent() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useSearchParams()

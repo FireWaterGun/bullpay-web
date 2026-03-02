@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { statusBadgeClass } from '@/components/admin/merchantListHelpers'
 
 export default function MerchantConfirmModal({
@@ -10,7 +10,7 @@ export default function MerchantConfirmModal({
   onConfirm,
   onClose,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   if (!merchant) return null
 

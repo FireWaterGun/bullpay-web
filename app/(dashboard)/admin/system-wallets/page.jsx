@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
@@ -13,7 +13,7 @@ import { copyToClipboard } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 
 export default function SystemBalance() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const [stats, setStats] = useState(null)

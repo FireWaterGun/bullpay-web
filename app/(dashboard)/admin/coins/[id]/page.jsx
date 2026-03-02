@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getCoinById, createCoin, updateCoin, deleteCoin } from '@/lib/api/admin'
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
@@ -12,7 +12,7 @@ import ErrorModal from '@/components/modals/ErrorModal'
 import { useToast } from '@/app/providers'
 
 export default function CoinForm() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const router = useRouter()
   const { id } = useParams()

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
@@ -10,7 +10,7 @@ import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 
 export default function SupportedCrypto() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const [coinNetworks, setCoinNetworks] = useState([])

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import {
   getUsers,
   changeUserStatus,
@@ -21,7 +21,7 @@ import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminUsersPage() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()

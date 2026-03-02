@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { formatUsd, formatDate } from '@/lib/utils/format'
@@ -50,7 +50,7 @@ export default function SystemLedgerTable({
   syncSearchParams,
   appliedFilters,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const router = useRouter()
 
   return (

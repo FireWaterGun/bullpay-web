@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAdminPayments } from '@/lib/api/admin'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
@@ -13,7 +13,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminPaymentList() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
 

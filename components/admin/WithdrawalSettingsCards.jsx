@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function SettingsCard({ title, children }) {
   return (
@@ -28,7 +28,7 @@ function BooleanBadge({ value }) {
 }
 
 function AutoApproveCard({ autoApprove }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   return (
     <SettingsCard title={t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}>
       <tr>
@@ -44,7 +44,7 @@ function AutoApproveCard({ autoApprove }) {
 }
 
 function GasSettingsCard({ gasSettings }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   return (
     <SettingsCard title={t('admin.withdrawal.gasSettings', { defaultValue: 'Gas Settings' })}>
       <tr>
@@ -64,7 +64,7 @@ function GasSettingsCard({ gasSettings }) {
 }
 
 function PolicyCard({ policy }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   return (
     <SettingsCard title={t('admin.withdrawal.policy', { defaultValue: 'Policy' })}>
       <tr>
@@ -76,7 +76,7 @@ function PolicyCard({ policy }) {
 }
 
 function ReservationCard({ reservation }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   return (
     <SettingsCard title={t('admin.withdrawal.reservation', { defaultValue: 'Reservation' })}>
       <tr>
@@ -92,7 +92,7 @@ function ReservationCard({ reservation }) {
 }
 
 function ReconciliationCard({ reconciliation }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   return (
     <SettingsCard title={t('admin.withdrawal.reconciliation', { defaultValue: 'Reconciliation' })}>
       <tr>

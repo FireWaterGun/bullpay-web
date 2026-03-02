@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CoinImg from '@/components/CoinImg'
@@ -37,7 +37,7 @@ export default function PlatformLedgerTable({
   syncSearchParams,
   appliedFilters,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const router = useRouter()
 
   return (

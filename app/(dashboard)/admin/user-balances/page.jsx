@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth, useToast } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getUserBalances, getUserBalancesSummary } from '@/lib/api/admin'
 import { formatDate } from '@/lib/utils/format'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
@@ -22,7 +22,7 @@ function roleBadgeClass(role) {
 }
 
 export default function UserBalanceListPage() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const SORT_BY_OPTIONS = [
     { value: 'totalValueUsd', label: t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' }) },
     { value: 'totalAssets', label: t('admin.userBalance.totalAssets', { defaultValue: 'Total Assets' }) },

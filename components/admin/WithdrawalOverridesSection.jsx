@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function FeeConfigCell({ config }) {
   if (config.fee?.type === 'fixed') {
@@ -61,7 +61,7 @@ export default function WithdrawalOverridesSection({
   labelColumnDefault,
   showMaximum = false,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const entries = Object.entries(overrides)
 
   return (

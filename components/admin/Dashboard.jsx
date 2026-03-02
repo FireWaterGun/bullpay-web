@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth, useToast } from '@/app/providers'
 import { getPaymentStats } from '@/lib/api/admin'
 import { formatUsd, formatCoinAmount, formatPercent } from '@/lib/utils/format'
@@ -10,7 +10,7 @@ import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function Dashboard() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
 

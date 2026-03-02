@@ -14,7 +14,7 @@ import {
   resetRolePermissionOverrides,
 } from '@/lib/api/admin'
 import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import PermissionActionModal from '@/components/admin/PermissionActionModal'
 import ResetOverridesModal from '@/components/admin/ResetOverridesModal'
@@ -27,7 +27,7 @@ export default function RolePermissions() {
   const { token } = useAuth()
   const toast = useToast()
   const { role } = useParams()
-  const { t } = useTranslation('common')
+  const { t } = useAdminTranslation()
 
   const [loading, setLoading] = useState(true)
   const [permissions, setPermissions] = useState([])

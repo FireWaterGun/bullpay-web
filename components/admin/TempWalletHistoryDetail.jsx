@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWalletHistory } from '@/lib/api/admin'
 import { formatDate } from '@/lib/utils/format'
@@ -24,7 +24,7 @@ function statusBadgeClass(s) {
 }
 
 export default function TempWalletHistoryDetail() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { id } = useParams()
   const router = useRouter()
   const { token } = useAuth()

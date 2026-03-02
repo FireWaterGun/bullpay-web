@@ -1,9 +1,9 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function OverrideFormModal({ modalType, editingKey, formData, setFormData, loading, onSave, onClose }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   return (
     <>

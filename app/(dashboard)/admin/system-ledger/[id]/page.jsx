@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getSystemLedgerEntry } from '@/lib/api/admin'
 import { formatUsd } from '@/lib/utils/format'
@@ -15,7 +15,7 @@ import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function SystemLedgerDetail() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()

@@ -1,7 +1,7 @@
 'use client'
 
 import { formatUsd, formatDate } from '@/lib/utils/format'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function AddressRow({ label, address, explorerUrl, onCopy }) {
   return (

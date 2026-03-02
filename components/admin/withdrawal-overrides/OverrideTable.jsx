@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function FeeTypeBadge({ config }) {
   if (config.fee?.fixed) {
@@ -56,7 +56,7 @@ const TABLE_CONFIG = {
 }
 
 export default function OverrideTable({ type, data, onEdit, loading }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const cfg = TABLE_CONFIG[type]
   const entries = Object.entries(data)
 

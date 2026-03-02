@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 
 export default function PaymentSettings() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
 

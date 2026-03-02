@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAdminPayment } from '@/lib/api/admin'
 import { formatAmount, formatDate } from '@/lib/utils/format'
@@ -15,7 +15,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminPaymentDetail() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { id } = useParams()
   const { token } = useAuth()
   const toast = useToast()

@@ -1,9 +1,9 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export function ChainSettingModal({ show, loading, editingChain, chainForm, setChainForm, onClose, onSave, getTitle }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   if (!show) return null
 
@@ -95,7 +95,7 @@ export function ChainSettingModal({ show, loading, editingChain, chainForm, setC
 }
 
 export function DeleteConfirmModal({ show, loading, deleteTarget, onClose, onConfirm }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   if (!show) return null
 

@@ -2,7 +2,7 @@
 
 import { formatAmount, formatDate } from '@/lib/utils/format'
 import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 /**
  * Payments table for AdminInvoiceDetail.

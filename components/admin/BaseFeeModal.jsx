@@ -1,9 +1,9 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function BaseFeeModal({ form, editing, loading, onFormChange, onSave, onClose }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   return (
     <>

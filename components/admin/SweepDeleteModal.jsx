@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 /**
  * Delete confirmation modal for sweep overrides.
@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
  * @param {Function} props.onClose - Called when the modal should close
  */
 export default function SweepDeleteModal({ show, loading, target, onConfirm, onClose }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   if (!show) return null
 

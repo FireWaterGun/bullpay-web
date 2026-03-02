@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 /**
  * Modal form for adding/editing a coin or network sweep override.
@@ -25,7 +25,7 @@ export default function SweepOverrideFormModal({
   onSave,
   onClose
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   if (!show) return null
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
 import { getSystemWallet, getSystemWalletLedger } from '@/lib/api/admin'
@@ -16,7 +16,7 @@ import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function WalletTransaction() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const { walletId } = useParams()

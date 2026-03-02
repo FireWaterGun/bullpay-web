@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import NextImage from 'next/image'
 import Link from 'next/link'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getCoins } from '@/lib/api/admin'
 
@@ -26,7 +26,7 @@ function getCoinColor(symbol, darker = false) {
 }
 
 export default function CoinList() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const [coins, setCoins] = useState([])
   const [loading, setLoading] = useState(true)

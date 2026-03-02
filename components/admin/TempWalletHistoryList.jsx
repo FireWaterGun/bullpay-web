@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWalletHistories } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
@@ -32,7 +32,7 @@ function statusBadgeClass(s) {
 }
 
 export default function TempWalletHistoryList() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()

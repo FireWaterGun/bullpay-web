@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 
 export default function SweepHistory() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { user, token } = useAuth()
   const [loading, setLoading] = useState(false)
   const [history, setHistory] = useState([])

@@ -3,7 +3,7 @@
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { formatUsd, formatDate } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0'

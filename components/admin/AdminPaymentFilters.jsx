@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 
 export default function AdminPaymentFilters({
@@ -25,7 +25,7 @@ export default function AdminPaymentFilters({
   onApply,
   onReset,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   return (
     <div className="card-body">

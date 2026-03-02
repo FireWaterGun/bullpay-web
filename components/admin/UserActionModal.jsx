@@ -2,7 +2,7 @@
 
 import { formatRoleLabel } from '@/lib/utils/roles'
 import { STATUS_OPTIONS, ROLE_OPTIONS, statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function UserActionModal({
   t,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function WithdrawalTxModals({
   showApproveModal,
@@ -16,7 +16,7 @@ export default function WithdrawalTxModals({
   onApprove,
   onReject,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   return (
     <>

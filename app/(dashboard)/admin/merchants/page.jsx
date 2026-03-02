@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getMerchants, activateMerchant, suspendMerchant } from '@/lib/api/admin'
 import { formatCommission, formatDate } from '@/lib/utils/format'
 import { STATUS_OPTIONS, statusBadgeClass } from '@/components/admin/merchantListHelpers'
@@ -12,7 +12,7 @@ import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminMerchantsPage() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()

@@ -3,7 +3,7 @@
 import { formatRoleLabel } from '@/lib/utils/roles'
 import { formatDate } from '@/lib/utils/format'
 import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function UserListTable({
   t,

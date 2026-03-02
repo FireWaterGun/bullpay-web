@@ -1,10 +1,10 @@
 'use client'
 
 import { formatRoleLabel } from '@/lib/utils/roles'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function PermissionActionModal({ action, role, permission, reason, onPermissionChange, onReasonChange, onSubmit, onClose, disabled }) {
-  const { t } = useTranslation('common')
+  const { t } = useAdminTranslation()
 
   const MODAL_CONFIG = {
     grant: {

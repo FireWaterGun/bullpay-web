@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { updateSweepSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
 import { logger } from '@/lib/utils/logger'
 
 export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const [loading, setLoading] = useState(false)

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getUserLedgerEntries } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
@@ -14,7 +14,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function UserLedgerList() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()

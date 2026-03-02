@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd, formatDate } from '@/lib/utils/format'
 
@@ -16,7 +16,7 @@ export default function SweepTransactionTable({
   onRetry,
   onPageChange,
 }) {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
 
   return (
     <div className="card">

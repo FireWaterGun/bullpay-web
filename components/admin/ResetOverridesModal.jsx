@@ -1,10 +1,10 @@
 'use client'
 
 import { formatRoleLabel } from '@/lib/utils/roles'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function ResetOverridesModal({ role, overridesCount, actionLoading, onReset, onClose }) {
-  const { t } = useTranslation('common')
+  const { t } = useAdminTranslation()
 
   return (
     <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onClose}>

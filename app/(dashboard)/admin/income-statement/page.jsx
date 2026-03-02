@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getIncomeStatement } from '@/lib/api/admin'
 import LocaleDatePicker from '@/components/LocaleDatePicker'
@@ -25,7 +25,7 @@ function hasReportData(report) {
 }
 
 export default function IncomeStatement() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
 

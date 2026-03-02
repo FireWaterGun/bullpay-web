@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWallets } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
@@ -27,7 +27,7 @@ function statusBadgeClass(s) {
 }
 
 export default function TempWalletList() {
-  const { t } = useTranslation()
+  const { t } = useAdminTranslation()
   const SORT_BY_OPTIONS = [
     { value: 'createdAt', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
     { value: 'lastAssignedAt', label: t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' }) },

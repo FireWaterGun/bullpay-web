@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '@/lib/api/admin'
 import LocaleDatePicker from '@/components/LocaleDatePicker'
@@ -58,7 +58,7 @@ function getDateRange(preset) {
 }
 
 export default function AdminDashboardPage() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
 
   const locale = useMemo(() => {

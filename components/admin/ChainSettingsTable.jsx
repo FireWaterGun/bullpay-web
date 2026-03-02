@@ -1,9 +1,9 @@
 'use client'
 
-import { useTranslation } from 'react-i18next'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 export default function ChainSettingsTable({ data, type, label, valueHeader, keyPrefix, emptyMessage, onEdit, loading }) {
-  const { t } = useTranslation('common')
+  const { t } = useAdminTranslation()
   const entries = Object.entries(data || {})
 
   return (
