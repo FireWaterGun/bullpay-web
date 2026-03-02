@@ -199,7 +199,7 @@ export default function SweepTransactions() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-transfer me-2"></i>
-                    {t('admin.sweep.transactions', { defaultValue: 'Sweep' })}
+                    {t('admin.sweep.transactions', { defaultValue: 'Sweeps' })}
                   </h4>
                   <p className="text-muted mb-0">
                     {t('admin.sweep.transactionsDesc', { defaultValue: 'View all sweep transactions and their status' })}

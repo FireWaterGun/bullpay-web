@@ -145,7 +145,7 @@
     "blockNumber": "区块",
     "user": "用户",
     "noTransactions": "未找到扫款交易",
-    "transactions": "交易",
+    "transactions": "Sweeps",
     "transactionsDesc": "查看所有扫款交易及其状态",
     "network": "网络",
     "dateRange": "日期范围",

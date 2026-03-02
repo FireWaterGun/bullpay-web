@@ -115,7 +115,7 @@
     "maxPerRun": "สูงสุด/รอบ",
     "jitter": "Jitter (ms)",
     "configuration": "การตั้งค่า",
-    "transactions": "ธุรกรรม",
+    "transactions": "Sweeps",
     "transactionsDesc": "ดูธุรกรรม sweep ทั้งหมดและสถานะ",
     "txHash": "Tx Hash",
     "noTransactions": "ไม่มีธุรกรรม sweep",

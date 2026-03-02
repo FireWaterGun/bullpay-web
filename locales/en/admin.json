@@ -145,7 +145,7 @@
     "coinNetworkId": "Coin-Network ID",
     "coinNetworkIdRequired": "Coin-Network ID is required",
     "coinNetworkIdHelp": "Format: coin_network_id (e.g., 1-eth, 1-bsc)",
-    "transactions": "Transactions",
+    "transactions": "Sweeps",
     "transactionsDesc": "View all sweep transactions and their status",
     "noTransactions": "No sweep transactions found",
     "createdAt": "Created Date",
