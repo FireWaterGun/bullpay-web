@@ -25,6 +25,19 @@ export async function loginApi(body: LoginRequest) {
   })
 }
 
+export interface Verify2FALoginRequest {
+  tempToken: string
+  code: string
+}
+
+export async function verify2FALoginApi(body: Verify2FALoginRequest) {
+  return apiFetch('/api/v1/auth/verify-2fa', {
+    method: 'POST',
+    body,
+    skipAuthRedirect: true,
+  })
+}
+
 export async function registerApi(body: RegisterRequest) {
   return apiFetch('/api/v1/auth/register', {
     method: 'POST',
