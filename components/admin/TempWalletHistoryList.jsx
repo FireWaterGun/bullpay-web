@@ -268,7 +268,7 @@ export default function TempWalletHistoryList() {
                       <th className="text-center">{t('admin.tempWalletHistories.walletId', { defaultValue: 'Wallet ID' })}</th>
                       <th className="text-center">{t('table.invoiceId', { defaultValue: 'Invoice ID' })}</th>
                       <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
-                      <th className="text-center">{t('table.coinNetworkId', { defaultValue: 'CN ID' })}</th>
+                      <th className="text-center">{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</th>
                       <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
                       <th>{t('admin.tempWalletHistories.firstDeposit', { defaultValue: 'First Deposit' })}</th>
                       <th>{t('admin.tempWalletHistories.swept', { defaultValue: 'Swept' })}</th>
@@ -313,8 +313,22 @@ export default function TempWalletHistoryList() {
                           <td className="text-center">
                             <span className="fw-medium">{h.userId || '-'}</span>
                           </td>
-                          <td className="text-center">
-                            <span className="fw-medium">{h.coinNetworkId || '-'}</span>
+                          <td style={{ whiteSpace: 'nowrap' }}>
+                            {(() => {
+                              const cn = coinNetworks.find(c => c.id === h.coinNetworkId)
+                              if (!cn) return <span className="fw-medium">{h.coinNetworkId || '-'}</span>
+                              const sym = (cn.coin?.symbol || '').toUpperCase()
+                              const net = (cn.network?.name || cn.network?.symbol || '').toUpperCase()
+                              return (
+                                <div className="d-flex align-items-center">
+                                  <CoinImg symbol={sym} networkSymbol={(cn.network?.symbol || '').toUpperCase()} size={24} className="me-3" />
+                                  <div>
+                                    <div className="fw-medium" style={{ lineHeight: 1.2 }}>{sym}</div>
+                                    {net && <small className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</small>}
+                                  </div>
+                                </div>
+                              )
+                            })()}
                           </td>
                           <td className="text-nowrap text-center">
                             <span className={statusBadgeClass(h.status)}>

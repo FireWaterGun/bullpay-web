@@ -12,14 +12,19 @@ export function SectionHeader({ label }: { label: string }) {
   )
 }
 
-export function MenuItem({ to, icon, label, end }: { to: string; icon: string; label: string; end?: boolean }) {
+export function MenuItem({ to, icon, label, end, badge }: { to: string; icon: string; label: string; end?: boolean; badge?: number }) {
   const pathname = usePathname()
   const isActive = end ? pathname === to : (pathname === to || pathname.startsWith(to + '/'))
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
-      <Link href={to} className="menu-link">
+      <Link href={to} className="menu-link" style={{ position: 'relative' }}>
         <i className={`menu-icon bx ${icon}`}></i>
         <div>{label}</div>
+        {!!badge && badge > 0 && (
+          <span className="badge rounded-pill bg-danger" style={badgeStyle}>
+            {badge > 99 ? '99+' : badge}
+          </span>
+        )}
       </Link>
     </li>
   )

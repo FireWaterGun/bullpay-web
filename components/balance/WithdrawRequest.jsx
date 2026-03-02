@@ -115,9 +115,6 @@ export default function WithdrawRequest() {
   }, [matchingWallets, address, effectiveAddress])
 
   const decimals = Number(balance?.decimals || 8)
-  const amountNum = Number(effectiveAmount) || 0
-
-  const canSubmit = amountNum > 0 && amountNum <= available && effectiveAddress.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee && !is2FALoading
 
   const executeWithdrawal = async (twoFactorCode) => {
     if (!balance || !effectiveAddress || !effectiveAmount || !selectedWallet?.id || !feeEstimate) return
@@ -167,6 +164,9 @@ export default function WithdrawRequest() {
     const fill = walletAvailable > 0 ? walletAvailable : available
     return fill > 0 ? String(fill) : amount
   }, [amount, walletAvailable, available])
+
+  const amountNum = Number(effectiveAmount) || 0
+  const canSubmit = amountNum > 0 && amountNum <= available && effectiveAddress.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee && !is2FALoading
 
   useEffect(() => {
     if (!coinNetworkId || !effectiveAmount || Number(effectiveAmount) <= 0) {
