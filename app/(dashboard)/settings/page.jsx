@@ -122,12 +122,14 @@ export default function SettingsPage() {
       <div>
         {/* Page Header */}
         <div className="card mb-4">
-          <div className="card-body">
-            <h5 className="mb-1">{t('settings.title', { defaultValue: 'Settings' })}</h5>
+          <div className="card-body d-flex justify-content-between align-items-start">
+            <div>
+              <h5 className="mb-1">{t('settings.title', { defaultValue: 'Settings' })}</h5>
+              <small className="text-muted d-block">
+                {t('settings.subtitle', { defaultValue: 'Manage your account settings and preferences' })}
+              </small>
+            </div>
             <RefreshButton onClick={fetchStatus} loading={loading} />
-            <small className="text-muted d-block">
-              {t('settings.subtitle', { defaultValue: 'Manage your account settings and preferences' })}
-            </small>
           </div>
         </div>
 
