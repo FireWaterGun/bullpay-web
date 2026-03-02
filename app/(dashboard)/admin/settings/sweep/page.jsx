@@ -9,6 +9,7 @@ import SweepScanningSettings from '@/components/admin/SweepScanningSettings'
 import SweepReconciliationSettings from '@/components/admin/SweepReconciliationSettings'
 import ConfirmResetModal from '@/components/ConfirmResetModal'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function Sweep() {
   const { t } = useTranslation()
@@ -193,15 +194,7 @@ export default function Sweep() {
   }
 
   if (loadingData) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

@@ -5,6 +5,7 @@ import useEVMFeePolicy from '@/components/admin/useEVMFeePolicy'
 import ChainSettingsTable from '@/components/admin/ChainSettingsTable'
 import { ChainSettingModal, DeleteConfirmModal } from '@/components/admin/EVMFeePolicyModals'
 import ConfirmResetModal from '@/components/ConfirmResetModal'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function EVMFeePolicy() {
   const { t } = useTranslation()
@@ -35,15 +36,7 @@ export default function EVMFeePolicy() {
   } = useEVMFeePolicy()
 
   if (loadingData) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

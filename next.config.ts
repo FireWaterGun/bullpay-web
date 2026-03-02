@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
 
   // Tree-shake barrel imports for faster builds & smaller bundles
   experimental: {
-    optimizePackageImports: ['bignumber.js', 'react-i18next', 'i18next', 'qrcode.react'],
+    optimizePackageImports: ['bignumber.js', 'react-i18next', 'i18next', 'qrcode.react', 'zod', 'react-hook-form', '@hookform/resolvers', 'react-turnstile'],
   },
 
   // Allow images from coin asset paths

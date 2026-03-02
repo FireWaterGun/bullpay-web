@@ -9,6 +9,7 @@ import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } 
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user']
 
@@ -85,15 +86,7 @@ export default function AdminRoles() {
   )
 
   if (loading) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

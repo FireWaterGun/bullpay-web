@@ -10,6 +10,7 @@ import MyLedgerFilterPanel from '@/components/ledger/MyLedgerFilterPanel'
 import MyLedgerTable from '@/components/ledger/MyLedgerTable'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 function getDateRange(preset) {
   const now = new Date()
@@ -147,15 +148,7 @@ function MyLedgerListContent() {
   }
 
   if (loading && entries.length === 0) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

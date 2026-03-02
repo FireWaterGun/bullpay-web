@@ -13,6 +13,7 @@ import WithdrawalTxFilters from '@/components/admin/WithdrawalTxFilters'
 import WithdrawalTxTable from '@/components/admin/WithdrawalTxTable'
 import WithdrawalTxModals from '@/components/admin/WithdrawalTxModals'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function WithdrawalTransactions() {
   return <Suspense><WithdrawalTransactionsContent /></Suspense>
@@ -214,15 +215,7 @@ function WithdrawalTransactionsContent() {
   }
 
   if (loading && withdrawals.length === 0) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

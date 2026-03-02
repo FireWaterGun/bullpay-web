@@ -7,11 +7,13 @@ export default function RegisterCompletePage() {
   const [email, setEmail] = useState('')
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('register_email')
-    if (stored) {
-      setEmail(stored)
-      sessionStorage.removeItem('register_email')
-    }
+    try {
+      const stored = sessionStorage.getItem('register_email')
+      if (stored) {
+        setEmail(stored)
+        sessionStorage.removeItem('register_email')
+      }
+    } catch {}
   }, [])
 
   return (

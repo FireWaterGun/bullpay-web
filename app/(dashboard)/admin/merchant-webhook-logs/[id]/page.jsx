@@ -10,6 +10,7 @@ import { getWebhookLog, retryWebhook } from '@/lib/api/merchantWebhookLogs'
 import { formatDate } from '@/lib/utils/format'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 const EVENT_OPTIONS = [
   { value: 'payment.completed', label: 'Completed' },
@@ -95,15 +96,7 @@ export default function MerchantWebhookLogDetail() {
   }
 
   if (loading && !log) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   if (!log) {

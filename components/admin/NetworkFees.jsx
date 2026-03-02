@@ -9,6 +9,7 @@ import BaseFeeModal from '@/components/admin/BaseFeeModal'
 import SlippageModal from '@/components/admin/SlippageModal'
 import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function NetworkFees() {
   const { t } = useTranslation()
@@ -166,15 +167,7 @@ export default function NetworkFees() {
   }
 
   if (loadingData) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

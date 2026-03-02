@@ -7,11 +7,13 @@ export default function ForgotCompletePage() {
   const [email, setEmail] = useState('')
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('forgot_email')
-    if (stored) {
-      setEmail(stored)
-      sessionStorage.removeItem('forgot_email')
-    }
+    try {
+      const stored = sessionStorage.getItem('forgot_email')
+      if (stored) {
+        setEmail(stored)
+        sessionStorage.removeItem('forgot_email')
+      }
+    } catch {}
   }, [])
 
   return (

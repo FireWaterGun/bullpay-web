@@ -11,6 +11,7 @@ import { formatDate } from '@/lib/utils/format'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 function statusBadgeClass(s) {
   const v = String(s || '').toLowerCase()
@@ -52,15 +53,7 @@ export default function TempWalletHistoryDetail() {
   }
 
   if (loading) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   if (!history) {

@@ -11,6 +11,7 @@ import CoinImg from '@/components/CoinImg'
 import CountdownTimer from './CountdownTimer'
 import PaymentQRCode from './PaymentQRCode'
 import PaymentProgressCard from './PaymentProgressCard'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function InvoicePayment({ code }) {
   const { t } = useTranslation()
@@ -68,15 +69,7 @@ export default function InvoicePayment({ code }) {
   }
 
   if (loading) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   if (error || !invoice) {

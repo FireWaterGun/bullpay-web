@@ -10,6 +10,7 @@ import AdminPaymentFilters from '@/components/admin/AdminPaymentFilters'
 import AdminPaymentRow from '@/components/admin/AdminPaymentRow'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminPaymentList() {
   const { t, i18n } = useTranslation()
@@ -93,15 +94,7 @@ export default function AdminPaymentList() {
   }
 
   if (loading && payments.length === 0) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (
@@ -206,7 +199,7 @@ export default function AdminPaymentList() {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       disabled={!pagination.hasPrev || loading}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      onClick={() => setCurrentPage(p => p - 1)}
                     >
                       <i className="bx bx-chevron-left"></i>
                       {t('actions.prev', { defaultValue: 'Previous' })}
@@ -220,7 +213,7 @@ export default function AdminPaymentList() {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       disabled={!pagination.hasNext || loading}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      onClick={() => setCurrentPage(p => p + 1)}
                     >
                       {t('actions.next', { defaultValue: 'Next' })}
                       <i className="bx bx-chevron-right"></i>

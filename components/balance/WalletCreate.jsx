@@ -31,7 +31,6 @@ export default function WalletCreate() {
   const [coins, setCoins] = useState([])
   const [loadingCoins, setLoadingCoins] = useState(false)
   const [selectedCoin, setSelectedCoin] = useState('')
-  const [networks, setNetworks] = useState([])
   const [coinNetworkId, setCoinNetworkId] = useState('')
   const [address, setAddress] = useState('')
   const [label, setLabel] = useState('')
@@ -78,29 +77,22 @@ export default function WalletCreate() {
     return bySymbol
   }, [coins])
 
+  // Derive networks from grouped[selectedCoin] — no state needed
+  const networks = useMemo(() => {
+    if (!selectedCoin) return []
+    return grouped[selectedCoin]?.items ?? []
+  }, [selectedCoin, grouped])
+
+  // Auto-select coinNetworkId when networks change
   useEffect(() => {
-    if (!selectedCoin) {
-      setNetworks([])
+    if (networks.length === 1) {
+      setCoinNetworkId(String(networks[0].id))
+    } else if (networks.length > 1 && !networks.some(i => String(i.id) === String(coinNetworkId))) {
       setCoinNetworkId('')
-      return
-    }
-
-    const group = grouped[selectedCoin]
-    if (group && group.items) {
-      setNetworks(group.items)
-
-      // Auto-select if only one network
-      if (group.items.length === 1) {
-        setCoinNetworkId(String(group.items[0].id))
-      } else if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
-        // Clear if current selection is not in available networks
-        setCoinNetworkId('')
-      }
-    } else {
-      setNetworks([])
+    } else if (networks.length === 0) {
       setCoinNetworkId('')
     }
-  }, [selectedCoin, grouped, coinNetworkId])
+  }, [networks]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function onSubmit(e) {
     e.preventDefault()

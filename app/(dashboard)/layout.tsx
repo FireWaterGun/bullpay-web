@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
 
     document.addEventListener('click', initAudio)
-    document.addEventListener('touchstart', initAudio)
+    document.addEventListener('touchstart', initAudio, { passive: true })
     document.addEventListener('keydown', initAudio)
 
     // Clear stale TemplateCustomizer localStorage (main.js reads these and can override React theme)

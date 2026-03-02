@@ -14,6 +14,7 @@ import { statusBadgeClass } from '@/components/admin/adminInvoiceHelpers'
 import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTable'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminInvoiceDetail() {
   const { t } = useTranslation()
@@ -46,15 +47,7 @@ export default function AdminInvoiceDetail() {
   }
 
   if (loading && !invoice) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   if (!invoice) {

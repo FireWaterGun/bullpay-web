@@ -208,9 +208,9 @@ export default function AdminMerchantsPage() {
                     {t('invoices.showingEntries', { start: ((pagination.page - 1) * pagination.limit) + 1, end: Math.min(pagination.page * pagination.limit, pagination.total), total: pagination.total, defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries' })}
                   </div>
                   <div className="btn-group">
-                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasPrev || loading} onClick={() => { setCurrentPage(currentPage - 1); syncSearchParams(appliedStatus, currentPage - 1) }}><i className="bx bx-chevron-left"></i> {t('actions.prev', { defaultValue: 'Previous' })}</button>
+                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasPrev || loading} onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedStatus, currentPage - 1) }}><i className="bx bx-chevron-left"></i> {t('actions.prev', { defaultValue: 'Previous' })}</button>
                     <button className="btn btn-outline-secondary btn-sm" disabled>{pagination.page} / {pagination.totalPages}</button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasNext || loading} onClick={() => { setCurrentPage(currentPage + 1); syncSearchParams(appliedStatus, currentPage + 1) }}>{t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right"></i></button>
+                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasNext || loading} onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedStatus, currentPage + 1) }}>{t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right"></i></button>
                   </div>
                 </div>
               )}

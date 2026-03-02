@@ -175,7 +175,7 @@ export default function PlatformLedgerTable({
               <button
                 className="btn btn-outline-secondary btn-sm"
                 disabled={!pagination.hasPrev || loading}
-                onClick={() => { setCurrentPage(currentPage - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
+                onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
               >
                 <i className="bx bx-chevron-left"></i>
                 {t('actions.prev', { defaultValue: 'Previous' })}
@@ -186,7 +186,7 @@ export default function PlatformLedgerTable({
               <button
                 className="btn btn-outline-secondary btn-sm"
                 disabled={!pagination.hasNext || loading}
-                onClick={() => { setCurrentPage(currentPage + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
+                onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
               >
                 {t('actions.next', { defaultValue: 'Next' })}
                 <i className="bx bx-chevron-right"></i>

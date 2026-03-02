@@ -9,6 +9,7 @@ import AutoApproveForm from '@/components/admin/withdrawal-policy/AutoApproveFor
 import GasSettingsForm from '@/components/admin/withdrawal-policy/GasSettingsForm'
 import ReconciliationForm from '@/components/admin/withdrawal-policy/ReconciliationForm'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function WithdrawalPolicy() {
   const { t } = useTranslation()
@@ -104,15 +105,7 @@ export default function WithdrawalPolicy() {
   }
 
   if (loadingData) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

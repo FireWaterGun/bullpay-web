@@ -9,6 +9,7 @@ import OverrideTable from '@/components/admin/withdrawal-overrides/OverrideTable
 import OverrideFormModal from '@/components/admin/withdrawal-overrides/OverrideFormModal'
 import DeleteConfirmModal from '@/components/admin/withdrawal-overrides/DeleteConfirmModal'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function WithdrawalOverrides() {
   const { t } = useTranslation()
@@ -172,15 +173,7 @@ export default function WithdrawalOverrides() {
   }
 
   if (loadingData) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

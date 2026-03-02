@@ -18,6 +18,7 @@ import AddressFilters from '@/components/balance/AddressFilters'
 import AddressTable from '@/components/balance/AddressTable'
 import AddressActionModal from '@/components/balance/AddressActionModal'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function WithdrawalAddresses() {
   const { t } = useTranslation()
@@ -195,15 +196,7 @@ export default function WithdrawalAddresses() {
   }
 
   if (loading && addresses.length === 0) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   const actionConfig = getActionConfig()

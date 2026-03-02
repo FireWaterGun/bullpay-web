@@ -303,12 +303,12 @@ export default function AdminSettings() {
               </small>
               <div className="btn-group">
                 <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasPrev || loading}
-                  onClick={() => { setCurrentPage(currentPage - 1); syncSearchParams(appliedFilters, currentPage - 1) }}>
+                  onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}>
                   <i className="bx bx-chevron-left"></i>
                 </button>
                 <button className="btn btn-outline-secondary btn-sm" disabled>{pagination.page} / {pagination.totalPages}</button>
                 <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasNext || loading}
-                  onClick={() => { setCurrentPage(currentPage + 1); syncSearchParams(appliedFilters, currentPage + 1) }}>
+                  onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}>
                   <i className="bx bx-chevron-right"></i>
                 </button>
               </div>

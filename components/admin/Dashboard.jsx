@@ -7,6 +7,7 @@ import { getPaymentStats } from '@/lib/api/admin'
 import { formatUsd, formatCoinAmount, formatPercent } from '@/lib/utils/format'
 import { StatCard, DailyTrendCard } from '@/components/admin/DashboardCards'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function Dashboard() {
   const { t } = useTranslation()
@@ -35,15 +36,7 @@ export default function Dashboard() {
   }
 
   if (loading) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   const overview = stats?.overview || {}

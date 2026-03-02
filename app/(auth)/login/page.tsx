@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Turnstile } from 'react-turnstile'
+import dynamic from 'next/dynamic'
+
+const Turnstile = dynamic(() => import('react-turnstile').then(m => m.Turnstile), { ssr: false })
 import { loginApi } from '@/lib/api/auth'
 import { useAuth } from '@/app/providers'
 import { extractToken } from '@/lib/utils/authToken'

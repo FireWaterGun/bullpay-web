@@ -23,20 +23,22 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
   // Check localStorage for existing rate limit on mount
   useEffect(() => {
     const checkRateLimit = () => {
-      const storedUntil = localStorage.getItem(RATE_LIMIT_KEY);
-      if (storedUntil) {
-        const until = parseInt(storedUntil, 10);
-        const now = Date.now();
-        if (until > now) {
-          const remaining = Math.ceil((until - now) / 1000);
-          setCountdown(remaining);
+      try {
+        const storedUntil = localStorage.getItem(RATE_LIMIT_KEY);
+        if (storedUntil) {
+          const until = parseInt(storedUntil, 10);
+          const now = Date.now();
+          if (until > now) {
+            const remaining = Math.ceil((until - now) / 1000);
+            setCountdown(remaining);
+          } else {
+            localStorage.removeItem(RATE_LIMIT_KEY);
+            setCountdown(0);
+          }
         } else {
-          localStorage.removeItem(RATE_LIMIT_KEY);
           setCountdown(0);
         }
-      } else {
-        setCountdown(0);
-      }
+      } catch {}
     };
     checkRateLimit();
   }, [show]);
@@ -48,7 +50,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownRef.current);
-            localStorage.removeItem(RATE_LIMIT_KEY);
+            try { localStorage.removeItem(RATE_LIMIT_KEY); } catch {}
             setError("");
             return 0;
           }
@@ -158,7 +160,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
         || err?.data?.error?.retryAfterSeconds;
       if (retryAfter && retryAfter > 0) {
         const until = Date.now() + (retryAfter * 1000);
-        localStorage.setItem(RATE_LIMIT_KEY, until.toString());
+        try { localStorage.setItem(RATE_LIMIT_KEY, until.toString()); } catch {}
         setCountdown(retryAfter);
         setError(t("settings.2fa.tooManyAttempts", {
           defaultValue: "Too many attempts. Please try again in {{seconds}} seconds",
@@ -344,7 +346,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
 
           <div className="modal-footer">
             {step > 1 && (
-              <button type="button" className="btn btn-outline-secondary" onClick={() => setStep(step - 1)} disabled={loading}>
+              <button type="button" className="btn btn-outline-secondary" onClick={() => setStep(s => s - 1)} disabled={loading}>
                 <i className="bx bx-chevron-left me-1"></i>
                 {t("common.back", { defaultValue: "Back" })}
               </button>
@@ -357,7 +359,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => setStep(step + 1)}
+                onClick={() => setStep(s => s + 1)}
                 disabled={loading || !setupData}
               >
                 {t("common.continue", { defaultValue: "Continue" })}

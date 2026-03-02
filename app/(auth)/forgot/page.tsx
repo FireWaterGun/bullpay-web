@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Turnstile } from 'react-turnstile'
+import dynamic from 'next/dynamic'
+
+const Turnstile = dynamic(() => import('react-turnstile').then(m => m.Turnstile), { ssr: false })
 import { forgotPasswordApi } from '@/lib/api/auth'
 
 export default function ForgotPage() {
@@ -25,7 +27,7 @@ export default function ForgotPage() {
     try {
       await forgotPasswordApi({ email, cfToken })
       // Store email in sessionStorage for the complete page
-      sessionStorage.setItem('forgot_email', email)
+      try { sessionStorage.setItem('forgot_email', email) } catch {}
       router.replace('/forgot-complete')
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {}

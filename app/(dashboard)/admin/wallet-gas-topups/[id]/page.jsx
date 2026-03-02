@@ -13,6 +13,7 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import GasTopupDetailsCard from '@/components/admin/GasTopupDetailsCard'
 import GasTopupTransactionCard from '@/components/admin/GasTopupTransactionCard'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function GasTopupDetail() {
   const { t } = useTranslation()
@@ -67,15 +68,7 @@ export default function GasTopupDetail() {
   }
 
   if (loading) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   if (!topup) {

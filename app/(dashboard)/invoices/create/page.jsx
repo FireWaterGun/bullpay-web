@@ -29,7 +29,6 @@ export default function InvoiceCreatePage() {
   const [coins, setCoins] = useState([])
   const [loadingCoins, setLoadingCoins] = useState(false)
   const [selectedCoin, setSelectedCoin] = useState('')
-  const [networks, setNetworks] = useState([])
 
   useEffect(() => {
     let mounted = true
@@ -67,6 +66,12 @@ export default function InvoiceCreatePage() {
     }
   }, [grouped, selectedCoin])
 
+  // Derive networks from grouped[selectedCoin] — no state needed
+  const networks = useMemo(() => {
+    if (!selectedCoin) return []
+    return grouped[selectedCoin]?.items ?? []
+  }, [selectedCoin, grouped])
+
   const selectedNetwork = useMemo(() => {
     return networks.find(n => String(n.id) === String(coinNetworkId))
   }, [networks, coinNetworkId])
@@ -76,27 +81,16 @@ export default function InvoiceCreatePage() {
     return min
   }, [selectedNetwork])
 
+  // Auto-select coinNetworkId when networks change
   useEffect(() => {
-    if (!selectedCoin) {
-      setNetworks([])
+    if (networks.length === 1) {
+      setCoinNetworkId(String(networks[0].id))
+    } else if (networks.length > 1 && !networks.some(i => String(i.id) === String(coinNetworkId))) {
       setCoinNetworkId('')
-      return
-    }
-
-    const group = grouped[selectedCoin]
-    if (group && group.items) {
-      setNetworks(group.items)
-
-      if (group.items.length === 1) {
-        setCoinNetworkId(String(group.items[0].id))
-      } else if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
-        setCoinNetworkId('')
-      }
-    } else {
-      setNetworks([])
+    } else if (networks.length === 0) {
       setCoinNetworkId('')
     }
-  }, [selectedCoin, grouped, coinNetworkId])
+  }, [networks]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function onSubmit(e) {
     e.preventDefault()

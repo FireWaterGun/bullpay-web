@@ -9,6 +9,7 @@ import SweepOverrideTable from '@/components/admin/SweepOverrideTable'
 import SweepOverrideFormModal from '@/components/admin/SweepOverrideFormModal'
 import SweepDeleteModal from '@/components/admin/SweepDeleteModal'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function SweepOverrides() {
   const { t } = useTranslation()
@@ -205,15 +206,7 @@ export default function SweepOverrides() {
   }
 
   if (loadingData) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (

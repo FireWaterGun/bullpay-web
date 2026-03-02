@@ -10,6 +10,7 @@ import { formatDate } from '@/lib/utils/format'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 const ACTION_OPTIONS = [
   { value: 'list_sweeps', label: 'List Sweeps' },
@@ -131,15 +132,7 @@ export default function AuditLogList() {
   }
 
   if (loading && logs.length === 0) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (
@@ -311,7 +304,7 @@ export default function AuditLogList() {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       disabled={!pagination.hasPrev || loading}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      onClick={() => setCurrentPage(p => p - 1)}
                     >
                       <i className="bx bx-chevron-left"></i>
                       Previous
@@ -322,7 +315,7 @@ export default function AuditLogList() {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       disabled={!pagination.hasNext || loading}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      onClick={() => setCurrentPage(p => p + 1)}
                     >
                       Next
                       <i className="bx bx-chevron-right"></i>

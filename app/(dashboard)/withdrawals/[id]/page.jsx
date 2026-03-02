@@ -10,6 +10,7 @@ import { copyToClipboard } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { statusBadgeClass, formatStatusLabel } from '@/components/balance/withdrawalHelpers'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function WithdrawalDetailPage() {
   const params = useParams()
@@ -44,15 +45,7 @@ export default function WithdrawalDetailPage() {
   }
 
   if (loading && !withdrawal) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   if (!withdrawal) {

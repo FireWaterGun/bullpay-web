@@ -13,6 +13,7 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import SweepMetadataCard from '@/components/admin/SweepMetadataCard'
 import SweepTransactionCard, { SweepTimestampsCard } from '@/components/admin/SweepTransactionCard'
 import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function SweepDetail() {
   const { t } = useTranslation()
@@ -67,15 +68,7 @@ export default function SweepDetail() {
   }
 
   if (loading) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   if (!sweep) {

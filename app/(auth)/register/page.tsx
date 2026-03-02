@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Turnstile } from 'react-turnstile'
+import dynamic from 'next/dynamic'
+
+const Turnstile = dynamic(() => import('react-turnstile').then(m => m.Turnstile), { ssr: false })
 import { registerApi } from '@/lib/api/auth'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -52,7 +54,7 @@ export default function RegisterPage() {
     try {
       await registerApi({ ...values, cfToken })
       // Store email in sessionStorage for the complete page
-      sessionStorage.setItem('register_email', values.email)
+      try { sessionStorage.setItem('register_email', values.email) } catch {}
       router.replace('/register-complete')
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {}

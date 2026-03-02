@@ -11,6 +11,7 @@ import PlatformLedgerFilterPanel from '@/components/ledger/PlatformLedgerFilterP
 import PlatformLedgerTable from '@/components/ledger/PlatformLedgerTable'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function PlatformLedgerList() {
   const { t, i18n } = useTranslation()
@@ -125,15 +126,7 @@ export default function PlatformLedgerList() {
   }
 
   if (loading && entries.length === 0) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    )
+    return <PageSpinner />
   }
 
   return (
