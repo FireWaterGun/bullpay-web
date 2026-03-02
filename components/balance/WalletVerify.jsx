@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
@@ -21,9 +21,13 @@ function WalletVerifyContent() {
   const [loading, setLoading] = useState(false)
   const [verified, setVerified] = useState(false)
   const [error, setError] = useState(null)
+  const calledRef = useRef(false)
 
   useEffect(() => {
-    if (verifyToken) handleVerify()
+    if (verifyToken && !calledRef.current) {
+      calledRef.current = true
+      handleVerify()
+    }
   }, [verifyToken])
 
   async function handleVerify() {

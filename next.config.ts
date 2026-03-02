@@ -36,6 +36,16 @@ const nextConfig: NextConfig = {
         destination: '/wallet/verify-address',
         permanent: true,
       },
+      {
+        source: '/verify',
+        destination: '/verify-email',
+        permanent: true,
+      },
+      {
+        source: '/wallets/verify',
+        destination: '/wallet/verify-address',
+        permanent: true,
+      },
     ]
   },
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { verifyEmailApi } from '@/lib/api/auth'
@@ -47,13 +47,12 @@ function VerifyEmailContent() {
     }
   }, [token, email])
 
+  const calledRef = useRef(false)
   useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      if (cancelled) return
-      await runVerify()
-    })()
-    return () => { cancelled = true }
+    if (!calledRef.current) {
+      calledRef.current = true
+      runVerify()
+    }
   }, [runVerify])
 
   const onBack = useCallback(() => {

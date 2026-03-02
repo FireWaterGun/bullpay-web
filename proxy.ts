@@ -10,7 +10,7 @@ const PUBLIC_PATHS = [
   '/login',
   '/register',
   '/forgot',
-  '/verify',
+  '/verify-email',
   '/pay/',
   '/pay-select/',
   '/api-docs',
