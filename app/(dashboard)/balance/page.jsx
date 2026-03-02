@@ -9,6 +9,7 @@ import { getBalancesWithFiat } from '@/lib/api/balance'
 import { formatCoinAmount, formatUsd } from '@/lib/utils/format'
 import CoinImg, { NetworkIcon } from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function BalancePage() {
   const { t } = useTranslation()
@@ -53,9 +54,7 @@ export default function BalancePage() {
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="fw-bold mb-0">{t('balance.title', { defaultValue: 'Balance' })}</h4>
-        <button className="btn btn-icon btn-text-secondary" onClick={loadBalances} disabled={loading}>
-          <i className="bx bx-refresh"></i>
-        </button>
+        <RefreshButton onClick={loadBalances} loading={loading} />
       </div>
 
       {/* Total Value Card */}

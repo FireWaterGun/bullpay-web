@@ -8,6 +8,7 @@ import { getAdminRoles, getAdminRoleStats } from '@/lib/api/admin'
 import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user']
 
@@ -113,9 +114,7 @@ export default function AdminRoles() {
             )}
           </p>
         </div>
-        <button className="btn btn-icon btn-text-secondary" onClick={loadData} disabled={loading}>
-          
-        </button>
+        <RefreshButton onClick={loadData} loading={loading} />
       </div>
 
       {/* Summary Stats */}

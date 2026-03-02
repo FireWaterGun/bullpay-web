@@ -9,6 +9,7 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import AdminPaymentFilters from '@/components/admin/AdminPaymentFilters'
 import AdminPaymentRow from '@/components/admin/AdminPaymentRow'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminPaymentList() {
   const { t, i18n } = useTranslation()
@@ -120,9 +121,7 @@ export default function AdminPaymentList() {
                     {t('admin.payments.description', { defaultValue: 'View all blockchain payment transactions' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadPayments} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadPayments} loading={loading} />
               </div>
             </div>
             <AdminPaymentFilters

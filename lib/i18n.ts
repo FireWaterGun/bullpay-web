@@ -29,4 +29,10 @@ void i18n
     },
   })
 
+// Expose i18next globally so Sneat theme main.js can access it
+// (main.js calls i18next.changeLanguage / i18next.language directly)
+if (typeof window !== 'undefined') {
+  ;(window as unknown as Record<string, unknown>).i18next = i18n
+}
+
 export default i18n

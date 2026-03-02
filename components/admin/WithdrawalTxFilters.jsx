@@ -3,6 +3,7 @@
 import { useTranslation } from 'react-i18next'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import CoinImg from '@/components/CoinImg'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function WithdrawalTxFilters({
   locale,
@@ -39,9 +40,7 @@ export default function WithdrawalTxFilters({
               {t('withdrawal.transactionsDesc', { defaultValue: 'View all withdrawal transactions and their status' })}
             </p>
           </div>
-          <button className="btn btn-icon btn-text-secondary" onClick={onRefresh} disabled={loading}>
-            <i className="bx bx-refresh"></i>
-          </button>
+          <RefreshButton onClick={onRefresh} loading={loading} />
         </div>
       </div>
       <div className="card-body">

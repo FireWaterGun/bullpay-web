@@ -14,6 +14,7 @@ import useSettingsFilters from '@/components/admin/useSettingsFilters'
 import SettingsTable from '@/components/admin/SettingsTable'
 import SettingEditModal from '@/components/admin/SettingEditModal'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminSettings() {
   const { t } = useTranslation()
@@ -228,9 +229,7 @@ export default function AdminSettings() {
                 {t('admin.settings.description', { defaultValue: 'View and manage system configuration settings' })}
               </p>
             </div>
-            <button className="btn btn-icon btn-text-secondary" onClick={() => { loadSettings(); loadCategories() }} disabled={loading}>
-              <i className="bx bx-refresh"></i>
-            </button>
+            <RefreshButton onClick={() => { loadSettings(); loadCategories() }} loading={loading} />
           </div>
         </div>
         <div className="card-body">
@@ -255,7 +254,7 @@ export default function AdminSettings() {
             </div>
           </div>
           <div className="d-flex gap-2 mt-3">
-            <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
+            <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
               <i className="bx bx-filter-alt me-1"></i>
               {t('filter.apply', { defaultValue: 'Apply Filters' })}
             </button>

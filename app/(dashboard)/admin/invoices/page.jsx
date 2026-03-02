@@ -11,6 +11,7 @@ import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminInvoiceList() {
   const { t, i18n } = useTranslation()
@@ -129,9 +130,7 @@ export default function AdminInvoiceList() {
                     {t('admin.invoices.description', { defaultValue: 'View all invoices and their status' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadInvoices} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadInvoices} loading={loading} />
               </div>
             </div>
             <div className="card-body">
@@ -187,7 +186,7 @@ export default function AdminInvoiceList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>

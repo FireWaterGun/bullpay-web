@@ -19,6 +19,7 @@ import PermissionActionModal from '@/components/admin/PermissionActionModal'
 import ResetOverridesModal from '@/components/admin/ResetOverridesModal'
 import PermissionGroupCard, { groupPermissions } from '@/components/admin/PermissionGroupCard'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function RolePermissions() {
   const { token } = useAuth()
@@ -283,9 +284,7 @@ export default function RolePermissions() {
               <i className="bx bx-reset me-1"></i>Reset All
             </button>
           )}
-          <button className="btn btn-icon btn-text-secondary" onClick={loadData} disabled={loading}>
-            <i className="bx bx-refresh"></i>
-          </button>
+          <RefreshButton onClick={loadData} loading={loading} />
         </div>
       </div>
 

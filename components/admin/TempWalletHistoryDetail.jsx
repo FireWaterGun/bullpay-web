@@ -10,6 +10,7 @@ import { getTempWalletHistory } from '@/lib/api/admin'
 import { formatDate } from '@/lib/utils/format'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 function statusBadgeClass(s) {
   const v = String(s || '').toLowerCase()
@@ -103,9 +104,7 @@ export default function TempWalletHistoryDetail() {
                     )}
                   </div>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadHistory} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadHistory} loading={loading} />
               </div>
             </div>
           </div>

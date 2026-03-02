@@ -30,14 +30,22 @@ interface AuthUser {
   [key: string]: unknown
 }
 
+export interface NavigationItem {
+  key: string
+  label: string
+  path: string
+  icon?: string
+  children?: NavigationItem[]
+}
+
+export interface NavigationSection {
+  section: string
+  items: NavigationItem[]
+}
+
 interface Navigation {
   role: string
-  menus: Array<{
-    key: string
-    label: string
-    icon?: string
-    children?: Array<{ key: string; label: string }>
-  }>
+  menus: NavigationSection[]
   permissions: string[]
 }
 
@@ -154,8 +162,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!navigation) return false
       if (navigation.role === 'super_admin') return true
       return navigation.menus?.some(
-        (m) =>
-          m.key === key || m.children?.some((c) => c.key === key)
+        (section) =>
+          section.items?.some(
+            (m) =>
+              m.key === key || m.children?.some((c) => c.key === key)
+          )
       ) ?? false
     },
     [navigation]

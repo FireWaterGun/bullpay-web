@@ -11,6 +11,7 @@ import { formatDate } from '@/lib/utils/format'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 function statusBadgeClass(s) {
   const v = String(s || '').toLowerCase()
@@ -68,7 +69,7 @@ export default function TempWalletDetail() {
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">Temp wallet not found</p>
-          <button className="btn btn-icon btn-text-secondary" onClick={() => router.back()}>Back</button>
+          <button className="btn btn-text-secondary" onClick={() => router.back()}>Back</button>
         </div>
       </div>
     )
@@ -117,9 +118,7 @@ export default function TempWalletDetail() {
                     <i className="bx bx-history me-1"></i>
                     View Histories
                   </Link>
-                  <button className="btn btn-icon btn-text-secondary" onClick={loadWallet} disabled={loading}>
-                    <i className="bx bx-refresh"></i>
-                  </button>
+                  <RefreshButton onClick={loadWallet} loading={loading} />
                 </div>
               </div>
             </div>

@@ -2,6 +2,7 @@
 
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
+import RefreshButton from '@/components/RefreshButton'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0'
@@ -26,9 +27,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               {wallet?.networkName || ''} &middot; {wallet?.purpose || ''} &middot; {wallet?.walletType || ''}
             </p>
           </div>
-          <button className="btn btn-icon btn-text-secondary" onClick={onRefresh} disabled={loading}>
-            <i className="bx bx-refresh"></i>
-          </button>
+          <RefreshButton onClick={onRefresh} loading={loading} />
         </div>
       </div>
       <div className="card-body">

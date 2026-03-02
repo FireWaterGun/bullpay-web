@@ -9,6 +9,7 @@ import { getWebhookLogs } from '@/lib/api/merchantWebhookLogs'
 import { formatDate } from '@/lib/utils/format'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 const EVENT_OPTIONS = [
   { value: 'payment.completed', label: 'Completed' },
@@ -152,9 +153,7 @@ export default function MerchantWebhookLogList() {
                   </h4>
                   <p className="text-muted mb-0">View and monitor webhook delivery attempts to merchants</p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadLogs} disabled={loading}>
-                  
-                </button>
+                <RefreshButton onClick={loadLogs} loading={loading} />
               </div>
             </div>
 
@@ -230,7 +229,7 @@ export default function MerchantWebhookLogList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>

@@ -17,6 +17,7 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { formatDate } from '@/lib/utils/format'
 import AddressActionModal from '@/components/balance/AddressActionModal'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 function AddressAuditLogTable({ auditLogs }) {
   if (!auditLogs || auditLogs.length === 0) return null
@@ -228,9 +229,7 @@ export default function WithdrawalAddressDetail() {
                   </div>
                 </div>
                 <div className="d-flex gap-2 flex-wrap">
-                  <button className="btn btn-icon btn-text-secondary" onClick={loadAddress} disabled={loading}>
-                    <i className="bx bx-refresh"></i>
-                  </button>
+                  <RefreshButton onClick={loadAddress} loading={loading} />
                 </div>
               </div>
             </div>

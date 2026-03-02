@@ -10,6 +10,7 @@ import { listCoins } from '@/lib/api/coins'
 import SystemLedgerFilters from '@/components/ledger/SystemLedgerFilters'
 import SystemLedgerTable from '@/components/ledger/SystemLedgerTable'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function SystemLedgerList() {
   const { t, i18n } = useTranslation()
@@ -151,9 +152,7 @@ export default function SystemLedgerList() {
                     {t('admin.ledger.systemLedgerDesc', { defaultValue: 'View all system ledger entries' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadEntries} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadEntries} loading={loading} />
               </div>
             </div>
             <div className="card-body">

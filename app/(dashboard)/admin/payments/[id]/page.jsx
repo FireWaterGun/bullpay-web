@@ -11,6 +11,7 @@ import { formatAmount, formatDate } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminPaymentDetail() {
   const { t } = useTranslation()
@@ -106,9 +107,7 @@ export default function AdminPaymentDetail() {
                     </div>
                   </div>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadPayment} disabled={loading}>
-                  
-                </button>
+                <RefreshButton onClick={loadPayment} loading={loading} />
               </div>
             </div>
           </div>

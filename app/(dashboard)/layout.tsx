@@ -1,13 +1,13 @@
 'use client'
 
-import Link from 'next/link'
 import { useAuth } from '@/app/providers'
+import type { NavigationItem, NavigationSection } from '@/app/providers'
 import { useRouter } from 'next/navigation'
-import { Suspense, useEffect, useState, type ReactNode } from 'react'
+import React, { Suspense, useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { THEME_STORAGE_KEY, LANG_STORAGE_KEY } from '@/lib/constants'
 import { initAudioContext } from '@/lib/utils/notification'
-import { MenuItem, SubItem, MenuGroup } from '@/components/dashboard/SidebarMenu'
+import { SectionHeader, MenuItem, SubItem, MenuGroup } from '@/components/dashboard/SidebarMenu'
 import NavbarContent from '@/components/dashboard/NavbarContent'
 import useDashboardData from '@/hooks/useDashboardData'
 import '@/components/dashboard/notification-badge.css'
@@ -138,87 +138,51 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }
 
   const renderMenus = () => {
-    const menus = navigation?.menus || []
-    if (!menus.length) return null
+    const sections = navigation?.menus || []
+    if (!sections.length) return null
 
-    if (isAdmin) {
-      const iconMap: Record<string, string> = {
-        'admin-dashboard': 'bx-bar-chart-alt-2',
-        'admin-reporting': 'bx-book',
-        'admin-user-management': 'bx-group',
-        'admin-financial': 'bx-receipt',
-        'admin-assets': 'bx-coin-stack',
-        'admin-operations': 'bx-transfer',
-        'admin-system': 'bx-cog',
-      }
-      const badgeMap: Record<string, number | undefined> = {
-        'admin-financial': pendingWithdrawalCount,
-        'admin-operations': pendingWithdrawalCount,
-      }
-      const childBadgeMap: Record<string, number | undefined> = {
-        '/admin/withdrawals': pendingWithdrawalCount,
-      }
-
-      return menus.map((group: any) => {
-        const children = group.children || []
-        const icon = iconMap[group.key] || 'bx-menu'
-        const badge = badgeMap[group.key]
-        const childPaths = children.map((c: any) => c.path)
-
-        if (!children.length) {
-          return <MenuItem key={group.key} to={group.path} end icon={icon} label={group.label} />
-        }
-
-        return (
-          <MenuGroup
-            key={group.key}
-            base={group.path}
-            icon={icon}
-            label={group.label}
-            matchPaths={[...new Set([group.path, ...childPaths])]}
-            badge={badge}
-          >
-            {children.map((child: any) => (
-              <SubItem key={child.key} to={child.path} end label={child.label} badge={childBadgeMap[child.path]} />
-            ))}
-          </MenuGroup>
-        )
-      })
-    } else {
-      const iconMap: Record<string, string> = {
-        'dashboard': 'bx-home',
-        'wallet': 'bx-wallet',
-        'invoices': 'bx-file',
-        'transactions': 'bx-transfer',
-        'settings': 'bx-cog',
-        'ledger': 'bx-book-content',
-        'merchant': 'bx-store',
-      }
-
-      return menus.map((group: any) => {
-        const children = group.children || []
-        const icon = iconMap[group.key] || 'bx-menu'
-        const childPaths = children.map((c: any) => c.path)
-
-        if (!children.length) {
-          return <MenuItem key={group.key} to={group.path} end icon={icon} label={group.label} />
-        }
-
-        return (
-          <MenuGroup
-            key={group.key}
-            base={group.path}
-            icon={icon}
-            label={group.label}
-            matchPaths={[...new Set([group.path, ...childPaths])]}
-          >
-            {children.map((child: any) => (
-              <SubItem key={child.key} to={child.path} end label={child.label} />
-            ))}
-          </MenuGroup>
-        )
-      })
+    const badgeMap: Record<string, number | undefined> = {
+      'admin-operations': pendingWithdrawalCount,
     }
+    const childBadgeMap: Record<string, number | undefined> = {
+      '/admin/withdrawals': pendingWithdrawalCount,
+    }
+
+    return sections.map((section: NavigationSection) => {
+      const items = section.items || []
+      if (!items.length) return null
+
+      return (
+        <React.Fragment key={section.section}>
+          <SectionHeader label={section.section} />
+          {items.map((item: NavigationItem) => {
+            const children = item.children || []
+            const icon = item.icon || 'bx-menu'
+            const badge = badgeMap[item.key]
+            const childPaths = children.map((c: NavigationItem) => c.path)
+
+            if (!children.length) {
+              return <MenuItem key={item.key} to={item.path} end icon={icon} label={item.label} />
+            }
+
+            return (
+              <MenuGroup
+                key={item.key}
+                base={item.path}
+                icon={icon}
+                label={item.label}
+                matchPaths={[...new Set([item.path, ...childPaths])]}
+                badge={badge}
+              >
+                {children.map((child: NavigationItem) => (
+                  <SubItem key={child.key} to={child.path} end label={child.label} badge={childBadgeMap[child.path]} />
+                ))}
+              </MenuGroup>
+            )
+          })}
+        </React.Fragment>
+      )
+    })
   }
 
   return (

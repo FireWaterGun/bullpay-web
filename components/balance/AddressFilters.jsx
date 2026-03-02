@@ -1,6 +1,7 @@
 'use client'
 
 import CoinImg from '@/components/CoinImg'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AddressFilters({
   statusFilter,
@@ -33,9 +34,7 @@ export default function AddressFilters({
               {t('withdrawal.walletAddressesDesc', { defaultValue: 'Manage user withdrawal wallet addresses' })}
             </p>
           </div>
-          <button className="btn btn-icon btn-text-secondary" onClick={onRefresh} disabled={loading}>
-            <i className="bx bx-refresh"></i>
-          </button>
+          <RefreshButton onClick={onRefresh} loading={loading} />
         </div>
       </div>
       <div className="card-body">

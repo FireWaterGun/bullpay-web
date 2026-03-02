@@ -2,13 +2,19 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
+
+export function SectionHeader({ label }: { label: string }) {
+  return (
+    <li className="menu-header small text-uppercase">
+      <span className="menu-header-text">{label}</span>
+    </li>
+  )
+}
 
 export function MenuItem({ to, icon, label, end }: { to: string; icon: string; label: string; end?: boolean }) {
   const pathname = usePathname()
-  const exactMatch = end ? pathname === to : pathname === to
-  const isDetailMatch = pathname.startsWith(to + '/')
-  const isActive = exactMatch || isDetailMatch
+  const isActive = end ? pathname === to : (pathname === to || pathname.startsWith(to + '/'))
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
       <Link href={to} className="menu-link">
@@ -21,9 +27,7 @@ export function MenuItem({ to, icon, label, end }: { to: string; icon: string; l
 
 export function SubItem({ to, label, end, badge }: { to: string; label: string; end?: boolean; badge?: number }) {
   const pathname = usePathname()
-  const exactMatch = end ? pathname === to : pathname === to
-  const isDetailMatch = pathname.startsWith(to + '/')
-  const isActive = exactMatch || isDetailMatch
+  const isActive = end ? pathname === to : (pathname === to || pathname.startsWith(to + '/'))
   return (
     <li className={`menu-item ${isActive ? 'active' : ''}`}>
       <Link href={to} className="menu-link" style={{ position: 'relative' }}>
@@ -43,25 +47,41 @@ export function SubMenuGroup({ base, label, children }: { base: string; label: s
   const match = pathname.startsWith(base)
   const [open, setOpen] = useState(match)
   const isActive = match
-  const toggle = (e: React.MouseEvent) => { e.preventDefault(); setOpen((v) => !v) }
+  const userToggled = useRef(false)
   const subRef = useRef<HTMLUListElement>(null)
+  const submenuId = `sub-${label.replace(/\s+/g, '-').toLowerCase()}`
+
+  const toggle = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
+    userToggled.current = true
+    setOpen((v) => !v)
+  }, [])
 
   useEffect(() => {
-    setOpen(match)
+    if (match) {
+      setOpen(true)
+      userToggled.current = false
+    } else if (!userToggled.current) {
+      setOpen(false)
+    }
   }, [match])
 
   useEffect(() => {
     const sub = subRef.current
     if (!sub) return
+    sub.style.overflow = 'hidden'
+    sub.style.transition = 'max-height 0.3s ease-in-out'
     sub.style.maxHeight = open ? '2000px' : '0px'
   }, [open])
 
   return (
     <li className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`}>
-      <a href="#" onClick={toggle} className="menu-link menu-toggle">
+      <a href="#" onClick={toggle} className="menu-link menu-toggle" aria-expanded={open} aria-controls={submenuId}>
         <div>{label}</div>
       </a>
-      <ul className="menu-sub" ref={subRef} style={{
+      <ul id={submenuId} className="menu-sub" ref={subRef} style={{
         maxHeight: open ? '2000px' : '0px',
         overflow: 'hidden',
         transition: 'max-height 0.3s ease-in-out'
@@ -107,18 +127,39 @@ export function MenuGroup({ base, icon, label, children, matchPaths, badge }: {
 }) {
   const pathname = usePathname()
 
-  const isMatched = matchPaths
-    ? matchPaths.some(path => pathname.startsWith(path))
-    : pathname.startsWith(base) && pathname !== base
+  const isMatched = useMemo(() => {
+    if (matchPaths) return matchPaths.some(path => pathname.startsWith(path))
+    return pathname.startsWith(base) && pathname !== base
+  }, [matchPaths, pathname, base])
 
   const [open, setOpen] = useState(isMatched)
   const isActive = isMatched
-  const toggle = (e: React.MouseEvent) => { e.preventDefault(); setOpen((v) => !v) }
-  const isCollapsed = typeof document !== 'undefined' && document.documentElement.classList.contains('layout-menu-collapsed')
-  const handleEnter = () => { if (isCollapsed) setOpen(true) }
-  const handleLeave = () => { if (isCollapsed) setOpen(false) }
+  const userToggled = useRef(false)
+  const submenuId = `menu-${label.replace(/\s+/g, '-').toLowerCase()}`
 
-  useEffect(() => { if (!isCollapsed) setOpen(isMatched) }, [isMatched, isCollapsed])
+  const getIsCollapsed = useCallback(() => {
+    return typeof document !== 'undefined' && document.documentElement.classList.contains('layout-menu-collapsed')
+  }, [])
+
+  const toggle = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
+    userToggled.current = true
+    setOpen((v) => !v)
+  }, [])
+  const handleEnter = useCallback(() => { if (getIsCollapsed()) setOpen(true) }, [getIsCollapsed])
+  const handleLeave = useCallback(() => { if (getIsCollapsed()) setOpen(false) }, [getIsCollapsed])
+
+  // Auto-open when navigating into this group; only auto-close if user hasn't manually toggled
+  useEffect(() => {
+    if (isMatched) {
+      setOpen(true)
+      userToggled.current = false
+    } else if (!userToggled.current && !getIsCollapsed()) {
+      setOpen(false)
+    }
+  }, [isMatched, getIsCollapsed])
 
   const subRef = useRef<HTMLUListElement>(null)
   const liRef = useRef<HTMLLIElement>(null)
@@ -164,7 +205,7 @@ export function MenuGroup({ base, icon, label, children, matchPaths, badge }: {
 
   return (
     <li ref={liRef} className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-      <a href="#" className="menu-link menu-toggle" onClick={(e) => { e.preventDefault(); toggle(e) }} aria-expanded={open} aria-controls={`${label}-submenu`}>
+      <a href="#" className="menu-link menu-toggle" onClick={toggle} aria-expanded={open} aria-controls={submenuId}>
         <i className={`menu-icon bx ${icon}`}></i>
         <div data-i18n={label}>{label}</div>
         {!!badge && badge > 0 && (
@@ -173,7 +214,7 @@ export function MenuGroup({ base, icon, label, children, matchPaths, badge }: {
           </span>
         )}
       </a>
-      <ul id={`${label}-submenu`} className="menu-sub" ref={subRef} style={{ maxHeight: open ? '3000px' : 0, overflow: 'hidden' }}>
+      <ul id={submenuId} className="menu-sub" ref={subRef} style={{ maxHeight: open ? '3000px' : 0, overflow: 'hidden' }}>
         {children}
       </ul>
     </li>

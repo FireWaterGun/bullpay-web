@@ -9,6 +9,7 @@ import { useToast } from '@/app/providers'
 import { getWebhookLog, retryWebhook } from '@/lib/api/merchantWebhookLogs'
 import { formatDate } from '@/lib/utils/format'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 const EVENT_OPTIONS = [
   { value: 'payment.completed', label: 'Completed' },
@@ -169,9 +170,7 @@ export default function MerchantWebhookLogDetail() {
                       )}
                     </button>
                   )}
-                  <button className="btn btn-icon btn-text-secondary" onClick={loadLog} disabled={loading}>
-                    
-                  </button>
+                  <RefreshButton onClick={loadLog} loading={loading} />
                 </div>
               </div>
             </div>

@@ -9,6 +9,7 @@ import { getUserBalances, getUserBalancesSummary } from '@/lib/api/admin'
 import { formatDate } from '@/lib/utils/format'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 const SORT_BY_OPTIONS = [
   { value: 'totalValueUsd', label: 'Total Value (USD)' },
@@ -141,9 +142,7 @@ export default function UserBalanceListPage() {
                     {t('admin.userBalances.description', { defaultValue: 'Overview of all user balances across the platform' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={() => { loadUsers(); loadSummary() }} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={() => { loadUsers(); loadSummary() }} loading={loading} />
               </div>
             </div>
           </div>
@@ -183,7 +182,7 @@ export default function UserBalanceListPage() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>

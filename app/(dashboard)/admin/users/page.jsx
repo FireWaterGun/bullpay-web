@@ -18,6 +18,7 @@ import UserListTable from '@/components/admin/UserListTable'
 import UserActionModal from '@/components/admin/UserActionModal'
 import { STATUS_OPTIONS, ROLE_OPTIONS } from '@/components/admin/userListHelpers'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminUsersPage() {
   const { t, i18n } = useTranslation()
@@ -230,9 +231,7 @@ export default function AdminUsersPage() {
                     {t('admin.users.description', { defaultValue: 'Manage users, roles, and access' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadUsers} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadUsers} loading={loading} />
               </div>
             </div>
           </div>
@@ -293,7 +292,7 @@ export default function AdminUsersPage() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>

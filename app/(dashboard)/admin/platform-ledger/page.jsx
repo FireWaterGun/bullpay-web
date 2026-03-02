@@ -10,6 +10,7 @@ import { listCoins } from '@/lib/api/coins'
 import PlatformLedgerFilterPanel from '@/components/ledger/PlatformLedgerFilterPanel'
 import PlatformLedgerTable from '@/components/ledger/PlatformLedgerTable'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function PlatformLedgerList() {
   const { t, i18n } = useTranslation()
@@ -151,9 +152,7 @@ export default function PlatformLedgerList() {
                     {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadEntries} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadEntries} loading={loading} />
               </div>
             </div>
             <PlatformLedgerFilterPanel

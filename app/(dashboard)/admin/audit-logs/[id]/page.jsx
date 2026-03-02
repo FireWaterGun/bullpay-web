@@ -9,6 +9,7 @@ import { useToast } from '@/app/providers'
 import { getAuditLog } from '@/lib/api/auditLogs'
 import { formatDate } from '@/lib/utils/format'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AuditLogDetail() {
   const { t } = useTranslation()
@@ -124,9 +125,7 @@ export default function AuditLogDetail() {
                     </div>
                   </div>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadLog} disabled={loading}>
-                  
-                </button>
+                <RefreshButton onClick={loadLog} loading={loading} />
               </div>
             </div>
           </div>

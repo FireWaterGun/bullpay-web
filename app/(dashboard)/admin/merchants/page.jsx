@@ -9,6 +9,7 @@ import { formatCommission, formatDate } from '@/lib/utils/format'
 import { STATUS_OPTIONS, statusBadgeClass } from '@/components/admin/merchantListHelpers'
 import MerchantConfirmModal from '@/components/admin/MerchantConfirmModal'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminMerchantsPage() {
   const { t } = useTranslation()
@@ -115,9 +116,7 @@ export default function AdminMerchantsPage() {
                   <h4 className="mb-1"><i className="bx bx-store me-2"></i>{t('admin.merchants.title', { defaultValue: 'Merchants' })}</h4>
                   <p className="text-muted mb-0">{t('admin.merchants.description', { defaultValue: 'Manage merchant accounts and status' })}</p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadMerchants} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadMerchants} loading={loading} />
               </div>
             </div>
           </div>
@@ -134,7 +133,7 @@ export default function AdminMerchantsPage() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}><i className="bx bx-filter-alt me-1"></i>{t('filter.apply', { defaultValue: 'Apply Filters' })}</button>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}><i className="bx bx-filter-alt me-1"></i>{t('filter.apply', { defaultValue: 'Apply Filters' })}</button>
                 <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}><i className="bx bx-reset me-1"></i>{t('filter.reset', { defaultValue: 'Reset' })}</button>
               </div>
             </div>

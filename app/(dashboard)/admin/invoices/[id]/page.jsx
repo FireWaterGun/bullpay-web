@@ -13,6 +13,7 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { statusBadgeClass } from '@/components/admin/adminInvoiceHelpers'
 import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTable'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminInvoiceDetail() {
   const { t } = useTranslation()
@@ -103,9 +104,7 @@ export default function AdminInvoiceDetail() {
                     </div>
                   </div>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadInvoice} disabled={loading}>
-                  
-                </button>
+                <RefreshButton onClick={loadInvoice} loading={loading} />
               </div>
             </div>
           </div>

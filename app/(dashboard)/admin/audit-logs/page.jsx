@@ -9,6 +9,7 @@ import { getAuditLogs } from '@/lib/api/auditLogs'
 import { formatDate } from '@/lib/utils/format'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 const ACTION_OPTIONS = [
   { value: 'list_sweeps', label: 'List Sweeps' },
@@ -156,9 +157,7 @@ export default function AuditLogList() {
                   </h4>
                   <p className="text-muted mb-0">Track admin actions and system events</p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadLogs} disabled={loading}>
-                  
-                </button>
+                <RefreshButton onClick={loadLogs} loading={loading} />
               </div>
             </div>
 
@@ -235,7 +234,7 @@ export default function AuditLogList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>

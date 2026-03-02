@@ -10,6 +10,7 @@ import { formatDate } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function UserBalanceDetailPage() {
   const { t } = useTranslation()
@@ -53,7 +54,7 @@ export default function UserBalanceDetailPage() {
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">User balance not found</p>
-          <button className="btn btn-icon btn-text-secondary" onClick={() => router.back()}>Back</button>
+          <button className="btn btn-text-secondary" onClick={() => router.back()}>Back</button>
         </div>
       </div>
     )
@@ -83,9 +84,7 @@ export default function UserBalanceDetailPage() {
                     </span>
                   )}
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadDetail} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadDetail} loading={loading} />
               </div>
             </div>
           </div>

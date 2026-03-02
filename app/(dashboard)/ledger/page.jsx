@@ -9,6 +9,7 @@ import { listCoins } from '@/lib/api/coins'
 import MyLedgerFilterPanel from '@/components/ledger/MyLedgerFilterPanel'
 import MyLedgerTable from '@/components/ledger/MyLedgerTable'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 function getDateRange(preset) {
   const now = new Date()
@@ -174,9 +175,7 @@ function MyLedgerListContent() {
                     {t('userLedger.description', { defaultValue: 'View your ledger entries and transaction history' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadEntries} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadEntries} loading={loading} />
               </div>
             </div>
             <MyLedgerFilterPanel

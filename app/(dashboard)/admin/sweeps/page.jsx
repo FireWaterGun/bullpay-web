@@ -13,6 +13,7 @@ import { listCoins } from '@/lib/api/coins'
 import SweepTransactionFilters from '@/components/admin/SweepTransactionFilters'
 import SweepTransactionTable from '@/components/admin/SweepTransactionTable'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function SweepTransactions() {
   const { t, i18n } = useTranslation()
@@ -211,9 +212,7 @@ export default function SweepTransactions() {
                     {t('admin.sweep.transactionsDesc', { defaultValue: 'View all sweep transactions and their status' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadSweeps} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadSweeps} loading={loading} />
               </div>
             </div>
             <SweepTransactionFilters

@@ -10,6 +10,7 @@ import { listCoins } from '@/lib/api/coins'
 import UserLedgerFilters from '@/components/ledger/UserLedgerFilters'
 import UserLedgerRow from '@/components/ledger/UserLedgerRow'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function UserLedgerList() {
   const { t, i18n } = useTranslation()
@@ -154,9 +155,7 @@ export default function UserLedgerList() {
                     {t('admin.ledger.userLedgerDesc', { defaultValue: 'View all user ledger entries' })}
                   </p>
                 </div>
-                <button className="btn btn-icon btn-text-secondary" onClick={loadEntries} disabled={loading}>
-                  <i className="bx bx-refresh"></i>
-                </button>
+                <RefreshButton onClick={loadEntries} loading={loading} />
               </div>
             </div>
             <UserLedgerFilters

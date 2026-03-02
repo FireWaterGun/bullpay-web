@@ -12,6 +12,7 @@ import { formatDate } from '@/lib/utils/format'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
 
 const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
 const SORT_BY_OPTIONS = [
@@ -164,9 +165,7 @@ export default function TempWalletList() {
                     <i className="bx bx-history me-1"></i>
                     {t('admin.tempWallets.usageHistories', { defaultValue: 'Usage Histories' })}
                   </Link>
-                  <button className="btn btn-icon btn-text-secondary" onClick={loadWallets} disabled={loading}>
-                    <i className="bx bx-refresh"></i>
-                  </button>
+                  <RefreshButton onClick={loadWallets} loading={loading} />
                 </div>
               </div>
             </div>
@@ -255,7 +254,7 @@ export default function TempWalletList() {
                 </div>
               </div>
               <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-icon btn-text-secondary" onClick={applyFilters} disabled={loading}>
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt me-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
