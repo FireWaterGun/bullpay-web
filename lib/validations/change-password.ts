@@ -23,6 +23,7 @@ export const changePasswordSchema = z
       .max(128, 'Password must be at most 128 characters'),
     newPassword: newPasswordSchema,
     newPasswordConfirmation: z.string().min(1, 'Please confirm your new password'),
+    totpCode: z.string().max(20).optional(),
   })
   .refine((data) => data.newPassword === data.newPasswordConfirmation, {
     message: 'Passwords do not match',

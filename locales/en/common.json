@@ -278,6 +278,9 @@
       "backupCodesDescription": "If you lose access to your authenticator app, you can use these codes to sign in. Each code can only be used once.",
       "enterCode": "Enter the 6-digit code from your authenticator app to verify setup",
       "enterPassword": "Enter your password to confirm",
+      "enterDisableCode": "Enter your 2FA code or backup code",
+      "codePlaceholder": "6-digit code or backup code",
+      "errorCodeRequired": "2FA code is required",
       "errorInvalidCode": "Please enter a valid 6-digit code",
       "errorPasswordRequired": "Password is required",
       "failedSetup": "Failed to setup 2FA",
@@ -299,7 +302,10 @@
       "changing": "Changing...",
       "changeSuccess": "Password changed successfully. Please log in again.",
       "changeFailed": "Failed to change password. Please try again.",
-      "incorrectCurrent": "Current password is incorrect"
+      "incorrectCurrent": "Current password is incorrect",
+      "totpLabel": "2FA Verification Code",
+      "totpHint": "Enter the code from your authenticator app or a backup code.",
+      "totpRequired": "Please enter your 2FA code"
     }
   },
   "2fa": {

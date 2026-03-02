@@ -278,6 +278,9 @@
       "backupCodesDescription": "如果您无法访问验证器应用，可以使用这些代码登录。每个代码只能使用一次。",
       "enterCode": "输入验证器应用中的6位数代码以验证设置",
       "enterPassword": "输入您的密码以确认",
+      "enterDisableCode": "输入您的 2FA 代码或备份代码",
+      "codePlaceholder": "6位代码或备份代码",
+      "errorCodeRequired": "请输入 2FA 代码",
       "errorInvalidCode": "请输入有效的6位数代码",
       "errorPasswordRequired": "请输入密码",
       "failedSetup": "设置2FA失败",
@@ -299,7 +302,10 @@
       "changing": "正在修改...",
       "changeSuccess": "密码修改成功，请重新登录。",
       "changeFailed": "密码修改失败，请重试。",
-      "incorrectCurrent": "当前密码不正确"
+      "incorrectCurrent": "当前密码不正确",
+      "totpLabel": "双重验证码",
+      "totpHint": "输入验证器应用中的验证码或备份代码。",
+      "totpRequired": "请输入您的双重验证码"
     }
   },
   "2fa": {

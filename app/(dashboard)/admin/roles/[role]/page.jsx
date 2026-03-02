@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
@@ -24,8 +24,9 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function RolePermissions() {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const toast = useToast()
+  const router = useRouter()
   const { role } = useParams()
   const { t } = useAdminTranslation()
 
@@ -48,8 +49,12 @@ export default function RolePermissions() {
   const level = ROLE_LEVEL[role] || 0
   const description = ROLE_DESCRIPTION[role] || ''
 
+  // Block access if requester's level is lower than the target role
+  const myLevel = ROLE_LEVEL[user?.role] || 0
+  const accessDenied = level > myLevel
+
   useEffect(() => {
-    loadData()
+    if (!accessDenied) loadData()
   }, [role])
 
   async function loadData() {
@@ -235,6 +240,23 @@ export default function RolePermissions() {
 
   if (loading) {
     return <PageSpinner />
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="container-xxl flex-grow-1 container-p-y">
+        <div className="card">
+          <div className="card-body text-center py-5">
+            <i className="bx bx-lock-alt text-danger" style={{ fontSize: '3rem' }}></i>
+            <h5 className="mt-3">{t('admin.roles.accessDenied', { defaultValue: 'Access Denied' })}</h5>
+            <p className="text-muted">{t('admin.roles.cannotViewHigherRole', { defaultValue: 'You do not have permission to view this role.' })}</p>
+            <button className="btn btn-primary" onClick={() => router.push('/admin/roles')}>
+              <i className="bx bx-arrow-back me-1"></i>{t('admin.roles.backToRoles', { defaultValue: 'Back to Roles' })}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

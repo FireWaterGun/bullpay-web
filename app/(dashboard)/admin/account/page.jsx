@@ -61,17 +61,22 @@ export default function AdminAccountPage() {
       currentPassword: '',
       newPassword: '',
       newPasswordConfirmation: '',
+      totpCode: '',
     },
   })
 
   const onChangePassword = async (formData) => {
     setChangingPassword(true)
     try {
-      await changePasswordApi(token, {
+      const payload = {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,
         newPasswordConfirmation: formData.newPasswordConfirmation,
-      })
+      }
+      if (is2FAEnabled && formData.totpCode) {
+        payload.totpCode = formData.totpCode
+      }
+      await changePasswordApi(token, payload)
 
       toast.success(
         t('admin.account.changeSuccess', {
@@ -82,7 +87,14 @@ export default function AdminAccountPage() {
       setTimeout(() => logout(), 1500)
     } catch (err) {
       const errorMsg = err?.message || err?.details || 'Password change failed'
-      if (errorMsg.toLowerCase().includes('current password')) {
+      const errorCode = err?.code || ''
+      if (errorCode === 'TWO_FACTOR_REQUIRED') {
+        setFormError('totpCode', {
+          message: t('admin.account.totpRequired', { defaultValue: 'Please enter your 2FA code' }),
+        })
+      } else if (errorMsg.toLowerCase().includes('invalid code') || errorMsg.toLowerCase().includes('too many attempts')) {
+        setFormError('totpCode', { message: errorMsg })
+      } else if (errorMsg.toLowerCase().includes('current password')) {
         setFormError('currentPassword', {
           message: t('admin.account.incorrectCurrent', { defaultValue: 'Current password is incorrect' }),
         })
@@ -211,6 +223,34 @@ export default function AdminAccountPage() {
                     <div className="invalid-feedback d-block">{errors.newPasswordConfirmation.message}</div>
                   )}
                 </div>
+
+                {/* 2FA Code (only if 2FA is enabled) */}
+                {is2FAEnabled && (
+                  <div className="mb-4">
+                    <label className="form-label" htmlFor="totpCode">
+                      <i className="bx bx-shield-quarter me-1 text-warning"></i>
+                      {t('admin.account.totpLabel', { defaultValue: '2FA Verification Code' })}
+                    </label>
+                    <input
+                      type="text"
+                      id="totpCode"
+                      className={`form-control ${errors.totpCode ? 'is-invalid' : ''}`}
+                      placeholder="000000"
+                      inputMode="numeric"
+                      maxLength={20}
+                      autoComplete="one-time-code"
+                      {...register('totpCode')}
+                    />
+                    {errors.totpCode && (
+                      <div className="invalid-feedback d-block">{errors.totpCode.message}</div>
+                    )}
+                    <div className="form-text">
+                      {t('admin.account.totpHint', {
+                        defaultValue: 'Enter the code from your authenticator app or a backup code.',
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Submit */}
                 <button

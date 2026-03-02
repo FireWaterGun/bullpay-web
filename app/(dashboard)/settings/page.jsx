@@ -40,6 +40,7 @@ export default function SettingsPage() {
       currentPassword: '',
       newPassword: '',
       newPasswordConfirmation: '',
+      totpCode: '',
     },
   })
 
@@ -65,11 +66,16 @@ export default function SettingsPage() {
   const onChangePassword = async (formData) => {
     setChangingPassword(true)
     try {
-      await changePasswordApi(token, {
+      const payload = {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,
         newPasswordConfirmation: formData.newPasswordConfirmation,
-      })
+      }
+      // Include TOTP code if 2FA is enabled and user provided one
+      if (is2FAEnabled && formData.totpCode) {
+        payload.totpCode = formData.totpCode
+      }
+      await changePasswordApi(token, payload)
 
       toast.success(
         t('settings.password.changeSuccess', {
@@ -81,8 +87,15 @@ export default function SettingsPage() {
       setTimeout(() => logout(), 1500)
     } catch (err) {
       const errorMsg = err?.message || err?.details || 'Password change failed'
-      // Map known API errors to form fields
-      if (errorMsg.toLowerCase().includes('current password')) {
+      const errorCode = err?.code || ''
+      // Handle 2FA required error (in case status wasn't loaded correctly)
+      if (errorCode === 'TWO_FACTOR_REQUIRED') {
+        setFormError('totpCode', {
+          message: t('settings.password.totpRequired', { defaultValue: 'Please enter your 2FA code' }),
+        })
+      } else if (errorMsg.toLowerCase().includes('invalid code') || errorMsg.toLowerCase().includes('too many attempts')) {
+        setFormError('totpCode', { message: errorMsg })
+      } else if (errorMsg.toLowerCase().includes('current password')) {
         setFormError('currentPassword', { message: t('settings.password.incorrectCurrent', { defaultValue: 'Current password is incorrect' }) })
       } else {
         logger.error('Failed to change password:', err)
@@ -109,97 +122,8 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Security Section */}
-        <div className="card mb-4">
-          <div className="card-header">
-            <h6 className="mb-0">
-              {t('settings.security.title', { defaultValue: 'Security' })}
-            </h6>
-          </div>
-          <div className="card-body">
-            {/* 2FA Row */}
-            <div className="d-flex align-items-start justify-content-between">
-              <div className="d-flex align-items-start">
-                <div
-                  className="rounded-circle d-flex align-items-center justify-content-center me-3 bg-label-primary"
-                  style={{ width: 48, height: 48 }}
-                >
-                  <i className="bx bx-lock-alt fs-4 text-primary"></i>
-                </div>
-                <div>
-                  <h6 className="mb-1">{t('settings.2fa.title', { defaultValue: 'Two-Factor Authentication' })}</h6>
-                  {loading ? (
-                    <div className="placeholder-glow">
-                      <span className="placeholder col-8"></span>
-                    </div>
-                  ) : is2FAEnabled ? (
-                    <>
-                      <span className="badge bg-success me-2">
-                        <i className="bx bx-check-circle me-1"></i>
-                        {t('settings.2fa.enabled', { defaultValue: 'Enabled' })}
-                      </span>
-                      {twoFAStatus?.verifiedAt && (
-                        <small className="text-muted">
-                          {t('settings.2fa.enabledSince', { defaultValue: 'Since' })}{' '}
-                          {new Date(twoFAStatus.verifiedAt).toLocaleDateString()}
-                        </small>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <span className="badge bg-secondary me-2">
-                        {t('settings.2fa.disabled', { defaultValue: 'Disabled' })}
-                      </span>
-                      <small className="text-muted d-block mt-1">
-                        {t('settings.2fa.description', {
-                          defaultValue:
-                            'Add an extra layer of security. We\'ll ask for a code from your authenticator app when you sign in.',
-                        })}
-                      </small>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div>
-                {loading ? (
-                  <button className="btn btn-outline-primary" disabled>
-                    <span className="spinner-border spinner-border-sm"></span>
-                  </button>
-                ) : is2FAEnabled ? (
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-outline-secondary dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                    >
-                      <i className="bx bx-cog me-1"></i>
-                      {t('common.manage', { defaultValue: 'Manage' })}
-                    </button>
-                    <ul className="dropdown-menu dropdown-menu-end">
-                      <li>
-                        <button
-                          className="dropdown-item text-danger"
-                          onClick={() => setShowDisableModal(true)}
-                        >
-                          <i className="bx bx-power-off me-2"></i>
-                          {t('settings.2fa.disable', { defaultValue: 'Disable 2FA' })}
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                ) : (
-                  <button className="btn btn-primary" onClick={() => setShowSetupModal(true)}>
-                    <i className="bx bx-lock me-1"></i>
-                    {t('settings.2fa.enable', { defaultValue: 'Enable 2FA' })}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Change Password Section */}
-        <div className="card">
+        <div className="card mb-4">
           <div className="card-header">
             <h6 className="mb-0">
               <i className="bx bx-key me-2"></i>
@@ -298,6 +222,34 @@ export default function SettingsPage() {
                     )}
                   </div>
 
+                  {/* 2FA Code (only if 2FA is enabled) */}
+                  {is2FAEnabled && (
+                    <div className="mb-4">
+                      <label className="form-label" htmlFor="totpCode">
+                        <i className="bx bx-shield-quarter me-1 text-warning"></i>
+                        {t('settings.password.totpLabel', { defaultValue: '2FA Verification Code' })}
+                      </label>
+                      <input
+                        type="text"
+                        id="totpCode"
+                        className={`form-control ${errors.totpCode ? 'is-invalid' : ''}`}
+                        placeholder="000000"
+                        inputMode="numeric"
+                        maxLength={20}
+                        autoComplete="one-time-code"
+                        {...register('totpCode')}
+                      />
+                      {errors.totpCode && (
+                        <div className="invalid-feedback d-block">{errors.totpCode.message}</div>
+                      )}
+                      <div className="form-text">
+                        {t('settings.password.totpHint', {
+                          defaultValue: 'Enter the code from your authenticator app or a backup code.',
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Submit */}
                   <button
                     type="submit"
@@ -319,6 +271,95 @@ export default function SettingsPage() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+
+        {/* Security Section */}
+        <div className="card mb-4">
+          <div className="card-header">
+            <h6 className="mb-0">
+              {t('settings.security.title', { defaultValue: 'Security' })}
+            </h6>
+          </div>
+          <div className="card-body">
+            {/* 2FA Row */}
+            <div className="d-flex align-items-start justify-content-between">
+              <div className="d-flex align-items-start">
+                <div
+                  className="rounded-circle d-flex align-items-center justify-content-center me-3 bg-label-primary"
+                  style={{ width: 48, height: 48 }}
+                >
+                  <i className="bx bx-lock-alt fs-4 text-primary"></i>
+                </div>
+                <div>
+                  <h6 className="mb-1">{t('settings.2fa.title', { defaultValue: 'Two-Factor Authentication' })}</h6>
+                  {loading ? (
+                    <div className="placeholder-glow">
+                      <span className="placeholder col-8"></span>
+                    </div>
+                  ) : is2FAEnabled ? (
+                    <>
+                      <span className="badge bg-success me-2">
+                        <i className="bx bx-check-circle me-1"></i>
+                        {t('settings.2fa.enabled', { defaultValue: 'Enabled' })}
+                      </span>
+                      {twoFAStatus?.verifiedAt && (
+                        <small className="text-muted">
+                          {t('settings.2fa.enabledSince', { defaultValue: 'Since' })}{' '}
+                          {new Date(twoFAStatus.verifiedAt).toLocaleDateString()}
+                        </small>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span className="badge bg-secondary me-2">
+                        {t('settings.2fa.disabled', { defaultValue: 'Disabled' })}
+                      </span>
+                      <small className="text-muted d-block mt-1">
+                        {t('settings.2fa.description', {
+                          defaultValue:
+                            'Add an extra layer of security. We\'ll ask for a code from your authenticator app when you sign in.',
+                        })}
+                      </small>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div>
+                {loading ? (
+                  <button className="btn btn-outline-primary" disabled>
+                    <span className="spinner-border spinner-border-sm"></span>
+                  </button>
+                ) : is2FAEnabled ? (
+                  <div className="dropdown">
+                    <button
+                      className="btn btn-outline-secondary dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      <i className="bx bx-cog me-1"></i>
+                      {t('common.manage', { defaultValue: 'Manage' })}
+                    </button>
+                    <ul className="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button
+                          className="dropdown-item text-danger"
+                          onClick={() => setShowDisableModal(true)}
+                        >
+                          <i className="bx bx-power-off me-2"></i>
+                          {t('settings.2fa.disable', { defaultValue: 'Disable 2FA' })}
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                ) : (
+                  <button className="btn btn-primary" onClick={() => setShowSetupModal(true)}>
+                    <i className="bx bx-lock me-1"></i>
+                    {t('settings.2fa.enable', { defaultValue: 'Enable 2FA' })}
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

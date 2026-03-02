@@ -69,6 +69,7 @@ export interface ChangePasswordRequest {
   currentPassword: string
   newPassword: string
   newPasswordConfirmation: string
+  totpCode?: string
 }
 
 export async function changePasswordApi(token: string | null, body: ChangePasswordRequest) {

@@ -10,11 +10,13 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
   const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [totpCode, setTotpCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleClose = () => {
     setPassword("");
+    setTotpCode("");
     setError("");
     setShowPassword(false);
     onClose();
@@ -25,14 +27,27 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
       setError(t("settings.2fa.errorPasswordRequired", { defaultValue: "Password is required" }));
       return;
     }
+    if (!totpCode) {
+      setError(t("settings.2fa.errorCodeRequired", { defaultValue: "2FA code is required" }));
+      return;
+    }
     setLoading(true);
     setError("");
     try {
-      await disable2FA(token, password);
+      await disable2FA(token, password, totpCode);
       onSuccess?.();
       handleClose();
     } catch (err) {
-      setError(err?.message || t("settings.2fa.failedDisable", { defaultValue: "Failed to disable 2FA" }));
+      if (err?.retryAfterSeconds) {
+        setError(t("settings.2fa.tooManyAttempts", {
+          seconds: err.retryAfterSeconds,
+          defaultValue: `Too many attempts. Please try again in ${err.retryAfterSeconds} seconds`,
+        }));
+      } else if (err?.remainingAttempts !== undefined) {
+        setError(err?.message || t("settings.2fa.failedDisable", { defaultValue: "Failed to disable 2FA" }));
+      } else {
+        setError(err?.message || t("settings.2fa.failedDisable", { defaultValue: "Failed to disable 2FA" }));
+      }
     } finally {
       setLoading(false);
     }
@@ -79,6 +94,21 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
                   <i className={`bx ${showPassword ? "bx-hide" : "bx-show"}`}></i>
                 </span>
               </div>
+            </div>
+            <div className="mb-3">
+              <label className="form-label fw-medium">
+                {t("settings.2fa.enterDisableCode", { defaultValue: "Enter your 2FA code or backup code" })}
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="form-control form-control-lg"
+                value={totpCode}
+                onChange={(e) => setTotpCode(e.target.value)}
+                placeholder={t("settings.2fa.codePlaceholder", { defaultValue: "6-digit code or backup code" })}
+                maxLength={20}
+                autoComplete="one-time-code"
+              />
               {error && <div className="text-danger mt-2">{error}</div>}
             </div>
           </div>
@@ -86,7 +116,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
             <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
-            <button type="button" className="btn btn-danger" onClick={handleDisable} disabled={loading || !password}>
+            <button type="button" className="btn btn-danger" onClick={handleDisable} disabled={loading || !password || !totpCode}>
               {loading ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-1"></span>

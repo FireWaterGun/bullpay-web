@@ -15,10 +15,13 @@ import PageSpinner from '@/components/PageSpinner'
 const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user']
 
 export default function AdminRoles() {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const toast = useToast()
   const router = useRouter()
   const { t } = useAdminTranslation()
+
+  // Requester's level — used to hide roles above their access
+  const myLevel = ROLE_LEVEL[user?.role] || 0
 
   const [loading, setLoading] = useState(true)
   const [roles, setRoles] = useState([])
@@ -82,9 +85,9 @@ export default function AdminRoles() {
     return (ROLE_LEVEL[getRoleKey(b)] || 0) - (ROLE_LEVEL[getRoleKey(a)] || 0)
   })
 
-  // Build hierarchy from known order, filtered by existing roles
+  // Build hierarchy from known order, filtered by existing roles and requester level
   const hierarchyRoles = HIERARCHY_ORDER.filter(h =>
-    roles.some(r => getRoleKey(r) === h)
+    roles.some(r => getRoleKey(r) === h) && (ROLE_LEVEL[h] || 0) <= myLevel
   )
 
   if (loading) {
@@ -178,7 +181,8 @@ export default function AdminRoles() {
       <div className="row g-4">
         {sortedRoles.filter((role) => {
           const canAssign = typeof role === 'object' ? role.canAssign : undefined
-          return canAssign !== false
+          const roleLevel = ROLE_LEVEL[getRoleKey(role)] || 0
+          return canAssign !== false && roleLevel <= myLevel
         }).map((role) => {
           const roleKey = getRoleKey(role)
           const roleName = getRoleName(role)
