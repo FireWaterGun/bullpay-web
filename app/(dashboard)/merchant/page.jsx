@@ -83,13 +83,13 @@ export default function MerchantPage() {
   useEffect(() => {
     loadProfile()
     load2FAStatus()
-  }, [])
+  }, [token])
 
   async function load2FAStatus() {
     if (!token) return
     try {
       const res = await get2FAStatus(token)
-      setIs2FAEnabled(res?.enabled === true)
+      setIs2FAEnabled(!!res?.enabled)
     } catch {
       // Non-critical — if we can't fetch status, 2FA fields won't show
       setIs2FAEnabled(false)
@@ -131,6 +131,7 @@ export default function MerchantPage() {
     setModalAction(action)
     setModalError('')
     setShowModal(true)
+    load2FAStatus()
   }
 
   function closeModal() {
@@ -530,7 +531,7 @@ export default function MerchantPage() {
                       </div>
                     </div>
                   )}
-                  <button className="btn btn-outline-primary btn-sm" onClick={() => { setWebhookUrl(merchant?.webhookUrl || ''); setEditingWebhook(true) }}>
+                  <button className="btn btn-outline-primary btn-sm" onClick={() => { setWebhookUrl(merchant?.webhookUrl || ''); setEditingWebhook(true); load2FAStatus() }}>
                     <i className="bx bx-edit me-1"></i>
                     {merchant?.hasWebhook
                       ? t('merchant.updateWebhook', { defaultValue: 'Update Webhook' })
