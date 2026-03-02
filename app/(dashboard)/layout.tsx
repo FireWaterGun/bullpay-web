@@ -137,6 +137,62 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     )
   }
 
+  // Map API navigation keys → i18n translation keys
+  const navLabel = (key: string, fallback: string) => {
+    const keyMap: Record<string, string> = {
+      // User menu
+      'dashboard': 'nav.dashboard',
+      'wallet': 'nav.wallet',
+      'wallet-overview': 'nav.balance',
+      'withdrawal': 'nav.withdrawals',
+      'invoices': 'nav.invoice',
+      'ledgers': 'nav.ledgers',
+      'settings': 'nav.settings',
+      '2fa': 'nav.twoFactor',
+      'merchant': 'nav.merchant',
+      // Admin menu
+      'admin-dashboard': 'nav.revenueDashboard',
+      'income-statement': 'nav.incomeStatement',
+      'admin-platform-ledger': 'nav.revenueExpense',
+      'admin-system-ledger': 'nav.systemLedger',
+      'admin-user-ledger': 'nav.userLedger',
+      'admin-system-wallets': 'nav.systemWallets',
+      'admin-user-balances': 'nav.userBalances',
+      'admin-withdrawal-addresses': 'nav.withdrawalWallets',
+      'admin-temp-wallets': 'nav.tempWallets',
+      'admin-ops-withdrawals': 'nav.withdrawals',
+      'admin-ops-invoices': 'nav.invoice',
+      'admin-ops-payments': 'nav.payments',
+      'admin-sweeps': 'nav.sweeps',
+      'admin-gas-topups': 'nav.gasTopups',
+      'admin-user-management': 'nav.userMerchant',
+      'admin-users': 'nav.users',
+      'admin-merchants': 'nav.merchants',
+      'admin-roles': 'nav.rolesPermissions',
+      'admin-assets': 'nav.cryptoManagement',
+      'admin-coins': 'nav.coins',
+      'admin-networks': 'nav.networks',
+      'admin-coin-networks': 'nav.coinNetworks',
+      'admin-system': 'nav.settings',
+      'admin-audit-logs': 'nav.auditLogs',
+      'admin-merchant-webhook-logs': 'nav.webhookLogs',
+    }
+    return keyMap[key] ? t(keyMap[key], { defaultValue: fallback }) : fallback
+  }
+
+  const sectionLabel = (section: string) => {
+    const sectionMap: Record<string, string> = {
+      'Overview': 'nav.sectionOverview',
+      'Financial': 'nav.sectionFinancial',
+      'Account': 'nav.sectionAccount',
+      'Reports': 'nav.sectionReports',
+      'Operations': 'nav.sectionOperations',
+      'Management': 'nav.sectionManagement',
+      'System': 'nav.sectionSystem',
+    }
+    return sectionMap[section] ? t(sectionMap[section], { defaultValue: section }) : section
+  }
+
   const renderMenus = () => {
     const sections = navigation?.menus || []
     if (!sections.length) return null
@@ -154,7 +210,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       return (
         <React.Fragment key={section.section}>
-          <SectionHeader label={section.section} />
+          <SectionHeader label={sectionLabel(section.section)} />
           {items.map((item: NavigationItem) => {
             const children = item.children || []
             const icon = item.icon || 'bx-menu'
@@ -162,7 +218,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             const childPaths = children.map((c: NavigationItem) => c.path)
 
             if (!children.length) {
-              return <MenuItem key={item.key} to={item.path} end icon={icon} label={item.label} />
+              return <MenuItem key={item.key} to={item.path} end icon={icon} label={navLabel(item.key, item.label)} />
             }
 
             return (
@@ -170,12 +226,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 key={item.key}
                 base={item.path}
                 icon={icon}
-                label={item.label}
+                label={navLabel(item.key, item.label)}
                 matchPaths={[...new Set([item.path, ...childPaths])]}
                 badge={badge}
               >
                 {children.map((child: NavigationItem) => (
-                  <SubItem key={child.key} to={child.path} end label={child.label} badge={childBadgeMap[child.path]} />
+                  <SubItem key={child.key} to={child.path} end label={navLabel(child.key, child.label)} badge={childBadgeMap[child.path]} />
                 ))}
               </MenuGroup>
             )
