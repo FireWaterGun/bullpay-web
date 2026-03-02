@@ -164,7 +164,7 @@ export default function AdminUsersPage() {
       switch (modalType) {
         case 'changeStatus':
           if (!newStatus) {
-            toast.error(t('admin.users.selectStatus', { defaultValue: 'Please select a status' }))
+            toast.error(t('admin.users.selectStatus', { defaultValue: t('admin.users.selectStatus', { defaultValue: t('admin.users.selectStatus', { defaultValue: 'Please select a status' }) }) }))
             return
           }
           await changeUserStatus(token, selectedUser.id, newStatus, statusReason.trim() || undefined)

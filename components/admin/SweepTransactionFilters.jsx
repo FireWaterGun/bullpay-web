@@ -113,8 +113,8 @@ export default function SweepTransactionFilters({
           <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
           <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
             <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-            <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-            <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
+            <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
+            <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
           </select>
         </div>
       </div>

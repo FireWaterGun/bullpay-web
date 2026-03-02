@@ -3,6 +3,7 @@
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import RefreshButton from '@/components/RefreshButton'
+import { useTranslation } from 'react-i18next'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0'
@@ -71,7 +72,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                   <button
                     onClick={(e) => onCopy(wallet.address, e)}
                     className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                    title="Copy"
+                    title={t('actions.copy', { defaultValue: 'Copy' })}
                   >
                     <i className="bx bx-copy" style={{ fontSize: '1rem' }}></i>
                   </button>
@@ -83,7 +84,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                 <i className="bx bx-check-circle me-1"></i>Status
               </small>
               {wallet.status === 'active' ? (
-                <span className="badge bg-label-success">Active</span>
+                <span className="badge bg-label-success">{t('admin.detail.active', { defaultValue: 'Active' })}</span>
               ) : (
                 <span className="badge bg-label-secondary">{wallet.status || 'N/A'}</span>
               )}
@@ -102,8 +103,8 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               <table className="table table-sm">
                 <thead>
                   <tr style={{ whiteSpace: 'nowrap' }}>
-                    <th>Coin</th>
-                    <th>Network</th>
+                    <th>{t('admin.detail.coin', { defaultValue: 'Coin' })}</th>
+                    <th>{t('admin.detail.network', { defaultValue: 'Network' })}</th>
                     <th className="text-end">Balance</th>
                     <th className="text-end">USD Value</th>
                   </tr>

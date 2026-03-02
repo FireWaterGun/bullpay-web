@@ -29,7 +29,7 @@ export default function WithdrawalTxTable({
           <table className="table table-hover" style={{ minWidth: '1200px' }}>
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>ID</th>
+                <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                 <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
                 <th>{t('withdrawal.chain', { defaultValue: 'Chain' })}</th>
                 <th>{t('withdrawal.coin', { defaultValue: 'Coin' })}</th>
@@ -143,7 +143,7 @@ export default function WithdrawalTxTable({
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                            title="View on explorer"
+                            title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                           >
                             <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                           </a>
@@ -162,7 +162,7 @@ export default function WithdrawalTxTable({
                         <button
                           className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                           onClick={() => onCopy(withdrawal.fromAddress)}
-                          title="Copy address"
+                          title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         >
                           <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                         </button>
@@ -178,7 +178,7 @@ export default function WithdrawalTxTable({
                         <button
                           className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                           onClick={() => onCopy(withdrawal.toAddress)}
-                          title="Copy address"
+                          title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         >
                           <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                         </button>

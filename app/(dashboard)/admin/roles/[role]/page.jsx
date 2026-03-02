@@ -14,6 +14,7 @@ import {
   resetRolePermissionOverrides,
 } from '@/lib/api/admin'
 import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles'
+import { useTranslation } from 'react-i18next'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import PermissionActionModal from '@/components/admin/PermissionActionModal'
 import ResetOverridesModal from '@/components/admin/ResetOverridesModal'
@@ -26,6 +27,7 @@ export default function RolePermissions() {
   const { token } = useAuth()
   const toast = useToast()
   const { role } = useParams()
+  const { t } = useTranslation('common')
 
   const [loading, setLoading] = useState(true)
   const [permissions, setPermissions] = useState([])
@@ -76,7 +78,7 @@ export default function RolePermissions() {
       setOverrides(overList)
     } catch (error) {
       logger.error('Failed to load role permissions:', error)
-      toast.error('Failed to load permissions')
+      toast.error(t('admin.roles.loadPermError', { defaultValue: 'Failed to load permissions' }))
     } finally {
       setLoading(false)
     }
@@ -150,11 +152,11 @@ export default function RolePermissions() {
     try {
       setActionLoading(permission)
       await grantRolePermission(token, role, permission, reason || undefined)
-      toast.success(`Granted: ${permission}`)
+      toast.success(t('admin.roles.grantedToast', { defaultValue: 'Granted: {{permission}}', permission }))
       await loadData()
     } catch (error) {
       logger.error('Grant failed:', error)
-      toast.error(error?.message || 'Failed to grant permission')
+      toast.error(error?.message || t('admin.roles.failedGrant', { defaultValue: 'Failed to grant permission' }))
     } finally {
       setActionLoading(null)
     }
@@ -164,11 +166,11 @@ export default function RolePermissions() {
     try {
       setActionLoading(permission)
       await denyRolePermission(token, role, permission, reason || undefined)
-      toast.success(`Denied: ${permission}`)
+      toast.success(t('admin.roles.deniedToast', { defaultValue: 'Denied: {{permission}}', permission }))
       await loadData()
     } catch (error) {
       logger.error('Deny failed:', error)
-      toast.error(error?.message || 'Failed to deny permission')
+      toast.error(error?.message || t('admin.roles.failedDeny', { defaultValue: 'Failed to deny permission' }))
     } finally {
       setActionLoading(null)
     }
@@ -178,11 +180,11 @@ export default function RolePermissions() {
     try {
       setActionLoading(permName)
       await deleteRolePermissionOverride(token, role, overrideId)
-      toast.success(`Reverted override: ${permName}`)
+      toast.success(t('admin.roles.revertedToast', { defaultValue: 'Reverted override: {{permission}}', permission: permName }))
       await loadData()
     } catch (error) {
       logger.error('Revert failed:', error)
-      toast.error(error?.message || 'Failed to revert override')
+      toast.error(error?.message || t('admin.roles.failedRevert', { defaultValue: 'Failed to revert override' }))
     } finally {
       setActionLoading(null)
     }
@@ -192,12 +194,12 @@ export default function RolePermissions() {
     try {
       setActionLoading('__reset__')
       await resetRolePermissionOverrides(token, role)
-      toast.success('All overrides have been reset')
+      toast.success(t('admin.roles.allOverridesReset', { defaultValue: 'All overrides have been reset' }))
       setShowResetModal(false)
       await loadData()
     } catch (error) {
       logger.error('Reset failed:', error)
-      toast.error(error?.message || 'Failed to reset overrides')
+      toast.error(error?.message || t('admin.roles.failedReset', { defaultValue: 'Failed to reset overrides' }))
     } finally {
       setActionLoading(null)
     }
@@ -242,7 +244,7 @@ export default function RolePermissions() {
         <ol className="breadcrumb mb-0">
           <li className="breadcrumb-item">
             <Link href="/admin/roles" className="text-muted">
-              <i className="bx bx-shield-alt-2 me-1"></i>Roles
+              <i className="bx bx-shield-alt-2 me-1"></i>{t('admin.roles.title', { defaultValue: 'Roles' })}
             </Link>
           </li>
           <li className="breadcrumb-item active">{formatRoleLabel(role)}</li>
@@ -267,14 +269,14 @@ export default function RolePermissions() {
         </div>
         <div className="d-flex gap-2 flex-wrap">
           <button className="btn btn-success btn-sm" onClick={() => openGrantModal()}>
-            <i className="bx bx-plus-circle me-1"></i>Grant
+            <i className="bx bx-plus-circle me-1"></i>{t('admin.roles.grant', { defaultValue: 'Grant' })}
           </button>
           <button className="btn btn-danger btn-sm" onClick={() => openDenyModal()}>
-            <i className="bx bx-minus-circle me-1"></i>Deny
+            <i className="bx bx-minus-circle me-1"></i>{t('admin.roles.deny', { defaultValue: 'Deny' })}
           </button>
           {overrides.length > 0 && (
             <button className="btn btn-outline-warning btn-sm" onClick={() => setShowResetModal(true)}>
-              <i className="bx bx-reset me-1"></i>Reset All
+              <i className="bx bx-reset me-1"></i>{t('admin.roles.resetAll', { defaultValue: 'Reset All' })}
             </button>
           )}
           <RefreshButton onClick={loadData} loading={loading} />
@@ -284,25 +286,25 @@ export default function RolePermissions() {
       {/* Summary Stats */}
       <div className="row g-4 mb-4">
         <SummaryCard
-          title="Total Permissions"
+          title={t('admin.roles.totalPermissions', { defaultValue: 'Total Permissions' })}
           value={permissions.length}
           icon="bx-lock-alt"
           color="primary"
         />
         <SummaryCard
-          title="Active"
+          title={t('admin.roles.active', { defaultValue: 'Active' })}
           value={activeCount}
           icon="bx-check-circle"
           color="success"
         />
         <SummaryCard
-          title="Inactive"
+          title={t('admin.roles.inactive', { defaultValue: 'Inactive' })}
           value={inactiveCount}
           icon="bx-x-circle"
           color={inactiveCount > 0 ? 'danger' : 'secondary'}
         />
         <SummaryCard
-          title="Overrides"
+          title={t('admin.roles.overrides', { defaultValue: 'Overrides' })}
           value={overrides.length}
           icon="bx-edit-alt"
           color={overrides.length > 0 ? 'warning' : 'secondary'}
@@ -319,7 +321,7 @@ export default function RolePermissions() {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Search permissions..."
+                  placeholder={t('admin.roles.searchPermissions', { defaultValue: 'Search permissions...' })}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -332,22 +334,22 @@ export default function RolePermissions() {
             </div>
             <div className="col-md-3">
               <select className="form-select" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-                <option value="all">All ({permissions.length})</option>
-                <option value="active">Active ({activeCount})</option>
-                <option value="inactive">Inactive ({inactiveCount})</option>
-                <option value="granted">Granted ({grantedCount})</option>
-                <option value="denied">Denied ({deniedCount})</option>
-                <option value="default">Default ({defaultCount})</option>
+                <option value="all">{t('admin.roles.all', { defaultValue: 'All' })} ({permissions.length})</option>
+                <option value="active">{t('admin.roles.active', { defaultValue: 'Active' })} ({activeCount})</option>
+                <option value="inactive">{t('admin.roles.inactive', { defaultValue: 'Inactive' })} ({inactiveCount})</option>
+                <option value="granted">{t('admin.roles.granted', { defaultValue: 'Granted' })} ({grantedCount})</option>
+                <option value="denied">{t('admin.roles.denied', { defaultValue: 'Denied' })} ({deniedCount})</option>
+                <option value="default">{t('admin.roles.default', { defaultValue: 'Default' })} ({defaultCount})</option>
               </select>
             </div>
             <div className="col-md-4 d-flex align-items-center justify-content-end gap-2">
               <small className="text-muted me-2">
-                {filteredPermissions.length} of {permissions.length} · {groupCount} groups
+                {filteredPermissions.length} / {permissions.length} · {groupCount} {t('admin.roles.groups', { defaultValue: 'groups' })}
               </small>
-              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={expandAll} title="Expand all">
+              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={expandAll} title={t('admin.roles.expandAll', { defaultValue: 'Expand all' })}>
                 <i className="bx bx-expand-vertical"></i>
               </button>
-              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={collapseAll} title="Collapse all">
+              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={collapseAll} title={t('admin.roles.collapseAll', { defaultValue: 'Collapse all' })}>
                 <i className="bx bx-collapse-vertical"></i>
               </button>
             </div>
@@ -360,7 +362,7 @@ export default function RolePermissions() {
         <div className="card">
           <div className="card-body text-center py-5">
             <i className="bx bx-shield-x text-muted" style={{ fontSize: '3rem' }}></i>
-            <p className="text-muted mt-2">No permissions found</p>
+            <p className="text-muted mt-2">{t('admin.roles.noPermissions', { defaultValue: 'No permissions found' })}</p>
           </div>
         </div>
       ) : (

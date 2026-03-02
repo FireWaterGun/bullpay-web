@@ -1,6 +1,9 @@
 'use client'
 
+import { useTranslation } from 'react-i18next'
+
 export default function ChainSettingsTable({ data, type, label, valueHeader, keyPrefix, emptyMessage, onEdit, loading }) {
+  const { t } = useTranslation('common')
   const entries = Object.entries(data || {})
 
   return (
@@ -22,9 +25,9 @@ export default function ChainSettingsTable({ data, type, label, valueHeader, key
           <table className="table table-hover">
             <thead>
               <tr>
-                <th>Chain ID</th>
+                <th>{t('admin.detail.chainId', { defaultValue: 'Chain ID' })}</th>
                 <th>{valueHeader}</th>
-                <th className="text-end">Actions</th>
+                <th className="text-end">{t('admin.detail.actions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
             <tbody>

@@ -153,11 +153,11 @@ export default function WithdrawalAddresses() {
 
   async function handleAction() {
     if (!selectedAddress || !actionReason.trim()) {
-      toast.error('Please provide a reason (minimum 10 characters)')
+      toast.error(t('admin.withdrawalAddress.reasonRequired', { defaultValue: 'Please provide a reason (minimum 10 characters)' }))
       return
     }
     if (actionReason.trim().length < 10) {
-      toast.error('Reason must be at least 10 characters')
+      toast.error(t('admin.withdrawalAddress.reasonTooShort', { defaultValue: 'Reason must be at least 10 characters' }))
       return
     }
 
@@ -167,19 +167,19 @@ export default function WithdrawalAddresses() {
       switch (actionType) {
         case 'flag':
           await flagWithdrawalAddress(token, selectedAddress.id, actionReason.trim())
-          toast.success('Address flagged successfully')
+          toast.success(t('admin.withdrawalAddress.flagSuccess', { defaultValue: 'Address flagged successfully' }))
           break
         case 'unflag':
           await unflagWithdrawalAddress(token, selectedAddress.id, actionReason.trim())
-          toast.success('Address unflagged successfully')
+          toast.success(t('admin.withdrawalAddress.unflagSuccess', { defaultValue: 'Address unflagged successfully' }))
           break
         case 'forceVerify':
           await forceVerifyWithdrawalAddress(token, selectedAddress.id, actionReason.trim(), skipLockPeriod)
-          toast.success('Address force verified successfully')
+          toast.success(t('admin.withdrawalAddress.verifySuccess', { defaultValue: 'Address force verified successfully' }))
           break
         case 'delete':
           await deleteWithdrawalAddress(token, selectedAddress.id, actionReason.trim())
-          toast.success('Address permanently deleted')
+          toast.success(t('admin.withdrawalAddress.deleteSuccess', { defaultValue: 'Address permanently deleted' }))
           break
       }
 
@@ -189,7 +189,7 @@ export default function WithdrawalAddresses() {
       loadAddresses()
     } catch (error) {
       logger.error(`Failed to ${actionType} address:`, error)
-      toast.error(`Failed to ${actionType} address`)
+      toast.error(t('admin.withdrawalAddress.actionFailed', { defaultValue: `Failed to ${actionType} address` }))
     } finally {
       setActionLoading(false)
     }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
+import { useTranslation } from 'react-i18next'
 import { getAdminRoles, getAdminRoleStats } from '@/lib/api/admin'
 import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
@@ -17,6 +18,7 @@ export default function AdminRoles() {
   const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()
+  const { t } = useTranslation('common')
 
   const [loading, setLoading] = useState(true)
   const [roles, setRoles] = useState([])
@@ -42,7 +44,7 @@ export default function AdminRoles() {
       setStats(statsData)
     } catch (error) {
       logger.error('Failed to load roles:', error)
-      toast.error('Failed to load roles')
+      toast.error(t('admin.roles.loadError', { defaultValue: 'Failed to load roles' }))
     } finally {
       setLoading(false)
     }
@@ -96,13 +98,13 @@ export default function AdminRoles() {
         <div>
           <h4 className="mb-1">
             <i className="bx bx-shield-alt-2 text-primary me-2"></i>
-            Roles & Permissions
+            {t('admin.roles.title', { defaultValue: 'Roles & Permissions' })}
           </h4>
           <p className="text-muted mb-0">
-            Manage role-based access control (RBAC)
+            {t('admin.roles.description', { defaultValue: 'Manage role-based access control (RBAC)' })}
             {requesterRole && (
               <span className="ms-2">
-                — logged in as <span className={`badge bg-label-${ROLE_COLOR[requesterRole] || 'secondary'}`}>{formatRoleLabel(requesterRole)}</span>
+                — {t('admin.roles.loggedInAs', { defaultValue: 'logged in as' })} <span className={`badge bg-label-${ROLE_COLOR[requesterRole] || 'secondary'}`}>{formatRoleLabel(requesterRole)}</span>
               </span>
             )}
           </p>
@@ -113,13 +115,13 @@ export default function AdminRoles() {
       {/* Summary Stats */}
       <div className="row g-4 mb-4">
         <SummaryCard
-          title="Total Users"
+          title={t('admin.roles.totalUsers', { defaultValue: 'Total Users' })}
           value={totalUsers ?? '—'}
           icon="bx-group"
           color="primary"
         />
         <SummaryCard
-          title="Total Roles"
+          title={t('admin.roles.totalRoles', { defaultValue: 'Total Roles' })}
           value={roles.length}
           icon="bx-shield-alt-2"
           color="info"
@@ -132,7 +134,7 @@ export default function AdminRoles() {
           <div className="card-body">
             <h6 className="mb-3">
               <i className="bx bx-sitemap me-2 text-muted"></i>
-              Role Hierarchy
+              {t('admin.roles.roleHierarchy', { defaultValue: 'Role Hierarchy' })}
             </h6>
             <div className="d-flex align-items-end gap-3 flex-wrap justify-content-center">
               {hierarchyRoles.map((roleKey) => {
@@ -161,7 +163,7 @@ export default function AdminRoles() {
                     <div className="mt-2">
                       <small className="fw-semibold d-block" style={{ fontSize: '0.75rem' }}>{formatRoleLabel(roleKey)}</small>
                       <small className="text-muted" style={{ fontSize: '0.7rem' }}>
-                        {rs.count} {rs.count === 1 ? 'user' : 'users'} · {rs.percentage.toFixed(0)}%
+                        {rs.count} {rs.count === 1 ? t('admin.roles.user', { defaultValue: 'user' }) : t('admin.roles.users', { defaultValue: 'users' })} · {rs.percentage.toFixed(0)}%
                       </small>
                     </div>
                   </div>
@@ -228,11 +230,11 @@ export default function AdminRoles() {
                   <div className="d-flex align-items-center gap-4 mb-3">
                     <div>
                       <h4 className="mb-0">{rs.count}</h4>
-                      <small className="text-muted">Users</small>
+                      <small className="text-muted">{t('admin.roles.users', { defaultValue: 'Users' })}</small>
                     </div>
                     <div className="flex-grow-1">
                       <div className="d-flex justify-content-between mb-1">
-                        <small className="text-muted">Distribution</small>
+                        <small className="text-muted">{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</small>
                         <small className={`fw-medium text-${color}`}>{rs.percentage.toFixed(1)}%</small>
                       </div>
                       <div className="progress" style={{ height: '6px' }}>
@@ -247,7 +249,7 @@ export default function AdminRoles() {
 
                   {/* Footer link */}
                   <div className="d-flex align-items-center justify-content-between pt-2 border-top">
-                    <small className="fw-medium">Manage Permissions</small>
+                    <small className="fw-medium">{t('admin.roles.managePermissions', { defaultValue: 'Manage Permissions' })}</small>
                     <i className={`bx bx-chevron-right text-${color}`}></i>
                   </div>
                 </div>
@@ -261,7 +263,7 @@ export default function AdminRoles() {
             <div className="card">
               <div className="card-body text-center py-5">
                 <i className="bx bx-shield-x text-muted" style={{ fontSize: '3rem' }}></i>
-                <p className="text-muted mt-2">No roles found</p>
+                <p className="text-muted mt-2">{t('admin.roles.noRoles', { defaultValue: 'No roles found' })}</p>
               </div>
             </div>
           </div>

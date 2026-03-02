@@ -175,7 +175,7 @@ export default function PlatformLedgerDetail() {
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{entry.id}</td>
                       </tr>
                       <tr>
@@ -187,7 +187,7 @@ export default function PlatformLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Coin</td>
+                        <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="d-flex align-items-center">
                             <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="me-3" />
@@ -214,11 +214,11 @@ export default function PlatformLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">State</td>
+                        <td className="text-muted">{t('admin.detail.state', { defaultValue: 'State' })}</td>
                         <td>{stateBadge(entry.state)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Amount</td>
+                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td>
                           <span className={`fw-medium ${isReversed ? '' : (isCredit ? 'text-success' : 'text-danger')}`}>
                             {isReversed ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)} {entry.coinSymbol}
@@ -230,12 +230,12 @@ export default function PlatformLedgerDetail() {
                         <td className="fw-medium">{formatUsd(entry.amountUsd)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Created</td>
+                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(entry.createdAt)}</td>
                       </tr>
                       {entry.updatedAt && (
                         <tr>
-                          <td className="text-muted">Updated</td>
+                          <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                           <td>{formatDate(entry.updatedAt)}</td>
                         </tr>
                       )}
@@ -259,14 +259,14 @@ export default function PlatformLedgerDetail() {
                     <table className="table table-borderless">
                       <tbody>
                         <tr>
-                          <td className="text-muted" style={{ width: '30%' }}>Tx Hash</td>
+                          <td className="text-muted" style={{ width: '30%' }}>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                           <td>
                             <div className="d-flex align-items-center">
                               <code className="me-2" style={{ wordBreak: 'break-all' }}>{entry.txHash}</code>
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary"
                                 onClick={() => handleCopy(entry.txHash)}
-                                title="Copy"
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
                                 <i className="bx bx-copy"></i>
                               </button>
@@ -276,7 +276,7 @@ export default function PlatformLedgerDetail() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-icon btn-text-secondary"
-                                  title="View on explorer"
+                                  title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                                 >
                                   <i className="bx bx-link-external"></i>
                                 </a>

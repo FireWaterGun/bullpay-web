@@ -33,10 +33,10 @@ function AddressAuditLogTable({ auditLogs }) {
           <table className="table table-sm mb-0">
             <thead>
               <tr>
-                <th>Action</th>
-                <th>Admin</th>
-                <th>Reason</th>
-                <th>Date</th>
+                <th>{t('admin.detail.action', { defaultValue: 'Action' })}</th>
+                <th>{t('admin.detail.admin', { defaultValue: 'Admin' })}</th>
+                <th>{t('admin.detail.reason', { defaultValue: 'Reason' })}</th>
+                <th>{t('admin.detail.date', { defaultValue: 'Date' })}</th>
               </tr>
             </thead>
             <tbody>
@@ -84,7 +84,7 @@ export default function WithdrawalAddressDetail() {
       setAddress(addr)
     } catch (error) {
       logger.error('Failed to load withdrawal address:', error)
-      toast.error('Failed to load withdrawal address')
+      toast.error(t('admin.withdrawalAddress.loadDetailError', { defaultValue: 'Failed to load withdrawal address' }))
     } finally {
       setLoading(false)
     }
@@ -92,8 +92,8 @@ export default function WithdrawalAddressDetail() {
 
   async function handleCopy(text) {
     const ok = await copyText(text)
-    if (ok) toast.success('Copied to clipboard!')
-    else toast.error('Failed to copy')
+    if (ok) toast.success(t('actions.copied', { defaultValue: 'Copied to clipboard!' }))
+    else toast.error(t('actions.copyFailed', { defaultValue: 'Failed to copy' }))
   }
 
   function statusBadgeClass(s) {
@@ -138,7 +138,7 @@ export default function WithdrawalAddressDetail() {
 
   async function handleAction() {
     if (!actionReason.trim() || actionReason.trim().length < 10) {
-      toast.error('Please provide a reason (minimum 10 characters)')
+      toast.error(t('admin.withdrawalAddress.reasonRequired', { defaultValue: 'Please provide a reason (minimum 10 characters)' }))
       return
     }
 
@@ -149,19 +149,19 @@ export default function WithdrawalAddressDetail() {
       switch (actionType) {
         case 'flag':
           await flagWithdrawalAddress(token, addrId, actionReason.trim())
-          toast.success('Address flagged successfully')
+          toast.success(t('admin.withdrawalAddress.flagSuccess', { defaultValue: 'Address flagged successfully' }))
           break
         case 'unflag':
           await unflagWithdrawalAddress(token, addrId, actionReason.trim())
-          toast.success('Address unflagged successfully')
+          toast.success(t('admin.withdrawalAddress.unflagSuccess', { defaultValue: 'Address unflagged successfully' }))
           break
         case 'forceVerify':
           await forceVerifyWithdrawalAddress(token, addrId, actionReason.trim(), skipLockPeriod)
-          toast.success('Address force verified successfully')
+          toast.success(t('admin.withdrawalAddress.verifySuccess', { defaultValue: 'Address force verified successfully' }))
           break
         case 'delete':
           await deleteWithdrawalAddress(token, addrId, actionReason.trim())
-          toast.success('Address permanently deleted')
+          toast.success(t('admin.withdrawalAddress.deleteSuccess', { defaultValue: 'Address permanently deleted' }))
           router.replace('/admin/withdrawal-addresses')
           return
       }
@@ -171,7 +171,7 @@ export default function WithdrawalAddressDetail() {
       loadAddress()
     } catch (error) {
       logger.error(`Failed to ${actionType} address:`, error)
-      toast.error(`Failed to ${actionType} address`)
+      toast.error(t('admin.withdrawalAddress.actionFailed', { defaultValue: `Failed to ${actionType} address` }))
     } finally {
       setActionLoading(false)
     }
@@ -186,7 +186,7 @@ export default function WithdrawalAddressDetail() {
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '4rem', opacity: 0.3 }}></i>
-          <h5 className="text-muted mt-3">Address not found</h5>
+          <h5 className="text-muted mt-3">{t('admin.withdrawalAddress.notFound', { defaultValue: 'Address not found' })}</h5>
           <Link href="/admin/withdrawal-addresses" className="btn btn-primary mt-3">
             <i className="bx bx-arrow-back me-1"></i>Back to Addresses
           </Link>
@@ -241,7 +241,7 @@ export default function WithdrawalAddressDetail() {
                       <span className="fw-semibold">{address.id}</span>
                     </div>
                     <div className="col-sm-6">
-                      <small className="text-muted d-block mb-1">User ID</small>
+                      <small className="text-muted d-block mb-1">{t('admin.detail.userId', { defaultValue: 'User ID' })}</small>
                       <span className="fw-semibold">{address.userId}</span>
                     </div>
                     <div className="col-sm-6">
@@ -249,7 +249,7 @@ export default function WithdrawalAddressDetail() {
                       <span>{address.label ? address.label : <span className="text-muted">—</span>}</span>
                     </div>
                     <div className="col-sm-6">
-                      <small className="text-muted d-block mb-1">Coin / Network</small>
+                      <small className="text-muted d-block mb-1">{t('admin.detail.coinNetwork', { defaultValue: 'Coin / Network' })}</small>
                       <div className="d-flex align-items-center gap-2">
                         <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={20} className="me-1" />
                         <span className="fw-medium">{coinSymbol}</span>
@@ -257,7 +257,7 @@ export default function WithdrawalAddressDetail() {
                       </div>
                     </div>
                     <div className="col-12">
-                      <small className="text-muted d-block mb-1">Address</small>
+                      <small className="text-muted d-block mb-1">{t('admin.detail.address', { defaultValue: 'Address' })}</small>
                       <div className="d-flex align-items-center gap-2">
                         <code className="text-primary" style={{ fontSize: '0.875rem', wordBreak: 'break-all' }}>
                           {address.address || 'N/A'}
@@ -266,7 +266,7 @@ export default function WithdrawalAddressDetail() {
                           <button
                             className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                             onClick={() => handleCopy(address.address)}
-                            title="Copy"
+                            title={t('actions.copy', { defaultValue: 'Copy' })}
                           >
                             <i className="bx bx-copy" style={{ fontSize: '1rem' }}></i>
                           </button>
@@ -274,11 +274,11 @@ export default function WithdrawalAddressDetail() {
                       </div>
                     </div>
                     <div className="col-sm-6">
-                      <small className="text-muted d-block mb-1">Created</small>
+                      <small className="text-muted d-block mb-1">{t('admin.detail.created', { defaultValue: 'Created' })}</small>
                       <span>{formatDate(address.createdAt)}</span>
                     </div>
                     <div className="col-sm-6">
-                      <small className="text-muted d-block mb-1">Updated</small>
+                      <small className="text-muted d-block mb-1">{t('admin.detail.updated', { defaultValue: 'Updated' })}</small>
                       <span>{formatDate(address.updatedAt)}</span>
                     </div>
                     <div className="col-sm-6">
@@ -306,11 +306,11 @@ export default function WithdrawalAddressDetail() {
             <div className="col-lg-4">
               <div className="card mb-4">
                 <div className="card-header">
-                  <h5 className="mb-0"><i className="bx bx-info-circle me-2"></i>Status</h5>
+                  <h5 className="mb-0"><i className="bx bx-info-circle me-2"></i>{t('admin.detail.status', { defaultValue: 'Status' })}</h5>
                 </div>
                 <div className="card-body">
                   <div className="mb-3">
-                    <small className="text-muted d-block mb-1">Status</small>
+                    <small className="text-muted d-block mb-1">{t('admin.detail.status', { defaultValue: 'Status' })}</small>
                     <span className={statusBadgeClass(address.status)} style={{ fontSize: '0.85rem' }}>
                       {statusLabel(address.status)}
                     </span>
@@ -343,7 +343,7 @@ export default function WithdrawalAddressDetail() {
               {address.status !== 'deleted' && (
                 <div className="card mb-4">
                   <div className="card-header">
-                    <h5 className="mb-0"><i className="bx bx-cog me-2"></i>Actions</h5>
+                    <h5 className="mb-0"><i className="bx bx-cog me-2"></i>{t('admin.detail.actions', { defaultValue: 'Actions' })}</h5>
                   </div>
                   <div className="card-body d-grid gap-2">
                     {!isFlagged ? (

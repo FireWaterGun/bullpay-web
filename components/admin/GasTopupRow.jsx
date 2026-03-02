@@ -4,7 +4,7 @@ import CoinImg from '@/components/CoinImg'
 import { formatDate } from '@/lib/utils/format'
 import { formatGasAmount, statusBadgeClass } from '@/components/admin/gasTopupHelpers'
 
-export default function GasTopupRow({ topup, onCopy, onNavigate }) {
+export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
   const coinSymbol = (topup.coinNetwork?.coin?.symbol || topup.coinSymbol || '').toUpperCase()
   const networkSymbol = (topup.coinNetwork?.network?.symbol || topup.networkSymbol || '').toUpperCase()
   const networkName = topup.coinNetwork?.network?.name || topup.networkName || ''
@@ -43,7 +43,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate }) {
       </td>
       <td className="text-center text-nowrap">
         <span className={statusBadgeClass(topup.status)}>
-          {String(topup.status || '').toUpperCase()}
+          {t(`admin.gasTopup.${topup.status}`, { defaultValue: String(topup.status || '').toUpperCase() }).toUpperCase()}
         </span>
       </td>
       <td>
@@ -53,7 +53,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate }) {
             <button
               className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
               onClick={() => onCopy(topup.txHash)}
-              title="Copy tx hash"
+              title={t('admin.gasTopup.copyTxHash', { defaultValue: 'Copy tx hash' })}
             >
               <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
             </button>
@@ -69,7 +69,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate }) {
             <button
               className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
               onClick={() => onCopy(topup.fromAddress)}
-              title="Copy address"
+              title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })}
             >
               <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
             </button>
@@ -85,7 +85,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate }) {
             <button
               className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
               onClick={() => onCopy(topup.toAddress)}
-              title="Copy address"
+              title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })}
             >
               <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
             </button>

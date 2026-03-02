@@ -3,6 +3,7 @@
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { formatUsd, formatDate } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
+import { useTranslation } from 'react-i18next'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0'
@@ -61,15 +62,15 @@ export default function WalletLedgerTable({ entries, loading, t }) {
       <table className="table table-hover" style={{ minWidth: '1200px' }}>
         <thead>
           <tr style={{ whiteSpace: 'nowrap' }}>
-            <th>ID</th>
+            <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
             <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
-            <th>Coin</th>
-            <th>Code</th>
+            <th>{t('admin.detail.coin', { defaultValue: 'Coin' })}</th>
+            <th>{t('admin.detail.code', { defaultValue: 'Code' })}</th>
             <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
             <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
             <th className="text-end">USD</th>
-            <th>Purpose</th>
-            <th>Tx Hash</th>
+            <th>{t('admin.detail.purpose', { defaultValue: 'Purpose' })}</th>
+            <th>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
             <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
           </tr>
         </thead>
@@ -118,7 +119,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                 <td>
                   {entry.state === 'settled' ? <span className="badge bg-label-success">Settled</span>
                     : entry.state === 'committed' ? <span className="badge bg-label-info">Committed</span>
-                    : entry.state === 'pending' ? <span className="badge bg-label-warning">Pending</span>
+                    : entry.state === 'pending' ? <span className="badge bg-label-warning">{t('status.pending', { defaultValue: 'Pending' })}</span>
                     : entry.state === 'reversed' ? <span className="badge bg-label-secondary">Reversed</span>
                     : <span className="text-muted">{entry.state || 'N/A'}</span>}
                 </td>
@@ -157,7 +158,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                           rel="noopener noreferrer"
                           className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                           onClick={(e) => e.stopPropagation()}
-                          title="View on explorer"
+                          title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                         >
                           <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                         </a>

@@ -25,7 +25,7 @@ export default function SweepTransactionTable({
           <table className="table table-hover" style={{ minWidth: '1200px' }}>
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>ID</th>
+                <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                 <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
                 <th>{t('admin.chain', { defaultValue: 'Chain' })}</th>
                 <th>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
@@ -119,7 +119,7 @@ export default function SweepTransactionTable({
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                            title="View on explorer"
+                            title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                           >
                             <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                           </a>
@@ -137,7 +137,7 @@ export default function SweepTransactionTable({
                           <button
                             className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                             onClick={() => handleCopy(sweep.fromAddress)}
-                            title="Copy address"
+                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                           >
                             <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                           </button>
@@ -153,7 +153,7 @@ export default function SweepTransactionTable({
                           <button
                             className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                             onClick={() => handleCopy(sweep.toAddress)}
-                            title="Copy address"
+                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                           >
                             <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                           </button>
@@ -174,7 +174,7 @@ export default function SweepTransactionTable({
                           className="btn btn-sm btn-outline-warning"
                           disabled={retryingId === sweep.id}
                           onClick={(e) => { e.stopPropagation(); onRetry(sweep.id) }}
-                          title="Retry sweep"
+                          title={t('admin.sweepDetail.retrySweep', { defaultValue: 'Retry sweep' })}
                         >
                           {retryingId === sweep.id ? (
                             <span className="spinner-border spinner-border-sm"></span>

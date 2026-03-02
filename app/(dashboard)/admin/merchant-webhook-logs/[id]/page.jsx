@@ -40,7 +40,7 @@ export default function MerchantWebhookLogDetail() {
       setLog(data)
     } catch (error) {
       logger.error('Failed to load webhook log:', error)
-      toast.error('Failed to load webhook log')
+      toast.error(t('admin.webhookLog.loadError', { defaultValue: 'Failed to load webhook log' }))
     } finally {
       setLoading(false)
     }
@@ -51,11 +51,11 @@ export default function MerchantWebhookLogDetail() {
     try {
       setRetrying(true)
       const res = await retryWebhook(token, log.merchantPaymentId)
-      toast.success(res.message || 'Webhook retry enqueued')
+      toast.success(res.message || t('admin.webhookLog.retryEnqueued', { defaultValue: 'Webhook retry enqueued' }))
       loadLog()
     } catch (error) {
       logger.error('Retry failed:', error)
-      toast.error(error?.message || 'Failed to retry webhook')
+      toast.error(error?.message || t('admin.webhookLog.retryFailed', { defaultValue: 'Failed to retry webhook' }))
     } finally {
       setRetrying(false)
     }
@@ -102,7 +102,7 @@ export default function MerchantWebhookLogDetail() {
   if (!log) {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="alert alert-warning">Webhook log not found</div>
+        <div className="alert alert-warning">{t('admin.webhookLog.notFound', { defaultValue: 'Webhook log not found' })}</div>
       </div>
     )
   }
@@ -180,7 +180,7 @@ export default function MerchantWebhookLogDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{log.id}</td>
                       </tr>
                       <tr>
@@ -192,11 +192,11 @@ export default function MerchantWebhookLogDetail() {
                         <td className="fw-medium">{log.merchantPaymentId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Event</td>
+                        <td className="text-muted">{t('admin.detail.event', { defaultValue: 'Event' })}</td>
                         <td>{eventBadge(log.event)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Callback URL</td>
+                        <td className="text-muted">{t('admin.detail.callbackUrl', { defaultValue: 'Callback URL' })}</td>
                         <td>
                           {log.callbackUrl ? (
                             <code className="text-body" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
@@ -206,7 +206,7 @@ export default function MerchantWebhookLogDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Created</td>
+                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(log.createdAt)}</td>
                       </tr>
                     </tbody>
@@ -229,7 +229,7 @@ export default function MerchantWebhookLogDetail() {
                         <td>{httpStatusText(log.httpStatus)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Success</td>
+                        <td className="text-muted">{t('admin.detail.success', { defaultValue: 'Success' })}</td>
                         <td>{successText(log.success)}</td>
                       </tr>
                       <tr>
@@ -248,7 +248,7 @@ export default function MerchantWebhookLogDetail() {
                       </tr>
                       {log.errorMessage && (
                         <tr>
-                          <td className="text-muted">Error</td>
+                          <td className="text-muted">{t('admin.detail.error', { defaultValue: 'Error' })}</td>
                           <td>
                             <span className="text-danger" style={{ wordBreak: 'break-word' }}>
                               {log.errorMessage}

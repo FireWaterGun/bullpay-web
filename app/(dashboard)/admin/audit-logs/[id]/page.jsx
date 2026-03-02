@@ -32,7 +32,7 @@ export default function AuditLogDetail() {
       setLog(data)
     } catch (error) {
       logger.error('Failed to load audit log:', error)
-      toast.error('Failed to load audit log')
+      toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit log' }))
     } finally {
       setLoading(false)
     }
@@ -81,7 +81,7 @@ export default function AuditLogDetail() {
   if (!log) {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="alert alert-warning">Audit log not found</div>
+        <div className="alert alert-warning">{t('admin.auditLog.notFound', { defaultValue: 'Audit log not found' })}</div>
       </div>
     )
   }
@@ -134,19 +134,19 @@ export default function AuditLogDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{log.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">User ID</td>
+                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="fw-medium">{log.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Action</td>
+                        <td className="text-muted">{t('admin.detail.action', { defaultValue: 'Action' })}</td>
                         <td>{actionBadge(log.action)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Created</td>
+                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(log.createdAt)}</td>
                       </tr>
                     </tbody>
@@ -165,7 +165,7 @@ export default function AuditLogDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Resource Type</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</td>
                         <td>{resourceTypeBadge(log.resourceType)}</td>
                       </tr>
                       <tr>

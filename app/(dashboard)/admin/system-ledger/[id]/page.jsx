@@ -142,11 +142,11 @@ export default function SystemLedgerDetail() {
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{entry.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Wallet ID</td>
+                        <td className="text-muted">{t('admin.detail.walletId', { defaultValue: 'Wallet ID' })}</td>
                         <td>{entry.walletId || 'N/A'}</td>
                       </tr>
                       <tr>
@@ -213,7 +213,7 @@ export default function SystemLedgerDetail() {
                       </tr>
                       {purposeLabel && (
                         <tr>
-                          <td className="text-muted">Purpose</td>
+                          <td className="text-muted">{t('admin.detail.purpose', { defaultValue: 'Purpose' })}</td>
                           <td className="fw-medium">{purposeLabel}</td>
                         </tr>
                       )}

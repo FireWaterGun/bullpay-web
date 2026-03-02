@@ -61,7 +61,7 @@ export default function AdminPaymentDetail() {
   if (!payment) {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="alert alert-warning">Payment not found</div>
+        <div className="alert alert-warning">{t('admin.paymentDetail.notFound', { defaultValue: 'Payment not found' })}</div>
       </div>
     )
   }
@@ -116,7 +116,7 @@ export default function AdminPaymentDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{payment.id}</td>
                       </tr>
                       <tr>
@@ -135,7 +135,7 @@ export default function AdminPaymentDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Status</td>
+                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
                           <span className={statusBadgeClass(payment.status)}>
                             {String(payment.status || '').toUpperCase()}
@@ -143,7 +143,7 @@ export default function AdminPaymentDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Amount</td>
+                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td className="fw-medium">{formatAmount(payment.amount)} {coinSymbol}</td>
                       </tr>
                       <tr>
@@ -152,7 +152,7 @@ export default function AdminPaymentDetail() {
                       </tr>
                       {payment.amountUsd && (
                         <tr>
-                          <td className="text-muted">Amount (USD)</td>
+                          <td className="text-muted">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
                           <td className="fw-medium">${formatAmount(payment.amountUsd)}</td>
                         </tr>
                       )}
@@ -168,7 +168,7 @@ export default function AdminPaymentDetail() {
                         </tr>
                       )}
                       <tr>
-                        <td className="text-muted">Coin</td>
+                        <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="d-flex align-items-center">
                             <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="me-2" />
@@ -177,11 +177,11 @@ export default function AdminPaymentDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Network</td>
+                        <td className="text-muted">{t('admin.detail.network', { defaultValue: 'Network' })}</td>
                         <td>{networkName || networkSymbol || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Confirmations</td>
+                        <td className="text-muted">{t('admin.detail.confirmations', { defaultValue: 'Confirmations' })}</td>
                         <td>
                           {payment.confirmations != null ? payment.confirmations : '-'}
                           {payment.requiredConfirmations != null && (
@@ -196,7 +196,7 @@ export default function AdminPaymentDetail() {
                         </tr>
                       )}
                       <tr>
-                        <td className="text-muted">Created</td>
+                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(payment.createdAt || payment.created_at)}</td>
                       </tr>
                       {payment.detectedAt && (
@@ -232,11 +232,11 @@ export default function AdminPaymentDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>User ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="fw-medium">{payment.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Tx Hash</td>
+                        <td className="text-muted">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                         <td>
                           {payment.txHash ? (
                             <div className="d-flex align-items-center">
@@ -249,7 +249,7 @@ export default function AdminPaymentDetail() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
-                                  title="View on explorer"
+                                  title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                                 >
                                   <i className="bx bx-link-external"></i>
                                 </a>
@@ -261,7 +261,7 @@ export default function AdminPaymentDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">From Address</td>
+                        <td className="text-muted">{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</td>
                         <td>
                           {payment.fromAddress ? (
                             <div className="d-flex align-items-center">
@@ -271,7 +271,7 @@ export default function AdminPaymentDetail() {
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                 onClick={() => handleCopy(payment.fromAddress)}
-                                title="Copy"
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
                                 <i className="bx bx-copy"></i>
                               </button>
@@ -282,7 +282,7 @@ export default function AdminPaymentDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">To Address</td>
+                        <td className="text-muted">{t('admin.detail.toAddress', { defaultValue: 'To Address' })}</td>
                         <td>
                           {payment.toAddress ? (
                             <div className="d-flex align-items-center">
@@ -292,7 +292,7 @@ export default function AdminPaymentDetail() {
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                 onClick={() => handleCopy(payment.toAddress)}
-                                title="Copy"
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
                                 <i className="bx bx-copy"></i>
                               </button>
@@ -304,7 +304,7 @@ export default function AdminPaymentDetail() {
                       </tr>
                       {payment.blockNumber && (
                         <tr>
-                          <td className="text-muted">Block Number</td>
+                          <td className="text-muted">{t('admin.detail.blockNumber', { defaultValue: 'Block Number' })}</td>
                           <td>{payment.blockNumber}</td>
                         </tr>
                       )}

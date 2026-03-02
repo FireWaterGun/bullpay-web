@@ -8,7 +8,7 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
   if (!data || data.length === 0) {
     return (
       <div className="d-flex align-items-center justify-content-center" style={{ height }}>
-        <span className="text-muted">No data available</span>
+        <span className="text-muted">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
       </div>
     )
   }
@@ -134,7 +134,7 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                       rx={2}
                       fill="#696cff"
                     >
-                      <title>Revenue: {formatCurrency(rev)}</title>
+                      <title>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}: {formatCurrency(rev)}</title>
                     </rect>
                     <rect
                       x={cx + 1}
@@ -146,7 +146,7 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                       stroke="#8898b8"
                       strokeWidth="0.5"
                     >
-                      <title>Cost: {formatCurrency(cost)}</title>
+                      <title>{t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}: {formatCurrency(cost)}</title>
                     </rect>
                   </g>
                 )
@@ -164,7 +164,7 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                 const cy = yPos(item.profit || 0)
                 return (
                   <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" stroke="#fff" strokeWidth="1.5">
-                    <title>Profit: {formatCurrency(item.profit)}</title>
+                    <title>{t ? t('admin.operatingProfit', { defaultValue: 'Profit' }) : 'Profit'}: {formatCurrency(item.profit)}</title>
                   </circle>
                 )
               })}

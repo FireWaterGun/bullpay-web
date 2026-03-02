@@ -141,10 +141,10 @@ export default function GasTopups() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-gas-pump me-2"></i>
-                    Gas Topups
+                    {t('admin.gasTopup.listTitle', { defaultValue: 'Gas Topups' })}
                   </h4>
                   <p className="text-muted mb-0">
-                    View gas topup transactions created by the system
+                    {t('admin.gasTopup.description', { defaultValue: 'View all gas topup transactions and their status' })}
                   </p>
                 </div>
                 <RefreshButton onClick={loadTopups} loading={loading} />
@@ -153,18 +153,18 @@ export default function GasTopups() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label">Status</label>
+                  <label className="form-label">{t('common.status', { defaultValue: 'Status' })}</label>
                   <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                    <option value="">All</option>
-                    <option value="pending">Pending</option>
-                    <option value="processing">Processing</option>
-                    <option value="completed">Completed</option>
-                    <option value="failed">Failed</option>
-                    <option value="skipped">Skipped</option>
+                    <option value="">{t('common.all', { defaultValue: 'All' })}</option>
+                    <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
+                    <option value="processing">{t('status.processing', { defaultValue: 'Processing' })}</option>
+                    <option value="completed">{t('status.completed', { defaultValue: 'Completed' })}</option>
+                    <option value="failed">{t('status.failed', { defaultValue: 'Failed' })}</option>
+                    <option value="skipped">{t('admin.gasTopup.skipped', { defaultValue: 'Skipped' })}</option>
                   </select>
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label">Coin / Network</label>
+                  <label className="form-label">{t('admin.gasTopup.coinNetwork', { defaultValue: 'Coin / Network' })}</label>
                   <div className="dropdown">
                     <button
                       className="form-select d-flex align-items-center justify-content-between"
@@ -175,7 +175,7 @@ export default function GasTopups() {
                     >
                       {coinNetworkIdFilter ? (() => {
                         const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
-                        if (!cn) return 'All'
+                        if (!cn) return t('common.all', { defaultValue: 'All' })
                         const sym = (cn.coin?.symbol || '').toUpperCase()
                         const net = (cn.network?.symbol || '').toUpperCase()
                         return (
@@ -185,12 +185,12 @@ export default function GasTopups() {
                             <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
                           </span>
                         )
-                      })() : <span className="text-muted">All</span>}
+                      })() : <span className="text-muted">{t('common.all', { defaultValue: 'All' })}</span>}
                     </button>
                     <ul className="dropdown-menu w-100" style={{ maxHeight: '280px', overflowY: 'auto' }}>
                       <li>
                         <button className="dropdown-item" onClick={() => setCoinNetworkIdFilter('')}>
-                          <span className="text-muted">All</span>
+                          <span className="text-muted">{t('common.all', { defaultValue: 'All' })}</span>
                         </button>
                       </li>
                       <li><hr className="dropdown-divider" /></li>
@@ -213,22 +213,22 @@ export default function GasTopups() {
                   </div>
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label">Sweep ID</label>
-                  <input type="number" className="form-control" placeholder="Sweep ID" value={sweepIdFilter} onChange={(e) => setSweepIdFilter(e.target.value)} />
+                  <label className="form-label">{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</label>
+                  <input type="number" className="form-control" placeholder={t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })} value={sweepIdFilter} onChange={(e) => setSweepIdFilter(e.target.value)} />
                 </div>
                 <div className="col-md-2 col-sm-6">
-                  <label className="form-label">Tx Hash</label>
+                  <label className="form-label">{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</label>
                   <input type="text" className="form-control" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label">Date Range</label>
+                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
                   <LocaleDateRangePicker
                     startDate={dateFromFilter}
                     endDate={dateToFilter}
                     onChangeStart={setDateFromFilter}
                     onChangeEnd={setDateToFilter}
                     locale={locale}
-                    placeholder="Select date range"
+                    placeholder={t('admin.detail.selectDateRange', { defaultValue: 'Select date range' })}
                     t={t}
                     style={{ width: '100%' }}
                   />
@@ -254,18 +254,18 @@ export default function GasTopups() {
                 <table className="table table-hover">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
-                      <th>ID</th>
-                      <th>Coin</th>
-                      <th className="text-center">Sweep ID</th>
-                      <th className="text-end">Topup Gas</th>
-                      <th className="text-end">Required Gas</th>
-                      <th className="text-center">Status</th>
-                      <th>Tx Hash</th>
-                      <th>From Address</th>
-                      <th>To Address</th>
-                      <th className="text-center">Retry</th>
-                      <th>Created</th>
-                      <th>Completed</th>
+                      <th>{t('admin.gasTopup.id', { defaultValue: 'ID' })}</th>
+                      <th>{t('admin.gasTopup.coin', { defaultValue: 'Coin' })}</th>
+                      <th className="text-center">{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</th>
+                      <th className="text-end">{t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}</th>
+                      <th className="text-end">{t('admin.gasTopup.requiredGas', { defaultValue: 'Required Gas' })}</th>
+                      <th className="text-center">{t('admin.gasTopup.status', { defaultValue: 'Status' })}</th>
+                      <th>{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</th>
+                      <th>{t('admin.gasTopup.fromAddress', { defaultValue: 'From Address' })}</th>
+                      <th>{t('admin.gasTopup.toAddress', { defaultValue: 'To Address' })}</th>
+                      <th className="text-center">{t('admin.gasTopup.retry', { defaultValue: 'Retry' })}</th>
+                      <th>{t('admin.gasTopup.created', { defaultValue: 'Created' })}</th>
+                      <th>{t('admin.gasTopup.completedAt', { defaultValue: 'Completed' })}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -282,6 +282,7 @@ export default function GasTopups() {
                           topup={topup}
                           onCopy={handleCopy}
                           onNavigate={(id) => router.push(`/admin/wallet-gas-topups/${id}`)}
+                          t={t}
                         />
                       ))
                     )}

@@ -2,21 +2,21 @@
 
 import { formatDate } from '@/lib/utils/format'
 
-export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) {
+export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t }) {
   return (
     <>
       <div className="card mb-4">
         <div className="card-header">
           <h5 className="mb-0">
             <i className="bx bx-link me-2"></i>
-            Transaction
+            {t('admin.gasTopup.transaction', { defaultValue: 'Transaction' })}
           </h5>
         </div>
         <div className="card-body">
           <table className="table table-borderless">
             <tbody>
               <tr>
-                <td className="text-muted" style={{ width: '40%' }}>Tx Hash</td>
+                <td className="text-muted" style={{ width: '40%' }}>{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</td>
                 <td>
                   {topup.txHash ? (
                     <>
@@ -29,14 +29,14 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) 
                             rel="noopener noreferrer"
                             className="btn btn-sm btn-outline-primary"
                           >
-                            <i className="bx bx-link-external me-1"></i>Explorer
+                            <i className="bx bx-link-external me-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </a>
                         )}
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => onCopy(topup.txHash)}
                         >
-                          <i className="bx bx-copy me-1"></i>Copy
+                          <i className="bx bx-copy me-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </button>
                       </div>
                     </>
@@ -47,24 +47,24 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) 
               </tr>
               {topup.blockNumber && (
                 <tr>
-                  <td className="text-muted">Block Number</td>
+                  <td className="text-muted">{t('admin.gasTopup.blockNumber', { defaultValue: 'Block Number' })}</td>
                   <td>{topup.blockNumber}</td>
                 </tr>
               )}
               {topup.gasUsedRaw && (
                 <tr>
-                  <td className="text-muted">Gas Used</td>
+                  <td className="text-muted">{t('admin.gasTopup.gasUsed', { defaultValue: 'Gas Used' })}</td>
                   <td><code style={{ fontSize: '0.8rem' }}>{topup.gasUsedRaw}</code></td>
                 </tr>
               )}
               {topup.gasPriceRaw && (
                 <tr>
-                  <td className="text-muted">Gas Price</td>
+                  <td className="text-muted">{t('admin.gasTopup.gasPrice', { defaultValue: 'Gas Price' })}</td>
                   <td><code style={{ fontSize: '0.8rem' }}>{topup.gasPriceRaw}</code></td>
                 </tr>
               )}
               <tr>
-                <td className="text-muted">From Address</td>
+                <td className="text-muted">{t('admin.gasTopup.fromAddress', { defaultValue: 'From Address' })}</td>
                 <td>
                   {topup.fromAddress ? (
                     <>
@@ -77,14 +77,14 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) 
                             rel="noopener noreferrer"
                             className="btn btn-sm btn-outline-primary"
                           >
-                            <i className="bx bx-link-external me-1"></i>Explorer
+                            <i className="bx bx-link-external me-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </a>
                         )}
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => onCopy(topup.fromAddress)}
                         >
-                          <i className="bx bx-copy me-1"></i>Copy
+                          <i className="bx bx-copy me-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </button>
                       </div>
                     </>
@@ -94,7 +94,7 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) 
                 </td>
               </tr>
               <tr>
-                <td className="text-muted">To Address</td>
+                <td className="text-muted">{t('admin.gasTopup.toAddress', { defaultValue: 'To Address' })}</td>
                 <td>
                   {topup.toAddress ? (
                     <>
@@ -107,14 +107,14 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) 
                             rel="noopener noreferrer"
                             className="btn btn-sm btn-outline-primary"
                           >
-                            <i className="bx bx-link-external me-1"></i>Explorer
+                            <i className="bx bx-link-external me-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </a>
                         )}
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => onCopy(topup.toAddress)}
                         >
-                          <i className="bx bx-copy me-1"></i>Copy
+                          <i className="bx bx-copy me-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </button>
                       </div>
                     </>
@@ -132,31 +132,31 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy }) 
         <div className="card-header">
           <h5 className="mb-0">
             <i className="bx bx-time me-2"></i>
-            Timestamps
+            {t('admin.gasTopup.timestamps', { defaultValue: 'Timestamps' })}
           </h5>
         </div>
         <div className="card-body">
           <table className="table table-borderless">
             <tbody>
               <tr>
-                <td className="text-muted" style={{ width: '40%' }}>Created</td>
+                <td className="text-muted" style={{ width: '40%' }}>{t('admin.gasTopup.created', { defaultValue: 'Created' })}</td>
                 <td>{formatDate(topup.createdAt)}</td>
               </tr>
               {topup.processingStartedAt && (
                 <tr>
-                  <td className="text-muted">Processing Started</td>
+                  <td className="text-muted">{t('admin.gasTopup.processingStartedAt', { defaultValue: 'Processing Started' })}</td>
                   <td>{formatDate(topup.processingStartedAt)}</td>
                 </tr>
               )}
               {topup.completedAt && (
                 <tr>
-                  <td className="text-muted">Completed</td>
+                  <td className="text-muted">{t('admin.gasTopup.completedAt', { defaultValue: 'Completed' })}</td>
                   <td>{formatDate(topup.completedAt)}</td>
                 </tr>
               )}
               {topup.updatedAt && (
                 <tr>
-                  <td className="text-muted">Updated</td>
+                  <td className="text-muted">{t('admin.gasTopup.updated', { defaultValue: 'Updated' })}</td>
                   <td>{formatDate(topup.updatedAt)}</td>
                 </tr>
               )}

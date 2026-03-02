@@ -104,7 +104,7 @@ export default function AuditLogList() {
       setPagination(data.pagination || null)
     } catch (error) {
       logger.error('Failed to load audit logs:', error)
-      toast.error('Failed to load audit logs')
+      toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit logs' }))
     } finally {
       setLoading(false)
     }
@@ -158,17 +158,17 @@ export default function AuditLogList() {
             <div className="card-body">
               <div className="row g-3">
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label">User ID</label>
+                  <label className="form-label">{t('admin.detail.userId', { defaultValue: 'User ID' })}</label>
                   <input
                     type="number"
                     className="form-control"
-                    placeholder="User ID"
+                    placeholder={t('admin.detail.userId', { defaultValue: 'User ID' })}
                     value={userIdFilter}
                     onChange={e => setUserIdFilter(e.target.value)}
                   />
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label">Action</label>
+                  <label className="form-label">{t('admin.detail.action', { defaultValue: 'Action' })}</label>
                   <select className="form-select" value={actionFilter} onChange={e => setActionFilter(e.target.value)}>
                     <option value="">{t('filter.allActions', { defaultValue: 'All Actions' })}</option>
                     {ACTION_OPTIONS.map(o => (
@@ -177,7 +177,7 @@ export default function AuditLogList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label">Resource Type</label>
+                  <label className="form-label">{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</label>
                   <select className="form-select" value={resourceTypeFilter} onChange={e => setResourceTypeFilter(e.target.value)}>
                     <option value="">{t('filter.allTypes', { defaultValue: 'All Types' })}</option>
                     {RESOURCE_TYPE_OPTIONS.map(o => (
@@ -186,11 +186,11 @@ export default function AuditLogList() {
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
-                  <label className="form-label">Resource ID</label>
+                  <label className="form-label">{t('admin.auditLog.resourceId', { defaultValue: 'Resource ID' })}</label>
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Resource ID"
+                    placeholder={t('admin.auditLog.resourceId', { defaultValue: 'Resource ID' })}
                     value={resourceIdFilter}
                     onChange={e => setResourceIdFilter(e.target.value)}
                   />
@@ -221,8 +221,8 @@ export default function AuditLogList() {
                   <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
                   <select className="form-select" value={sortOrderFilter} onChange={e => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
                   </select>
                 </div>
               </div>
@@ -246,13 +246,13 @@ export default function AuditLogList() {
                 <table className="table table-hover">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
-                      <th>ID</th>
+                      <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                       <th className="text-center">User</th>
-                      <th>Action</th>
-                      <th>Resource Type</th>
+                      <th>{t('admin.detail.action', { defaultValue: 'Action' })}</th>
+                      <th>{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</th>
                       <th className="text-center">Resource ID</th>
                       <th>IP Address</th>
-                      <th>Created</th>
+                      <th>{t('admin.detail.created', { defaultValue: 'Created' })}</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -281,7 +281,7 @@ export default function AuditLogList() {
                             <Link
                               href={`/admin/audit-logs/${log.id}`}
                               className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                              title="View details"
+                              title={t('admin.detail.viewDetails', { defaultValue: 'View details' })}
                             >
                               <i className="bx bx-chevron-right"></i>
                             </Link>

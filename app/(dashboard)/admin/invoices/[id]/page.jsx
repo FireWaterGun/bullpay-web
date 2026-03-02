@@ -53,7 +53,7 @@ export default function AdminInvoiceDetail() {
   if (!invoice) {
     return (
       <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="alert alert-warning">Invoice not found</div>
+        <div className="alert alert-warning">{t('admin.invoiceDetail.notFound', { defaultValue: 'Invoice not found' })}</div>
       </div>
     )
   }
@@ -113,7 +113,7 @@ export default function AdminInvoiceDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{invoice.id}</td>
                       </tr>
                       <tr>
@@ -125,7 +125,7 @@ export default function AdminInvoiceDetail() {
                         <td className="fw-medium">{invoice.publicCode || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Status</td>
+                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
                           <span className={statusBadgeClass(invoice.status)}>
                             {String(invoice.status || '').toUpperCase()}
@@ -133,7 +133,7 @@ export default function AdminInvoiceDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Amount</td>
+                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td className="fw-medium">{formatAmount(invoice.amount)} {coinSymbol}</td>
                       </tr>
                       <tr>
@@ -151,7 +151,7 @@ export default function AdminInvoiceDetail() {
                       </tr>
                       {invoice.amountUsd && (
                         <tr>
-                          <td className="text-muted">Amount (USD)</td>
+                          <td className="text-muted">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
                           <td className="fw-medium">${formatAmount(invoice.amountUsd)}</td>
                         </tr>
                       )}
@@ -167,7 +167,7 @@ export default function AdminInvoiceDetail() {
                         </tr>
                       )}
                       <tr>
-                        <td className="text-muted">Coin</td>
+                        <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="d-flex align-items-center">
                             <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="me-2" />
@@ -176,11 +176,11 @@ export default function AdminInvoiceDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Network</td>
+                        <td className="text-muted">{t('admin.detail.network', { defaultValue: 'Network' })}</td>
                         <td>{networkName || networkSymbol || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Created</td>
+                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(invoice.createdAt || invoice.created_at)}</td>
                       </tr>
                       <tr>
@@ -208,12 +208,12 @@ export default function AdminInvoiceDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>User ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="fw-medium">{invoice.userId || invoice.user?.id || '-'}</td>
                       </tr>
                       {invoice.user?.email && (
                         <tr>
-                          <td className="text-muted">Email</td>
+                          <td className="text-muted">{t('admin.detail.email', { defaultValue: 'Email' })}</td>
                           <td className="fw-medium">{invoice.user.email}</td>
                         </tr>
                       )}
@@ -234,7 +234,7 @@ export default function AdminInvoiceDetail() {
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                 onClick={() => handleCopy(invoice.paymentAddress)}
-                                title="Copy"
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
                                 <i className="bx bx-copy"></i>
                               </button>

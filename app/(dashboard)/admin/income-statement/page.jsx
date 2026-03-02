@@ -65,7 +65,7 @@ export default function IncomeStatement() {
 
   async function loadReport() {
     if (!fromDate || !toDate) {
-      toast.error('From and To dates are required')
+      toast.error(t('admin.incomeStatement.datesRequired', { defaultValue: 'From and To dates are required' }))
       return
     }
     try {
@@ -181,7 +181,7 @@ export default function IncomeStatement() {
                     <i className="bx bx-bar-chart-alt-2" style={{ fontSize: '2.5rem', color: 'var(--bs-secondary-color)' }}></i>
                   </div>
                 </div>
-                <h5 className="mb-2">No transactions found</h5>
+                <h5 className="mb-2">{t('admin.incomeStatement.noTransactions', { defaultValue: 'No transactions found' })}</h5>
                 <p className="text-muted mb-3" style={{ maxWidth: 400, margin: '0 auto' }}>
                   There are no revenue or expense records for the period <strong>{fromDate}</strong> to <strong>{toDate}</strong>.
                 </p>

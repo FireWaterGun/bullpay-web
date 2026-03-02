@@ -117,7 +117,7 @@ export default function TempWalletHistoryList() {
       setPagination(data.pagination || null)
     } catch (error) {
       logger.error('Failed to load temp wallet histories:', error)
-      toast.error('Failed to load temp wallet histories')
+      toast.error(t('admin.tempWallet.loadHistoriesError', { defaultValue: 'Failed to load temp wallet histories' }))
     } finally {
       setLoading(false)
     }
@@ -239,8 +239,8 @@ export default function TempWalletHistoryList() {
                   <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
                   <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
                   </select>
                 </div>
               </div>
@@ -337,7 +337,7 @@ export default function TempWalletHistoryList() {
                             <Link
                               href={`/admin/temp-wallet-histories/${h.id}`}
                               className="btn btn-sm btn-icon btn-text-secondary"
-                              title="View detail"
+                              title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
                             >
                               <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
                             </Link>

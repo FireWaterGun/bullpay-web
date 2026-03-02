@@ -51,7 +51,7 @@ export default function UserLedgerDetail() {
   function stateBadge(state) {
     if (state === 'settled') return <span className="badge bg-label-success">Settled</span>
     if (state === 'committed') return <span className="badge bg-label-info">Committed</span>
-    if (state === 'pending') return <span className="badge bg-label-warning">Pending</span>
+    if (state === 'pending') return <span className="badge bg-label-warning">{t('status.pending', { defaultValue: 'Pending' })}</span>
     if (state === 'reversed') return <span className="badge bg-label-secondary">Reversed</span>
     return <span className="text-muted">{state || 'N/A'}</span>
   }
@@ -177,11 +177,11 @@ export default function UserLedgerDetail() {
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{entry.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">User ID</td>
+                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td><span className="badge bg-label-primary">#{entry.userId}</span></td>
                       </tr>
                       <tr>
@@ -266,19 +266,19 @@ export default function UserLedgerDetail() {
                     <tbody>
                       {entry.reservationId && (
                         <tr>
-                          <td className="text-muted" style={{ width: '40%' }}>Reservation ID</td>
+                          <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
                           <td><code>{entry.reservationId}</code></td>
                         </tr>
                       )}
                       {entry.relatedId && (
                         <tr>
-                          <td className="text-muted">Related ID</td>
+                          <td className="text-muted">{t('admin.detail.relatedId', { defaultValue: 'Related ID' })}</td>
                           <td>#{entry.relatedId}</td>
                         </tr>
                       )}
                       {entry.txHash && (
                         <tr>
-                          <td className="text-muted">Tx Hash</td>
+                          <td className="text-muted">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                           <td>
                             <code className="text-break" style={{ fontSize: '0.75rem' }}>{entry.txHash}</code>
                             <div className="d-flex gap-1 mt-2">
@@ -321,7 +321,7 @@ export default function UserLedgerDetail() {
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Created</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(entry.createdAt)}</td>
                       </tr>
                       {entry.committedAt && (
@@ -344,7 +344,7 @@ export default function UserLedgerDetail() {
                       )}
                       {entry.updatedAt && (
                         <tr>
-                          <td className="text-muted">Updated</td>
+                          <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                           <td>{formatDate(entry.updatedAt)}</td>
                         </tr>
                       )}

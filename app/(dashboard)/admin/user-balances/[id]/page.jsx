@@ -31,7 +31,7 @@ export default function UserBalanceDetailPage() {
       setData(result)
     } catch (error) {
       logger.error('Failed to load user balance detail:', error)
-      toast.error('Failed to load user balance detail')
+      toast.error(t('admin.userBalance.loadDetailError', { defaultValue: 'Failed to load user balance detail' }))
     } finally {
       setLoading(false)
     }
@@ -83,13 +83,13 @@ export default function UserBalanceDetailPage() {
           </div>
 
           <div className="row g-4 mb-4">
-            <SummaryCard title="Total Assets" value={data.totalAssets ?? 0} icon="bx-coin-stack" color="primary" />
-            <SummaryCard title="Total Value (USD)" value={`$${data.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
+            <SummaryCard title={t('admin.userBalance.totalAssets', { defaultValue: 'Total Assets' })} value={data.totalAssets ?? 0} icon="bx-coin-stack" color="primary" />
+            <SummaryCard title={t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' })} value={`$${data.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
           </div>
 
           <div className="card">
             <div className="card-header">
-              <h5 className="mb-0"><i className="bx bx-coin-stack me-2"></i>Assets</h5>
+              <h5 className="mb-0"><i className="bx bx-coin-stack me-2"></i>{t('admin.userBalance.assets', { defaultValue: 'Assets' })}</h5>
             </div>
             <div className="card-body">
               {assets.length === 0 ? (
@@ -99,16 +99,16 @@ export default function UserBalanceDetailPage() {
                   <table className="table table-hover">
                     <thead>
                       <tr style={{ whiteSpace: 'nowrap' }}>
-                        <th>Coin</th>
-                        <th>Network</th>
-                        <th className="text-end">Confirmed</th>
-                        <th className="text-end">Unconfirmed</th>
+                        <th>{t('admin.detail.coin', { defaultValue: 'Coin' })}</th>
+                        <th>{t('admin.detail.network', { defaultValue: 'Network' })}</th>
+                        <th className="text-end">{t('status.confirmed', { defaultValue: 'Confirmed' })}</th>
+                        <th className="text-end">{t('status.unconfirmed', { defaultValue: 'Unconfirmed' })}</th>
                         <th className="text-end">Locked</th>
                         <th className="text-end">Available</th>
                         <th className="text-end">Total</th>
                         <th className="text-end">Price (USD)</th>
-                        <th className="text-end">Value (USD)</th>
-                        <th>Updated</th>
+                        <th className="text-end">{t('admin.userBalance.valueUsd', { defaultValue: 'Value (USD)' })}</th>
+                        <th>{t('admin.detail.updated', { defaultValue: 'Updated' })}</th>
                       </tr>
                     </thead>
                     <tbody>

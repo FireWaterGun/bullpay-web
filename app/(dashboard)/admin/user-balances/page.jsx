@@ -12,12 +12,6 @@ import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
-const SORT_BY_OPTIONS = [
-  { value: 'totalValueUsd', label: 'Total Value (USD)' },
-  { value: 'totalAssets', label: 'Total Assets' },
-  { value: 'updatedAt', label: 'Updated At' },
-]
-
 function roleBadgeClass(role) {
   const v = String(role || '').toLowerCase()
   if (v === 'super_admin') return 'badge bg-label-danger'
@@ -29,6 +23,11 @@ function roleBadgeClass(role) {
 
 export default function UserBalanceListPage() {
   const { t } = useTranslation()
+  const SORT_BY_OPTIONS = [
+    { value: 'totalValueUsd', label: t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' }) },
+    { value: 'totalAssets', label: t('admin.userBalance.totalAssets', { defaultValue: 'Total Assets' }) },
+    { value: 'updatedAt', label: t('admin.detail.updatedAt', { defaultValue: 'Updated At' }) },
+  ]
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
@@ -110,7 +109,7 @@ export default function UserBalanceListPage() {
       setPagination(data.pagination || null)
     } catch (error) {
       logger.error('Failed to load user balances:', error)
-      toast.error('Failed to load user balances')
+      toast.error(t('admin.userBalance.loadError', { defaultValue: 'Failed to load user balances' }))
     } finally {
       setLoading(false)
     }
@@ -143,10 +142,10 @@ export default function UserBalanceListPage() {
 
           {summary && (
             <div className="row g-4 mb-4">
-              <SummaryCard title="Total Users" value={summary.totalUsers ?? 0} icon="bx-group" color="primary" />
-              <SummaryCard title="Total Value (USD)" value={`$${summary.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
-              <SummaryCard title="Average (USD)" value={`$${summary.averageValueUsd ?? '0.00'}`} icon="bx-bar-chart-alt-2" color="info" />
-              <SummaryCard title="With Balance" value={summary.totalUsersWithBalance ?? summary.usersWithBalance ?? 0} icon="bx-user-check" color="warning" />
+              <SummaryCard title={t('admin.userBalance.totalUsers', { defaultValue: 'Total Users' })} value={summary.totalUsers ?? 0} icon="bx-group" color="primary" />
+              <SummaryCard title={t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' })} value={`$${summary.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
+              <SummaryCard title={t('admin.userBalance.averageUsd', { defaultValue: 'Average (USD)' })} value={`$${summary.averageValueUsd ?? '0.00'}`} icon="bx-bar-chart-alt-2" color="info" />
+              <SummaryCard title={t('admin.userBalance.withBalance', { defaultValue: 'With Balance' })} value={summary.totalUsersWithBalance ?? summary.usersWithBalance ?? 0} icon="bx-user-check" color="warning" />
             </div>
           )}
 
@@ -166,8 +165,8 @@ export default function UserBalanceListPage() {
                   <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
                   <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">
@@ -229,7 +228,7 @@ export default function UserBalanceListPage() {
                             <Link
                               href={`/admin/user-balances/${u.userId}`}
                               className="btn btn-sm btn-icon btn-text-secondary"
-                              title="View detail"
+                              title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
                             >
                               <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
                             </Link>

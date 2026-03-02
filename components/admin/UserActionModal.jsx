@@ -2,6 +2,7 @@
 
 import { formatRoleLabel } from '@/lib/utils/roles'
 import { STATUS_OPTIONS, ROLE_OPTIONS, statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
+import { useTranslation } from 'react-i18next'
 
 export default function UserActionModal({
   t,
@@ -51,11 +52,11 @@ export default function UserActionModal({
             <div className="rounded p-3 mb-3" style={{ backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
               <div className="row g-2">
                 <div className="col-6">
-                  <small className="text-muted d-block">User ID</small>
+                  <small className="text-muted d-block">{t('admin.detail.userId', { defaultValue: 'User ID' })}</small>
                   <strong>{selectedUser.id}</strong>
                 </div>
                 <div className="col-6">
-                  <small className="text-muted d-block">Email</small>
+                  <small className="text-muted d-block">{t('admin.detail.email', { defaultValue: 'Email' })}</small>
                   <strong>{selectedUser.email}</strong>
                 </div>
                 <div className="col-6">

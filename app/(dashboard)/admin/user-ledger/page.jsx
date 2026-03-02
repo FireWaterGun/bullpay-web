@@ -184,15 +184,15 @@ export default function UserLedgerList() {
                 <table className="table table-hover" style={{ minWidth: '1200px' }}>
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
-                      <th>ID</th>
-                      <th>User ID</th>
+                      <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
+                      <th>{t('admin.detail.userId', { defaultValue: 'User ID' })}</th>
                       <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
                       <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
-                      <th>Code</th>
+                      <th>{t('admin.detail.code', { defaultValue: 'Code' })}</th>
                       <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
                       <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
                       <th className="text-end">USD</th>
-                      <th>Tx Hash</th>
+                      <th>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
                       <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
                       <th></th>
                     </tr>

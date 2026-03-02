@@ -41,7 +41,7 @@ export default function TempWalletHistoryDetail() {
       setHistory(data)
     } catch (error) {
       logger.error('Failed to load temp wallet history:', error)
-      toast.error('Failed to load history')
+      toast.error(t('admin.tempWallet.loadHistoryError', { defaultValue: 'Failed to load history' }))
     } finally {
       setLoading(false)
     }
@@ -107,17 +107,17 @@ export default function TempWalletHistoryDetail() {
             <div className="col-md-6">
               <div className="card mb-4">
                 <div className="card-header">
-                  <h5 className="mb-0"><i className="bx bx-detail me-2"></i>Details</h5>
+                  <h5 className="mb-0"><i className="bx bx-detail me-2"></i>{t('admin.detail.details', { defaultValue: 'Details' })}</h5>
                 </div>
                 <div className="card-body">
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{history.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Status</td>
+                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
                           <span className={statusBadgeClass(history.status)}>
                             {String(history.status || '').toUpperCase()}
@@ -149,16 +149,16 @@ export default function TempWalletHistoryDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">User ID</td>
+                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="fw-medium">{history.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Coin Network ID</td>
+                        <td className="text-muted">{t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}</td>
                         <td className="fw-medium">{history.coinNetworkId || '-'}</td>
                       </tr>
                       {history.address && (
                         <tr>
-                          <td className="text-muted">Address</td>
+                          <td className="text-muted">{t('admin.detail.address', { defaultValue: 'Address' })}</td>
                           <td>
                             <div className="d-flex align-items-center">
                               <code className="text-body me-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
@@ -167,7 +167,7 @@ export default function TempWalletHistoryDetail() {
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                 onClick={() => handleCopy(history.address)}
-                                title="Copy"
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
                                 <i className="bx bx-copy"></i>
                               </button>
@@ -177,7 +177,7 @@ export default function TempWalletHistoryDetail() {
                       )}
                       {history.amount != null && (
                         <tr>
-                          <td className="text-muted">Amount</td>
+                          <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                           <td className="fw-bold">{history.amount}</td>
                         </tr>
                       )}
@@ -192,7 +192,7 @@ export default function TempWalletHistoryDetail() {
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                 onClick={() => handleCopy(history.sweepTxHash)}
-                                title="Copy"
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
                                 <i className="bx bx-copy"></i>
                               </button>
@@ -210,17 +210,17 @@ export default function TempWalletHistoryDetail() {
             <div className="col-md-6">
               <div className="card mb-4">
                 <div className="card-header">
-                  <h5 className="mb-0"><i className="bx bx-time-five me-2"></i>Timestamps</h5>
+                  <h5 className="mb-0"><i className="bx bx-time-five me-2"></i>{t('admin.detail.timestamps', { defaultValue: 'Timestamps' })}</h5>
                 </div>
                 <div className="card-body">
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Created</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(history.createdAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Updated</td>
+                        <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                         <td>{formatDate(history.updatedAt)}</td>
                       </tr>
                       <tr>
@@ -254,7 +254,7 @@ export default function TempWalletHistoryDetail() {
               {history.failureReason && (
                 <div className="card mb-4">
                   <div className="card-header">
-                    <h5 className="mb-0 text-danger"><i className="bx bx-error me-2"></i>Failure Reason</h5>
+                    <h5 className="mb-0 text-danger"><i className="bx bx-error me-2"></i>{t('admin.detail.failureReason', { defaultValue: 'Failure Reason' })}</h5>
                   </div>
                   <div className="card-body">
                     <pre className="mb-0 text-danger" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '0.85rem' }}>
@@ -268,7 +268,7 @@ export default function TempWalletHistoryDetail() {
               {history.metadata && Object.keys(history.metadata).length > 0 && (
                 <div className="card mb-4">
                   <div className="card-header">
-                    <h5 className="mb-0"><i className="bx bx-code-alt me-2"></i>Metadata</h5>
+                    <h5 className="mb-0"><i className="bx bx-code-alt me-2"></i>{t('admin.detail.metadata', { defaultValue: 'Metadata' })}</h5>
                   </div>
                   <div className="card-body">
                     <pre className="mb-0" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '0.8rem', maxHeight: 300, overflow: 'auto' }}>

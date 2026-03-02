@@ -178,8 +178,8 @@ export default function WalletTransaction() {
                   <label className="form-label">{t('filter.entryType', { defaultValue: 'Entry Type' })}</label>
                   <select className="form-select" value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="credit">Credit</option>
-                    <option value="debit">Debit</option>
+                    <option value="credit">{t('admin.detail.credit', { defaultValue: 'Credit' })}</option>
+                    <option value="debit">{t('admin.detail.debit', { defaultValue: 'Debit' })}</option>
                   </select>
                 </div>
                 <div className="col-md-3 col-sm-6">

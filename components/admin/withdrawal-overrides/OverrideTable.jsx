@@ -88,7 +88,7 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
                 )}
                 <th>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</th>
                 <th>{t('admin.withdrawal.feeConfig', { defaultValue: 'Fee Config' })}</th>
-                <th className="text-end">Actions</th>
+                <th className="text-end">{t('admin.detail.actions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
             <tbody>

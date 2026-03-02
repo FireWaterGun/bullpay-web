@@ -41,7 +41,7 @@ export default function TempWalletDetail() {
       setWallet(data)
     } catch (error) {
       logger.error('Failed to load temp wallet:', error)
-      toast.error('Failed to load temp wallet')
+      toast.error(t('admin.tempWallet.loadDetailError', { defaultValue: 'Failed to load temp wallet' }))
     } finally {
       setLoading(false)
     }
@@ -128,11 +128,11 @@ export default function TempWalletDetail() {
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{wallet.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Status</td>
+                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
                           <span className={statusBadgeClass(wallet.status)}>
                             {String(wallet.status || '').toUpperCase()}
@@ -156,11 +156,11 @@ export default function TempWalletDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">User ID</td>
+                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="fw-medium">{wallet.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Coin</td>
+                        <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="d-flex align-items-center gap-2">
                             <CoinImg symbol={wallet.coinSymbol} networkSymbol={wallet.networkSymbol} size={28} />
@@ -176,7 +176,7 @@ export default function TempWalletDetail() {
                         <td className="fw-medium">{wallet.decimals ?? '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Address</td>
+                        <td className="text-muted">{t('admin.detail.address', { defaultValue: 'Address' })}</td>
                         <td>
                           {wallet.address ? (
                             <div className="d-flex align-items-center">
@@ -186,7 +186,7 @@ export default function TempWalletDetail() {
                               <button
                                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                 onClick={() => handleCopy(wallet.address)}
-                                title="Copy"
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
                                 <i className="bx bx-copy"></i>
                               </button>
@@ -196,7 +196,7 @@ export default function TempWalletDetail() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-icon btn-text-primary rounded-pill flex-shrink-0"
-                                  title="View on Explorer"
+                                  title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                                 >
                                   <i className="bx bx-link-external"></i>
                                 </a>
@@ -245,7 +245,7 @@ export default function TempWalletDetail() {
                     )}
                     {wallet.isAssigned && <span className="badge bg-label-info">Assigned</span>}
                     {wallet.isAvailable && <span className="badge bg-label-success">Available</span>}
-                    {wallet.isExpired && <span className="badge bg-label-danger">Expired</span>}
+                    {wallet.isExpired && <span className="badge bg-label-danger">{t('status.expired', { defaultValue: 'Expired' })}</span>}
                     {wallet.hasBeenUsed && <span className="badge bg-label-warning">Has Been Used</span>}
                     {wallet.needsSweeping && <span className="badge bg-label-primary">Needs Sweeping</span>}
                     {wallet.timeToExpiry != null && (
@@ -260,17 +260,17 @@ export default function TempWalletDetail() {
               {/* Timestamps */}
               <div className="card mb-4">
                 <div className="card-header">
-                  <h5 className="mb-0"><i className="bx bx-time-five me-2"></i>Timestamps</h5>
+                  <h5 className="mb-0"><i className="bx bx-time-five me-2"></i>{t('admin.detail.timestamps', { defaultValue: 'Timestamps' })}</h5>
                 </div>
                 <div className="card-body">
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Created</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{formatDate(wallet.createdAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Updated</td>
+                        <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                         <td>{formatDate(wallet.updatedAt)}</td>
                       </tr>
                       <tr>
@@ -322,7 +322,7 @@ export default function TempWalletDetail() {
                                 <button
                                   className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                   onClick={() => handleCopy(wallet.lastSweepTxHash)}
-                                  title="Copy"
+                                  title={t('actions.copy', { defaultValue: 'Copy' })}
                                 >
                                   <i className="bx bx-copy"></i>
                                 </button>
@@ -350,7 +350,7 @@ export default function TempWalletDetail() {
                                 <button
                                   className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
                                   onClick={() => handleCopy(wallet.lastTxHash)}
-                                  title="Copy"
+                                  title={t('actions.copy', { defaultValue: 'Copy' })}
                                 >
                                   <i className="bx bx-copy"></i>
                                 </button>
@@ -403,7 +403,7 @@ export default function TempWalletDetail() {
               {wallet.metadata && Object.keys(wallet.metadata).length > 0 && (
                 <div className="card mb-4">
                   <div className="card-header">
-                    <h5 className="mb-0"><i className="bx bx-code-alt me-2"></i>Metadata</h5>
+                    <h5 className="mb-0"><i className="bx bx-code-alt me-2"></i>{t('admin.detail.metadata', { defaultValue: 'Metadata' })}</h5>
                   </div>
                   <div className="card-body">
                     <pre className="mb-0" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '0.8rem', maxHeight: 300, overflow: 'auto' }}>

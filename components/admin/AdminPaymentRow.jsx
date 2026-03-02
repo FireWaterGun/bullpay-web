@@ -93,7 +93,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                title="View on explorer"
+                title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
               >
                 <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
               </a>
@@ -112,7 +112,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             <button
               className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
               onClick={() => onCopy(payment.fromAddress)}
-              title="Copy address"
+              title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
             >
               <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
             </button>
@@ -130,7 +130,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             <button
               className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
               onClick={() => onCopy(payment.toAddress)}
-              title="Copy address"
+              title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
             >
               <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
             </button>
@@ -151,7 +151,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
         <Link
           href={`/admin/payments/${payment.id}`}
           className="btn btn-sm btn-icon btn-text-secondary"
-          title="View detail"
+          title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
         >
           <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
         </Link>

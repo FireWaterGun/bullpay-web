@@ -3,6 +3,7 @@
 import { formatRoleLabel } from '@/lib/utils/roles'
 import { formatDate } from '@/lib/utils/format'
 import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
+import { useTranslation } from 'react-i18next'
 
 export default function UserListTable({
   t,
@@ -53,7 +54,7 @@ export default function UserListTable({
                         <button
                           className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                           onClick={() => onCopy(user.email)}
-                          title="Copy email"
+                          title={t('admin.detail.copyEmail', { defaultValue: 'Copy email' })}
                         >
                           <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                         </button>

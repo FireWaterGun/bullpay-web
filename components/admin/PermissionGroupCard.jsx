@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslation } from 'react-i18next'
+
 const GROUP_ICONS = {
   dashboard: 'bx-tachometer',
   wallet: 'bx-wallet',
@@ -31,6 +33,7 @@ function getPermAction(permName) {
 }
 
 export default function PermissionGroupCard({ group, perms, color = 'primary', isCollapsed, overrideMap, actionLoading, onToggle, onDeny, onGrant, onRevert }) {
+  const { t } = useTranslation('common')
   const activeInGroup = perms.filter(p => p.active).length
   const groupIcon = getGroupIcon(group)
 
@@ -48,7 +51,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
             {formatGroupLabel(group)}
           </h6>
           <div className="d-flex align-items-center gap-2">
-            <small className="text-muted">{activeInGroup}/{perms.length} active</small>
+            <small className="text-muted">{activeInGroup}/{perms.length} {t('admin.roles.active', { defaultValue: 'active' }).toLowerCase()}</small>
             <span className={`badge bg-label-${color} rounded-pill`} style={{ fontSize: '0.7rem' }}>{perms.length}</span>
           </div>
         </div>
@@ -81,7 +84,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
                       <span className={`badge ${badge.cls}`} style={{ fontSize: '0.6rem' }}>{badge.label}</span>
                       {isOverridden && (
                         <span className="badge bg-label-warning" style={{ fontSize: '0.6rem' }}>
-                          <i className="bx bx-edit-alt" style={{ fontSize: '0.55rem' }}></i> override
+                          <i className="bx bx-edit-alt" style={{ fontSize: '0.55rem' }}></i> {t('admin.roles.override', { defaultValue: 'override' })}
                         </span>
                       )}
                     </div>
@@ -103,9 +106,9 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
                             className="btn btn-xs btn-outline-warning"
                             style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem' }}
                             onClick={(e) => { e.stopPropagation(); onRevert(override.id, p.permission) }}
-                            title="Revert to default"
+                            title={t('admin.roles.revertToDefault', { defaultValue: 'Revert to default' })}
                           >
-                            <i className="bx bx-undo me-1"></i>Revert
+                            <i className="bx bx-undo me-1"></i>{t('admin.roles.revert', { defaultValue: 'Revert' })}
                           </button>
                         )}
                         {p.active ? (
@@ -113,18 +116,18 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
                             className="btn btn-xs btn-outline-danger"
                             style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem' }}
                             onClick={(e) => { e.stopPropagation(); onDeny(p.permission) }}
-                            title="Deny this permission"
+                            title={t('admin.roles.denyPermission', { defaultValue: 'Deny this permission' })}
                           >
-                            <i className="bx bx-x me-1"></i>Deny
+                            <i className="bx bx-x me-1"></i>{t('admin.roles.deny', { defaultValue: 'Deny' })}
                           </button>
                         ) : (
                           <button
                             className="btn btn-xs btn-outline-success"
                             style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem' }}
                             onClick={(e) => { e.stopPropagation(); onGrant(p.permission) }}
-                            title="Grant this permission"
+                            title={t('admin.roles.grantPermission', { defaultValue: 'Grant this permission' })}
                           >
-                            <i className="bx bx-check me-1"></i>Grant
+                            <i className="bx bx-check me-1"></i>{t('admin.roles.grant', { defaultValue: 'Grant' })}
                           </button>
                         )}
                       </div>

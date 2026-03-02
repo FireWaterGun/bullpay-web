@@ -35,7 +35,7 @@ export default function SweepDetail() {
       setSweep(data)
     } catch (error) {
       logger.error('Failed to load sweep transaction:', error)
-      toast.error('Failed to load sweep transaction')
+      toast.error(t('admin.sweepDetail.loadError', { defaultValue: 'Failed to load sweep transaction' }))
     } finally {
       setLoading(false)
     }
@@ -174,20 +174,20 @@ export default function SweepDetail() {
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>ID</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="fw-medium">{sweep.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">User ID</td>
+                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td>{sweep.userId || 'N/A'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Coin Network ID</td>
+                        <td className="text-muted">{t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}</td>
                         <td>{sweep.coinNetworkId || 'N/A'}</td>
                       </tr>
                       {coinSymbol && (
                         <tr>
-                          <td className="text-muted">Coin</td>
+                          <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                           <td>
                             <div className="d-flex align-items-center">
                               <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="me-3" />
@@ -202,11 +202,11 @@ export default function SweepDetail() {
                         </tr>
                       )}
                       <tr>
-                        <td className="text-muted">Status</td>
+                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Amount</td>
+                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td>
                           <span className="fw-bold">
                             {sweep.amount || formatAmount(sweep.amountRaw, sweep.decimals, coinSymbol, networkSymbol)}
@@ -244,7 +244,7 @@ export default function SweepDetail() {
                       </tr>
                       {sweep.reservationId && (
                         <tr>
-                          <td className="text-muted">Reservation ID</td>
+                          <td className="text-muted">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
                           <td><code style={{ fontSize: '0.8rem' }}>{sweep.reservationId}</code></td>
                         </tr>
                       )}

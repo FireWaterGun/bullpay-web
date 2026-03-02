@@ -36,7 +36,7 @@ export default function GasTopupDetail() {
       setTopup(data)
     } catch (error) {
       logger.error('Failed to load gas topup:', error)
-      toast.error('Failed to load gas topup details')
+      toast.error(t('admin.gasTopup.loadDetailError', { defaultValue: 'Failed to load gas topup details' }))
     } finally {
       setLoading(false)
     }
@@ -76,7 +76,7 @@ export default function GasTopupDetail() {
       <div className="container-xxl flex-grow-1 container-p-y">
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
-          <p className="text-muted mt-2">Gas topup not found</p>
+          <p className="text-muted mt-2">{t('admin.gasTopup.notFound', { defaultValue: 'Gas topup not found' })}</p>
           <button className="btn btn-primary" onClick={() => router.back()}>
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
@@ -123,7 +123,7 @@ export default function GasTopupDetail() {
                   )}
                   <div>
                     <h4 className="mb-1">
-                      Gas Topup #{topup.id}
+                      {t('admin.gasTopup.detailTitle', { id: topup.id, defaultValue: 'Gas Topup #{{id}}' })}
                     </h4>
                     <div className="d-flex align-items-center gap-2 flex-wrap">
                       <span className={statusBadgeClass(topup.status)}>
@@ -147,7 +147,7 @@ export default function GasTopupDetail() {
                     {formatAmount(topup.topupGasRaw || topup.amountRaw || topup.amount, decimals)}{' '}
                     <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>ETH</span>
                   </div>
-                  <small className="text-muted">Topup Gas</small>
+                  <small className="text-muted">{t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}</small>
                 </div>
               </div>
             </div>
@@ -163,6 +163,7 @@ export default function GasTopupDetail() {
                 decimals={decimals}
                 formatAmount={formatAmount}
                 statusBadgeClass={statusBadgeClass}
+                t={t}
               />
             </div>
 
@@ -171,6 +172,7 @@ export default function GasTopupDetail() {
                 topup={topup}
                 explorerUrl={explorerUrl}
                 onCopy={handleCopy}
+                t={t}
               />
             </div>
           </div>
@@ -180,7 +182,7 @@ export default function GasTopupDetail() {
               <div className="card-header">
                 <h5 className="mb-0">
                   <i className="bx bx-info-circle me-2"></i>
-                  Metadata
+                  {t('admin.gasTopup.metadata', { defaultValue: 'Metadata' })}
                 </h5>
               </div>
               <div className="card-body">
@@ -188,13 +190,13 @@ export default function GasTopupDetail() {
                   <tbody>
                     {metadata.tokenSymbol && (
                       <tr>
-                        <td className="text-muted" style={{ width: '40%' }}>Token Symbol</td>
+                        <td className="text-muted" style={{ width: '40%' }}>{t('admin.gasTopup.tokenSymbol', { defaultValue: 'Token Symbol' })}</td>
                         <td>{metadata.tokenSymbol}</td>
                       </tr>
                     )}
                     {metadata.tokenContractAddress && (
                       <tr>
-                        <td className="text-muted">Token Contract</td>
+                        <td className="text-muted">{t('admin.gasTopup.tokenContract', { defaultValue: 'Token Contract' })}</td>
                         <td>
                           <code className="text-break" style={{ fontSize: '0.75rem' }}>{metadata.tokenContractAddress}</code>
                           {explorerUrl && (
@@ -203,7 +205,7 @@ export default function GasTopupDetail() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="btn btn-sm btn-icon btn-text-secondary rounded-pill ms-1"
-                              title="View on explorer"
+                              title={t('admin.gasTopup.viewOnExplorer', { defaultValue: 'View on explorer' })}
                             >
                               <i className="bx bx-link-external"></i>
                             </a>
@@ -213,13 +215,13 @@ export default function GasTopupDetail() {
                     )}
                     {metadata.networkName && (
                       <tr>
-                        <td className="text-muted">Network</td>
+                        <td className="text-muted">{t('admin.gasTopup.networkName', { defaultValue: 'Network Name' })}</td>
                         <td>{metadata.networkName}</td>
                       </tr>
                     )}
                     {metadata.createdByTask && (
                       <tr>
-                        <td className="text-muted">Created By</td>
+                        <td className="text-muted">{t('admin.gasTopup.createdByTask', { defaultValue: 'Created By' })}</td>
                         <td><code>{metadata.createdByTask}</code></td>
                       </tr>
                     )}
@@ -234,7 +236,7 @@ export default function GasTopupDetail() {
               <div className="card-header">
                 <h5 className="mb-0 text-danger">
                   <i className="bx bx-error me-2"></i>
-                  Failure Reason
+                  {t('admin.gasTopup.failureReason', { defaultValue: 'Failure Reason' })}
                 </h5>
               </div>
               <div className="card-body">

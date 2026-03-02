@@ -16,12 +16,6 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
-const SORT_BY_OPTIONS = [
-  { value: 'createdAt', label: 'Created At' },
-  { value: 'lastAssignedAt', label: 'Last Assigned' },
-  { value: 'lastSweepAt', label: 'Last Sweep' },
-  { value: 'reuseCount', label: 'Reuse Count' },
-]
 
 function statusBadgeClass(s) {
   const v = String(s || '').toLowerCase()
@@ -34,6 +28,12 @@ function statusBadgeClass(s) {
 
 export default function TempWalletList() {
   const { t } = useTranslation()
+  const SORT_BY_OPTIONS = [
+    { value: 'createdAt', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
+    { value: 'lastAssignedAt', label: t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' }) },
+    { value: 'lastSweepAt', label: t('admin.tempWallet.lastSweep', { defaultValue: 'Last Sweep' }) },
+    { value: 'reuseCount', label: t('admin.tempWallet.reuseCount', { defaultValue: 'Reuse Count' }) },
+  ]
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
@@ -121,7 +121,7 @@ export default function TempWalletList() {
       } : null)
     } catch (error) {
       logger.error('Failed to load temp wallets:', error)
-      toast.error('Failed to load temp wallets')
+      toast.error(t('admin.tempWallet.loadError', { defaultValue: 'Failed to load temp wallets' }))
     } finally {
       setLoading(false)
     }
@@ -150,7 +150,7 @@ export default function TempWalletList() {
                     {t('admin.tempWallets.title', { defaultValue: 'Temp Wallets' })}
                   </h4>
                   <p className="text-muted mb-0">
-                    {t('admin.tempWallets.description', { defaultValue: 'Monitor temporary payment wallets (read-only)' })}
+                    {t('admin.tempWallets.description', { defaultValue: 'Monitor temporary payment wallets' })}
                   </p>
                 </div>
                 <div className="d-flex gap-2">
@@ -241,8 +241,8 @@ export default function TempWalletList() {
                   <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
                   <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) }) }) })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: t('admin.detail.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) }) }) })}</option>
                   </select>
                 </div>
               </div>
@@ -278,7 +278,7 @@ export default function TempWalletList() {
                       <th className="text-end">Last Sweep Amt</th>
                       <th className="text-end">Leftover Native</th>
                       <th className="text-end">Leftover Token</th>
-                      <th>{t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' })}</th>
+                      <th>{t('admin.tempWallets.lastAssigned', { defaultValue: t('admin.tempWallet.lastAssigned', { defaultValue: t('admin.tempWallet.lastAssigned', { defaultValue: 'Last Assigned' }) }) })}</th>
                       <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
                       <th>{t('table.created', { defaultValue: 'Created' })}</th>
                       <th></th>
@@ -330,7 +330,7 @@ export default function TempWalletList() {
                                 <button
                                   className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                                   onClick={() => handleCopy(w.address)}
-                                  title="Copy address"
+                                  title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                                 >
                                   <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                                 </button>
@@ -378,7 +378,7 @@ export default function TempWalletList() {
                             <Link
                               href={`/admin/temp-wallets/${w.id}`}
                               className="btn btn-sm btn-icon btn-text-secondary"
-                              title="View detail"
+                              title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
                             >
                               <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
                             </Link>

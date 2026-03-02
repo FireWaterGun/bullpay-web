@@ -144,7 +144,7 @@ export default function Sweep() {
       }).join(', ')
       
       toast.success(
-        `Updated ${updates.length} setting(s) successfully! - ${updatedSettings}`,
+        t('admin.sweep.updateSuccess', { defaultValue: `Updated ${updates.length} setting(s) successfully!`, count: updates.length }) + ` - ${updatedSettings}`,
         5000
       )
       

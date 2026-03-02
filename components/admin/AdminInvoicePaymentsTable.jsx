@@ -2,6 +2,7 @@
 
 import { formatAmount, formatDate } from '@/lib/utils/format'
 import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Payments table for AdminInvoiceDetail.
@@ -26,17 +27,17 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
             <table className="table table-hover" style={{ minWidth: '900px' }}>
               <thead>
                 <tr>
-                  <th style={{ minWidth: '60px' }}>ID</th>
-                  <th style={{ minWidth: '100px' }}>Status</th>
-                  <th className="text-end" style={{ minWidth: '150px' }}>Amount</th>
-                  <th className="text-end" style={{ minWidth: '150px' }}>Actual Amount</th>
-                  <th style={{ minWidth: '120px' }}>Confirmations</th>
-                  <th style={{ minWidth: '680px' }}>Tx Hash</th>
-                  <th style={{ minWidth: '420px' }}>From Address</th>
-                  <th style={{ minWidth: '420px' }}>To Address</th>
-                  <th style={{ minWidth: '140px' }}>Detected</th>
-                  <th style={{ minWidth: '140px' }}>Confirmed</th>
-                  <th style={{ minWidth: '140px' }}>Completed</th>
+                  <th style={{ minWidth: '60px' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
+                  <th style={{ minWidth: '100px' }}>{t('admin.detail.status', { defaultValue: 'Status' })}</th>
+                  <th className="text-end" style={{ minWidth: '150px' }}>{t('admin.detail.amount', { defaultValue: 'Amount' })}</th>
+                  <th className="text-end" style={{ minWidth: '150px' }}>{t('admin.detail.actualAmount', { defaultValue: 'Actual Amount' })}</th>
+                  <th style={{ minWidth: '120px' }}>{t('admin.detail.confirmations', { defaultValue: 'Confirmations' })}</th>
+                  <th style={{ minWidth: '680px' }}>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
+                  <th style={{ minWidth: '420px' }}>{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</th>
+                  <th style={{ minWidth: '420px' }}>{t('admin.detail.toAddress', { defaultValue: 'To Address' })}</th>
+                  <th style={{ minWidth: '140px' }}>{t('admin.detail.detected', { defaultValue: 'Detected' })}</th>
+                  <th style={{ minWidth: '140px' }}>{t('status.confirmed', { defaultValue: 'Confirmed' })}</th>
+                  <th style={{ minWidth: '140px' }}>{t('status.completed', { defaultValue: 'Completed' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,7 +79,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                               target="_blank"
                               rel="noopener noreferrer"
                               className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
-                              title="View on explorer"
+                              title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                             >
                               <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                             </a>
@@ -97,7 +98,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                           <button
                             className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                             onClick={() => onCopy(payment.fromAddress)}
-                            title="Copy address"
+                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                           >
                             <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                           </button>
@@ -115,7 +116,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                           <button
                             className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
                             onClick={() => onCopy(payment.toAddress)}
-                            title="Copy address"
+                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                           >
                             <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
                           </button>

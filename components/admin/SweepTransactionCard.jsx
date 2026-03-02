@@ -1,6 +1,7 @@
 'use client'
 
 import { formatUsd, formatDate } from '@/lib/utils/format'
+import { useTranslation } from 'react-i18next'
 
 function AddressRow({ label, address, explorerUrl, onCopy }) {
   return (
@@ -50,7 +51,7 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
         <table className="table table-borderless">
           <tbody>
             <tr>
-              <td className="text-muted" style={{ width: '40%' }}>Tx Hash</td>
+              <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
               <td>
                 {sweep.txHash ? (
                   <>
@@ -81,7 +82,7 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
             </tr>
             {sweep.blockNumber && (
               <tr>
-                <td className="text-muted">Block Number</td>
+                <td className="text-muted">{t('admin.detail.blockNumber', { defaultValue: 'Block Number' })}</td>
                 <td>{sweep.blockNumber}</td>
               </tr>
             )}
@@ -125,18 +126,18 @@ export function SweepTimestampsCard({ sweep, metadata }) {
         <table className="table table-borderless">
           <tbody>
             <tr>
-              <td className="text-muted" style={{ width: '40%' }}>Created</td>
+              <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>
               <td>{formatDate(sweep.createdAt)}</td>
             </tr>
             {sweep.completedAt && (
               <tr>
-                <td className="text-muted">Completed</td>
+                <td className="text-muted">{t('status.completed', { defaultValue: 'Completed' })}</td>
                 <td>{formatDate(sweep.completedAt)}</td>
               </tr>
             )}
             {sweep.updatedAt && (
               <tr>
-                <td className="text-muted">Updated</td>
+                <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                 <td>{formatDate(sweep.updatedAt)}</td>
               </tr>
             )}

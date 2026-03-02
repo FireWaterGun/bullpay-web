@@ -194,7 +194,7 @@ export default function SupportedCrypto() {
                           </button>
                         </div>
                       ) : (
-                        <span className="text-muted">Native</span>
+                        <span className="text-muted">{t('admin.detail.native', { defaultValue: 'Native' })}</span>
                       )}
                     </td>
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>

@@ -1,6 +1,7 @@
 'use client'
 
 import { formatCoinAmount } from '@/lib/utils/format'
+import { useTranslation } from 'react-i18next'
 
 const cardStyle = {
   borderRadius: '0.75rem',
@@ -94,9 +95,9 @@ export function DailyTrendCard({ date, currencies, isToday }) {
             letterSpacing: '0.5px'
           }}
         >
-          <span style={{ width: '40%' }}>Coin</span>
-          <span style={{ width: '25%', textAlign: 'center' }}>Txn</span>
-          <span style={{ width: '35%', textAlign: 'right' }}>Volume</span>
+          <span style={{ width: '40%' }}>{t('admin.detail.coin', { defaultValue: 'Coin' })}</span>
+          <span style={{ width: '25%', textAlign: 'center' }}>{t('admin.dashboard.txn', { defaultValue: 'Txn' })}</span>
+          <span style={{ width: '35%', textAlign: 'right' }}>{t('admin.dashboard.volume', { defaultValue: 'Volume' })}</span>
         </div>
         {Object.entries(currencies).map(([currency, data]) => (
           <div
