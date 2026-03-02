@@ -24,7 +24,7 @@ import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminUsersPage() {
   const { t, i18n } = useAdminTranslation()
-  const { token } = useAuth()
+  const { token, navigation } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -377,6 +377,7 @@ export default function AdminUsersPage() {
           loading={createLoading}
           onClose={() => !createLoading && setShowCreateModal(false)}
           onSubmit={handleCreateUser}
+          callerRole={navigation?.role}
         />
       )}
     </div>

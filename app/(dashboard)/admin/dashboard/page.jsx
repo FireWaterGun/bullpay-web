@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '@/lib/api/admin'
@@ -59,7 +60,19 @@ function getDateRange(preset) {
 
 export default function AdminDashboardPage() {
   const { t, i18n } = useAdminTranslation()
-  const { token } = useAuth()
+  const { token, hasPermission, navigation } = useAuth()
+  const router = useRouter()
+
+  // Redirect if user doesn't have revenue dashboard permission
+  useEffect(() => {
+    if (navigation && !hasPermission('admin.revenue.view')) {
+      // Find first available menu path from navigation
+      const firstPath = navigation.menus
+        ?.flatMap((s) => s.items)
+        ?.find((item) => item.path)?.path
+      router.replace(firstPath || '/admin/users')
+    }
+  }, [navigation, hasPermission, router])
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }

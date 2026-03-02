@@ -1,16 +1,26 @@
 'use client'
 
-import { useState } from 'react'
-import { ROLE_OPTIONS } from '@/components/admin/userListHelpers'
+import { useState, useMemo } from 'react'
 import { formatRoleLabel } from '@/lib/utils/roles'
 
-// Exclude super_admin — only creatable via CLI, server rejects it too
-const CREATABLE_ROLES = ROLE_OPTIONS.filter((r) => r !== 'super_admin')
+/**
+ * Roles creatable per caller role — mirrors server-side getCreatableRoles().
+ * super_admin/system cannot be created via UI.
+ */
+const CREATABLE_ROLES_BY_ROLE = {
+  super_admin: ['regular_user', 'business_user', 'support_agent', 'admin'],
+  admin: ['regular_user', 'business_user', 'support_agent'],
+  support_agent: ['regular_user', 'business_user'],
+}
 
-export default function CreateUserModal({ t, loading, onClose, onSubmit }) {
+export default function CreateUserModal({ t, loading, onClose, onSubmit, callerRole }) {
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
   const [password, setPassword] = useState('')
+  const creatableRoles = useMemo(
+    () => CREATABLE_ROLES_BY_ROLE[callerRole] || [],
+    [callerRole]
+  )
   const [role, setRole] = useState('regular_user')
   const [showPassword, setShowPassword] = useState(false)
 
@@ -108,7 +118,7 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit }) {
                 onChange={(e) => setRole(e.target.value)}
                 disabled={loading}
               >
-                {CREATABLE_ROLES.map((r) => (
+                {creatableRoles.map((r) => (
                   <option key={r} value={r}>{formatRoleLabel(r)}</option>
                 ))}
               </select>

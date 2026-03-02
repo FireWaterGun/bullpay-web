@@ -9,7 +9,7 @@ import { getBalancesWithFiat } from '@/lib/api/balance'
 import { logger } from '@/lib/utils/logger'
 
 export default function useDashboardData() {
-  const { user, isAdmin, token } = useAuth()
+  const { user, isAdmin, token, hasPermission, navigation } = useAuth()
   const toast = useToast()
 
   const [fiatBalance, setFiatBalance] = useState({ currency: 'USD', amount: '0' })
@@ -20,22 +20,23 @@ export default function useDashboardData() {
 
   // Listen for withdrawal status changes (approve/reject) to refresh badge
   useEffect(() => {
-    const handler = () => { if (isAdmin && token) loadPendingWithdrawalCount() }
+    const handler = () => { if (isAdmin && token && hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount() }
     window.addEventListener('withdrawal-status-changed', handler)
     return () => window.removeEventListener('withdrawal-status-changed', handler)
   }, [isAdmin, token])
 
   // Load payment stats for admin users
   useEffect(() => {
-    if (token) {
-      if (isAdmin) {
-        loadPaymentStats()
-        loadPendingWithdrawalCount()
-      } else {
-        loadUserBalance()
+    if (!token) return
+    if (isAdmin) {
+      if (navigation) {
+        if (hasPermission('admin.system_stats.view')) loadPaymentStats()
+        if (hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount()
       }
+    } else {
+      loadUserBalance()
     }
-  }, [isAdmin, token])
+  }, [isAdmin, token, navigation])
 
   async function loadPendingWithdrawalCount() {
     try {
