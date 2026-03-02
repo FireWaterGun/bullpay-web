@@ -372,7 +372,19 @@
     "resetPasswordWarning": "This will immediately change the user's password.",
     "disable2FAWarning": "This will disable two-factor authentication for this user. They will need to set it up again.",
     "registeredDate": "Registered Date",
-    "createdDate": "Created Date"
+    "createdDate": "Created Date",
+    "createUser": "Create User",
+    "createUserBtn": "Create User",
+    "createSuccess": "User created successfully",
+    "createError": "Failed to create user. Please try again.",
+    "createInfo": "Admin-created users are set as active with email verified by default.",
+    "emailPlaceholder": "user@example.com",
+    "fullNamePlaceholder": "John Doe",
+    "password": "Password",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "passwordMaxLength": "Password must not exceed 128 characters",
+    "emailExists": "Email already registered",
+    "roleEscalation": "Cannot create user with this role"
   },
   "merchants": {
     "title": "Merchants",

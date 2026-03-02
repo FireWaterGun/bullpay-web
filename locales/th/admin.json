@@ -403,7 +403,19 @@
     "resetPasswordWarning": "การดำเนินการนี้จะเปลี่ยนรหัสผ่านของผู้ใช้ทันที",
     "disable2FAWarning": "การดำเนินการนี้จะปิดการยืนยันตัวตนสองขั้นตอนของผู้ใช้ ผู้ใช้จะต้องตั้งค่าใหม่อีกครั้ง",
     "registeredDate": "วันที่สมัคร",
-    "createdDate": "Created Date"
+    "createdDate": "วันที่สร้าง",
+    "createUser": "สร้างผู้ใช้",
+    "createUserBtn": "สร้างผู้ใช้",
+    "createSuccess": "สร้างผู้ใช้สำเร็จ",
+    "createError": "สร้างผู้ใช้ไม่สำเร็จ กรุณาลองอีกครั้ง",
+    "createInfo": "ผู้ใช้ที่สร้างโดยแอดมินจะถูกตั้งเป็นสถานะ Active และยืนยันอีเมลแล้วโดยอัตโนมัติ",
+    "emailPlaceholder": "user@example.com",
+    "fullNamePlaceholder": "ชื่อ นามสกุล",
+    "password": "รหัสผ่าน",
+    "passwordPlaceholder": "อย่างน้อย 8 ตัวอักษร",
+    "passwordMaxLength": "รหัสผ่านต้องไม่เกิน 128 ตัวอักษร",
+    "emailExists": "อีเมลนี้ถูกใช้แล้ว",
+    "roleEscalation": "ไม่สามารถสร้างผู้ใช้ด้วยบทบาทนี้ได้"
   },
   "merchants": {
     "title": "ร้านค้า",

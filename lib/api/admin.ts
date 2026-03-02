@@ -1304,6 +1304,20 @@ export async function disableUser2FA(token: string | null, id: number) {
   })
 }
 
+/**
+ * Create a new user (Admin only)
+ */
+export async function createUser(
+  token: string | null,
+  data: { email: string; password: string; fullName?: string; role: string }
+) {
+  return apiFetch(`/api/v1/admin/users`, {
+    method: 'POST',
+    token,
+    body: data,
+  })
+}
+
 // ── Admin Settings ──────────────────────────────────────────
 
 /**

@@ -10,12 +10,14 @@ import {
   changeUserRole,
   resetUserPassword,
   disableUser2FA,
+  createUser,
 } from '@/lib/api/admin'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import { formatRoleLabel } from '@/lib/utils/roles'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import UserListTable from '@/components/admin/UserListTable'
 import UserActionModal from '@/components/admin/UserActionModal'
+import CreateUserModal from '@/components/admin/CreateUserModal'
 import { STATUS_OPTIONS, ROLE_OPTIONS } from '@/components/admin/userListHelpers'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
@@ -74,6 +76,8 @@ export default function AdminUsersPage() {
   const [statusReason, setStatusReason] = useState('')
   const [newRole, setNewRole] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [createLoading, setCreateLoading] = useState(false)
 
   useEffect(() => {
     loadUsers()
@@ -155,6 +159,29 @@ export default function AdminUsersPage() {
     setModalType('')
   }
 
+  async function handleCreateUser(data) {
+    try {
+      setCreateLoading(true)
+      await createUser(token, data)
+      toast.success(t('admin.users.createSuccess', { defaultValue: 'User created successfully' }))
+      setShowCreateModal(false)
+      loadUsers()
+    } catch (error) {
+      logger.error('Failed to create user:', error)
+      const code = error?.code || ''
+      const msg = error?.message || ''
+      if (code === 'EMAIL_EXISTS' || msg.includes('Email already registered')) {
+        toast.error(t('admin.users.emailExists', { defaultValue: 'Email already registered' }))
+      } else if (code === 'ROLE_ESCALATION' || msg.includes('exceeds your permission')) {
+        toast.error(t('admin.users.roleEscalation', { defaultValue: 'Cannot create user with this role' }))
+      } else {
+        toast.error(t('admin.users.createError', { defaultValue: 'Failed to create user. Please try again.' }))
+      }
+    } finally {
+      setCreateLoading(false)
+    }
+  }
+
   async function handleModalSubmit() {
     if (!selectedUser) return
 
@@ -164,7 +191,7 @@ export default function AdminUsersPage() {
       switch (modalType) {
         case 'changeStatus':
           if (!newStatus) {
-            toast.error(t('admin.users.selectStatus', { defaultValue: t('admin.users.selectStatus', { defaultValue: t('admin.users.selectStatus', { defaultValue: 'Please select a status' }) }) }))
+            toast.error(t('admin.users.selectStatus', { defaultValue: 'Please select a status' }))
             return
           }
           await changeUserStatus(token, selectedUser.id, newStatus, statusReason.trim() || undefined)
@@ -231,7 +258,13 @@ export default function AdminUsersPage() {
                     {t('admin.users.description', { defaultValue: 'Manage users, roles, and access' })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadUsers} loading={loading} />
+                <div className="d-flex gap-2 align-items-center">
+                  <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+                    <i className="bx bx-user-plus me-1"></i>
+                    {t('admin.users.createUser', { defaultValue: 'Create User' })}
+                  </button>
+                  <RefreshButton onClick={loadUsers} loading={loading} />
+                </div>
               </div>
             </div>
           </div>
@@ -335,6 +368,15 @@ export default function AdminUsersPage() {
           setNewPassword={setNewPassword}
           onClose={closeModal}
           onSubmit={handleModalSubmit}
+        />
+      )}
+
+      {showCreateModal && (
+        <CreateUserModal
+          t={t}
+          loading={createLoading}
+          onClose={() => !createLoading && setShowCreateModal(false)}
+          onSubmit={handleCreateUser}
         />
       )}
     </div>

@@ -404,7 +404,19 @@
     "resetPasswordWarning": "此操作将立即更改用户的密码。",
     "disable2FAWarning": "此操作将禁用该用户的双因素认证。用户需要重新设置。",
     "registeredDate": "注册日期",
-    "createdDate": "Created Date"
+    "createdDate": "创建日期",
+    "createUser": "创建用户",
+    "createUserBtn": "创建用户",
+    "createSuccess": "用户创建成功",
+    "createError": "创建用户失败，请重试",
+    "createInfo": "管理员创建的用户默认为活跃状态，邮箱已验证。",
+    "emailPlaceholder": "user@example.com",
+    "fullNamePlaceholder": "张三",
+    "password": "密码",
+    "passwordPlaceholder": "至少8个字符",
+    "passwordMaxLength": "密码不能超过128个字符",
+    "emailExists": "邮箱已注册",
+    "roleEscalation": "无法创建此角色的用户"
   },
   "merchants": {
     "title": "商户",
