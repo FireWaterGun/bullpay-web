@@ -37,35 +37,31 @@ export default function AdminAccountPage() {
   const onChangePassword = async (formData) => {
     setChangingPassword(true)
     try {
-      const res = await changePasswordApi(token, {
+      await changePasswordApi(token, {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,
         newPasswordConfirmation: formData.newPasswordConfirmation,
       })
 
-      if (res?.success || res?.status === 'success') {
-        toast.success(
-          t('admin.account.changeSuccess', {
-            defaultValue: 'Password changed successfully. Please log in again.',
-          })
-        )
-        resetForm()
-        setTimeout(() => logout(), 1500)
-      } else {
-        const errorMsg = res?.error?.message || res?.message || 'Password change failed'
-        if (errorMsg.toLowerCase().includes('current password')) {
-          setFormError('currentPassword', {
-            message: t('admin.account.incorrectCurrent', { defaultValue: 'Current password is incorrect' }),
-          })
-        } else {
-          toast.error(errorMsg)
-        }
-      }
-    } catch (err) {
-      logger.error('Failed to change password:', err)
-      toast.error(
-        t('admin.account.changeFailed', { defaultValue: 'Failed to change password. Please try again.' })
+      toast.success(
+        t('admin.account.changeSuccess', {
+          defaultValue: 'Password changed successfully. Please log in again.',
+        })
       )
+      resetForm()
+      setTimeout(() => logout(), 1500)
+    } catch (err) {
+      const errorMsg = err?.message || err?.details || 'Password change failed'
+      if (errorMsg.toLowerCase().includes('current password')) {
+        setFormError('currentPassword', {
+          message: t('admin.account.incorrectCurrent', { defaultValue: 'Current password is incorrect' }),
+        })
+      } else {
+        logger.error('Failed to change password:', err)
+        toast.error(
+          t('admin.account.changeFailed', { defaultValue: 'Failed to change password. Please try again.' })
+        )
+      }
     } finally {
       setChangingPassword(false)
     }

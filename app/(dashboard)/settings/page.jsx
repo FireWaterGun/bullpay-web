@@ -65,33 +65,29 @@ export default function SettingsPage() {
   const onChangePassword = async (formData) => {
     setChangingPassword(true)
     try {
-      const res = await changePasswordApi(token, {
+      await changePasswordApi(token, {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,
         newPasswordConfirmation: formData.newPasswordConfirmation,
       })
 
-      if (res?.success || res?.status === 'success') {
-        toast.success(
-          t('settings.password.changeSuccess', {
-            defaultValue: 'Password changed successfully. Please log in again.',
-          })
-        )
-        resetForm()
-        // Server revoked all tokens, log out client side
-        setTimeout(() => logout(), 1500)
-      } else {
-        const errorMsg = res?.error?.message || res?.message || 'Password change failed'
-        // Map known API errors to form fields
-        if (errorMsg.toLowerCase().includes('current password')) {
-          setFormError('currentPassword', { message: t('settings.password.incorrectCurrent', { defaultValue: 'Current password is incorrect' }) })
-        } else {
-          toast.error(errorMsg)
-        }
-      }
+      toast.success(
+        t('settings.password.changeSuccess', {
+          defaultValue: 'Password changed successfully. Please log in again.',
+        })
+      )
+      resetForm()
+      // Server revoked all tokens, log out client side
+      setTimeout(() => logout(), 1500)
     } catch (err) {
-      logger.error('Failed to change password:', err)
-      toast.error(t('settings.password.changeFailed', { defaultValue: 'Failed to change password. Please try again.' }))
+      const errorMsg = err?.message || err?.details || 'Password change failed'
+      // Map known API errors to form fields
+      if (errorMsg.toLowerCase().includes('current password')) {
+        setFormError('currentPassword', { message: t('settings.password.incorrectCurrent', { defaultValue: 'Current password is incorrect' }) })
+      } else {
+        logger.error('Failed to change password:', err)
+        toast.error(t('settings.password.changeFailed', { defaultValue: 'Failed to change password. Please try again.' }))
+      }
     } finally {
       setChangingPassword(false)
     }
