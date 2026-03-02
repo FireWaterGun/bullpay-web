@@ -106,6 +106,25 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     else { html.classList.remove('layout-menu-collapsed'); html.classList.remove('layout-menu-hover') }
   }, [collapsed])
 
+  // Disable Sneat theme menu.js click handler – React MenuGroup manages toggle/animation
+  useEffect(() => {
+    const disableSneatMenu = () => {
+      const el = document.getElementById('layout-menu') as HTMLElement & { menuInstance?: { _unbindEvents: () => void } }
+      if (el?.menuInstance?._unbindEvents) {
+        el.menuInstance._unbindEvents()
+        delete el.menuInstance
+        return true
+      }
+      return false
+    }
+    // main.js loads with strategy="lazyOnload" so poll briefly until it initialises
+    if (!disableSneatMenu()) {
+      const id = setInterval(() => { if (disableSneatMenu()) clearInterval(id) }, 200)
+      const timeout = setTimeout(() => clearInterval(id), 10_000)
+      return () => { clearInterval(id); clearTimeout(timeout) }
+    }
+  }, [])
+
   const toggleMenu = (e?: React.MouseEvent) => {
     e?.preventDefault?.()
     if (isXlUp()) {
