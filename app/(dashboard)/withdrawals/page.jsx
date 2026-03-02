@@ -17,6 +17,7 @@ import {
   formatStatusLabel,
   WITHDRAWAL_STATUSES,
 } from '@/components/balance/withdrawalHelpers'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function WithdrawalsPage() {
   const { t } = useTranslation()
@@ -119,7 +120,10 @@ export default function WithdrawalsPage() {
       <div className="mb-4">
         <div className="card">
           <div className="card-header d-flex align-items-center justify-content-between">
-            <h5 className="card-title mb-0">{t('balance.withdrawals', { defaultValue: 'Withdrawals' })}</h5>
+            <div className="d-flex align-items-center gap-2">
+              <h5 className="card-title mb-0">{t('balance.withdrawals', { defaultValue: 'Withdrawals' })}</h5>
+              <RefreshButton onClick={loadWithdrawals} loading={loading} />
+            </div>
             <Link href="/wallet/new-address" className="btn btn-primary">
               {t('balance.newAddress', { defaultValue: 'New Address' })}
             </Link>

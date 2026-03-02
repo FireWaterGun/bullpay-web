@@ -10,6 +10,7 @@ import { formatDate } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
 import ConfirmModal from '@/components/ConfirmModal'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function WalletsPage() {
   const { t } = useTranslation()
@@ -60,7 +61,10 @@ export default function WalletsPage() {
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="fw-bold mb-0">{t('wallets.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
+        <div className="d-flex align-items-center gap-2">
+          <h4 className="fw-bold mb-0">{t('wallets.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
+          <RefreshButton onClick={loadData} loading={loading} />
+        </div>
         <Link href="/wallets/create" className="btn btn-primary">
           <i className="bx bx-plus me-1"></i>
           {t('wallets.addNew', { defaultValue: 'Add Address' })}

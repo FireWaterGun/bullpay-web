@@ -9,6 +9,7 @@ import { formatDate, formatCoinAmount } from '@/lib/utils/format'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { statusBadgeClass, formatStatusLabel } from '@/components/balance/withdrawalHelpers'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function WithdrawalDetailPage() {
   const params = useParams()
@@ -88,8 +89,9 @@ export default function WithdrawalDetailPage() {
             <div className="d-flex align-items-center gap-3">
               <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} />
               <div>
-                <h4 className="mb-1">
+                <h4 className="mb-1 d-flex align-items-center gap-2">
                   {t('withdrawals.detail', { defaultValue: 'Withdrawal' })} #{withdrawal.id}
+                  <RefreshButton onClick={loadWithdrawal} loading={loading} />
                 </h4>
                 <div className="d-flex align-items-center gap-2 flex-wrap">
                   <span className={statusBadgeClass(withdrawal.status)}>

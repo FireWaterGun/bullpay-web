@@ -8,6 +8,7 @@ import { listCoins } from '@/lib/api/coins'
 import { getBalancesWithFiat } from '@/lib/api/balance'
 import { formatCoinAmount } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
+import RefreshButton from '@/components/RefreshButton'
 
 const NETWORK_LABELS = {
   1: 'Bitcoin',
@@ -54,7 +55,13 @@ export default function WalletBalancePage() {
 
   useEffect(() => {
     let mounted = true
-    ;(async () => {
+    loadData(mounted)
+    return () => {
+      mounted = false
+    }
+  }, [token])
+
+  async function loadData(mounted = true) {
       try {
         setLoading(true)
         const [coinList, balanceRes] = await Promise.all([
@@ -97,11 +104,7 @@ export default function WalletBalancePage() {
       } finally {
         setLoading(false)
       }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [token])
+  }
 
   // Map by coinNetworkId
   const coinNetById = useMemo(() => {
@@ -126,6 +129,7 @@ export default function WalletBalancePage() {
                 })}
               </h4>
             </div>
+            <RefreshButton onClick={() => loadData()} loading={loading} />
           </div>
         </div>
         <div className="card-body">

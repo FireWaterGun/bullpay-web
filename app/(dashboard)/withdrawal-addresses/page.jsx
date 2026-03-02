@@ -8,6 +8,7 @@ import { getWithdrawalAddresses, flagWithdrawalAddress, unflagWithdrawalAddress,
 import AddressFilters from '@/components/balance/AddressFilters'
 import AddressTable from '@/components/balance/AddressTable'
 import AddressActionModal from '@/components/balance/AddressActionModal'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function WithdrawalAddressesPage() {
   return <Suspense><WithdrawalAddressesContent /></Suspense>
@@ -84,7 +85,10 @@ function WithdrawalAddressesContent() {
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
-      <h4 className="fw-bold mb-4">{t('withdrawalAddresses.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
+      <div className="d-flex align-items-center gap-2 mb-4">
+        <h4 className="fw-bold mb-0">{t('withdrawalAddresses.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
+        <RefreshButton onClick={loadAddresses} loading={loading} />
+      </div>
 
       <AddressFilters
         filters={filters}

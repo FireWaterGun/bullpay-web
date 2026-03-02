@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { get2FAStatus } from '@/lib/api/twoFactor'
 import { Setup2FAModal, Disable2FAModal } from '@/components/TwoFactorModals'
+import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 
 export default function SettingsPage() {
@@ -42,7 +43,8 @@ export default function SettingsPage() {
         <div className="card mb-4">
           <div className="card-body">
             <h5 className="mb-1">{t('settings.title', { defaultValue: 'Settings' })}</h5>
-            <small className="text-muted">
+            <RefreshButton onClick={fetchStatus} loading={loading} />
+            <small className="text-muted d-block">
               {t('settings.subtitle', { defaultValue: 'Manage your account settings and preferences' })}
             </small>
           </div>

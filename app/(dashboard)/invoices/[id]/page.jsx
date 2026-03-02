@@ -11,6 +11,7 @@ import CoinImg from '@/components/CoinImg'
 import { statusClass } from '@/components/invoices/invoiceDetailHelpers'
 import InvoicePaymentsTable from '@/components/invoices/InvoicePaymentsTable'
 import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function InvoiceDetailPage() {
   const { t } = useTranslation()
@@ -89,6 +90,7 @@ export default function InvoiceDetailPage() {
                       <span className={`badge rounded-pill d-inline-flex align-items-center px-3 text-capitalize ${statusClass(invoice.status)}`}>
                         {invoice.status || '-'}
                       </span>
+                      <RefreshButton onClick={loadInvoice} loading={loading} />
                     </h5>
                     <div className="text-muted small">
                       {t('invoices.createdAt') || 'Created'}: {formatDateTime(invoice.createdAt || invoice.created_at)}

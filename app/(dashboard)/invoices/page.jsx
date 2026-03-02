@@ -11,6 +11,7 @@ import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import InvoiceFilterPanel from '@/components/invoices/InvoiceFilterPanel'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function InvoiceList() {
   const { t, i18n } = useTranslation()
@@ -164,7 +165,10 @@ export default function InvoiceList() {
         {/* List */}
         <div className="card">
           <div className="card-header d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">{t("invoices.title", { defaultValue: "Invoices" })}</h5>
+            <div className="d-flex align-items-center gap-2">
+              <h5 className="mb-0">{t("invoices.title", { defaultValue: "Invoices" })}</h5>
+              <RefreshButton onClick={load} loading={loading} />
+            </div>
             <Link href="/invoices/create" className="btn btn-primary">
               <i className="bx bx-plus me-1"></i>
               {t("invoices.create", { defaultValue: "Create Invoice" })}

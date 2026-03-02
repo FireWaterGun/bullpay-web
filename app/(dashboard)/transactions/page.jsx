@@ -8,6 +8,7 @@ import LocaleDatePicker from '@/components/LocaleDatePicker'
 import { formatUsd, formatChange } from '@/lib/utils/format'
 import DailyTrendChart from '@/components/dashboard/DailyTrendChart'
 import TransactionByCoinTable from '@/components/dashboard/TransactionByCoinTable'
+import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 
 const summaryValueStyle = { fontSize: '1.75rem' }
@@ -186,6 +187,7 @@ export default function TransactionsPage() {
           <i className="bx bx-bar-chart-alt-2 text-primary me-2"></i>
           {t('nav.dashboard', { defaultValue: 'Dashboard' })}
         </h4>
+        <RefreshButton onClick={loadData} loading={loadingSummary || loadingDaily || loadingByCoin} />
         <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
           <span className="badge bg-label-secondary fs-6 fw-normal px-3 py-2">
             {dateRangeLabel}

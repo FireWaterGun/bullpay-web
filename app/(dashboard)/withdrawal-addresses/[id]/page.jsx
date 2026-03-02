@@ -11,6 +11,7 @@ import CoinImg from '@/components/CoinImg'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
 import AddressActionModal from '@/components/balance/AddressActionModal'
 import AddressAuditLog from '@/components/balance/AddressAuditLog'
+import RefreshButton from '@/components/RefreshButton'
 
 export default function WithdrawalAddressDetailPage() {
   const params = useParams()
@@ -98,6 +99,7 @@ export default function WithdrawalAddressDetailPage() {
             {formatAddressStatus(address.status)}
           </span>
         </div>
+        <RefreshButton onClick={loadAddress} loading={loading} />
       </div>
 
       <div className="row">
