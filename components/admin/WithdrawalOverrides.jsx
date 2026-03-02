@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import { getSweepSettings, updateSweepSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
 import OverrideTable from '@/components/admin/withdrawal-overrides/OverrideTable'
 import OverrideFormModal from '@/components/admin/withdrawal-overrides/OverrideFormModal'
-import DeleteConfirmModal from '@/components/admin/withdrawal-overrides/DeleteConfirmModal'
+const DeleteConfirmModal = dynamic(() => import('@/components/admin/withdrawal-overrides/DeleteConfirmModal'), { ssr: false })
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { disable2FA } from "@/lib/api/twoFactor";
 
@@ -13,13 +13,12 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!show) {
-      setPassword("");
-      setError("");
-      setShowPassword(false);
-    }
-  }, [show]);
+  const handleClose = () => {
+    setPassword("");
+    setError("");
+    setShowPassword(false);
+    onClose();
+  };
 
   const handleDisable = async () => {
     if (!password) {
@@ -31,7 +30,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
     try {
       await disable2FA(token, password);
       onSuccess?.();
-      onClose();
+      handleClose();
     } catch (err) {
       setError(err?.message || "Failed to disable 2FA");
     } finally {
@@ -47,7 +46,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">{t("settings.2fa.disableTitle", { defaultValue: "Disable 2FA" })}</h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
+            <button type="button" className="btn-close" onClick={handleClose} disabled={loading}></button>
           </div>
           <div className="modal-body">
             <div className="alert alert-warning d-flex align-items-start mb-4">
@@ -84,7 +83,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={loading}>
+            <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             <button type="button" className="btn btn-danger" onClick={handleDisable} disabled={loading || !password}>

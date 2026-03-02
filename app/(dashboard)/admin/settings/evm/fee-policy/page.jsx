@@ -1,10 +1,11 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import useEVMFeePolicy from '@/components/admin/useEVMFeePolicy'
 import ChainSettingsTable from '@/components/admin/ChainSettingsTable'
 import { ChainSettingModal, DeleteConfirmModal } from '@/components/admin/EVMFeePolicyModals'
-import ConfirmResetModal from '@/components/ConfirmResetModal'
+const ConfirmResetModal = dynamic(() => import('@/components/ConfirmResetModal'), { ssr: false })
 import PageSpinner from '@/components/PageSpinner'
 
 export default function EVMFeePolicy() {

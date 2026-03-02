@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import { updateSweepSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
-import ConfirmResetModal from '@/components/ConfirmResetModal'
+const ConfirmResetModal = dynamic(() => import('@/components/ConfirmResetModal'), { ssr: false })
 import { logger } from '@/lib/utils/logger'
 
 export default function GasSettingsForm({ gasSettings, setGasSettings }) {

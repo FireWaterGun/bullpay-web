@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import { getSweepSettings, updateSweepSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
 import BaseFeeModal from '@/components/admin/BaseFeeModal'
 import SlippageModal from '@/components/admin/SlippageModal'
-import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal'
+const DeleteConfirmModal = dynamic(() => import('@/components/admin/DeleteConfirmModal'), { ssr: false })
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 

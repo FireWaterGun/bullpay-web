@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/app/providers";
 import { verify2FA } from "@/lib/api/twoFactor";
@@ -22,13 +22,12 @@ export default function Verify2FAModal({
   const [isBackupCode, setIsBackupCode] = useState(false);
   const inputRefs = useRef([]);
 
-  useEffect(() => {
-    if (!show) {
-      setCode("");
-      setError("");
-      setIsBackupCode(false);
-    }
-  }, [show]);
+  const handleClose = () => {
+    setCode("");
+    setError("");
+    setIsBackupCode(false);
+    onClose();
+  };
 
   const handleCodeChange = (index, value) => {
     if (isBackupCode) {
@@ -73,7 +72,7 @@ export default function Verify2FAModal({
     }
     if (skipVerify) {
       onSuccess?.(code);
-      onClose();
+      handleClose();
       return;
     }
     setLoading(true);
@@ -86,7 +85,7 @@ export default function Verify2FAModal({
         }
       }
       onSuccess?.(res);
-      onClose();
+      handleClose();
     } catch (err) {
       setError(err?.message || t("2fa.errorVerificationFailed", { defaultValue: "Verification failed" }));
     } finally {
@@ -110,7 +109,7 @@ export default function Verify2FAModal({
             <h5 className="modal-title">
               {title || t("2fa.verifyTitle", { defaultValue: "Two-Factor Authentication" })}
             </h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
+            <button type="button" className="btn-close" onClick={handleClose} disabled={loading}></button>
           </div>
           <div className="modal-body">
             <p className="text-muted text-center mb-4">
@@ -163,7 +162,7 @@ export default function Verify2FAModal({
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={loading}>
+            <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             <button

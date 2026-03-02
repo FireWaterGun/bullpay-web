@@ -86,16 +86,15 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
   }, [show, token, setupData]);
 
   // Reset state when modal closes
-  useEffect(() => {
-    if (!show) {
-      setStep(1);
-      setSetupData(null);
-      setTotpCode("");
-      setError("");
-      setCopiedSecret(false);
-      setCopiedCodes(false);
-    }
-  }, [show]);
+  const handleClose = () => {
+    setStep(1);
+    setSetupData(null);
+    setTotpCode("");
+    setError("");
+    setCopiedSecret(false);
+    setCopiedCodes(false);
+    onClose();
+  };
 
   const handleCopySecret = async () => {
     if (!setupData?.secret) return;
@@ -153,7 +152,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
     try {
       await enable2FA(token, totpCode);
       onSuccess?.();
-      onClose();
+      handleClose();
     } catch (err) {
       const retryAfter = err?.retryAfterSeconds
         || err?.data?.retryAfterSeconds
@@ -185,7 +184,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
             <h5 className="modal-title">
               {t("settings.2fa.setupTitle", { defaultValue: "Setup Two-Factor Authentication" })}
             </h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
+            <button type="button" className="btn-close" onClick={handleClose} disabled={loading}></button>
           </div>
 
           <div className="modal-body">
@@ -352,7 +351,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
               </button>
             )}
             <div className="flex-grow-1"></div>
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={loading}>
+            <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             {step < 3 ? (

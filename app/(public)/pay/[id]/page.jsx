@@ -1,12 +1,13 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import { NetworkIcon } from '@/components/CoinImg'
 import useInvoicePayment, { formatDuration } from '@/components/payment/useInvoicePayment'
 import { isSafeRedirectUrl } from '@/lib/utils/url'
 import { formatAmount } from '@/lib/utils/format'
 import NetworkSelectionPanel from '@/components/payment/NetworkSelectionPanel'
-import PaymentQRSection from '@/components/payment/PaymentQRSection'
+const PaymentQRSection = dynamic(() => import('@/components/payment/PaymentQRSection'), { ssr: false })
 import PaymentProgressSteps from '@/components/payment/PaymentProgressSteps'
 
 function statusLabel(s, t) {

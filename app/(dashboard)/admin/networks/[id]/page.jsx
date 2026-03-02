@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import { getNetworkById, createNetwork, updateNetwork, deleteNetwork } from '@/lib/api/admin'
-import DeleteConfirmModal from '@/components/modals/DeleteConfirmModal'
+const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
 import { useToast } from '@/app/providers'
 import NetworkFormFields from '@/components/crypto/NetworkFormFields'
 import NetworkInfoPanel from '@/components/crypto/NetworkInfoPanel'
