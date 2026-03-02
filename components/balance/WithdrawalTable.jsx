@@ -4,7 +4,9 @@ import CoinImg from '@/components/CoinImg'
 import { formatDate, formatCoinAmount } from '@/lib/utils/format'
 import { statusBadgeClass, formatStatusLabel } from './withdrawalHelpers'
 
-export default function WithdrawalTable({ withdrawals = [], onViewDetail, onApprove, onReject, t }) {
+const EMPTY_WITHDRAWALS = []
+
+export default function WithdrawalTable({ withdrawals = EMPTY_WITHDRAWALS, onViewDetail, onApprove, onReject, t }) {
   if (!withdrawals.length) {
     return (
       <div className="text-center text-muted py-4">

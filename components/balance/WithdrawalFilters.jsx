@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { WITHDRAWAL_STATUSES, formatStatusLabel } from './withdrawalHelpers'
 
-export default function WithdrawalFilters({ filters, onFilterChange, coins = [], onReset, t }) {
+const EMPTY_COINS = []
+
+export default function WithdrawalFilters({ filters, onFilterChange, coins = EMPTY_COINS, onReset, t }) {
   const [expanded, setExpanded] = useState(false)
 
   function update(key, value) {

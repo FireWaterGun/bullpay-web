@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react'
 
+const EMPTY_STYLE = {}
+
 /**
  * A locale-aware date picker that replaces native <input type="date">.
  * Renders a Bootstrap-styled input with a calendar dropdown.
@@ -15,7 +17,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
  *  - style: object
  *  - t: i18next translate function (optional, for Clear/Today labels)
  */
-export default function LocaleDatePicker({ value, onChange, locale = 'en-US', placeholder = '', className = '', style = {}, t, minDate, maxDate }) {
+export default function LocaleDatePicker({ value, onChange, locale = 'en-US', placeholder = '', className = '', style = EMPTY_STYLE, t, minDate, maxDate }) {
   const [open, setOpen] = useState(false)
   const [viewYear, setViewYear] = useState(() => {
     if (value) return new Date(value + 'T00:00:00').getFullYear()

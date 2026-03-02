@@ -106,12 +106,12 @@ export default function WithdrawalDetailPage() {
                 </div>
               </div>
             </div>
-            {totalAmount && (
+            {totalAmount ? (
               <div className="text-end">
                 <h4 className="mb-0">{formatCoinAmount(totalAmount)}</h4>
-                {withdrawal.amountUsd && <small className="text-muted">${Number(withdrawal.amountUsd).toFixed(2)}</small>}
+                {withdrawal.amountUsd ? <small className="text-muted">${Number(withdrawal.amountUsd).toFixed(2)}</small> : null}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

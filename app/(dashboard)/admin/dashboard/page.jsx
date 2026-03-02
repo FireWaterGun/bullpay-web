@@ -101,44 +101,46 @@ export default function AdminDashboardPage() {
 
     const loadData = async () => {
       setError('')
-
       setLoadingSummary(true)
-      try {
-        const summaryRes = await getRevenueSummary(token, dateRange.from, dateRange.to)
-        setSummary(summaryRes)
-      } catch (e) {
-        logger.error('Failed to load summary:', e)
-        setError(e?.message || 'Failed to load summary')
-      } finally {
-        setLoadingSummary(false)
-      }
-
       setLoadingDaily(true)
-      try {
-        const dailyRes = await getRevenueDaily(token, dateRange.from, dateRange.to)
-        const items = dailyRes?.items || dailyRes || []
-        const chartData = items.map(item => ({
+      setLoadingByCoin(true)
+
+      const [summaryResult, dailyResult, byCoinResult] = await Promise.allSettled([
+        getRevenueSummary(token, dateRange.from, dateRange.to),
+        getRevenueDaily(token, dateRange.from, dateRange.to),
+        getRevenueByCoin(token, dateRange.from, dateRange.to),
+      ])
+
+      // Summary
+      if (summaryResult.status === 'fulfilled') {
+        setSummary(summaryResult.value)
+      } else {
+        logger.error('Failed to load summary:', summaryResult.reason)
+        setError(summaryResult.reason?.message || 'Failed to load summary')
+      }
+      setLoadingSummary(false)
+
+      // Daily
+      if (dailyResult.status === 'fulfilled') {
+        const items = dailyResult.value?.items || dailyResult.value || []
+        setDailyData(items.map(item => ({
           date: item.date,
           revenue: parseFloat(item.revenueUsd || 0),
           cost: parseFloat(item.costUsd || 0),
           profit: parseFloat(item.operatingProfitUsd || 0),
-        }))
-        setDailyData(chartData)
-      } catch (e) {
-        logger.error('Failed to load daily data:', e)
-      } finally {
-        setLoadingDaily(false)
+        })))
+      } else {
+        logger.error('Failed to load daily data:', dailyResult.reason)
       }
+      setLoadingDaily(false)
 
-      setLoadingByCoin(true)
-      try {
-        const byCoinRes = await getRevenueByCoin(token, dateRange.from, dateRange.to)
-        setByCoinData(byCoinRes?.items || byCoinRes || [])
-      } catch (e) {
-        logger.error('Failed to load by-coin data:', e)
-      } finally {
-        setLoadingByCoin(false)
+      // By Coin
+      if (byCoinResult.status === 'fulfilled') {
+        setByCoinData(byCoinResult.value?.items || byCoinResult.value || [])
+      } else {
+        logger.error('Failed to load by-coin data:', byCoinResult.reason)
       }
+      setLoadingByCoin(false)
     }
 
     loadData()

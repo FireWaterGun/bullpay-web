@@ -57,6 +57,7 @@ export default function UserBalanceListPage() {
   })
 
   useEffect(() => { loadUsers() }, [currentPage, appliedFilters])
+  // Load summary once on mount (parallel with first loadUsers via React batching)
   useEffect(() => { loadSummary() }, [])
 
   function syncSearchParams(filters, page) {

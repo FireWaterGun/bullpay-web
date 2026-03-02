@@ -9,7 +9,6 @@
  */
 
 import { BigNumber } from 'bignumber.js'
-import { ethers } from 'ethers'
 
 /**
  * Supported blockchain families
@@ -69,25 +68,10 @@ export class AmountNormalizer {
     }
 
     try {
-      switch (chain) {
-        case 'ETH':
-        case 'BSC':
-        case 'POLYGON':
-          // Use ethers.js for EVM chains (most battle-tested)
-          return ethers.parseUnits(trimmedAmount, decimals).toString()
-
-        case 'SOL':
-          // Solana: use provided decimals (9 for SOL, 6 for USDC, etc.)
-          return ethers.parseUnits(trimmedAmount, decimals).toString()
-
-        case 'BTC':
-        case 'TRX':
-        default:
-          // Use BigNumber for Bitcoin and TRON
-          const value = new BigNumber(trimmedAmount)
-          const multiplier = new BigNumber(10).pow(decimals)
-          return value.multipliedBy(multiplier).integerValue().toString()
-      }
+      // Use BigNumber for all chains — avoids importing ethers (~300KB)
+      const value = new BigNumber(trimmedAmount)
+      const multiplier = new BigNumber(10).pow(decimals)
+      return value.multipliedBy(multiplier).integerValue().toString()
     } catch (error: any) {
       throw new Error(
         `Failed to convert amount to raw units: ${error.message} (amount=${amount}, chain=${chain}, decimals=${decimals})`
@@ -129,27 +113,12 @@ export class AmountNormalizer {
     }
 
     try {
-      switch (chain) {
-        case 'ETH':
-        case 'BSC':
-        case 'POLYGON':
-          // Use ethers.js for EVM chains - trim trailing zeros
-          return ethers.formatUnits(trimmedRaw, decimals).replace(/\.?0+$/, '')
-
-        case 'SOL':
-          // Solana: use provided decimals (9 for SOL, 6 for USDC, etc.) - trim trailing zeros
-          return ethers.formatUnits(trimmedRaw, decimals).replace(/\.?0+$/, '')
-
-        case 'BTC':
-        case 'TRX':
-        default:
-          // Use BigNumber for Bitcoin (8 decimals) and TRON (6 decimals)
-          const value = new BigNumber(trimmedRaw)
-          const divisor = new BigNumber(10).pow(decimals)
-          const result = value.dividedBy(divisor)
-          // Use toFixed(decimals) to avoid scientific notation and trim trailing zeros
-          return result.toFixed(decimals).replace(/\.?0+$/, '')
-      }
+      // Use BigNumber for all chains — avoids importing ethers (~300KB)
+      const value = new BigNumber(trimmedRaw)
+      const divisor = new BigNumber(10).pow(decimals)
+      const result = value.dividedBy(divisor)
+      // Use toFixed(decimals) to avoid scientific notation and trim trailing zeros
+      return result.toFixed(decimals).replace(/\.?0+$/, '')
     } catch (error: any) {
       throw new Error(
         `Failed to convert raw units to amount: ${error.message} (raw=${raw}, chain=${chain}, decimals=${decimals})`

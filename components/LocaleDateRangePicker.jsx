@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react'
 
+const EMPTY_STYLE = {}
+
 /**
  * A locale-aware date RANGE picker (single input, pick from-to in one calendar).
  *
@@ -26,7 +28,7 @@ export default function LocaleDateRangePicker({
   locale = 'en-US',
   placeholder = '',
   className = '',
-  style = {},
+  style = EMPTY_STYLE,
   t,
   minDate,
   maxDate,

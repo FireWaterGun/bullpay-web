@@ -57,6 +57,8 @@ export default function AdminSettings() {
   const [expandedGroups, setExpandedGroups] = useState(new Set())
 
   useEffect(() => { loadSettings() }, [currentPage, appliedFilters])
+
+  // Load categories on mount (runs once, parallel with first loadSettings via React batching)
   useEffect(() => { loadCategories() }, [])
 
   async function loadSettings() {

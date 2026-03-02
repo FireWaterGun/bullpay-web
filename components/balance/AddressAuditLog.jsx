@@ -2,7 +2,9 @@
 
 import { formatDate } from '@/lib/utils/format'
 
-export default function AddressAuditLog({ logs = [], t }) {
+const EMPTY_LOGS = []
+
+export default function AddressAuditLog({ logs = EMPTY_LOGS, t }) {
   if (!logs.length) {
     return (
       <div className="text-muted small py-2">

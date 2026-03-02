@@ -3,7 +3,9 @@
 import { useState, useMemo } from 'react'
 import CoinImg, { NetworkIcon } from '@/components/CoinImg'
 
-export default function CoinNetworkList({ coins = [], onSelect, selectedId, t }) {
+const EMPTY_COINS = []
+
+export default function CoinNetworkList({ coins = EMPTY_COINS, onSelect, selectedId, t }) {
   const [search, setSearch] = useState('')
 
   const grouped = useMemo(() => {

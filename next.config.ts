@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
 
   reactStrictMode: true,
 
+  // Tree-shake barrel imports for faster builds & smaller bundles
+  experimental: {
+    optimizePackageImports: ['bignumber.js', 'react-i18next', 'i18next', 'qrcode.react'],
+  },
+
   // Allow images from coin asset paths
   images: {
     unoptimized: true, // Use unoptimized for Sneat theme compatibility

@@ -3,6 +3,8 @@
 import { useEffect, useRef } from 'react';
 import { usePusher } from '@/app/providers';
 
+const EMPTY_CALLBACKS = {};
+
 /**
  * Hook to subscribe to invoice events via Pusher
  * @param {string} invoiceId - Invoice ID to subscribe to
@@ -13,7 +15,7 @@ import { usePusher } from '@/app/providers';
  * @param {Function} callbacks.onPaymentCompleted - Called when payment is completed
  * @param {Function} callbacks.onWithdrawalCompleted - Called when withdrawal is completed
  */
-export function useInvoiceEvents(invoiceId, callbacks = {}) {
+export function useInvoiceEvents(invoiceId, callbacks = EMPTY_CALLBACKS) {
   const { subscribe, unsubscribe, isConnected } = usePusher() || {};
   const channelRef = useRef(null);
   const callbacksRef = useRef(callbacks);
@@ -77,7 +79,7 @@ export function useInvoiceEvents(invoiceId, callbacks = {}) {
  * @param {Function} callbacks.onMerchantApproved - Called when merchant account is approved
  * @param {Function} callbacks.onWithdrawalAddressApproved - Called when withdrawal address is approved
  */
-export function useUserInvoiceEvents(userId, callbacks = {}) {
+export function useUserInvoiceEvents(userId, callbacks = EMPTY_CALLBACKS) {
   const { subscribe, unsubscribe, isConnected } = usePusher() || {};
   const channelRef = useRef(null);
   const callbacksRef = useRef(callbacks);
@@ -179,7 +181,7 @@ export function useUserInvoiceEvents(userId, callbacks = {}) {
  * @param {Object} callbacks - Event callbacks
  * @param {Function} callbacks.onSweepCompleted - Called when sweep is completed
  */
-export function useSystemNotifications(isAdmin, callbacks = {}) {
+export function useSystemNotifications(isAdmin, callbacks = EMPTY_CALLBACKS) {
   const { subscribe, unsubscribe, isConnected } = usePusher() || {};
   const channelRef = useRef(null);
   const callbacksRef = useRef(callbacks);

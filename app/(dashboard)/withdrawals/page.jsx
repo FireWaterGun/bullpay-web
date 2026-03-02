@@ -39,28 +39,19 @@ export default function WithdrawalsPage() {
   const [status, setStatus] = useState('ALL')
   const [pagination, setPagination] = useState(null)
 
-  // Load coins
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        const coinsData = await listCoins(token)
-        if (!mounted) return
-        setCoins(Array.isArray(coinsData) ? coinsData : [])
-      } catch {/* ignore */}
-    })()
-    return () => { mounted = false }
-  }, [token])
-
-  // Load wallets for top section
+  // Load coins and wallets in parallel
   useEffect(() => {
     let mounted = true
     ;(async () => {
       try {
         setWalletLoading(true)
-        const data = await listWallets(token)
+        const [coinsData, walletsData] = await Promise.all([
+          listCoins(token),
+          listWallets(token),
+        ])
         if (!mounted) return
-        setWalletItems(Array.isArray(data) ? data : [])
+        setCoins(Array.isArray(coinsData) ? coinsData : [])
+        setWalletItems(Array.isArray(walletsData) ? walletsData : [])
       } catch (e) {
         if (!mounted) return
         setWalletError(typeof e?.message === 'string' ? e.message : 'Failed to load')
