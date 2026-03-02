@@ -218,7 +218,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             const childPaths = children.map((c: NavigationItem) => c.path)
 
             if (!children.length) {
-              return <MenuItem key={item.key} to={item.path} end icon={icon} label={navLabel(item.key, item.label)} />
+              const itemBadge = badge || childBadgeMap[item.path]
+              return <MenuItem key={item.key} to={item.path} end icon={icon} label={navLabel(item.key, item.label)} badge={itemBadge} />
             }
 
             return (
