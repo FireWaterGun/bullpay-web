@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import dynamic from 'next/dynamic'
 import { useAuth, useToast } from '@/app/providers'
 import { get2FAStatus } from '@/lib/api/twoFactor'
-import { Setup2FAModal, Disable2FAModal } from '@/components/TwoFactorModals'
+const Setup2FAModal = dynamic(() => import('@/components/TwoFactorModals').then(m => m.Setup2FAModal), { ssr: false })
+const Disable2FAModal = dynamic(() => import('@/components/TwoFactorModals').then(m => m.Disable2FAModal), { ssr: false })
 import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 

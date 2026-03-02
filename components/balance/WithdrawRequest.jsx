@@ -104,30 +104,28 @@ export default function WithdrawRequest() {
     return wallets.filter(w => Number(w.coinNetworkId) === id)
   }, [wallets, coinNetworkId])
 
-  useEffect(() => {
-    if (!address && matchingWallets.length > 0) {
-      const first = matchingWallets[0]
-      if (first?.address) setAddress(first.address)
-    }
-  }, [matchingWallets, address])
+  // Derive default address from first matching wallet (no useEffect needed)
+  const defaultAddress = matchingWallets.length > 0 ? (matchingWallets[0]?.address || '') : ''
+  const effectiveAddress = address || defaultAddress
 
   const selectedWallet = useMemo(() => {
     if (address) return matchingWallets.find(w => (w.address || '') === address) || null
+    if (effectiveAddress) return matchingWallets.find(w => (w.address || '') === effectiveAddress) || null
     return matchingWallets[0] || null
-  }, [matchingWallets, address])
+  }, [matchingWallets, address, effectiveAddress])
 
   const decimals = Number(balance?.decimals || 8)
-  const amountNum = Number(amount) || 0
+  const amountNum = Number(effectiveAmount) || 0
 
-  const canSubmit = amountNum > 0 && amountNum <= available && address.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee && !is2FALoading
+  const canSubmit = amountNum > 0 && amountNum <= available && effectiveAddress.trim().length > 0 && selectedWallet?.id && feeEstimate && !estimatingFee && !is2FALoading
 
   const executeWithdrawal = async (twoFactorCode) => {
-    if (!balance || !address || !amount || !selectedWallet?.id || !feeEstimate) return
+    if (!balance || !effectiveAddress || !effectiveAmount || !selectedWallet?.id || !feeEstimate) return
     try {
       setSubmitting(true)
       await createWithdrawal({
         coinNetworkId: Number(balance.coinNetworkId),
-        amount: String(amount),
+        amount: String(effectiveAmount),
         withdrawalAddressId: selectedWallet.id,
         memo: '',
         ...(twoFactorCode ? { twoFactorCode } : {}),
@@ -143,7 +141,7 @@ export default function WithdrawRequest() {
 
   const onConfirm = async (e) => {
     e.preventDefault()
-    if (!balance || !address || !amount || !selectedWallet?.id || !feeEstimate) return
+    if (!balance || !effectiveAddress || !effectiveAmount || !selectedWallet?.id || !feeEstimate) return
 
     if (is2FAEnabled) {
       setShow2FAModal(true)
@@ -163,15 +161,15 @@ export default function WithdrawRequest() {
     return Number.isFinite(n) ? n : 0
   }, [selectedWallet])
 
-  useEffect(() => {
-    if (amount === '' || Number(amount) === 0) {
-      const fill = walletAvailable > 0 ? walletAvailable : available
-      if (fill > 0) setAmount(String(fill))
-    }
-  }, [walletAvailable, available])
+  // Derive initial amount from wallet/available balance (no useEffect needed)
+  const effectiveAmount = useMemo(() => {
+    if (amount !== '' && Number(amount) !== 0) return amount
+    const fill = walletAvailable > 0 ? walletAvailable : available
+    return fill > 0 ? String(fill) : amount
+  }, [amount, walletAvailable, available])
 
   useEffect(() => {
-    if (!coinNetworkId || !amount || Number(amount) <= 0) {
+    if (!coinNetworkId || !effectiveAmount || Number(effectiveAmount) <= 0) {
       setFeeEstimate(null)
       setFeeError('')
       return
@@ -182,7 +180,7 @@ export default function WithdrawRequest() {
       try {
         setEstimatingFee(true)
         setFeeError('')
-        const estimate = await estimateWithdrawalFee(coinNetworkId, amount, token)
+        const estimate = await estimateWithdrawalFee(coinNetworkId, effectiveAmount, token)
         if (mounted) {
           setFeeEstimate(estimate)
         }
@@ -203,7 +201,7 @@ export default function WithdrawRequest() {
       mounted = false
       clearTimeout(timer)
     }
-  }, [amount, coinNetworkId, token])
+  }, [effectiveAmount, coinNetworkId, token])
 
   const closeSuccess = () => {
     setSuccessOpen(false)
@@ -284,7 +282,7 @@ export default function WithdrawRequest() {
 
                   <div className="mb-3">
                     <label className="form-label">{t('balance.payoutAddress', { defaultValue: 'Payout address' })}</label>
-                    <input className="form-control" value={address} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
+                    <input className="form-control" value={effectiveAddress} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
                   </div>
 
                   <div className="mb-3">
@@ -296,7 +294,7 @@ export default function WithdrawRequest() {
                         max={available}
                         step={1 / Math.pow(10, Math.min(decimals, 8))}
                         className="form-control form-control-lg"
-                        value={amount}
+                        value={effectiveAmount}
                         onChange={(e) => {
                           const value = e.target.value
                           const numValue = Number(value)
@@ -361,7 +359,7 @@ export default function WithdrawRequest() {
           </div>
         )}
       </div>
-      <SuccessModalWrapper open={successOpen} onClose={closeSuccess} receiveAmount={feeEstimate?.display?.netAmount || amount} sym={sym} address={address} networkName={networkLabel} t={t} />
+      <SuccessModalWrapper open={successOpen} onClose={closeSuccess} receiveAmount={feeEstimate?.display?.netAmount || effectiveAmount} sym={sym} address={effectiveAddress} networkName={networkLabel} t={t} />
       <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
 
       <Verify2FAModal
