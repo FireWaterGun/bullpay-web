@@ -786,7 +786,7 @@
     "enterPassword": "Password",
     "passwordPlaceholder": "Enter your current password",
     "enter2FACode": "2FA Code",
-    "totpPlaceholder": "Enter 6-digit code from authenticator",
+    "totpPlaceholder": "6-digit code or backup code",
     "twoFactorRequired": "Please enter your password and 2FA code",
     "passwordRequired": "Please enter your password",
     "invalidPassword": "Invalid password",

@@ -788,7 +788,7 @@
     "enterPassword": "密码",
     "passwordPlaceholder": "请输入当前密码",
     "enter2FACode": "2FA 验证码",
-    "totpPlaceholder": "请输入验证器中的6位数字",
+    "totpPlaceholder": "6位验证码或备用码",
     "twoFactorRequired": "请输入密码和2FA验证码",
     "passwordRequired": "请输入密码",
     "invalidPassword": "密码错误",
