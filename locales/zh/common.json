@@ -42,6 +42,7 @@
     "rolesPermissions": "角色与权限",
     "auditLogs": "审计日志",
     "webhookLogs": "Webhook日志",
+    "maintenance": "维护模式",
     "myAccount": "我的账户"
   },
   "user": {
@@ -901,5 +902,13 @@
     "transactions": "提现",
     "transactionsDesc": "View all withdrawal transactions and their status",
     "txHash": "交易哈希"
+  },
+  "maintenance": {
+    "title": "系统维护中",
+    "defaultMessage": "系统正在维护中，请稍后再试。",
+    "estimatedEnd": "预计完成时间",
+    "checking": "检查中...",
+    "checkNow": "立即检查",
+    "autoCheck": "{seconds} 秒后自动检查"
   }
 }

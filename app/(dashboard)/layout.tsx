@@ -1,14 +1,15 @@
 'use client'
 
-import { useAuth } from '@/app/providers'
+import { useAuth, usePusher } from '@/app/providers'
 import type { NavigationItem, NavigationSection } from '@/app/providers'
 import { useRouter } from 'next/navigation'
-import React, { Suspense, useEffect, useState, type ReactNode } from 'react'
+import React, { Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { THEME_STORAGE_KEY, LANG_STORAGE_KEY } from '@/lib/constants'
 import { initAudioContext } from '@/lib/utils/notification'
 import { SectionHeader, MenuItem, SubItem, MenuGroup } from '@/components/dashboard/SidebarMenu'
 import NavbarContent from '@/components/dashboard/NavbarContent'
+import MaintenanceBanner from '@/components/admin/MaintenanceBanner'
 import useDashboardData from '@/hooks/useDashboardData'
 import '@/components/dashboard/notification-badge.css'
 
@@ -17,6 +18,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, token, navigation, isAdmin, isReady, hasMenu } = useAuth()
   const router = useRouter()
   const { fiatBalance, pendingWithdrawalCount, notificationRefreshRef } = useDashboardData()
+  const { subscribe, unsubscribe, isConnected } = usePusher() || {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const maintenanceChannelRef = useRef<any>(null)
 
   const [collapsed, setCollapsed] = useState(false)
   const [theme, setTheme] = useState('light')
@@ -32,6 +36,38 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       router.replace('/login')
     }
   }, [isReady, token, router])
+
+  // Real-time maintenance redirect for non-admin users via Pusher
+  useEffect(() => {
+    if (!subscribe || !isConnected || isAdmin || !isReady) return
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const channel = subscribe('system-maintenance') as any
+    maintenanceChannelRef.current = channel
+
+    if (channel) {
+      channel.bind('maintenance-status-changed', (data: any) => {
+        if (data.maintenance) {
+          try {
+            sessionStorage.setItem('maintenance_info', JSON.stringify({
+              message: data.message,
+              messageTh: data.messageTh,
+              estimatedEnd: data.estimatedEnd,
+            }))
+          } catch { /* sessionStorage may not be available */ }
+          window.location.href = '/maintenance'
+        }
+      })
+    }
+
+    return () => {
+      if (maintenanceChannelRef.current) {
+        maintenanceChannelRef.current.unbind_all()
+        unsubscribe?.('system-maintenance')
+        maintenanceChannelRef.current = null
+      }
+    }
+  }, [subscribe, unsubscribe, isConnected, isAdmin, isReady])
 
   useEffect(() => {
     const html = document.documentElement
@@ -193,6 +229,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       'admin-networks': 'nav.networks',
       'admin-coin-networks': 'nav.coinNetworks',
       'admin-system': 'nav.settings',
+      'admin-maintenance': 'nav.maintenance',
       'admin-audit-logs': 'nav.auditLogs',
       'admin-merchant-webhook-logs': 'nav.webhookLogs',
       'admin-account': 'nav.myAccount',
@@ -296,6 +333,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <div className="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
               <a className="nav-item nav-link px-0 me-xl-6" href="#" onClick={toggleMenu}><i className="icon-base bx bx-menu icon-md"></i></a>
             </div>
+            {isAdmin && <MaintenanceBanner />}
             <NavbarContent
               fiatBalance={fiatBalance}
               notificationRefreshRef={notificationRefreshRef}

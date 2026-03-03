@@ -42,6 +42,7 @@
     "rolesPermissions": "บทบาทและสิทธิ์",
     "auditLogs": "บันทึกการตรวจสอบ",
     "webhookLogs": "บันทึก Webhook",
+    "maintenance": "ปิดปรับปรุง",
     "myAccount": "บัญชีของฉัน"
   },
   "user": {
@@ -908,5 +909,13 @@
     "transactions": "การถอน",
     "transactionsDesc": "View all withdrawal transactions and their status",
     "txHash": "แฮชธุรกรรม"
+  },
+  "maintenance": {
+    "title": "ระบบกำลังปรับปรุง",
+    "defaultMessage": "ระบบกำลังปรับปรุง กรุณาลองใหม่ภายหลัง",
+    "estimatedEnd": "คาดว่าจะเสร็จ",
+    "checking": "กำลังตรวจสอบ...",
+    "checkNow": "ตรวจสอบเดี๋ยวนี้",
+    "autoCheck": "ตรวจสอบอัตโนมัติใน {seconds} วินาที"
   }
 }

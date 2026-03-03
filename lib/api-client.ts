@@ -71,6 +71,35 @@ export async function apiFetch<T = unknown>(
     throw new ApiError(401, 'UNAUTHORIZED', 'Session expired')
   }
 
+  // Handle 503 — maintenance mode, redirect to maintenance page
+  if (res.status === 503) {
+    const json503 = await res.json().catch(() => null)
+    const errPayload = json503?.error || json503
+    if (errPayload?.code === 'SERVICE_MAINTENANCE' && typeof window !== 'undefined') {
+      // Store maintenance info for the maintenance page
+      try {
+        sessionStorage.setItem(
+          'maintenance_info',
+          JSON.stringify({
+            message: errPayload.message,
+            messageTh: errPayload.messageTh,
+            estimatedEnd: errPayload.estimatedEnd,
+            retryAfterSeconds: errPayload.retryAfterSeconds,
+          })
+        )
+      } catch {
+        // sessionStorage may not be available
+      }
+      window.location.href = '/maintenance'
+    }
+    throw new ApiError(
+      503,
+      errPayload?.code || 'SERVICE_UNAVAILABLE',
+      errPayload?.message || 'Service temporarily unavailable',
+      json503
+    )
+  }
+
   // Handle no-content responses
   if (res.status === 204) return undefined as T
 

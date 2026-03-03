@@ -42,6 +42,7 @@
     "rolesPermissions": "Roles & Permissions",
     "auditLogs": "Audit Logs",
     "webhookLogs": "Webhook Logs",
+    "maintenance": "Maintenance",
     "myAccount": "My Account"
   },
   "user": {
@@ -899,5 +900,13 @@
     "transactions": "Withdrawal",
     "transactionsDesc": "View all withdrawal transactions and their status",
     "txHash": "Tx Hash"
+  },
+  "maintenance": {
+    "title": "Under Maintenance",
+    "defaultMessage": "System is under maintenance. Please try again later.",
+    "estimatedEnd": "Estimated completion",
+    "checking": "Checking...",
+    "checkNow": "Check Now",
+    "autoCheck": "Auto-checking in {seconds}s"
   }
 }

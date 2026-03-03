@@ -1,4 +1,4 @@
-export const CATEGORY_OPTIONS = ['general', 'withdrawal', 'sweep', 'gas_topup', 'gas_price', 'gas_limit', 'rbf', 'invoice', 'notification', 'security']
+export const CATEGORY_OPTIONS = ['general', 'withdrawal', 'sweep', 'gas_topup', 'gas_price', 'gas_limit', 'rbf', 'invoice', 'notification', 'security', 'maintenance']
 export const SCOPE_OPTIONS = ['global', 'merchant', 'user']
 
 export function formatLabel(str) {

@@ -275,7 +275,7 @@ export function PusherProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const appKey = process.env.NEXT_PUBLIC_PUSHER_APP_KEY
-    if (!appKey || !token) return
+    if (!appKey) return
 
     let pusher: InstanceType<typeof import('pusher-js').default>
 
@@ -305,10 +305,16 @@ export function PusherProvider({ children }: { children: ReactNode }) {
               disableStats: true,
             }
           : {}),
+        // Auth only needed for private/presence channels — public channels skip this.
+        // When token is unavailable, private channel subscriptions will fail gracefully.
         channelAuthorization: {
           endpoint: authEndpoint,
           transport: 'ajax' as const,
           customHandler: ({ socketId, channelName }, callback) => {
+            if (!token) {
+              callback(new Error('No auth token — cannot subscribe to private channel'), null)
+              return
+            }
             fetch(authEndpoint, {
               method: 'POST',
               headers: {

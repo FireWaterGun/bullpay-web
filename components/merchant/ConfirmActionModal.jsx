@@ -101,13 +101,15 @@ export default function ConfirmActionModal({ action, loading, is2FAEnabled, onCo
                   type="text"
                   className="form-control"
                   value={totpCode}
-                  onChange={(e) => setTotpCode(e.target.value.replace(/[^0-9A-Za-z]/g, '').slice(0, 8))}
-                  placeholder={t('merchant.totpPlaceholder', { defaultValue: 'Enter 6-digit code from authenticator' })}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 20))}
+                  placeholder={t('merchant.totpPlaceholder', { defaultValue: 'Enter 6-digit code or backup code' })}
                   disabled={loading}
-                  maxLength={8}
+                  maxLength={20}
                   autoComplete="one-time-code"
-                  inputMode="numeric"
                 />
+                <div className="form-text">
+                  {t('merchant.totpHint', { defaultValue: 'Enter the code from your authenticator app or a backup code.' })}
+                </div>
               </div>
             )}
 
