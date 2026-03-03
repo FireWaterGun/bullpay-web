@@ -181,6 +181,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       'settings': 'nav.settings',
       '2fa': 'nav.twoFactor',
       'integration': 'nav.integration',
+      'merchant-overview': 'nav.apiCredentials',
+      'webhook-logs': 'nav.webhookLogs',
       // Admin menu
       'admin-dashboard': 'nav.revenueDashboard',
       'income-statement': 'nav.incomeStatement',
