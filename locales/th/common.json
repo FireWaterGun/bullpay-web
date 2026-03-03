@@ -796,7 +796,7 @@
     "enterPassword": "รหัสผ่าน",
     "passwordPlaceholder": "กรอกรหัสผ่านปัจจุบันของคุณ",
     "enter2FACode": "รหัส 2FA",
-    "totpPlaceholder": "กรอกรหัส 6 หลักจากแอปยืนยันตัวตน",
+    "totpPlaceholder": "รหัส 6 หลัก หรือ backup code",
     "twoFactorRequired": "กรุณากรอกรหัสผ่านและรหัส 2FA",
     "passwordRequired": "กรุณากรอกรหัสผ่าน",
     "invalidPassword": "รหัสผ่านไม่ถูกต้อง",
