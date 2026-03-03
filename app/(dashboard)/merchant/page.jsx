@@ -482,17 +482,10 @@ export default function MerchantPage() {
                         type="text"
                         className="form-control"
                         value={webhookTotpCode}
-<<<<<<< HEAD
-                        onChange={(e) => setWebhookTotpCode(e.target.value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 20))}
-                        placeholder={t('merchant.totpPlaceholder', { defaultValue: 'Enter 6-digit code or backup code' })}
-                        disabled={webhookLoading}
-                        maxLength={20}
-=======
-                        onChange={(e) => setWebhookTotpCode(e.target.value.replace(/[^0-9A-Za-z\-]/g, '').slice(0, 9))}
+                        onChange={(e) => setWebhookTotpCode(e.target.value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 9))}
                         placeholder={t('merchant.totpPlaceholder', { defaultValue: '6-digit code or backup code' })}
                         disabled={webhookLoading}
                         maxLength={9}
->>>>>>> 82707a8c4d1cd4c4e1e65437bcac8d4a00e8c428
                         autoComplete="one-time-code"
                       />
                       <div className="form-text">
