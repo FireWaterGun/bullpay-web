@@ -1372,21 +1372,6 @@ export async function getSettings(
 }
 
 /**
- * Get setting categories with counts (Admin only)
- */
-export async function getSettingCategories(token: string | null) {
-  return apiFetch('/api/v1/admin/settings/categories', { token })
-}
-
-/**
- * Get setting by ID (Admin only)
- */
-export async function getSettingById(token: string | null, id: number) {
-  const data = await apiFetch<any>(`/api/v1/admin/settings/${id}`, { token })
-  return data?.setting || data
-}
-
-/**
  * Get setting by key name (Admin only)
  */
 export async function getSettingByKey(token: string | null, key: string) {
