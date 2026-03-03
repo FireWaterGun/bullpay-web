@@ -43,6 +43,7 @@
     "auditLogs": "审计日志",
     "webhookLogs": "Webhook日志",
     "maintenance": "维护模式",
+    "withdrawalSettings": "提款设置",
     "myAccount": "我的账户"
   },
   "user": {

@@ -98,10 +98,10 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                 />
               </div>
 
-              {/* Withdraw Fee */}
+              {/* Withdraw Fee (total, legacy) */}
               <div className="col-md-6">
                 <label className="form-label">
-                  {t('crypto.withdrawFee', { defaultValue: 'Withdraw Fee' })}
+                  {t('crypto.withdrawFee', { defaultValue: 'Withdraw Fee (Total)' })}
                 </label>
                 <input
                   type="text"
@@ -115,6 +115,49 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                   pattern="^\d+(\.\d+)?$"
                   maxLength={32}
                 />
+              </div>
+
+              {/* Withdraw Fee Base (auto-updated, read-only on edit) */}
+              {isEdit && (
+                <div className="col-md-6">
+                  <label className="form-label">
+                    {t('crypto.withdrawFeeBase', { defaultValue: 'Fee Base (Gas Cost)' })}
+                    <span className="badge bg-label-info ms-2" style={{ fontSize: '0.65rem' }}>AUTO</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control form-control-lg"
+                    value={formData.withdrawFeeBase || '-'}
+                    disabled
+                    readOnly
+                  />
+                  <small className="text-muted">
+                    {t('crypto.withdrawFeeBaseHelp', { defaultValue: 'Auto-calculated from gas prices. Cannot be edited manually.' })}
+                  </small>
+                </div>
+              )}
+
+              {/* Withdraw Fee Percent (platform margin) */}
+              <div className="col-md-6">
+                <label className="form-label">
+                  {t('crypto.withdrawFeePercent', { defaultValue: 'Fee Percent (%)' })}
+                  <span className="badge bg-label-success ms-2" style={{ fontSize: '0.65rem' }}>MARGIN</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  id="withdrawFeePercent"
+                  name="withdrawFeePercent"
+                  value={formData.withdrawFeePercent}
+                  onChange={handleChange}
+                  disabled={loading}
+                  placeholder="0.50"
+                  pattern="^\d+(\.\d+)?$"
+                  maxLength={10}
+                />
+                <small className="text-muted">
+                  {t('crypto.withdrawFeePercentHelp', { defaultValue: 'Platform fee as % of withdrawal amount. This is your revenue margin.' })}
+                </small>
               </div>
 
               {/* Daily Withdraw Limit USD */}

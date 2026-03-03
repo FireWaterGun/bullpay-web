@@ -45,6 +45,8 @@ export default function SupportedCryptoForm() {
     minWithdrawAmount: '',
     maxWithdrawAmount: '',
     withdrawFee: '',
+    withdrawFeeBase: '',
+    withdrawFeePercent: '',
     dailyWithdrawLimitUsd: '',
     status: 'active'
   })
@@ -86,11 +88,13 @@ export default function SupportedCryptoForm() {
       const coinNetwork = await getCoinNetworkById(token, parseInt(id))
 
       if (coinNetwork) {
-        // ฟังก์ชันตัด trailing zeros
+        // ฟังก์ชันตัด trailing zeros (avoid scientific notation for small values)
         const cleanNumber = (value) => {
           if (!value) return ''
           const num = parseFloat(value)
-          return isNaN(num) ? '' : num.toString()
+          if (isNaN(num)) return ''
+          if (Math.abs(num) < 1e-6) return value
+          return num.toLocaleString('en-US', { maximumFractionDigits: 18, useGrouping: false })
         }
 
         setFormData({
@@ -102,6 +106,8 @@ export default function SupportedCryptoForm() {
           minWithdrawAmount: cleanNumber(coinNetwork.minWithdrawAmount),
           maxWithdrawAmount: cleanNumber(coinNetwork.maxWithdrawAmount),
           withdrawFee: cleanNumber(coinNetwork.withdrawFee),
+          withdrawFeeBase: cleanNumber(coinNetwork.withdrawFeeBase),
+          withdrawFeePercent: cleanNumber(coinNetwork.withdrawFeePercent),
           dailyWithdrawLimitUsd: cleanNumber(coinNetwork.dailyWithdrawLimitUsd),
           status: coinNetwork.status || 'active'
         })
@@ -126,7 +132,7 @@ export default function SupportedCryptoForm() {
   // DECIMAL(32,18) — crypto amounts: max 14 integer + 18 decimal digits
   const cryptoAmountFields = new Set([
     'minWithdrawAmount', 'maxWithdrawAmount',
-    'withdrawFee'
+    'withdrawFee', 'withdrawFeePercent'
   ])
   // DECIMAL(16,2) — USD amounts: max 14 integer + 2 decimal digits
   const usdAmountFields = new Set(['dailyWithdrawLimitUsd'])
@@ -161,7 +167,7 @@ export default function SupportedCryptoForm() {
       }
 
       // Validate crypto amount fields — DECIMAL(32,18): max 14 integer + 18 decimal
-      const cryptoFields = ['minWithdrawAmount', 'maxWithdrawAmount', 'withdrawFee']
+      const cryptoFields = ['minWithdrawAmount', 'maxWithdrawAmount', 'withdrawFee', 'withdrawFeePercent']
       const cryptoPattern = /^\d{1,14}(\.\d{1,18})?$/
       for (const field of cryptoFields) {
         if (formData[field] && !cryptoPattern.test(formData[field])) {
@@ -181,6 +187,7 @@ export default function SupportedCryptoForm() {
           ...(formData.minWithdrawAmount && { minWithdrawAmount: formData.minWithdrawAmount }),
           ...(formData.maxWithdrawAmount && { maxWithdrawAmount: formData.maxWithdrawAmount }),
           ...(formData.withdrawFee && { withdrawFee: formData.withdrawFee }),
+          ...(formData.withdrawFeePercent && { withdrawFeePercent: formData.withdrawFeePercent }),
           ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
           status: formData.status || 'active'
         }
@@ -195,6 +202,7 @@ export default function SupportedCryptoForm() {
           minWithdrawAmount: formData.minWithdrawAmount,
           maxWithdrawAmount: formData.maxWithdrawAmount,
           withdrawFee: formData.withdrawFee,
+          ...(formData.withdrawFeePercent && { withdrawFeePercent: formData.withdrawFeePercent }),
           ...(formData.dailyWithdrawLimitUsd && { dailyWithdrawLimitUsd: formData.dailyWithdrawLimitUsd }),
           status: formData.status || 'active'
         }

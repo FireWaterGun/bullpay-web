@@ -43,6 +43,7 @@
     "auditLogs": "บันทึกการตรวจสอบ",
     "webhookLogs": "บันทึก Webhook",
     "maintenance": "ปิดปรับปรุง",
+    "withdrawalSettings": "ตั้งค่าการถอน",
     "myAccount": "บัญชีของฉัน"
   },
   "user": {

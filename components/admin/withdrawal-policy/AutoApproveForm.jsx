@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
-import { updateSweepSetting } from '@/lib/api/admin'
+import { upsertSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
 import { logger } from '@/lib/utils/logger'
 
@@ -12,6 +12,7 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
   const { token } = useAuth()
   const toast = useToast()
   const [loading, setLoading] = useState(false)
+  const [toggling, setToggling] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [formData, setFormData] = useState({})
 
@@ -20,12 +21,20 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
     setShowModal(true)
   }
 
+  async function saveAutoApproveFields(enabled, thresholdUsd) {
+    await Promise.all([
+      upsertSetting(token, { keyName: 'withdrawal.auto_approve.enabled', value: String(enabled) }),
+      upsertSetting(token, { keyName: 'withdrawal.auto_approve.threshold_usd', value: String(thresholdUsd) }),
+    ])
+  }
+
   async function handleSave() {
     try {
       setLoading(true)
-      const settingValue = { enabled: formData.enabled, thresholdUsd: parseFloat(formData.thresholdUsd) || 0 }
-      await updateSweepSetting(token, 'payment.withdraw.auto_approve', settingValue)
-      setAutoApprove(settingValue)
+      const enabled = formData.enabled
+      const thresholdUsd = parseFloat(formData.thresholdUsd) || 0
+      await saveAutoApproveFields(enabled, thresholdUsd)
+      setAutoApprove({ enabled, thresholdUsd })
       setShowModal(false)
       toast.success(t('admin.withdrawal.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {
@@ -54,17 +63,23 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
                       type="checkbox"
                       className="form-check-input"
                       checked={autoApprove.enabled || false}
-                      onChange={(e) => {
-                        const newValue = { ...autoApprove, enabled: e.target.checked }
-                        setAutoApprove(newValue)
-                        updateSweepSetting(token, 'payment.withdraw.auto_approve', newValue)
-                          .then(() => toast.success(t('admin.withdrawal.saveSuccess', { defaultValue: 'Settings saved successfully' })))
-                          .catch(err => {
-                            setAutoApprove(autoApprove)
-                            toast.error(err?.message || t('admin.withdrawal.saveError', { defaultValue: 'Failed to save settings' }))
-                          })
+                      disabled={toggling}
+                      onChange={async (e) => {
+                        const newEnabled = e.target.checked
+                        const prev = { ...autoApprove }
+                        setToggling(true)
+                        setAutoApprove({ ...autoApprove, enabled: newEnabled })
+                        try {
+                          await upsertSetting(token, { keyName: 'withdrawal.auto_approve.enabled', value: String(newEnabled) })
+                          toast.success(t('admin.withdrawal.saveSuccess', { defaultValue: 'Settings saved successfully' }))
+                        } catch (err) {
+                          setAutoApprove(prev)
+                          toast.error(err?.message || t('admin.withdrawal.saveError', { defaultValue: 'Failed to save settings' }))
+                        } finally {
+                          setToggling(false)
+                        }
                       }}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: toggling ? 'not-allowed' : 'pointer' }}
                     />
                   </div>
                 </td>
@@ -74,7 +89,7 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
                 <td className="py-3">
                   <div className="d-flex align-items-center gap-2">
                     <code>{autoApprove.thresholdUsd || 0}</code>
-                    <button type="button" className="btn btn-sm btn-icon" onClick={handleEdit} style={{ marginLeft: 'auto' }}>
+                    <button type="button" className="btn btn-sm btn-icon" onClick={handleEdit} disabled={toggling} style={{ marginLeft: 'auto' }}>
                       <i className="bx bx-edit text-primary" style={{ fontSize: '1rem' }}></i>
                     </button>
                   </div>
@@ -86,16 +101,42 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
       </div>
 
       {showModal && (
-        <>
-          <div className="modal-backdrop fade show"></div>
-          <div className="modal fade show d-block" tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
+        <AutoApproveModal
+          formData={formData}
+          setFormData={setFormData}
+          onClose={() => setShowModal(false)}
+          onSave={handleSave}
+          loading={loading}
+          t={t}
+        />
+      )}
+    </>
+  )
+}
+
+function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }) {
+  // Stable ref for onClose to avoid listener churn
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
+  // Escape key handler
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape' && !loading) onCloseRef.current() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [loading])
+
+  return (
+    <>
+      <div className="modal-backdrop fade show"></div>
+      <div className="modal fade show d-block" tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
                   <h5 className="modal-title">
                     {t('admin.withdrawal.editAutoApprove', { defaultValue: 'Edit Auto Approve' })}
                   </h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)} disabled={loading}></button>
+                  <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
                 </div>
                 <div className="modal-body">
                   <div className="row g-3">
@@ -131,7 +172,7 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => setShowModal(false)}
+                    onClick={onClose}
                     disabled={loading}
                   >
                     {t('actions.cancel', { defaultValue: 'Cancel' })}
@@ -139,7 +180,7 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={handleSave}
+                    onClick={onSave}
                     disabled={loading}
                   >
                     {loading ? (
@@ -159,7 +200,5 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
             </div>
           </div>
         </>
-      )}
-    </>
   )
 }

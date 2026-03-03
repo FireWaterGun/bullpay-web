@@ -43,6 +43,7 @@
     "auditLogs": "Audit Logs",
     "webhookLogs": "Webhook Logs",
     "maintenance": "Maintenance",
+    "withdrawalSettings": "Withdrawal Settings",
     "myAccount": "My Account"
   },
   "user": {

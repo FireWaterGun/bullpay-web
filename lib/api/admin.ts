@@ -277,6 +277,7 @@ export async function updateCoinNetwork(token: string | null, id: number, coinNe
   maxWithdrawAmount?: string
   depositFee?: string
   withdrawFee?: string
+  withdrawFeePercent?: string
   depositConfirmations?: number
   dailyWithdrawLimitUsd?: string
 }) {
@@ -319,16 +320,22 @@ export async function getSweepSettings(
 
 /**
  * Update sweep setting (Admin only)
+ * Uses the correct PUT /settings/ route with { keyName, value } body
  */
 export async function updateSweepSetting(
   token: string | null,
   keyName: string,
   value: any
 ) {
-  return apiFetch(`/api/v1/admin/settings/${keyName}`, {
+  // API expects value as string — stringify objects/booleans
+  const stringValue = typeof value === 'object' ? JSON.stringify(value)
+    : typeof value === 'boolean' ? String(value)
+    : String(value)
+
+  return apiFetch('/api/v1/admin/settings', {
     method: 'PUT',
     token,
-    body: { value },
+    body: { keyName, value: stringValue },
   })
 }
 

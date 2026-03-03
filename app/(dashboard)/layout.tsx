@@ -229,6 +229,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       'admin-networks': 'nav.networks',
       'admin-coin-networks': 'nav.coinNetworks',
       'admin-system': 'nav.settings',
+      'admin-withdrawal-settings': 'nav.withdrawalSettings',
       'admin-maintenance': 'nav.maintenance',
       'admin-audit-logs': 'nav.auditLogs',
       'admin-merchant-webhook-logs': 'nav.webhookLogs',
