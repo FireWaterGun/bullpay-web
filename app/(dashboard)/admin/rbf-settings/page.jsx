@@ -1,0 +1,1022 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { useAuth, useToast } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { getSettings, upsertSetting } from '@/lib/api/admin'
+import { logger } from '@/lib/utils/logger'
+
+// ─── Constants ───────────────────────────────────────────────
+
+const TABS = [
+  { key: 'global', icon: 'bx-globe', labelKey: 'admin.rbfSettings.tabGlobal', defaultLabel: 'Global' },
+  { key: 'network', icon: 'bx-network-chart', labelKey: 'admin.rbfSettings.tabNetwork', defaultLabel: 'Per-Network' },
+]
+
+const NETWORKS = [
+  { key: 'eth', name: 'Ethereum', symbol: 'ETH' },
+  { key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC' },
+  { key: 'pol', name: 'Polygon', symbol: 'POL' },
+  { key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM' },
+  { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM' },
+  { key: 'base', name: 'Base', symbol: 'BASE' },
+  { key: 'avax', name: 'Avalanche', symbol: 'AVAX' },
+]
+
+// ─── Formatting Helpers ──────────────────────────────────────
+
+function formatMs(v) {
+  const ms = Number(v)
+  if (isNaN(ms) || v === '' || v === null || v === undefined || v === '—') return '—'
+  if (ms >= 3600_000) {
+    const h = ms / 3600_000
+    return h % 1 === 0 ? `${h}h` : `${(ms / 60_000).toFixed(0)}m`
+  }
+  return `${(ms / 60_000).toFixed(0)}m`
+}
+
+function formatPercent(v) {
+  if (v === undefined || v === '' || v === null || v === '—') return '—'
+  return `${v}%`
+}
+
+function formatRatio(v) {
+  const n = Number(v)
+  if (isNaN(n) || v === '' || v === null || v === undefined) return '—'
+  return `${(n * 100).toFixed(1)}%`
+}
+
+function formatUsd(v) {
+  if (v === undefined || v === '' || v === null || v === '—') return '—'
+  return `$${v}`
+}
+
+// ─── Component ───────────────────────────────────────────────
+
+export default function RbfSettingsPage() {
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const toast = useToast()
+
+  const [activeTab, setActiveTab] = useState('global')
+  const [loading, setLoading] = useState(true)
+  const [settingsMap, setSettingsMap] = useState({})
+  const [editModal, setEditModal] = useState(null)
+  const [editForm, setEditForm] = useState({})
+  const [formErrors, setFormErrors] = useState({})
+  const [saving, setSaving] = useState(false)
+
+  // Escape key to close modal (blocked during save)
+  useEffect(() => {
+    if (!editModal) return
+    const handler = (e) => { if (e.key === 'Escape' && !saving) setEditModal(null) }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [editModal, saving])
+
+  // ─── Data Loading ────────────────────────────────────────
+
+  const loadSettings = useCallback(async () => {
+    if (!token) return
+    try {
+      const rbfRes = await getSettings(token, { category: 'rbf', limit: 100 })
+      const map = {}
+      for (const item of rbfRes?.items || []) {
+        const key = item.keyName || item.key_name
+        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? ''
+      }
+      setSettingsMap(map)
+    } catch (error) {
+      logger.error('Failed to load RBF settings:', error)
+      toast.error(t('admin.rbfSettings.loadError', { defaultValue: 'Failed to load RBF settings' }))
+    }
+  }, [token]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    async function init() {
+      setLoading(true)
+      await loadSettings()
+      setLoading(false)
+    }
+    init()
+  }, [loadSettings])
+
+  // ─── Helpers ─────────────────────────────────────────────
+
+  function getVal(key, fallback = '—') {
+    const v = settingsMap[key]
+    return v !== undefined && v !== '' ? v : fallback
+  }
+
+  function updateField(field, value) {
+    setEditForm((f) => ({ ...f, [field]: value }))
+    setFormErrors((e) => {
+      if (!e[field]) return e
+      const next = { ...e }
+      delete next[field]
+      return next
+    })
+  }
+
+  function validateNumber(value, { min, max, integer, fieldLabel } = {}) {
+    if (value === '' || value === undefined) return null
+    const n = Number(value)
+    if (isNaN(n) || value.toString().trim() === '') return t('admin.rbfSettings.errNotANumber', { defaultValue: '{{field}} must be a valid number', field: fieldLabel || 'Value' })
+    if (integer && !Number.isInteger(n)) return t('admin.rbfSettings.errMustBeInteger', { defaultValue: '{{field}} must be an integer', field: fieldLabel || 'Value' })
+    if (min !== undefined && n < min) return t('admin.rbfSettings.errMin', { defaultValue: '{{field}} must be at least {{min}}', field: fieldLabel || 'Value', min })
+    if (max !== undefined && n > max) return t('admin.rbfSettings.errMax', { defaultValue: '{{field}} cannot exceed {{max}}', field: fieldLabel || 'Value', max })
+    return null
+  }
+
+  // ─── Open Edit Modals ───────────────────────────────────
+
+  function openGlobalEdit(group) {
+    let form = {}
+    if (group === 'droppedDetection') {
+      form = {
+        minNotFoundCount: getVal('rbf.dropped_detection.min_not_found_count', ''),
+        minNotFoundDuration: getVal('rbf.dropped_detection.min_not_found_duration', ''),
+      }
+    } else if (group === 'rateLimiting') {
+      form = {
+        maxRbfPerHour: getVal('rbf.rate_limiting.max_rbf_per_hour', ''),
+        maxRbfPerAddress: getVal('rbf.rate_limiting.max_rbf_per_address', ''),
+      }
+    } else if (group === 'safety') {
+      form = {
+        maxReplacementsPerTx: getVal('rbf.safety.max_replacements_per_tx', ''),
+      }
+    }
+    setEditForm(form)
+    setFormErrors({})
+    setEditModal({ tab: 'global', group })
+  }
+
+  function openNetworkEdit(network) {
+    const net = network.key
+    setEditForm({
+      enabled: getVal(`rbf.${net}.enabled`, ''),
+      minPendingDuration: getVal(`rbf.${net}.min_pending_duration`, ''),
+      maxPendingDuration: getVal(`rbf.${net}.max_pending_duration`, ''),
+      gasBumpPercent: getVal(`rbf.${net}.gas_bump_percent`, ''),
+      minTimeBetweenReplaces: getVal(`rbf.${net}.min_time_between_replaces`, ''),
+      minAmountUsd: getVal(`rbf.${net}.min_amount_usd`, ''),
+      maxCostRatio: getVal(`rbf.${net}.max_cost_ratio`, ''),
+      maxCostUsd: getVal(`rbf.${net}.max_cost_usd`, ''),
+    })
+    setFormErrors({})
+    setEditModal({ tab: 'network', network })
+  }
+
+  // ─── Save Handlers ──────────────────────────────────────
+
+  async function saveSetting(keyName, value) {
+    await upsertSetting(token, { keyName, value: String(value) })
+  }
+
+  async function handleSaveGlobal() {
+    const { group } = editModal
+
+    // Validate
+    const errors = {}
+    if (group === 'droppedDetection') {
+      const e1 = validateNumber(editForm.minNotFoundCount, { min: 1, integer: true, fieldLabel: 'Min Not-Found Checks' })
+      if (e1) errors.minNotFoundCount = e1
+      const e2 = validateNumber(editForm.minNotFoundDuration, { min: 0, integer: true, fieldLabel: 'Min Not-Found Duration' })
+      if (e2) errors.minNotFoundDuration = e2
+    } else if (group === 'rateLimiting') {
+      const e1 = validateNumber(editForm.maxRbfPerHour, { min: 1, integer: true, fieldLabel: 'Max RBF Per Hour' })
+      if (e1) errors.maxRbfPerHour = e1
+      const e2 = validateNumber(editForm.maxRbfPerAddress, { min: 1, integer: true, fieldLabel: 'Max RBF Per Address' })
+      if (e2) errors.maxRbfPerAddress = e2
+    } else if (group === 'safety') {
+      const e1 = validateNumber(editForm.maxReplacementsPerTx, { min: 1, integer: true, fieldLabel: 'Max Replacements' })
+      if (e1) errors.maxReplacementsPerTx = e1
+    }
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return }
+
+    try {
+      setSaving(true)
+      const updates = []
+      const mapUpdates = {}
+
+      if (group === 'droppedDetection') {
+        const keyMap = {
+          minNotFoundCount: 'rbf.dropped_detection.min_not_found_count',
+          minNotFoundDuration: 'rbf.dropped_detection.min_not_found_duration',
+        }
+        for (const [formKey, dbKey] of Object.entries(keyMap)) {
+          const val = editForm[formKey]
+          if (val !== '') {
+            updates.push(saveSetting(dbKey, val))
+            mapUpdates[dbKey] = String(val)
+          }
+        }
+      } else if (group === 'rateLimiting') {
+        const keyMap = {
+          maxRbfPerHour: 'rbf.rate_limiting.max_rbf_per_hour',
+          maxRbfPerAddress: 'rbf.rate_limiting.max_rbf_per_address',
+        }
+        for (const [formKey, dbKey] of Object.entries(keyMap)) {
+          const val = editForm[formKey]
+          if (val !== '') {
+            updates.push(saveSetting(dbKey, val))
+            mapUpdates[dbKey] = String(val)
+          }
+        }
+      } else if (group === 'safety') {
+        const val = editForm.maxReplacementsPerTx
+        if (val !== '') {
+          const dbKey = 'rbf.safety.max_replacements_per_tx'
+          updates.push(saveSetting(dbKey, val))
+          mapUpdates[dbKey] = String(val)
+        }
+      }
+
+      if (updates.length === 0) return
+      await Promise.all(updates)
+      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }))
+      setEditModal(null)
+      toast.success(t('admin.rbfSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
+    } catch (error) {
+      toast.error(error?.message || t('admin.rbfSettings.saveError', { defaultValue: 'Failed to save settings' }))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function handleSaveNetwork() {
+    const net = editModal.network.key
+
+    // Validate
+    const errors = {}
+    const e1 = validateNumber(editForm.gasBumpPercent, { min: 1, integer: true, fieldLabel: 'Gas Bump %' })
+    if (e1) errors.gasBumpPercent = e1
+    const e2 = validateNumber(editForm.minPendingDuration, { min: 0, integer: true, fieldLabel: 'Min Pending' })
+    if (e2) errors.minPendingDuration = e2
+    const e3 = validateNumber(editForm.maxPendingDuration, { min: 0, integer: true, fieldLabel: 'Max Pending' })
+    if (e3) errors.maxPendingDuration = e3
+    const e4 = validateNumber(editForm.minTimeBetweenReplaces, { min: 0, integer: true, fieldLabel: 'Replace Interval' })
+    if (e4) errors.minTimeBetweenReplaces = e4
+    const e5 = validateNumber(editForm.minAmountUsd, { min: 0, fieldLabel: 'Min Amount' })
+    if (e5) errors.minAmountUsd = e5
+    const e6 = validateNumber(editForm.maxCostRatio, { min: 0, max: 1, fieldLabel: 'Max Cost Ratio' })
+    if (e6) errors.maxCostRatio = e6
+    const e7 = validateNumber(editForm.maxCostUsd, { min: 0, fieldLabel: 'Max Cost' })
+    if (e7) errors.maxCostUsd = e7
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return }
+
+    try {
+      setSaving(true)
+      const updates = []
+      const mapUpdates = {}
+
+      const keyMap = {
+        enabled: `rbf.${net}.enabled`,
+        minPendingDuration: `rbf.${net}.min_pending_duration`,
+        maxPendingDuration: `rbf.${net}.max_pending_duration`,
+        gasBumpPercent: `rbf.${net}.gas_bump_percent`,
+        minTimeBetweenReplaces: `rbf.${net}.min_time_between_replaces`,
+        minAmountUsd: `rbf.${net}.min_amount_usd`,
+        maxCostRatio: `rbf.${net}.max_cost_ratio`,
+        maxCostUsd: `rbf.${net}.max_cost_usd`,
+      }
+
+      for (const [formKey, dbKey] of Object.entries(keyMap)) {
+        const val = editForm[formKey]
+        if (val !== '') {
+          updates.push(saveSetting(dbKey, val))
+          mapUpdates[dbKey] = String(val)
+        }
+      }
+
+      if (updates.length === 0) return
+      await Promise.all(updates)
+      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }))
+      setEditModal(null)
+      toast.success(t('admin.rbfSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
+    } catch (error) {
+      toast.error(error?.message || t('admin.rbfSettings.saveError', { defaultValue: 'Failed to save settings' }))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function handleSave() {
+    if (!editModal) return
+    if (editModal.tab === 'global') return handleSaveGlobal()
+    if (editModal.tab === 'network') return handleSaveNetwork()
+  }
+
+  // ─── Render: Loading ─────────────────────────────────────
+
+  if (loading) {
+    return (
+      <div className="container-xxl flex-grow-1 container-p-y">
+        <div className="d-flex justify-content-center align-items-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Render: Page ────────────────────────────────────────
+
+  return (
+    <div className="container-xxl flex-grow-1 container-p-y">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h4 className="mb-1">
+            <i className="bx bx-refresh me-2 text-primary"></i>
+            {t('admin.rbfSettings.title', { defaultValue: 'RBF Settings' })}
+          </h4>
+          <p className="text-muted mb-0">
+            {t('admin.rbfSettings.subtitle', { defaultValue: 'Configure Replace-by-Fee behavior for stuck transactions across all EVM networks' })}
+          </p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="nav-align-top">
+        <ul className="nav nav-tabs" role="tablist">
+          {TABS.map((tab) => (
+            <li key={tab.key} className="nav-item" role="presentation">
+              <button
+                className={`nav-link ${activeTab === tab.key ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.key)}
+                type="button"
+                role="tab"
+              >
+                <i className={`bx ${tab.icon} me-1`}></i>
+                {t(tab.labelKey, { defaultValue: tab.defaultLabel })}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div className="tab-content border border-top-0 rounded-bottom p-4">
+          {activeTab === 'global' && renderGlobalTab()}
+          {activeTab === 'network' && renderNetworkTab()}
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      {editModal && renderEditModal()}
+    </div>
+  )
+
+  // ─── Tab: Global ─────────────────────────────────────────
+
+  function renderGlobalTab() {
+    return (
+      <>
+        <div className="alert alert-primary mb-4" role="alert">
+          <i className="bx bx-info-circle me-1"></i>
+          {t('admin.rbfSettings.globalInfo', {
+            defaultValue: 'Global RBF settings apply across all networks. These control dropped transaction detection, system-wide rate limiting, and safety limits.',
+          })}
+        </div>
+
+        {/* Dropped Detection */}
+        <div className="card mb-3">
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <h6 className="mb-0">
+                <i className="bx bx-search-alt me-1 text-warning"></i>
+                {t('admin.rbfSettings.droppedDetection', { defaultValue: 'Dropped Transaction Detection' })}
+              </h6>
+              <small className="text-muted">
+                {t('admin.rbfSettings.droppedDetectionDesc', { defaultValue: 'When a transaction disappears from the mempool for too long, it is considered dropped' })}
+              </small>
+            </div>
+            <button
+              className="btn btn-icon btn-sm text-secondary"
+              onClick={() => openGlobalEdit('droppedDetection')}
+              title={t('admin.rbfSettings.edit', { defaultValue: 'Edit' })}
+            >
+              <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
+            </button>
+          </div>
+          <div className="card-body">
+            <div className="row g-4">
+              <div className="col-md-6">
+                <div className="text-muted small">{t('admin.rbfSettings.minNotFoundCount', { defaultValue: 'Min Not-Found Checks' })}</div>
+                {(() => {
+                  const val = getVal('rbf.dropped_detection.min_not_found_count')
+                  return (
+                    <>
+                      <div className="fw-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.consecutiveChecks', { defaultValue: 'consecutive checks' })}</div>}
+                    </>
+                  )
+                })()}
+              </div>
+              <div className="col-md-6">
+                <div className="text-muted small">{t('admin.rbfSettings.minNotFoundDuration', { defaultValue: 'Min Not-Found Duration' })}</div>
+                {(() => {
+                  const raw = getVal('rbf.dropped_detection.min_not_found_duration', '')
+                  const formatted = formatMs(raw)
+                  return (
+                    <>
+                      <div className="fw-semibold fs-5">{formatted}</div>
+                      {formatted !== '—' && <div className="text-muted small">{raw} ms</div>}
+                    </>
+                  )
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rate Limiting */}
+        <div className="card mb-3">
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <h6 className="mb-0">
+                <i className="bx bx-shield me-1 text-info"></i>
+                {t('admin.rbfSettings.rateLimiting', { defaultValue: 'Rate Limiting' })}
+              </h6>
+              <small className="text-muted">
+                {t('admin.rbfSettings.rateLimitingDesc', { defaultValue: 'Prevents excessive RBF replacements that could waste gas fees' })}
+              </small>
+            </div>
+            <button
+              className="btn btn-icon btn-sm text-secondary"
+              onClick={() => openGlobalEdit('rateLimiting')}
+              title={t('admin.rbfSettings.edit', { defaultValue: 'Edit' })}
+            >
+              <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
+            </button>
+          </div>
+          <div className="card-body">
+            <div className="row g-4">
+              <div className="col-md-6">
+                <div className="text-muted small">{t('admin.rbfSettings.maxRbfPerHour', { defaultValue: 'Max RBF Per Hour' })}</div>
+                {(() => {
+                  const val = getVal('rbf.rate_limiting.max_rbf_per_hour')
+                  return (
+                    <>
+                      <div className="fw-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.systemWide', { defaultValue: 'system-wide' })}</div>}
+                    </>
+                  )
+                })()}
+              </div>
+              <div className="col-md-6">
+                <div className="text-muted small">{t('admin.rbfSettings.maxRbfPerAddress', { defaultValue: 'Max RBF Per Address' })}</div>
+                {(() => {
+                  const val = getVal('rbf.rate_limiting.max_rbf_per_address')
+                  return (
+                    <>
+                      <div className="fw-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.perAddress', { defaultValue: 'per address' })}</div>}
+                    </>
+                  )
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Safety */}
+        <div className="card mb-3">
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <h6 className="mb-0">
+                <i className="bx bx-lock-alt me-1 text-danger"></i>
+                {t('admin.rbfSettings.safety', { defaultValue: 'Safety Limits' })}
+              </h6>
+              <small className="text-muted">
+                {t('admin.rbfSettings.safetyDesc', { defaultValue: 'Hard limits to prevent runaway replacement loops' })}
+              </small>
+            </div>
+            <button
+              className="btn btn-icon btn-sm text-secondary"
+              onClick={() => openGlobalEdit('safety')}
+              title={t('admin.rbfSettings.edit', { defaultValue: 'Edit' })}
+            >
+              <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
+            </button>
+          </div>
+          <div className="card-body">
+            <div className="row g-4">
+              <div className="col-md-6">
+                <div className="text-muted small">{t('admin.rbfSettings.maxReplacementsPerTx', { defaultValue: 'Max Replacements Per Tx' })}</div>
+                {(() => {
+                  const val = getVal('rbf.safety.max_replacements_per_tx')
+                  return (
+                    <>
+                      <div className="fw-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.perTransaction', { defaultValue: 'per transaction' })}</div>}
+                    </>
+                  )
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── Tab: Per-Network ────────────────────────────────────
+
+  function renderNetworkTab() {
+    return (
+      <>
+        <div className="alert alert-primary mb-4" role="alert">
+          <i className="bx bx-info-circle me-1"></i>
+          {t('admin.rbfSettings.networkInfo', {
+            defaultValue: 'Per-network RBF settings control gas bump percentages, timing thresholds, and cost limits. Each network has different optimal values based on block times and gas price volatility.',
+          })}
+        </div>
+
+        <div className="table-responsive">
+          <table className="table table-hover border-top">
+            <thead>
+              <tr>
+                <th>{t('admin.rbfSettings.colNetwork', { defaultValue: 'Network' })}</th>
+                <th className="text-center">{t('admin.rbfSettings.colStatus', { defaultValue: 'Status' })}</th>
+                <th className="text-center">{t('admin.rbfSettings.colGasBump', { defaultValue: 'Gas Bump' })}</th>
+                <th className="text-center">{t('admin.rbfSettings.colMinPending', { defaultValue: 'Min Pending' })}</th>
+                <th className="text-center">{t('admin.rbfSettings.colReplaceInterval', { defaultValue: 'Replace Interval' })}</th>
+                <th className="text-center">{t('admin.rbfSettings.colMinAmount', { defaultValue: 'Min Amount' })}</th>
+                <th className="text-center">{t('admin.rbfSettings.colMaxCost', { defaultValue: 'Max Cost' })}</th>
+                <th className="text-end">{t('admin.rbfSettings.colActions', { defaultValue: 'Actions' })}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {NETWORKS.map((net) => {
+                const enabled = getVal(`rbf.${net.key}.enabled`, '')
+                const gasBump = getVal(`rbf.${net.key}.gas_bump_percent`, '')
+                const minPending = getVal(`rbf.${net.key}.min_pending_duration`, '')
+                const replaceInterval = getVal(`rbf.${net.key}.min_time_between_replaces`, '')
+                const minAmount = getVal(`rbf.${net.key}.min_amount_usd`, '')
+                const maxCost = getVal(`rbf.${net.key}.max_cost_usd`, '')
+
+                return (
+                  <tr key={net.key}>
+                    <td>
+                      <strong>{net.name}</strong>
+                      <div className="text-muted small">{net.symbol}</div>
+                    </td>
+                    <td className="text-center">
+                      <span className={`badge rounded-pill ${
+                        enabled === 'true' ? 'bg-label-success' :
+                        enabled === 'false' ? 'bg-label-danger' :
+                        'bg-label-secondary'
+                      }`}>
+                        {enabled === 'true'
+                          ? t('admin.rbfSettings.enabled', { defaultValue: 'Enabled' })
+                          : enabled === 'false'
+                            ? t('admin.rbfSettings.disabled', { defaultValue: 'Disabled' })
+                            : '—'}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <span className="fw-semibold">{formatPercent(gasBump)}</span>
+                    </td>
+                    <td className="text-center">
+                      <span className="fw-semibold">{formatMs(minPending)}</span>
+                    </td>
+                    <td className="text-center">
+                      <span className="fw-semibold">{formatMs(replaceInterval)}</span>
+                    </td>
+                    <td className="text-center">
+                      <span className="fw-semibold">{formatUsd(minAmount)}</span>
+                    </td>
+                    <td className="text-center">
+                      <span className="fw-semibold">{formatUsd(maxCost)}</span>
+                    </td>
+                    <td className="text-end">
+                      <button
+                        className="btn btn-icon btn-sm text-secondary"
+                        title={t('admin.rbfSettings.edit', { defaultValue: 'Edit' })}
+                        onClick={() => openNetworkEdit(net)}
+                      >
+                        <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Info card */}
+        <div className="card bg-lighter mt-3">
+          <div className="card-body py-3">
+            <h6 className="mb-2">
+              <i className="bx bx-info-circle me-1"></i>
+              {t('admin.rbfSettings.howRbfWorks', { defaultValue: 'How RBF Works' })}
+            </h6>
+            <div className="text-muted small">
+              {t('admin.rbfSettings.howRbfWorksDesc', {
+                defaultValue: 'When a transaction is stuck pending longer than Min Pending duration, the system bumps the gas price by the Gas Bump percentage and resubmits. Replacements are spaced by the Replace Interval. Cost guards (Min Amount, Max Cost Ratio, Max Cost USD) prevent uneconomical replacements.',
+              })}
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── Edit Modal ──────────────────────────────────────────
+
+  function renderEditModal() {
+    const { tab } = editModal
+
+    let modalTitle = ''
+    let modalIcon = 'bx-cog'
+    let modalSize = ''
+
+    if (tab === 'global') {
+      const groupTitles = {
+        droppedDetection: t('admin.rbfSettings.editDroppedDetection', { defaultValue: 'Edit Dropped Detection' }),
+        rateLimiting: t('admin.rbfSettings.editRateLimiting', { defaultValue: 'Edit Rate Limiting' }),
+        safety: t('admin.rbfSettings.editSafety', { defaultValue: 'Edit Safety Limits' }),
+      }
+      const groupIcons = {
+        droppedDetection: 'bx-search-alt',
+        rateLimiting: 'bx-shield',
+        safety: 'bx-lock-alt',
+      }
+      modalTitle = groupTitles[editModal.group]
+      modalIcon = groupIcons[editModal.group]
+    } else {
+      modalTitle = t('admin.rbfSettings.editNetwork', { defaultValue: 'Edit RBF — {{network}}', network: editModal.network.name })
+      modalIcon = 'bx-network-chart'
+      modalSize = 'modal-lg'
+    }
+
+    return (
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
+        style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+        onClick={(e) => { if (e.target === e.currentTarget && !saving) setEditModal(null) }}
+      >
+        <div className={`modal-dialog modal-dialog-centered ${modalSize}`}>
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">
+                <i className={`bx ${modalIcon} me-2`}></i>
+                {modalTitle}
+              </h5>
+              <button type="button" className="btn-close" onClick={() => setEditModal(null)} disabled={saving}></button>
+            </div>
+            <div className="modal-body">
+              {tab === 'global' && renderGlobalForm()}
+              {tab === 'network' && renderNetworkForm()}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-outline-secondary" onClick={() => setEditModal(null)} disabled={saving}>
+                {t('admin.rbfSettings.cancel', { defaultValue: 'Cancel' })}
+              </button>
+              <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
+                {saving && <span className="spinner-border spinner-border-sm me-1" role="status"></span>}
+                {t('admin.rbfSettings.save', { defaultValue: 'Save Changes' })}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Modal Forms ─────────────────────────────────────────
+
+  function renderGlobalForm() {
+    const { group } = editModal
+
+    if (group === 'droppedDetection') {
+      return (
+        <>
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              {t('admin.rbfSettings.minNotFoundCount', { defaultValue: 'Min Not-Found Checks' })}
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              className={`form-control ${formErrors.minNotFoundCount ? 'is-invalid' : ''}`}
+              value={editForm.minNotFoundCount ?? ''}
+              onChange={(e) => updateField('minNotFoundCount', e.target.value)}
+            />
+            {formErrors.minNotFoundCount && <div className="invalid-feedback">{formErrors.minNotFoundCount}</div>}
+            <div className="form-text">
+              {t('admin.rbfSettings.minNotFoundCountDesc', {
+                defaultValue: 'Number of consecutive checks where transaction is not found before considering it dropped.',
+              })}
+            </div>
+          </div>
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              {t('admin.rbfSettings.minNotFoundDuration', { defaultValue: 'Min Not-Found Duration' })}
+            </label>
+            <div className="input-group">
+              <input
+                type="text"
+                inputMode="numeric"
+                className={`form-control ${formErrors.minNotFoundDuration ? 'is-invalid' : ''}`}
+                value={editForm.minNotFoundDuration ?? ''}
+                onChange={(e) => updateField('minNotFoundDuration', e.target.value)}
+              />
+              <span className="input-group-text">ms</span>
+            </div>
+            {formErrors.minNotFoundDuration && <div className="invalid-feedback d-block">{formErrors.minNotFoundDuration}</div>}
+            <div className="form-text">
+              {t('admin.rbfSettings.minNotFoundDurationDesc', {
+                defaultValue: 'Minimum time (milliseconds) a transaction must be missing before considering it dropped.',
+              })}
+            </div>
+            {editForm.minNotFoundDuration && !isNaN(Number(editForm.minNotFoundDuration)) && (
+              <div className="alert alert-info mt-2 mb-0 py-2">
+                <i className="bx bx-time me-1"></i>
+                ≈ {formatMs(editForm.minNotFoundDuration)}
+              </div>
+            )}
+          </div>
+        </>
+      )
+    }
+
+    if (group === 'rateLimiting') {
+      return (
+        <>
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              {t('admin.rbfSettings.maxRbfPerHour', { defaultValue: 'Max RBF Per Hour' })}
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              className={`form-control ${formErrors.maxRbfPerHour ? 'is-invalid' : ''}`}
+              value={editForm.maxRbfPerHour ?? ''}
+              onChange={(e) => updateField('maxRbfPerHour', e.target.value)}
+            />
+            {formErrors.maxRbfPerHour && <div className="invalid-feedback">{formErrors.maxRbfPerHour}</div>}
+            <div className="form-text">
+              {t('admin.rbfSettings.maxRbfPerHourDesc', {
+                defaultValue: 'Maximum number of RBF replacement transactions the system can submit per hour (global).',
+              })}
+            </div>
+          </div>
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              {t('admin.rbfSettings.maxRbfPerAddress', { defaultValue: 'Max RBF Per Address' })}
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              className={`form-control ${formErrors.maxRbfPerAddress ? 'is-invalid' : ''}`}
+              value={editForm.maxRbfPerAddress ?? ''}
+              onChange={(e) => updateField('maxRbfPerAddress', e.target.value)}
+            />
+            {formErrors.maxRbfPerAddress && <div className="invalid-feedback">{formErrors.maxRbfPerAddress}</div>}
+            <div className="form-text">
+              {t('admin.rbfSettings.maxRbfPerAddressDesc', {
+                defaultValue: 'Maximum number of RBF replacement transactions per wallet address.',
+              })}
+            </div>
+          </div>
+        </>
+      )
+    }
+
+    if (group === 'safety') {
+      return (
+        <div className="mb-3">
+          <label className="form-label fw-semibold">
+            {t('admin.rbfSettings.maxReplacementsPerTx', { defaultValue: 'Max Replacements Per Tx' })}
+          </label>
+          <input
+            type="text"
+            inputMode="numeric"
+            className={`form-control ${formErrors.maxReplacementsPerTx ? 'is-invalid' : ''}`}
+            value={editForm.maxReplacementsPerTx ?? ''}
+            onChange={(e) => updateField('maxReplacementsPerTx', e.target.value)}
+          />
+          {formErrors.maxReplacementsPerTx && <div className="invalid-feedback">{formErrors.maxReplacementsPerTx}</div>}
+          <div className="form-text">
+            {t('admin.rbfSettings.maxReplacementsPerTxDesc', {
+              defaultValue: 'Maximum number of times a single transaction can be replaced. Prevents infinite replacement loops.',
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  function renderNetworkForm() {
+    const { network } = editModal
+
+    return (
+      <>
+        {/* Network badge */}
+        <div className="mb-4">
+          <span className="text-muted">{network.symbol}</span>
+        </div>
+
+        {/* Enabled toggle */}
+        <div className="mb-4">
+          <label className="form-label fw-semibold">
+            {t('admin.rbfSettings.enabledLabel', { defaultValue: 'RBF Enabled' })}
+          </label>
+          <select
+            className="form-select"
+            value={editForm.enabled ?? ''}
+            onChange={(e) => setEditForm((f) => ({ ...f, enabled: e.target.value }))}
+          >
+            {editForm.enabled === '' && <option value="" disabled>—</option>}
+            <option value="true">{t('admin.rbfSettings.enabled', { defaultValue: 'Enabled' })}</option>
+            <option value="false">{t('admin.rbfSettings.disabled', { defaultValue: 'Disabled' })}</option>
+          </select>
+          <div className="form-text">
+            {t('admin.rbfSettings.enabledDesc', { defaultValue: 'Enable or disable RBF for this network.' })}
+          </div>
+        </div>
+
+        {/* Gas Bump */}
+        <div
+          className="card mb-3"
+          style={{ borderLeft: '3px solid var(--bs-warning)' }}
+        >
+          <div className="card-body py-3">
+            <h6 className="mb-3 d-flex align-items-center text-warning">
+              <i className="bx bx-trending-up me-2"></i>
+              {t('admin.rbfSettings.gasBumpSection', { defaultValue: 'Gas Price Bump' })}
+            </h6>
+            <label className="form-label small text-muted mb-1">
+              {t('admin.rbfSettings.gasBumpPercent', { defaultValue: 'Gas Bump Percent' })}
+            </label>
+            <div className="input-group">
+              <input
+                type="text"
+                inputMode="numeric"
+                className={`form-control ${formErrors.gasBumpPercent ? 'is-invalid' : ''}`}
+                value={editForm.gasBumpPercent ?? ''}
+                onChange={(e) => updateField('gasBumpPercent', e.target.value)}
+              />
+              <span className="input-group-text">%</span>
+            </div>
+            {formErrors.gasBumpPercent && <div className="invalid-feedback d-block">{formErrors.gasBumpPercent}</div>}
+            <div className="form-text">
+              {t('admin.rbfSettings.gasBumpPercentDesc', { defaultValue: 'Percentage to increase gas price when submitting RBF replacement.' })}
+            </div>
+          </div>
+        </div>
+
+        {/* Timing */}
+        <div
+          className="card mb-3"
+          style={{ borderLeft: '3px solid var(--bs-info)' }}
+        >
+          <div className="card-body py-3">
+            <h6 className="mb-3 d-flex align-items-center text-info">
+              <i className="bx bx-time me-2"></i>
+              {t('admin.rbfSettings.timingSection', { defaultValue: 'Timing Thresholds' })}
+            </h6>
+            <div className="row g-3">
+              <div className="col-md-4">
+                <label className="form-label small text-muted mb-1">
+                  {t('admin.rbfSettings.minPendingDuration', { defaultValue: 'Min Pending Duration' })}
+                </label>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className={`form-control ${formErrors.minPendingDuration ? 'is-invalid' : ''}`}
+                    value={editForm.minPendingDuration ?? ''}
+                    onChange={(e) => updateField('minPendingDuration', e.target.value)}
+                  />
+                  <span className="input-group-text">ms</span>
+                </div>
+                {formErrors.minPendingDuration && <div className="invalid-feedback d-block">{formErrors.minPendingDuration}</div>}
+                {editForm.minPendingDuration && !isNaN(Number(editForm.minPendingDuration)) && (
+                  <small className="text-muted">≈ {formatMs(editForm.minPendingDuration)}</small>
+                )}
+              </div>
+              <div className="col-md-4">
+                <label className="form-label small text-muted mb-1">
+                  {t('admin.rbfSettings.maxPendingDuration', { defaultValue: 'Max Pending Duration' })}
+                </label>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className={`form-control ${formErrors.maxPendingDuration ? 'is-invalid' : ''}`}
+                    value={editForm.maxPendingDuration ?? ''}
+                    onChange={(e) => updateField('maxPendingDuration', e.target.value)}
+                  />
+                  <span className="input-group-text">ms</span>
+                </div>
+                {formErrors.maxPendingDuration && <div className="invalid-feedback d-block">{formErrors.maxPendingDuration}</div>}
+                {editForm.maxPendingDuration && !isNaN(Number(editForm.maxPendingDuration)) && (
+                  <small className="text-muted">≈ {formatMs(editForm.maxPendingDuration)}</small>
+                )}
+              </div>
+              <div className="col-md-4">
+                <label className="form-label small text-muted mb-1">
+                  {t('admin.rbfSettings.minTimeBetweenReplaces', { defaultValue: 'Min Replace Interval' })}
+                </label>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className={`form-control ${formErrors.minTimeBetweenReplaces ? 'is-invalid' : ''}`}
+                    value={editForm.minTimeBetweenReplaces ?? ''}
+                    onChange={(e) => updateField('minTimeBetweenReplaces', e.target.value)}
+                  />
+                  <span className="input-group-text">ms</span>
+                </div>
+                {formErrors.minTimeBetweenReplaces && <div className="invalid-feedback d-block">{formErrors.minTimeBetweenReplaces}</div>}
+                {editForm.minTimeBetweenReplaces && !isNaN(Number(editForm.minTimeBetweenReplaces)) && (
+                  <small className="text-muted">≈ {formatMs(editForm.minTimeBetweenReplaces)}</small>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cost Limits */}
+        <div
+          className="card mb-0"
+          style={{ borderLeft: '3px solid var(--bs-success)' }}
+        >
+          <div className="card-body py-3">
+            <h6 className="mb-3 d-flex align-items-center text-success">
+              <i className="bx bx-dollar me-2"></i>
+              {t('admin.rbfSettings.costSection', { defaultValue: 'Cost Limits' })}
+            </h6>
+            <div className="row g-3">
+              <div className="col-md-4">
+                <label className="form-label small text-muted mb-1">
+                  {t('admin.rbfSettings.minAmountUsd', { defaultValue: 'Min Amount (USD)' })}
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text">$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    className={`form-control ${formErrors.minAmountUsd ? 'is-invalid' : ''}`}
+                    value={editForm.minAmountUsd ?? ''}
+                    onChange={(e) => updateField('minAmountUsd', e.target.value)}
+                  />
+                </div>
+                {formErrors.minAmountUsd && <div className="invalid-feedback d-block">{formErrors.minAmountUsd}</div>}
+                <div className="form-text">
+                  {t('admin.rbfSettings.minAmountUsdDesc', { defaultValue: 'Minimum transaction USD value to allow RBF.' })}
+                </div>
+              </div>
+              <div className="col-md-4">
+                <label className="form-label small text-muted mb-1">
+                  {t('admin.rbfSettings.maxCostRatio', { defaultValue: 'Max Cost Ratio' })}
+                </label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className={`form-control ${formErrors.maxCostRatio ? 'is-invalid' : ''}`}
+                  value={editForm.maxCostRatio ?? ''}
+                  onChange={(e) => updateField('maxCostRatio', e.target.value)}
+                />
+                {formErrors.maxCostRatio && <div className="invalid-feedback">{formErrors.maxCostRatio}</div>}
+                <div className="form-text">
+                  {t('admin.rbfSettings.maxCostRatioDesc', { defaultValue: 'Max gas cost as fraction of tx value (0.05 = 5%).' })}
+                </div>
+                {editForm.maxCostRatio && !isNaN(Number(editForm.maxCostRatio)) && (
+                  <small className="text-info">= {formatRatio(editForm.maxCostRatio)}</small>
+                )}
+              </div>
+              <div className="col-md-4">
+                <label className="form-label small text-muted mb-1">
+                  {t('admin.rbfSettings.maxCostUsd', { defaultValue: 'Max Cost (USD)' })}
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text">$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    className={`form-control ${formErrors.maxCostUsd ? 'is-invalid' : ''}`}
+                    value={editForm.maxCostUsd ?? ''}
+                    onChange={(e) => updateField('maxCostUsd', e.target.value)}
+                  />
+                </div>
+                {formErrors.maxCostUsd && <div className="invalid-feedback d-block">{formErrors.maxCostUsd}</div>}
+                <div className="form-text">
+                  {t('admin.rbfSettings.maxCostUsdDesc', { defaultValue: 'Maximum USD gas cost for a single RBF replacement.' })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
+}

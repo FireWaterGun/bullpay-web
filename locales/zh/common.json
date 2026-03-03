@@ -44,6 +44,8 @@
     "webhookLogs": "Webhook日志",
     "maintenance": "维护模式",
     "withdrawalSettings": "提款设置",
+    "gasSettings": "Gas 设置",
+    "rbfSettings": "RBF 设置",
     "myAccount": "我的账户"
   },
   "user": {

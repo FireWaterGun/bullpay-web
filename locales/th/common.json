@@ -44,6 +44,8 @@
     "webhookLogs": "บันทึก Webhook",
     "maintenance": "ปิดปรับปรุง",
     "withdrawalSettings": "ตั้งค่าการถอน",
+    "gasSettings": "ตั้งค่าค่าแก๊ส",
+    "rbfSettings": "ตั้งค่า RBF",
     "myAccount": "บัญชีของฉัน"
   },
   "user": {

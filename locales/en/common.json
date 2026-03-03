@@ -44,6 +44,8 @@
     "webhookLogs": "Webhook Logs",
     "maintenance": "Maintenance",
     "withdrawalSettings": "Withdrawal Settings",
+    "gasSettings": "Gas Settings",
+    "rbfSettings": "RBF Settings",
     "myAccount": "My Account"
   },
   "user": {
