@@ -48,6 +48,78 @@ export default function AdminMaintenancePage() {
   // Confirm modal state for quick toggle
   const [pendingToggle, setPendingToggle] = useState(null)
 
+  // Validation errors
+  const [errors, setErrors] = useState({})
+
+  /**
+   * Validate a single IPv4/IPv6 address string.
+   * Returns true if valid, false otherwise.
+   */
+  function isValidIp(ip) {
+    if (!ip || typeof ip !== 'string') return false
+    const trimmed = ip.trim()
+    if (!trimmed) return false
+    // IPv4
+    const ipv4Re = /^(\d{1,3}\.){3}\d{1,3}$/
+    if (ipv4Re.test(trimmed)) {
+      return trimmed.split('.').every(o => { const n = Number(o); return n >= 0 && n <= 255 })
+    }
+    // IPv6 (including ::1 loopback)
+    if (trimmed === '::1') return true
+    const ipv6Re = /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/
+    return ipv6Re.test(trimmed)
+  }
+
+  /**
+   * Validate all form fields. Returns errors object (empty = valid).
+   */
+  function validateForm() {
+    const newErrors = {}
+
+    // Message (Thai) required when maintenance is active
+    if (level !== 'none' && !message.trim()) {
+      newErrors.message = t('admin.maintenance.messageRequired', { defaultValue: 'Message (Thai) is required when maintenance is active' })
+    }
+
+    // Message (English) required when maintenance is active
+    if (level !== 'none' && !messageEn.trim()) {
+      newErrors.messageEn = t('admin.maintenance.messageEnRequired', { defaultValue: 'Message (English) is required when maintenance is active' })
+    }
+
+    // Estimated End: validate date format if provided
+    if (estimatedEnd.trim()) {
+      const dt = new Date(estimatedEnd)
+      if (isNaN(dt.getTime())) {
+        newErrors.estimatedEnd = t('admin.maintenance.invalidDate', { defaultValue: 'Invalid date format' })
+      }
+    }
+
+    // Allowed IPs: validate JSON + each entry is valid IP
+    if (allowedIps.trim() && allowedIps.trim() !== '[]') {
+      try {
+        const parsed = JSON.parse(allowedIps)
+        if (!Array.isArray(parsed)) {
+          newErrors.allowedIps = t('admin.maintenance.invalidIps', { defaultValue: 'Must be a JSON array' })
+        } else {
+          for (const entry of parsed) {
+            if (typeof entry !== 'string' || !entry.trim()) {
+              newErrors.allowedIps = t('admin.maintenance.invalidIpEntry', { defaultValue: 'Each entry must be a non-empty string' })
+              break
+            }
+            if (!isValidIp(entry)) {
+              newErrors.allowedIps = t('admin.maintenance.invalidIpFormat', { ip: entry.trim(), defaultValue: `"${entry.trim()}" is not a valid IPv4 or IPv6 address` })
+              break
+            }
+          }
+        }
+      } catch {
+        newErrors.allowedIps = t('admin.maintenance.invalidIps', { defaultValue: 'Must be valid JSON (e.g. ["1.2.3.4"])' })
+      }
+    }
+
+    return newErrors
+  }
+
   const loadSettings = useCallback(async () => {
     if (!token) return
     setLoading(true)
@@ -105,34 +177,17 @@ export default function AdminMaintenancePage() {
 
   async function handleSave() {
     if (!token) return
+
+    // Validate form
+    const formErrors = validateForm()
+    setErrors(formErrors)
+    if (Object.keys(formErrors).length > 0) {
+      toast.error(t('admin.maintenance.fixErrors', { defaultValue: 'Please fix the errors before saving' }))
+      return
+    }
+
     setSaving(true)
     try {
-      // Validate allowed IPs JSON
-      if (allowedIps.trim()) {
-        try {
-          const parsed = JSON.parse(allowedIps)
-          if (!Array.isArray(parsed)) {
-            toast.error(t('admin.maintenance.invalidIps', { defaultValue: 'Allowed IPs must be a JSON array' }))
-            setSaving(false)
-            return
-          }
-        } catch {
-          toast.error(t('admin.maintenance.invalidIps', { defaultValue: 'Allowed IPs must be valid JSON (e.g. ["1.2.3.4"])' }))
-          setSaving(false)
-          return
-        }
-      }
-
-      // Validate estimatedEnd datetime format
-      if (estimatedEnd.trim()) {
-        const dt = new Date(estimatedEnd)
-        if (isNaN(dt.getTime())) {
-          toast.error(t('admin.maintenance.invalidDate', { defaultValue: 'Invalid estimated end date format' }))
-          setSaving(false)
-          return
-        }
-      }
-
       const updates = [
         { keyName: 'maintenance.level', value: level },
         { keyName: 'maintenance.message', value: message },
@@ -289,28 +344,32 @@ export default function AdminMaintenancePage() {
               <div className="mb-3">
                 <label className="form-label">
                   {t('admin.maintenance.messageTh', { defaultValue: 'Message (Thai)' })}
+                  {level !== 'none' && <span className="text-danger"> *</span>}
                 </label>
                 <textarea
-                  className="form-control"
+                  className={`form-control${errors.message ? ' is-invalid' : ''}`}
                   rows={2}
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(e) => { setMessage(e.target.value); setErrors(prev => ({ ...prev, message: undefined })) }}
                   placeholder="ระบบกำลังปรับปรุง กรุณารอสักครู่"
                 />
+                {errors.message && <div className="invalid-feedback d-block">{errors.message}</div>}
               </div>
 
               {/* Message EN */}
               <div className="mb-3">
                 <label className="form-label">
                   {t('admin.maintenance.messageEn', { defaultValue: 'Message (English)' })}
+                  {level !== 'none' && <span className="text-danger"> *</span>}
                 </label>
                 <textarea
-                  className="form-control"
+                  className={`form-control${errors.messageEn ? ' is-invalid' : ''}`}
                   rows={2}
                   value={messageEn}
-                  onChange={(e) => setMessageEn(e.target.value)}
+                  onChange={(e) => { setMessageEn(e.target.value); setErrors(prev => ({ ...prev, messageEn: undefined })) }}
                   placeholder="System is under maintenance. Please try again later."
                 />
+                {errors.messageEn && <div className="invalid-feedback d-block">{errors.messageEn}</div>}
               </div>
 
               {/* Estimated End */}
@@ -360,14 +419,17 @@ export default function AdminMaintenancePage() {
                 </label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control${errors.allowedIps ? ' is-invalid' : ''}`}
                   value={allowedIps}
-                  onChange={(e) => setAllowedIps(e.target.value)}
+                  onChange={(e) => { setAllowedIps(e.target.value); setErrors(prev => ({ ...prev, allowedIps: undefined })) }}
                   placeholder='["1.2.3.4", "5.6.7.8"]'
                 />
-                <div className="form-text">
-                  {t('admin.maintenance.allowedIpsHelp', { defaultValue: 'JSON array of IPs that can access the system during maintenance.' })}
-                </div>
+                {errors.allowedIps
+                  ? <div className="invalid-feedback d-block">{errors.allowedIps}</div>
+                  : <div className="form-text">
+                      {t('admin.maintenance.allowedIpsHelp', { defaultValue: 'JSON array of IPs that can access the system during maintenance.' })}
+                    </div>
+                }
               </div>
 
               {/* Save button */}

@@ -15,6 +15,7 @@ import {
   getNetworks
 } from '@/lib/api/admin'
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
+const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false })
 import { useToast } from '@/app/providers'
 import CoinSelector from '@/components/crypto/CoinSelector'
 import NetworkSelector from '@/components/crypto/NetworkSelector'
@@ -255,67 +256,14 @@ export default function SupportedCryptoForm() {
             />
 
           {/* Delete Button Card - Hidden */}
-          {false && isEdit && (
-            <div className="card">
-              <div className="card-body">
-                <h6 className="card-title text-danger mb-3">
-                  <i className="bx bx-error-circle me-2"></i>
-                  {t('crypto.dangerZone', { defaultValue: 'Danger Zone' })}
-                </h6>
-                <p className="text-muted mb-3">
-                  {t('crypto.deleteCoinNetworkWarning', { defaultValue: 'Once you delete this coin-network pair, there is no going back. Please be certain.' })}
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  disabled={loading}
-                >
-                  <i className="bx bx-trash me-1"></i>
-                  {t('crypto.deleteCoinNetwork', { defaultValue: 'Delete Coin-Network' })}
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Error Modal */}
-      {showErrorModal && (
-        <>
-          <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-            <div className="modal-dialog modal-dialog-centered" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title text-danger">
-                    <i className="bx bx-error-circle me-2"></i>
-                    {t('crypto.errorOccurred', { defaultValue: 'Error Occurred' })}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowErrorModal(false)}
-                    disabled={loading}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <p className="mb-0">{errorMessage}</p>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => setShowErrorModal(false)}
-                  >
-                    {t('actions.ok', { defaultValue: 'OK' })}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-backdrop fade show"></div>
-        </>
-      )}
+      <ErrorModal
+        show={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        message={errorMessage}
+      />
 
       <DeleteConfirmModal
         show={showDeleteConfirm}

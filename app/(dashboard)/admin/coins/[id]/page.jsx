@@ -8,7 +8,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getCoinById, createCoin, updateCoin, deleteCoin } from '@/lib/api/admin'
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
-import ErrorModal from '@/components/modals/ErrorModal'
+const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false })
 import { useToast } from '@/app/providers'
 
 export default function CoinForm() {
@@ -331,20 +331,7 @@ export default function CoinForm() {
                   {/* Actions */}
                   <div className="col-12 pt-3">
                     <div className="d-flex gap-3 justify-content-between">
-                      {/* Delete button - Hidden */}
-                      {false && isEdit && (
-                        <button 
-                          type="button" 
-                          className="btn btn-danger"
-                          onClick={() => setShowDeleteConfirm(true)}
-                          disabled={loading}
-                        >
-                          <i className="bx bx-trash me-2"></i>
-                          {t('actions.delete', { defaultValue: 'Delete' })}
-                        </button>
-                      )}
-                      
-                      <div className={`d-flex gap-3 ms-auto`}>
+                      <div className="d-flex gap-3 ms-auto">
                         <Link
                           href="/admin/coins"
                           className={`btn btn-label-secondary${loading ? ' disabled' : ''}`}
