@@ -56,6 +56,7 @@ export function StatCard({ icon, color, value, label }) {
 }
 
 export function DailyTrendCard({ date, currencies, isToday }) {
+  const { t } = useAdminTranslation()
   const totalTxn = Object.values(currencies).reduce((sum, d) => sum + d.count, 0)
   return (
     <div
