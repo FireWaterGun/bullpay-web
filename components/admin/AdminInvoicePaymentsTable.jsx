@@ -9,6 +9,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
  * Displays all payments associated with an invoice.
  */
 export default function AdminInvoicePaymentsTable({ payments, coinSymbol, network, onCopy }) {
+  const { t } = useAdminTranslation()
   return (
     <div className="card">
       <div className="card-header">

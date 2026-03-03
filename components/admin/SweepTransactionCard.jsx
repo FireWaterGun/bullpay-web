@@ -39,6 +39,7 @@ function AddressRow({ label, address, explorerUrl, onCopy }) {
 }
 
 export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
+  const { t } = useAdminTranslation()
   return (
     <div className="card mb-4">
       <div className="card-header">
@@ -114,6 +115,7 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
 }
 
 export function SweepTimestampsCard({ sweep, metadata }) {
+  const { t } = useAdminTranslation()
   return (
     <div className="card mb-4">
       <div className="card-header">
