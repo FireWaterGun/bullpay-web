@@ -1,11 +1,13 @@
 'use client'
 
 import { useTranslation } from 'react-i18next'
-import { formatAmount, formatDateTime } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusClass, formatTxHash } from './invoiceDetailHelpers'
 
 export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
   const { t } = useTranslation()
+  const { fmtDateTime } = useDateFormat()
 
   if (!payments) {
     return (
@@ -77,7 +79,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
                   {p.status ? t(`invoices.${p.status.toLowerCase()}`, { defaultValue: p.status }) : '-'}
                 </span>
               </td>
-              <td className="text-nowrap">{formatDateTime(p.createdAt || p.created_at)}</td>
+              <td className="text-nowrap">{fmtDateTime(p.createdAt || p.created_at)}</td>
             </tr>
           ))}
         </tbody>

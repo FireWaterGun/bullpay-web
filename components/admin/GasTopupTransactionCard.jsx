@@ -1,8 +1,9 @@
 'use client'
 
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t }) {
+  const { fmtDate } = useDateFormat()
   return (
     <>
       <div className="card mb-4">
@@ -140,24 +141,24 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
             <tbody>
               <tr>
                 <td className="text-muted" style={{ width: '40%' }}>{t('admin.gasTopup.created', { defaultValue: 'Created' })}</td>
-                <td>{formatDate(topup.createdAt)}</td>
+                <td>{fmtDate(topup.createdAt)}</td>
               </tr>
               {topup.processingStartedAt && (
                 <tr>
                   <td className="text-muted">{t('admin.gasTopup.processingStartedAt', { defaultValue: 'Processing Started' })}</td>
-                  <td>{formatDate(topup.processingStartedAt)}</td>
+                  <td>{fmtDate(topup.processingStartedAt)}</td>
                 </tr>
               )}
               {topup.completedAt && (
                 <tr>
                   <td className="text-muted">{t('admin.gasTopup.completedAt', { defaultValue: 'Completed' })}</td>
-                  <td>{formatDate(topup.completedAt)}</td>
+                  <td>{fmtDate(topup.completedAt)}</td>
                 </tr>
               )}
               {topup.updatedAt && (
                 <tr>
                   <td className="text-muted">{t('admin.gasTopup.updated', { defaultValue: 'Updated' })}</td>
-                  <td>{formatDate(topup.updatedAt)}</td>
+                  <td>{fmtDate(topup.updatedAt)}</td>
                 </tr>
               )}
             </tbody>

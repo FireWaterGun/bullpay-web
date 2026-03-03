@@ -79,3 +79,16 @@ export async function changePasswordApi(token: string | null, body: ChangePasswo
     body,
   })
 }
+
+export interface UpdateProfileRequest {
+  fullName?: string
+  timezone?: string
+}
+
+export async function updateProfileApi(token: string | null, body: UpdateProfileRequest) {
+  return apiFetch('/api/v1/auth/me', {
+    method: 'PATCH',
+    token: token || undefined,
+    body,
+  })
+}

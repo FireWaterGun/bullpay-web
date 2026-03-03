@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDateTime as formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 /**
  * Transaction card — reservation, related ID, tx hash, invoice, sweep, note.
@@ -86,6 +86,7 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
  * Timestamps card — created, committed, settled, reversed, updated.
  */
 export function TimestampsCard({ entry }) {
+  const { fmtDateTime } = useDateFormat()
   return (
     <div className="card mb-4">
       <div className="card-header">
@@ -99,30 +100,30 @@ export function TimestampsCard({ entry }) {
           <tbody>
             <tr>
               <td className="text-muted" style={{ width: '40%' }}>Created</td>
-              <td>{formatDate(entry.createdAt)}</td>
+              <td>{fmtDateTime(entry.createdAt)}</td>
             </tr>
             {entry.committedAt && (
               <tr>
                 <td className="text-muted">Committed</td>
-                <td>{formatDate(entry.committedAt)}</td>
+                <td>{fmtDateTime(entry.committedAt)}</td>
               </tr>
             )}
             {entry.settledAt && (
               <tr>
                 <td className="text-muted">Settled</td>
-                <td>{formatDate(entry.settledAt)}</td>
+                <td>{fmtDateTime(entry.settledAt)}</td>
               </tr>
             )}
             {entry.reversedAt && (
               <tr>
                 <td className="text-muted">Reversed</td>
-                <td>{formatDate(entry.reversedAt)}</td>
+                <td>{fmtDateTime(entry.reversedAt)}</td>
               </tr>
             )}
             {entry.updatedAt && (
               <tr>
                 <td className="text-muted">Updated</td>
-                <td>{formatDate(entry.updatedAt)}</td>
+                <td>{fmtDateTime(entry.updatedAt)}</td>
               </tr>
             )}
           </tbody>

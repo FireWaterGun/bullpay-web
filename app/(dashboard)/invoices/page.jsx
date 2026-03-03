@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import { listInvoices } from '@/lib/api/invoices'
 import { listCoins } from '@/lib/api/coins'
-import { formatAmount, formatDateTime } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
@@ -15,6 +16,7 @@ import RefreshButton from '@/components/RefreshButton'
 
 export default function InvoiceList() {
   const { t, i18n } = useTranslation()
+  const { fmtDateTime } = useDateFormat()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -276,7 +278,7 @@ export default function InvoiceList() {
                             {it.status ? t(`invoices.${it.status.toLowerCase()}`, { defaultValue: it.status }) : "-"}
                           </span>
                         </td>
-                        <td className="text-nowrap">{formatDateTime(it.createdAt || it.created_at)}</td>
+                        <td className="text-nowrap">{fmtDateTime(it.createdAt || it.created_at)}</td>
                         <td className="text-end">
                           <div className="d-flex gap-1 justify-content-end">
                             <Link

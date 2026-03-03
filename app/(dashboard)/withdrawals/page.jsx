@@ -8,6 +8,7 @@ import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents'
 import { listWithdrawals } from '@/lib/api/withdrawals'
 import { listCoins } from '@/lib/api/coins'
 import { listWallets } from '@/lib/api/wallets'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import WalletAddressTable from '@/components/balance/WalletAddressTable'
 import {
@@ -21,6 +22,7 @@ import RefreshButton from '@/components/RefreshButton'
 
 export default function WithdrawalsPage() {
   const { t } = useTranslation()
+  const { fmtDate } = useDateFormat()
   const { token, user } = useAuth()
   const toast = useToast()
 
@@ -225,7 +227,7 @@ export default function WithdrawalsPage() {
                           <span className={statusBadgeClass(it.status)}>{formatStatusLabel(String(it.status || '').toUpperCase())}</span>
                         </td>
                         <td className="text-nowrap text-end">
-                          <span className="text-muted small">{new Date(it.createdAt).toLocaleString()}</span>
+                          <span className="text-muted small">{fmtDate(it.createdAt)}</span>
                         </td>
                         <td className="text-center">
                           <Link

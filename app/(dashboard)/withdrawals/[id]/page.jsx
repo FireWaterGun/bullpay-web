@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { getWithdrawalById } from '@/lib/api/withdrawals'
-import { formatDate, formatCoinAmount } from '@/lib/utils/format'
+import { formatCoinAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { statusBadgeClass, formatStatusLabel } from '@/components/balance/withdrawalHelpers'
@@ -18,6 +19,7 @@ export default function WithdrawalDetailPage() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToast()
+  const { fmtDate } = useDateFormat()
 
   const withdrawalId = params?.id
   const [withdrawal, setWithdrawal] = useState(null)
@@ -221,24 +223,24 @@ export default function WithdrawalDetailPage() {
               <ul className="list-unstyled mb-0">
                 <li className="d-flex justify-content-between mb-2">
                   <span className="text-muted">{t('withdrawals.created', { defaultValue: 'Created' })}</span>
-                  <span className="small">{formatDate(withdrawal.createdAt)}</span>
+                  <span className="small">{fmtDate(withdrawal.createdAt)}</span>
                 </li>
                 {withdrawal.processedAt && (
                   <li className="d-flex justify-content-between mb-2">
                     <span className="text-muted">{t('withdrawals.processed', { defaultValue: 'Processed' })}</span>
-                    <span className="small">{formatDate(withdrawal.processedAt)}</span>
+                    <span className="small">{fmtDate(withdrawal.processedAt)}</span>
                   </li>
                 )}
                 {withdrawal.completedAt && (
                   <li className="d-flex justify-content-between mb-2">
                     <span className="text-muted">{t('withdrawals.completed', { defaultValue: 'Completed' })}</span>
-                    <span className="small">{formatDate(withdrawal.completedAt)}</span>
+                    <span className="small">{fmtDate(withdrawal.completedAt)}</span>
                   </li>
                 )}
                 {withdrawal.updatedAt && (
                   <li className="d-flex justify-content-between">
                     <span className="text-muted">{t('withdrawals.updated', { defaultValue: 'Updated' })}</span>
-                    <span className="small">{formatDate(withdrawal.updatedAt)}</span>
+                    <span className="small">{fmtDate(withdrawal.updatedAt)}</span>
                   </li>
                 )}
               </ul>

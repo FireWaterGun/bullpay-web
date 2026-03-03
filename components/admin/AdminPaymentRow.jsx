@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { formatAmount, formatDate } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 
 export function statusBadgeClass(s) {
@@ -16,6 +17,7 @@ export function statusBadgeClass(s) {
 }
 
 export default function AdminPaymentRow({ payment, onCopy }) {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
   const coinSymbol = (payment.coin?.symbol || payment.coinSymbol || payment.invoice?.coin?.symbol || '').toUpperCase()
@@ -140,11 +142,11 @@ export default function AdminPaymentRow({ payment, onCopy }) {
         )}
       </td>
       <td>
-        <span style={{ whiteSpace: 'nowrap' }}>{formatDate(payment.createdAt || payment.created_at)}</span>
+        <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(payment.createdAt || payment.created_at)}</span>
       </td>
       <td>
         <span style={{ whiteSpace: 'nowrap' }}>
-          {payment.confirmedAt ? formatDate(payment.confirmedAt) : <span className="text-muted">-</span>}
+          {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-muted">-</span>}
         </span>
       </td>
       <td>

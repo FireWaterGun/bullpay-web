@@ -1,12 +1,14 @@
 'use client'
 
 import CoinImg from '@/components/CoinImg'
-import { formatDate, formatCoinAmount } from '@/lib/utils/format'
+import { formatCoinAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusBadgeClass, formatStatusLabel } from './withdrawalHelpers'
 
 const EMPTY_WITHDRAWALS = []
 
 export default function WithdrawalTable({ withdrawals = EMPTY_WITHDRAWALS, onViewDetail, onApprove, onReject, t }) {
+  const { fmtDate } = useDateFormat()
   if (!withdrawals.length) {
     return (
       <div className="text-center text-muted py-4">
@@ -52,7 +54,7 @@ export default function WithdrawalTable({ withdrawals = EMPTY_WITHDRAWALS, onVie
                   {formatStatusLabel(w.status)}
                 </span>
               </td>
-              <td><span className="small">{formatDate(w.createdAt)}</span></td>
+              <td><span className="small">{fmtDate(w.createdAt)}</span></td>
               <td>
                 <div className="dropdown">
                   <button className="btn btn-sm btn-icon btn-text-secondary" data-bs-toggle="dropdown">

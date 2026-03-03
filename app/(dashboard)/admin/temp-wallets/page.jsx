@@ -8,7 +8,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWallets } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
@@ -27,6 +27,7 @@ function statusBadgeClass(s) {
 }
 
 export default function TempWalletList() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const SORT_BY_OPTIONS = [
     { value: 'createdAt', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
@@ -366,13 +367,13 @@ export default function TempWalletList() {
                             <span className="fw-medium">{w.lastLeftoverTokenAmount || '-'}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(w.lastAssignedAt)}</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(w.lastAssignedAt)}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(w.expiresAt)}</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(w.expiresAt)}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(w.createdAt)}</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(w.createdAt)}</span>
                           </td>
                           <td>
                             <Link

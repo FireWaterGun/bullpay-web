@@ -5,13 +5,15 @@ import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getMerchants, activateMerchant, suspendMerchant } from '@/lib/api/admin'
-import { formatCommission, formatDate } from '@/lib/utils/format'
+import { formatCommission } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { STATUS_OPTIONS, statusBadgeClass } from '@/components/admin/merchantListHelpers'
 import MerchantConfirmModal from '@/components/admin/MerchantConfirmModal'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 
 export default function AdminMerchantsPage() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
@@ -183,7 +185,7 @@ export default function AdminMerchantsPage() {
                             <td className="text-center">
                               {merchant.hasWebhook ? <span className="badge bg-label-success"><i className="bx bx-check"></i></span> : <span className="badge bg-label-secondary"><i className="bx bx-x"></i></span>}
                             </td>
-                            <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>{formatDate(merchant.createdAt)}</td>
+                            <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>{fmtDate(merchant.createdAt)}</td>
                             <td className="text-center">
                               <div className="dropdown">
                                 <button className="btn btn-sm btn-icon btn-text-secondary rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i className="bx bx-dots-vertical-rounded"></i></button>

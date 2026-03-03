@@ -1,7 +1,8 @@
 'use client'
 
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
-import { formatUsd, formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
@@ -33,6 +34,7 @@ function getPurposeLabel(metadata) {
 }
 
 export default function WalletLedgerTable({ entries, loading, t }) {
+  const { fmtDate } = useDateFormat()
   if (loading) {
     return (
       <div className="text-center py-4">
@@ -169,7 +171,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                   )}
                 </td>
                 <td>
-                  <span style={{ whiteSpace: 'nowrap' }}>{formatDate(entry.createdAt)}</span>
+                  <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(entry.createdAt)}</span>
                 </td>
               </tr>
             )

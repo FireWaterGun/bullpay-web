@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
-import { formatUsd, formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 const ENTRY_CODE_LABELS = {
   'DP': 'Deposit',
@@ -45,6 +46,7 @@ export default function MyLedgerTable({
 }) {
   const { t } = useTranslation()
   const router = useRouter()
+  const { fmtDate } = useDateFormat()
 
   return (
     <div className="card">
@@ -124,7 +126,7 @@ export default function MyLedgerTable({
                         )}
                       </td>
                       <td>
-                        <span style={{ whiteSpace: 'nowrap' }}>{formatDate(entry.createdAt)}</span>
+                        <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(entry.createdAt)}</span>
                       </td>
                       <td>
                         <Link href={`/ledger/${entry.id}`} className="btn btn-sm btn-icon btn-outline-primary"

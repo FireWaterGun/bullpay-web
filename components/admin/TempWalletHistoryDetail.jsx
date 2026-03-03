@@ -7,7 +7,7 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWalletHistory } from '@/lib/api/admin'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
@@ -24,6 +24,7 @@ function statusBadgeClass(s) {
 }
 
 export default function TempWalletHistoryDetail() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
   const router = useRouter()
@@ -217,32 +218,32 @@ export default function TempWalletHistoryDetail() {
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(history.createdAt)}</td>
+                        <td>{fmtDate(history.createdAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
-                        <td>{formatDate(history.updatedAt)}</td>
+                        <td>{fmtDate(history.updatedAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Assigned At</td>
-                        <td>{formatDate(history.assignedAt)}</td>
+                        <td>{fmtDate(history.assignedAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">First Deposit</td>
-                        <td>{formatDate(history.firstDepositAt)}</td>
+                        <td>{fmtDate(history.firstDepositAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Swept At</td>
-                        <td>{formatDate(history.sweptAt)}</td>
+                        <td>{fmtDate(history.sweptAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Released At</td>
-                        <td>{formatDate(history.releasedAt)}</td>
+                        <td>{fmtDate(history.releasedAt)}</td>
                       </tr>
                       {history.failedAt && (
                         <tr>
                           <td className="text-muted">Failed At</td>
-                          <td className="text-danger">{formatDate(history.failedAt)}</td>
+                          <td className="text-danger">{fmtDate(history.failedAt)}</td>
                         </tr>
                       )}
                     </tbody>

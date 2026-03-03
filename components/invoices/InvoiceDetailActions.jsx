@@ -3,12 +3,13 @@
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
-import { formatDateTime } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import CountdownTimer from './CountdownTimer'
 
 export default function InvoiceDetailActions({ invoice, explorer }) {
   const { t } = useTranslation()
+  const { fmtDateTime } = useDateFormat()
   const [copiedPublic, setCopiedPublic] = useState(false)
   const [shareError, setShareError] = useState('')
 
@@ -109,11 +110,11 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
             </>
           )}
           <small className="text-muted d-block mb-1">{t('invoices.createdAt') || 'Created'}</small>
-          <div>{formatDateTime(invoice.createdAt || invoice.created_at)}</div>
+          <div>{fmtDateTime(invoice.createdAt || invoice.created_at)}</div>
           {invoice.expiryAt && (
             <>
               <small className="text-muted d-block mt-3 mb-1">{t('invoices.expiryAt') || 'Expires'}</small>
-              <div>{formatDateTime(invoice.expiryAt)}</div>
+              <div>{fmtDateTime(invoice.expiryAt)}</div>
             </>
           )}
         </div>

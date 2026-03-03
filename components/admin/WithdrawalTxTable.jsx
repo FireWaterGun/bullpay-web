@@ -2,7 +2,8 @@
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
-import { formatUsd, formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 export default function WithdrawalTxTable({
   withdrawals,
@@ -20,6 +21,7 @@ export default function WithdrawalTxTable({
   onPageChange,
   syncSearchParams,
 }) {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
   return (
@@ -186,7 +188,7 @@ export default function WithdrawalTxTable({
                     </div>
                   </td>
                   <td>
-                    <span style={{ whiteSpace: 'nowrap' }}>{formatDate(withdrawal.createdAt)}</span>
+                    <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(withdrawal.createdAt)}</span>
                   </td>
                 </tr>
               ))

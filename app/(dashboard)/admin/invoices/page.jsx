@@ -6,7 +6,8 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAdminInvoices } from '@/lib/api/admin'
-import { formatAmount, formatDate } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
@@ -15,6 +16,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminInvoiceList() {
+  const { fmtDate } = useDateFormat()
   const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
@@ -287,10 +289,10 @@ export default function AdminInvoiceList() {
                               )}
                             </td>
                             <td>
-                              <span style={{ whiteSpace: 'nowrap' }}>{formatDate(invoice.createdAt || invoice.created_at)}</span>
+                              <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(invoice.createdAt || invoice.created_at)}</span>
                             </td>
                             <td>
-                              <span style={{ whiteSpace: 'nowrap' }}>{formatDate(invoice.expiryAt || invoice.expiry_at)}</span>
+                              <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(invoice.expiryAt || invoice.expiry_at)}</span>
                             </td>
                             <td>
                               <Link

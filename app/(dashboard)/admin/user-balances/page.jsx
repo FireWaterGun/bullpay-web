@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getUserBalances, getUserBalancesSummary } from '@/lib/api/admin'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
@@ -22,6 +22,7 @@ function roleBadgeClass(role) {
 }
 
 export default function UserBalanceListPage() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const SORT_BY_OPTIONS = [
     { value: 'totalValueUsd', label: t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' }) },
@@ -223,7 +224,7 @@ export default function UserBalanceListPage() {
                           </td>
                           <td className="text-center"><span className="fw-medium">{u.totalAssets ?? 0}</span></td>
                           <td className="text-end text-nowrap"><span className="fw-bold">${u.totalValueUsd || '0.00'}</span></td>
-                          <td><span style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{formatDate(u.valuedAt)}</span></td>
+                          <td><span style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{fmtDate(u.valuedAt)}</span></td>
                           <td>
                             <Link
                               href={`/admin/user-balances/${u.userId}`}

@@ -7,7 +7,8 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAdminInvoice } from '@/lib/api/admin'
-import { formatAmount, formatDate } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { statusBadgeClass } from '@/components/admin/adminInvoiceHelpers'
@@ -17,6 +18,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminInvoiceDetail() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
   const { token } = useAuth()
@@ -181,16 +183,16 @@ export default function AdminInvoiceDetail() {
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(invoice.createdAt || invoice.created_at)}</td>
+                        <td>{fmtDate(invoice.createdAt || invoice.created_at)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Expires</td>
-                        <td>{formatDate(invoice.expiryAt || invoice.expiry_at)}</td>
+                        <td>{fmtDate(invoice.expiryAt || invoice.expiry_at)}</td>
                       </tr>
                       {invoice.paidAt && (
                         <tr>
                           <td className="text-muted">Paid At</td>
-                          <td>{formatDate(invoice.paidAt || invoice.paid_at)}</td>
+                          <td>{fmtDate(invoice.paidAt || invoice.paid_at)}</td>
                         </tr>
                       )}
                     </tbody>

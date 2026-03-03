@@ -1,6 +1,7 @@
 'use client'
 
-import { formatUsd, formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function AddressRow({ label, address, explorerUrl, onCopy }) {
@@ -40,6 +41,7 @@ function AddressRow({ label, address, explorerUrl, onCopy }) {
 
 export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
   const { t } = useAdminTranslation()
+  const { fmtDate } = useDateFormat()
   return (
     <div className="card mb-4">
       <div className="card-header">
@@ -129,30 +131,30 @@ export function SweepTimestampsCard({ sweep, metadata }) {
           <tbody>
             <tr>
               <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-              <td>{formatDate(sweep.createdAt)}</td>
+              <td>{fmtDate(sweep.createdAt)}</td>
             </tr>
             {sweep.completedAt && (
               <tr>
                 <td className="text-muted">{t('status.completed', { defaultValue: 'Completed' })}</td>
-                <td>{formatDate(sweep.completedAt)}</td>
+                <td>{fmtDate(sweep.completedAt)}</td>
               </tr>
             )}
             {sweep.updatedAt && (
               <tr>
                 <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
-                <td>{formatDate(sweep.updatedAt)}</td>
+                <td>{fmtDate(sweep.updatedAt)}</td>
               </tr>
             )}
             {metadata.lastAttemptAt && (
               <tr>
                 <td className="text-muted">Last Attempt</td>
-                <td>{formatDate(metadata.lastAttemptAt)}</td>
+                <td>{fmtDate(metadata.lastAttemptAt)}</td>
               </tr>
             )}
             {metadata.failedAt && (
               <tr>
                 <td className="text-muted">Failed At</td>
-                <td className="text-danger">{formatDate(metadata.failedAt)}</td>
+                <td className="text-danger">{fmtDate(metadata.failedAt)}</td>
               </tr>
             )}
           </tbody>

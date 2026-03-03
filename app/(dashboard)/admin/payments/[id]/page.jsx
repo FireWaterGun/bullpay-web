@@ -7,7 +7,8 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAdminPayment } from '@/lib/api/admin'
-import { formatAmount, formatDate } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
@@ -15,6 +16,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function AdminPaymentDetail() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
   const { token } = useAuth()
@@ -197,24 +199,24 @@ export default function AdminPaymentDetail() {
                       )}
                       <tr>
                         <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(payment.createdAt || payment.created_at)}</td>
+                        <td>{fmtDate(payment.createdAt || payment.created_at)}</td>
                       </tr>
                       {payment.detectedAt && (
                         <tr>
                           <td className="text-muted">Detected At</td>
-                          <td>{formatDate(payment.detectedAt)}</td>
+                          <td>{fmtDate(payment.detectedAt)}</td>
                         </tr>
                       )}
                       {payment.confirmedAt && (
                         <tr>
                           <td className="text-muted">Confirmed At</td>
-                          <td>{formatDate(payment.confirmedAt)}</td>
+                          <td>{fmtDate(payment.confirmedAt)}</td>
                         </tr>
                       )}
                       {payment.completedAt && (
                         <tr>
                           <td className="text-muted">Completed At</td>
-                          <td>{formatDate(payment.completedAt)}</td>
+                          <td>{fmtDate(payment.completedAt)}</td>
                         </tr>
                       )}
                     </tbody>

@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { getMyLedgerEntry } from '@/lib/api/userLedger'
-import { formatUsd, formatDateTime as formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
@@ -31,6 +32,7 @@ export default function MyLedgerDetail() {
   const { token } = useAuth()
   const toast = useToast()
   const { id } = useParams()
+  const { fmtDateTime } = useDateFormat()
   const [loading, setLoading] = useState(true)
   const [entry, setEntry] = useState(null)
 
@@ -252,30 +254,30 @@ export default function MyLedgerDetail() {
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('userLedger.createdAt', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(entry.createdAt)}</td>
+                        <td>{fmtDateTime(entry.createdAt)}</td>
                       </tr>
                       {entry.committedAt && (
                         <tr>
                           <td className="text-muted">{t('userLedger.committedAt', { defaultValue: 'Committed' })}</td>
-                          <td>{formatDate(entry.committedAt)}</td>
+                          <td>{fmtDateTime(entry.committedAt)}</td>
                         </tr>
                       )}
                       {entry.settledAt && (
                         <tr>
                           <td className="text-muted">{t('userLedger.settledAt', { defaultValue: 'Settled' })}</td>
-                          <td>{formatDate(entry.settledAt)}</td>
+                          <td>{fmtDateTime(entry.settledAt)}</td>
                         </tr>
                       )}
                       {entry.reversedAt && (
                         <tr>
                           <td className="text-muted">{t('userLedger.reversedAt', { defaultValue: 'Reversed' })}</td>
-                          <td>{formatDate(entry.reversedAt)}</td>
+                          <td>{fmtDateTime(entry.reversedAt)}</td>
                         </tr>
                       )}
                       {entry.updatedAt && (
                         <tr>
                           <td className="text-muted">{t('userLedger.updatedAt', { defaultValue: 'Updated' })}</td>
-                          <td>{formatDate(entry.updatedAt)}</td>
+                          <td>{fmtDateTime(entry.updatedAt)}</td>
                         </tr>
                       )}
                     </tbody>

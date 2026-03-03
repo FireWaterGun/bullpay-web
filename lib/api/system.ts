@@ -17,3 +17,29 @@ export async function getSystemStatus() {
   const json = await res.json()
   return json?.data || { maintenance: false, level: 'none', message: null, messageTh: null, estimatedEnd: null }
 }
+
+/**
+ * Check if the current caller is blocked by maintenance mode.
+ *
+ * Calls a lightweight endpoint BEHIND the maintenance middleware.
+ * - Returns `true` if the user IS blocked (got 503).
+ * - Returns `false` if the user is bypassed (allowed IP or admin).
+ *
+ * Uses raw fetch to avoid the apiFetch 503 → redirect loop.
+ */
+export async function checkMaintenanceBlocked(token?: string): Promise<boolean> {
+  try {
+    const headers: Record<string, string> = { Accept: 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    const res = await fetch(`${API_BASE_URL}/api/v1/system/maintenance-check`, {
+      headers,
+      cache: 'no-store',
+    })
+    // 503 = blocked by maintenance, 200 = allowed through
+    return res.status === 503
+  } catch {
+    // Network error — assume blocked to be safe
+    return true
+  }
+}

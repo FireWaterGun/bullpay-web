@@ -10,7 +10,8 @@ import {
   updateWebhook,
 } from '@/lib/api/merchant'
 import { get2FAStatus } from '@/lib/api/twoFactor'
-import { formatCommission, formatDate } from '@/lib/utils/format'
+import { formatCommission } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import CredentialAlert from '@/components/merchant/CredentialAlert'
 import RegisterForm from '@/components/merchant/RegisterForm'
@@ -59,6 +60,7 @@ export default function MerchantPage() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToast()
+  const { fmtDate } = useDateFormat()
 
   const [loading, setLoading] = useState(true)
   const [merchant, setMerchant] = useState(null)
@@ -341,7 +343,7 @@ export default function MerchantPage() {
                 )}
                 <span>
                   <i className="bx bx-calendar me-1"></i>
-                  {t('merchant.createdAt', { defaultValue: 'Registered' })}: {formatDate(merchant?.createdAt)}
+                  {t('merchant.createdAt', { defaultValue: 'Registered' })}: {fmtDate(merchant?.createdAt)}
                 </span>
               </div>
 
@@ -380,7 +382,7 @@ export default function MerchantPage() {
             <StatTile
               icon="bx-calendar-check"
               label={t('merchant.since', { defaultValue: 'Since' })}
-              value={formatDate(merchant?.createdAt)}
+              value={fmtDate(merchant?.createdAt)}
               color="info"
             />
             <StatTile

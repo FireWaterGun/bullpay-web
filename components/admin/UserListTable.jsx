@@ -1,7 +1,7 @@
 'use client'
 
 import { formatRoleLabel } from '@/lib/utils/roles'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
@@ -17,6 +17,7 @@ export default function UserListTable({
   onPageChange,
   onSyncSearchParams,
 }) {
+  const { fmtDate } = useDateFormat()
   return (
     <div className="card">
       <div className="card-body">
@@ -84,10 +85,10 @@ export default function UserListTable({
                       )}
                     </td>
                     <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
-                      {formatDate(user.lastLoginAt)}
+                      {fmtDate(user.lastLoginAt)}
                     </td>
                     <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
-                      {formatDate(user.createdAt)}
+                      {fmtDate(user.createdAt)}
                     </td>
                     <td className="text-center">
                       <div className="dropdown">

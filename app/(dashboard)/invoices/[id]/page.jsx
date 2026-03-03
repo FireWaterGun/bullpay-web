@@ -5,7 +5,8 @@ import { useParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { getInvoice } from '@/lib/api/invoices'
 import { useAuth } from '@/app/providers'
-import { formatAmount, formatDateTime } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { useInvoiceEvents } from '@/hooks/useInvoiceEvents'
 import CoinImg from '@/components/CoinImg'
 import { statusClass } from '@/components/invoices/invoiceDetailHelpers'
@@ -14,6 +15,7 @@ import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions'
 import RefreshButton from '@/components/RefreshButton'
 
 export default function InvoiceDetailPage() {
+  const { fmtDateTime } = useDateFormat()
   const { t } = useTranslation()
   const params = useParams()
   const id = params?.id
@@ -93,11 +95,11 @@ export default function InvoiceDetailPage() {
                       <RefreshButton onClick={loadInvoice} loading={loading} />
                     </h5>
                     <div className="text-muted small">
-                      {t('invoices.createdAt') || 'Created'}: {formatDateTime(invoice.createdAt || invoice.created_at)}
+                      {t('invoices.createdAt') || 'Created'}: {fmtDateTime(invoice.createdAt || invoice.created_at)}
                     </div>
                     {invoice.expiryAt && (
                       <div className="text-muted small">
-                        {t('invoices.expiryAt') || 'Expires'}: {formatDateTime(invoice.expiryAt)}
+                        {t('invoices.expiryAt') || 'Expires'}: {fmtDateTime(invoice.expiryAt)}
                       </div>
                     )}
                   </div>

@@ -6,7 +6,8 @@ import { useToast } from '@/app/providers'
 import { usePusher } from '@/app/providers'
 import { getPublicInvoice, getPublicInvoiceStatus } from '@/lib/api/invoices'
 import { copyToClipboard } from '@/lib/utils/clipboard'
-import { formatCoinAmount, formatDate } from '@/lib/utils/format'
+import { formatCoinAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import CountdownTimer from './CountdownTimer'
 import PaymentQRCode from './PaymentQRCode'
@@ -17,6 +18,7 @@ export default function InvoicePayment({ code }) {
   const { t } = useTranslation()
   const toast = useToast()
   const pusher = usePusher()
+  const { fmtDate } = useDateFormat()
 
   const [invoice, setInvoice] = useState(null)
   const [qr, setQr] = useState(null)
@@ -191,7 +193,7 @@ export default function InvoicePayment({ code }) {
                   )}
                   <tr>
                     <td className="text-muted">{t('invoices.createdAt', { defaultValue: 'Created' })}</td>
-                    <td>{formatDate(invoice.createdAt)}</td>
+                    <td>{fmtDate(invoice.createdAt)}</td>
                   </tr>
                 </tbody>
               </table>

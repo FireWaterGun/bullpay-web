@@ -6,7 +6,7 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAuditLogs } from '@/lib/api/auditLogs'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
@@ -34,6 +34,7 @@ const SORT_BY_OPTIONS = [
 ]
 
 export default function AuditLogList() {
+  const { fmtDate } = useDateFormat()
   const { t, i18n } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
@@ -276,7 +277,7 @@ export default function AuditLogList() {
                               <code className="text-body" style={{ fontSize: '0.8rem' }}>{log.ipAddress}</code>
                             ) : '-'}
                           </td>
-                          <td>{formatDate(log.createdAt)}</td>
+                          <td>{fmtDate(log.createdAt)}</td>
                           <td>
                             <Link
                               href={`/admin/audit-logs/${log.id}`}

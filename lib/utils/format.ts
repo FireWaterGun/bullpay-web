@@ -141,16 +141,43 @@ export function formatChange(value: string | number | null | undefined, decimals
 // ---------------------------------------------------------------------------
 
 /**
- * Format a date string as DD/MM/YYYY HH:mm
- *   formatDate('2024-01-15T10:30:00Z') → "15/01/2024 10:30"
+ * Options for date formatting with timezone and locale support.
+ */
+interface DateFormatOptions {
+  /** IANA timezone (e.g. 'Asia/Bangkok', 'UTC'). Defaults to browser timezone. */
+  timeZone?: string
+  /** BCP 47 locale string (e.g. 'en-US', 'th-TH'). Defaults to browser locale. */
+  locale?: string
+}
+
+/**
+ * Format a date as locale-aware short date/time.
+ *   formatDate('2024-01-15T10:30:00Z', { locale: 'en-US', timeZone: 'Asia/Bangkok' })
+ *     → "Jan 15, 2024, 05:30 PM"
+ *   formatDate('2024-01-15T10:30:00Z', { locale: 'th-TH', timeZone: 'Asia/Bangkok' })
+ *     → "15 ม.ค. 2567, 17:30"
  *   formatDate(null) → "N/A"
  */
-export function formatDate(value: string | number | Date | null | undefined): string {
+export function formatDate(
+  value: string | number | Date | null | undefined,
+  options?: DateFormatOptions
+): string {
   if (!value) return 'N/A'
   const d = value instanceof Date ? value : new Date(String(value))
   if (isNaN(d.getTime())) return 'N/A'
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  try {
+    return new Intl.DateTimeFormat(options?.locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: options?.timeZone,
+    }).format(d)
+  } catch {
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -177,18 +204,21 @@ export function formatAmount(value: string | number | null | undefined): string 
   return trimTrailingZerosDecimal(s)
 }
 
-export function formatDateTime(value: string | number | Date | null | undefined): string {
+export function formatDateTime(
+  value: string | number | Date | null | undefined,
+  options?: DateFormatOptions
+): string {
   if (!value) return '-'
   const d = value instanceof Date ? value : new Date(String(value))
   if (isNaN(d.getTime())) return String(value)
   try {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(options?.locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true,
+      timeZone: options?.timeZone,
     }).format(d)
   } catch {
     return d.toLocaleString()

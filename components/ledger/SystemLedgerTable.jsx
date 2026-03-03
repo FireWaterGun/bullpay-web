@@ -3,7 +3,8 @@
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { formatUsd, formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 
 function parseMetadata(entry) {
@@ -52,6 +53,7 @@ export default function SystemLedgerTable({
 }) {
   const { t } = useAdminTranslation()
   const router = useRouter()
+  const { fmtDate } = useDateFormat()
 
   return (
     <div className="card">
@@ -169,7 +171,7 @@ export default function SystemLedgerTable({
                         )}
                       </td>
                       <td>
-                        <span style={{ whiteSpace: 'nowrap' }}>{formatDate(entry.createdAt)}</span>
+                        <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(entry.createdAt)}</span>
                       </td>
                       <td>
                         <Link

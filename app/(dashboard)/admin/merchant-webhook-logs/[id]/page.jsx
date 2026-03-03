@@ -7,7 +7,7 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getWebhookLog, retryWebhook } from '@/lib/api/merchantWebhookLogs'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
@@ -20,6 +20,7 @@ const EVENT_OPTIONS = [
 ]
 
 export default function MerchantWebhookLogDetail() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
   const { token, hasPermission } = useAuth()
@@ -207,7 +208,7 @@ export default function MerchantWebhookLogDetail() {
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(log.createdAt)}</td>
+                        <td>{fmtDate(log.createdAt)}</td>
                       </tr>
                     </tbody>
                   </table>

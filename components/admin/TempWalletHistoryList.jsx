@@ -8,7 +8,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWalletHistories } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
@@ -32,6 +32,7 @@ function statusBadgeClass(s) {
 }
 
 export default function TempWalletHistoryList() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
@@ -336,16 +337,16 @@ export default function TempWalletHistoryList() {
                             </span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(h.firstDepositAt)}</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(h.firstDepositAt)}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(h.sweptAt)}</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(h.sweptAt)}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(h.releasedAt)}</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(h.releasedAt)}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{formatDate(h.createdAt)}</span>
+                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(h.createdAt)}</span>
                           </td>
                           <td>
                             <Link

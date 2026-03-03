@@ -2,7 +2,8 @@
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
-import { formatUsd, formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 export default function SweepTransactionTable({
   sweeps,
@@ -16,6 +17,7 @@ export default function SweepTransactionTable({
   onRetry,
   onPageChange,
 }) {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
   return (
@@ -161,11 +163,11 @@ export default function SweepTransactionTable({
                       </div>
                     </td>
                     <td>
-                      <span style={{ whiteSpace: 'nowrap' }}>{formatDate(sweep.createdAt)}</span>
+                      <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(sweep.createdAt)}</span>
                     </td>
                     <td>
                       <span style={{ whiteSpace: 'nowrap' }}>
-                        {sweep.completedAt ? formatDate(sweep.completedAt) : <span className="text-muted">-</span>}
+                        {sweep.completedAt ? fmtDate(sweep.completedAt) : <span className="text-muted">-</span>}
                       </span>
                     </td>
                     <td className="text-center">

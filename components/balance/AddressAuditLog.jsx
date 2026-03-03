@@ -1,10 +1,11 @@
 'use client'
 
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 const EMPTY_LOGS = []
 
 export default function AddressAuditLog({ logs = EMPTY_LOGS, t }) {
+  const { fmtDate } = useDateFormat()
   if (!logs.length) {
     return (
       <div className="text-muted small py-2">
@@ -22,7 +23,7 @@ export default function AddressAuditLog({ logs = EMPTY_LOGS, t }) {
             <div className="small">{log.action || log.event || '-'}</div>
             {log.user?.email && <div className="text-muted small">by {log.user.email}</div>}
             {log.reason && <div className="text-muted small">Reason: {log.reason}</div>}
-            <div className="text-muted small">{formatDate(log.createdAt)}</div>
+            <div className="text-muted small">{fmtDate(log.createdAt)}</div>
           </div>
         </li>
       ))}

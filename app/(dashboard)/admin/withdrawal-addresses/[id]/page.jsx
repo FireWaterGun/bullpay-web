@@ -14,13 +14,14 @@ import {
 } from '@/lib/api/admin'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import AddressActionModal from '@/components/balance/AddressActionModal'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 function AddressAuditLogTable({ auditLogs }) {
+  const { fmtDate } = useDateFormat()
   if (!auditLogs || auditLogs.length === 0) return null
 
   return (
@@ -45,7 +46,7 @@ function AddressAuditLogTable({ auditLogs }) {
                   <td><span className="fw-medium">{log.action}</span></td>
                   <td>{log.adminId || log.performedBy || '—'}</td>
                   <td className="text-muted" style={{ maxWidth: 300, whiteSpace: 'normal' }}>{log.reason || '—'}</td>
-                  <td className="text-nowrap">{formatDate(log.createdAt || log.timestamp)}</td>
+                  <td className="text-nowrap">{fmtDate(log.createdAt || log.timestamp)}</td>
                 </tr>
               ))}
             </tbody>
@@ -57,6 +58,7 @@ function AddressAuditLogTable({ auditLogs }) {
 }
 
 export default function WithdrawalAddressDetail() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
@@ -275,11 +277,11 @@ export default function WithdrawalAddressDetail() {
                     </div>
                     <div className="col-sm-6">
                       <small className="text-muted d-block mb-1">{t('admin.detail.created', { defaultValue: 'Created' })}</small>
-                      <span>{formatDate(address.createdAt)}</span>
+                      <span>{fmtDate(address.createdAt)}</span>
                     </div>
                     <div className="col-sm-6">
                       <small className="text-muted d-block mb-1">{t('admin.detail.updated', { defaultValue: 'Updated' })}</small>
-                      <span>{formatDate(address.updatedAt)}</span>
+                      <span>{fmtDate(address.updatedAt)}</span>
                     </div>
                     <div className="col-sm-6">
                       <small className="text-muted d-block mb-1">Usage Count</small>
@@ -292,7 +294,7 @@ export default function WithdrawalAddressDetail() {
                     {address.lockUntil && (
                       <div className="col-sm-6">
                         <small className="text-muted d-block mb-1">Lock Until</small>
-                        <span>{formatDate(address.lockUntil)}</span>
+                        <span>{fmtDate(address.lockUntil)}</span>
                         {address.isLocked && <span className="badge bg-label-warning ms-2">Locked</span>}
                       </div>
                     )}

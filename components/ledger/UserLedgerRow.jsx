@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CoinImg from '@/components/CoinImg'
-import { formatUsd, formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 export function stateBadge(state) {
   if (state === 'settled') return <span>Settled</span>
@@ -24,6 +25,7 @@ export function formatAmount(val) {
 
 export default function UserLedgerRow({ entry, t }) {
   const router = useRouter()
+  const { fmtDate } = useDateFormat()
   const isCredit = entry.entryType === 'credit'
 
   return (
@@ -96,7 +98,7 @@ export default function UserLedgerRow({ entry, t }) {
         )}
       </td>
       <td>
-        <span style={{ whiteSpace: 'nowrap' }}>{formatDate(entry.createdAt)}</span>
+        <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(entry.createdAt)}</span>
       </td>
       <td>
         <Link

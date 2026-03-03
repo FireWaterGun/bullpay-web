@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getUserBalanceDetail } from '@/lib/api/admin'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
@@ -14,6 +14,7 @@ import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function UserBalanceDetailPage() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id: userId } = useParams()
   const { token } = useAuth()
@@ -73,7 +74,7 @@ export default function UserBalanceDetailPage() {
                   </h4>
                   {data.valuedAt && (
                     <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-                      Valued at {formatDate(data.valuedAt)}
+                      Valued at {fmtDate(data.valuedAt)}
                     </span>
                   )}
                 </div>
@@ -155,7 +156,7 @@ export default function UserBalanceDetailPage() {
                             <td className="text-end text-nowrap"><span className="fw-medium">{asset.totalBalance || '0'}</span></td>
                             <td className="text-end text-nowrap"><span className="fw-medium">${asset.priceUsd ?? '-'}</span></td>
                             <td className="text-end text-nowrap"><span className="fw-medium">${asset.valueUsd || '0.00'}</span></td>
-                            <td><span style={{ whiteSpace: 'nowrap', fontSize: '0.8rem' }}>{formatDate(asset.updatedAt)}</span></td>
+                            <td><span style={{ whiteSpace: 'nowrap', fontSize: '0.8rem' }}>{fmtDate(asset.updatedAt)}</span></td>
                           </tr>
                         )
                       })}

@@ -1,6 +1,7 @@
 'use client'
 
-import { formatAmount, formatDate } from '@/lib/utils/format'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
@@ -10,6 +11,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
  */
 export default function AdminInvoicePaymentsTable({ payments, coinSymbol, network, onCopy }) {
   const { t } = useAdminTranslation()
+  const { fmtDate } = useDateFormat()
   return (
     <div className="card">
       <div className="card-header">
@@ -128,17 +130,17 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     </td>
                     <td>
                       <span style={{ whiteSpace: 'nowrap' }}>
-                        {payment.detectedAt ? formatDate(payment.detectedAt) : <span className="text-muted">-</span>}
+                        {payment.detectedAt ? fmtDate(payment.detectedAt) : <span className="text-muted">-</span>}
                       </span>
                     </td>
                     <td>
                       <span style={{ whiteSpace: 'nowrap' }}>
-                        {payment.confirmedAt ? formatDate(payment.confirmedAt) : <span className="text-muted">-</span>}
+                        {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-muted">-</span>}
                       </span>
                     </td>
                     <td>
                       <span style={{ whiteSpace: 'nowrap' }}>
-                        {payment.completedAt ? formatDate(payment.completedAt) : <span className="text-muted">-</span>}
+                        {payment.completedAt ? fmtDate(payment.completedAt) : <span className="text-muted">-</span>}
                       </span>
                     </td>
                   </tr>

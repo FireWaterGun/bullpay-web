@@ -7,12 +7,13 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getAuditLog } from '@/lib/api/auditLogs'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function AuditLogDetail() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
   const { token } = useAuth()
@@ -147,7 +148,7 @@ export default function AuditLogDetail() {
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(log.createdAt)}</td>
+                        <td>{fmtDate(log.createdAt)}</td>
                       </tr>
                     </tbody>
                   </table>

@@ -1,10 +1,11 @@
 'use client'
 
 import CoinImg from '@/components/CoinImg'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { formatGasAmount, statusBadgeClass } from '@/components/admin/gasTopupHelpers'
 
 export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
+  const { fmtDate } = useDateFormat()
   const coinSymbol = (topup.coinNetwork?.coin?.symbol || topup.coinSymbol || '').toUpperCase()
   const networkSymbol = (topup.coinNetwork?.network?.symbol || topup.networkSymbol || '').toUpperCase()
   const networkName = topup.coinNetwork?.network?.name || topup.networkName || ''
@@ -100,10 +101,10 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
         </span>
       </td>
       <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
-        {formatDate(topup.createdAt)}
+        {fmtDate(topup.createdAt)}
       </td>
       <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
-        {topup.completedAt ? formatDate(topup.completedAt) : <span className="text-muted">-</span>}
+        {topup.completedAt ? fmtDate(topup.completedAt) : <span className="text-muted">-</span>}
       </td>
     </tr>
   )

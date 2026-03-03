@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getSystemStatus } from '@/lib/api/system'
 import { usePusher } from '@/app/providers'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 const CHANNEL = 'system-maintenance'
 const EVENT = 'maintenance-status-changed'
@@ -221,6 +222,7 @@ function CountdownRing({ seconds, total }) {
 export default function MaintenancePage() {
   const { t, i18n } = useTranslation('common')
   const locale = i18n.language || 'en'
+  const { fmtDateTime } = useDateFormat()
   const { subscribe, unsubscribe, isConnected } = usePusher() || {}
   const channelRef = useRef(null)
   const [info, setInfo] = useState({
@@ -353,10 +355,7 @@ export default function MaintenancePage() {
   const displayMessage = locale === 'th' && info.messageTh ? info.messageTh : info.message
 
   const formattedEstimatedEnd = info.estimatedEnd
-    ? new Date(info.estimatedEnd).toLocaleString(locale === 'th' ? 'th-TH' : 'en-US', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      })
+    ? fmtDateTime(info.estimatedEnd)
     : null
 
   return (

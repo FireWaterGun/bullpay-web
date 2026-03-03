@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import CoinImg from '@/components/CoinImg'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { addressStatusBadgeClass } from './withdrawalHelpers'
 
 function statusLabel(s) {
@@ -27,6 +27,7 @@ export default function AddressTable({
   t,
 }) {
   const router = useRouter()
+  const { fmtDate } = useDateFormat()
 
   return (
     <div className="card">
@@ -169,7 +170,7 @@ export default function AddressTable({
                         </div>
                       </td>
                       <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
-                        {formatDate(addr.createdAt)}
+                        {fmtDate(addr.createdAt)}
                       </td>
                     </tr>
                   )

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { listWallets, deleteWallet } from '@/lib/api/wallets'
 import { listCoins } from '@/lib/api/coins'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import ConfirmModal from '@/components/ConfirmModal'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
@@ -16,6 +16,7 @@ export default function WalletsPage() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToast()
+  const { fmtDate } = useDateFormat()
 
   const [wallets, setWallets] = useState([])
   const [coins, setCoins] = useState([])
@@ -124,7 +125,7 @@ export default function WalletsPage() {
                           {formatAddressStatus(w.status)}
                         </span>
                       </td>
-                      <td><span className="small">{formatDate(w.createdAt)}</span></td>
+                      <td><span className="small">{fmtDate(w.createdAt)}</span></td>
                       <td>
                         <div className="dropdown">
                           <button className="btn btn-sm btn-icon btn-text-secondary" data-bs-toggle="dropdown">

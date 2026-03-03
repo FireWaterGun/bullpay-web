@@ -27,6 +27,7 @@ interface AuthUser {
   role: string
   fullName?: string
   avatarUrl?: string
+  timezone?: string
   [key: string]: unknown
 }
 
@@ -57,6 +58,7 @@ interface AuthContextValue {
   isReady: boolean
   login: (token: string, user: AuthUser) => void
   logout: () => void
+  updateUser: (updates: Partial<AuthUser>) => void
   hasPermission: (perm: string) => boolean
   hasMenu: (key: string) => boolean
   setNavigation: (nav: Navigation) => void
@@ -145,6 +147,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     deleteCookie('bullpay_nav')
   }, [])
 
+  const updateUser = useCallback((updates: Partial<AuthUser>) => {
+    setUser((prev) => {
+      if (!prev) return prev
+      const updated = { ...prev, ...updates }
+      setCookie('bullpay_user', JSON.stringify(updated))
+      return updated
+    })
+  }, [])
+
   // Idle auto-logout (30 min inactivity)
   useIdleLogout(logout, !!token)
 
@@ -182,6 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isReady,
         login,
         logout,
+        updateUser,
         hasPermission,
         hasMenu,
         setNavigation,

@@ -2,9 +2,11 @@
 
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
-import { formatCoinAmount, formatDate } from '@/lib/utils/format'
+import { formatCoinAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 export default function PaymentDetailsSection({ invoice, toast, t }) {
+  const { fmtDate } = useDateFormat()
   async function handleCopy(text) {
     const ok = await copyToClipboard(text)
     if (ok) toast?.('success', t?.('common.copied', { defaultValue: 'Copied!' }) || 'Copied!')
@@ -60,12 +62,12 @@ export default function PaymentDetailsSection({ invoice, toast, t }) {
               )}
               <tr>
                 <td className="text-muted">{t?.('invoices.createdAt', { defaultValue: 'Created' }) || 'Created'}</td>
-                <td>{formatDate(invoice?.createdAt)}</td>
+                <td>{fmtDate(invoice?.createdAt)}</td>
               </tr>
               {invoice?.expiresAt && (
                 <tr>
                   <td className="text-muted">{t?.('invoices.expiresAt', { defaultValue: 'Expires' }) || 'Expires'}</td>
-                  <td>{formatDate(invoice?.expiresAt)}</td>
+                  <td>{fmtDate(invoice?.expiresAt)}</td>
                 </tr>
               )}
             </tbody>

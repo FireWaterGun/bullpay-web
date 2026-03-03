@@ -7,7 +7,7 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWallet } from '@/lib/api/admin'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
@@ -24,6 +24,7 @@ function statusBadgeClass(s) {
 }
 
 export default function TempWalletDetail() {
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
   const router = useRouter()
@@ -267,35 +268,35 @@ export default function TempWalletDetail() {
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(wallet.createdAt)}</td>
+                        <td>{fmtDate(wallet.createdAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
-                        <td>{formatDate(wallet.updatedAt)}</td>
+                        <td>{fmtDate(wallet.updatedAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Expires</td>
-                        <td>{formatDate(wallet.expiresAt)}</td>
+                        <td>{fmtDate(wallet.expiresAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">First Used</td>
-                        <td>{formatDate(wallet.firstUsedAt)}</td>
+                        <td>{fmtDate(wallet.firstUsedAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Last Assigned</td>
-                        <td>{formatDate(wallet.lastAssignedAt)}</td>
+                        <td>{fmtDate(wallet.lastAssignedAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Last Released</td>
-                        <td>{formatDate(wallet.lastReleasedAt)}</td>
+                        <td>{fmtDate(wallet.lastReleasedAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Last Checked</td>
-                        <td>{formatDate(wallet.lastCheckedAt)}</td>
+                        <td>{fmtDate(wallet.lastCheckedAt)}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Last Sweep</td>
-                        <td>{formatDate(wallet.lastSweepAt)}</td>
+                        <td>{fmtDate(wallet.lastSweepAt)}</td>
                       </tr>
                     </tbody>
                   </table>

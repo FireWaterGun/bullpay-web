@@ -10,6 +10,7 @@ import { initAudioContext } from '@/lib/utils/notification'
 import { SectionHeader, MenuItem, SubItem, MenuGroup } from '@/components/dashboard/SidebarMenu'
 import NavbarContent from '@/components/dashboard/NavbarContent'
 import MaintenanceBanner from '@/components/admin/MaintenanceBanner'
+import { checkMaintenanceBlocked } from '@/lib/api/system'
 import useDashboardData from '@/hooks/useDashboardData'
 import '@/components/dashboard/notification-badge.css'
 
@@ -48,14 +49,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     if (channel) {
       channel.bind('maintenance-status-changed', (data: any) => {
         if (data.maintenance) {
-          try {
-            sessionStorage.setItem('maintenance_info', JSON.stringify({
-              message: data.message,
-              messageTh: data.messageTh,
-              estimatedEnd: data.estimatedEnd,
-            }))
-          } catch { /* sessionStorage may not be available */ }
-          window.location.href = '/maintenance'
+          // Verify the user is actually blocked (not on allowed-IP list)
+          checkMaintenanceBlocked(token || undefined).then((blocked) => {
+            if (!blocked) return // IP is allowed — stay on dashboard
+            try {
+              sessionStorage.setItem('maintenance_info', JSON.stringify({
+                message: data.message,
+                messageTh: data.messageTh,
+                estimatedEnd: data.estimatedEnd,
+              }))
+            } catch { /* sessionStorage may not be available */ }
+            window.location.href = '/maintenance'
+          })
         }
       })
     }
@@ -67,7 +72,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         maintenanceChannelRef.current = null
       }
     }
-  }, [subscribe, unsubscribe, isConnected, isAdmin, isReady])
+  }, [subscribe, unsubscribe, isConnected, isAdmin, isReady, token])
 
   useEffect(() => {
     const html = document.documentElement
@@ -197,14 +202,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const keyMap: Record<string, string> = {
       // User menu
       'dashboard': 'nav.dashboard',
+      'reports': 'nav.reports',
       'wallet': 'nav.wallet',
       'wallet-overview': 'nav.balance',
       'withdrawal': 'nav.withdrawals',
       'invoices': 'nav.invoice',
-      'ledgers': 'nav.ledgers',
+      'activity': 'nav.activity',
       'settings': 'nav.settings',
       '2fa': 'nav.twoFactor',
-      'merchant': 'nav.merchant',
+      'integration': 'nav.integration',
       // Admin menu
       'admin-dashboard': 'nav.revenueDashboard',
       'income-statement': 'nav.incomeStatement',
@@ -243,7 +249,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const sectionLabel = (section: string) => {
     const sectionMap: Record<string, string> = {
       'Overview': 'nav.sectionOverview',
-      'Financial': 'nav.sectionFinancial',
+      'Payments': 'nav.sectionPayments',
       'Account': 'nav.sectionAccount',
       'Reports': 'nav.sectionReports',
       'Operations': 'nav.sectionOperations',

@@ -55,7 +55,6 @@ export default function RootLayout({
 
         {/* Vendor CSS */}
         <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/apex-charts/apex-charts.css" />
 
         {/* Page CSS */}
         <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
@@ -91,7 +90,6 @@ export default function RootLayout({
         <Script src="/assets/vendor/js/menu.js" strategy="afterInteractive" />
 
         {/* Vendor JS */}
-        <Script src="/assets/vendor/libs/apex-charts/apexcharts.js" strategy="lazyOnload" />
         <Script src="/assets/vendor/libs/@form-validation/popular.js" strategy="lazyOnload" />
         <Script src="/assets/vendor/libs/@form-validation/bootstrap5.js" strategy="lazyOnload" />
         <Script src="/assets/vendor/libs/@form-validation/auto-focus.js" strategy="lazyOnload" />

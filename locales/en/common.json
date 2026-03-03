@@ -12,9 +12,11 @@
     "supportedCrypto": "Supported Crypto",
     "coinNetworks": "Coin Networks",
     "merchant": "Merchant",
+    "integration": "Integration",
+    "reports": "Reports",
     "ledger": "Ledger",
     "sectionOverview": "Overview",
-    "sectionFinancial": "Financial",
+    "sectionPayments": "Payments",
     "sectionAccount": "Account",
     "sectionReports": "Reports",
     "sectionOperations": "Operations",
@@ -23,6 +25,7 @@
     "wallet": "Wallet",
     "withdrawals": "Withdrawals",
     "ledgers": "Ledgers",
+    "activity": "Activity",
     "twoFactor": "Two-Factor",
     "revenueDashboard": "Revenue Dashboard",
     "incomeStatement": "Income Statement",
@@ -260,7 +263,21 @@
     "title": "Settings",
     "subtitle": "Manage your account settings and preferences",
     "security": {
-      "title": "Security"
+      "title": "Security",
+      "subtitle": "Two-factor authentication & security options"
+    },
+    "timezone": {
+      "title": "Timezone",
+      "description": "Set your preferred timezone for displaying dates and times.",
+      "label": "Timezone",
+      "saved": "Timezone updated successfully",
+      "failed": "Failed to update timezone"
+    },
+    "stats": {
+      "active": "Active",
+      "twoFA": "2FA",
+      "localTime": "Local Time",
+      "date": "Date"
     },
     "2fa": {
       "title": "Two-Factor Authentication",
@@ -293,7 +310,10 @@
       "retryIn": "Retry in {{seconds}}s",
       "tooManyAttempts": "Too many attempts. Please try again in {{seconds}} seconds",
       "backupCodesDownloadTitle": "BullPay 2FA Backup Codes",
-      "backupCodesKeepSafe": "Keep these codes safe. Each code can only be used once."
+      "backupCodesKeepSafe": "Keep these codes safe. Each code can only be used once.",
+      "disabledHint": "Not enabled — your account is less secure",
+      "enableSuccess": "Two-factor authentication enabled successfully",
+      "disableSuccess": "Two-factor authentication has been disabled"
     },
     "password": {
       "title": "Change Password",
@@ -432,7 +452,8 @@
     "status": "Status",
     "id": "ID",
     "showLess": "Show Less",
-    "optional": "Optional"
+    "optional": "Optional",
+    "save": "Save"
   },
   "wallet": {
     "loading": "Loading wallet...",
@@ -829,8 +850,8 @@
     "role": "Role"
   },
   "userLedger": {
-    "title": "My Ledger",
-    "description": "View your ledger entries and transaction history",
+    "title": "Activity",
+    "description": "View your activity and transaction history",
     "loadError": "Failed to load ledger entries",
     "noEntries": "No ledger entries found",
     "entryDetail": "Ledger Entry",

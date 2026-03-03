@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { getWithdrawalAddressById, approveWithdrawalAddress, suspendWithdrawalAddress } from '@/lib/api/admin'
-import { formatDate } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
@@ -20,6 +20,7 @@ export default function WithdrawalAddressDetailPage() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToast()
+  const { fmtDate } = useDateFormat()
 
   const addressId = params?.id
   const [address, setAddress] = useState(null)
@@ -142,7 +143,7 @@ export default function WithdrawalAddressDetailPage() {
                   )}
                   <tr>
                     <td className="text-muted">{t('withdrawalAddresses.created', { defaultValue: 'Created' })}</td>
-                    <td>{formatDate(address.createdAt)}</td>
+                    <td>{fmtDate(address.createdAt)}</td>
                   </tr>
                 </tbody>
               </table>

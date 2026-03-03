@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslation } from 'react-i18next'
+import { useDateFormat } from '@/hooks/useDateFormat'
 
 /**
  * Read-only info sidebar panel shown in edit mode.
@@ -8,6 +9,7 @@ import { useTranslation } from 'react-i18next'
  */
 export default function NetworkInfoPanel({ networkMeta }) {
   const { t } = useTranslation()
+  const { fmtDate } = useDateFormat()
 
   return (
     <div className="col-12 col-xl-4">
@@ -32,13 +34,13 @@ export default function NetworkInfoPanel({ networkMeta }) {
             {networkMeta.createdAt && (
               <li className="d-flex justify-content-between mb-3">
                 <span className="text-muted">{t('common.createdAt', { defaultValue: 'Created' })}</span>
-                <span className="small">{new Date(networkMeta.createdAt).toLocaleString()}</span>
+                <span className="small">{fmtDate(networkMeta.createdAt)}</span>
               </li>
             )}
             {networkMeta.updatedAt && (
               <li className="d-flex justify-content-between mb-3">
                 <span className="text-muted">{t('common.updatedAt', { defaultValue: 'Updated' })}</span>
-                <span className="small">{new Date(networkMeta.updatedAt).toLocaleString()}</span>
+                <span className="small">{fmtDate(networkMeta.updatedAt)}</span>
               </li>
             )}
           </ul>

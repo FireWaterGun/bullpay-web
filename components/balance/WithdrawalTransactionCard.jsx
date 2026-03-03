@@ -1,10 +1,12 @@
 'use client'
 
 import CoinImg from '@/components/CoinImg'
-import { formatDate, formatCoinAmount } from '@/lib/utils/format'
+import { formatCoinAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusBadgeClass, formatStatusLabel } from './withdrawalHelpers'
 
 export default function WithdrawalTransactionCard({ withdrawal, onClick, t }) {
+  const { fmtDate } = useDateFormat()
   if (!withdrawal) return null
 
   return (
@@ -27,7 +29,7 @@ export default function WithdrawalTransactionCard({ withdrawal, onClick, t }) {
                 {withdrawal.coinSymbol || withdrawal.coin?.symbol || ''}
               </div>
               <div className="text-muted small">
-                {withdrawal.networkSymbol || withdrawal.network?.symbol || ''} &middot; {formatDate(withdrawal.createdAt)}
+                {withdrawal.networkSymbol || withdrawal.network?.symbol || ''} &middot; {fmtDate(withdrawal.createdAt)}
               </div>
             </div>
           </div>

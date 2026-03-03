@@ -6,13 +6,15 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getPlatformLedgerEntry } from '@/lib/api/admin'
-import { formatUsd, formatDateTime as formatDate } from '@/lib/utils/format'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function PlatformLedgerDetail() {
+  const { fmtDateTime } = useDateFormat()
   const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
@@ -231,12 +233,12 @@ export default function PlatformLedgerDetail() {
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{formatDate(entry.createdAt)}</td>
+                        <td>{fmtDateTime(entry.createdAt)}</td>
                       </tr>
                       {entry.updatedAt && (
                         <tr>
                           <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
-                          <td>{formatDate(entry.updatedAt)}</td>
+                          <td>{fmtDateTime(entry.updatedAt)}</td>
                         </tr>
                       )}
                     </tbody>
