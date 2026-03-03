@@ -93,17 +93,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     document.addEventListener('touchstart', initAudio, { passive: true })
     document.addEventListener('keydown', initAudio)
 
-    // Clear stale TemplateCustomizer localStorage (main.js reads these and can override React theme)
-    try {
-      const tplName = 'vertical-menu-template'
-      localStorage.removeItem(`templateCustomizer-${tplName}--Theme`)
-      localStorage.removeItem(`templateCustomizer-${tplName}--Skin`)
-      localStorage.removeItem(`templateCustomizer-${tplName}--Color`)
-      localStorage.removeItem(`templateCustomizer-${tplName}--LayoutCollapsed`)
-      localStorage.removeItem(`templateCustomizer-${tplName}--Rtl`)
-      localStorage.removeItem(`templateCustomizer-${tplName}--Lang`)
-    } catch { }
-
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
       if (savedTheme === 'light' || savedTheme === 'dark') setTheme(savedTheme)
@@ -146,25 +135,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     if (collapsed) html.classList.add('layout-menu-collapsed')
     else { html.classList.remove('layout-menu-collapsed'); html.classList.remove('layout-menu-hover') }
   }, [collapsed])
-
-  // Disable Sneat theme menu.js click handler – React MenuGroup manages toggle/animation
-  useEffect(() => {
-    const disableSneatMenu = () => {
-      const el = document.getElementById('layout-menu') as HTMLElement & { menuInstance?: { _unbindEvents: () => void } }
-      if (el?.menuInstance?._unbindEvents) {
-        el.menuInstance._unbindEvents()
-        delete el.menuInstance
-        return true
-      }
-      return false
-    }
-    // main.js loads with strategy="lazyOnload" so poll briefly until it initialises
-    if (!disableSneatMenu()) {
-      const id = setInterval(() => { if (disableSneatMenu()) clearInterval(id) }, 200)
-      const timeout = setTimeout(() => clearInterval(id), 10_000)
-      return () => { clearInterval(id); clearTimeout(timeout) }
-    }
-  }, [])
 
   const toggleMenu = (e?: React.MouseEvent) => {
     e?.preventDefault?.()
