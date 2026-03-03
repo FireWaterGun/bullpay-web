@@ -220,7 +220,7 @@ export default function CoinForm() {
                     </label>
                     <input
                       type="text"
-                      className="form-control form-control-lg"
+                      className="form-control"
                       id="symbol"
                       name="symbol"
                       value={formData.symbol}
@@ -242,7 +242,7 @@ export default function CoinForm() {
                     </label>
                     <input
                       type="text"
-                      className="form-control form-control-lg"
+                      className="form-control"
                       id="name"
                       name="name"
                       value={formData.name}
@@ -260,7 +260,7 @@ export default function CoinForm() {
                       {t('crypto.type', { defaultValue: 'Type' })} <span className="text-danger">*</span>
                     </label>
                     <select
-                      className="form-select form-select-lg"
+                      className="form-select"
                       id="type"
                       name="type"
                       value={formData.type}
@@ -281,7 +281,7 @@ export default function CoinForm() {
                     </label>
                     <input
                       type="number"
-                      className="form-control form-control-lg"
+                      className="form-control"
                       id="decimals"
                       name="decimals"
                       value={formData.decimals}
@@ -300,7 +300,7 @@ export default function CoinForm() {
                       {t('invoices.statusCol')}
                     </label>
                     <select
-                      className="form-select form-select-lg"
+                      className="form-select"
                       id="status"
                       name="status"
                       value={formData.status}
@@ -318,7 +318,7 @@ export default function CoinForm() {
                     </label>
                     <input
                       type="url"
-                      className="form-control form-control-lg"
+                      className="form-control"
                       id="logoUrl"
                       name="logoUrl"
                       value={formData.logoUrl}
@@ -335,7 +335,7 @@ export default function CoinForm() {
                       {false && isEdit && (
                         <button 
                           type="button" 
-                          className="btn btn-lg btn-danger"
+                          className="btn btn-danger"
                           onClick={() => setShowDeleteConfirm(true)}
                           disabled={loading}
                         >
@@ -347,13 +347,13 @@ export default function CoinForm() {
                       <div className={`d-flex gap-3 ms-auto`}>
                         <Link
                           href="/admin/coins"
-                          className={`btn btn-lg btn-label-secondary${loading ? ' disabled' : ''}`}
+                          className={`btn btn-label-secondary${loading ? ' disabled' : ''}`}
                         >
                           {t('actions.cancel', { defaultValue: 'Cancel' })}
                         </Link>
                         <button 
                           type="submit" 
-                          className="btn btn-lg btn-primary"
+                          className="btn btn-primary"
                           disabled={loading}
                         >
                           {loading ? (

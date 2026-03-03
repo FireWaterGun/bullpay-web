@@ -23,7 +23,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                 </label>
                 <input
                   type="text"
-                  className="form-control form-control-lg"
+                  className="form-control"
                   id="contractAddress"
                   name="contractAddress"
                   value={formData.contractAddress}
@@ -43,7 +43,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                 </label>
                 <input
                   type="number"
-                  className="form-control form-control-lg"
+                  className="form-control"
                   id="decimals"
                   name="decimals"
                   value={formData.decimals}
@@ -63,131 +63,10 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
 
               <div className="col-md-6">
                 <label className="form-label">
-                  {t('crypto.minWithdrawAmount', { defaultValue: 'Min Withdraw Amount' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="minWithdrawAmount"
-                  name="minWithdrawAmount"
-                  value={formData.minWithdrawAmount}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="20"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
-              </div>
-
-              {/* Max Withdraw Amount */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.maxWithdrawAmount', { defaultValue: 'Max Withdraw Amount' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="maxWithdrawAmount"
-                  name="maxWithdrawAmount"
-                  value={formData.maxWithdrawAmount}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="50000"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
-              </div>
-
-              {/* Withdraw Fee (total, legacy) */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.withdrawFee', { defaultValue: 'Withdraw Fee (Total)' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="withdrawFee"
-                  name="withdrawFee"
-                  value={formData.withdrawFee}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="5"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={32}
-                />
-              </div>
-
-              {/* Withdraw Fee Base (auto-updated, read-only on edit) */}
-              {isEdit && (
-                <div className="col-md-6">
-                  <label className="form-label">
-                    {t('crypto.withdrawFeeBase', { defaultValue: 'Fee Base (Gas Cost)' })}
-                    <span className="badge bg-label-info ms-2" style={{ fontSize: '0.65rem' }}>AUTO</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-lg"
-                    value={formData.withdrawFeeBase || '-'}
-                    disabled
-                    readOnly
-                  />
-                  <small className="text-muted">
-                    {t('crypto.withdrawFeeBaseHelp', { defaultValue: 'Auto-calculated from gas prices. Cannot be edited manually.' })}
-                  </small>
-                </div>
-              )}
-
-              {/* Withdraw Fee Percent (platform margin) */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.withdrawFeePercent', { defaultValue: 'Fee Percent (%)' })}
-                  <span className="badge bg-label-success ms-2" style={{ fontSize: '0.65rem' }}>MARGIN</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="withdrawFeePercent"
-                  name="withdrawFeePercent"
-                  value={formData.withdrawFeePercent}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="0.50"
-                  pattern="^\d+(\.\d+)?$"
-                  maxLength={10}
-                />
-                <small className="text-muted">
-                  {t('crypto.withdrawFeePercentHelp', { defaultValue: 'Platform fee as % of withdrawal amount. This is your revenue margin.' })}
-                </small>
-              </div>
-
-              {/* Daily Withdraw Limit USD */}
-              <div className="col-md-6">
-                <label className="form-label">
-                  {t('crypto.dailyWithdrawLimitUsd', { defaultValue: 'Daily Withdraw Limit (USD)' })}
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  id="dailyWithdrawLimitUsd"
-                  name="dailyWithdrawLimitUsd"
-                  value={formData.dailyWithdrawLimitUsd}
-                  onChange={handleChange}
-                  disabled={loading}
-                  placeholder="10000.00"
-                  pattern="^\d+(\.\d{1,2})?$"
-                  maxLength={17}
-                />
-                <small className="text-muted">
-                  {t('crypto.dailyWithdrawLimitUsdHelp', { defaultValue: 'Maximum daily withdrawal limit in USD. Leave empty for no limit.' })}
-                </small>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
                   {t('crypto.status', { defaultValue: 'Status' })} <span className="text-danger">*</span>
                 </label>
                 <select
-                  className="form-select form-select-lg"
+                  className="form-select"
                   id="status"
                   name="status"
                   value={formData.status}

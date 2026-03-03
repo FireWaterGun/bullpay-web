@@ -18,7 +18,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
         </label>
         <input
           type="text"
-          className="form-control form-control-lg"
+          className="form-control"
           id="name"
           name="name"
           value={formData.name}
@@ -37,7 +37,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
         </label>
         <input
           type="text"
-          className="form-control form-control-lg"
+          className="form-control"
           id="symbol"
           name="symbol"
           value={formData.symbol}
@@ -58,7 +58,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           {t('crypto.networkType', { defaultValue: 'Network Type' })} <span className="text-danger">*</span>
         </label>
         <select
-          className="form-select form-select-lg"
+          className="form-select"
           id="type"
           name="type"
           value={formData.type}
@@ -82,7 +82,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
         </label>
         <input
           type="number"
-          className="form-control form-control-lg"
+          className="form-control"
           id="chainId"
           name="chainId"
           value={formData.chainId}
@@ -100,7 +100,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
         </label>
         <input
           type="number"
-          className="form-control form-control-lg"
+          className="form-control"
           id="confirmationBlocks"
           name="confirmationBlocks"
           value={formData.confirmationBlocks}
@@ -119,7 +119,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
         </label>
         <input
           type="url"
-          className="form-control form-control-lg"
+          className="form-control"
           id="rpcUrl"
           name="rpcUrl"
           value={formData.rpcUrl}
@@ -136,7 +136,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
         </label>
         <input
           type="url"
-          className="form-control form-control-lg"
+          className="form-control"
           id="explorerUrl"
           name="explorerUrl"
           value={formData.explorerUrl}
@@ -153,7 +153,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
         </label>
         <input
           type="url"
-          className="form-control form-control-lg"
+          className="form-control"
           id="apiUrl"
           name="apiUrl"
           value={formData.apiUrl}
@@ -169,7 +169,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           {t('invoices.statusCol')}
         </label>
         <select
-          className="form-select form-select-lg"
+          className="form-select"
           id="status"
           name="status"
           value={formData.status}
@@ -184,7 +184,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
 
       {/* Is Testnet */}
       <div className="col-12">
-        <div className="form-check form-check-lg">
+        <div className="form-check">
           <input
             className="form-check-input"
             type="checkbox"
@@ -207,7 +207,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           {false && isEdit && (
             <button
               type="button"
-              className="btn btn-lg btn-danger"
+              className="btn btn-danger"
               disabled={loading}
             >
               <i className="bx bx-trash me-2"></i>
@@ -218,7 +218,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           <div className={`d-flex gap-3 ms-auto`}>
             <button
               type="button"
-              className="btn btn-lg btn-label-secondary"
+              className="btn btn-label-secondary"
               onClick={onCancel}
               disabled={loading}
             >
@@ -226,7 +226,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
             </button>
             <button
               type="submit"
-              className="btn btn-lg btn-primary"
+              className="btn btn-primary"
               disabled={loading}
             >
               {loading ? (

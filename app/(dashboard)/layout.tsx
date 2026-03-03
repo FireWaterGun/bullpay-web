@@ -292,7 +292,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 badge={badge}
               >
                 {children.map((child: NavigationItem) => (
-                  <SubItem key={child.key} to={child.path} end label={navLabel(child.key, child.label)} badge={childBadgeMap[child.path]} />
+                  <SubItem key={child.key} to={child.path} label={navLabel(child.key, child.label)} badge={childBadgeMap[child.path]} />
                 ))}
               </MenuGroup>
             )

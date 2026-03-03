@@ -109,132 +109,132 @@ export default function CoinList() {
             </div>
           </div>
         </div>
-        <div className="card-body">
-          {error && (
-            <div className="alert alert-danger" role="alert">
+
+        {/* Error Alert */}
+        {error && (
+          <div className="card-body">
+            <div className="alert alert-danger mb-0" role="alert">
               <i className="bx bx-error-circle me-2"></i>
               {error}
             </div>
-          )}
-          
-          {!error && coins.length === 0 ? (
-            <div className="text-center py-6">
-              <div className="mb-3">
-                <i className="bx bx-search-alt text-muted" style={{ fontSize: '3rem' }}></i>
-              </div>
-              <h5 className="mb-2">
-                {searchQuery 
-                  ? t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' })
-                  : t('crypto.noCoins', { defaultValue: 'No coins found' })
-                }
-              </h5>
-              {searchQuery && (
-                <p className="text-muted small mb-0">
-                  {t('crypto.tryDifferentSearch', { defaultValue: 'Try a different search term' })}
-                </p>
-              )}
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-hover" style={{ verticalAlign: 'middle' }}>
-                <thead>
-                  <tr>
-                    <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
-                    <th>{t('crypto.symbol', { defaultValue: 'Symbol' })}</th>
-                    <th className="text-center">{t('crypto.type', { defaultValue: 'Type' })}</th>
-                    <th className="text-center">{t('crypto.decimals', { defaultValue: 'Decimals' })}</th>
-                    <th className="text-center">{t('invoices.statusCol')}</th>
-                    <th className="text-center">{t('invoices.actions')}</th>
-                  </tr>
-                </thead>
-                <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
-                  {coins.map((coin) => (
-                    <tr key={coin.id}>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <div className="d-flex align-items-center">
-                          <CoinImg
-                            symbol={coin.symbol}
-                            logoUrl={coin.logoUrl}
-                            size={40}
-                            className="me-3"
-                            showFallback
-                          />
-                          <div>
-                            <div className="fw-medium">{coin.name || 'N/A'}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <span className="fw-medium">{coin.symbol}</span>
-                      </td>
-                      <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                        {coin.type === 'native' 
-                          ? t('crypto.native', { defaultValue: 'Native' })
-                          : t('crypto.token', { defaultValue: 'Token' })
+          </div>
+        )}
+
+        {/* Table */}
+        <div className="table-responsive">
+          <table className="table table-hover">
+            <thead>
+              <tr>
+                <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
+                <th>{t('crypto.symbol', { defaultValue: 'Symbol' })}</th>
+                <th className="text-center">{t('crypto.type', { defaultValue: 'Type' })}</th>
+                <th className="text-center">{t('crypto.decimals', { defaultValue: 'Decimals' })}</th>
+                <th className="text-center">{t('invoices.statusCol')}</th>
+                <th className="text-center">{t('invoices.actions')}</th>
+              </tr>
+            </thead>
+            <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+              {coins.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-6">
+                    <div className="d-flex flex-column align-items-center justify-content-center">
+                      <i className="bx bx-coin mb-3" style={{ fontSize: '3rem', color: '#a1acb8' }}></i>
+                      <p className="text-muted mb-0">
+                        {searchQuery 
+                          ? t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' })
+                          : t('crypto.noCoins', { defaultValue: 'No coins found' })
                         }
-                      </td>
-                      <td className="text-center" style={{ verticalAlign: 'middle' }}>{coin.decimals || 0}</td>
-                      <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                        {coin.status === 'active' ? (
-                          <span className="badge bg-label-success">{t('admin.active')}</span>
-                        ) : (
-                          <span className="badge bg-label-secondary">{coin.status}</span>
-                        )}
-                      </td>
-                      <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                        <Link
-                          href={`/admin/coins/${coin.id}`}
-                          className="btn btn-sm btn-icon"
-                          title={t('actions.edit', { defaultValue: 'Edit' })}
-                        >
-                          <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          
-          {/* Pagination */}
-          {!error && coins.length > 0 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <div className="text-muted small">
-                {t('invoices.showingEntries', {
-                  start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                  end: Math.min(pagination.page * pagination.limit, pagination.total),
-                  total: pagination.total,
-                  defaultValue: `Showing ${((pagination.page - 1) * pagination.limit) + 1} to ${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total} entries`
-                })}
-              </div>
-              <div className="btn-group">
-                <button
-                  className="btn btn-outline-secondary btn-sm"
-                  disabled={!pagination.hasPrev || loading}
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                >
-                  <i className="bx bx-chevron-left"></i>
-                  {t('actions.prev', { defaultValue: 'Previous' })}
-                </button>
-                <button
-                  className="btn btn-outline-secondary btn-sm"
-                  disabled
-                >
-                  {pagination.page} / {pagination.totalPages}
-                </button>
-                <button
-                  className="btn btn-outline-secondary btn-sm"
-                  disabled={!pagination.hasNext || loading}
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                >
-                  {t('actions.next', { defaultValue: 'Next' })}
-                  <i className="bx bx-chevron-right"></i>
-                </button>
-              </div>
-            </div>
-          )}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                coins.map((coin) => (
+                  <tr key={coin.id}>
+                    <td style={{ verticalAlign: 'middle' }}>
+                      <div className="d-flex align-items-center">
+                        <CoinImg
+                          symbol={coin.symbol}
+                          logoUrl={coin.logoUrl}
+                          size={40}
+                          className="me-3"
+                          showFallback
+                        />
+                        <div>
+                          <div className="fw-medium">{coin.name || 'N/A'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ verticalAlign: 'middle' }}>
+                      <span className="fw-medium">{coin.symbol}</span>
+                    </td>
+                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
+                      {coin.type === 'native' 
+                        ? t('crypto.native', { defaultValue: 'Native' })
+                        : t('crypto.token', { defaultValue: 'Token' })
+                      }
+                    </td>
+                    <td className="text-center" style={{ verticalAlign: 'middle' }}>{coin.decimals || 0}</td>
+                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
+                      {coin.status === 'active' ? (
+                        <span className="badge bg-label-success">{t('admin.active')}</span>
+                      ) : (
+                        <span className="badge bg-label-secondary">{coin.status}</span>
+                      )}
+                    </td>
+                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
+                      <Link
+                        href={`/admin/coins/${coin.id}`}
+                        className="btn btn-sm btn-icon"
+                        title={t('actions.edit', { defaultValue: 'Edit' })}
+                      >
+                        <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
+
+        {/* Pagination */}
+        {!error && coins.length > 0 && (
+          <div className="card-footer d-flex justify-content-between align-items-center">
+            <div className="text-muted small">
+              {t('invoices.showingEntries', {
+                start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
+                end: Math.min(pagination.page * pagination.limit, pagination.total),
+                total: pagination.total,
+                defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+              })}
+            </div>
+            <div className="btn-group">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                disabled={!pagination.hasPrev || loading}
+                onClick={() => handlePageChange(pagination.page - 1)}
+              >
+                <i className="bx bx-chevron-left"></i>
+                {t('actions.prev', { defaultValue: 'Previous' })}
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                disabled
+              >
+                {pagination.page} / {pagination.totalPages}
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                disabled={!pagination.hasNext || loading}
+                onClick={() => handlePageChange(pagination.page + 1)}
+              >
+                {t('actions.next', { defaultValue: 'Next' })}
+                <i className="bx bx-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

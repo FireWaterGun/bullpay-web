@@ -240,8 +240,8 @@ export default function NetworkList() {
                           <img
                             src={networkImages[network.id].url}
                             alt={network.symbol || network.name}
-                            width="32"
-                            height="32"
+                            width="40"
+                            height="40"
                             className="me-3"
                             style={{ objectFit: 'contain' }}
                           />
@@ -249,8 +249,8 @@ export default function NetworkList() {
                           <div
                             className="me-3 rounded-circle d-flex align-items-center justify-content-center fw-bold"
                             style={{
-                              width: 32,
-                              height: 32,
+                              width: 40,
+                              height: 40,
                               background: `linear-gradient(135deg, ${getNetworkColor(network.symbol)} 0%, ${getNetworkColor(network.symbol, true)} 100%)`,
                               color: 'white',
                               fontSize: '0.75rem',
