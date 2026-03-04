@@ -11,6 +11,7 @@ import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import CardEmptyState from '@/components/CardEmptyState'
 
 const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user']
 
@@ -265,9 +266,11 @@ export default function AdminRoles() {
         {roles.length === 0 && (
           <div className="col-12">
             <div className="card">
-              <div className="card-body text-center py-5">
-                <i className="bx bx-shield-x text-muted" style={{ fontSize: '3rem' }}></i>
-                <p className="text-muted mt-2">{t('admin.roles.noRoles', { defaultValue: 'No roles found' })}</p>
+              <div className="card-body">
+                <CardEmptyState
+                  icon="bx-shield-x"
+                  message={t('admin.roles.noRoles', { defaultValue: 'No roles found' })}
+                />
               </div>
             </div>
           </div>

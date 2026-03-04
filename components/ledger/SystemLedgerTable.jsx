@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
+import TableEmptyState from '@/components/TableEmptyState'
 
 function parseMetadata(entry) {
   try {
@@ -77,11 +78,11 @@ export default function SystemLedgerTable({
             </thead>
             <tbody>
               {entries.length === 0 ? (
-                <tr>
-                  <td colSpan="11" className="text-center text-muted py-4">
-                    {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={11}
+                  icon="bx-book-content"
+                  message={t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
+                />
               ) : (
                 entries.map((entry) => {
                   const isCredit = entry.entryType === 'credit'

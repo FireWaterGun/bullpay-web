@@ -10,6 +10,7 @@ import { formatCoinAmount, formatUsd } from '@/lib/utils/format'
 import CoinImg, { NetworkIcon } from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function BalancePage() {
   const { t } = useTranslation()
@@ -94,8 +95,12 @@ export default function BalancePage() {
         </div>
       ) : filteredBalances.length === 0 ? (
         <div className="card">
-          <div className="card-body text-center text-muted py-4">
-            {t('balance.empty', { defaultValue: 'No balances found' })}
+          <div className="card-body">
+            <CardEmptyState
+              icon="bx-wallet"
+              message={t('balance.empty', { defaultValue: 'No balances found' })}
+              sub={t('balance.emptySub', { defaultValue: 'Your balances will appear here once you receive payments' })}
+            />
           </div>
         </div>
       ) : (

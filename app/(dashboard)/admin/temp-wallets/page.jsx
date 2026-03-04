@@ -14,6 +14,7 @@ import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
 
@@ -287,11 +288,12 @@ export default function TempWalletList() {
                   </thead>
                   <tbody>
                     {wallets.length === 0 ? (
-                      <tr>
-                        <td colSpan="17" className="text-center text-muted py-4">
-                          {t('admin.tempWallets.noWallets', { defaultValue: 'No temp wallets found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={17}
+                        icon="bx-wallet-alt"
+                        message={t('admin.tempWallets.noWallets', { defaultValue: 'No temp wallets found' })}
+                        sub={t('admin.tempWallets.noWalletsSub', { defaultValue: 'No temp wallets match the current filters' })}
+                      />
                     ) : (
                       wallets.map((w) => (
                         <tr key={w.id}>

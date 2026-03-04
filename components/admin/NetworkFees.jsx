@@ -8,6 +8,7 @@ import { getSweepSettings, updateSweepSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
 import BaseFeeModal from '@/components/admin/BaseFeeModal'
 import SlippageModal from '@/components/admin/SlippageModal'
+import CardEmptyState from '@/components/CardEmptyState'
 const DeleteConfirmModal = dynamic(() => import('@/components/admin/DeleteConfirmModal'), { ssr: false })
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
@@ -225,16 +226,12 @@ export default function NetworkFees() {
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center text-muted py-5">
-                    <i className="bx bx-data" style={{ fontSize: '4rem', opacity: 0.3 }}></i>
-                    <p className="mt-3 mb-0">
-                      {t('admin.network.noBaseFees', { defaultValue: 'No base fees configured' })}
-                    </p>
-                    <small className="text-muted">
-                      {t('admin.network.noBaseFeesHelp', { defaultValue: 'Add network-specific base fees for quick estimates' })}
-                    </small>
-                  </div>
-                )}
+                  <CardEmptyState
+                    icon="bx-data"
+                    message={t('admin.network.noBaseFees', { defaultValue: 'No base fees configured' })}
+                    sub={t('admin.network.noBaseFeesHelp', { defaultValue: 'Add network-specific base fees for quick estimates' })}
+                  />
+                )
               </div>
 
               {/* Slippage by Network */}
@@ -279,15 +276,11 @@ export default function NetworkFees() {
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center text-muted py-5">
-                    <i className="bx bx-data" style={{ fontSize: '4rem', opacity: 0.3 }}></i>
-                    <p className="mt-3 mb-0">
-                      {t('admin.network.noSlippage', { defaultValue: 'No network-specific slippage configured' })}
-                    </p>
-                    <small className="text-muted">
-                      {t('admin.network.noSlippageHelp', { defaultValue: 'Add network-specific slippage percentages for fee volatility protection' })}
-                    </small>
-                  </div>
+                  <CardEmptyState
+                    icon="bx-data"
+                    message={t('admin.network.noSlippage', { defaultValue: 'No network-specific slippage configured' })}
+                    sub={t('admin.network.noSlippageHelp', { defaultValue: 'Add network-specific slippage percentages for fee volatility protection' })}
+                  />
                 )}
               </div>
             </div>

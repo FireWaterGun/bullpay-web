@@ -11,6 +11,7 @@ import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 function roleBadgeClass(role) {
   const v = String(role || '').toLowerCase()
@@ -206,11 +207,12 @@ export default function UserBalanceListPage() {
                   </thead>
                   <tbody>
                     {users.length === 0 ? (
-                      <tr>
-                        <td colSpan="8" className="text-center text-muted py-4">
-                          {t('admin.userBalances.noData', { defaultValue: 'No user balances found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={8}
+                        icon="bx-money"
+                        message={t('admin.userBalances.noData', { defaultValue: 'No user balances found' })}
+                        sub={t('admin.userBalances.noDataSub', { defaultValue: 'No users match the current search' })}
+                      />
                     ) : (
                       users.map((u) => (
                         <tr key={u.userId}>

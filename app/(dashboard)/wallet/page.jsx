@@ -9,6 +9,7 @@ import { getBalancesWithFiat } from '@/lib/api/balance'
 import { formatCoinAmount } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
 import RefreshButton from '@/components/RefreshButton'
+import CardEmptyState from '@/components/CardEmptyState'
 
 const NETWORK_LABELS = {
   1: 'Bitcoin',
@@ -176,11 +177,11 @@ export default function WalletBalancePage() {
               {error}
             </div>
           ) : balances.length === 0 ? (
-            <div className="text-center text-muted py-5">
-              {t('balance.noBalances', {
-                defaultValue: 'No balances to show',
-              })}
-            </div>
+            <CardEmptyState
+              icon="bx-wallet"
+              message={t('balance.noBalances', { defaultValue: 'No balances to show' })}
+              sub={t('balance.noBalancesSub', { defaultValue: 'Your balances will appear here once you receive payments' })}
+            />
           ) : (
             <div className="d-flex flex-column gap-2">
               {balances.map((b, idx) => {

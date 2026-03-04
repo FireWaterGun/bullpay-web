@@ -10,6 +10,7 @@ import { getTempWalletHistories } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
+import TableEmptyState from '@/components/TableEmptyState'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
@@ -280,11 +281,11 @@ export default function TempWalletHistoryList() {
                   </thead>
                   <tbody>
                     {histories.length === 0 ? (
-                      <tr>
-                        <td colSpan="11" className="text-center text-muted py-4">
-                          {t('admin.tempWalletHistories.noHistories', { defaultValue: 'No histories found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={11}
+                        icon="bx-history"
+                        message={t('admin.tempWalletHistories.noHistories', { defaultValue: 'No histories found' })}
+                      />
                     ) : (
                       histories.map((h) => (
                         <tr key={h.id}>

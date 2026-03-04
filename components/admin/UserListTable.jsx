@@ -4,6 +4,7 @@ import { formatRoleLabel } from '@/lib/utils/roles'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function UserListTable({
   t,
@@ -38,11 +39,11 @@ export default function UserListTable({
             </thead>
             <tbody>
               {users.length === 0 ? (
-                <tr>
-                  <td colSpan="9" className="text-center text-muted py-4">
-                    {t('admin.users.noUsers', { defaultValue: 'No users found' })}
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={9}
+                  icon="bx-user"
+                  message={t('admin.users.noUsers', { defaultValue: 'No users found' })}
+                />
               ) : (
                 users.map((user) => (
                   <tr key={user.id}>

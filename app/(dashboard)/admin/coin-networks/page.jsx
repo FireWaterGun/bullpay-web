@@ -8,6 +8,7 @@ import { useToast } from '@/app/providers'
 import { getCoinNetworks } from '@/lib/api/admin'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function SupportedCrypto() {
   const { t } = useAdminTranslation()
@@ -136,19 +137,14 @@ export default function SupportedCrypto() {
             </thead>
             <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
               {coinNetworks.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-6">
-                    <div className="d-flex flex-column align-items-center justify-content-center">
-                      <i className="bx bx-coin-stack mb-3" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
-                      <p className="text-muted mb-0">
-                        {searchQuery 
-                          ? t('crypto.noSupportedFound', { defaultValue: 'No supported crypto found' })
-                          : t('crypto.noSupported', { defaultValue: 'No supported crypto yet' })
-                        }
-                      </p>
-                    </div>
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={5}
+                  icon="bx-coin-stack"
+                  message={searchQuery
+                    ? t('crypto.noSupportedFound', { defaultValue: 'No supported crypto found' })
+                    : t('crypto.noSupported', { defaultValue: 'No supported crypto yet' })
+                  }
+                />
               ) : (
                 coinNetworks.map((coinNetwork) => (
                   <tr key={coinNetwork.id}>

@@ -9,6 +9,7 @@ import LocaleDatePicker from '@/components/LocaleDatePicker'
 import { getDateRange } from '@/components/ledger/incomeStatementUtils'
 import IncomeStatementReport from '@/components/ledger/IncomeStatementReport'
 import { logger } from '@/lib/utils/logger'
+import CardEmptyState from '@/components/CardEmptyState'
 
 function hasReportData(report) {
   if (!report) return false
@@ -175,16 +176,12 @@ export default function IncomeStatement() {
           {/* Empty state - no data for this period */}
           {report && !hasData && !loading && (
             <div className="card">
-              <div className="card-body text-center py-5">
-                <div className="mb-3">
-                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(var(--bs-secondary-rgb), 0.1)' }}>
-                    <i className="bx bx-bar-chart-alt-2" style={{ fontSize: '2.5rem', color: 'var(--bs-secondary-color)' }}></i>
-                  </div>
-                </div>
-                <h5 className="mb-2">{t('admin.incomeStatement.noTransactions', { defaultValue: 'No transactions found' })}</h5>
-                <p className="text-muted mb-3" style={{ maxWidth: 400, margin: '0 auto' }}>
-                  There are no revenue or expense records for the period <strong>{fromDate}</strong> to <strong>{toDate}</strong>.
-                </p>
+              <div className="card-body">
+                <CardEmptyState
+                  icon="bx-bar-chart-alt-2"
+                  message={t('admin.incomeStatement.noTransactions', { defaultValue: 'No transactions found' })}
+                  sub={`There are no revenue or expense records for the period ${fromDate} to ${toDate}.`}
+                />
               </div>
             </div>
           )}
@@ -192,16 +189,12 @@ export default function IncomeStatement() {
           {/* Empty state - no report loaded */}
           {!report && !loading && (
             <div className="card">
-              <div className="card-body text-center py-5">
-                <div className="mb-3">
-                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center" style={{ width: 80, height: 80, backgroundColor: 'rgba(var(--bs-primary-rgb), 0.08)' }}>
-                    <i className="bx bx-line-chart" style={{ fontSize: '2.5rem', color: 'var(--bs-primary)' }}></i>
-                  </div>
-                </div>
-                <h5 className="mb-2">Select a date range</h5>
-                <p className="text-muted mb-0" style={{ maxWidth: 400, margin: '0 auto' }}>
-                  Choose the period you want to view the Income Statement for.
-                </p>
+              <div className="card-body">
+                <CardEmptyState
+                  icon="bx-line-chart"
+                  message="Select a date range"
+                  sub="Choose the period you want to view the Income Statement for."
+                />
               </div>
             </div>
           )}

@@ -7,8 +7,12 @@ const formatCurrency = formatUsdAuto
 export default function RevenueBarChart({ data, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
-      <div className="d-flex align-items-center justify-content-center" style={{ height }}>
-        <span className="text-muted">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
+      <div className="d-flex flex-column align-items-center justify-content-center" style={{ height }}>
+        <div className="rounded-circle bg-label-secondary d-flex align-items-center justify-content-center mb-3" style={{ width: 64, height: 64 }}>
+          <i className="bx bx-bar-chart-alt-2 fs-2"></i>
+        </div>
+        <span className="fw-medium text-dark">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
+        <span className="text-muted small mt-1">{t ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' }) : 'Select a date range with data'}</span>
       </div>
     )
   }

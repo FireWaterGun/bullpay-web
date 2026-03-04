@@ -12,6 +12,7 @@ import SummaryCard from '@/components/admin/RevenueSummaryCard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function UserBalanceDetailPage() {
   const { fmtDate } = useDateFormat()
@@ -94,7 +95,10 @@ export default function UserBalanceDetailPage() {
             </div>
             <div className="card-body">
               {assets.length === 0 ? (
-                <div className="text-center text-muted py-4">No assets found for this user</div>
+                <CardEmptyState
+                  icon="bx-coin-stack"
+                  message="No assets found for this user"
+                />
               ) : (
                 <div className="table-responsive">
                   <table className="table table-hover">

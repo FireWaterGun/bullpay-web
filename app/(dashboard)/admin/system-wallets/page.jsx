@@ -11,6 +11,7 @@ import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function SystemBalance() {
   const { t } = useAdminTranslation()
@@ -161,10 +162,10 @@ export default function SystemBalance() {
             </div>
             <div className="card-body">
               {!stats?.balanceDetails || stats.balanceDetails.length === 0 ? (
-                <div className="d-flex flex-column align-items-center justify-content-center py-6">
-                  <i className="bx bx-wallet text-muted mb-3" style={{ fontSize: '3rem' }}></i>
-                  <p className="text-muted mb-0">{t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })}</p>
-                </div>
+                <CardEmptyState
+                  icon="bx-wallet"
+                  message={t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })}
+                />
               ) : (
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
                   <table className="table table-hover" style={{ minWidth: '1600px' }}>

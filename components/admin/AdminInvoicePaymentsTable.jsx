@@ -4,6 +4,7 @@ import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import CardEmptyState from '@/components/CardEmptyState'
 
 /**
  * Payments table for AdminInvoiceDetail.
@@ -22,9 +23,10 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
       </div>
       <div className="card-body">
         {payments.length === 0 ? (
-          <div className="text-center text-muted py-4">
-            No payments recorded for this invoice
-          </div>
+          <CardEmptyState
+            icon="bx-credit-card"
+            message="No payments recorded for this invoice"
+          />
         ) : (
           <div className="table-responsive" style={{ overflowX: 'auto' }}>
             <table className="table table-hover" style={{ minWidth: '900px' }}>

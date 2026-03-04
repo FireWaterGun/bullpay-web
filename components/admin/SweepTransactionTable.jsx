@@ -4,6 +4,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function SweepTransactionTable({
   sweeps,
@@ -45,11 +46,11 @@ export default function SweepTransactionTable({
             </thead>
             <tbody>
               {sweeps.length === 0 ? (
-                <tr>
-                  <td colSpan="14" className="text-center text-muted py-4">
-                    {t('admin.sweep.noTransactions', { defaultValue: 'No sweep transactions found' })}
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={14}
+                  icon="bx-refresh"
+                  message={t('admin.sweep.noTransactions', { defaultValue: 'No sweep transactions found' })}
+                />
               ) : (
                 sweeps.map((sweep) => (
                   <tr key={sweep.id} style={{ cursor: 'pointer' }} onClick={() => onNavigate(sweep.id)}>

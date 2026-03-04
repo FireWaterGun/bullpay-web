@@ -22,6 +22,7 @@ import PermissionGroupCard, { groupPermissions } from '@/components/admin/Permis
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function RolePermissions() {
   const { token, user } = useAuth()
@@ -382,9 +383,11 @@ export default function RolePermissions() {
       {/* Permission Groups */}
       {groupCount === 0 ? (
         <div className="card">
-          <div className="card-body text-center py-5">
-            <i className="bx bx-shield-x text-muted" style={{ fontSize: '3rem' }}></i>
-            <p className="text-muted mt-2">{t('admin.roles.noPermissions', { defaultValue: 'No permissions found' })}</p>
+          <div className="card-body">
+            <CardEmptyState
+              icon="bx-shield-x"
+              message={t('admin.roles.noPermissions', { defaultValue: 'No permissions found' })}
+            />
           </div>
         </div>
       ) : (

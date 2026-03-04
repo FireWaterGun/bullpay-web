@@ -7,6 +7,7 @@ import { getSettingByKey, upsertSetting, getCoinNetworks, updateCoinNetwork } fr
 import { logger } from '@/lib/utils/logger'
 import AutoApproveForm from '@/components/admin/withdrawal-policy/AutoApproveForm'
 import CoinImg from '@/components/CoinImg'
+import CardEmptyState from '@/components/CardEmptyState'
 
 const TABS = [
   { key: 'policy', icon: 'bx-shield-quarter', labelKey: 'admin.withdrawalSettings.tabPolicy', defaultLabel: 'Policy' },
@@ -682,10 +683,10 @@ export default function WithdrawalSettingsPage() {
                 </div>
               </div>
             ) : coinNetworks.length === 0 ? (
-              <div className="text-center py-5 text-muted">
-                <i className="bx bx-search-alt-2 fs-1 mb-2 d-block"></i>
-                {t('admin.withdrawalSettings.noCoinNetworks', { defaultValue: 'No coin-networks found' })}
-              </div>
+              <CardEmptyState
+                icon="bx-search-alt-2"
+                message={t('admin.withdrawalSettings.noCoinNetworks', { defaultValue: 'No coin-networks found' })}
+              />
             ) : (
               <table className="table table-hover mb-0">
                 <thead className="table-light">

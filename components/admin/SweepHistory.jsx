@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function SweepHistory() {
   const { t } = useAdminTranslation()
@@ -162,12 +163,11 @@ export default function SweepHistory() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td colSpan="9" className="text-center text-muted py-5">
-                        <i className="bx bx-info-circle bx-lg d-block mb-2"></i>
-                        {t('admin.sweep.noHistory', { defaultValue: 'No sweep history available' })}
-                      </td>
-                    </tr>
+                    <TableEmptyState
+                      colSpan={9}
+                      icon="bx-history"
+                      message={t('admin.sweep.noHistory', { defaultValue: 'No sweep history available' })}
+                    />
                   </tbody>
                 </table>
               </div>

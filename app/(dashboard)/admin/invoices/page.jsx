@@ -14,6 +14,7 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function AdminInvoiceList() {
   const { fmtDate } = useDateFormat()
@@ -215,11 +216,12 @@ export default function AdminInvoiceList() {
                   </thead>
                   <tbody>
                     {invoices.length === 0 ? (
-                      <tr>
-                        <td colSpan="11" className="text-center text-muted py-4">
-                          {t('admin.invoices.noInvoices', { defaultValue: 'No invoices found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={11}
+                        icon="bx-file"
+                        message={t('admin.invoices.noInvoices', { defaultValue: 'No invoices found' })}
+                        sub={t('admin.invoices.noInvoicesSub', { defaultValue: 'No invoices match the current filters' })}
+                      />
                     ) : (
                       invoices.map((invoice) => {
                         const coinSymbol = (invoice.coin?.symbol || invoice.coinSymbol || '').toUpperCase()

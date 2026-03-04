@@ -15,6 +15,7 @@ import GasTopupRow from '@/components/admin/GasTopupRow'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function GasTopups() {
   const { t, i18n } = useAdminTranslation()
@@ -270,11 +271,12 @@ export default function GasTopups() {
                   </thead>
                   <tbody>
                     {topups.length === 0 ? (
-                      <tr>
-                        <td colSpan="12" className="text-center text-muted py-4">
-                          {t('admin.gasTopup.noTopups', { defaultValue: 'No gas topups found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={12}
+                        icon="bx-gas-pump"
+                        message={t('admin.gasTopup.noTopups', { defaultValue: 'No gas topups found' })}
+                        sub={t('admin.gasTopup.noTopupsSub', { defaultValue: 'No gas topups match the current filters' })}
+                      />
                     ) : (
                       topups.map((topup) => (
                         <GasTopupRow

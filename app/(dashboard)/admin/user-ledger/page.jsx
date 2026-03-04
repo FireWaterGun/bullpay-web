@@ -12,6 +12,7 @@ import UserLedgerRow from '@/components/ledger/UserLedgerRow'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function UserLedgerList() {
   const { t, i18n } = useAdminTranslation()
@@ -199,11 +200,12 @@ export default function UserLedgerList() {
                   </thead>
                   <tbody>
                     {entries.length === 0 ? (
-                      <tr>
-                        <td colSpan="11" className="text-center text-muted py-4">
-                          {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={11}
+                        icon="bx-book-content"
+                        message={t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
+                        sub={t('admin.ledger.noEntriesSub', { defaultValue: 'No entries match the current filters' })}
+                      />
                     ) : (
                       entries.map((entry) => (
                         <UserLedgerRow key={entry.id} entry={entry} t={t} />

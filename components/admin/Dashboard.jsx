@@ -8,6 +8,7 @@ import { formatUsd, formatCoinAmount, formatPercent } from '@/lib/utils/format'
 import { StatCard, DailyTrendCard } from '@/components/admin/DashboardCards'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function Dashboard() {
   const { t } = useAdminTranslation()
@@ -89,10 +90,10 @@ export default function Dashboard() {
                 </div>
                 <div className="card-body">
                   {Object.keys(byCurrency).length === 0 ? (
-                    <div className="text-center text-muted py-5">
-                      <i className="bx bx-data" style={{ fontSize: '3rem', opacity: 0.3 }}></i>
-                      <p className="mt-2 mb-0">{t('admin.dashboard.noData', { defaultValue: 'No data available' })}</p>
-                    </div>
+                    <CardEmptyState
+                      icon="bx-data"
+                      message={t('admin.dashboard.noData', { defaultValue: 'No data available' })}
+                    />
                   ) : (
                     <div className="table-responsive">
                       <table className="table table-hover">
@@ -140,10 +141,10 @@ export default function Dashboard() {
                 </div>
                 <div className="card-body">
                   {topUsers.length === 0 ? (
-                    <div className="text-center text-muted py-4">
-                      <i className="bx bx-user" style={{ fontSize: '2rem', opacity: 0.3 }}></i>
-                      <p className="mt-2 mb-0 small">{t('admin.dashboard.noUsers', { defaultValue: 'No users yet' })}</p>
-                    </div>
+                    <CardEmptyState
+                      icon="bx-user"
+                      message={t('admin.dashboard.noUsers', { defaultValue: 'No users yet' })}
+                    />
                   ) : (
                     <div className="list-group list-group-flush">
                       {topUsers.map((user, index) => (
@@ -199,10 +200,10 @@ export default function Dashboard() {
                 </div>
                 <div className="card-body">
                   {Object.keys(trends).length === 0 ? (
-                    <div className="text-center text-muted py-4">
-                      <i className="bx bx-line-chart" style={{ fontSize: '2rem', opacity: 0.3 }}></i>
-                      <p className="mt-2 mb-0 small">{t('admin.dashboard.noTrends', { defaultValue: 'No trend data yet' })}</p>
-                    </div>
+                    <CardEmptyState
+                      icon="bx-line-chart"
+                      message={t('admin.dashboard.noTrends', { defaultValue: 'No trend data yet' })}
+                    />
                   ) : (
                     <>
                       <div

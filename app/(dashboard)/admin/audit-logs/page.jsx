@@ -11,6 +11,7 @@ import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 const ACTION_OPTIONS = [
   { value: 'list_sweeps', label: 'List Sweeps' },
@@ -259,11 +260,12 @@ export default function AuditLogList() {
                   </thead>
                   <tbody>
                     {logs.length === 0 ? (
-                      <tr>
-                        <td colSpan="8" className="text-center text-muted py-4">
-                          No audit logs found
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={8}
+                        icon="bx-shield"
+                        message={t('admin.auditLogs.noLogs', { defaultValue: 'No audit logs found' })}
+                        sub={t('admin.auditLogs.noLogsSub', { defaultValue: 'No audit logs match the current filters' })}
+                      />
                     ) : (
                       logs.map(log => (
                         <tr key={log.id} style={{ whiteSpace: 'nowrap' }}>

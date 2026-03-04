@@ -1,6 +1,7 @@
 'use client'
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import CardEmptyState from '@/components/CardEmptyState'
 
 function FeeConfigCell({ config }) {
   if (config.fee?.type === 'fixed') {
@@ -105,9 +106,10 @@ export default function WithdrawalOverridesSection({
           </table>
         </div>
       ) : (
-        <div className="text-center text-muted py-4">
-          <p>{t(emptyMessageKey, { defaultValue: emptyMessageDefault })}</p>
-        </div>
+        <CardEmptyState
+          icon="bx-data"
+          message={t(emptyMessageKey, { defaultValue: emptyMessageDefault })}
+        />
       )}
     </div>
   )

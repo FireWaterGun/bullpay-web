@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
+import TableEmptyState from '@/components/TableEmptyState'
 
 const tableHeaderStyle = { fontSize: '0.8rem' }
 
@@ -48,11 +49,12 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
               </thead>
               <tbody>
                 {byCoinData.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="text-center text-muted py-4">
-                      {t('common.noData', { defaultValue: 'No data available' })}
-                    </td>
-                  </tr>
+                  <TableEmptyState
+                    colSpan={5}
+                    icon="bx-coin-stack"
+                    message={t('common.noData', { defaultValue: 'No data available' })}
+                    sub={t('common.noDataSub', { defaultValue: 'No transactions in this period' })}
+                  />
                 ) : (
                   <>
                     {byCoinData.map((item) => {

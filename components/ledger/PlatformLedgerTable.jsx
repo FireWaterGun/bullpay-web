@@ -6,6 +6,7 @@ import Link from 'next/link'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import TableEmptyState from '@/components/TableEmptyState'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0'
@@ -64,11 +65,11 @@ export default function PlatformLedgerTable({
             </thead>
             <tbody>
               {entries.length === 0 ? (
-                <tr>
-                  <td colSpan="11" className="text-center text-muted py-4">
-                    {t('admin.platformLedger.noEntries', { defaultValue: 'No revenue & expense entries found' })}
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={11}
+                  icon="bx-receipt"
+                  message={t('admin.platformLedger.noEntries', { defaultValue: 'No revenue & expense entries found' })}
+                />
               ) : (
                 entries.map((entry) => {
                   const isCredit = entry.entryType === 'credit'

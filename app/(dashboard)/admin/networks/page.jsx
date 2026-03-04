@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getNetworks } from '@/lib/api/admin'
+import TableEmptyState from '@/components/TableEmptyState'
 
 // Network color mapping for gradient badges
 function getNetworkColor(symbol, darker = false) {
@@ -218,19 +219,14 @@ export default function NetworkList() {
             </thead>
             <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
               {networks.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-6">
-                    <div className="d-flex flex-column align-items-center justify-content-center">
-                      <i className="bx bx-network-chart mb-3" style={{ fontSize: '3rem', color: '#a1acb8' }}></i>
-                      <p className="text-muted mb-0">
-                        {searchQuery 
-                          ? t('crypto.noNetworksFound', { defaultValue: 'No networks found' })
-                          : t('crypto.noNetworks', { defaultValue: 'No networks yet' })
-                        }
-                      </p>
-                    </div>
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={5}
+                  icon="bx-network-chart"
+                  message={searchQuery
+                    ? t('crypto.noNetworksFound', { defaultValue: 'No networks found' })
+                    : t('crypto.noNetworks', { defaultValue: 'No networks yet' })
+                  }
+                />
               ) : (
                 networks.map((network) => (
                   <tr key={network.id}>

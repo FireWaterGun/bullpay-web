@@ -13,6 +13,7 @@ import CoinImg from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import InvoiceFilterPanel from '@/components/invoices/InvoiceFilterPanel'
 import RefreshButton from '@/components/RefreshButton'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function InvoiceList() {
   const { t, i18n } = useTranslation()
@@ -217,11 +218,12 @@ export default function InvoiceList() {
                   </thead>
                   <tbody>
                     {items.length === 0 && (
-                      <tr>
-                        <td colSpan={8} className="text-center text-muted">
-                          {t("invoices.none")}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={8}
+                        icon="bx-file"
+                        message={t('invoices.none', { defaultValue: 'No invoices found' })}
+                        sub={t('invoices.noneSub', { defaultValue: 'Create your first invoice to get started' })}
+                      />
                     )}
                     {items.map((it) => (
                       <tr key={it.id}>

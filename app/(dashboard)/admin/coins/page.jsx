@@ -6,6 +6,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getCoins } from '@/lib/api/admin'
 import CoinImg from '@/components/CoinImg'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function CoinList() {
   const { t } = useAdminTranslation()
@@ -135,19 +136,14 @@ export default function CoinList() {
             </thead>
             <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
               {coins.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-6">
-                    <div className="d-flex flex-column align-items-center justify-content-center">
-                      <i className="bx bx-coin mb-3" style={{ fontSize: '3rem', color: '#a1acb8' }}></i>
-                      <p className="text-muted mb-0">
-                        {searchQuery 
-                          ? t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' })
-                          : t('crypto.noCoins', { defaultValue: 'No coins found' })
-                        }
-                      </p>
-                    </div>
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={6}
+                  icon="bx-coin"
+                  message={searchQuery
+                    ? t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' })
+                    : t('crypto.noCoins', { defaultValue: 'No coins found' })
+                  }
+                />
               ) : (
                 coins.map((coin) => (
                   <tr key={coin.id}>

@@ -11,6 +11,7 @@ import AdminPaymentRow from '@/components/admin/AdminPaymentRow'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function AdminPaymentList() {
   const { t, i18n } = useAdminTranslation()
@@ -166,11 +167,12 @@ export default function AdminPaymentList() {
                   </thead>
                   <tbody>
                     {payments.length === 0 ? (
-                      <tr>
-                        <td colSpan="14" className="text-center text-muted py-4">
-                          {t('admin.payments.noPayments', { defaultValue: 'No payments found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={14}
+                        icon="bx-credit-card"
+                        message={t('admin.payments.noPayments', { defaultValue: 'No payments found' })}
+                        sub={t('admin.payments.noPaymentsSub', { defaultValue: 'No payments match the current filters' })}
+                      />
                     ) : (
                       payments.map((payment) => (
                         <AdminPaymentRow

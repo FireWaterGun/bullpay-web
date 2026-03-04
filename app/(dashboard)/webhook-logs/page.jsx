@@ -10,6 +10,7 @@ import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 const EVENT_OPTIONS = [
   { value: 'payment.completed', label: 'Completed', color: 'success' },
@@ -250,11 +251,12 @@ export default function WebhookLogsPage() {
                   </thead>
                   <tbody>
                     {logs.length === 0 ? (
-                      <tr>
-                        <td colSpan="10" className="text-center text-muted py-4">
-                          {t('webhookLog.noLogs', { defaultValue: 'No webhook logs found' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={10}
+                        icon="bx-broadcast"
+                        message={t('webhookLog.noLogs', { defaultValue: 'No webhook logs found' })}
+                        sub={t('webhookLog.noLogsSub', { defaultValue: 'Webhook delivery logs will appear here when payments trigger callbacks' })}
+                      />
                     ) : (
                       logs.map((log) => (
                         <tr key={log.id} style={{ whiteSpace: 'nowrap' }}>

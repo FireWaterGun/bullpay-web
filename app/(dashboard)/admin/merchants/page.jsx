@@ -11,6 +11,7 @@ import { STATUS_OPTIONS, statusBadgeClass } from '@/components/admin/merchantLis
 import MerchantConfirmModal from '@/components/admin/MerchantConfirmModal'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function AdminMerchantsPage() {
   const { fmtDate } = useDateFormat()
@@ -159,7 +160,12 @@ export default function AdminMerchantsPage() {
                   </thead>
                   <tbody>
                     {merchants.length === 0 ? (
-                      <tr><td colSpan="8" className="text-center text-muted py-4">{t('admin.merchants.noMerchants', { defaultValue: 'No merchants found' })}</td></tr>
+                      <TableEmptyState
+                        colSpan={8}
+                        icon="bx-store"
+                        message={t('admin.merchants.noMerchants', { defaultValue: 'No merchants found' })}
+                        sub={t('admin.merchants.noMerchantsSub', { defaultValue: 'No merchants match the current search' })}
+                      />
                     ) : (
                       merchants.map((merchant) => {
                         const status = String(merchant.status || '').toLowerCase()

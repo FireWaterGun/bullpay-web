@@ -19,6 +19,7 @@ import {
   WITHDRAWAL_STATUSES,
 } from '@/components/balance/withdrawalHelpers'
 import RefreshButton from '@/components/RefreshButton'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function WithdrawalsPage() {
   const { t } = useTranslation()
@@ -126,7 +127,11 @@ export default function WithdrawalsPage() {
             {walletLoading ? (
               <div className="text-center py-4"><div className="spinner-border" role="status" aria-hidden="true"></div></div>
             ) : walletItems.length === 0 ? (
-              <div className="text-center text-muted py-4">{t('wallet.none', { defaultValue: 'No wallets' })}</div>
+              <CardEmptyState
+                icon="bx-wallet"
+                message={t('wallet.none', { defaultValue: 'No wallets' })}
+                sub={t('wallet.noneSub', { defaultValue: 'Add a withdrawal address to get started' })}
+              />
             ) : (
               <WalletAddressTable walletItems={walletItems} cnById={cnById} />
             )}
@@ -156,7 +161,11 @@ export default function WithdrawalsPage() {
           {loading ? (
             <div className="text-center py-4"><div className="spinner-border" role="status" aria-hidden="true"></div></div>
           ) : items.length === 0 ? (
-            <div className="text-center text-muted py-4">{t('balance.noWithdrawals', { defaultValue: 'No withdrawals' })}</div>
+              <CardEmptyState
+                icon="bx-transfer"
+                message={t('balance.noWithdrawals', { defaultValue: 'No withdrawals' })}
+                sub={t('balance.noWithdrawalsSub', { defaultValue: 'Your withdrawal history will appear here' })}
+              />
           ) : (
             <div className="table-responsive">
               <table className="table table-sm align-middle">

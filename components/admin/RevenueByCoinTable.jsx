@@ -2,6 +2,7 @@
 
 import { formatUsdAuto, formatPercent as formatPercentShared } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
+import TableEmptyState from '@/components/TableEmptyState'
 
 const formatCurrency = formatUsdAuto
 const formatPercent = formatPercentShared
@@ -37,11 +38,11 @@ export function RevenueByCoinTable({ byCoinData, totals, loading, t }) {
                   </thead>
                   <tbody>
                     {byCoinData.length === 0 ? (
-                      <tr>
-                        <td colSpan="5" className="text-center text-muted py-4">
-                          {t('common.noData', { defaultValue: 'No data available' })}
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={5}
+                        icon="bx-coin-stack"
+                        message={t('common.noData', { defaultValue: 'No data available' })}
+                      />
                     ) : (
                       <>
                         {byCoinData.map((item) => {

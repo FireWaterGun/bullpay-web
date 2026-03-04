@@ -4,6 +4,7 @@ import CoinImg from '@/components/CoinImg'
 import { formatCoinAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusBadgeClass, formatStatusLabel } from './withdrawalHelpers'
+import CardEmptyState from '@/components/CardEmptyState'
 
 const EMPTY_WITHDRAWALS = []
 
@@ -11,9 +12,11 @@ export default function WithdrawalTable({ withdrawals = EMPTY_WITHDRAWALS, onVie
   const { fmtDate } = useDateFormat()
   if (!withdrawals.length) {
     return (
-      <div className="text-center text-muted py-4">
-        {t?.('withdrawals.empty', { defaultValue: 'No withdrawals found' }) || 'No withdrawals found'}
-      </div>
+      <CardEmptyState
+        icon="bx-transfer"
+        message={t?.('withdrawals.empty', { defaultValue: 'No withdrawals found' }) || 'No withdrawals found'}
+        sub={t?.('withdrawals.emptySub', { defaultValue: 'Your withdrawal history will appear here' }) || 'Your withdrawal history will appear here'}
+      />
     )
   }
 

@@ -5,6 +5,7 @@ import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import CardEmptyState from '@/components/CardEmptyState'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0'
@@ -47,15 +48,11 @@ export default function WalletLedgerTable({ entries, loading, t }) {
 
   if (entries.length === 0) {
     return (
-      <div className="text-center py-5">
-        <i className="bx bx-receipt" style={{ fontSize: '4rem', opacity: 0.3, color: 'var(--bs-secondary-color)' }}></i>
-        <h6 className="text-muted mt-3 mb-2">
-          {t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
-        </h6>
-        <p className="text-muted small mb-0">
-          {t('admin.ledger.noEntriesDesc', { defaultValue: 'Try adjusting your filters to see more results' })}
-        </p>
-      </div>
+      <CardEmptyState
+        icon="bx-receipt"
+        message={t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
+        sub={t('admin.ledger.noEntriesDesc', { defaultValue: 'Try adjusting your filters to see more results' })}
+      />
     )
   }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import CardEmptyState from '@/components/CardEmptyState'
 
 function FeeTypeBadge({ config }) {
   if (config.fee?.fixed) {
@@ -129,10 +130,10 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
           </table>
         </div>
       ) : (
-        <div className="text-center text-muted py-5">
-          <i className="bx bx-data" style={{ fontSize: '4rem', opacity: 0.3 }}></i>
-          <p className="mt-3 mb-0">{t(cfg.emptyKey, { defaultValue: cfg.emptyDefault })}</p>
-        </div>
+        <CardEmptyState
+          icon="bx-data"
+          message={t(cfg.emptyKey, { defaultValue: cfg.emptyDefault })}
+        />
       )}
     </div>
   )

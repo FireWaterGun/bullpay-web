@@ -5,8 +5,12 @@ import { formatUsd } from '@/lib/utils/format'
 function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
-      <div className="d-flex align-items-center justify-content-center" style={{ height }}>
-        <span className="text-muted">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
+      <div className="d-flex flex-column align-items-center justify-content-center" style={{ height }}>
+        <div className="rounded-circle bg-label-secondary d-flex align-items-center justify-content-center mb-3" style={{ width: 64, height: 64 }}>
+          <i className="bx bx-line-chart fs-2"></i>
+        </div>
+        <span className="fw-medium text-dark">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
+        <span className="text-muted small mt-1">{t ? t('userDashboard.noDataSub', { defaultValue: 'Select a date range with transactions' }) : 'Select a date range with transactions'}</span>
       </div>
     )
   }

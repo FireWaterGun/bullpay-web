@@ -4,6 +4,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import TableEmptyState from '@/components/TableEmptyState'
 
 export default function WithdrawalTxTable({
   withdrawals,
@@ -49,11 +50,11 @@ export default function WithdrawalTxTable({
             </thead>
             <tbody>
               {withdrawals.length === 0 ? (
-                <tr>
-                  <td colSpan="14" className="text-center text-muted py-4">
-                    {t('withdrawal.noTransactions', { defaultValue: 'No withdrawal transactions found' })}
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={14}
+                  icon="bx-transfer"
+                  message={t('withdrawal.noTransactions', { defaultValue: 'No withdrawal transactions found' })}
+                />
               ) : (
               withdrawals.map((withdrawal) => (
                 <tr key={withdrawal.id}>

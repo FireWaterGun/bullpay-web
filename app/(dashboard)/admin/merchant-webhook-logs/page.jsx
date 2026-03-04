@@ -11,6 +11,7 @@ import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 
 const EVENT_OPTIONS = [
   { value: 'payment.completed', label: 'Completed' },
@@ -258,11 +259,12 @@ export default function MerchantWebhookLogList() {
                   </thead>
                   <tbody>
                     {logs.length === 0 ? (
-                      <tr>
-                        <td colSpan="12" className="text-center text-muted py-4">
-                          No webhook logs found
-                        </td>
-                      </tr>
+                      <TableEmptyState
+                        colSpan={12}
+                        icon="bx-broadcast"
+                        message={t('admin.webhookLogs.noLogs', { defaultValue: 'No webhook logs found' })}
+                        sub={t('admin.webhookLogs.noLogsSub', { defaultValue: 'Webhook delivery logs will appear here when payments trigger callbacks' })}
+                      />
                     ) : (
                       logs.map(log => (
                         <tr key={log.id} style={{ whiteSpace: 'nowrap' }}>

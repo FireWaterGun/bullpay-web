@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import CoinImg from '@/components/CoinImg'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { addressStatusBadgeClass } from './withdrawalHelpers'
+import TableEmptyState from '@/components/TableEmptyState'
 
 function statusLabel(s) {
   const v = String(s || '').toLowerCase()
@@ -52,11 +53,11 @@ export default function AddressTable({
             </thead>
             <tbody>
               {addresses.length === 0 ? (
-                <tr>
-                  <td colSpan="12" className="text-center text-muted py-4">
-                    No withdrawal addresses found
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={12}
+                  icon="bx-map-pin"
+                  message="No withdrawal addresses found"
+                />
               ) : (
                 addresses.map((addr) => {
                   const coinSymbol = (addr.coinSymbol || '').toUpperCase()

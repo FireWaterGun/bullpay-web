@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import TableEmptyState from '@/components/TableEmptyState'
 
 const ENTRY_CODE_LABELS = {
   'DP': 'Deposit',
@@ -68,11 +69,12 @@ export default function MyLedgerTable({
             </thead>
             <tbody>
               {entries.length === 0 ? (
-                <tr>
-                  <td colSpan="9" className="text-center text-muted py-4">
-                    {t('userLedger.noEntries', { defaultValue: 'No ledger entries found' })}
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={9}
+                  icon="bx-book-content"
+                  message={t('userLedger.noEntries', { defaultValue: 'No ledger entries found' })}
+                  sub={t('userLedger.noEntriesSub', { defaultValue: 'Your transaction history will appear here' })}
+                />
               ) : (
                 entries.map((entry) => {
                   const isCredit = entry.entryType === 'credit'

@@ -8,6 +8,7 @@ import { updateSweepSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
 const ConfirmResetModal = dynamic(() => import('@/components/ConfirmResetModal'), { ssr: false })
 import { logger } from '@/lib/utils/logger'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function GasSettingsForm({ gasSettings, setGasSettings }) {
   const { t } = useAdminTranslation()
@@ -195,10 +196,10 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
             </table>
           </div>
         ) : (
-          <div className="text-center text-muted py-5">
-            <i className="bx bx-data" style={{ fontSize: '4rem', opacity: 0.3 }}></i>
-            <p className="mt-3 mb-0">{t('admin.withdrawal.noNetworks', { defaultValue: 'No networks configured' })}</p>
-          </div>
+          <CardEmptyState
+            icon="bx-data"
+            message={t('admin.withdrawal.noNetworks', { defaultValue: 'No networks configured' })}
+          />
         )}
       </div>
 

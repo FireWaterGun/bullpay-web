@@ -11,6 +11,7 @@ import CoinImg from '@/components/CoinImg'
 import ConfirmModal from '@/components/ConfirmModal'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
 import RefreshButton from '@/components/RefreshButton'
+import CardEmptyState from '@/components/CardEmptyState'
 
 export default function WalletsPage() {
   const { t } = useTranslation()
@@ -81,16 +82,15 @@ export default function WalletsPage() {
               </div>
             </div>
           ) : wallets.length === 0 ? (
-            <div className="text-center text-muted py-4">
-              <i className="bx bx-wallet fs-1 d-block mb-2"></i>
-              {t('wallets.empty', { defaultValue: 'No withdrawal addresses found' })}
-              <div className="mt-3">
-                <Link href="/wallets/create" className="btn btn-primary btn-sm">
-                  <i className="bx bx-plus me-1"></i>
-                  {t('wallets.addFirst', { defaultValue: 'Add your first address' })}
-                </Link>
-              </div>
-            </div>
+            <CardEmptyState
+              icon="bx-wallet"
+              message={t('wallets.empty', { defaultValue: 'No withdrawal addresses found' })}
+            >
+              <Link href="/wallets/create" className="btn btn-primary btn-sm mt-3">
+                <i className="bx bx-plus me-1"></i>
+                {t('wallets.addFirst', { defaultValue: 'Add your first address' })}
+              </Link>
+            </CardEmptyState>
           ) : (
             <div className="table-responsive">
               <table className="table table-hover">

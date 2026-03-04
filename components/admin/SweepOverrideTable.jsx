@@ -1,6 +1,7 @@
 'use client'
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import CardEmptyState from '@/components/CardEmptyState'
 
 /**
  * Reusable override table for coin or network sweep overrides.
@@ -20,8 +21,6 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
     ? t('admin.sweep.coin', { defaultValue: 'Coin' })
     : t('admin.sweep.coinNetworkId', { defaultValue: 'Coin-Network ID' })
 
-  const emptyIcon = isCoin ? 'bx bx-data' : 'bx bx-network-chart'
-
   const emptyMessage = isCoin
     ? t('admin.sweep.noOverrides', { defaultValue: 'No coin overrides configured' })
     : t('admin.sweep.noNetworkOverrides', { defaultValue: 'No network overrides configured' })
@@ -34,11 +33,11 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
 
   if (entries.length === 0) {
     return (
-      <div className="text-center text-muted py-5">
-        <i className={emptyIcon} style={{ fontSize: '4rem', opacity: 0.3 }}></i>
-        <p className="mt-3 mb-0">{emptyMessage}</p>
-        <small className="text-muted">{emptyHelp}</small>
-      </div>
+      <CardEmptyState
+        icon={isCoin ? 'bx-data' : 'bx-network-chart'}
+        message={emptyMessage}
+        sub={emptyHelp}
+      />
     )
   }
 
