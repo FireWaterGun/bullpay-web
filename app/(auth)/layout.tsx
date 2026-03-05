@@ -1,6 +1,5 @@
 /**
  * Auth layout — centered, no sidebar.
- * Uses Tailwind CSS only (no Bootstrap/Sneat).
  */
 
 export default function AuthLayout({

@@ -1,21 +1,22 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import CardEmptyState from '@/components/CardEmptyState'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import CardEmptyState from '@/components/CardEmptyState';
+import { Badge } from '../ui';
 
 function FeeConfigCell({ config }) {
   if (config.fee?.type === 'fixed') {
-    return <code>Fixed: {config.fee.fixed}</code>
+    return <code>Fixed: {config.fee.fixed}</code>;
   }
   if (config.fee?.type === 'percentage') {
     return (
       <code>
         {config.fee.percentage}% (min: {config.fee.min}
         {config.fee.max ? `, max: ${config.fee.max}` : ''})
-      </code>
-    )
+      </code>);
+
   }
-  return <span className="text-muted">-</span>
+  return <span className="text-muted">-</span>;
 }
 
 function OverrideRow({ label, config, showMaximum }) {
@@ -23,33 +24,33 @@ function OverrideRow({ label, config, showMaximum }) {
     <tr>
       <td><strong>{label}</strong></td>
       <td>
-        {config.minimum ? (
-          <code>{config.minimum}</code>
-        ) : (
-          <span className="text-muted">-</span>
-        )}
+        {config.minimum ?
+        <code>{config.minimum}</code> :
+
+        <span className="text-muted">-</span>
+        }
       </td>
-      {showMaximum && (
-        <td>
-          {config.maximum ? (
-            <code>{config.maximum}</code>
-          ) : (
-            <span className="text-muted">-</span>
-          )}
-        </td>
-      )}
+      {showMaximum &&
       <td>
-        {config.fee?.type ? (
-          <span className="badge bg-cyan-50 text-cyan-700">{config.fee.type}</span>
-        ) : (
-          <span className="text-muted">-</span>
-        )}
+          {config.maximum ?
+        <code>{config.maximum}</code> :
+
+        <span className="text-muted">-</span>
+        }
+        </td>
+      }
+      <td>
+        {config.fee?.type ?
+        <Badge className="bg-cyan-50 text-cyan-700">{config.fee.type}</Badge> :
+
+        <span className="text-muted">-</span>
+        }
       </td>
       <td>
         <FeeConfigCell config={config} />
       </td>
-    </tr>
-  )
+    </tr>);
+
 }
 
 export default function WithdrawalOverridesSection({
@@ -60,57 +61,57 @@ export default function WithdrawalOverridesSection({
   emptyMessageDefault,
   labelColumnKey,
   labelColumnDefault,
-  showMaximum = false,
+  showMaximum = false
 }) {
-  const { t } = useAdminTranslation()
-  const entries = Object.entries(overrides)
+  const { t } = useAdminTranslation();
+  const entries = Object.entries(overrides);
 
   return (
     <div className="mb-5">
       <div className="flex justify-between items-center mb-3">
         <h6 className="mb-0">
           {title}
-          <span
-            className={`badge rounded-full ${badgeColor} ml-2`}
-            style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}
-          >
+          <Badge className={`rounded-full${
+          badgeColor} ml-2 text-xs py-[0.35em] px-[0.65em]`}>
+
+            
             {entries.length}
-          </span>
+          </Badge>
         </h6>
       </div>
 
-      {entries.length > 0 ? (
-        <div className="overflow-x-auto">
+      {entries.length > 0 ?
+      <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr>
                 <th>{t(labelColumnKey, { defaultValue: labelColumnDefault })}</th>
                 <th>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</th>
-                {showMaximum && (
-                  <th>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</th>
-                )}
+                {showMaximum &&
+              <th>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</th>
+              }
                 <th>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</th>
                 <th>{t('admin.withdrawal.feeConfig', { defaultValue: 'Fee Config' })}</th>
               </tr>
             </thead>
             <tbody>
-              {entries.map(([key, config]) => (
-                <OverrideRow
-                  key={key}
-                  label={key}
-                  config={config}
-                  showMaximum={showMaximum}
-                />
-              ))}
+              {entries.map(([key, config]) =>
+            <OverrideRow
+              key={key}
+              label={key}
+              config={config}
+              showMaximum={showMaximum} />
+
+            )}
             </tbody>
           </table>
-        </div>
-      ) : (
-        <CardEmptyState
-          icon="bx-data"
-          message={t(emptyMessageKey, { defaultValue: emptyMessageDefault })}
-        />
-      )}
-    </div>
-  )
+        </div> :
+
+      <CardEmptyState
+        icon="bx-data"
+        message={t(emptyMessageKey, { defaultValue: emptyMessageDefault })} />
+
+      }
+    </div>);
+
 }

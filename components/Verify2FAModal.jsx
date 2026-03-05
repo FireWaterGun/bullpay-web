@@ -1,10 +1,11 @@
-'use client'
+'use client';
 
 import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/app/providers";
 import { verify2FA } from "@/lib/api/twoFactor";
-import { logger } from '@/lib/utils/logger'
+import { logger } from '@/lib/utils/logger';
+import { Button, Input, Spinner } from './ui'
 
 export default function Verify2FAModal({
   show,
@@ -12,7 +13,7 @@ export default function Verify2FAModal({
   onSuccess,
   title,
   description,
-  skipVerify = false,
+  skipVerify = false
 }) {
   const { t } = useTranslation();
   const { token } = useAuth();
@@ -102,8 +103,8 @@ export default function Verify2FAModal({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-      <div className="bg-white rounded-xl shadow-xl mx-4 w-full" style={{ maxWidth: '380px' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-xl shadow-xl mx-4 w-full max-w-[380px]">
           <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
             <h5 className="font-semibold">
               {title || t("2fa.verifyTitle", { defaultValue: "Two-Factor Authentication" })}
@@ -113,77 +114,77 @@ export default function Verify2FAModal({
           <div className="p-6">
             <p className="text-surface-500 text-center mb-4">
               {description || t("2fa.verifyDescription", {
-                defaultValue: "Enter the 6-digit code from your authenticator app"
-              })}
+              defaultValue: "Enter the 6-digit code from your authenticator app"
+            })}
             </p>
-            {isBackupCode ? (
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-input text-center font-mono"
-                  placeholder="ABCD-EFGH"
-                  value={code}
-                  onChange={(e) => handleCodeChange(0, e.target.value)}
-                  maxLength={9}
-                  autoFocus
-                />
-              </div>
-            ) : (
-              <div className="flex justify-center gap-2 mb-3" onPaste={handlePaste}>
-                {[0, 1, 2, 3, 4, 5].map((i) => (
-                  <input
-                    key={"digit-" + i}
-                    ref={(el) => (inputRefs.current[i] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    className="form-input text-center font-bold"
-                    style={{ width: 40, height: 45, fontSize: 18 }}
-                    maxLength={1}
-                    value={code[i] || ""}
-                    onChange={(e) => handleCodeChange(i, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(i, e)}
-                    autoFocus={i === 0}
-                  />
-                ))}
-              </div>
+            {isBackupCode ?
+          <div className="mb-3">
+                <Input
+              type="text"
+
+              placeholder="ABCD-EFGH"
+              value={code}
+              onChange={(e) => handleCodeChange(0, e.target.value)}
+              maxLength={9}
+              autoFocus className="text-center font-mono" />
+            
+              </div> :
+
+          <div className="flex justify-center gap-2 mb-3" onPaste={handlePaste}>
+                {[0, 1, 2, 3, 4, 5].map((i) =>
+            <Input
+              key={"digit-" + i}
+              ref={(el) => inputRefs.current[i] = el}
+              type="text"
+              inputMode="numeric"
+
+
+              maxLength={1}
+              value={code[i] || ""}
+              onChange={(e) => handleCodeChange(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              autoFocus={i === 0} className="text-center font-bold w-10 h-[45px] text-[18px]" />
+
             )}
-            {error && (
-              <div className="rounded-lg bg-red-50 text-red-700 py-2 px-3 mb-3">
+              </div>
+          }
+            {error &&
+          <div className="rounded-lg bg-red-50 text-red-700 py-2 px-3 mb-3">
                 <small>{error}</small>
               </div>
-            )}
+          }
             <div className="text-center">
               <button type="button" className="text-primary-600 hover:text-primary-700 text-sm" onClick={toggleBackupCode}>
-                {isBackupCode
-                  ? t("2fa.useAuthenticator", { defaultValue: "Use authenticator app instead" })
-                  : t("2fa.useBackupCode", { defaultValue: "Use backup code instead" })}
+                {isBackupCode ?
+              t("2fa.useAuthenticator", { defaultValue: "Use authenticator app instead" }) :
+              t("2fa.useBackupCode", { defaultValue: "Use backup code instead" })}
               </button>
             </div>
           </div>
           <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
-            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={handleClose} disabled={loading}>
+            <Button type="button" onClick={handleClose} disabled={loading} variant="outline-secondary">
               {t("common.cancel", { defaultValue: "Cancel" })}
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleVerify}
-              disabled={loading || (!isBackupCode && code.length !== 6) || (isBackupCode && !code)}
-            >
-              {loading ? (
-                <>
-                  <span className="spinner w-4 h-4 border-2 mr-1 inline-block align-middle"></span>
+            </Button>
+            <Button
+            type="button"
+
+            onClick={handleVerify}
+            disabled={loading || !isBackupCode && code.length !== 6 || isBackupCode && !code}>
+            
+              {loading ?
+            <>
+                  <Spinner className="w-4 h-4 mr-1 inline-block align-middle" />
                   {t("common.verifying", { defaultValue: "Verifying..." })}
-                </>
-              ) : (
-                <>
+                </> :
+
+            <>
                   <i className="bx bx-check mr-1"></i>
                   {t("common.verify", { defaultValue: "Verify" })}
                 </>
-              )}
-            </button>
+            }
+            </Button>
           </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }

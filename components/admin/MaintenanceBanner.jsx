@@ -108,16 +108,8 @@ export default function MaintenanceBanner() {
   return (
     <Link
       href="/admin/maintenance"
-      className="flex items-center gap-2 no-underline mr-auto"
-      style={{
-        fontSize: '0.8125rem',
-        whiteSpace: 'nowrap',
-        padding: '0.3rem 0.75rem',
-        borderRadius: '6px',
-        backgroundColor: config.bg,
-        color: config.color,
-        transition: 'background-color 0.2s, color 0.2s',
-      }}
+      className="flex items-center gap-2 no-underline mr-auto text-sm whitespace-nowrap py-[0.3rem] px-[0.75rem]"
+      style={{ borderRadius: '6px', backgroundColor: config.bg, color: config.color, transition: 'background-color 0.2s, color 0.2s' }}
     >
       <span
         style={{
@@ -129,7 +121,7 @@ export default function MaintenanceBanner() {
           ...(config.pulse ? { animation: 'maintenance-pulse 2s ease-in-out infinite' } : {}),
         }}
       />
-      <span style={{ fontWeight: 600 }}>{config.label}</span>
+      <span className="font-semibold">{config.label}</span>
       {config.pulse && PULSE_KEYFRAMES}
     </Link>
   )

@@ -4,7 +4,7 @@ export default function PaymentQRCode({ qrDataUrl, size = 200, alt = 'Payment QR
   if (!qrDataUrl) {
     return (
       <div
-        className="flex items-center justify-center bg-light rounded"
+        className="flex items-center justify-center bg-surface-50 rounded"
         style={{ width: size, height: size }}
       >
         <span className="text-muted text-sm">No QR</span>
@@ -18,8 +18,8 @@ export default function PaymentQRCode({ qrDataUrl, size = 200, alt = 'Payment QR
       alt={alt}
       width={size}
       height={size}
-      className="rounded"
-      style={{ imageRendering: 'pixelated' }}
+      className="rounded [image-rendering:pixelated]"
+     
     />
   )
 }

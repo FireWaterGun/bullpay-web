@@ -1,259 +1,260 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { useAuth } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useToast } from '@/app/providers'
-import { getSettingByKey, upsertSetting } from '@/lib/api/admin'
-import { getSystemStatus } from '@/lib/api/system'
-import { logger } from '@/lib/utils/logger'
-import ConfirmModal from '@/components/ConfirmModal'
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/app/providers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useToast } from '@/app/providers';
+import { getSettingByKey, upsertSetting } from '@/lib/api/admin';
+import { getSystemStatus } from '@/lib/api/system';
+import { logger } from '@/lib/utils/logger';
+import ConfirmModal from '@/components/ConfirmModal';
+import { Alert, Badge, Button, Card, Input, Label, Spinner } from '../../../../components/ui';
 
 const MAINTENANCE_KEYS = [
-  'maintenance.level',
-  'maintenance.message_en',
-  'maintenance.estimated_end',
-  'maintenance.allowed_ips',
-]
+'maintenance.level',
+'maintenance.message_en',
+'maintenance.estimated_end',
+'maintenance.allowed_ips'];
+
 
 // Labels/descriptions resolved via t() at render time — see getLevelOptions()
 function getLevelOptions(t) {
   return [
-    { value: 'none', label: t('admin.maintenance.levelNone', { defaultValue: 'None' }), description: t('admin.maintenance.levelNoneDesc', { defaultValue: 'System operating normally' }), color: 'success', icon: 'bx-check-circle' },
-    { value: 'partial', label: t('admin.maintenance.levelPartial', { defaultValue: 'Partial' }), description: t('admin.maintenance.levelPartialDesc', { defaultValue: 'Block user API + merchant write, allow merchant read + background jobs' }), color: 'warning', icon: 'bx-error' },
-    { value: 'full', label: t('admin.maintenance.levelFull', { defaultValue: 'Full' }), description: t('admin.maintenance.levelFullDesc', { defaultValue: 'Block all APIs except admin + health check' }), color: 'danger', icon: 'bx-x-circle' },
-  ]
+  { value: 'none', label: t('admin.maintenance.levelNone', { defaultValue: 'None' }), description: t('admin.maintenance.levelNoneDesc', { defaultValue: 'System operating normally' }), color: 'success', icon: 'bx-check-circle' },
+  { value: 'partial', label: t('admin.maintenance.levelPartial', { defaultValue: 'Partial' }), description: t('admin.maintenance.levelPartialDesc', { defaultValue: 'Block user API + merchant write, allow merchant read + background jobs' }), color: 'warning', icon: 'bx-error' },
+  { value: 'full', label: t('admin.maintenance.levelFull', { defaultValue: 'Full' }), description: t('admin.maintenance.levelFullDesc', { defaultValue: 'Block all APIs except admin + health check' }), color: 'danger', icon: 'bx-x-circle' }];
+
 }
 
 export default function AdminMaintenancePage() {
-  const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
+  const { t } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
 
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [liveStatus, setLiveStatus] = useState(null)
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [liveStatus, setLiveStatus] = useState(null);
 
   // Form state
-  const [level, setLevel] = useState('none')
-  const [messageEn, setMessageEn] = useState('')
-  const [estimatedEnd, setEstimatedEnd] = useState('')
-  const [allowedIps, setAllowedIps] = useState('')
+  const [level, setLevel] = useState('none');
+  const [messageEn, setMessageEn] = useState('');
+  const [estimatedEnd, setEstimatedEnd] = useState('');
+  const [allowedIps, setAllowedIps] = useState('');
 
   // Track original values for dirty detection
-  const [originalValues, setOriginalValues] = useState({})
+  const [originalValues, setOriginalValues] = useState({});
 
   // Confirm modal state for quick toggle
-  const [pendingToggle, setPendingToggle] = useState(null)
+  const [pendingToggle, setPendingToggle] = useState(null);
 
   // Validation errors
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({});
 
   /**
    * Validate a single IPv4/IPv6 address string.
    * Returns true if valid, false otherwise.
    */
   function isValidIp(ip) {
-    if (!ip || typeof ip !== 'string') return false
-    const trimmed = ip.trim()
-    if (!trimmed) return false
+    if (!ip || typeof ip !== 'string') return false;
+    const trimmed = ip.trim();
+    if (!trimmed) return false;
     // IPv4
-    const ipv4Re = /^(\d{1,3}\.){3}\d{1,3}$/
+    const ipv4Re = /^(\d{1,3}\.){3}\d{1,3}$/;
     if (ipv4Re.test(trimmed)) {
-      return trimmed.split('.').every(o => { const n = Number(o); return n >= 0 && n <= 255 })
+      return trimmed.split('.').every((o) => {const n = Number(o);return n >= 0 && n <= 255;});
     }
     // IPv6 (including ::1 loopback)
-    if (trimmed === '::1') return true
-    const ipv6Re = /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/
-    return ipv6Re.test(trimmed)
+    if (trimmed === '::1') return true;
+    const ipv6Re = /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/;
+    return ipv6Re.test(trimmed);
   }
 
   /**
    * Validate all form fields. Returns errors object (empty = valid).
    */
   function validateForm() {
-    const newErrors = {}
+    const newErrors = {};
 
     // Message (English) required when maintenance is active
     if (level !== 'none' && !messageEn.trim()) {
-      newErrors.messageEn = t('admin.maintenance.messageEnRequired', { defaultValue: 'Message is required when maintenance is active' })
+      newErrors.messageEn = t('admin.maintenance.messageEnRequired', { defaultValue: 'Message is required when maintenance is active' });
     }
 
     // Estimated End: validate date format if provided
     if (estimatedEnd.trim()) {
-      const dt = new Date(estimatedEnd)
+      const dt = new Date(estimatedEnd);
       if (isNaN(dt.getTime())) {
-        newErrors.estimatedEnd = t('admin.maintenance.invalidDate', { defaultValue: 'Invalid date format' })
+        newErrors.estimatedEnd = t('admin.maintenance.invalidDate', { defaultValue: 'Invalid date format' });
       }
     }
 
     // Allowed IPs: validate JSON + each entry is valid IP
     if (allowedIps.trim() && allowedIps.trim() !== '[]') {
       try {
-        const parsed = JSON.parse(allowedIps)
+        const parsed = JSON.parse(allowedIps);
         if (!Array.isArray(parsed)) {
-          newErrors.allowedIps = t('admin.maintenance.invalidIps', { defaultValue: 'Must be a JSON array' })
+          newErrors.allowedIps = t('admin.maintenance.invalidIps', { defaultValue: 'Must be a JSON array' });
         } else {
           for (const entry of parsed) {
             if (typeof entry !== 'string' || !entry.trim()) {
-              newErrors.allowedIps = t('admin.maintenance.invalidIpEntry', { defaultValue: 'Each entry must be a non-empty string' })
-              break
+              newErrors.allowedIps = t('admin.maintenance.invalidIpEntry', { defaultValue: 'Each entry must be a non-empty string' });
+              break;
             }
             if (!isValidIp(entry)) {
-              newErrors.allowedIps = t('admin.maintenance.invalidIpFormat', { ip: entry.trim(), defaultValue: `"${entry.trim()}" is not a valid IPv4 or IPv6 address` })
-              break
+              newErrors.allowedIps = t('admin.maintenance.invalidIpFormat', { ip: entry.trim(), defaultValue: `"${entry.trim()}" is not a valid IPv4 or IPv6 address` });
+              break;
             }
           }
         }
       } catch {
-        newErrors.allowedIps = t('admin.maintenance.invalidIps', { defaultValue: 'Must be valid JSON (e.g. ["1.2.3.4"])' })
+        newErrors.allowedIps = t('admin.maintenance.invalidIps', { defaultValue: 'Must be valid JSON (e.g. ["1.2.3.4"])' });
       }
     }
 
-    return newErrors
+    return newErrors;
   }
 
   const loadSettings = useCallback(async () => {
-    if (!token) return
-    setLoading(true)
+    if (!token) return;
+    setLoading(true);
     try {
       const results = await Promise.all(
         MAINTENANCE_KEYS.map(async (key) => {
           try {
-            const setting = await getSettingByKey(token, key)
-            return { key, value: setting?.value ?? setting?.defaultValue ?? '' }
+            const setting = await getSettingByKey(token, key);
+            return { key, value: setting?.value ?? setting?.defaultValue ?? '' };
           } catch {
-            return { key, value: '' }
+            return { key, value: '' };
           }
         })
-      )
+      );
 
-      const values = {}
+      const values = {};
       for (const { key, value } of results) {
-        values[key] = value
+        values[key] = value;
       }
 
-      setLevel(values['maintenance.level'] || 'none')
-      setMessageEn(values['maintenance.message_en'] || '')
-      setEstimatedEnd(values['maintenance.estimated_end'] || '')
-      setAllowedIps(values['maintenance.allowed_ips'] || '[]')
-      setOriginalValues(values)
+      setLevel(values['maintenance.level'] || 'none');
+      setMessageEn(values['maintenance.message_en'] || '');
+      setEstimatedEnd(values['maintenance.estimated_end'] || '');
+      setAllowedIps(values['maintenance.allowed_ips'] || '[]');
+      setOriginalValues(values);
     } catch (error) {
-      logger.error('Failed to load maintenance settings:', error)
-      toast.error(t('admin.maintenance.loadError', { defaultValue: 'Failed to load maintenance settings' }))
+      logger.error('Failed to load maintenance settings:', error);
+      toast.error(t('admin.maintenance.loadError', { defaultValue: 'Failed to load maintenance settings' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [token])
+  }, [token]);
 
   // Load live status (public endpoint)
   const loadLiveStatus = useCallback(async () => {
     try {
-      const status = await getSystemStatus()
-      setLiveStatus(status)
+      const status = await getSystemStatus();
+      setLiveStatus(status);
     } catch {
-      setLiveStatus(null)
+      setLiveStatus(null);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    loadSettings()
-    loadLiveStatus()
-  }, [loadSettings, loadLiveStatus])
+    loadSettings();
+    loadLiveStatus();
+  }, [loadSettings, loadLiveStatus]);
 
   // Auto-refresh status every 15s
   useEffect(() => {
-    const interval = setInterval(loadLiveStatus, 15_000)
-    return () => clearInterval(interval)
-  }, [loadLiveStatus])
+    const interval = setInterval(loadLiveStatus, 15_000);
+    return () => clearInterval(interval);
+  }, [loadLiveStatus]);
 
   async function handleSave() {
-    if (!token) return
+    if (!token) return;
 
     // Validate form
-    const formErrors = validateForm()
-    setErrors(formErrors)
+    const formErrors = validateForm();
+    setErrors(formErrors);
     if (Object.keys(formErrors).length > 0) {
-      toast.error(t('admin.maintenance.fixErrors', { defaultValue: 'Please fix the errors before saving' }))
-      return
+      toast.error(t('admin.maintenance.fixErrors', { defaultValue: 'Please fix the errors before saving' }));
+      return;
     }
 
-    setSaving(true)
+    setSaving(true);
     try {
       const updates = [
-        { keyName: 'maintenance.level', value: level },
-        { keyName: 'maintenance.message_en', value: messageEn },
-        { keyName: 'maintenance.estimated_end', value: estimatedEnd },
-        { keyName: 'maintenance.allowed_ips', value: allowedIps.trim() || '[]' },
-      ]
+      { keyName: 'maintenance.level', value: level },
+      { keyName: 'maintenance.message_en', value: messageEn },
+      { keyName: 'maintenance.estimated_end', value: estimatedEnd },
+      { keyName: 'maintenance.allowed_ips', value: allowedIps.trim() || '[]' }];
+
 
       for (const update of updates) {
-        await upsertSetting(token, update)
+        await upsertSetting(token, update);
       }
 
       toast.success(
-        level === 'none'
-          ? t('admin.maintenance.disabled', { defaultValue: 'Maintenance mode disabled' })
-          : t('admin.maintenance.enabled', { defaultValue: 'Maintenance mode activated ({level})' }).replace('{level}', level)
-      )
+        level === 'none' ?
+        t('admin.maintenance.disabled', { defaultValue: 'Maintenance mode disabled' }) :
+        t('admin.maintenance.enabled', { defaultValue: 'Maintenance mode activated ({level})' }).replace('{level}', level)
+      );
 
       // Notify navbar banner to refresh immediately
-      window.dispatchEvent(new Event('maintenance-status-changed'))
+      window.dispatchEvent(new Event('maintenance-status-changed'));
 
       // Refresh live status and original values
-      await Promise.all([loadLiveStatus(), loadSettings()])
+      await Promise.all([loadLiveStatus(), loadSettings()]);
     } catch (error) {
-      logger.error('Failed to save maintenance settings:', error)
-      toast.error(t('admin.maintenance.saveError', { defaultValue: 'Failed to save maintenance settings' }))
+      logger.error('Failed to save maintenance settings:', error);
+      toast.error(t('admin.maintenance.saveError', { defaultValue: 'Failed to save maintenance settings' }));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   // Quick toggle: activate partial or deactivate
   function requestQuickToggle(newLevel) {
-    if (newLevel === level) return // already at this level
-    setPendingToggle(newLevel)
+    if (newLevel === level) return; // already at this level
+    setPendingToggle(newLevel);
   }
 
   async function confirmQuickToggle() {
-    const newLevel = pendingToggle
-    setPendingToggle(null)
-    if (!newLevel || !token) return
-    setLevel(newLevel)
-    setSaving(true)
+    const newLevel = pendingToggle;
+    setPendingToggle(null);
+    if (!newLevel || !token) return;
+    setLevel(newLevel);
+    setSaving(true);
     try {
-      await upsertSetting(token, { keyName: 'maintenance.level', value: newLevel })
+      await upsertSetting(token, { keyName: 'maintenance.level', value: newLevel });
       toast.success(
-        newLevel === 'none'
-          ? t('admin.maintenance.disabled', { defaultValue: 'Maintenance mode disabled' })
-          : t('admin.maintenance.enabled', { defaultValue: 'Maintenance mode activated ({level})' }).replace('{level}', newLevel)
-      )
+        newLevel === 'none' ?
+        t('admin.maintenance.disabled', { defaultValue: 'Maintenance mode disabled' }) :
+        t('admin.maintenance.enabled', { defaultValue: 'Maintenance mode activated ({level})' }).replace('{level}', newLevel)
+      );
 
       // Notify navbar banner to refresh immediately
-      window.dispatchEvent(new Event('maintenance-status-changed'))
+      window.dispatchEvent(new Event('maintenance-status-changed'));
 
-      await loadLiveStatus()
+      await loadLiveStatus();
     } catch (error) {
-      logger.error('Quick toggle failed:', error)
-      toast.error(t('admin.maintenance.saveError', { defaultValue: 'Failed to toggle maintenance mode' }))
+      logger.error('Quick toggle failed:', error);
+      toast.error(t('admin.maintenance.saveError', { defaultValue: 'Failed to toggle maintenance mode' }));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
-  const levelOptions = getLevelOptions(t)
-  const currentLevelInfo = levelOptions.find((o) => o.value === level) || levelOptions[0]
-  const isActive = level !== 'none'
+  const levelOptions = getLevelOptions(t);
+  const currentLevelInfo = levelOptions.find((o) => o.value === level) || levelOptions[0];
+  const isActive = level !== 'none';
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center" style={{ minHeight: '50vh' }}>
-        <div className="spinner text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    )
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <Spinner role="status" className="text-primary" />
+
+        
+      </div>);
+
   }
 
   return (
@@ -272,23 +273,23 @@ export default function AdminMaintenancePage() {
       </div>
 
       {/* Live Status Banner */}
-      {liveStatus && (
-        <div className={`alert border-0 flex items-center mb-4 ${liveStatus.maintenance ?'bg-amber-50 text-amber-700 text-warning' : 'bg-green-50 text-green-700 text-success'}`} style={{ borderLeft: `4px solid`, borderLeftColor: 'currentColor' }}>
-          <i className={`bx ${liveStatus.maintenance ?'bx-error' : 'bx-check-circle'} mr-2`} style={{ fontSize: '1.25rem' }}></i>
+      {liveStatus &&
+      <Alert style={{ borderLeft: `4px solid`, borderLeftColor: 'currentColor' }} className="border-0 flex items-center mb-4">
+          <i className={`bx ${liveStatus.maintenance ? 'bx-error' : 'bx-check-circle'} mr-2 text-xl`}></i>
           <div>
             <strong>{t('admin.maintenance.liveStatus', { defaultValue: 'Live Status' })}:</strong>{' '}
-            {liveStatus.maintenance
-              ? t('admin.maintenance.systemDown', { defaultValue: 'System is in maintenance mode ({level})' }).replace('{level}', liveStatus.level)
-              : t('admin.maintenance.systemUp', { defaultValue: 'System is operating normally' })
-            }
+            {liveStatus.maintenance ?
+          t('admin.maintenance.systemDown', { defaultValue: 'System is in maintenance mode ({level})' }).replace('{level}', liveStatus.level) :
+          t('admin.maintenance.systemUp', { defaultValue: 'System is operating normally' })
+          }
           </div>
-        </div>
-      )}
+        </Alert>
+      }
 
       <div className="grid grid-cols-12 gap-x-6">
         {/* Quick Toggle Cards */}
         <div className="col-span-12 mb-4">
-          <div className="card">
+          <Card>
             <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
                 {t('admin.maintenance.quickToggle', { defaultValue: 'Quick Toggle' })}
@@ -296,16 +297,16 @@ export default function AdminMaintenancePage() {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                {levelOptions.map((opt) => (
-                  <div key={opt.value} className="md:col-span-4">
+                {levelOptions.map((opt) =>
+                <div key={opt.value} className="md:col-span-4">
                     <div
-                      className={`card border ${level === opt.value ?`border-${opt.color} shadow-sm` : 'border-light'}`}
-                      style={{ cursor: level === opt.value ? 'default' : 'pointer', transition: 'all 0.2s', opacity: level === opt.value ? 0.7 : 1 }}
-                      onClick={() => requestQuickToggle(opt.value)}
-                    >
+                    className={`bg-white rounded-card shadow-card dark:bg-dark-paper dark:shadow-card-dark border ${level === opt.value ? `border-${opt.color} shadow-sm` : 'border-surface-200'}`}
+                    style={{ cursor: level === opt.value ? 'default' : 'pointer', transition: 'all 0.2s', opacity: level === opt.value ? 0.7 : 1 }}
+                    onClick={() => requestQuickToggle(opt.value)}>
+                    
                       <div className="p-5 text-center py-4">
-                        <i className={`bx ${opt.icon} text-${opt.color} mb-2`} style={{ fontSize: '2rem' }}></i>
-                        <h6 className={`mb-1 ${level === opt.value ?`text-${opt.color}` : ''}`}>
+                        <i className={`bx ${opt.icon} text-${opt.color} mb-2 text-[2rem]`}></i>
+                        <h6 className={`mb-1 ${level === opt.value ? `text-${opt.color}` : ''}`}>
                           {opt.label}
                           {level === opt.value && <i className="bx bx-check ml-1"></i>}
                         </h6>
@@ -313,73 +314,73 @@ export default function AdminMaintenancePage() {
                       </div>
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Configuration Form */}
         <div className="lg:col-span-8">
-          <div className="card">
+          <Card>
             <div className="px-5 py-4 border-b border-surface-200 flex items-center justify-between">
               <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
                 {t('admin.maintenance.configuration', { defaultValue: 'Configuration' })}
               </h5>
-              <span className={`badge bg-label-${currentLevelInfo.color}`}>
+              <Badge color={currentLevelInfo.color} label>
                 {currentLevelInfo.label}
-              </span>
+              </Badge>
             </div>
             <div className="p-5">
               {/* Message */}
               <div className="mb-3">
-                <label className="form-label">
+                <Label>
                   {t('admin.maintenance.messageEn', { defaultValue: 'Message' })}
                   {level !== 'none' && <span className="text-danger"> *</span>}
-                </label>
-                <textarea
-                  className={`form-input${errors.messageEn ?' is-invalid' : ''}`}
+                </Label>
+                <Input
+
                   rows={2}
                   value={messageEn}
-                  onChange={(e) => { setMessageEn(e.target.value); setErrors(prev => ({ ...prev, messageEn: undefined })) }}
-                  placeholder="System is under maintenance. Please try again later."
-                />
+                  onChange={(e) => {setMessageEn(e.target.value);setErrors((prev) => ({ ...prev, messageEn: undefined }));}}
+                  placeholder="System is under maintenance. Please try again later." error={errors.messageEn} />
+                
                 {errors.messageEn && <div className="text-xs text-danger-500 mt-1 block">{errors.messageEn}</div>}
               </div>
 
               {/* Estimated End */}
               <div className="mb-3">
-                <label className="form-label">
+                <Label>
                   {t('admin.maintenance.estimatedEnd', { defaultValue: 'Estimated End Time' })}
-                </label>
+                </Label>
                 <div className="grid grid-cols-12 gap-x-6 gap-2">
-                  <div className="col-7">
-                    <input
+                  <div className="col-span-7">
+                    <Input
                       type="date"
-                      className="form-input"
+
                       value={estimatedEnd ? estimatedEnd.slice(0, 10) : ''}
                       onChange={(e) => {
-                        const dateVal = e.target.value
-                        if (!dateVal) { setEstimatedEnd(''); return }
+                        const dateVal = e.target.value;
+                        if (!dateVal) {setEstimatedEnd('');return;}
                         // Keep existing time or default to 00:00
-                        const existingTime = estimatedEnd ? estimatedEnd.slice(11, 16) : '00:00'
-                        setEstimatedEnd(new Date(`${dateVal}T${existingTime}`).toISOString())
-                      }}
-                    />
+                        const existingTime = estimatedEnd ? estimatedEnd.slice(11, 16) : '00:00';
+                        setEstimatedEnd(new Date(`${dateVal}T${existingTime}`).toISOString());
+                      }} />
+                    
                   </div>
-                  <div className="col-5">
-                    <input
+                  <div className="col-span-5">
+                    <Input
                       type="time"
-                      className="form-input"
+
                       value={estimatedEnd ? estimatedEnd.slice(11, 16) : ''}
                       disabled={!estimatedEnd}
                       onChange={(e) => {
-                        const timeVal = e.target.value
-                        if (!timeVal || !estimatedEnd) return
-                        const dateVal = estimatedEnd.slice(0, 10)
-                        setEstimatedEnd(new Date(`${dateVal}T${timeVal}`).toISOString())
-                      }}
-                    />
+                        const timeVal = e.target.value;
+                        if (!timeVal || !estimatedEnd) return;
+                        const dateVal = estimatedEnd.slice(0, 10);
+                        setEstimatedEnd(new Date(`${dateVal}T${timeVal}`).toISOString());
+                      }} />
+                    
                   </div>
                 </div>
                 <div className="text-xs text-surface-500 mt-1">
@@ -389,46 +390,46 @@ export default function AdminMaintenancePage() {
 
               {/* Allowed IPs */}
               <div className="mb-4">
-                <label className="form-label">
+                <Label>
                   {t('admin.maintenance.allowedIps', { defaultValue: 'Allowed IPs (bypass maintenance)' })}
-                </label>
-                <input
+                </Label>
+                <Input
                   type="text"
-                  className={`form-input${errors.allowedIps ?' is-invalid' : ''}`}
+
                   value={allowedIps}
-                  onChange={(e) => { setAllowedIps(e.target.value); setErrors(prev => ({ ...prev, allowedIps: undefined })) }}
-                  placeholder='["1.2.3.4", "5.6.7.8"]'
-                />
-                {errors.allowedIps
-                  ? <div className="text-xs text-danger-500 mt-1 block">{errors.allowedIps}</div>
-                  : <div className="text-xs text-surface-500 mt-1">
+                  onChange={(e) => {setAllowedIps(e.target.value);setErrors((prev) => ({ ...prev, allowedIps: undefined }));}}
+                  placeholder='["1.2.3.4", "5.6.7.8"]' error={errors.allowedIps} />
+                
+                {errors.allowedIps ?
+                <div className="text-xs text-danger-500 mt-1 block">{errors.allowedIps}</div> :
+                <div className="text-xs text-surface-500 mt-1">
                       {t('admin.maintenance.allowedIpsHelp', { defaultValue: 'JSON array of IPs that can access the system during maintenance.' })}
                     </div>
                 }
               </div>
 
               {/* Save button */}
-              <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-                {saving ? (
-                  <>
-                    <span className="spinner w-4 h-4 mr-1" role="status" aria-hidden="true"></span>
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ?
+                <>
+                    <Spinner role="status" aria-hidden="true" className="w-4 h-4 mr-1" />
                     {t('common.saving', { defaultValue: 'Saving...' })}
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     <i className="bx bx-save mr-1"></i>
                     {t('admin.maintenance.saveAll', { defaultValue: 'Save Configuration' })}
                   </>
-                )}
-              </button>
+                }
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Info Sidebar */}
         <div className="lg:col-span-4">
           {/* Level Explanation */}
-          <div className="card mb-3">
+          <Card className="mb-3">
             <div className="px-5 py-4 border-b border-surface-200">
               <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
                 <i className="bx bx-info-circle mr-1"></i>
@@ -487,10 +488,10 @@ export default function AdminMaintenancePage() {
               </table>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Tips */}
-          <div className="card">
+          <Card>
             <div className="px-5 py-4 border-b border-surface-200">
               <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
                 <i className="bx bx-bulb mr-1"></i>
@@ -498,7 +499,7 @@ export default function AdminMaintenancePage() {
               </h6>
             </div>
             <div className="p-5">
-              <ul className="list-unstyled mb-0 text-sm text-muted">
+              <ul className="list-none mb-0 text-sm text-muted">
                 <li className="mb-2">
                   <i className="bx bx-right-arrow-alt mr-1"></i>
                   {t('admin.maintenance.tip1', { defaultValue: 'Use Partial for UI/frontend updates — merchants can still check payment status.' })}
@@ -517,7 +518,7 @@ export default function AdminMaintenancePage() {
                 </li>
               </ul>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
@@ -526,23 +527,23 @@ export default function AdminMaintenancePage() {
         show={pendingToggle !== null}
         title={t('admin.maintenance.confirmToggleTitle', { defaultValue: 'Change Maintenance Mode' })}
         message={
-          pendingToggle === 'none'
-            ? t('admin.maintenance.confirmDisable', { defaultValue: 'Are you sure you want to disable maintenance mode? The system will be fully accessible to all users.' })
-            : pendingToggle === 'full'
-              ? t('admin.maintenance.confirmFull', { defaultValue: 'Are you sure you want to enable Full maintenance mode? All user and merchant APIs will be blocked immediately.' })
-              : t('admin.maintenance.confirmPartial', { defaultValue: 'Are you sure you want to enable Partial maintenance mode? User APIs and merchant write operations will be blocked.' })
+        pendingToggle === 'none' ?
+        t('admin.maintenance.confirmDisable', { defaultValue: 'Are you sure you want to disable maintenance mode? The system will be fully accessible to all users.' }) :
+        pendingToggle === 'full' ?
+        t('admin.maintenance.confirmFull', { defaultValue: 'Are you sure you want to enable Full maintenance mode? All user and merchant APIs will be blocked immediately.' }) :
+        t('admin.maintenance.confirmPartial', { defaultValue: 'Are you sure you want to enable Partial maintenance mode? User APIs and merchant write operations will be blocked.' })
         }
         confirmText={
-          pendingToggle === 'none'
-            ? t('admin.maintenance.confirmDisableBtn', { defaultValue: 'Disable Maintenance' })
-            : t('admin.maintenance.confirmEnableBtn', { defaultValue: 'Enable Maintenance' })
+        pendingToggle === 'none' ?
+        t('admin.maintenance.confirmDisableBtn', { defaultValue: 'Disable Maintenance' }) :
+        t('admin.maintenance.confirmEnableBtn', { defaultValue: 'Enable Maintenance' })
         }
         cancelText={t('common:cancel', { defaultValue: 'Cancel' })}
         confirmVariant={pendingToggle === 'none' ? 'success' : pendingToggle === 'full' ? 'danger' : 'warning'}
         onConfirm={confirmQuickToggle}
         onCancel={() => setPendingToggle(null)}
-        busy={saving}
-      />
-    </div>
-  )
+        busy={saving} />
+      
+    </div>);
+
 }

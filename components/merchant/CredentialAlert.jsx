@@ -1,20 +1,21 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useState } from 'react';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { Button, Input, InputGroup, Label } from '../ui'
 
 export default function CredentialAlert({ credentials, warning, onDismiss, t }) {
-  const [copiedKey, setCopiedKey] = useState(false)
-  const [copiedSecret, setCopiedSecret] = useState(false)
+  const [copiedKey, setCopiedKey] = useState(false);
+  const [copiedSecret, setCopiedSecret] = useState(false);
 
   async function handleCopy(text, setter) {
-    const ok = await copyText(text)
-    if (ok) { setter(true); setTimeout(() => setter(false), 2000) }
+    const ok = await copyText(text);
+    if (ok) {setter(true);setTimeout(() => setter(false), 2000);}
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="bg-white rounded-xl shadow-xl mx-4 w-full" style={{ maxWidth: '500px' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-xl shadow-xl mx-4 w-full max-w-[500px]">
         <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
           <h5 className="font-semibold">
             {t('merchant.apiCredentials', { defaultValue: 'API Credentials' })}
@@ -27,38 +28,38 @@ export default function CredentialAlert({ credentials, warning, onDismiss, t }) 
             {warning || t('merchant.credentialWarning')}
           </div>
 
-          {credentials.apiKey && (
-            <div className="mb-3">
-              <label className="form-label font-semibold mb-1">{t('merchant.apiKey', { defaultValue: 'API Key' })}</label>
-              <div className="bp-input-group">
-                <input type="text" className="form-input font-mono" value={credentials.apiKey} readOnly style={{ fontSize: '0.85rem' }} />
-                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => handleCopy(credentials.apiKey, setCopiedKey)}>
-                  <i className={`bx ${copiedKey ?'bx-check' : 'bx-copy'} mr-1`}></i>
+          {credentials.apiKey &&
+          <div className="mb-3">
+              <Label className="font-semibold mb-1">{t('merchant.apiKey', { defaultValue: 'API Key' })}</Label>
+              <InputGroup>
+                <Input type="text" value={credentials.apiKey} readOnly className="font-mono text-[0.85rem]" />
+                <Button onClick={() => handleCopy(credentials.apiKey, setCopiedKey)} variant="outline-secondary">
+                  <i className={`bx ${copiedKey ? 'bx-check' : 'bx-copy'} mr-1`}></i>
                   {copiedKey ? t('merchant.copied', { defaultValue: 'Copied!' }) : t('actions.copy', { defaultValue: 'Copy' })}
-                </button>
-              </div>
+                </Button>
+              </InputGroup>
             </div>
-          )}
-          {credentials.apiSecret && (
-            <div className="mb-0">
-              <label className="form-label font-semibold mb-1">{t('merchant.apiSecret', { defaultValue: 'API Secret' })}</label>
-              <div className="bp-input-group">
-                <input type="text" className="form-input font-mono" value={credentials.apiSecret} readOnly style={{ fontSize: '0.85rem' }} />
-                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => handleCopy(credentials.apiSecret, setCopiedSecret)}>
-                  <i className={`bx ${copiedSecret ?'bx-check' : 'bx-copy'} mr-1`}></i>
+          }
+          {credentials.apiSecret &&
+          <div className="mb-0">
+              <Label className="font-semibold mb-1">{t('merchant.apiSecret', { defaultValue: 'API Secret' })}</Label>
+              <InputGroup>
+                <Input type="text" value={credentials.apiSecret} readOnly className="font-mono text-[0.85rem]" />
+                <Button onClick={() => handleCopy(credentials.apiSecret, setCopiedSecret)} variant="outline-secondary">
+                  <i className={`bx ${copiedSecret ? 'bx-check' : 'bx-copy'} mr-1`}></i>
                   {copiedSecret ? t('merchant.copied', { defaultValue: 'Copied!' }) : t('actions.copy', { defaultValue: 'Copy' })}
-                </button>
-              </div>
+                </Button>
+              </InputGroup>
             </div>
-          )}
+          }
         </div>
         <div className="px-6 py-4 border-t border-surface-200">
-          <button type="button" className="btn btn-primary" onClick={onDismiss}>
+          <Button type="button" onClick={onDismiss}>
             <i className="bx bx-check mr-1"></i>
             {t('merchant.credentialSaved', { defaultValue: 'I have saved my credentials' })}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

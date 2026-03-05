@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
-import { formatRoleLabel } from '@/lib/utils/roles'
-import { STATUS_OPTIONS, ROLE_OPTIONS, statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { formatRoleLabel } from '@/lib/utils/roles';
+import { STATUS_OPTIONS, ROLE_OPTIONS, statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Alert, Button, Input, Label, Select, Spinner } from '../ui';
 
 export default function UserActionModal({
   t,
@@ -18,27 +19,27 @@ export default function UserActionModal({
   newPassword,
   setNewPassword,
   onClose,
-  onSubmit,
+  onSubmit
 }) {
   function getModalConfig() {
     switch (modalType) {
       case 'changeStatus':
-        return { title: t('admin.users.changeStatus', { defaultValue: 'Change User Status' }), btnClass: 'btn-warning', btnLabel: t('admin.users.updateStatus', { defaultValue: 'Update Status' }), icon: 'bx-user-check' }
+        return { title: t('admin.users.changeStatus', { defaultValue: 'Change User Status' }), btnVariant: 'warning', btnLabel: t('admin.users.updateStatus', { defaultValue: 'Update Status' }), icon: 'bx-user-check' };
       case 'changeRole':
-        return { title: t('admin.users.changeRole', { defaultValue: 'Change User Role' }), btnClass: 'btn-primary', btnLabel: t('admin.users.updateRole', { defaultValue: 'Update Role' }), icon: 'bx-shield' }
+        return { title: t('admin.users.changeRole', { defaultValue: 'Change User Role' }), btnVariant: 'primary', btnLabel: t('admin.users.updateRole', { defaultValue: 'Update Role' }), icon: 'bx-shield' };
       case 'resetPassword':
-        return { title: t('admin.users.resetPassword', { defaultValue: 'Reset Password' }), btnClass: 'btn-danger', btnLabel: t('admin.users.resetPasswordBtn', { defaultValue: 'Reset Password' }), icon: 'bx-lock-open' }
+        return { title: t('admin.users.resetPassword', { defaultValue: 'Reset Password' }), btnVariant: 'danger', btnLabel: t('admin.users.resetPasswordBtn', { defaultValue: 'Reset Password' }), icon: 'bx-lock-open' };
       case 'disable2FA':
-        return { title: t('admin.users.disable2FA', { defaultValue: 'Disable 2FA' }), btnClass: 'btn-danger', btnLabel: t('admin.users.disable2FABtn', { defaultValue: 'Disable 2FA' }), icon: 'bx-shield-x' }
+        return { title: t('admin.users.disable2FA', { defaultValue: 'Disable 2FA' }), btnVariant: 'danger', btnLabel: t('admin.users.disable2FABtn', { defaultValue: 'Disable 2FA' }), icon: 'bx-shield-x' };
       default:
-        return { title: '', btnClass: '', btnLabel: '', icon: '' }
+        return { title: '', btnVariant: 'primary', btnLabel: '', icon: '' };
     }
   }
 
-  const config = getModalConfig()
+  const config = getModalConfig();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !modalLoading && onClose()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !modalLoading && onClose()}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="bg-white rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
@@ -49,7 +50,7 @@ export default function UserActionModal({
             <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={modalLoading}></button>
           </div>
           <div className="p-5">
-            <div className="rounded p-3 mb-3" style={{ backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
+            <div className="rounded p-3 mb-3 bg-surface-100" style={{ border: '1px solid var(--color-surface-200)' }}>
               <div className="grid grid-cols-12 gap-x-6 gap-2">
                 <div className="col-span-6">
                   <small className="text-muted block">{t('admin.detail.userId', { defaultValue: 'User ID' })}</small>
@@ -70,93 +71,93 @@ export default function UserActionModal({
               </div>
             </div>
 
-            {modalType === 'changeStatus' && (
-              <>
+            {modalType === 'changeStatus' &&
+            <>
                 <div className="mb-3">
-                  <label className="form-label">{t('admin.users.newStatus', { defaultValue: 'New Status' })} <span className="text-danger">*</span></label>
-                  <select className="form-input" value={newStatus} onChange={(e) => setNewStatus(e.target.value)} disabled={modalLoading}>
-                    {STATUS_OPTIONS.map(s => (
-                      <option key={s} value={s}>{formatRoleLabel(s)}</option>
-                    ))}
-                  </select>
+                  <Label>{t('admin.users.newStatus', { defaultValue: 'New Status' })} <span className="text-danger">*</span></Label>
+                  <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} disabled={modalLoading}>
+                    {STATUS_OPTIONS.map((s) =>
+                  <option key={s} value={s}>{formatRoleLabel(s)}</option>
+                  )}
+                  </Select>
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">{t('admin.users.reason', { defaultValue: 'Reason' })}</label>
-                  <textarea
-                    className="form-input"
-                    rows="3"
-                    placeholder={t('admin.users.reasonPlaceholder', { defaultValue: 'Enter reason (optional, max 500 characters)...' })}
-                    value={statusReason}
-                    onChange={(e) => setStatusReason(e.target.value)}
-                    maxLength={500}
-                    disabled={modalLoading}
-                  />
+                  <Label>{t('admin.users.reason', { defaultValue: 'Reason' })}</Label>
+                  <Input
+
+                  rows="3"
+                  placeholder={t('admin.users.reasonPlaceholder', { defaultValue: 'Enter reason (optional, max 500 characters)...' })}
+                  value={statusReason}
+                  onChange={(e) => setStatusReason(e.target.value)}
+                  maxLength={500}
+                  disabled={modalLoading} />
+                
                 </div>
               </>
-            )}
+            }
 
-            {modalType === 'changeRole' && (
-              <div className="mb-3">
-                <label className="form-label">{t('admin.users.newRole', { defaultValue: 'New Role' })} <span className="text-danger">*</span></label>
-                <select className="form-input" value={newRole} onChange={(e) => setNewRole(e.target.value)} disabled={modalLoading}>
-                  {ROLE_OPTIONS.map(r => (
-                    <option key={r} value={r}>{formatRoleLabel(r)}</option>
-                  ))}
-                </select>
+            {modalType === 'changeRole' &&
+            <div className="mb-3">
+                <Label>{t('admin.users.newRole', { defaultValue: 'New Role' })} <span className="text-danger">*</span></Label>
+                <Select value={newRole} onChange={(e) => setNewRole(e.target.value)} disabled={modalLoading}>
+                  {ROLE_OPTIONS.map((r) =>
+                <option key={r} value={r}>{formatRoleLabel(r)}</option>
+                )}
+                </Select>
               </div>
-            )}
+            }
 
-            {modalType === 'resetPassword' && (
-              <>
-                <div className="alert alert-danger py-2 mb-3" role="alert">
+            {modalType === 'resetPassword' &&
+            <>
+                <Alert role="alert" className="py-2 mb-3">
                   <i className="bx bx-error mr-1"></i>
                   {t('admin.users.resetPasswordWarning', { defaultValue: 'This will immediately change the user\'s password.' })}
-                </div>
+                </Alert>
                 <div className="mb-3">
-                  <label className="form-label">{t('admin.users.newPassword', { defaultValue: 'New Password' })} <span className="text-danger">*</span></label>
-                  <input
-                    type="password"
-                    className="form-input"
-                    placeholder={t('admin.users.newPasswordPlaceholder', { defaultValue: 'Enter new password (8-128 characters)...' })}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    minLength={8}
-                    maxLength={128}
-                    disabled={modalLoading}
-                  />
+                  <Label>{t('admin.users.newPassword', { defaultValue: 'New Password' })} <span className="text-danger">*</span></Label>
+                  <Input
+                  type="password"
+
+                  placeholder={t('admin.users.newPasswordPlaceholder', { defaultValue: 'Enter new password (8-128 characters)...' })}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  minLength={8}
+                  maxLength={128}
+                  disabled={modalLoading} />
+                
                 </div>
               </>
-            )}
+            }
 
-            {modalType === 'disable2FA' && (
-              <div className="alert alert-danger py-2 mb-3" role="alert">
+            {modalType === 'disable2FA' &&
+            <Alert role="alert" className="py-2 mb-3">
                 <i className="bx bx-error mr-1"></i>
                 {t('admin.users.disable2FAWarning', { defaultValue: 'This will disable two-factor authentication for this user. They will need to set it up again.' })}
-              </div>
-            )}
+              </Alert>
+            }
           </div>
           <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={modalLoading}>
+            <Button type="button" onClick={onClose} disabled={modalLoading} variant="outline-secondary">
               {t('actions.cancel', { defaultValue: 'Cancel' })}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className={`btn ${config.btnClass}`}
+              variant={config.btnVariant}
               onClick={onSubmit}
-              disabled={modalLoading}
-            >
-              {modalLoading ? (
-                <>
-                  <span className="spinner w-4 h-4 mr-1"></span>
+              disabled={modalLoading}>
+              
+              {modalLoading ?
+              <>
+                  <Spinner className="w-4 h-4 mr-1" />
                   {t('invoices.loading', { defaultValue: 'Loading...' })}
-                </>
-              ) : (
-                config.btnLabel
-              )}
-            </button>
+                </> :
+
+              config.btnLabel
+              }
+            </Button>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

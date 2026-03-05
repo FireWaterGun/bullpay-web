@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Public_Sans } from 'next/font/google'
-import Script from 'next/script'
 import { AppProviders } from './providers'
 import './globals.css'
 
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#696cff',
+  themeColor: '#2563eb',
 }
 
 export default function RootLayout({
@@ -38,36 +37,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`layout-wide customizer-hide ${publicSans.className}`}
+      className={publicSans.className}
       dir="ltr"
-      data-skin="default"
-      data-template="vertical-menu-template"
-      data-assets-path="/assets/"
       suppressHydrationWarning
     >
       <head>
-        {/* Core CSS */}
+        {/* Icon font (Boxicons via CSS masks) */}
         <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
-        <link rel="stylesheet" href="/assets/css/demo.css" />
-        <link rel="stylesheet" href="/assets/css/custom-overrides.css" />
-
-        {/* Page CSS */}
-        <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
-        <link rel="stylesheet" href="/assets/vendor/css/pages/app-invoice.css" />
-
-        {/* Boxicons (self-hosted) */}
-        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons/boxicons.min.css" />
       </head>
       <body>
         <AppProviders>{children}</AppProviders>
-
-        {/* Helpers & Config */}
-        <Script src="/assets/vendor/js/helpers.js" strategy="beforeInteractive" />
-        <Script src="/assets/js/config.js" strategy="beforeInteractive" />
-
-        {/* Core JS */}
-        <Script src="/assets/vendor/libs/popper/popper.js" strategy="afterInteractive" />
-        <Script src="/assets/vendor/js/bootstrap.js" strategy="afterInteractive" />
       </body>
     </html>
   )

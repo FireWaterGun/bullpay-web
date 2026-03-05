@@ -1,83 +1,84 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useMemo } from 'react'
-import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useToast } from '@/app/providers'
-import { getUserLedgerEntries } from '@/lib/api/admin'
-import { listCoins } from '@/lib/api/coins'
-import UserLedgerFilters from '@/components/ledger/UserLedgerFilters'
-import UserLedgerRow from '@/components/ledger/UserLedgerRow'
-import { logger } from '@/lib/utils/logger'
-import RefreshButton from '@/components/RefreshButton'
-import PageSpinner from '@/components/PageSpinner'
-import TableEmptyState from '@/components/TableEmptyState'
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams as useNextSearchParams } from 'next/navigation';
+import { useAuth } from '@/app/providers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useToast } from '@/app/providers';
+import { getUserLedgerEntries } from '@/lib/api/admin';
+import { listCoins } from '@/lib/api/coins';
+import UserLedgerFilters from '@/components/ledger/UserLedgerFilters';
+import UserLedgerRow from '@/components/ledger/UserLedgerRow';
+import { logger } from '@/lib/utils/logger';
+import RefreshButton from '@/components/RefreshButton';
+import PageSpinner from '@/components/PageSpinner';
+import TableEmptyState from '@/components/TableEmptyState';
+import { Button, Card } from '../../../../components/ui'
 
 export default function UserLedgerList() {
-  const { t, i18n } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
-  const searchParams = useNextSearchParams()
+  const { t, i18n } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
+  const searchParams = useNextSearchParams();
 
   const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
-    return map[i18n.language] || 'en-US'
-  }, [i18n.language])
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
+    return map[i18n.language] || 'en-US';
+  }, [i18n.language]);
 
-  const initType = searchParams.get('type') || ''
-  const initUserId = searchParams.get('userId') || ''
-  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
-  const initEntryCode = searchParams.get('entryCode') || ''
-  const initState = searchParams.get('state') || ''
-  const initTxHash = searchParams.get('txHash') || ''
-  const initStartDate = searchParams.get('startDate') || ''
-  const initEndDate = searchParams.get('endDate') || ''
-  const initPage = parseInt(searchParams.get('page')) || 1
+  const initType = searchParams.get('type') || '';
+  const initUserId = searchParams.get('userId') || '';
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || '';
+  const initEntryCode = searchParams.get('entryCode') || '';
+  const initState = searchParams.get('state') || '';
+  const initTxHash = searchParams.get('txHash') || '';
+  const initStartDate = searchParams.get('startDate') || '';
+  const initEndDate = searchParams.get('endDate') || '';
+  const initPage = parseInt(searchParams.get('page')) || 1;
 
-  const [loading, setLoading] = useState(false)
-  const [entries, setEntries] = useState([])
-  const [pagination, setPagination] = useState(null)
-  const [currentPage, setCurrentPage] = useState(initPage)
-  const [coinNetworks, setCoinNetworks] = useState([])
+  const [loading, setLoading] = useState(false);
+  const [entries, setEntries] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [currentPage, setCurrentPage] = useState(initPage);
+  const [coinNetworks, setCoinNetworks] = useState([]);
 
   // Filter states (draft — applied on "Apply")
-  const [typeFilter, setTypeFilter] = useState(initType)
-  const [userIdFilter, setUserIdFilter] = useState(initUserId)
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
-  const [entryCodeFilter, setEntryCodeFilter] = useState(initEntryCode)
-  const [stateFilter, setStateFilter] = useState(initState)
-  const [txHashFilter, setTxHashFilter] = useState(initTxHash)
-  const [startDateFilter, setStartDateFilter] = useState(initStartDate)
-  const [endDateFilter, setEndDateFilter] = useState(initEndDate)
+  const [typeFilter, setTypeFilter] = useState(initType);
+  const [userIdFilter, setUserIdFilter] = useState(initUserId);
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId);
+  const [entryCodeFilter, setEntryCodeFilter] = useState(initEntryCode);
+  const [stateFilter, setStateFilter] = useState(initState);
+  const [txHashFilter, setTxHashFilter] = useState(initTxHash);
+  const [startDateFilter, setStartDateFilter] = useState(initStartDate);
+  const [endDateFilter, setEndDateFilter] = useState(initEndDate);
 
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState(() => {
-    const f = {}
-    if (initType) f.type = initType
-    if (initUserId) f.userId = Number(initUserId)
-    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
-    if (initEntryCode) f.entryCode = initEntryCode
-    if (initState) f.state = initState
-    if (initTxHash) f.txHash = initTxHash
-    if (initStartDate) f.startDate = initStartDate
-    if (initEndDate) f.endDate = initEndDate
-    return f
-  })
+    const f = {};
+    if (initType) f.type = initType;
+    if (initUserId) f.userId = Number(initUserId);
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId);
+    if (initEntryCode) f.entryCode = initEntryCode;
+    if (initState) f.state = initState;
+    if (initTxHash) f.txHash = initTxHash;
+    if (initStartDate) f.startDate = initStartDate;
+    if (initEndDate) f.endDate = initEndDate;
+    return f;
+  });
 
   useEffect(() => {
-    loadEntries()
-  }, [currentPage, appliedFilters])
+    loadEntries();
+  }, [currentPage, appliedFilters]);
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {})
-  }, [])
+    listCoins(token).then(setCoinNetworks).catch(() => {});
+  }, []);
 
   function syncSearchParams(filters, page) {
-    const params = new URLSearchParams()
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
-    if (page > 1) params.set('page', page)
-    window.history.replaceState(null, '', `?${params.toString()}`)
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([k, v]) => {if (v !== undefined && v !== '') params.set(k, v);});
+    if (page > 1) params.set('page', page);
+    window.history.replaceState(null, '', `?${params.toString()}`);
   }
 
   function applyFilters() {
@@ -89,47 +90,47 @@ export default function UserLedgerList() {
       state: stateFilter || undefined,
       txHash: txHashFilter || undefined,
       startDate: startDateFilter || undefined,
-      endDate: endDateFilter || undefined,
-    }
-    setAppliedFilters(f)
-    setCurrentPage(1)
-    syncSearchParams(f, 1)
+      endDate: endDateFilter || undefined
+    };
+    setAppliedFilters(f);
+    setCurrentPage(1);
+    syncSearchParams(f, 1);
   }
 
   function resetFilters() {
-    setTypeFilter('')
-    setUserIdFilter('')
-    setCoinNetworkIdFilter('')
-    setEntryCodeFilter('')
-    setStateFilter('')
-    setTxHashFilter('')
-    setStartDateFilter('')
-    setEndDateFilter('')
-    setAppliedFilters({})
-    setCurrentPage(1)
-    window.history.replaceState(null, '', window.location.pathname)
+    setTypeFilter('');
+    setUserIdFilter('');
+    setCoinNetworkIdFilter('');
+    setEntryCodeFilter('');
+    setStateFilter('');
+    setTxHashFilter('');
+    setStartDateFilter('');
+    setEndDateFilter('');
+    setAppliedFilters({});
+    setCurrentPage(1);
+    window.history.replaceState(null, '', window.location.pathname);
   }
 
   async function loadEntries() {
     try {
-      setLoading(true)
+      setLoading(true);
       const data = await getUserLedgerEntries(token, {
         page: currentPage,
         limit: 20,
-        ...appliedFilters,
-      })
-      setEntries(data.items || [])
-      setPagination(data.pagination || null)
+        ...appliedFilters
+      });
+      setEntries(data.items || []);
+      setPagination(data.pagination || null);
     } catch (error) {
-      logger.error('Failed to load user ledger entries:', error)
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
+      logger.error('Failed to load user ledger entries:', error);
+      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   if (loading && entries.length === 0) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
   return (
@@ -137,7 +138,7 @@ export default function UserLedgerList() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           {/* Header */}
-          <div className="card mb-4">
+          <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
@@ -174,17 +175,17 @@ export default function UserLedgerList() {
               endDateFilter={endDateFilter}
               setEndDateFilter={setEndDateFilter}
               onApply={applyFilters}
-              onReset={resetFilters}
-            />
-          </div>
+              onReset={resetFilters} />
+            
+          </Card>
 
           {/* Table */}
-          <div className="card">
+          <Card>
             <div className="p-5">
-              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
-                <table className="w-full" style={{ minWidth: '1200px' }}>
+              <div className="overflow-x-auto overflow-x-auto">
+                <table className="w-full min-w-[1200px]">
                   <thead>
-                    <tr style={{ whiteSpace: 'nowrap' }}>
+                    <tr className="whitespace-nowrap">
                       <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                       <th>{t('admin.detail.userId', { defaultValue: 'User ID' })}</th>
                       <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
@@ -199,60 +200,60 @@ export default function UserLedgerList() {
                     </tr>
                   </thead>
                   <tbody>
-                    {entries.length === 0 ? (
-                      <TableEmptyState
-                        colSpan={11}
-                        icon="bx-book-content"
-                        message={t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
-                        sub={t('admin.ledger.noEntriesSub', { defaultValue: 'No entries match the current filters' })}
-                      />
-                    ) : (
-                      entries.map((entry) => (
-                        <UserLedgerRow key={entry.id} entry={entry} t={t} />
-                      ))
-                    )}
+                    {entries.length === 0 ?
+                    <TableEmptyState
+                      colSpan={11}
+                      icon="bx-book-content"
+                      message={t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
+                      sub={t('admin.ledger.noEntriesSub', { defaultValue: 'No entries match the current filters' })} /> :
+
+
+                    entries.map((entry) =>
+                    <UserLedgerRow key={entry.id} entry={entry} t={t} />
+                    )
+                    }
                   </tbody>
                 </table>
               </div>
 
               {/* Pagination */}
-              {pagination && pagination.total > 0 && (
-                <div className="flex justify-between items-center mt-4">
+              {pagination && pagination.total > 0 &&
+              <div className="flex justify-between items-center mt-4">
                   <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
-                      start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                      end: Math.min(pagination.page * pagination.limit, pagination.total),
-                      total: pagination.total,
-                      defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                    })}
+                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
+                    end: Math.min(pagination.page * pagination.limit, pagination.total),
+                    total: pagination.total,
+                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+                  })}
                   </div>
                   <div className="inline-flex rounded-lg shadow-sm">
-                    <button
-                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                      disabled={!pagination.hasPrev || loading}
-                      onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
-                    >
+                    <Button
+
+                    disabled={!pagination.hasPrev || loading}
+                    onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
+                    
                       <i className="bx bx-chevron-left"></i>
                       {t('actions.prev', { defaultValue: 'Previous' })}
-                    </button>
-                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>
+                    </Button>
+                    <Button disabled variant="outline-secondary" size="sm">
                       {pagination.page} / {pagination.totalPages}
-                    </button>
-                    <button
-                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                      disabled={!pagination.hasNext || loading}
-                      onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
-                    >
+                    </Button>
+                    <Button
+
+                    disabled={!pagination.hasNext || loading}
+                    onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
+                    
                       {t('actions.next', { defaultValue: 'Next' })}
                       <i className="bx bx-chevron-right"></i>
-                    </button>
+                    </Button>
                   </div>
                 </div>
-              )}
+              }
             </div>
-          </div>
+          </Card>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

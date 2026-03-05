@@ -1,23 +1,24 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
-const Turnstile = dynamic(() => import('react-turnstile').then(m => m.Turnstile), { ssr: false })
-import { registerApi } from '@/lib/api/auth'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+const Turnstile = dynamic(() => import('react-turnstile').then((m) => m.Turnstile), { ssr: false });
+import { registerApi } from '@/lib/api/auth';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert, Button, Input, Label } from '../../../components/ui';
 
-const passwordSchema = z.string()
-  .min(8, 'Password must be at least 8 characters')
-  .max(50, 'Password must be at most 50 characters')
-  .regex(/[a-z]/, 'At least one lowercase letter')
-  .regex(/[A-Z]/, 'At least one uppercase letter')
-  .regex(/[0-9]/, 'At least one number')
-  .regex(/[^A-Za-z0-9]/, 'At least one special character')
+const passwordSchema = z.string().
+min(8, 'Password must be at least 8 characters').
+max(50, 'Password must be at most 50 characters').
+regex(/[a-z]/, 'At least one lowercase letter').
+regex(/[A-Z]/, 'At least one uppercase letter').
+regex(/[0-9]/, 'At least one number').
+regex(/[^A-Za-z0-9]/, 'At least one special character');
 
 const schema = z.object({
   fullName: z.string().min(1, 'Full name is required').max(50, 'Full name must be at most 50 characters'),
@@ -27,52 +28,52 @@ const schema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword']
-})
+});
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>;
 
 export default function RegisterPage() {
-  const router = useRouter()
-  const [cfToken, setCfToken] = useState('')
-  const [captchaRenderKey, setCaptchaRenderKey] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
+  const router = useRouter();
+  const [cfToken, setCfToken] = useState('');
+  const [captchaRenderKey, setCaptchaRenderKey] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
   const { register, handleSubmit, formState: { errors, isValid }, setError: setFormError } = useForm<FormValues>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' }
-  })
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: FormValues) => {
-    setError('')
-    setLoading(true)
+    setError('');
+    setLoading(true);
     try {
-      await registerApi({ ...values, cfToken })
-      try { sessionStorage.setItem('register_email', values.email) } catch {}
-      router.replace('/register-complete')
+      await registerApi({ ...values, cfToken });
+      try {sessionStorage.setItem('register_email', values.email);} catch {}
+      router.replace('/register-complete');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      const details = err?.details || err?.data?.error?.details || err?.data?.details || {}
-      if (details?.password?.[0]) setFormError('password', { message: details.password[0] })
-      if (details?.confirmPassword?.[0]) setFormError('confirmPassword', { message: details.confirmPassword[0] })
-      if (details?.email?.[0]) setFormError('email', { message: details.email[0] })
-      let display = ''
-      if (typeof err?.message === 'string') display = err.message
-      else if (typeof err?.data?.error?.message === 'string') display = err.data.error.message
-      else if (typeof err?.data?.message === 'string') display = err.data.message
-      if (!display && Array.isArray(details?.cfToken) && details.cfToken.length) display = details.cfToken[0]
-      setError(display || 'Register failed')
-      setCfToken('')
-      setCaptchaRenderKey((k) => k + 1)
+      const details = err?.details || err?.data?.error?.details || err?.data?.details || {};
+      if (details?.password?.[0]) setFormError('password', { message: details.password[0] });
+      if (details?.confirmPassword?.[0]) setFormError('confirmPassword', { message: details.confirmPassword[0] });
+      if (details?.email?.[0]) setFormError('email', { message: details.email[0] });
+      let display = '';
+      if (typeof err?.message === 'string') display = err.message;else
+      if (typeof err?.data?.error?.message === 'string') display = err.data.error.message;else
+      if (typeof err?.data?.message === 'string') display = err.data.message;
+      if (!display && Array.isArray(details?.cfToken) && details.cfToken.length) display = details.cfToken[0];
+      setError(display || 'Register failed');
+      setCfToken('');
+      setCaptchaRenderKey((k) => k + 1);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
@@ -91,56 +92,56 @@ export default function RegisterPage() {
         <h4 className="text-xl font-semibold mb-1">Create your account</h4>
         <p className="text-sm text-surface-500 mb-6">Start accepting crypto payments in minutes</p>
 
-        {error && <div className="alert alert-danger mb-4">{error}</div>}
+        {error && <Alert className="mb-4">{error}</Alert>}
 
         <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
           {/* Full name */}
           <div>
-            <label htmlFor="fullName" className="form-label">Full name</label>
-            <input
+            <Label htmlFor="fullName">Full name</Label>
+            <Input
               type="text"
-              className={`form-input ${errors.fullName ?'!border-danger-500' : ''}`}
+
               id="fullName"
               placeholder="John Doe"
               maxLength={50}
-              {...register('fullName')}
-            />
+              {...register('fullName')} error={errors.fullName} />
+            
             {errors.fullName && <p className="mt-1 text-sm text-danger-500">{errors.fullName.message}</p>}
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="form-label">Email</label>
-            <input
+            <Label htmlFor="email">Email</Label>
+            <Input
               type="email"
-              className={`form-input ${errors.email ?'!border-danger-500' : ''}`}
+
               id="email"
               placeholder="Enter your email"
               maxLength={50}
-              {...register('email')}
-            />
+              {...register('email')} error={errors.email} />
+            
             {errors.email && <p className="mt-1 text-sm text-danger-500">{errors.email.message}</p>}
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="form-label">Password</label>
+            <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <input
+              <Input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
-                className={`form-input pr-10 ${errors.password ?'!border-danger-500' : ''}`}
+
                 placeholder="••••••••••••"
                 maxLength={50}
-                {...register('password')}
-              />
+                {...register('password')} error={errors.password} className="pr-10" />
+              
               <button
                 type="button"
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-surface-400 hover:text-surface-600 transition-colors cursor-pointer"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                <i className={`bx ${showPassword ?'bx-show' : 'bx-hide'} text-lg`}></i>
+                aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                
+                <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
               </button>
             </div>
             {errors.password && <p className="mt-1 text-sm text-danger-500">{errors.password.message}</p>}
@@ -148,23 +149,23 @@ export default function RegisterPage() {
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
             <div className="relative">
-              <input
+              <Input
                 type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
-                className={`form-input pr-10 ${errors.confirmPassword ?'!border-danger-500' : ''}`}
+
                 placeholder="••••••••••••"
                 maxLength={50}
-                {...register('confirmPassword')}
-              />
+                {...register('confirmPassword')} error={errors.confirmPassword} className="pr-10" />
+              
               <button
                 type="button"
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-surface-400 hover:text-surface-600 transition-colors cursor-pointer"
                 onClick={() => setShowConfirmPassword((v) => !v)}
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-              >
-                <i className={`bx ${showConfirmPassword ?'bx-show' : 'bx-hide'} text-lg`}></i>
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}>
+                
+                <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
               </button>
             </div>
             {errors.confirmPassword && <p className="mt-1 text-sm text-danger-500">{errors.confirmPassword.message}</p>}
@@ -172,30 +173,30 @@ export default function RegisterPage() {
 
           {/* Captcha */}
           <div>
-            {siteKey && (
-              <div className="rounded-[10px] overflow-hidden">
+            {siteKey &&
+            <div className="rounded-[10px] overflow-hidden">
                 <Turnstile
-                  key={captchaRenderKey}
-                  sitekey={siteKey}
-                  theme="light"
-                  appearance="always"
-                  size="flexible"
-                  onVerify={(token) => setCfToken(token)}
-                  onError={() => setError('CAPTCHA failed, please try again')}
-                  onExpire={() => setCfToken('')}
-                />
+                key={captchaRenderKey}
+                sitekey={siteKey}
+                theme="light"
+                appearance="always"
+                size="flexible"
+                onVerify={(token) => setCfToken(token)}
+                onError={() => setError('CAPTCHA failed, please try again')}
+                onExpire={() => setCfToken('')} />
+              
               </div>
-            )}
+            }
           </div>
 
           {/* Submit */}
-          <button
-            className="btn btn-primary w-full"
+          <Button
+
             type="submit"
-            disabled={loading || !cfToken || !isValid}
-          >
+            disabled={loading || !cfToken || !isValid} className="w-full">
+            
             {loading ? 'Submitting...' : 'Sign up'}
-          </button>
+          </Button>
         </form>
 
         <p className="text-center mt-6 text-sm text-surface-500">
@@ -203,6 +204,6 @@ export default function RegisterPage() {
           <Link href="/login" className="font-medium">Sign in instead</Link>
         </p>
       </div>
-    </div>
-  )
+    </div>);
+
 }

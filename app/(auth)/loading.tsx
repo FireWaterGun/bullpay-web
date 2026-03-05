@@ -1,7 +1,8 @@
+import { Spinner } from '../../components/ui'
 export default function AuthLoading() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="spinner text-primary-600"></div>
-    </div>
-  )
+      <Spinner className="text-primary-600" />
+    </div>);
+
 }

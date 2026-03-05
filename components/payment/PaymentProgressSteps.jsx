@@ -25,14 +25,9 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
     }}>
       <div className="flex items-start justify-between relative">
         {/* Connector lines */}
-        <div className="absolute" style={{ top: 22, left: 0, right: 0, zIndex: 0, padding: '0 60px' }}>
-          <div style={{ height: 2, background: 'var(--color-surface-200)', borderRadius: 2 }}>
-            <div style={{
-              height: '100%', borderRadius: 2,
-              background: isPaid ? '#22c55e' : currentStep >= 2 ? 'var(--color-primary-600)' : 'transparent',
-              width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%',
-              transition: 'width 0.4s ease',
-            }}></div>
+        <div className="absolute top-[22px] left-[0px] right-[0px] z-0 py-[0] px-[60px]">
+          <div className="h-0.5 bg-surface-200 rounded-sm">
+            <div className="rounded-sm" style={{ height: '100%', background: isPaid ? '#22c55e' : currentStep >= 2 ? 'var(--color-primary-600)' : 'transparent', width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%', transition: 'width 0.4s ease' }}></div>
           </div>
         </div>
 
@@ -44,8 +39,8 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
           const circleSize = isActive ? 44 : 14
 
           return (
-            <div key={step.key} className="text-center" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-              <div className="flex justify-center" style={{ height: 44, alignItems: 'center' }}>
+            <div key={step.key} className="text-center flex-1 relative z-[1]">
+              <div className="flex justify-center h-11 items-center">
                 {isActive ? (
                   <div className="flex items-center justify-center rounded-full" style={{
                     width: circleSize, height: circleSize,
@@ -53,40 +48,24 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
                     background: 'color-mix(in srgb, var(--color-primary-600) 8%, transparent)',
                     transition: 'all 0.3s ease',
                   }}>
-                    <i className={`bx ${step.icon}`} style={{ fontSize: 20, color: 'var(--color-primary-600)' }}></i>
+                    <i className={`bx ${step.icon} text-[20px] text-primary-600`}></i>
                   </div>
                 ) : isDone ? (
-                  <div className="flex items-center justify-center rounded-full" style={{
-                    width: 44, height: 44,
-                    background: '#22c55e',
-                    transition: 'all 0.3s ease',
-                    animation: step.key === 3 ? 'progressBounce 0.6s ease' : 'none',
-                  }}>
-                    <i className="bx bx-check text-white" style={{ fontSize: 22 }}></i>
+                  <div className="flex items-center justify-center rounded-full w-11 h-11 bg-green-500" style={{ transition: 'all 0.3s ease', animation: step.key === 3 ? 'progressBounce 0.6s ease' : 'none' }}>
+                    <i className="bx bx-check text-white text-[22px]"></i>
                   </div>
                 ) : isError ? (
-                  <div className="flex items-center justify-center rounded-full" style={{
-                    width: 44, height: 44,
-                    background: '#ef4444',
-                    transition: 'all 0.3s ease',
-                  }}>
-                    <i className="bx bx-x text-white" style={{ fontSize: 22 }}></i>
+                  <div className="flex items-center justify-center rounded-full w-11 h-11 bg-red-500" style={{ transition: 'all 0.3s ease' }}>
+                    <i className="bx bx-x text-white text-[22px]"></i>
                   </div>
                 ) : (
-                  <div className="rounded-full" style={{
-                    width: circleSize, height: circleSize,
-                    background: 'var(--color-surface-200)',
-                    transition: 'all 0.3s ease',
-                  }}></div>
+                  <div className="rounded-full bg-surface-200" style={{ width: circleSize, height: circleSize, transition: 'all 0.3s ease' }}></div>
                 )}
               </div>
-              <div className="mt-1" style={{
-                fontSize: '0.7rem', fontWeight: 600,
-                color: isDone ? '#22c55e'
+              <div className="mt-1 text-[0.7rem] font-semibold" style={{ color: isDone ? '#22c55e'
                   : isError ? '#ef4444'
                   : isActive ? 'var(--color-primary-600)'
-                  : 'var(--color-surface-500)',
-              }}>
+                  : 'var(--color-surface-500)' }}>
                 {step.label}
               </div>
             </div>

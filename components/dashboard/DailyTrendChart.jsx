@@ -6,7 +6,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center" style={{ height }}>
-        <div className="rounded-full bg-surface-100 flex items-center justify-center mb-3" style={{ width: 64, height: 64 }}>
+        <div className="rounded-full bg-surface-100 flex items-center justify-center mb-3 w-16 h-16">
           <i className="bx bx-line-chart text-3xl"></i>
         </div>
         <span className="font-medium text-surface-900">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
@@ -73,43 +73,30 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
 
   return (
     <div>
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{ display: 'flex', minWidth: yAxisW + barAreaW + 120 }}>
+      <div className="overflow-x-auto">
+        <div className="flex" style={{ minWidth: yAxisW + barAreaW + 120 }}>
           {/* Y-axis */}
-          <div style={{ width: yAxisW, flexShrink: 0, position: 'relative', height: chartH }}>
+          <div className="shrink-0 relative" style={{ width: yAxisW, height: chartH }}>
             {yScale.labels.map((v) => (
-              <div
+              <div className="absolute right-[8px] text-[0.72rem] text-surface-500 whitespace-nowrap"
                 key={`y-${v}`}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v) - 8,
-                  right: 8,
-                  fontSize: '0.72rem',
-                  color: 'var(--color-surface-500, #6b7280)',
-                  whiteSpace: 'nowrap',
-                }}
+                style={{ top: yPos(v) - 8 }}
               >
                 {formatUsd(v)}
               </div>
             ))}
           </div>
           {/* Chart area */}
-          <div style={{ position: 'relative', flex: 1, minWidth: barAreaW, height: chartH }}>
+          <div className="relative flex-1" style={{ minWidth: barAreaW, height: chartH }}>
             {/* Grid lines */}
             {yScale.labels.map((v) => (
-              <div
+              <div className="absolute left-[0px] right-[0px]"
                 key={`grid-${v}`}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v),
-                  left: 0,
-                  right: 0,
-                  borderTop: v === 0 ? '1.5px solid var(--color-surface-500, #6b7280)' : '1px dashed var(--color-surface-200, #e5e7eb)',
-                }}
+                style={{ top: yPos(v), borderTop: v === 0 ? '1.5px solid var(--color-surface-500, #6b7280)' : '1px dashed var(--color-surface-200, #e5e7eb)' }}
               />
             ))}
             {/* Bars + line */}
-            <svg width={barAreaW} height={chartH} style={{ position: 'absolute', top: 0, left: 0 }}>
+            <svg className="absolute top-[0px] left-[0px]" width={barAreaW} height={chartH}>
               <defs>
                 <pattern id="withdrawalPattern" patternUnits="userSpaceOnUse" width="4" height="4">
                   <rect width="4" height="4" fill="#a8b8d8" />
@@ -131,7 +118,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
 
                 return (
                   <g key={item.date || i}>
-                    <rect x={cx - barW - 1} y={depTop} width={barW} height={depH} rx={2} fill="#696cff">
+                    <rect x={cx - barW - 1} y={depTop} width={barW} height={depH} rx={2} fill="var(--color-primary-600, #2563eb)">
                       <title>{t ? t('userDashboard.chartDeposit', { value: formatUsd(dep), defaultValue: `Deposit: ${formatUsd(dep)}` }) : `Deposit: ${formatUsd(dep)}`}</title>
                     </rect>
                     <rect x={cx + 1} y={wthTop} width={barW} height={wthH} rx={2} fill="url(#withdrawalPattern)">
@@ -155,26 +142,26 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
             </svg>
           </div>
           {/* Legend */}
-          <div style={{ width: 110, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
+          <div className="w-[110px] shrink-0 flex flex-col justify-center gap-3 pl-[16px]">
             <div className="flex items-center gap-2">
-              <span style={{ width: 14, height: 14, backgroundColor: 'var(--color-primary-600, #696cff)', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+              <span className="w-3.5 h-3.5 bg-primary-600 rounded-[3px] inline-block shrink-0"></span>
               <small>{t ? t('userDashboard.deposits', { defaultValue: 'Deposit' }) : 'Deposit'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(#9ca3af 0% 25%, #6b7280 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+              <span className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0" style={{ background: 'repeating-conic-gradient(#9ca3af 0% 25%, #6b7280 0% 50%) 50%/6px 6px' }}></span>
               <small>{t ? t('userDashboard.withdrawals', { defaultValue: 'Withdrawal' }) : 'Withdrawal'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
+              <span className="w-4 inline-block shrink-0" style={{ borderBottom: '2px solid #03c3ec' }}></span>
               <small>{t ? t('userDashboard.netFlow', { defaultValue: 'Net Flow' }) : 'Net Flow'}</small>
             </div>
           </div>
         </div>
         {/* X-axis labels */}
-        <div style={{ display: 'flex', marginLeft: yAxisW, width: barAreaW }}>
+        <div className="flex" style={{ marginLeft: yAxisW, width: barAreaW }}>
           {data.map((item) => (
-            <div key={`x-${item.date}`} style={{ width: barGroupW, textAlign: 'center', flexShrink: 0 }}>
-              <small className="text-surface-500" style={{ fontSize: '0.72rem' }}>
+            <div className="text-center shrink-0" key={`x-${item.date}`} style={{ width: barGroupW }}>
+              <small className="text-surface-500 text-[0.72rem]">
                 {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
             </div>

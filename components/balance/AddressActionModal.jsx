@@ -1,4 +1,5 @@
-'use client'
+'use client';
+import { Button, Input, Label, Spinner } from '../ui';
 
 export default function AddressActionModal({
   selectedAddress,
@@ -10,10 +11,10 @@ export default function AddressActionModal({
   setSkipLockPeriod,
   actionLoading,
   onAction,
-  onClose,
+  onClose
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !actionLoading && onClose()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !actionLoading && onClose()}>
       <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h5 className="font-semibold text-lg flex items-center">
@@ -38,69 +39,69 @@ export default function AddressActionModal({
                 </div>
                 <div className="col-span-2">
                   <small className="text-surface-500 block">Address</small>
-                  <code style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>{selectedAddress.address}</code>
+                  <code className="text-[0.8rem] break-all">{selectedAddress.address}</code>
                 </div>
               </div>
             </div>
           </div>
 
-          {actionType === 'delete' && (
-            <div className="rounded-lg bg-red-50 text-red-700 p-3 flex items-center mb-3" role="alert">
+          {actionType === 'delete' &&
+          <div className="rounded-lg bg-red-50 text-red-700 p-3 flex items-center mb-3" role="alert">
               <i className="bx bx-error-circle mr-2 text-xl"></i>
               <div>This action is <strong>irreversible</strong>. The address will be permanently deleted.</div>
             </div>
-          )}
+          }
 
           <div className="mb-3">
-            <label className="form-label">Reason <span className="text-red-500">*</span></label>
-            <textarea
-              className="form-input w-full"
+            <Label>Reason <span className="text-red-500">*</span></Label>
+            <Input
+
               rows="3"
               placeholder="Enter reason (minimum 10 characters)..."
               value={actionReason}
               onChange={(e) => setActionReason(e.target.value)}
-              disabled={actionLoading}
-            ></textarea>
+              disabled={actionLoading} className="w-full">
+            </Input>
             <small className="text-surface-500">{actionReason.trim().length}/500 characters</small>
           </div>
 
-          {actionType === 'forceVerify' && (
-            <label className="flex items-center gap-2 cursor-pointer">
+          {actionType === 'forceVerify' &&
+          <label className="flex items-center gap-2 cursor-pointer">
               <input
-                className="rounded border-surface-300"
-                type="checkbox"
-                checked={skipLockPeriod}
-                onChange={(e) => setSkipLockPeriod(e.target.checked)}
-                disabled={actionLoading}
-              />
+              className="rounded border-surface-300"
+              type="checkbox"
+              checked={skipLockPeriod}
+              onChange={(e) => setSkipLockPeriod(e.target.checked)}
+              disabled={actionLoading} />
+            
               <span className="text-sm">Skip lock period</span>
             </label>
-          )}
+          }
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t">
-          <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={actionLoading}>
+          <Button type="button" onClick={onClose} disabled={actionLoading} variant="outline-secondary">
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className={`btn ${actionConfig.btnClass}`}
+            variant={actionConfig.btnVariant}
             onClick={onAction}
-            disabled={actionLoading || actionReason.trim().length < 10}
-          >
-            {actionLoading ? (
-              <>
-                <span className="spinner w-4 h-4 border-2 mr-1"></span>
+            disabled={actionLoading || actionReason.trim().length < 10}>
+            
+            {actionLoading ?
+            <>
+                <Spinner className="w-4 h-4 mr-1" />
                 Processing...
-              </>
-            ) : (
-              <>
+              </> :
+
+            <>
                 <i className={`bx ${actionConfig.icon} mr-1`}></i>
                 {actionConfig.btnLabel}
               </>
-            )}
-          </button>
+            }
+          </Button>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

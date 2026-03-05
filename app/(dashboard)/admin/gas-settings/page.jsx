@@ -1,272 +1,273 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useAuth, useToast } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { getSettings, upsertSetting } from '@/lib/api/admin'
-import { logger } from '@/lib/utils/logger'
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth, useToast } from '@/app/providers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { getSettings, upsertSetting } from '@/lib/api/admin';
+import { logger } from '@/lib/utils/logger';
+import { Alert, Badge, Button, Card, Input, Label, Spinner } from '../../../../components/ui';
 
 // ─── Constants ───────────────────────────────────────────────
 
 const TABS = [
-  { key: 'gasPrice', icon: 'bx-gas-pump', labelKey: 'admin.gasSettings.tabGasPrice', defaultLabel: 'Gas Price' },
-  { key: 'gasLimit', icon: 'bx-tachometer', labelKey: 'admin.gasSettings.tabGasLimit', defaultLabel: 'Gas Limit' },
-  { key: 'gasTopup', icon: 'bx-coin-stack', labelKey: 'admin.gasSettings.tabGasTopup', defaultLabel: 'Gas Topup' },
-]
+{ key: 'gasPrice', icon: 'bx-gas-pump', labelKey: 'admin.gasSettings.tabGasPrice', defaultLabel: 'Gas Price' },
+{ key: 'gasLimit', icon: 'bx-tachometer', labelKey: 'admin.gasSettings.tabGasLimit', defaultLabel: 'Gas Limit' },
+{ key: 'gasTopup', icon: 'bx-coin-stack', labelKey: 'admin.gasSettings.tabGasTopup', defaultLabel: 'Gas Topup' }];
+
 
 const NETWORKS = [
-  { key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC', nativeCoin: 'BNB', type: 'legacy' },
-  { key: 'pol', name: 'Polygon', symbol: 'POL', nativeCoin: 'POL', type: 'eip1559' },
-  { key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559' },
-]
+{ key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559' },
+{ key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC', nativeCoin: 'BNB', type: 'legacy' },
+{ key: 'pol', name: 'Polygon', symbol: 'POL', nativeCoin: 'POL', type: 'eip1559' },
+{ key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM', nativeCoin: 'ETH', type: 'eip1559' },
+{ key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559' },
+{ key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559' },
+{ key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559' }];
 
-const OPERATIONS = ['withdrawal', 'sweep', 'topup']
+
+const OPERATIONS = ['withdrawal', 'sweep', 'topup'];
 
 // ─── Component ───────────────────────────────────────────────
 
 export default function GasSettingsPage() {
-  const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
+  const { t } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
 
-  const [activeTab, setActiveTab] = useState('gasPrice')
-  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('gasPrice');
+  const [loading, setLoading] = useState(true);
 
   // All settings keyed by keyName → value
-  const [settingsMap, setSettingsMap] = useState({})
+  const [settingsMap, setSettingsMap] = useState({});
 
   // Edit modals
-  const [editModal, setEditModal] = useState(null) // { tab, network }
-  const [editForm, setEditForm] = useState({})
-  const [formErrors, setFormErrors] = useState({})
-  const [saving, setSaving] = useState(false)
+  const [editModal, setEditModal] = useState(null); // { tab, network }
+  const [editForm, setEditForm] = useState({});
+  const [formErrors, setFormErrors] = useState({});
+  const [saving, setSaving] = useState(false);
 
   // Escape key to close modal (blocked during save to prevent race condition)
   useEffect(() => {
-    if (!editModal) return
-    const handler = (e) => { if (e.key === 'Escape' && !saving) setEditModal(null) }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [editModal, saving])
+    if (!editModal) return;
+    const handler = (e) => {if (e.key === 'Escape' && !saving) setEditModal(null);};
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [editModal, saving]);
 
   // ─── Data Loading ────────────────────────────────────────
 
   const loadSettings = useCallback(async () => {
-    if (!token) return
+    if (!token) return;
     try {
       const [gasPriceRes, gasLimitRes, gasTopupRes] = await Promise.all([
-        getSettings(token, { category: 'gas_price', limit: 100 }),
-        getSettings(token, { category: 'gas_limit', limit: 100 }),
-        getSettings(token, { category: 'gas_topup', limit: 100 }),
-      ])
+      getSettings(token, { category: 'gas_price', limit: 100 }),
+      getSettings(token, { category: 'gas_limit', limit: 100 }),
+      getSettings(token, { category: 'gas_topup', limit: 100 })]
+      );
 
-      const map = {}
+      const map = {};
       const allItems = [
-        ...(gasPriceRes?.items || []),
-        ...(gasLimitRes?.items || []),
-        ...(gasTopupRes?.items || []),
-      ]
+      ...(gasPriceRes?.items || []),
+      ...(gasLimitRes?.items || []),
+      ...(gasTopupRes?.items || [])];
+
       for (const item of allItems) {
-        const key = item.keyName || item.key_name
-        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? ''
+        const key = item.keyName || item.key_name;
+        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? '';
       }
-      setSettingsMap(map)
+      setSettingsMap(map);
     } catch (error) {
-      logger.error('Failed to load gas settings:', error)
-      toast.error(t('admin.gasSettings.loadError', { defaultValue: 'Failed to load gas settings' }))
+      logger.error('Failed to load gas settings:', error);
+      toast.error(t('admin.gasSettings.loadError', { defaultValue: 'Failed to load gas settings' }));
     }
-  }, [token]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     async function init() {
-      setLoading(true)
-      await loadSettings()
-      setLoading(false)
+      setLoading(true);
+      await loadSettings();
+      setLoading(false);
     }
-    init()
-  }, [loadSettings])
+    init();
+  }, [loadSettings]);
 
   // ─── Helpers ─────────────────────────────────────────────
 
   function getVal(key, fallback = '—') {
-    const v = settingsMap[key]
-    return v !== undefined && v !== '' ? v : fallback
+    const v = settingsMap[key];
+    return v !== undefined && v !== '' ? v : fallback;
   }
 
   function updateField(field, value) {
-    setEditForm((f) => ({ ...f, [field]: value }))
+    setEditForm((f) => ({ ...f, [field]: value }));
     setFormErrors((e) => {
-      if (!e[field]) return e
-      const next = { ...e }
-      delete next[field]
-      return next
-    })
+      if (!e[field]) return e;
+      const next = { ...e };
+      delete next[field];
+      return next;
+    });
   }
 
   function validateNumber(value, { min, max, integer, fieldLabel } = {}) {
-    if (value === '' || value === undefined) return null // empty = optional, skip
-    const n = Number(value)
-    if (isNaN(n) || value.toString().trim() === '') return t('admin.gasSettings.errNotANumber', { defaultValue: '{{field}} must be a valid number', field: fieldLabel || 'Value' })
-    if (integer && !Number.isInteger(n)) return t('admin.gasSettings.errMustBeInteger', { defaultValue: '{{field}} must be an integer', field: fieldLabel || 'Value' })
-    if (min !== undefined && n < min) return t('admin.gasSettings.errMin', { defaultValue: '{{field}} must be at least {{min}}', field: fieldLabel || 'Value', min })
-    if (max !== undefined && n > max) return t('admin.gasSettings.errMax', { defaultValue: '{{field}} cannot exceed {{max}}', field: fieldLabel || 'Value', max })
-    return null
+    if (value === '' || value === undefined) return null; // empty = optional, skip
+    const n = Number(value);
+    if (isNaN(n) || value.toString().trim() === '') return t('admin.gasSettings.errNotANumber', { defaultValue: '{{field}} must be a valid number', field: fieldLabel || 'Value' });
+    if (integer && !Number.isInteger(n)) return t('admin.gasSettings.errMustBeInteger', { defaultValue: '{{field}} must be an integer', field: fieldLabel || 'Value' });
+    if (min !== undefined && n < min) return t('admin.gasSettings.errMin', { defaultValue: '{{field}} must be at least {{min}}', field: fieldLabel || 'Value', min });
+    if (max !== undefined && n > max) return t('admin.gasSettings.errMax', { defaultValue: '{{field}} cannot exceed {{max}}', field: fieldLabel || 'Value', max });
+    return null;
   }
 
   function openGasPriceEdit(network) {
-    const net = network.key
+    const net = network.key;
     const form = {
-      maxGasPriceGwei: getVal(`gas_price.${net}.max_gas_price_gwei`, ''),
-    }
+      maxGasPriceGwei: getVal(`gas_price.${net}.max_gas_price_gwei`, '')
+    };
     for (const op of OPERATIONS) {
-      form[`${op}Base`] = getVal(`gas_price.${net}.${op}.base_multiplier`, '')
+      form[`${op}Base`] = getVal(`gas_price.${net}.${op}.base_multiplier`, '');
       if (network.type === 'eip1559') {
-        form[`${op}Priority`] = getVal(`gas_price.${net}.${op}.priority_multiplier`, '')
+        form[`${op}Priority`] = getVal(`gas_price.${net}.${op}.priority_multiplier`, '');
       }
     }
-    setEditForm(form)
-    setFormErrors({})
-    setEditModal({ tab: 'gasPrice', network })
+    setEditForm(form);
+    setFormErrors({});
+    setEditModal({ tab: 'gasPrice', network });
   }
 
   function openGasLimitEdit(network) {
     setEditForm({
-      multiplier: getVal(`gas_limit.${network.key}.multiplier`, ''),
-    })
-    setFormErrors({})
-    setEditModal({ tab: 'gasLimit', network })
+      multiplier: getVal(`gas_limit.${network.key}.multiplier`, '')
+    });
+    setFormErrors({});
+    setEditModal({ tab: 'gasLimit', network });
   }
 
   function openGasTopupEdit(network) {
     setEditForm({
-      maxTopupAmount: getVal(`gas_topup.${network.key}.max_topup_amount`, ''),
-    })
-    setFormErrors({})
-    setEditModal({ tab: 'gasTopup', network })
+      maxTopupAmount: getVal(`gas_topup.${network.key}.max_topup_amount`, '')
+    });
+    setFormErrors({});
+    setEditModal({ tab: 'gasTopup', network });
   }
 
   // ─── Save Handlers ──────────────────────────────────────
 
   async function saveSetting(keyName, value) {
-    await upsertSetting(token, { keyName, value: String(value) })
+    await upsertSetting(token, { keyName, value: String(value) });
   }
 
   async function handleSaveGasPrice() {
-    const net = editModal.network.key
-    const isEip1559 = editModal.network.type === 'eip1559'
+    const net = editModal.network.key;
+    const isEip1559 = editModal.network.type === 'eip1559';
 
     // Validate
-    const errors = {}
-    const e1 = validateNumber(editForm.maxGasPriceGwei, { min: 0, max: 100000, fieldLabel: 'Max Gas Price' })
-    if (e1) errors.maxGasPriceGwei = e1
+    const errors = {};
+    const e1 = validateNumber(editForm.maxGasPriceGwei, { min: 0, max: 100000, fieldLabel: 'Max Gas Price' });
+    if (e1) errors.maxGasPriceGwei = e1;
     for (const op of OPERATIONS) {
-      const eBase = validateNumber(editForm[`${op}Base`], { min: 1, max: 100, fieldLabel: 'Base Multiplier' })
-      if (eBase) errors[`${op}Base`] = eBase
+      const eBase = validateNumber(editForm[`${op}Base`], { min: 1, max: 100, fieldLabel: 'Base Multiplier' });
+      if (eBase) errors[`${op}Base`] = eBase;
       if (isEip1559) {
-        const ePri = validateNumber(editForm[`${op}Priority`], { min: 1, max: 100, fieldLabel: 'Priority Multiplier' })
-        if (ePri) errors[`${op}Priority`] = ePri
+        const ePri = validateNumber(editForm[`${op}Priority`], { min: 1, max: 100, fieldLabel: 'Priority Multiplier' });
+        if (ePri) errors[`${op}Priority`] = ePri;
       }
     }
-    if (Object.keys(errors).length > 0) { setFormErrors(errors); return }
+    if (Object.keys(errors).length > 0) {setFormErrors(errors);return;}
 
     try {
-      setSaving(true)
-      const updates = []
-      const mapUpdates = {}
+      setSaving(true);
+      const updates = [];
+      const mapUpdates = {};
 
       // Max gas price
-      const maxGwei = editForm.maxGasPriceGwei
+      const maxGwei = editForm.maxGasPriceGwei;
       if (maxGwei !== '') {
-        const key = `gas_price.${net}.max_gas_price_gwei`
-        updates.push(saveSetting(key, maxGwei))
-        mapUpdates[key] = String(maxGwei)
+        const key = `gas_price.${net}.max_gas_price_gwei`;
+        updates.push(saveSetting(key, maxGwei));
+        mapUpdates[key] = String(maxGwei);
       }
 
       // Per-operation multipliers
       for (const op of OPERATIONS) {
-        const baseVal = editForm[`${op}Base`]
+        const baseVal = editForm[`${op}Base`];
         if (baseVal !== '') {
-          const key = `gas_price.${net}.${op}.base_multiplier`
-          updates.push(saveSetting(key, baseVal))
-          mapUpdates[key] = String(baseVal)
+          const key = `gas_price.${net}.${op}.base_multiplier`;
+          updates.push(saveSetting(key, baseVal));
+          mapUpdates[key] = String(baseVal);
         }
         if (isEip1559) {
-          const priVal = editForm[`${op}Priority`]
+          const priVal = editForm[`${op}Priority`];
           if (priVal !== '') {
-            const key = `gas_price.${net}.${op}.priority_multiplier`
-            updates.push(saveSetting(key, priVal))
-            mapUpdates[key] = String(priVal)
+            const key = `gas_price.${net}.${op}.priority_multiplier`;
+            updates.push(saveSetting(key, priVal));
+            mapUpdates[key] = String(priVal);
           }
         }
       }
 
-      if (updates.length === 0) return
-      await Promise.all(updates)
-      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }))
-      setEditModal(null)
-      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
+      if (updates.length === 0) return;
+      await Promise.all(updates);
+      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }));
+      setEditModal(null);
+      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }));
     } catch (error) {
-      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }))
+      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function handleSaveGasLimit() {
-    const val = editForm.multiplier
-    if (val === '' || val === undefined) return
+    const val = editForm.multiplier;
+    if (val === '' || val === undefined) return;
 
-    const errors = {}
-    const e1 = validateNumber(val, { min: 1, max: 100, fieldLabel: 'Multiplier' })
-    if (e1) errors.multiplier = e1
-    if (Object.keys(errors).length > 0) { setFormErrors(errors); return }
+    const errors = {};
+    const e1 = validateNumber(val, { min: 1, max: 100, fieldLabel: 'Multiplier' });
+    if (e1) errors.multiplier = e1;
+    if (Object.keys(errors).length > 0) {setFormErrors(errors);return;}
 
-    const key = `gas_limit.${editModal.network.key}.multiplier`
+    const key = `gas_limit.${editModal.network.key}.multiplier`;
     try {
-      setSaving(true)
-      await saveSetting(key, val)
-      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }))
-      setEditModal(null)
-      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
+      setSaving(true);
+      await saveSetting(key, val);
+      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }));
+      setEditModal(null);
+      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }));
     } catch (error) {
-      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }))
+      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function handleSaveGasTopup() {
-    const val = editForm.maxTopupAmount
-    if (val === '' || val === undefined) return
+    const val = editForm.maxTopupAmount;
+    if (val === '' || val === undefined) return;
 
-    const errors = {}
-    const e1 = validateNumber(val, { min: 0, fieldLabel: 'Max Topup Amount' })
-    if (e1) errors.maxTopupAmount = e1
-    if (Object.keys(errors).length > 0) { setFormErrors(errors); return }
+    const errors = {};
+    const e1 = validateNumber(val, { min: 0, fieldLabel: 'Max Topup Amount' });
+    if (e1) errors.maxTopupAmount = e1;
+    if (Object.keys(errors).length > 0) {setFormErrors(errors);return;}
 
-    const key = `gas_topup.${editModal.network.key}.max_topup_amount`
+    const key = `gas_topup.${editModal.network.key}.max_topup_amount`;
     try {
-      setSaving(true)
-      await saveSetting(key, val)
-      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }))
-      setEditModal(null)
-      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
+      setSaving(true);
+      await saveSetting(key, val);
+      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }));
+      setEditModal(null);
+      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }));
     } catch (error) {
-      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }))
+      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   function handleSave() {
-    if (!editModal) return
-    if (editModal.tab === 'gasPrice') return handleSaveGasPrice()
-    if (editModal.tab === 'gasLimit') return handleSaveGasLimit()
-    if (editModal.tab === 'gasTopup') return handleSaveGasTopup()
+    if (!editModal) return;
+    if (editModal.tab === 'gasPrice') return handleSaveGasPrice();
+    if (editModal.tab === 'gasLimit') return handleSaveGasLimit();
+    if (editModal.tab === 'gasTopup') return handleSaveGasTopup();
   }
 
   // ─── Render: Loading ─────────────────────────────────────
@@ -275,12 +276,12 @@ export default function GasSettingsPage() {
     return (
       <div className="grow py-6">
         <div className="flex justify-center items-center py-5">
-          <div className="spinner text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
+          <Spinner role="status" className="text-primary" />
+
+          
         </div>
-      </div>
-    )
+      </div>);
+
   }
 
   // ─── Render: Tabs ────────────────────────────────────────
@@ -303,22 +304,22 @@ export default function GasSettingsPage() {
       {/* Tabs */}
       <div className="">
         <ul className="nav flex border-b border-surface-200 gap-1" role="tablist">
-          {TABS.map((tab) => (
-            <li key={tab.key} className="" role="presentation">
+          {TABS.map((tab) =>
+          <li key={tab.key} className="" role="presentation">
               <button
-                className={`px-4 py-2 text-sm font-medium text-surface-500 hover:text-surface-700 border-b-2 border-transparent hover:border-surface-300 ${activeTab === tab.key ?'active' : ''}`}
-                onClick={() => setActiveTab(tab.key)}
-                type="button"
-                role="tab"
-              >
+              className={`px-4 py-2 text-sm font-medium text-surface-500 hover:text-surface-700 border-b-2 border-transparent hover:border-surface-300 ${activeTab === tab.key ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.key)}
+              type="button"
+              role="tab">
+              
                 <i className={`bx ${tab.icon} mr-1`}></i>
                 {t(tab.labelKey, { defaultValue: tab.defaultLabel })}
               </button>
             </li>
-          ))}
+          )}
         </ul>
 
-        <div className="tab-content border border-top-0 rounded-bottom p-4">
+        <div className="border border-t-0 rounded-b p-4">
           {activeTab === 'gasPrice' && renderGasPriceTab()}
           {activeTab === 'gasLimit' && renderGasLimitTab()}
           {activeTab === 'gasTopup' && renderGasTopupTab()}
@@ -327,23 +328,23 @@ export default function GasSettingsPage() {
 
       {/* Edit Modal */}
       {editModal && renderEditModal()}
-    </div>
-  )
+    </div>);
+
 
   // ─── Tab: Gas Price ──────────────────────────────────────
 
   function renderGasPriceTab() {
     return (
       <>
-        <div className="alert alert bg-primary-50 text-primary-700 border-primary-200 mb-4" role="alert">
+        <Alert variant="primary" className="mb-4">
           <i className="bx bx-info-circle mr-1"></i>
           {t('admin.gasSettings.gasPriceInfo', {
-            defaultValue: 'Gas price multipliers control how aggressively transactions are priced. Higher multipliers = faster confirmation but higher cost. BSC uses Legacy (gasPrice only), all other networks use EIP-1559 (base + priority fee).',
+            defaultValue: 'Gas price multipliers control how aggressively transactions are priced. Higher multipliers = faster confirmation but higher cost. BSC uses Legacy (gasPrice only), all other networks use EIP-1559 (base + priority fee).'
           })}
-        </div>
+        </Alert>
 
         <div className="overflow-x-auto">
-          <table className="w-full border-top">
+          <table className="w-full border-t">
             <thead>
               <tr>
                 <th>{t('admin.gasSettings.colNetwork', { defaultValue: 'Network' })}</th>
@@ -356,7 +357,7 @@ export default function GasSettingsPage() {
             </thead>
             <tbody>
               {NETWORKS.map((net) => {
-                const maxGwei = getVal(`gas_price.${net.key}.max_gas_price_gwei`)
+                const maxGwei = getVal(`gas_price.${net.key}.max_gas_price_gwei`);
                 return (
                   <tr key={net.key}>
                     <td>
@@ -364,9 +365,9 @@ export default function GasSettingsPage() {
                         <div>
                           <strong>{net.name}</strong>
                           <div>
-                            <span className={`badge rounded-full ${net.type ==='eip1559' ? 'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'} mr-1`}>
+                            <Badge className={`rounded-full${net.type === 'eip1559' ? 'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'} mr-1`}>
                               {net.type === 'eip1559' ? 'EIP-1559' : 'Legacy'}
-                            </span>
+                            </Badge>
                             <small className="text-muted">{net.symbol}</small>
                           </div>
                         </div>
@@ -377,8 +378,8 @@ export default function GasSettingsPage() {
                       {maxGwei !== '—' && <div className="text-muted text-sm">gwei</div>}
                     </td>
                     {OPERATIONS.map((op) => {
-                      const baseVal = getVal(`gas_price.${net.key}.${op}.base_multiplier`)
-                      const priVal = net.type === 'eip1559' ? getVal(`gas_price.${net.key}.${op}.priority_multiplier`) : null
+                      const baseVal = getVal(`gas_price.${net.key}.${op}.base_multiplier`);
+                      const priVal = net.type === 'eip1559' ? getVal(`gas_price.${net.key}.${op}.priority_multiplier`) : null;
                       return (
                         <td key={op} className="text-center">
                           <div>
@@ -387,35 +388,35 @@ export default function GasSettingsPage() {
                             </span>
                             <div className="text-muted text-sm">base</div>
                           </div>
-                          {priVal !== null && (
-                            <div className="mt-1">
+                          {priVal !== null &&
+                          <div className="mt-1">
                               <span className="text-body font-medium">
                                 {priVal}{priVal !== '—' && '×'}
                               </span>
                               <div className="text-muted text-sm">priority</div>
                             </div>
-                          )}
-                        </td>
-                      )
+                          }
+                        </td>);
+
                     })}
                     <td className="text-right">
-                      <button
-                        className="btn btn-icon btn-sm text-secondary"
+                      <Button
+
                         title={t('admin.gasSettings.edit', { defaultValue: 'Edit' })}
-                        onClick={() => openGasPriceEdit(net)}
-                      >
-                        <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
-                      </button>
+                        onClick={() => openGasPriceEdit(net)} size="sm" className="text-secondary">
+                        
+                        <i className="bx bx-edit text-[1rem]"></i>
+                      </Button>
                     </td>
-                  </tr>
-                )
+                  </tr>);
+
               })}
             </tbody>
           </table>
         </div>
 
         {/* Formula info */}
-        <div className="card bg-lighter mt-3">
+        <Card className="bg-lighter mt-3">
           <div className="p-5 py-3">
             <h6 className="mb-2">
               <i className="bx bx-math mr-1"></i>
@@ -433,9 +434,9 @@ export default function GasSettingsPage() {
               </div>
             </div>
           </div>
-        </div>
-      </>
-    )
+        </Card>
+      </>);
+
   }
 
   // ─── Tab: Gas Limit ──────────────────────────────────────
@@ -443,15 +444,15 @@ export default function GasSettingsPage() {
   function renderGasLimitTab() {
     return (
       <>
-        <div className="alert alert bg-primary-50 text-primary-700 border-primary-200 mb-4" role="alert">
+        <Alert variant="primary" className="mb-4">
           <i className="bx bx-info-circle mr-1"></i>
           {t('admin.gasSettings.gasLimitInfo', {
-            defaultValue: 'Gas limit multiplier is applied after estimateGas() to add a safety buffer, preventing out-of-gas failures. Unused gas is NOT charged — only the buffer risk cost.',
+            defaultValue: 'Gas limit multiplier is applied after estimateGas() to add a safety buffer, preventing out-of-gas failures. Unused gas is NOT charged — only the buffer risk cost.'
           })}
-        </div>
+        </Alert>
 
         <div className="overflow-x-auto">
-          <table className="w-full border-top">
+          <table className="w-full border-t">
             <thead>
               <tr>
                 <th>{t('admin.gasSettings.colNetwork', { defaultValue: 'Network' })}</th>
@@ -462,8 +463,8 @@ export default function GasSettingsPage() {
             </thead>
             <tbody>
               {NETWORKS.map((net) => {
-                const multiplier = getVal(`gas_limit.${net.key}.multiplier`)
-                const bufferPct = multiplier !== '—' ? ((parseFloat(multiplier) - 1) * 100).toFixed(0) : '—'
+                const multiplier = getVal(`gas_limit.${net.key}.multiplier`);
+                const bufferPct = multiplier !== '—' ? ((parseFloat(multiplier) - 1) * 100).toFixed(0) : '—';
                 return (
                   <tr key={net.key}>
                     <td>
@@ -474,35 +475,35 @@ export default function GasSettingsPage() {
                       <span className="font-semibold">{multiplier}{multiplier !== '—' && '×'}</span>
                     </td>
                     <td className="text-center">
-                      {bufferPct !== '—' ? (
-                        <span className={`badge rounded-full ${ parseInt(bufferPct) >= 20 ?'bg-amber-50 text-amber-700' :
-                          parseInt(bufferPct) >= 15 ? 'bg-cyan-50 text-cyan-700' :
-                          'bg-green-50 text-green-700'
-                        }`}>
+                      {bufferPct !== '—' ?
+                      <Badge className={`rounded-full${parseInt(bufferPct) >= 20 ? 'bg-amber-50 text-amber-700' :
+                      parseInt(bufferPct) >= 15 ? 'bg-cyan-50 text-cyan-700' :
+                      'bg-green-50 text-green-700'}`}>
+                        
                           +{bufferPct}%
-                        </span>
-                      ) : (
-                        <span className="text-muted">—</span>
-                      )}
+                        </Badge> :
+
+                      <span className="text-muted">—</span>
+                      }
                     </td>
                     <td className="text-right">
-                      <button
-                        className="btn btn-icon btn-sm text-secondary"
+                      <Button
+
                         title={t('admin.gasSettings.edit', { defaultValue: 'Edit' })}
-                        onClick={() => openGasLimitEdit(net)}
-                      >
-                        <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
-                      </button>
+                        onClick={() => openGasLimitEdit(net)} size="sm" className="text-secondary">
+                        
+                        <i className="bx bx-edit text-[1rem]"></i>
+                      </Button>
                     </td>
-                  </tr>
-                )
+                  </tr>);
+
               })}
             </tbody>
           </table>
         </div>
 
         {/* Formula info */}
-        <div className="card bg-lighter mt-3">
+        <Card className="bg-lighter mt-3">
           <div className="p-5 py-3">
             <h6 className="mb-2">
               <i className="bx bx-math mr-1"></i>
@@ -511,13 +512,13 @@ export default function GasSettingsPage() {
             <code>gasLimit = estimateGas() × multiplier</code>
             <div className="text-muted text-sm mt-1">
               {t('admin.gasSettings.gasLimitFormulaNote', {
-                defaultValue: 'Example: estimateGas() = 21,000 × 1.15 = 24,150 gas limit. Unused gas is not charged.',
+                defaultValue: 'Example: estimateGas() = 21,000 × 1.15 = 24,150 gas limit. Unused gas is not charged.'
               })}
             </div>
           </div>
-        </div>
-      </>
-    )
+        </Card>
+      </>);
+
   }
 
   // ─── Tab: Gas Topup ──────────────────────────────────────
@@ -525,15 +526,15 @@ export default function GasSettingsPage() {
   function renderGasTopupTab() {
     return (
       <>
-        <div className="alert alert bg-primary-50 text-primary-700 border-primary-200 mb-4" role="alert">
+        <Alert variant="primary" className="mb-4">
           <i className="bx bx-info-circle mr-1"></i>
           {t('admin.gasSettings.gasTopupInfo', {
-            defaultValue: 'Max topup amount is the safety cap for native coin sent to temp wallets for gas. The actual topup amount is calculated based on the gas deficit — this is just the maximum allowed per topup.',
+            defaultValue: 'Max topup amount is the safety cap for native coin sent to temp wallets for gas. The actual topup amount is calculated based on the gas deficit — this is just the maximum allowed per topup.'
           })}
-        </div>
+        </Alert>
 
         <div className="overflow-x-auto">
-          <table className="w-full border-top">
+          <table className="w-full border-t">
             <thead>
               <tr>
                 <th>{t('admin.gasSettings.colNetwork', { defaultValue: 'Network' })}</th>
@@ -544,7 +545,7 @@ export default function GasSettingsPage() {
             </thead>
             <tbody>
               {NETWORKS.map((net) => {
-                const amount = getVal(`gas_topup.${net.key}.max_topup_amount`)
+                const amount = getVal(`gas_topup.${net.key}.max_topup_amount`);
                 return (
                   <tr key={net.key}>
                     <td>
@@ -555,26 +556,26 @@ export default function GasSettingsPage() {
                       <span className="font-semibold">{amount}</span>
                     </td>
                     <td className="text-center">
-                      <span className="badge bg-primary-50 text-primary-600">{net.nativeCoin}</span>
+                      <Badge className="bg-primary-50 text-primary-600">{net.nativeCoin}</Badge>
                     </td>
                     <td className="text-right">
-                      <button
-                        className="btn btn-icon btn-sm text-secondary"
+                      <Button
+
                         title={t('admin.gasSettings.edit', { defaultValue: 'Edit' })}
-                        onClick={() => openGasTopupEdit(net)}
-                      >
-                        <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
-                      </button>
+                        onClick={() => openGasTopupEdit(net)} size="sm" className="text-secondary">
+                        
+                        <i className="bx bx-edit text-[1rem]"></i>
+                      </Button>
                     </td>
-                  </tr>
-                )
+                  </tr>);
+
               })}
             </tbody>
           </table>
         </div>
 
         {/* Info card */}
-        <div className="card bg-lighter mt-3">
+        <Card className="bg-lighter mt-3">
           <div className="p-5 py-3">
             <h6 className="mb-2">
               <i className="bx bx-info-circle mr-1"></i>
@@ -582,39 +583,39 @@ export default function GasSettingsPage() {
             </h6>
             <div className="text-muted text-sm">
               {t('admin.gasSettings.gasTopupHowItWorksDesc', {
-                defaultValue: 'When a temp wallet needs to sweep tokens but lacks gas, the system sends native coin from the gas wallet. The topup amount = (required gas) − (current balance), capped at the max topup amount above.',
+                defaultValue: 'When a temp wallet needs to sweep tokens but lacks gas, the system sends native coin from the gas wallet. The topup amount = (required gas) − (current balance), capped at the max topup amount above.'
               })}
             </div>
           </div>
-        </div>
-      </>
-    )
+        </Card>
+      </>);
+
   }
 
   // ─── Edit Modal ──────────────────────────────────────────
 
   function renderEditModal() {
-    const { tab, network } = editModal
-    const isEip1559 = network.type === 'eip1559'
+    const { tab, network } = editModal;
+    const isEip1559 = network.type === 'eip1559';
 
     const modalTitle = {
       gasPrice: t('admin.gasSettings.editGasPrice', { defaultValue: 'Edit Gas Price — {{network}}', network: network.name }),
       gasLimit: t('admin.gasSettings.editGasLimit', { defaultValue: 'Edit Gas Limit — {{network}}', network: network.name }),
-      gasTopup: t('admin.gasSettings.editGasTopup', { defaultValue: 'Edit Gas Topup — {{network}}', network: network.name }),
-    }[tab]
+      gasTopup: t('admin.gasSettings.editGasTopup', { defaultValue: 'Edit Gas Topup — {{network}}', network: network.name })
+    }[tab];
 
     return (
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center block"
+        className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50"
         tabIndex="-1"
-        style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-        onClick={(e) => { if (e.target === e.currentTarget && !saving) setEditModal(null) }}
-      >
-        <div className={`w-full max-w-lg mx-4 ${tab ==='gasPrice' ? 'modal-lg' : ''}`}>
+
+        onClick={(e) => {if (e.target === e.currentTarget && !saving) setEditModal(null);}}>
+        
+        <div className={`w-full max-w-lg mx-4 ${tab === 'gasPrice' ? 'max-w-[800px]' : ''}`}>
           <div className="bg-white rounded-xl shadow-xl">
             <div className="flex items-center justify-between p-5 border-b border-surface-200">
               <h5 className="text-lg font-semibold text-surface-800">
-                <i className={`bx ${TABS.find((item) => item.key === tab)?.icon ||'bx-cog'} mr-2`}></i>
+                <i className={`bx ${TABS.find((item) => item.key === tab)?.icon || 'bx-cog'} mr-2`}></i>
                 {modalTitle}
               </h5>
               <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={() => setEditModal(null)} disabled={saving}></button>
@@ -625,18 +626,18 @@ export default function GasSettingsPage() {
               {tab === 'gasTopup' && renderGasTopupForm(network)}
             </div>
             <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-              <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => setEditModal(null)} disabled={saving}>
+              <Button onClick={() => setEditModal(null)} disabled={saving} variant="outline-secondary">
                 {t('admin.gasSettings.cancel', { defaultValue: 'Cancel' })}
-              </button>
-              <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-                {saving && <span className="spinner w-4 h-4 mr-1" role="status"></span>}
+              </Button>
+              <Button onClick={handleSave} disabled={saving}>
+                {saving && <Spinner role="status" className="w-4 h-4 mr-1" />}
                 {t('admin.gasSettings.save', { defaultValue: 'Save Changes' })}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
-      </div>
-    )
+      </div>);
+
   }
 
   // ─── Modal Forms ─────────────────────────────────────────
@@ -645,36 +646,36 @@ export default function GasSettingsPage() {
     const opLabels = {
       withdrawal: t('admin.gasSettings.opWithdrawal', { defaultValue: 'Withdrawal' }),
       sweep: t('admin.gasSettings.opSweep', { defaultValue: 'Sweep' }),
-      topup: t('admin.gasSettings.opTopup', { defaultValue: 'Topup' }),
-    }
+      topup: t('admin.gasSettings.opTopup', { defaultValue: 'Topup' })
+    };
 
-    const opIcons = { withdrawal: 'bx-upload', sweep: 'bx-transfer', topup: 'bx-coin-stack' }
-    const opColors = { withdrawal: 'var(--bs-primary)', sweep: 'var(--bs-success)', topup: 'var(--bs-warning)' }
-    const opTextColors = { withdrawal: 'text-primary', sweep: 'text-success', topup: 'text-warning' }
+    const opIcons = { withdrawal: 'bx-upload', sweep: 'bx-transfer', topup: 'bx-coin-stack' };
+    const opColors = { withdrawal: 'var(--color-primary-600)', sweep: 'var(--color-green-500)', topup: 'var(--color-amber-500)' };
+    const opTextColors = { withdrawal: 'text-primary', sweep: 'text-success', topup: 'text-warning' };
 
     return (
       <>
         {/* Network type badge */}
         <div className="mb-4">
-          <span className={`badge rounded-full ${isEip1559 ?'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'} mr-2`}>
+          <Badge className={`rounded-full${isEip1559 ? 'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'} mr-2`}>
             {isEip1559 ? 'EIP-1559' : 'Legacy'}
-          </span>
+          </Badge>
           <span className="text-muted">{network.symbol}</span>
         </div>
 
         {/* Max Gas Price */}
         <div className="mb-4">
-          <label className="form-label font-semibold">
+          <Label className="font-semibold">
             {t('admin.gasSettings.maxGasPriceGwei', { defaultValue: 'Max Gas Price (Gwei)' })}
-          </label>
+          </Label>
           <div className="flex items-stretch">
-            <input
+            <Input
               type="text"
               inputMode="decimal"
-              className={`form-input ${formErrors.maxGasPriceGwei ?'is-invalid' : ''}`}
+
               value={editForm.maxGasPriceGwei ?? ''}
-              onChange={(e) => updateField('maxGasPriceGwei', e.target.value)}
-            />
+              onChange={(e) => updateField('maxGasPriceGwei', e.target.value)} error={formErrors.maxGasPriceGwei} />
+            
             <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">Gwei</span>
           </div>
           {formErrors.maxGasPriceGwei && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxGasPriceGwei}</div>}
@@ -691,58 +692,58 @@ export default function GasSettingsPage() {
           <hr className="grow ml-3 my-0" />
         </div>
 
-        {OPERATIONS.map((op) => (
-          <div
-            key={op}
-            className="card mb-3"
-            style={{ borderLeft: `3px solid ${opColors[op]}` }}
-          >
+        {OPERATIONS.map((op) =>
+        <Card
+          key={op}
+
+          style={{ borderLeft: `3px solid ${opColors[op]}` }} className="mb-3">
+          
             <div className="p-5 py-3">
               <h6 className={`mb-3 flex items-center ${opTextColors[op]}`}>
                 <i className={`bx ${opIcons[op]} mr-2`}></i>
                 {opLabels[op]}
               </h6>
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className={isEip1559 ? 'col-md-6' : 'col-12'}>
-                  <label className="form-label text-sm text-muted mb-1">
+                <div className={isEip1559 ? 'md:col-span-6' : 'col-span-12'}>
+                  <Label className="text-sm text-muted mb-1">
                     {t('admin.gasSettings.baseMultiplier', { defaultValue: 'Base Multiplier' })}
-                  </label>
+                  </Label>
                   <div className="flex items-stretch">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      className={`form-input ${formErrors[`${op}Base`] ? 'is-invalid' : ''}`}
-                      value={editForm[`${op}Base`] ?? ''}
-                      onChange={(e) => updateField(`${op}Base`, e.target.value)}
-                    />
+                    <Input
+                    type="text"
+                    inputMode="decimal"
+
+                    value={editForm[`${op}Base`] ?? ''}
+                    onChange={(e) => updateField(`${op}Base`, e.target.value)} error={formErrors[`${op}Base`]} />
+                  
                     <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">×</span>
                   </div>
                   {formErrors[`${op}Base`] && <div className="text-xs text-danger-500 mt-1 block">{formErrors[`${op}Base`]}</div>}
                 </div>
-                {isEip1559 && (
-                  <div className="md:col-span-6">
-                    <label className="form-label text-sm text-muted mb-1">
+                {isEip1559 &&
+              <div className="md:col-span-6">
+                    <Label className="text-sm text-muted mb-1">
                       {t('admin.gasSettings.priorityMultiplier', { defaultValue: 'Priority Multiplier' })}
-                    </label>
+                    </Label>
                     <div className="flex items-stretch">
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        className={`form-input ${formErrors[`${op}Priority`] ? 'is-invalid' : ''}`}
-                        value={editForm[`${op}Priority`] ?? ''}
-                        onChange={(e) => updateField(`${op}Priority`, e.target.value)}
-                      />
+                      <Input
+                    type="text"
+                    inputMode="decimal"
+
+                    value={editForm[`${op}Priority`] ?? ''}
+                    onChange={(e) => updateField(`${op}Priority`, e.target.value)} error={formErrors[`${op}Priority`]} />
+                  
                       <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">×</span>
                     </div>
                     {formErrors[`${op}Priority`] && <div className="text-xs text-danger-500 mt-1 block">{formErrors[`${op}Priority`]}</div>}
                   </div>
-                )}
+              }
               </div>
             </div>
-          </div>
-        ))}
-      </>
-    )
+          </Card>
+        )}
+      </>);
+
   }
 
   function renderGasLimitForm(network) {
@@ -752,34 +753,34 @@ export default function GasSettingsPage() {
           <span className="text-muted">{network.symbol}</span>
         </div>
         <div className="mb-3">
-          <label className="form-label font-semibold">
+          <Label className="font-semibold">
             {t('admin.gasSettings.gasLimitMultiplier', { defaultValue: 'Gas Limit Multiplier' })}
-          </label>
+          </Label>
           <div className="flex items-stretch">
-            <input
+            <Input
               type="text"
               inputMode="decimal"
-              className={`form-input ${formErrors.multiplier ?'is-invalid' : ''}`}
+
               value={editForm.multiplier ?? ''}
-              onChange={(e) => updateField('multiplier', e.target.value)}
-            />
+              onChange={(e) => updateField('multiplier', e.target.value)} error={formErrors.multiplier} />
+            
             <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">×</span>
           </div>
           {formErrors.multiplier && <div className="text-xs text-danger-500 mt-1 block">{formErrors.multiplier}</div>}
           <div className="text-xs text-surface-500 mt-1">
             {t('admin.gasSettings.gasLimitMultiplierDesc', {
-              defaultValue: 'Applied to estimateGas() result. 1.10 = 10% buffer, 1.20 = 20% buffer. Higher buffer prevents out-of-gas failures.',
+              defaultValue: 'Applied to estimateGas() result. 1.10 = 10% buffer, 1.20 = 20% buffer. Higher buffer prevents out-of-gas failures.'
             })}
           </div>
         </div>
-        {editForm.multiplier && !isNaN(parseFloat(editForm.multiplier)) && (
-          <div className="alert alert bg-cyan-50 text-cyan-700 border-cyan-200 mb-0">
+        {editForm.multiplier && !isNaN(parseFloat(editForm.multiplier)) &&
+        <Alert variant="info" className="mb-0">
             <i className="bx bx-calculator mr-1"></i>
             {t('admin.gasSettings.bufferPreview', { defaultValue: 'Buffer: +{{pct}}% above gas estimate', pct: ((parseFloat(editForm.multiplier) - 1) * 100).toFixed(0) })}
-          </div>
-        )}
-      </div>
-    )
+          </Alert>
+        }
+      </div>);
+
   }
 
   function renderGasTopupForm(network) {
@@ -787,30 +788,30 @@ export default function GasSettingsPage() {
       <div>
         <div className="mb-3">
           <span className="text-muted">{network.symbol}</span>
-          <span className="badge bg-primary-50 text-primary-600 ml-2">{network.nativeCoin}</span>
+          <Badge className="bg-primary-50 text-primary-600 ml-2">{network.nativeCoin}</Badge>
         </div>
         <div className="mb-3">
-          <label className="form-label font-semibold">
+          <Label className="font-semibold">
             {t('admin.gasSettings.maxTopupAmount', { defaultValue: 'Max Topup Amount' })}
-          </label>
+          </Label>
           <div className="flex items-stretch">
-            <input
+            <Input
               type="text"
               inputMode="decimal"
-              className={`form-input ${formErrors.maxTopupAmount ?'is-invalid' : ''}`}
+
               value={editForm.maxTopupAmount ?? ''}
-              onChange={(e) => updateField('maxTopupAmount', e.target.value)}
-            />
+              onChange={(e) => updateField('maxTopupAmount', e.target.value)} error={formErrors.maxTopupAmount} />
+            
             <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">{network.nativeCoin}</span>
           </div>
           {formErrors.maxTopupAmount && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxTopupAmount}</div>}
           <div className="text-xs text-surface-500 mt-1">
             {t('admin.gasSettings.maxTopupAmountDesc', {
-              defaultValue: 'Maximum native coin to send per topup operation. Safety cap to prevent over-funding temp wallets.',
+              defaultValue: 'Maximum native coin to send per topup operation. Safety cap to prevent over-funding temp wallets.'
             })}
           </div>
         </div>
-      </div>
-    )
+      </div>);
+
   }
 }

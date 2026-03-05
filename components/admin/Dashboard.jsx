@@ -1,53 +1,54 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth, useToast } from '@/app/providers'
-import { getPaymentStats } from '@/lib/api/admin'
-import { formatUsd, formatCoinAmount, formatPercent } from '@/lib/utils/format'
-import { StatCard, DailyTrendCard } from '@/components/admin/DashboardCards'
-import { logger } from '@/lib/utils/logger'
-import PageSpinner from '@/components/PageSpinner'
-import CardEmptyState from '@/components/CardEmptyState'
+import { useState, useEffect } from 'react';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAuth, useToast } from '@/app/providers';
+import { getPaymentStats } from '@/lib/api/admin';
+import { formatUsd, formatCoinAmount, formatPercent } from '@/lib/utils/format';
+import { StatCard, DailyTrendCard } from '@/components/admin/DashboardCards';
+import { logger } from '@/lib/utils/logger';
+import PageSpinner from '@/components/PageSpinner';
+import CardEmptyState from '@/components/CardEmptyState';
+import { Badge, Button, Card } from '../ui'
 
 export default function Dashboard() {
-  const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
+  const { t } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
 
-  const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState(null)
-  const [showAllTrends, setShowAllTrends] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+  const [showAllTrends, setShowAllTrends] = useState(false);
 
   useEffect(() => {
-    loadStats()
-  }, [])
+    loadStats();
+  }, []);
 
   async function loadStats() {
     try {
-      setLoading(true)
-      const data = await getPaymentStats(token)
-      setStats(data)
+      setLoading(true);
+      const data = await getPaymentStats(token);
+      setStats(data);
     } catch (error) {
-      logger.error('Failed to load payment stats:', error)
-      toast.error(t('admin.dashboard.loadError', { defaultValue: 'Failed to load dashboard data' }))
+      logger.error('Failed to load payment stats:', error);
+      toast.error(t('admin.dashboard.loadError', { defaultValue: 'Failed to load dashboard data' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   if (loading) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
-  const overview = stats?.overview || {}
-  const byStatus = stats?.byStatus || {}
-  const byCurrency = stats?.byCurrency || {}
-  const topUsers = stats?.topUsers || []
-  const trends = stats.trends.daily
-  const sortedTrendDates = Object.entries(trends).sort((a, b) => b[0].localeCompare(a[0]))
-  const visibleTrends = showAllTrends ? sortedTrendDates.slice(0, 30) : sortedTrendDates.slice(0, 7)
-  const hasMoreTrends = sortedTrendDates.length > 7
+  const overview = stats?.overview || {};
+  const byStatus = stats?.byStatus || {};
+  const byCurrency = stats?.byCurrency || {};
+  const topUsers = stats?.topUsers || [];
+  const trends = stats.trends.daily;
+  const sortedTrendDates = Object.entries(trends).sort((a, b) => b[0].localeCompare(a[0]));
+  const visibleTrends = showAllTrends ? sortedTrendDates.slice(0, 30) : sortedTrendDates.slice(0, 7);
+  const hasMoreTrends = sortedTrendDates.length > 7;
 
   return (
     <div className="grow py-6">
@@ -58,44 +59,44 @@ export default function Dashboard() {
               icon="bx-receipt"
               color="primary"
               value={overview.totalPayments || 0}
-              label={t('admin.dashboard.payments', { defaultValue: 'Total Payments' })}
-            />
+              label={t('admin.dashboard.payments', { defaultValue: 'Total Payments' })} />
+            
             <StatCard
               icon="bx-check-circle"
               color="success"
               value={formatPercent(overview.successRate || 0)}
-              label={t('admin.dashboard.successRate', { defaultValue: 'Success Rate' })}
-            />
+              label={t('admin.dashboard.successRate', { defaultValue: 'Success Rate' })} />
+            
             <StatCard
               icon="bx-dollar"
               color="info"
               value={formatUsd(overview.fiat?.amount || 0)}
-              label={`${t('admin.dashboard.fiatVolume', { defaultValue: 'Fiat Volume' })} (${overview.fiat?.currency || 'USD'})`}
-            />
+              label={`${t('admin.dashboard.fiatVolume', { defaultValue: 'Fiat Volume' })} (${overview.fiat?.currency || 'USD'})`} />
+            
             <StatCard
               icon="bx-check-double"
               color="success"
               value={byStatus.completed || 0}
-              label={t('admin.dashboard.transactions', { defaultValue: 'Completed Transactions' })}
-            />
+              label={t('admin.dashboard.transactions', { defaultValue: 'Completed Transactions' })} />
+            
           </div>
 
           <div className="grid grid-cols-12 gap-x-6 gap-4">
             <div className="lg:col-span-8">
-              <div className="card">
+              <Card>
                 <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
                   <h5 className="mb-0">
                     {t('admin.dashboard.byCurrency', { defaultValue: 'Volume by Currency' })}
                   </h5>
                 </div>
                 <div className="p-5">
-                  {Object.keys(byCurrency).length === 0 ? (
-                    <CardEmptyState
-                      icon="bx-data"
-                      message={t('admin.dashboard.noData', { defaultValue: 'No data available' })}
-                    />
-                  ) : (
-                    <div className="overflow-x-auto">
+                  {Object.keys(byCurrency).length === 0 ?
+                  <CardEmptyState
+                    icon="bx-data"
+                    message={t('admin.dashboard.noData', { defaultValue: 'No data available' })} /> :
+
+
+                  <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead>
                           <tr>
@@ -106,13 +107,13 @@ export default function Dashboard() {
                           </tr>
                         </thead>
                         <tbody>
-                          {Object.entries(byCurrency).map(([currency, data]) => (
-                            <tr key={currency}>
+                          {Object.entries(byCurrency).map(([currency, data]) =>
+                        <tr key={currency}>
                               <td>
                                 <span className="font-medium">{currency}</span>
                               </td>
                               <td className="text-right">
-                                <span className="badge bg-surface-100 text-surface-600">{data.count}</span>
+                                <Badge className="bg-surface-100 text-surface-600">{data.count}</Badge>
                               </td>
                               <td className="text-right">
                                 <span className="font-medium">
@@ -123,36 +124,36 @@ export default function Dashboard() {
                                 {formatCoinAmount(data.averageAmount)}
                               </td>
                             </tr>
-                          ))}
+                        )}
                         </tbody>
                       </table>
                     </div>
-                  )}
+                  }
                 </div>
-              </div>
+              </Card>
             </div>
 
             <div className="lg:col-span-4">
-              <div className="card">
+              <Card>
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
                     {t('admin.dashboard.topUsers', { defaultValue: 'Top Users' })}
                   </h5>
                 </div>
                 <div className="p-5">
-                  {topUsers.length === 0 ? (
-                    <CardEmptyState
-                      icon="bx-user"
-                      message={t('admin.dashboard.noUsers', { defaultValue: 'No users yet' })}
-                    />
-                  ) : (
-                    <div className="list-group list-group-flush">
-                      {topUsers.map((user, index) => (
-                        <div key={user.userId} className="list-group-item px-0">
+                  {topUsers.length === 0 ?
+                  <CardEmptyState
+                    icon="bx-user"
+                    message={t('admin.dashboard.noUsers', { defaultValue: 'No users yet' })} /> :
+
+
+                  <div className="list-group list-group-flush">
+                      {topUsers.map((user, index) =>
+                    <div key={user.userId} className="list-group-item px-0">
                           <div className="flex justify-between items-center">
                             <div>
                               <h6 className="mb-0">
-                                <span className="badge bg-primary-50 text-primary-600 mr-2">{index + 1}</span>
+                                <Badge className="bg-primary-50 text-primary-600 mr-2">{index + 1}</Badge>
                                 {user.email}
                               </h6>
                               <small className="text-muted">
@@ -166,80 +167,64 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
-                      ))}
+                    )}
                     </div>
-                  )}
+                  }
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
 
           <div className="grid grid-cols-12 gap-x-6 gap-4 mt-2">
             <div className="col-span-12">
-              <div className="card" style={{
-                borderRadius: '0.75rem',
-                border: 'none',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-              }}>
-                <div className="px-5 py-4 border-b border-surface-200 flex items-center" style={{ border: 'none' }}>
-                  <div style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '0.5rem',
-                    backgroundColor: 'rgba(var(--bs-info-rgb), 0.08)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '0.75rem'
-                  }}>
-                    <i className="bx bx-trending-up" style={{ fontSize: '1.25rem', color: 'var(--bs-info)' }}></i>
+              <Card style={{ borderRadius: '0.75rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }} className="border-none">
+                <div className="px-5 py-4 border-b border-surface-200 flex items-center border-none">
+                  <div className="w-9 h-9 flex items-center justify-center" style={{ borderRadius: '0.5rem', backgroundColor: 'rgba(6, 182, 212, 0.08)', marginRight: '0.75rem' }}>
+                    <i className="bx bx-trending-up text-xl text-cyan-500"></i>
                   </div>
-                  <h5 className="mb-0" style={{ fontWeight: 600 }}>
+                  <h5 className="mb-0 font-semibold">
                     {t('admin.dashboard.dailyTrends', { defaultValue: 'Daily Trends' })}
                   </h5>
                 </div>
                 <div className="p-5">
-                  {Object.keys(trends).length === 0 ? (
-                    <CardEmptyState
-                      icon="bx-line-chart"
-                      message={t('admin.dashboard.noTrends', { defaultValue: 'No trend data yet' })}
-                    />
-                  ) : (
-                    <>
+                  {Object.keys(trends).length === 0 ?
+                  <CardEmptyState
+                    icon="bx-line-chart"
+                    message={t('admin.dashboard.noTrends', { defaultValue: 'No trend data yet' })} /> :
+
+
+                  <>
                       <div
-                        className="flex gap-3 pb-2"
-                        style={{
-                          overflowX: 'auto',
-                          scrollbarWidth: 'thin'
-                        }}
-                      >
-                        {visibleTrends.map(([date, currencies], idx) => (
-                          <DailyTrendCard
-                            key={date}
-                            date={date}
-                            currencies={currencies}
-                            isToday={idx === 0}
-                          />
-                        ))}
-                      </div>
-                      {hasMoreTrends && (
-                        <div className="text-right mt-2">
-                          <button
-                            className="btn btn-sm btn bg-transparent text-primary-600 hover:underline shadow-none p-0 text-muted p-0"
-                            onClick={() => setShowAllTrends(!showAllTrends)}
-                          >
-                            {showAllTrends ? t('common.showLess', { defaultValue: 'Show Less' }) : `+${sortedTrendDates.length - 7} more`}
-                          </button>
-                        </div>
+                      className="flex gap-3 pb-2 overflow-x-auto"
+                      style={{ scrollbarWidth: 'thin' }}>
+                      
+                        {visibleTrends.map(([date, currencies], idx) =>
+                      <DailyTrendCard
+                        key={date}
+                        date={date}
+                        currencies={currencies}
+                        isToday={idx === 0} />
+
                       )}
+                      </div>
+                      {hasMoreTrends &&
+                    <div className="text-right mt-2">
+                          <Button
+
+                        onClick={() => setShowAllTrends(!showAllTrends)} size="sm" className="bg-transparent text-primary-600 hover:underline shadow-none p-0 text-muted p-0">
+                        
+                            {showAllTrends ? t('common.showLess', { defaultValue: 'Show Less' }) : `+${sortedTrendDates.length - 7} more`}
+                          </Button>
+                        </div>
+                    }
                     </>
-                  )}
+                  }
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

@@ -1,6 +1,7 @@
-'use client'
+'use client';
 
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
+import { Alert, Button, Spinner } from '../ui'
 
 /**
  * Reusable Delete Confirmation Modal
@@ -24,20 +25,20 @@ export default function DeleteConfirmModal({
   itemName,
   itemDetails
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  if (!show) return null
+  if (!show) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center block"
-      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-      onClick={onClose}
-    >
+      className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50"
+
+      onClick={onClose}>
+      
       <div
         className="w-full max-w-lg mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
+        onClick={(e) => e.stopPropagation()}>
+        
         <div className="bg-white rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
             <h5 className="text-lg font-semibold text-surface-800">
@@ -47,8 +48,8 @@ export default function DeleteConfirmModal({
               type="button"
               className="cursor-pointer text-surface-500 hover:text-surface-700"
               onClick={onClose}
-              disabled={loading}
-            ></button>
+              disabled={loading}>
+            </button>
           </div>
 
           <div className="p-5">
@@ -56,9 +57,9 @@ export default function DeleteConfirmModal({
               {message}
             </p>
 
-            <div className="alert alert-danger mt-3 mb-0">
+            <Alert className="mt-3 mb-0">
               <div className="flex items-start">
-                <i className="bx bx-error-circle fs-4 mr-2"></i>
+                <i className="bx bx-error-circle text-2xl mr-2"></i>
                 <div>
                   <strong>Warning:</strong>
                   <br />
@@ -67,39 +68,39 @@ export default function DeleteConfirmModal({
                   })}
                 </div>
               </div>
-            </div>
+            </Alert>
           </div>
 
           <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-            <button
+            <Button
               type="button"
-              className="btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none"
+
               onClick={onClose}
-              disabled={loading}
-            >
+              disabled={loading} className="bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none">
+              
               {t('actions.cancel', { defaultValue: 'Cancel' })}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className="btn btn-danger"
+
               onClick={onConfirm}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="spinner w-4 h-4 mr-2" role="status"></span>
+              disabled={loading} variant="danger">
+              
+              {loading ?
+              <>
+                  <Spinner role="status" className="w-4 h-4 mr-2" />
                   {t('actions.deleting', { defaultValue: 'Deleting...' })}
-                </>
-              ) : (
-                <>
+                </> :
+
+              <>
                   <i className="bx bx-trash mr-2"></i>
                   {t('actions.delete', { defaultValue: 'Delete' })}
                 </>
-              )}
-            </button>
+              }
+            </Button>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

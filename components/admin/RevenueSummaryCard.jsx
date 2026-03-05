@@ -1,37 +1,38 @@
-'use client'
+'use client';
 
-import { formatChange } from '@/lib/utils/format'
+import { formatChange } from '@/lib/utils/format';
+import { AvatarInitial, bgLabelClass, Card } from '../ui'
 
 export default function RevenueSummaryCard({ title, value, change, changeLabel, icon, color = 'primary', valueColor }) {
-  const isPositive = change >= 0
-  const changeColor = isPositive ? 'text-success' : 'text-danger'
-  const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
+  const isPositive = change >= 0;
+  const changeColor = isPositive ? 'text-success' : 'text-danger';
+  const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt';
 
   return (
     <div className="col-span-6 col-xl">
-      <div className="card h-full">
+      <Card className="h-full">
         <div className="p-5">
           <div className="flex items-start justify-between">
             <div className="content-left">
-              <span className="form-label">{title}</span>
+              <span className="block text-sm font-medium text-surface-700 dark:text-surface-900-text mb-1.5">{title}</span>
               <div className="flex items-center">
-                <h4 className={`mb-0 mr-2${valueColor ?` text-${valueColor}` : ''}`}>{value}</h4>
-                {change !== undefined && change !== null && (
-                  <small className={changeColor}>
+                <h4 className={`mb-0 mr-2${valueColor ? ` text-${valueColor}` : ''}`}>{value}</h4>
+                {change !== undefined && change !== null &&
+                <small className={changeColor}>
                     <i className={`bx ${changeIcon}`}></i>
                     {typeof change === 'number' ? formatChange(change) : change}{changeLabel && changeLabel !== '%' ? changeLabel : ''}
                   </small>
-                )}
+                }
               </div>
             </div>
             <div className="avatar">
-              <span className={`avatar-initial rounded bg-label-${color}`}>
+              <AvatarInitial className={bgLabelClass(color)}>
                 <i className={`bx ${icon} bx-sm`}></i>
-              </span>
+              </AvatarInitial>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  )
+      </Card>
+    </div>);
+
 }

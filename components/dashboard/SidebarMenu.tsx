@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 
-/* ── Section Header (Sneat: short line at left + uppercase label) ── */
+/* ── Section Header ── */
 export function SectionHeader({ label }: { label: string }) {
   return (
     <li className="bp-section-hdr px-[2rem]">

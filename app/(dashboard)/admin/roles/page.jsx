@@ -1,98 +1,99 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/providers'
-import { useToast } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { getAdminRoles, getAdminRoleStats } from '@/lib/api/admin'
-import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles'
-import SummaryCard from '@/components/admin/RevenueSummaryCard'
-import { logger } from '@/lib/utils/logger'
-import RefreshButton from '@/components/RefreshButton'
-import PageSpinner from '@/components/PageSpinner'
-import CardEmptyState from '@/components/CardEmptyState'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/providers';
+import { useToast } from '@/app/providers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { getAdminRoles, getAdminRoleStats } from '@/lib/api/admin';
+import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles';
+import SummaryCard from '@/components/admin/RevenueSummaryCard';
+import { logger } from '@/lib/utils/logger';
+import RefreshButton from '@/components/RefreshButton';
+import PageSpinner from '@/components/PageSpinner';
+import CardEmptyState from '@/components/CardEmptyState';
+import { AvatarInitial, Badge, bgLabelClass, Card } from '../../../../components/ui';
 
-const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user']
+const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user'];
 
 export default function AdminRoles() {
-  const { token, user } = useAuth()
-  const toast = useToast()
-  const router = useRouter()
-  const { t } = useAdminTranslation()
+  const { token, user } = useAuth();
+  const toast = useToast();
+  const router = useRouter();
+  const { t } = useAdminTranslation();
 
   // Requester's level — used to hide roles above their access
-  const myLevel = ROLE_LEVEL[user?.role] || 0
+  const myLevel = ROLE_LEVEL[user?.role] || 0;
 
-  const [loading, setLoading] = useState(true)
-  const [roles, setRoles] = useState([])
-  const [stats, setStats] = useState(null)
-  const [requesterRole, setRequesterRole] = useState(null)
+  const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [requesterRole, setRequesterRole] = useState(null);
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   async function loadData() {
     try {
-      setLoading(true)
+      setLoading(true);
       const [rolesData, statsData] = await Promise.all([
-        getAdminRoles(token),
-        getAdminRoleStats(token).catch(() => null),
-      ])
+      getAdminRoles(token),
+      getAdminRoleStats(token).catch(() => null)]
+      );
 
       // API: { roles: [{ value, name, canAssign }], requesterRole }
-      const roleList = Array.isArray(rolesData) ? rolesData : (rolesData?.roles || [])
-      setRoles(roleList)
-      setRequesterRole(rolesData?.requesterRole || null)
-      setStats(statsData)
+      const roleList = Array.isArray(rolesData) ? rolesData : rolesData?.roles || [];
+      setRoles(roleList);
+      setRequesterRole(rolesData?.requesterRole || null);
+      setStats(statsData);
     } catch (error) {
-      logger.error('Failed to load roles:', error)
-      toast.error(t('admin.roles.loadError', { defaultValue: 'Failed to load roles' }))
+      logger.error('Failed to load roles:', error);
+      toast.error(t('admin.roles.loadError', { defaultValue: 'Failed to load roles' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   // Build lookup: role key -> { count, percentage }
   function getRoleStats(roleKey) {
-    if (!stats) return { count: 0, percentage: 0 }
-    const key = roleKey.toLowerCase()
+    if (!stats) return { count: 0, percentage: 0 };
+    const key = roleKey.toLowerCase();
 
     if (stats.roleDistribution && Array.isArray(stats.roleDistribution)) {
-      const entry = stats.roleDistribution.find(d => d.role === key)
-      if (entry) return { count: entry.count || 0, percentage: parseFloat(entry.percentage) || 0 }
+      const entry = stats.roleDistribution.find((d) => d.role === key);
+      if (entry) return { count: entry.count || 0, percentage: parseFloat(entry.percentage) || 0 };
     }
 
-    return { count: 0, percentage: 0 }
+    return { count: 0, percentage: 0 };
   }
 
   // Extract role key from role object — API uses `value` field
   function getRoleKey(role) {
-    if (typeof role === 'string') return role.toLowerCase()
-    return (role.value || role.name || role.role || '').toLowerCase()
+    if (typeof role === 'string') return role.toLowerCase();
+    return (role.value || role.name || role.role || '').toLowerCase();
   }
 
   function getRoleName(role) {
-    if (typeof role === 'string') return formatRoleLabel(role)
-    return role.name || formatRoleLabel(role.value || '')
+    if (typeof role === 'string') return formatRoleLabel(role);
+    return role.name || formatRoleLabel(role.value || '');
   }
 
-  const totalUsers = stats?.totalUsers
-    ?? (stats?.roleDistribution ? stats.roleDistribution.reduce((sum, d) => sum + (d.count || 0), 0) : null)
+  const totalUsers = stats?.totalUsers ?? (
+  stats?.roleDistribution ? stats.roleDistribution.reduce((sum, d) => sum + (d.count || 0), 0) : null);
 
   // Sort roles by hierarchy level (highest first)
   const sortedRoles = [...roles].sort((a, b) => {
-    return (ROLE_LEVEL[getRoleKey(b)] || 0) - (ROLE_LEVEL[getRoleKey(a)] || 0)
-  })
+    return (ROLE_LEVEL[getRoleKey(b)] || 0) - (ROLE_LEVEL[getRoleKey(a)] || 0);
+  });
 
   // Build hierarchy from known order, filtered by existing roles and requester level
-  const hierarchyRoles = HIERARCHY_ORDER.filter(h =>
-    roles.some(r => getRoleKey(r) === h) && (ROLE_LEVEL[h] || 0) <= myLevel
-  )
+  const hierarchyRoles = HIERARCHY_ORDER.filter((h) =>
+  roles.some((r) => getRoleKey(r) === h) && (ROLE_LEVEL[h] || 0) <= myLevel
+  );
 
   if (loading) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
   return (
@@ -106,11 +107,11 @@ export default function AdminRoles() {
           </h4>
           <p className="text-muted mb-0">
             {t('admin.roles.description', { defaultValue: 'Manage role-based access control (RBAC)' })}
-            {requesterRole && (
-              <span className="ml-2">
-                — {t('admin.roles.loggedInAs', { defaultValue: 'logged in as' })} <span className={`badge bg-label-${ROLE_COLOR[requesterRole] ||'secondary'}`}>{formatRoleLabel(requesterRole)}</span>
+            {requesterRole &&
+            <span className="ml-2">
+                — {t('admin.roles.loggedInAs', { defaultValue: 'logged in as' })} <Badge color={ROLE_COLOR[requesterRole] || 'secondary'} label>{formatRoleLabel(requesterRole)}</Badge>
               </span>
-            )}
+            }
           </p>
         </div>
         <RefreshButton onClick={loadData} loading={loading} />
@@ -122,19 +123,19 @@ export default function AdminRoles() {
           title={t('admin.roles.totalUsers', { defaultValue: 'Total Users' })}
           value={totalUsers ?? '—'}
           icon="bx-group"
-          color="primary"
-        />
+          color="primary" />
+        
         <SummaryCard
           title={t('admin.roles.totalRoles', { defaultValue: 'Total Roles' })}
           value={roles.length}
           icon="bx-shield-alt-2"
-          color="info"
-        />
+          color="info" />
+        
       </div>
 
       {/* Role Hierarchy */}
-      {hierarchyRoles.length > 0 && (
-        <div className="card mb-4">
+      {hierarchyRoles.length > 0 &&
+      <Card className="mb-4">
           <div className="p-5">
             <h6 className="mb-3">
               <i className="bx bx-sitemap mr-2 text-muted"></i>
@@ -142,77 +143,74 @@ export default function AdminRoles() {
             </h6>
             <div className="flex items-end gap-3 flex-wrap justify-center">
               {hierarchyRoles.map((roleKey) => {
-                const level = ROLE_LEVEL[roleKey] || 1
-                const color = ROLE_COLOR[roleKey] || 'secondary'
-                const icon = ROLE_ICON[roleKey] || 'bx-user'
-                const rs = getRoleStats(roleKey)
-                const barHeight = 40 + level * 16
+              const level = ROLE_LEVEL[roleKey] || 1;
+              const color = ROLE_COLOR[roleKey] || 'secondary';
+              const icon = ROLE_ICON[roleKey] || 'bx-user';
+              const rs = getRoleStats(roleKey);
+              const barHeight = 40 + level * 16;
 
-                return (
-                  <div
-                    key={roleKey}
-                    className="text-center"
-                    style={{ cursor: 'pointer', minWidth: '100px', flex: '1 1 0' }}
-                    onClick={() => router.push(`/admin/roles/${roleKey}`)}
-                  >
+              return (
+                <div
+                  key={roleKey}
+                  className="text-center cursor-pointer min-w-[100px]"
+                  style={{ flex: '1 1 0' }}
+                  onClick={() => router.push(`/admin/roles/${roleKey}`)}>
+                  
                     <div
-                      className={`flex flex-col items-center justify-end mx-auto rounded-top bg-label-${color}`}
-                      style={{ width: '100%', maxWidth: '120px', height: `${barHeight}px`, transition: 'opacity 0.2s' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
-                    >
-                      <i className={`bx ${icon} mb-1`} style={{ fontSize: '1.25rem' }}></i>
-                      <span className={`badge bg-${color} mb-2`} style={{ fontSize: '0.65rem' }}>L{level}</span>
+                    className={`flex flex-col items-center justify-end mx-auto rounded-top ${bgLabelClass(color)} w-full max-w-[120px]`}
+                    style={{ height: `${barHeight}px`, transition: 'opacity 0.2s' }}
+                    onMouseEnter={(e) => {e.currentTarget.style.opacity = '0.8';}}
+                    onMouseLeave={(e) => {e.currentTarget.style.opacity = '1';}}>
+                    
+                      <i className={`bx ${icon} mb-1 text-xl`}></i>
+                      <Badge className={`bg-${color} mb-2 text-[0.65rem]`}>L{level}</Badge>
                     </div>
                     <div className="mt-2">
-                      <small className="font-semibold block" style={{ fontSize: '0.75rem' }}>{formatRoleLabel(roleKey)}</small>
-                      <small className="text-muted" style={{ fontSize: '0.7rem' }}>
+                      <small className="font-semibold block text-xs">{formatRoleLabel(roleKey)}</small>
+                      <small className="text-muted text-[0.7rem]">
                         {rs.count} {rs.count === 1 ? t('admin.roles.user', { defaultValue: 'user' }) : t('admin.roles.users', { defaultValue: 'users' })} · {rs.percentage.toFixed(0)}%
                       </small>
                     </div>
-                  </div>
-                )
-              })}
+                  </div>);
+
+            })}
             </div>
           </div>
-        </div>
-      )}
+        </Card>
+      }
 
       {/* Role Cards */}
       <div className="grid grid-cols-12 gap-x-6 gap-4">
         {sortedRoles.filter((role) => {
-          const canAssign = typeof role === 'object' ? role.canAssign : undefined
-          const roleLevel = ROLE_LEVEL[getRoleKey(role)] || 0
-          return canAssign !== false && roleLevel <= myLevel
+          const canAssign = typeof role === 'object' ? role.canAssign : undefined;
+          const roleLevel = ROLE_LEVEL[getRoleKey(role)] || 0;
+          return canAssign !== false && roleLevel <= myLevel;
         }).map((role) => {
-          const roleKey = getRoleKey(role)
-          const roleName = getRoleName(role)
-          const color = ROLE_COLOR[roleKey] || 'secondary'
-          const icon = ROLE_ICON[roleKey] || 'bx-user'
-          const level = ROLE_LEVEL[roleKey] || 0
-          const description = ROLE_DESCRIPTION[roleKey] || ''
-          const rs = getRoleStats(roleKey)
+          const roleKey = getRoleKey(role);
+          const roleName = getRoleName(role);
+          const color = ROLE_COLOR[roleKey] || 'secondary';
+          const icon = ROLE_ICON[roleKey] || 'bx-user';
+          const level = ROLE_LEVEL[roleKey] || 0;
+          const description = ROLE_DESCRIPTION[roleKey] || '';
+          const rs = getRoleStats(roleKey);
 
           return (
             <div key={roleKey} className="md:col-span-6">
-              <div
-                className="card h-full"
-                style={{
-                  cursor: 'pointer',
-                  transition: 'transform 0.15s, box-shadow 0.15s',
-                }}
+              <Card
+
+                style={{ transition: 'transform 0.15s, box-shadow 0.15s' }}
                 onClick={() => router.push(`/admin/roles/${roleKey}`)}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
-              >
+                onMouseEnter={(e) => {e.currentTarget.style.transform = 'translateY(-2px)';e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';}}
+                onMouseLeave={(e) => {e.currentTarget.style.transform = '';e.currentTarget.style.boxShadow = '';}} className="h-full cursor-pointer">
+                
                 <div className="p-5">
                   {/* Role header */}
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className="avatar">
-                        <span className={`avatar-initial rounded bg-label-${color}`}>
+                        <AvatarInitial className={bgLabelClass(color)}>
                           <i className={`bx ${icon} bx-sm`}></i>
-                        </span>
+                        </AvatarInitial>
                       </div>
                       <div>
                         <h5 className="mb-0">{roleName}</h5>
@@ -220,16 +218,16 @@ export default function AdminRoles() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {level > 0 && (
-                        <span className={`badge bg-label-${color}`}>L{level}</span>
-                      )}
+                      {level > 0 &&
+                      <Badge color={color} label>L{level}</Badge>
+                      }
                     </div>
                   </div>
 
                   {/* Description */}
-                  {description && (
-                    <p className="text-muted mb-3" style={{ fontSize: '0.85rem' }}>{description}</p>
-                  )}
+                  {description &&
+                  <p className="text-muted mb-3 text-[0.85rem]">{description}</p>
+                  }
 
                   {/* Stats */}
                   <div className="flex items-center gap-4 mb-3">
@@ -242,40 +240,40 @@ export default function AdminRoles() {
                         <small className="text-muted">{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</small>
                         <small className={`font-medium text-${color}`}>{rs.percentage.toFixed(1)}%</small>
                       </div>
-                      <div className="progress" style={{ height: '6px' }}>
+                      <div className="h-[6px] w-full rounded-full bg-surface-200 overflow-hidden">
                         <div
-                          className={`progress-bar bg-${color}`}
+                          className={`h-full rounded-full bg-${color}`}
                           role="progressbar"
-                          style={{ width: `${Math.max(rs.percentage, 2)}%`, transition: 'width 0.4s ease' }}
-                        ></div>
+                          style={{ width: `${Math.max(rs.percentage, 2)}%`, transition: 'width 0.4s ease' }}>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Footer link */}
-                  <div className="flex items-center justify-between pt-2 border-top">
+                  <div className="flex items-center justify-between pt-2 border-t">
                     <small className="font-medium">{t('admin.roles.managePermissions', { defaultValue: 'Manage Permissions' })}</small>
                     <i className={`bx bx-chevron-right text-${color}`}></i>
                   </div>
                 </div>
-              </div>
-            </div>
-          )
+              </Card>
+            </div>);
+
         })}
 
-        {roles.length === 0 && (
-          <div className="col-span-12">
-            <div className="card">
+        {roles.length === 0 &&
+        <div className="col-span-12">
+            <Card>
               <div className="p-5">
                 <CardEmptyState
-                  icon="bx-shield-x"
-                  message={t('admin.roles.noRoles', { defaultValue: 'No roles found' })}
-                />
+                icon="bx-shield-x"
+                message={t('admin.roles.noRoles', { defaultValue: 'No roles found' })} />
+              
               </div>
-            </div>
+            </Card>
           </div>
-        )}
+        }
       </div>
-    </div>
-  )
+    </div>);
+
 }

@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Button, Input, Label, Spinner } from '../ui'
 
 export default function BaseFeeModal({ form, editing, loading, onFormChange, onSave, onClose }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
   return (
     <>
@@ -20,37 +21,37 @@ export default function BaseFeeModal({ form, editing, loading, onFormChange, onS
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="col-span-12">
-                  <label className="form-label">{t('admin.network.networkSymbol', { defaultValue: 'Network Symbol' })} *</label>
-                  <input
+                  <Label>{t('admin.network.networkSymbol', { defaultValue: 'Network Symbol' })} *</Label>
+                  <Input
                     type="text"
-                    className="form-input"
+
                     placeholder="BTC, ETH, BNB..."
                     value={form.network}
                     onChange={(e) => {
-                      const value = e.target.value.toUpperCase()
+                      const value = e.target.value.toUpperCase();
                       if (/^[A-Z0-9]*$/.test(value) && value.length <= 20) {
-                        onFormChange({ ...form, network: value })
+                        onFormChange({ ...form, network: value });
                       }
                     }}
                     disabled={!!editing}
-                    maxLength={20}
-                  />
+                    maxLength={20} />
+                  
                 </div>
                 <div className="col-span-12">
-                  <label className="form-label">{t('admin.network.fee', { defaultValue: 'Fee' })} *</label>
-                  <input
+                  <Label>{t('admin.network.fee', { defaultValue: 'Fee' })} *</Label>
+                  <Input
                     type="text"
-                    className="form-input"
+
                     placeholder="0.001"
                     value={form.fee}
                     onChange={(e) => {
-                      const value = e.target.value
+                      const value = e.target.value;
                       if (/^[0-9.]*$/.test(value) && value.length <= 20) {
-                        onFormChange({ ...form, fee: value })
+                        onFormChange({ ...form, fee: value });
                       }
                     }}
-                    maxLength={20}
-                  />
+                    maxLength={20} />
+                  
                   <small className="text-muted">
                     {t('admin.network.baseFeeHelp', { defaultValue: 'Base network fee in native currency for quick estimates' })}
                   </small>
@@ -58,36 +59,36 @@ export default function BaseFeeModal({ form, editing, loading, onFormChange, onS
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-              <button
+              <Button
                 type="button"
-                className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
+
                 onClick={onClose}
-                disabled={loading}
-              >
+                disabled={loading} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
+                
                 {t('actions.cancel', { defaultValue: 'Cancel' })}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="btn btn-primary"
+
                 onClick={onSave}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner w-4 h-4 mr-2"></span>
+                disabled={loading}>
+                
+                {loading ?
+                <>
+                    <Spinner className="w-4 h-4 mr-2" />
                     {t('actions.saving', { defaultValue: 'Saving...' })}
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     <i className="bx bx-save mr-1"></i>
                     {t('actions.save', { defaultValue: 'Save' })}
                   </>
-                )}
-              </button>
+                }
+              </Button>
             </div>
           </div>
         </div>
       </div>
-    </>
-  )
+    </>);
+
 }

@@ -180,20 +180,8 @@ export default function CoinImg({
     const letter = (symbol || 'C').charAt(0).toUpperCase()
     return (
       <div
-        className={className}
-        style={{
-          width: size,
-          height: size,
-          borderRadius: '8px',
-          backgroundColor: getAvatarColor(symbol || 'C'),
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: size * 0.5,
-          fontWeight: 'bold',
-          flexShrink: 0,
-        }}
+        className={`${className} text-white flex items-center justify-center font-bold shrink-0`}
+        style={{ width: size, height: size, borderRadius: '8px', backgroundColor: getAvatarColor(symbol || 'C'), fontSize: size * 0.5 }}
       >
         {letter}
       </div>
@@ -218,8 +206,8 @@ export default function CoinImg({
   // ------ Image with network badge overlay ------
   return (
     <div
-      className={`relative${className ? ` ${className}` : ''}`}
-      style={{ width: size, height: size, flexShrink: 0 }}
+      className={`relative${className ? ` ${className}` : ''} shrink-0`}
+      style={{ width: size, height: size }}
     >
       <img
         src={src}
@@ -231,16 +219,8 @@ export default function CoinImg({
         onError={handleCoinError}
       />
       <div
-        className="absolute rounded-full flex items-center justify-center"
-        style={{
-          bottom: -2,
-          right: -2,
-          width: badgeSize,
-          height: badgeSize,
-          backgroundColor: 'white',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          padding: `${badgePadding}px`,
-        }}
+        className="absolute rounded-full flex items-center justify-center bg-white"
+        style={{ bottom: -2, right: -2, width: badgeSize, height: badgeSize, boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: `${badgePadding}px` }}
       >
         <img
           src={netSrc}

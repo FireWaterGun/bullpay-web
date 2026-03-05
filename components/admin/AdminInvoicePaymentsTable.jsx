@@ -1,20 +1,21 @@
-'use client'
+'use client';
 
-import { formatAmount } from '@/lib/utils/format'
-import { useDateFormat } from '@/hooks/useDateFormat'
-import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import CardEmptyState from '@/components/CardEmptyState'
+import { formatAmount } from '@/lib/utils/format';
+import { useDateFormat } from '@/hooks/useDateFormat';
+import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import CardEmptyState from '@/components/CardEmptyState';
+import { Button, Card } from '../ui';
 
 /**
  * Payments table for AdminInvoiceDetail.
  * Displays all payments associated with an invoice.
  */
 export default function AdminInvoicePaymentsTable({ payments, coinSymbol, network, onCopy }) {
-  const { t } = useAdminTranslation()
-  const { fmtDate } = useDateFormat()
+  const { t } = useAdminTranslation();
+  const { fmtDate } = useDateFormat();
   return (
-    <div className="card">
+    <Card>
       <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
           <i className="bx bx-transfer mr-2"></i>
@@ -22,32 +23,32 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
         </h5>
       </div>
       <div className="p-5">
-        {payments.length === 0 ? (
-          <CardEmptyState
-            icon="bx-credit-card"
-            message="No payments recorded for this invoice"
-          />
-        ) : (
-          <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
-            <table className="w-full" style={{ minWidth: '900px' }}>
+        {payments.length === 0 ?
+        <CardEmptyState
+          icon="bx-credit-card"
+          message="No payments recorded for this invoice" /> :
+
+
+        <div className="overflow-x-auto overflow-x-auto">
+            <table className="w-full min-w-[900px]">
               <thead>
                 <tr>
-                  <th style={{ minWidth: '60px' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
-                  <th style={{ minWidth: '100px' }}>{t('admin.detail.status', { defaultValue: 'Status' })}</th>
-                  <th className="text-right" style={{ minWidth: '150px' }}>{t('admin.detail.amount', { defaultValue: 'Amount' })}</th>
-                  <th className="text-right" style={{ minWidth: '150px' }}>{t('admin.detail.actualAmount', { defaultValue: 'Actual Amount' })}</th>
-                  <th style={{ minWidth: '120px' }}>{t('admin.detail.confirmations', { defaultValue: 'Confirmations' })}</th>
-                  <th style={{ minWidth: '680px' }}>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
-                  <th style={{ minWidth: '420px' }}>{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</th>
-                  <th style={{ minWidth: '420px' }}>{t('admin.detail.toAddress', { defaultValue: 'To Address' })}</th>
-                  <th style={{ minWidth: '140px' }}>{t('admin.detail.detected', { defaultValue: 'Detected' })}</th>
-                  <th style={{ minWidth: '140px' }}>{t('status.confirmed', { defaultValue: 'Confirmed' })}</th>
-                  <th style={{ minWidth: '140px' }}>{t('status.completed', { defaultValue: 'Completed' })}</th>
+                  <th className="min-w-[60px]">{t('admin.detail.id', { defaultValue: 'ID' })}</th>
+                  <th className="min-w-[100px]">{t('admin.detail.status', { defaultValue: 'Status' })}</th>
+                  <th className="text-right min-w-[150px]">{t('admin.detail.amount', { defaultValue: 'Amount' })}</th>
+                  <th className="text-right min-w-[150px]">{t('admin.detail.actualAmount', { defaultValue: 'Actual Amount' })}</th>
+                  <th className="min-w-[120px]">{t('admin.detail.confirmations', { defaultValue: 'Confirmations' })}</th>
+                  <th className="min-w-[680px]">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
+                  <th className="min-w-[420px]">{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</th>
+                  <th className="min-w-[420px]">{t('admin.detail.toAddress', { defaultValue: 'To Address' })}</th>
+                  <th className="min-w-[140px]">{t('admin.detail.detected', { defaultValue: 'Detected' })}</th>
+                  <th className="min-w-[140px]">{t('status.confirmed', { defaultValue: 'Confirmed' })}</th>
+                  <th className="min-w-[140px]">{t('status.completed', { defaultValue: 'Completed' })}</th>
                 </tr>
               </thead>
               <tbody>
-                {payments.map((payment) => (
-                  <tr key={payment.id}>
+                {payments.map((payment) =>
+              <tr key={payment.id}>
                     <td>
                       <span className="font-semibold text-primary">{payment.id}</span>
                     </td>
@@ -68,90 +69,90 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     </td>
                     <td className="text-center whitespace-nowrap">
                       {payment.confirmations != null ? payment.confirmations : '-'}
-                      {payment.requiredConfirmations != null && (
-                        <small className="text-muted"> / {payment.requiredConfirmations}</small>
-                      )}
+                      {payment.requiredConfirmations != null &&
+                  <small className="text-muted"> / {payment.requiredConfirmations}</small>
+                  }
                     </td>
                     <td>
-                      {payment.txHash ? (
-                        <div className="flex items-center">
-                          <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
+                      {payment.txHash ?
+                  <div className="flex items-center">
+                          <span className="mr-2 whitespace-nowrap">
                             {payment.txHash}
                           </span>
-                          {network?.explorerUrl && (
-                            <a
-                              href={`${network.explorerUrl}/tx/${payment.txHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
-                              title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
-                            >
-                              <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                            </a>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-muted">-</span>
-                      )}
+                          {network?.explorerUrl &&
+                    <Button variant="text-secondary" size="icon" className="rounded-full"
+                    href={`${network.explorerUrl}/tx/${payment.txHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+
+                    title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}>
+                      
+                              <i className="bx bx-link-external text-xl"></i>
+                            </Button>
+                    }
+                        </div> :
+
+                  <span className="text-muted">-</span>
+                  }
                     </td>
                     <td>
-                      {payment.fromAddress ? (
-                        <div className="flex items-center">
-                          <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
+                      {payment.fromAddress ?
+                  <div className="flex items-center">
+                          <span className="mr-2 whitespace-nowrap">
                             {payment.fromAddress}
                           </span>
-                          <button
-                            className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
-                            onClick={() => onCopy(payment.fromAddress)}
-                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
-                          >
-                            <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-muted">-</span>
-                      )}
+                          <Button
+
+                      onClick={() => onCopy(payment.fromAddress)}
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      
+                            <i className="bx bx-copy text-xl"></i>
+                          </Button>
+                        </div> :
+
+                  <span className="text-muted">-</span>
+                  }
                     </td>
                     <td>
-                      {payment.toAddress ? (
-                        <div className="flex items-center">
-                          <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
+                      {payment.toAddress ?
+                  <div className="flex items-center">
+                          <span className="mr-2 whitespace-nowrap">
                             {payment.toAddress}
                           </span>
-                          <button
-                            className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
-                            onClick={() => onCopy(payment.toAddress)}
-                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
-                          >
-                            <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-muted">-</span>
-                      )}
+                          <Button
+
+                      onClick={() => onCopy(payment.toAddress)}
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      
+                            <i className="bx bx-copy text-xl"></i>
+                          </Button>
+                        </div> :
+
+                  <span className="text-muted">-</span>
+                  }
                     </td>
                     <td>
-                      <span style={{ whiteSpace: 'nowrap' }}>
+                      <span className="whitespace-nowrap">
                         {payment.detectedAt ? fmtDate(payment.detectedAt) : <span className="text-muted">-</span>}
                       </span>
                     </td>
                     <td>
-                      <span style={{ whiteSpace: 'nowrap' }}>
+                      <span className="whitespace-nowrap">
                         {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-muted">-</span>}
                       </span>
                     </td>
                     <td>
-                      <span style={{ whiteSpace: 'nowrap' }}>
+                      <span className="whitespace-nowrap">
                         {payment.completedAt ? fmtDate(payment.completedAt) : <span className="text-muted">-</span>}
                       </span>
                     </td>
                   </tr>
-                ))}
+              )}
               </tbody>
             </table>
           </div>
-        )}
+        }
       </div>
-    </div>
-  )
+    </Card>);
+
 }

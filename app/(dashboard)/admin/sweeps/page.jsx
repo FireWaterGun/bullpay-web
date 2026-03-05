@@ -1,82 +1,83 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useToast } from '@/app/providers'
-import { getSweeps, forceSweep } from '@/lib/api/admin'
-import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import { listCoins } from '@/lib/api/coins'
-import SweepTransactionFilters from '@/components/admin/SweepTransactionFilters'
-import SweepTransactionTable from '@/components/admin/SweepTransactionTable'
-import { logger } from '@/lib/utils/logger'
-import RefreshButton from '@/components/RefreshButton'
-import PageSpinner from '@/components/PageSpinner'
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams as useNextSearchParams } from 'next/navigation';
+import { useAuth } from '@/app/providers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useToast } from '@/app/providers';
+import { getSweeps, forceSweep } from '@/lib/api/admin';
+import { AmountNormalizer } from '@/lib/utils/amount_normalizer';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { listCoins } from '@/lib/api/coins';
+import SweepTransactionFilters from '@/components/admin/SweepTransactionFilters';
+import SweepTransactionTable from '@/components/admin/SweepTransactionTable';
+import { logger } from '@/lib/utils/logger';
+import RefreshButton from '@/components/RefreshButton';
+import PageSpinner from '@/components/PageSpinner';
+import { Card, badgeBase } from '../../../../components/ui'
 
 export default function SweepTransactions() {
-  const { t, i18n } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
-  const searchParams = useNextSearchParams()
-  const router = useRouter()
+  const { t, i18n } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
+  const searchParams = useNextSearchParams();
+  const router = useRouter();
 
   const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
-    return map[i18n.language] || 'en-US'
-  }, [i18n.language])
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
+    return map[i18n.language] || 'en-US';
+  }, [i18n.language]);
 
-  const initStatus = searchParams.get('status') || ''
-  const initUserId = searchParams.get('userId') || ''
-  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
-  const initStartDate = searchParams.get('startDate') || ''
-  const initEndDate = searchParams.get('endDate') || ''
-  const initSortBy = searchParams.get('sortBy') || ''
-  const initSortOrder = searchParams.get('sortOrder') || ''
-  const initPage = parseInt(searchParams.get('page')) || 1
+  const initStatus = searchParams.get('status') || '';
+  const initUserId = searchParams.get('userId') || '';
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || '';
+  const initStartDate = searchParams.get('startDate') || '';
+  const initEndDate = searchParams.get('endDate') || '';
+  const initSortBy = searchParams.get('sortBy') || '';
+  const initSortOrder = searchParams.get('sortOrder') || '';
+  const initPage = parseInt(searchParams.get('page')) || 1;
 
-  const [loading, setLoading] = useState(false)
-  const [sweeps, setSweeps] = useState([])
-  const [pagination, setPagination] = useState(null)
-  const [currentPage, setCurrentPage] = useState(initPage)
-  const [retryingId, setRetryingId] = useState(null)
-  const [coinNetworks, setCoinNetworks] = useState([])
+  const [loading, setLoading] = useState(false);
+  const [sweeps, setSweeps] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [currentPage, setCurrentPage] = useState(initPage);
+  const [retryingId, setRetryingId] = useState(null);
+  const [coinNetworks, setCoinNetworks] = useState([]);
 
-  const [statusFilter, setStatusFilter] = useState(initStatus)
-  const [userIdFilter, setUserIdFilter] = useState(initUserId)
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
-  const [startDateFilter, setStartDateFilter] = useState(initStartDate)
-  const [endDateFilter, setEndDateFilter] = useState(initEndDate)
-  const [sortByFilter, setSortByFilter] = useState(initSortBy)
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
+  const [statusFilter, setStatusFilter] = useState(initStatus);
+  const [userIdFilter, setUserIdFilter] = useState(initUserId);
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId);
+  const [startDateFilter, setStartDateFilter] = useState(initStartDate);
+  const [endDateFilter, setEndDateFilter] = useState(initEndDate);
+  const [sortByFilter, setSortByFilter] = useState(initSortBy);
+  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder);
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
-    const f = {}
-    if (initStatus) f.status = initStatus
-    if (initUserId) f.userId = Number(initUserId)
-    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
-    if (initStartDate) f.startDate = initStartDate
-    if (initEndDate) f.endDate = initEndDate
-    if (initSortBy) f.sortBy = initSortBy
-    if (initSortOrder) f.sortOrder = initSortOrder
-    return f
-  })
+    const f = {};
+    if (initStatus) f.status = initStatus;
+    if (initUserId) f.userId = Number(initUserId);
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId);
+    if (initStartDate) f.startDate = initStartDate;
+    if (initEndDate) f.endDate = initEndDate;
+    if (initSortBy) f.sortBy = initSortBy;
+    if (initSortOrder) f.sortOrder = initSortOrder;
+    return f;
+  });
 
   useEffect(() => {
-    loadSweeps()
-  }, [currentPage, appliedFilters])
+    loadSweeps();
+  }, [currentPage, appliedFilters]);
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {})
-  }, [])
+    listCoins(token).then(setCoinNetworks).catch(() => {});
+  }, []);
 
   function syncSearchParams(filters, page) {
-    const params = new URLSearchParams()
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
-    if (page > 1) params.set('page', page)
-    window.history.replaceState(null, '', `?${params.toString()}`)
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([k, v]) => {if (v !== undefined && v !== '') params.set(k, v);});
+    if (page > 1) params.set('page', page);
+    window.history.replaceState(null, '', `?${params.toString()}`);
   }
 
   function applyFilters() {
@@ -87,37 +88,37 @@ export default function SweepTransactions() {
       startDate: startDateFilter || undefined,
       endDate: endDateFilter || undefined,
       sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
-    }
-    setAppliedFilters(f)
-    setCurrentPage(1)
-    syncSearchParams(f, 1)
+      sortOrder: sortOrderFilter || undefined
+    };
+    setAppliedFilters(f);
+    setCurrentPage(1);
+    syncSearchParams(f, 1);
   }
 
   function resetFilters() {
-    setStatusFilter('')
-    setUserIdFilter('')
-    setCoinNetworkIdFilter('')
-    setStartDateFilter('')
-    setEndDateFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
-    setAppliedFilters({})
-    setCurrentPage(1)
-    window.history.replaceState(null, '', window.location.pathname)
+    setStatusFilter('');
+    setUserIdFilter('');
+    setCoinNetworkIdFilter('');
+    setStartDateFilter('');
+    setEndDateFilter('');
+    setSortByFilter('');
+    setSortOrderFilter('');
+    setAppliedFilters({});
+    setCurrentPage(1);
+    window.history.replaceState(null, '', window.location.pathname);
   }
 
   async function loadSweeps() {
     try {
-      setLoading(true)
+      setLoading(true);
       const data = await getSweeps(token, {
         page: currentPage,
         limit: 20,
-        ...appliedFilters,
-      })
-      setSweeps(data.sweeps || data.items || [])
+        ...appliedFilters
+      });
+      setSweeps(data.sweeps || data.items || []);
 
-      const meta = data.meta || data.pagination
+      const meta = data.meta || data.pagination;
       if (meta) {
         setPagination({
           page: meta.currentPage || meta.page || currentPage,
@@ -126,74 +127,74 @@ export default function SweepTransactions() {
           totalPages: meta.lastPage || meta.totalPages || 1,
           hasPrev: meta.previousPageUrl !== null || (meta.currentPage || meta.page || 1) > 1,
           hasNext: meta.nextPageUrl !== null || (meta.currentPage || meta.page || 1) < (meta.lastPage || meta.totalPages || 1)
-        })
+        });
       } else {
-        setPagination(null)
+        setPagination(null);
       }
     } catch (error) {
-      logger.error('Failed to load sweep transactions:', error)
-      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }))
+      logger.error('Failed to load sweep transactions:', error);
+      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleRetry(sweepId) {
     try {
-      setRetryingId(sweepId)
-      await forceSweep(token, sweepId)
-      toast.success(t('admin.sweep.retrySuccess', { defaultValue: 'Sweep retry initiated successfully' }))
-      loadSweeps()
+      setRetryingId(sweepId);
+      await forceSweep(token, sweepId);
+      toast.success(t('admin.sweep.retrySuccess', { defaultValue: 'Sweep retry initiated successfully' }));
+      loadSweeps();
     } catch (error) {
-      logger.error('Failed to retry sweep:', error)
-      toast.error(t('admin.sweep.retryError', { defaultValue: 'Failed to retry sweep' }))
+      logger.error('Failed to retry sweep:', error);
+      toast.error(t('admin.sweep.retryError', { defaultValue: 'Failed to retry sweep' }));
     } finally {
-      setRetryingId(null)
+      setRetryingId(null);
     }
   }
 
   function formatAmount(amountRaw, decimals, coinSymbol, networkSymbol) {
-    if (!amountRaw || !decimals) return '0'
+    if (!amountRaw || !decimals) return '0';
 
     try {
-      const chain = AmountNormalizer.detectChain(coinSymbol || '', networkSymbol || '')
-      return AmountNormalizer.fromRaw(amountRaw.toString(), chain, decimals)
+      const chain = AmountNormalizer.detectChain(coinSymbol || '', networkSymbol || '');
+      return AmountNormalizer.fromRaw(amountRaw.toString(), chain, decimals);
     } catch (error) {
-      logger.error('Failed to format amount:', error)
-      const amount = Number(amountRaw) / Math.pow(10, decimals)
-      return amount.toString()
+      logger.error('Failed to format amount:', error);
+      const amount = Number(amountRaw) / Math.pow(10, decimals);
+      return amount.toString();
     }
   }
 
   async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+    const ok = await copyText(text);
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
   }
 
   function statusBadgeClass(s) {
-    const v = String(s || '').toUpperCase()
-    if (v === 'PENDING') return 'badge bg-amber-50 text-amber-700'
-    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-cyan-50 text-cyan-700'
-    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-green-50 text-green-700'
-    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-red-50 text-red-700'
-    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-surface-100 text-surface-600'
-    return 'badge bg-surface-100 text-surface-600'
+    const v = String(s || '').toUpperCase();
+    if (v === 'PENDING') return `${badgeBase} bg-amber-50 text-amber-700`;
+    if (v === 'PROCESSING' || v === 'APPROVED') return `${badgeBase} bg-cyan-50 text-cyan-700`;
+    if (v === 'COMPLETED' || v === 'SUCCESS') return `${badgeBase} bg-green-50 text-green-700`;
+    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return `${badgeBase} bg-red-50 text-red-700`;
+    if (v === 'CANCELLED' || v === 'CANCELED') return `${badgeBase} bg-surface-100 text-surface-600`;
+    return `${badgeBase} bg-surface-100 text-surface-600`;
   }
 
   function handlePageChange(page) {
-    setCurrentPage(page)
-    syncSearchParams(appliedFilters, page)
+    setCurrentPage(page);
+    syncSearchParams(appliedFilters, page);
   }
 
   if (loading && sweeps.length === 0) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
   return (
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <div className="card mb-4">
+          <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
@@ -220,9 +221,9 @@ export default function SweepTransactions() {
               locale={locale}
               loading={loading}
               onApply={applyFilters}
-              onReset={resetFilters}
-            />
-          </div>
+              onReset={resetFilters} />
+            
+          </Card>
 
           <SweepTransactionTable
             sweeps={sweeps}
@@ -234,10 +235,10 @@ export default function SweepTransactions() {
             statusBadgeClass={statusBadgeClass}
             onNavigate={(id) => router.push(`/admin/sweeps/${id}`)}
             onRetry={handleRetry}
-            onPageChange={handlePageChange}
-          />
+            onPageChange={handlePageChange} />
+          
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

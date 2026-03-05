@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Button, Spinner } from '../../ui'
 
 export default function DeleteConfirmModal({ loading, onConfirm, onClose }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
   return (
     <>
@@ -25,36 +26,36 @@ export default function DeleteConfirmModal({ loading, onConfirm, onClose }) {
               </p>
             </div>
             <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-              <button
+              <Button
                 type="button"
-                className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
+
                 onClick={onClose}
-                disabled={loading}
-              >
+                disabled={loading} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
+                
                 {t('actions.cancel', { defaultValue: 'Cancel' })}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="btn btn-danger"
+
                 onClick={onConfirm}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner w-4 h-4 mr-2"></span>
+                disabled={loading} variant="danger">
+                
+                {loading ?
+                <>
+                    <Spinner className="w-4 h-4 mr-2" />
                     {t('actions.deleting', { defaultValue: 'Deleting...' })}
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     <i className="bx bx-trash mr-1"></i>
                     {t('actions.delete', { defaultValue: 'Delete' })}
                   </>
-                )}
-              </button>
+                }
+              </Button>
             </div>
           </div>
         </div>
       </div>
-    </>
-  )
+    </>);
+
 }

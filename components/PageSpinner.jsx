@@ -1,3 +1,4 @@
+import { Spinner } from './ui'
 /**
  * Shared full-page loading spinner.
  * Used as early-return in page components when data is loading.
@@ -9,10 +10,10 @@ export default function PageSpinner() {
   return (
     <div className="flex-grow py-6">
       <div className="flex justify-center items-center py-12">
-        <div className="spinner w-8 h-8 border-3 text-primary-600" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
+        <Spinner role="status" size="lg" className="text-primary-600" />
+
+        
       </div>
-    </div>
-  )
+    </div>);
+
 }

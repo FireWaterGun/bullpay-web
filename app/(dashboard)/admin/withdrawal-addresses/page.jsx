@@ -139,15 +139,15 @@ export default function WithdrawalAddresses() {
   function getActionConfig() {
     switch (actionType) {
       case 'flag':
-        return { title: 'Flag Address', btnClass: 'btn-warning', btnLabel: 'Flag', icon: 'bx-flag' }
+        return { title: 'Flag Address', btnVariant: 'warning', btnLabel: 'Flag', icon: 'bx-flag' }
       case 'unflag':
-        return { title: 'Remove Flag', btnClass: 'btn-success', btnLabel: 'Unflag', icon: 'bx-check-circle' }
+        return { title: 'Remove Flag', btnVariant: 'success', btnLabel: 'Unflag', icon: 'bx-check-circle' }
       case 'forceVerify':
-        return { title: 'Force Verify', btnClass: 'btn-info', btnLabel: 'Verify', icon: 'bx-shield-quarter' }
+        return { title: 'Force Verify', btnVariant: 'info', btnLabel: 'Verify', icon: 'bx-shield-quarter' }
       case 'delete':
-        return { title: 'Permanent Delete', btnClass: 'btn-danger', btnLabel: 'Delete Permanently', icon: 'bx-trash' }
+        return { title: 'Permanent Delete', btnVariant: 'danger', btnLabel: 'Delete Permanently', icon: 'bx-trash' }
       default:
-        return { title: '', btnClass: '', btnLabel: '', icon: '' }
+        return { title: '', btnVariant: 'primary', btnLabel: '', icon: '' }
     }
   }
 

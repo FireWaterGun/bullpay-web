@@ -1,7 +1,8 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import CardEmptyState from '@/components/CardEmptyState'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import CardEmptyState from '@/components/CardEmptyState';
+import { Button } from '../ui'
 
 /**
  * Reusable override table for coin or network sweep overrides.
@@ -13,32 +14,32 @@ import CardEmptyState from '@/components/CardEmptyState'
  * @param {Function} props.onEdit - Called with (key, config) when the edit button is clicked
  */
 export default function SweepOverrideTable({ overrides, type, loading, onEdit }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
-  const isCoin = type === 'coin'
+  const isCoin = type === 'coin';
 
-  const idLabel = isCoin
-    ? t('admin.sweep.coin', { defaultValue: 'Coin' })
-    : t('admin.sweep.coinNetworkId', { defaultValue: 'Coin-Network ID' })
+  const idLabel = isCoin ?
+  t('admin.sweep.coin', { defaultValue: 'Coin' }) :
+  t('admin.sweep.coinNetworkId', { defaultValue: 'Coin-Network ID' });
 
-  const emptyMessage = isCoin
-    ? t('admin.sweep.noOverrides', { defaultValue: 'No coin overrides configured' })
-    : t('admin.sweep.noNetworkOverrides', { defaultValue: 'No network overrides configured' })
+  const emptyMessage = isCoin ?
+  t('admin.sweep.noOverrides', { defaultValue: 'No coin overrides configured' }) :
+  t('admin.sweep.noNetworkOverrides', { defaultValue: 'No network overrides configured' });
 
-  const emptyHelp = isCoin
-    ? t('admin.sweep.noOverridesHelp', { defaultValue: 'Add coin overrides to customize sweep settings per cryptocurrency' })
-    : t('admin.sweep.noNetworkOverridesHelp', { defaultValue: 'Add network overrides to customize sweep settings per network' })
+  const emptyHelp = isCoin ?
+  t('admin.sweep.noOverridesHelp', { defaultValue: 'Add coin overrides to customize sweep settings per cryptocurrency' }) :
+  t('admin.sweep.noNetworkOverridesHelp', { defaultValue: 'Add network overrides to customize sweep settings per network' });
 
-  const entries = Object.entries(overrides)
+  const entries = Object.entries(overrides);
 
   if (entries.length === 0) {
     return (
       <CardEmptyState
         icon={isCoin ? 'bx-data' : 'bx-network-chart'}
         message={emptyMessage}
-        sub={emptyHelp}
-      />
-    )
+        sub={emptyHelp} />);
+
+
   }
 
   return (
@@ -53,39 +54,39 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
           </tr>
         </thead>
         <tbody>
-          {entries.map(([key, config]) => (
-            <tr key={key}>
+          {entries.map(([key, config]) =>
+          <tr key={key}>
               <td>
                 <strong>{key}</strong>
               </td>
               <td>
-                {config.minBalance !== undefined ? (
-                  <code>{config.minBalance}</code>
-                ) : (
-                  <span className="text-muted">-</span>
-                )}
+                {config.minBalance !== undefined ?
+              <code>{config.minBalance}</code> :
+
+              <span className="text-muted">-</span>
+              }
               </td>
               <td>
-                {config.gasBuffer !== undefined ? (
-                  <code>{config.gasBuffer}</code>
-                ) : (
-                  <span className="text-muted">-</span>
-                )}
+                {config.gasBuffer !== undefined ?
+              <code>{config.gasBuffer}</code> :
+
+              <span className="text-muted">-</span>
+              }
               </td>
               <td className="text-right">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-icon mr-1"
-                  onClick={() => onEdit(key, config)}
-                  disabled={loading}
-                >
-                  <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                </button>
+                <Button
+                type="button"
+
+                onClick={() => onEdit(key, config)}
+                disabled={loading} size="icon" className="mr-1">
+                
+                  <i className="bx bx-edit text-primary text-xl"></i>
+                </Button>
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
-    </div>
-  )
+    </div>);
+
 }

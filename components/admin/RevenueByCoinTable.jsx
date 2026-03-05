@@ -1,103 +1,104 @@
-'use client'
+'use client';
 
-import { formatUsdAuto, formatPercent as formatPercentShared } from '@/lib/utils/format'
-import CoinImg from '@/components/CoinImg'
-import TableEmptyState from '@/components/TableEmptyState'
+import { formatUsdAuto, formatPercent as formatPercentShared } from '@/lib/utils/format';
+import CoinImg from '@/components/CoinImg';
+import TableEmptyState from '@/components/TableEmptyState';
+import { Card, Spinner } from '../ui'
 
-const formatCurrency = formatUsdAuto
-const formatPercent = formatPercentShared
+const formatCurrency = formatUsdAuto;
+const formatPercent = formatPercentShared;
 
 export function RevenueByCoinTable({ byCoinData, totals, loading, t }) {
   return (
     <div className="grid grid-cols-12 gap-x-6 mb-4">
       <div className="col-span-12">
-        <div className="card">
+        <Card>
           <div className="px-5 py-4 border-b border-surface-200">
             <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
               {t('admin.revenueByCoin', { defaultValue: 'Revenue by Coin' })}
             </h5>
           </div>
           <div className="p-5 p-0">
-            {loading ? (
-              <div className="flex justify-center py-5">
-                <div className="spinner text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
+            {loading ?
+            <div className="flex justify-center py-5">
+                <Spinner role="status" className="text-primary" />
+
+              
+              </div> :
+
+            <div className="overflow-x-auto">
                 <table className="w-full mb-0">
                   <thead className="">
                     <tr>
-                      <th className="uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
-                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
-                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.cost', { defaultValue: 'Cost' })}</th>
-                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}</th>
-                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.margin', { defaultValue: 'Margin' })}</th>
+                      <th className="uppercase font-semibold text-muted text-[0.8rem]">{t('admin.coin', { defaultValue: 'Coin' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted text-[0.8rem]">{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted text-[0.8rem]">{t('admin.cost', { defaultValue: 'Cost' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted text-[0.8rem]">{t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted text-[0.8rem]">{t('admin.margin', { defaultValue: 'Margin' })}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {byCoinData.length === 0 ? (
-                      <TableEmptyState
-                        colSpan={5}
-                        icon="bx-coin-stack"
-                        message={t('common.noData', { defaultValue: 'No data available' })}
-                      />
-                    ) : (
-                      <>
-                        {byCoinData.map((item) => {
-                          const revenue = parseFloat(item.revenueUsd || 0)
-                          const cost = parseFloat(item.costUsd || 0)
-                          const profit = parseFloat(item.operatingProfitUsd || 0)
-                          const margin = parseFloat(item.marginPercent || 0)
+                    {byCoinData.length === 0 ?
+                  <TableEmptyState
+                    colSpan={5}
+                    icon="bx-coin-stack"
+                    message={t('common.noData', { defaultValue: 'No data available' })} /> :
 
-                          return (
-                            <tr key={`${item.coinSymbol}-${item.networkName || 'all'}`}>
+
+                  <>
+                        {byCoinData.map((item) => {
+                      const revenue = parseFloat(item.revenueUsd || 0);
+                      const cost = parseFloat(item.costUsd || 0);
+                      const profit = parseFloat(item.operatingProfitUsd || 0);
+                      const margin = parseFloat(item.marginPercent || 0);
+
+                      return (
+                        <tr key={`${item.coinSymbol}-${item.networkName || 'all'}`}>
                               <td>
                                 <div className="flex items-center">
                                   <CoinImg symbol={item.coinSymbol} size={24} className="mr-2" />
                                   <span className="font-medium">{item.coinSymbol}</span>
-                                  {item.networkName && (
-                                    <small className="text-muted ml-1">/ {item.networkName}</small>
-                                  )}
+                                  {item.networkName &&
+                              <small className="text-muted ml-1">/ {item.networkName}</small>
+                              }
                                 </div>
                               </td>
                               <td className="text-right">{formatCurrency(revenue)}</td>
                               <td className="text-right">{formatCurrency(cost)}</td>
-                              <td className={`text-right ${profit > 0 ?'text-success' : profit < 0 ? 'text-danger' : ''}`}>
+                              <td className={`text-right ${profit > 0 ? 'text-success' : profit < 0 ? 'text-danger' : ''}`}>
                                 {formatCurrency(profit)}
                               </td>
                               <td className="text-right">{formatPercent(margin)}</td>
-                            </tr>
-                          )
-                        })}
+                            </tr>);
+
+                    })}
                         <tr className="font-bold">
                           <td>{t('common.total', { defaultValue: 'TOTAL' })}</td>
                           <td className="text-right">{formatCurrency(totals.revenue)}</td>
                           <td className="text-right">{formatCurrency(totals.cost)}</td>
-                          <td className={`text-right ${totals.profit > 0 ?'text-success' : totals.profit < 0 ? 'text-danger' : ''}`}>
+                          <td className={`text-right ${totals.profit > 0 ? 'text-success' : totals.profit < 0 ? 'text-danger' : ''}`}>
                             {formatCurrency(totals.profit)}
                           </td>
                           <td className="text-right">{formatPercent(totals.margin)}</td>
                         </tr>
                       </>
-                    )}
+                  }
                   </tbody>
                 </table>
               </div>
-            )}
+            }
           </div>
-        </div>
+        </Card>
       </div>
-    </div>
-  )
+    </div>);
+
 }
 
 export function RevenueVolumeSummary({ summary, t }) {
   return (
     <div className="grid grid-cols-12 gap-x-6">
       <div className="col-span-12">
-        <div className="card">
+        <Card>
           <div className="p-5 py-3">
             <div className="flex flex-wrap justify-between gap-3">
               <div>
@@ -126,8 +127,8 @@ export function RevenueVolumeSummary({ summary, t }) {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
-    </div>
-  )
+    </div>);
+
 }

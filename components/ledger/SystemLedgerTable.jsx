@@ -1,46 +1,47 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { formatUsd } from '@/lib/utils/format'
-import { useDateFormat } from '@/hooks/useDateFormat'
-import CoinImg from '@/components/CoinImg'
-import TableEmptyState from '@/components/TableEmptyState'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useRouter } from 'next/navigation';
+
+import { formatUsd } from '@/lib/utils/format';
+import { useDateFormat } from '@/hooks/useDateFormat';
+import CoinImg from '@/components/CoinImg';
+import TableEmptyState from '@/components/TableEmptyState';
+import { Badge, Button, Card } from '../ui';
 
 function parseMetadata(entry) {
   try {
-    return typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
-  } catch { return {} }
+    return typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {};
+  } catch {return {};}
 }
 
 function getPurposeLabel(metadata) {
-  if (!metadata) return null
+  if (!metadata) return null;
   const purposeMap = {
     'payment_received': 'Payment Received',
     'merchant_credit': 'Merchant Credit',
     'native_coin_sweep_cost': 'Sweep Cost',
     'gas_topup_for_token_sweep': 'Gas Top-up',
-    'token_sweep_cost': 'Token Sweep Cost',
-  }
-  return purposeMap[metadata.purpose] || purposeMap[metadata.type] || metadata.purpose || metadata.type || null
+    'token_sweep_cost': 'Token Sweep Cost'
+  };
+  return purposeMap[metadata.purpose] || purposeMap[metadata.type] || metadata.purpose || metadata.type || null;
 }
 
 function stateBadge(state) {
-  if (state === 'settled') return <span>Settled</span>
-  if (state === 'committed') return <span>Committed</span>
-  if (state === 'pending') return <span>Pending</span>
-  if (state === 'reversed') return <span>Reversed</span>
-  return <span className="text-muted">{state || 'N/A'}</span>
+  if (state === 'settled') return <span>Settled</span>;
+  if (state === 'committed') return <span>Committed</span>;
+  if (state === 'pending') return <span>Pending</span>;
+  if (state === 'reversed') return <span>Reversed</span>;
+  return <span className="text-muted">{state || 'N/A'}</span>;
 }
 
 function formatAmount(val) {
-  if (!val && val !== 0) return '0'
-  let str = String(val)
+  if (!val && val !== 0) return '0';
+  let str = String(val);
   if (str.includes('.')) {
-    str = str.replace(/0+$/, '').replace(/\.$/, '')
+    str = str.replace(/0+$/, '').replace(/\.$/, '');
   }
-  return str || '0'
+  return str || '0';
 }
 
 export default function SystemLedgerTable({
@@ -50,19 +51,19 @@ export default function SystemLedgerTable({
   currentPage,
   setCurrentPage,
   syncSearchParams,
-  appliedFilters,
+  appliedFilters
 }) {
-  const { t } = useAdminTranslation()
-  const router = useRouter()
-  const { fmtDate } = useDateFormat()
+  const { t } = useAdminTranslation();
+  const router = useRouter();
+  const { fmtDate } = useDateFormat();
 
   return (
-    <div className="card">
+    <Card>
       <div className="p-5">
-        <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
-          <table className="w-full" style={{ minWidth: '1200px' }}>
+        <div className="overflow-x-auto overflow-x-auto">
+          <table className="w-full min-w-[1200px]">
             <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
+              <tr className="whitespace-nowrap">
                 <th>ID</th>
                 <th>{t('admin.ledger.type', { defaultValue: 'Type' })}</th>
                 <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
@@ -77,155 +78,155 @@ export default function SystemLedgerTable({
               </tr>
             </thead>
             <tbody>
-              {entries.length === 0 ? (
-                <TableEmptyState
-                  colSpan={11}
-                  icon="bx-book-content"
-                  message={t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })}
-                />
-              ) : (
-                entries.map((entry) => {
-                  const isCredit = entry.entryType === 'credit'
-                  const metadata = parseMetadata(entry)
-                  const purposeLabel = getPurposeLabel(metadata)
+              {entries.length === 0 ?
+              <TableEmptyState
+                colSpan={11}
+                icon="bx-book-content"
+                message={t('admin.ledger.noEntries', { defaultValue: 'No ledger entries found' })} /> :
 
-                  return (
-                    <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/admin/system-ledger/${entry.id}`)}>
+
+              entries.map((entry) => {
+                const isCredit = entry.entryType === 'credit';
+                const metadata = parseMetadata(entry);
+                const purposeLabel = getPurposeLabel(metadata);
+
+                return (
+                  <tr className="cursor-pointer" key={entry.id} onClick={() => router.push(`/admin/system-ledger/${entry.id}`)}>
                       <td>
                         <span className="font-semibold text-primary">{entry.id}</span>
                       </td>
                       <td>
-                        <span className={`badge ${entry.state ==='reversed' ? 'bg-surface-100 text-surface-600' : (isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700')}`}>
-                          <i className={`bx ${isCredit ?'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
+                        <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                          <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
                           {isCredit ? 'Credit' : 'Debit'}
-                        </span>
+                        </Badge>
                       </td>
-                      <td style={{ whiteSpace: 'nowrap' }}>
+                      <td className="whitespace-nowrap">
                         <div className="flex items-center">
                           <CoinImg
-                            symbol={entry.coinSymbol}
-                            networkSymbol={entry.networkSymbol}
-                            size={24}
-                            className="mr-2"
-                          />
+                          symbol={entry.coinSymbol}
+                          networkSymbol={entry.networkSymbol}
+                          size={24}
+                          className="mr-2" />
+                        
                           <div>
-                            <div className="font-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
-                            {entry.networkName && (
-                              <small className="text-muted" style={{ fontSize: '0.75rem' }}>{entry.networkName}</small>
-                            )}
+                            <div className="font-medium leading-[1.2]">{entry.coinSymbol || '-'}</div>
+                            {entry.networkName &&
+                          <small className="text-muted text-xs">{entry.networkName}</small>
+                          }
                           </div>
                         </div>
                       </td>
                       <td>
-                        {entry.entryCode ? (
-                          <span className="font-medium">{entry.entryCode}</span>
-                        ) : (
-                          <span className="text-muted">-</span>
-                        )}
+                        {entry.entryCode ?
+                      <span className="font-medium">{entry.entryCode}</span> :
+
+                      <span className="text-muted">-</span>
+                      }
                       </td>
                       <td>
                         {stateBadge(entry.state)}
                       </td>
-                      <td className="text-right" style={{ whiteSpace: 'nowrap' }}>
-                        <span className={`font-medium ${entry.state ==='reversed' ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
-                          {entry.state === 'reversed' ? '' : (isCredit ? '-' : '+')}{formatAmount(entry.amount)}
+                      <td className="text-right whitespace-nowrap">
+                        <span className={`font-medium ${entry.state === 'reversed' ? '' : isCredit ? 'text-danger' : 'text-success'}`}>
+                          {entry.state === 'reversed' ? '' : isCredit ? '-' : '+'}{formatAmount(entry.amount)}
                         </span>
                       </td>
-                      <td className="text-right" style={{ whiteSpace: 'nowrap' }}>
+                      <td className="text-right whitespace-nowrap">
                         <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
                       </td>
                       <td>
                         <div>
-                          {purposeLabel && (
-                            <div className="font-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
-                          )}
-                          {metadata?.invoiceNumber && (
-                            <small className="badge bg-primary-50 text-primary-600">{metadata.invoiceNumber}</small>
-                          )}
-                          {metadata?.sweepId && !metadata?.invoiceNumber && (
-                            <small className="text-muted">Sweep #{metadata.sweepId}</small>
-                          )}
-                          {!purposeLabel && !metadata?.invoiceNumber && !metadata?.sweepId && (
-                            <span className="text-muted">-</span>
-                          )}
+                          {purposeLabel &&
+                        <div className="font-medium text-[0.85rem]">{purposeLabel}</div>
+                        }
+                          {metadata?.invoiceNumber &&
+                        <Badge>{metadata.invoiceNumber}</Badge>
+                        }
+                          {metadata?.sweepId && !metadata?.invoiceNumber &&
+                        <small className="text-muted">Sweep #{metadata.sweepId}</small>
+                        }
+                          {!purposeLabel && !metadata?.invoiceNumber && !metadata?.sweepId &&
+                        <span className="text-muted">-</span>
+                        }
                         </div>
                       </td>
                       <td>
-                        {entry.txHash ? (
-                          <div className="flex items-center">
+                        {entry.txHash ?
+                      <div className="flex items-center">
                             <span className="mr-2">{entry.txHash}</span>
-                            {entry.explorerUrl && (
-                              <a
-                                href={`${entry.explorerUrl}/tx/${entry.txHash}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
-                                onClick={(e) => e.stopPropagation()}
-                                title="View on explorer"
-                              >
-                                <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
-                              </a>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-muted">-</span>
-                        )}
+                            {entry.explorerUrl &&
+                        <Button variant="text-secondary" size="icon" className="rounded-full"
+                        href={`${entry.explorerUrl}/tx/${entry.txHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        onClick={(e) => e.stopPropagation()}
+                        title="View on explorer">
+                          
+                                <i className="bx bx-link-external text-xl"></i>
+                              </Button>
+                        }
+                          </div> :
+
+                      <span className="text-muted">-</span>
+                      }
                       </td>
                       <td>
-                        <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(entry.createdAt)}</span>
+                        <span className="whitespace-nowrap">{fmtDate(entry.createdAt)}</span>
                       </td>
                       <td>
-                        <Link
-                          href={`/admin/system-ledger/${entry.id}`}
-                          className="btn btn-sm btn-icon btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
-                          onClick={(e) => e.stopPropagation()}
-                          title={t('actions.view', { defaultValue: 'View' })}
-                        >
+                        <Button variant="outline-primary" size="icon"
+                      href={`/admin/system-ledger/${entry.id}`}
+
+                      onClick={(e) => e.stopPropagation()}
+                      title={t('actions.view', { defaultValue: 'View' })}>
+                        
                           <i className="bx bx-show"></i>
-                        </Link>
+                        </Button>
                       </td>
-                    </tr>
-                  )
-                })
-              )}
+                    </tr>);
+
+              })
+              }
             </tbody>
           </table>
         </div>
 
-        {pagination && pagination.total > 0 && (
-          <div className="flex justify-between items-center mt-4">
+        {pagination && pagination.total > 0 &&
+        <div className="flex justify-between items-center mt-4">
             <div className="text-muted text-sm">
               {t('invoices.showingEntries', {
-                start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                end: Math.min(pagination.page * pagination.limit, pagination.total),
-                total: pagination.total,
-                defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-              })}
+              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
+              end: Math.min(pagination.page * pagination.limit, pagination.total),
+              total: pagination.total,
+              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+            })}
             </div>
             <div className="inline-flex rounded-lg shadow-sm">
-              <button
-                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                disabled={!pagination.hasPrev || loading}
-                onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
-              >
+              <Button
+
+              disabled={!pagination.hasPrev || loading}
+              onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
+              
                 <i className="bx bx-chevron-left"></i>
                 {t('actions.prev', { defaultValue: 'Previous' })}
-              </button>
-              <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>
+              </Button>
+              <Button disabled variant="outline-secondary" size="sm">
                 {pagination.page} / {pagination.totalPages}
-              </button>
-              <button
-                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                disabled={!pagination.hasNext || loading}
-                onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
-              >
+              </Button>
+              <Button
+
+              disabled={!pagination.hasNext || loading}
+              onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
+              
                 {t('actions.next', { defaultValue: 'Next' })}
                 <i className="bx bx-chevron-right"></i>
-              </button>
+              </Button>
             </div>
           </div>
-        )}
+        }
       </div>
-    </div>
-  )
+    </Card>);
+
 }

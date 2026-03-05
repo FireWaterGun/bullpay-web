@@ -8,10 +8,10 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
   if (!data || data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center" style={{ height }}>
-        <div className="rounded-full bg-surface-100 text-surface-600 flex items-center justify-center mb-3" style={{ width: 64, height: 64 }}>
-          <i className="bx bx-bar-chart-alt-2 fs-2"></i>
+        <div className="rounded-full bg-surface-100 text-surface-600 flex items-center justify-center mb-3 w-16 h-16">
+          <i className="bx bx-bar-chart-alt-2 text-[2rem]"></i>
         </div>
-        <span className="font-medium text-dark">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
+        <span className="font-medium text-surface-900">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
         <span className="text-muted text-sm mt-1">{t ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' }) : 'Select a date range with data'}</span>
       </div>
     )
@@ -74,41 +74,28 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
 
   return (
     <div>
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{ display: 'flex', minWidth: yAxisW + barAreaW + 120 }}>
+      <div className="overflow-x-auto">
+        <div className="flex" style={{ minWidth: yAxisW + barAreaW + 120 }}>
           {/* Y-axis */}
-          <div style={{ width: yAxisW, flexShrink: 0, position: 'relative', height: chartH }}>
+          <div className="shrink-0 relative" style={{ width: yAxisW, height: chartH }}>
             {yScale.labels.map((v) => (
-              <div
+              <div className="absolute right-[8px] text-[0.72rem] text-surface-500 whitespace-nowrap"
                 key={`y-${v}`}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v) - 8,
-                  right: 8,
-                  fontSize: '0.72rem',
-                  color: 'var(--bs-secondary-color)',
-                  whiteSpace: 'nowrap',
-                }}
+                style={{ top: yPos(v) - 8 }}
               >
                 {formatUsdAuto(v)}
               </div>
             ))}
           </div>
           {/* Chart area */}
-          <div style={{ position: 'relative', flex: 1, minWidth: barAreaW, height: chartH }}>
+          <div className="relative flex-1" style={{ minWidth: barAreaW, height: chartH }}>
             {yScale.labels.map((v) => (
-              <div
+              <div className="absolute left-[0px] right-[0px]"
                 key={`grid-${v}`}
-                style={{
-                  position: 'absolute',
-                  top: yPos(v),
-                  left: 0,
-                  right: 0,
-                  borderTop: v === 0 ? '1.5px solid var(--bs-secondary-color)' : '1px dashed var(--bs-border-color)',
-                }}
+                style={{ top: yPos(v), borderTop: v === 0 ? '1.5px solid var(--color-surface-500)' : '1px dashed var(--color-surface-200)' }}
               />
             ))}
-            <svg width={barAreaW} height={chartH} style={{ position: 'absolute', top: 0, left: 0 }}>
+            <svg className="absolute top-[0px] left-[0px]" width={barAreaW} height={chartH}>
               <defs>
                 <pattern id="costPattern" patternUnits="userSpaceOnUse" width="4" height="4">
                   <rect width="4" height="4" fill="#a8b8d8" />
@@ -136,7 +123,7 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                       width={barW}
                       height={revH}
                       rx={2}
-                      fill="#696cff"
+                      fill="var(--color-primary-600, #2563eb)"
                     >
                       <title>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}: {formatCurrency(rev)}</title>
                     </rect>
@@ -175,26 +162,26 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
             </svg>
           </div>
           {/* Legend */}
-          <div style={{ width: 100, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
+          <div className="w-[100px] shrink-0 flex flex-col justify-center gap-3 pl-[16px]">
             <div className="flex items-center gap-2">
-              <span style={{ width: 14, height: 14, backgroundColor: 'var(--bs-primary)', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+              <span className="w-3.5 h-3.5 bg-primary-600 rounded-[3px] inline-block shrink-0"></span>
               <small>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(var(--bs-gray-400) 0% 25%, var(--bs-gray-500) 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+              <span className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0" style={{ background: 'repeating-conic-gradient(var(--color-surface-400) 0% 25%, var(--color-surface-500) 0% 50%) 50%/6px 6px' }}></span>
               <small>{t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span style={{ width: 16, borderBottom: '2px solid var(--bs-info)', display: 'inline-block', flexShrink: 0 }}></span>
+              <span className="w-4 inline-block shrink-0" style={{ borderBottom: '2px solid var(--color-cyan-500)' }}></span>
               <small>{t ? t('admin.operatingProfit', { defaultValue: 'Operating Profit' }) : 'Operating Profit'}</small>
             </div>
           </div>
         </div>
         {/* X-axis labels */}
-        <div style={{ display: 'flex', marginLeft: yAxisW, width: barAreaW }}>
+        <div className="flex" style={{ marginLeft: yAxisW, width: barAreaW }}>
           {data.map((item) => (
-            <div key={`x-${item.date}`} style={{ width: barGroupW, flexShrink: 0, textAlign: 'center' }}>
-              <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+            <div className="shrink-0 text-center" key={`x-${item.date}`} style={{ width: barGroupW }}>
+              <small className="text-muted text-xs">
                 {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
             </div>

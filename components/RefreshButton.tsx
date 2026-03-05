@@ -2,6 +2,7 @@
 
 import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { buttonClass } from './ui'
 
 // Inject styles once globally
 const STYLE_ID = 'refresh-btn-styles'
@@ -12,7 +13,7 @@ function ensureStyles() {
   style.id = STYLE_ID
   style.textContent = [
     '@keyframes refresh-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }',
-    '@keyframes topbar-glow { 0%,100% { box-shadow: 0 0 8px var(--color-primary-600, #696cff), 0 0 4px var(--color-primary-600, #696cff); } 50% { box-shadow: 0 0 16px var(--color-primary-600, #696cff), 0 0 8px var(--color-primary-600, #696cff); } }',
+    '@keyframes topbar-glow { 0%,100% { box-shadow: 0 0 8px var(--color-primary-600, #2563eb), 0 0 4px var(--color-primary-600, #2563eb); } 50% { box-shadow: 0 0 16px var(--color-primary-600, #2563eb), 0 0 8px var(--color-primary-600, #2563eb); } }',
   ].join('\n')
   document.head.appendChild(style)
 }
@@ -34,7 +35,7 @@ interface RefreshButtonProps {
   onClick: () => void | Promise<void>
   /** Whether data is currently loading */
   loading?: boolean
-  /** Button className override (default: btn btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none) */
+  /** Button className override */
   className?: string
   /** Extra title for accessibility */
   title?: string
@@ -51,7 +52,7 @@ interface RefreshButtonProps {
 export default function RefreshButton({
   onClick,
   loading = false,
-  className = 'btn btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none',
+  className = buttonClass('text-secondary'),
   title = 'Refresh',
 }: RefreshButtonProps) {
   const [progress, setProgress] = useState(0)
@@ -190,12 +191,8 @@ export default function RefreshButton({
         aria-label={title}
       >
         <i
-          className="bx bx-refresh"
-          style={{
-            display: 'inline-block',
-            animation: loading ? 'refresh-spin 0.8s linear infinite' : 'none',
-            fontSize: '1.25rem',
-          }}
+          className="bx bx-refresh inline-block text-xl"
+          style={{ animation: loading ? 'refresh-spin 0.8s linear infinite' : 'none' }}
         />
       </button>
     </>
@@ -217,7 +214,7 @@ const topBarContainerStyle: React.CSSProperties = {
 
 const topBarStyle: React.CSSProperties = {
   height: '100%',
-  backgroundColor: 'var(--color-primary-600, #696cff)',
+  backgroundColor: 'var(--color-primary-600, #2563eb)',
   position: 'relative',
 }
 

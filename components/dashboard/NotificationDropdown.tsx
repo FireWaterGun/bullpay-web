@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useAuth } from '@/app/providers'
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/app/providers';
 import {
   getNotifications,
   getUnreadCount,
@@ -10,12 +10,13 @@ import {
   markAllAsRead,
   getNotificationIcon,
   getNotificationColor,
-  formatNotificationTime,
-} from '@/lib/api/notifications'
-import { logger } from '@/lib/utils/logger'
+  formatNotificationTime } from
+'@/lib/api/notifications';
+import { logger } from '@/lib/utils/logger';
+import { Spinner } from '../ui'
 
 interface NotificationDropdownProps {
-  refreshRef: React.MutableRefObject<(() => void) | null>
+  refreshRef: React.MutableRefObject<(() => void) | null>;
 }
 
 const colorMap: Record<string, string> = {
@@ -24,73 +25,73 @@ const colorMap: Record<string, string> = {
   danger: 'bg-red-100 text-red-600',
   warning: 'bg-amber-100 text-amber-600',
   info: 'bg-blue-100 text-blue-600',
-  secondary: 'bg-surface-100 text-surface-600',
-}
+  secondary: 'bg-surface-100 text-surface-600'
+};
 
 export default function NotificationDropdown({ refreshRef }: NotificationDropdownProps) {
-  const { t } = useTranslation()
-  const { token } = useAuth()
+  const { t } = useTranslation();
+  const { token } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [notifications, setNotifications] = useState<any[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   // Click outside to close
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [open])
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
 
   const loadNotifications = useCallback(async () => {
-    if (!token) return
+    if (!token) return;
     try {
-      setLoading(true)
+      setLoading(true);
       const [notifData, count] = await Promise.all([
-        getNotifications({ limit: 10, includeRead: false }, token),
-        getUnreadCount(token),
-      ])
-      setNotifications(notifData.items || [])
-      setUnreadCount(count)
+      getNotifications({ limit: 10, includeRead: false }, token),
+      getUnreadCount(token)]
+      );
+      setNotifications(notifData.items || []);
+      setUnreadCount(count);
     } catch (error) {
-      logger.error('Failed to load notifications:', error)
+      logger.error('Failed to load notifications:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [token])
+  }, [token]);
 
   useEffect(() => {
-    if (token) loadNotifications()
-  }, [token, loadNotifications])
+    if (token) loadNotifications();
+  }, [token, loadNotifications]);
 
   useEffect(() => {
-    if (refreshRef) refreshRef.current = loadNotifications
-  }, [refreshRef, loadNotifications])
+    if (refreshRef) refreshRef.current = loadNotifications;
+  }, [refreshRef, loadNotifications]);
 
   async function handleMarkAsRead(notificationId: number) {
     try {
-      await markAsRead([String(notificationId)], token!)
+      await markAsRead([String(notificationId)], token!);
       setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
-      )
-      setUnreadCount((prev) => Math.max(0, prev - 1))
+      prev.map((n) => n.id === notificationId ? { ...n, isRead: true } : n)
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
-      logger.error('Failed to mark notification as read:', error)
+      logger.error('Failed to mark notification as read:', error);
     }
   }
 
   async function handleMarkAllAsRead() {
     try {
-      await markAllAsRead(token!)
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
-      setUnreadCount(0)
+      await markAllAsRead(token!);
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setUnreadCount(0);
     } catch (error) {
-      logger.error('Failed to mark all as read:', error)
+      logger.error('Failed to mark all as read:', error);
     }
   }
 
@@ -100,67 +101,67 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
       <button
         onClick={() => setOpen(!open)}
         className="relative flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors cursor-pointer"
-        title="Notifications"
-      >
+        title="Notifications">
+        
         <i className="bx bx-bell text-xl"></i>
-        {unreadCount > 0 && (
-          <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-danger-500 rounded-full border-2 border-white"></span>
-        )}
+        {unreadCount > 0 &&
+        <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-danger-500 rounded-full border-2 border-white"></span>
+        }
       </button>
 
       {/* Dropdown */}
       <div
-        className={`bp-absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 !min-w-[360px] !max-w-[calc(100vw-2rem)] !p-0 ${open ?'bp-dropdown-open' : ''}`}
-      >
+        className={`bp-absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 !min-w-[360px] !max-w-[calc(100vw-2rem)] !p-0 ${open ? 'bp-dropdown-open' : ''}`}>
+        
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-surface-100">
           <h6 className="text-sm font-semibold text-surface-900">
             {t('notifications.title', { defaultValue: 'Notifications' })}
-            {unreadCount > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold text-white bg-primary-600 rounded-full">
+            {unreadCount > 0 &&
+            <span className="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold text-white bg-primary-600 rounded-full">
                 {unreadCount}
               </span>
-            )}
+            }
           </h6>
           <button
             onClick={handleMarkAllAsRead}
             className="text-surface-400 hover:text-primary-600 transition-colors cursor-pointer"
-            title={t('notifications.markAllRead', { defaultValue: 'Mark all as read' })}
-          >
+            title={t('notifications.markAllRead', { defaultValue: 'Mark all as read' })}>
+            
             <i className="bx bx-check-double text-lg"></i>
           </button>
         </div>
 
         {/* List */}
         <div className="max-h-[300px] overflow-y-auto">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="spinner text-primary-600"></div>
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-surface-400">
+          {loading ?
+          <div className="flex items-center justify-center py-8">
+              <Spinner className="text-primary-600" />
+            </div> :
+          notifications.length === 0 ?
+          <div className="flex flex-col items-center justify-center py-8 text-surface-400">
               <i className="bx bx-bell-off text-3xl mb-2"></i>
               <span className="text-sm">
                 {t('notifications.noNotifications', { defaultValue: 'No notifications' })}
               </span>
-            </div>
-          ) : (
-            <ul>
+            </div> :
+
+          <ul>
               {notifications.map((notif) => {
-                const color = colorMap[getNotificationColor(notif.type)] || colorMap.secondary
-                return (
-                  <li
-                    key={notif.id}
-                    className={`px-4 py-3 cursor-pointer transition-colors border-l-[3px] ${ notif.isRead ?'border-l-transparent hover:bg-surface-50'
-                        : 'border-l-primary-500 bg-primary-50/30 hover:bg-primary-50/50 font-medium'
-                    }`}
-                    onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}
-                  >
+              const color = colorMap[getNotificationColor(notif.type)] || colorMap.secondary;
+              return (
+                <li
+                  key={notif.id}
+                  className={`px-4 py-3 cursor-pointer transition-colors border-l-[3px] ${notif.isRead ? 'border-l-transparent hover:bg-surface-50' :
+                  'border-l-primary-500 bg-primary-50/30 hover:bg-primary-50/50 font-medium'}`
+                  }
+                  onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}>
+                  
                     <div className="flex gap-3">
                       <div className="shrink-0">
                         <span
-                          className={`flex items-center justify-center w-9 h-9 rounded-full text-sm ${color}`}
-                        >
+                        className={`flex items-center justify-center w-9 h-9 rounded-full text-sm ${color}`}>
+                        
                           <i className={`bx ${getNotificationIcon(notif.type)}`}></i>
                         </span>
                       </div>
@@ -173,28 +174,28 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
                           {formatNotificationTime(notif.createdAt)}
                         </p>
                       </div>
-                      {!notif.isRead && (
-                        <span className="shrink-0 mt-2 w-2.5 h-2.5 bg-primary-500 rounded-full"></span>
-                      )}
+                      {!notif.isRead &&
+                    <span className="shrink-0 mt-2 w-2.5 h-2.5 bg-primary-500 rounded-full"></span>
+                    }
                     </div>
-                  </li>
-                )
-              })}
+                  </li>);
+
+            })}
             </ul>
-          )}
+          }
         </div>
 
         {/* Footer */}
         <div className="border-t border-surface-100">
           <button
             onClick={loadNotifications}
-            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-primary-600 hover:bg-surface-50 transition-colors cursor-pointer"
-          >
+            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-primary-600 hover:bg-surface-50 transition-colors cursor-pointer">
+            
             <i className="bx bx-refresh"></i>
             {t('notifications.refresh', { defaultValue: 'Refresh' })}
           </button>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

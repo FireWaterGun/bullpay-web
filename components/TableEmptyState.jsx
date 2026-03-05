@@ -15,8 +15,8 @@ export default function TableEmptyState({ colSpan, icon = 'bx-data', message, su
       <td colSpan={colSpan} className="text-center py-12">
         <div className="flex flex-col items-center gap-2">
           <div
-            className="rounded-full bg-surface-100 flex items-center justify-center mb-1"
-            style={{ width: 64, height: 64 }}
+            className="rounded-full bg-surface-100 flex items-center justify-center mb-1 w-16 h-16"
+           
           >
             <i className={`bx ${icon} text-3xl text-surface-500`}></i>
           </div>

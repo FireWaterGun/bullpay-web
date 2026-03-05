@@ -1,6 +1,7 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Button, Card, Input, Label, Spinner } from '../ui';
 
 export default function WithdrawalTxModals({
   showApproveModal,
@@ -14,14 +15,14 @@ export default function WithdrawalTxModals({
   setRejectReason,
   formatAmount,
   onApprove,
-  onReject,
+  onReject
 }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
   return (
     <>
-      {showApproveModal && selectedWithdrawal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !approving && setShowApproveModal(false)}>
+      {showApproveModal && selectedWithdrawal &&
+      <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !approving && setShowApproveModal(false)}>
           <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="bg-white rounded-xl shadow-xl">
               <div className="flex items-center justify-between p-5 border-b border-surface-200">
@@ -32,7 +33,7 @@ export default function WithdrawalTxModals({
               </div>
               <div className="p-5">
                 <p className="mb-3">{t('withdrawal.approveMessage', { defaultValue: 'Are you sure you want to approve this withdrawal?' })}</p>
-                <div className="card" style={{ backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
+                <Card style={{ border: '1px solid var(--color-surface-200)' }} className="bg-surface-100">
                   <div className="p-5">
                     <div className="grid grid-cols-12 gap-x-6 gap-2">
                       <div className="col-span-6">
@@ -57,30 +58,30 @@ export default function WithdrawalTxModals({
                       </div>
                     </div>
                   </div>
-                </div>
+                </Card>
               </div>
               <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-                <button type="button" className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300" onClick={() => setShowApproveModal(false)} disabled={approving}>
+                <Button type="button" onClick={() => setShowApproveModal(false)} disabled={approving} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
                   {t('actions.cancel', { defaultValue: 'Cancel' })}
-                </button>
-                <button type="button" className="btn btn-primary" onClick={onApprove} disabled={approving}>
-                  {approving ? (
-                    <>
-                      <span className="spinner w-4 h-4 mr-1"></span>
+                </Button>
+                <Button type="button" onClick={onApprove} disabled={approving}>
+                  {approving ?
+                <>
+                      <Spinner className="w-4 h-4 mr-1" />
                       {t('withdrawal.approving', { defaultValue: 'Approving...' })}
-                    </>
-                  ) : (
-                    t('withdrawal.approve', { defaultValue: 'Approve' })
-                  )}
-                </button>
+                    </> :
+
+                t('withdrawal.approve', { defaultValue: 'Approve' })
+                }
+                </Button>
               </div>
             </div>
           </div>
         </div>
-      )}
+      }
 
-      {showRejectModal && selectedWithdrawal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !rejecting && setShowRejectModal(false)}>
+      {showRejectModal && selectedWithdrawal &&
+      <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !rejecting && setShowRejectModal(false)}>
           <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="bg-white rounded-xl shadow-xl">
               <div className="flex items-center justify-between p-5 border-b border-surface-200">
@@ -91,7 +92,7 @@ export default function WithdrawalTxModals({
               </div>
               <div className="p-5">
                 <p className="mb-3">{t('withdrawal.rejectMessage', { defaultValue: 'Are you sure you want to reject this withdrawal?' })}</p>
-                <div className="card mb-3" style={{ backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
+                <Card style={{ border: '1px solid var(--color-surface-200)' }} className="mb-3 bg-surface-100">
                   <div className="p-5">
                     <div className="grid grid-cols-12 gap-x-6 gap-2">
                       <div className="col-span-6">
@@ -116,27 +117,27 @@ export default function WithdrawalTxModals({
                       </div>
                     </div>
                   </div>
-                </div>
+                </Card>
 
                 <div className="mb-3">
-                  <label htmlFor="rejectReason" className="form-label">
+                  <Label htmlFor="rejectReason">
                     {t('withdrawal.rejectReason', { defaultValue: 'Reason for rejection' })} <span className="text-danger">*</span>
-                  </label>
-                  <textarea
-                    id="rejectReason"
-                    className={`form-input ${rejectReason.trim().length > 0 && rejectReason.trim().length < 10 ?'is-invalid' : ''}`}
-                    rows="3"
-                    value={rejectReason}
-                    onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder={t('withdrawal.rejectReasonPlaceholder', { defaultValue: 'e.g., Suspicious activity detected' })}
-                    disabled={rejecting}
-                  />
+                  </Label>
+                  <Input
+                  id="rejectReason"
+
+                  rows="3"
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder={t('withdrawal.rejectReasonPlaceholder', { defaultValue: 'e.g., Suspicious activity detected' })}
+                  disabled={rejecting} error={rejectReason.trim().length > 0 && rejectReason.trim().length < 10} />
+                
                   <div className="flex justify-between mt-1">
-                    <small className={`${rejectReason.trim().length > 0 && rejectReason.trim().length < 10 ?'text-danger' : 'text-muted'}`}>
-                      {rejectReason.trim().length < 10
-                        ? t('withdrawal.rejectReasonMinLength', { defaultValue: 'Minimum 10 characters required' })
-                        : t('common.optional', { defaultValue: '' })
-                      }
+                    <small className={`${rejectReason.trim().length > 0 && rejectReason.trim().length < 10 ? 'text-danger' : 'text-muted'}`}>
+                      {rejectReason.trim().length < 10 ?
+                    t('withdrawal.rejectReasonMinLength', { defaultValue: 'Minimum 10 characters required' }) :
+                    t('common.optional', { defaultValue: '' })
+                    }
                     </small>
                     <small className="text-muted">
                       {rejectReason.trim().length}/10
@@ -145,24 +146,24 @@ export default function WithdrawalTxModals({
                 </div>
               </div>
               <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-                <button type="button" className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300" onClick={() => setShowRejectModal(false)} disabled={rejecting}>
+                <Button type="button" onClick={() => setShowRejectModal(false)} disabled={rejecting} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
                   {t('actions.cancel', { defaultValue: 'Cancel' })}
-                </button>
-                <button type="button" className="btn btn-danger" onClick={onReject} disabled={rejecting || rejectReason.trim().length < 10}>
-                  {rejecting ? (
-                    <>
-                      <span className="spinner w-4 h-4 mr-1"></span>
+                </Button>
+                <Button type="button" onClick={onReject} disabled={rejecting || rejectReason.trim().length < 10} variant="danger">
+                  {rejecting ?
+                <>
+                      <Spinner className="w-4 h-4 mr-1" />
                       {t('withdrawal.rejecting', { defaultValue: 'Rejecting...' })}
-                    </>
-                  ) : (
-                    t('withdrawal.reject', { defaultValue: 'Reject' })
-                  )}
-                </button>
+                    </> :
+
+                t('withdrawal.reject', { defaultValue: 'Reject' })
+                }
+                </Button>
               </div>
             </div>
           </div>
         </div>
-      )}
-    </>
-  )
+      }
+    </>);
+
 }

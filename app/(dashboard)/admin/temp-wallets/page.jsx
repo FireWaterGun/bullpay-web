@@ -1,85 +1,86 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { useAuth } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useToast } from '@/app/providers'
-import { getTempWallets } from '@/lib/api/admin'
-import { listCoins } from '@/lib/api/coins'
-import { useDateFormat } from '@/hooks/useDateFormat'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import CoinImg from '@/components/CoinImg'
-import { logger } from '@/lib/utils/logger'
-import RefreshButton from '@/components/RefreshButton'
-import PageSpinner from '@/components/PageSpinner'
-import TableEmptyState from '@/components/TableEmptyState'
+import { useState, useEffect } from 'react';
+import { useSearchParams as useNextSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/app/providers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useToast } from '@/app/providers';
+import { getTempWallets } from '@/lib/api/admin';
+import { listCoins } from '@/lib/api/coins';
+import { useDateFormat } from '@/hooks/useDateFormat';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import CoinImg from '@/components/CoinImg';
+import { logger } from '@/lib/utils/logger';
+import RefreshButton from '@/components/RefreshButton';
+import PageSpinner from '@/components/PageSpinner';
+import TableEmptyState from '@/components/TableEmptyState';
+import { Badge, Button, Card, Input, Label, Select, inputClass, badgeBase } from '../../../../components/ui';
 
-const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
+const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled'];
 
 function statusBadgeClass(s) {
-  const v = String(s || '').toLowerCase()
-  if (v === 'active' || v === 'pooled') return 'badge bg-green-50 text-green-700'
-  if (v === 'assigned') return 'badge bg-cyan-50 text-cyan-700'
-  if (v === 'used' || v === 'sweeped') return 'badge bg-amber-50 text-amber-700'
-  if (v === 'expired' || v === 'disabled') return 'badge bg-red-50 text-red-700'
-  return 'badge bg-surface-100 text-surface-600'
+  const v = String(s || '').toLowerCase();
+  if (v === 'active' || v === 'pooled') return `${badgeBase} bg-green-50 text-green-700`;
+  if (v === 'assigned') return `${badgeBase} bg-cyan-50 text-cyan-700`;
+  if (v === 'used' || v === 'sweeped') return `${badgeBase} bg-amber-50 text-amber-700`;
+  if (v === 'expired' || v === 'disabled') return `${badgeBase} bg-red-50 text-red-700`;
+  return `${badgeBase} bg-surface-100 text-surface-600`;
 }
 
 export default function TempWalletList() {
-  const { fmtDate } = useDateFormat()
-  const { t } = useAdminTranslation()
+  const { fmtDate } = useDateFormat();
+  const { t } = useAdminTranslation();
   const SORT_BY_OPTIONS = [
-    { value: 'createdAt', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
-    { value: 'lastAssignedAt', label: t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' }) },
-    { value: 'lastSweepAt', label: t('admin.tempWallet.lastSweep', { defaultValue: 'Last Sweep' }) },
-    { value: 'reuseCount', label: t('admin.tempWallet.reuseCount', { defaultValue: 'Reuse Count' }) },
-  ]
-  const { token } = useAuth()
-  const toast = useToast()
-  const searchParams = useNextSearchParams()
+  { value: 'createdAt', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
+  { value: 'lastAssignedAt', label: t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' }) },
+  { value: 'lastSweepAt', label: t('admin.tempWallet.lastSweep', { defaultValue: 'Last Sweep' }) },
+  { value: 'reuseCount', label: t('admin.tempWallet.reuseCount', { defaultValue: 'Reuse Count' }) }];
 
-  const initStatus = searchParams.get('status') || ''
-  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
-  const initAddress = searchParams.get('address') || ''
-  const initSortBy = searchParams.get('sortBy') || ''
-  const initSortOrder = searchParams.get('sortOrder') || ''
-  const initPage = parseInt(searchParams.get('page')) || 1
+  const { token } = useAuth();
+  const toast = useToast();
+  const searchParams = useNextSearchParams();
 
-  const [loading, setLoading] = useState(false)
-  const [wallets, setWallets] = useState([])
-  const [pagination, setPagination] = useState(null)
-  const [currentPage, setCurrentPage] = useState(initPage)
-  const [coinNetworks, setCoinNetworks] = useState([])
+  const initStatus = searchParams.get('status') || '';
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || '';
+  const initAddress = searchParams.get('address') || '';
+  const initSortBy = searchParams.get('sortBy') || '';
+  const initSortOrder = searchParams.get('sortOrder') || '';
+  const initPage = parseInt(searchParams.get('page')) || 1;
 
-  const [statusFilter, setStatusFilter] = useState(initStatus)
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
-  const [addressFilter, setAddressFilter] = useState(initAddress)
-  const [sortByFilter, setSortByFilter] = useState(initSortBy)
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
+  const [loading, setLoading] = useState(false);
+  const [wallets, setWallets] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [currentPage, setCurrentPage] = useState(initPage);
+  const [coinNetworks, setCoinNetworks] = useState([]);
+
+  const [statusFilter, setStatusFilter] = useState(initStatus);
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId);
+  const [addressFilter, setAddressFilter] = useState(initAddress);
+  const [sortByFilter, setSortByFilter] = useState(initSortBy);
+  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder);
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
-    const f = {}
-    if (initStatus) f.status = initStatus
-    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
-    if (initAddress) f.address = initAddress
-    if (initSortBy) f.sortBy = initSortBy
-    if (initSortOrder) f.sortOrder = initSortOrder
-    return f
-  })
+    const f = {};
+    if (initStatus) f.status = initStatus;
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId);
+    if (initAddress) f.address = initAddress;
+    if (initSortBy) f.sortBy = initSortBy;
+    if (initSortOrder) f.sortOrder = initSortOrder;
+    return f;
+  });
 
-  useEffect(() => { loadWallets() }, [currentPage, appliedFilters])
+  useEffect(() => {loadWallets();}, [currentPage, appliedFilters]);
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {})
-  }, [])
+    listCoins(token).then(setCoinNetworks).catch(() => {});
+  }, []);
 
   function syncSearchParams(filters, page) {
-    const params = new URLSearchParams()
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, String(v)) })
-    if (page > 1) params.set('page', page)
-    window.history.replaceState(null, '', `?${params.toString()}`)
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([k, v]) => {if (v !== undefined && v !== '') params.set(k, String(v));});
+    if (page > 1) params.set('page', page);
+    window.history.replaceState(null, '', `?${params.toString()}`);
   }
 
   function applyFilters() {
@@ -88,54 +89,54 @@ export default function TempWalletList() {
       coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
       address: addressFilter || undefined,
       sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
-    }
-    setAppliedFilters(f)
-    setCurrentPage(1)
-    syncSearchParams(f, 1)
+      sortOrder: sortOrderFilter || undefined
+    };
+    setAppliedFilters(f);
+    setCurrentPage(1);
+    syncSearchParams(f, 1);
   }
 
   function resetFilters() {
-    setStatusFilter('')
-    setCoinNetworkIdFilter('')
-    setAddressFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
-    setAppliedFilters({})
-    setCurrentPage(1)
-    syncSearchParams({}, 1)
+    setStatusFilter('');
+    setCoinNetworkIdFilter('');
+    setAddressFilter('');
+    setSortByFilter('');
+    setSortOrderFilter('');
+    setAppliedFilters({});
+    setCurrentPage(1);
+    syncSearchParams({}, 1);
   }
 
   async function loadWallets() {
-    if (!token) return
+    if (!token) return;
     try {
-      setLoading(true)
-      const data = await getTempWallets(token, { page: currentPage, limit: 20, ...appliedFilters })
-      setWallets(data.items || [])
-      const m = data.meta || data.pagination || null
+      setLoading(true);
+      const data = await getTempWallets(token, { page: currentPage, limit: 20, ...appliedFilters });
+      setWallets(data.items || []);
+      const m = data.meta || data.pagination || null;
       setPagination(m ? {
         total: m.total,
         page: m.page,
         limit: m.perPage || m.limit || 20,
         totalPages: m.lastPage || m.totalPages || 1,
         hasNext: m.hasNextPage ?? m.hasNext ?? false,
-        hasPrev: m.hasPrevPage ?? m.hasPrev ?? false,
-      } : null)
+        hasPrev: m.hasPrevPage ?? m.hasPrev ?? false
+      } : null);
     } catch (error) {
-      logger.error('Failed to load temp wallets:', error)
-      toast.error(t('admin.tempWallet.loadError', { defaultValue: 'Failed to load temp wallets' }))
+      logger.error('Failed to load temp wallets:', error);
+      toast.error(t('admin.tempWallet.loadError', { defaultValue: 'Failed to load temp wallets' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+    const ok = await copyText(text);
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
   }
 
   if (loading && wallets.length === 0) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
   return (
@@ -143,7 +144,7 @@ export default function TempWalletList() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           {/* Header */}
-          <div className="card mb-4">
+          <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
@@ -156,10 +157,10 @@ export default function TempWalletList() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Link href="/admin/temp-wallet-histories" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
+                  <Button variant="outline-secondary" href="/admin/temp-wallet-histories">
                     <i className="bx bx-history mr-1"></i>
                     {t('admin.tempWallets.usageHistories', { defaultValue: 'Usage Histories' })}
-                  </Link>
+                  </Button>
                   <RefreshButton onClick={loadWallets} loading={loading} />
                 </div>
               </div>
@@ -169,38 +170,38 @@ export default function TempWalletList() {
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <Label>{t('filter.status', { defaultValue: 'Status' })}</Label>
+                  <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
-                    {WALLET_STATUS_OPTIONS.map(s => (
-                      <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-                    ))}
-                  </select>
+                    {WALLET_STATUS_OPTIONS.map((s) =>
+                    <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                    )}
+                  </Select>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</label>
+                  <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
                   <div className="dropdown">
                     <button
-                      className="form-input flex items-center justify-between"
+                      className={`${inputClass()} flex items-center justify-between text-left`}
                       type="button"
-                      aria-expanded="false"
-                      style={{ textAlign: 'left' }}
-                    >
+                      aria-expanded="false">
+
+                      
                       {coinNetworkIdFilter ? (() => {
-                        const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
-                        if (!cn) return 'All'
-                        const sym = (cn.coin?.symbol || '').toUpperCase()
-                        const net = (cn.network?.symbol || '').toUpperCase()
+                        const cn = coinNetworks.find((c) => String(c.id) === String(coinNetworkIdFilter));
+                        if (!cn) return 'All';
+                        const sym = (cn.coin?.symbol || '').toUpperCase();
+                        const net = (cn.network?.symbol || '').toUpperCase();
                         return (
                           <span className="flex items-center gap-2">
                             <CoinImg symbol={sym} networkSymbol={net} size={22} />
-                            <span className="font-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
-                          </span>
-                        )
+                            <span className="font-semibold text-[0.85rem]">{sym}</span>
+                            <span className="text-muted text-xs">{net}</span>
+                          </span>);
+
                       })() : <span className="text-muted">All</span>}
                     </button>
-                    <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 w-full" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+                    <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 w-full max-h-[280px] overflow-y-auto">
                       <li>
                         <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => setCoinNetworkIdFilter('')}>
                           <span className="text-muted">All</span>
@@ -208,65 +209,65 @@ export default function TempWalletList() {
                       </li>
                       <li><hr className="dropdown-divider" /></li>
                       {coinNetworks.map((cn) => {
-                        const sym = (cn.coin?.symbol || '').toUpperCase()
-                        const net = (cn.network?.symbol || '').toUpperCase()
+                        const sym = (cn.coin?.symbol || '').toUpperCase();
+                        const net = (cn.network?.symbol || '').toUpperCase();
                         return (
                           <li key={cn.id}>
                             <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer flex items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
                               <CoinImg symbol={sym} networkSymbol={net} size={28} />
                               <div>
-                                <div className="font-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
-                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{net}</div>
+                                <div className="font-semibold text-[0.85rem]">{sym}</div>
+                                <div className="text-muted text-[0.7rem]">{net}</div>
                               </div>
                             </button>
-                          </li>
-                        )
+                          </li>);
+
                       })}
                     </ul>
                   </div>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.address', { defaultValue: 'Address' })}</label>
-                  <input type="text" className="form-input" placeholder="0x..." value={addressFilter} onChange={(e) => setAddressFilter(e.target.value)} />
+                  <Label>{t('filter.address', { defaultValue: 'Address' })}</Label>
+                  <Input type="text" placeholder="0x..." value={addressFilter} onChange={(e) => setAddressFilter(e.target.value)} />
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-input" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+                  <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
+                  <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    {SORT_BY_OPTIONS.map(o => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
-                  </select>
+                    {SORT_BY_OPTIONS.map((o) =>
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                    )}
+                  </Select>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
-                  <select className="form-input" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
+                  <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
+                  <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) }) }) })}</option>
                     <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: t('admin.detail.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) }) }) })}</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
-                </button>
-                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
+                </Button>
+                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Table */}
-          <div className="card">
+          <Card>
             <div className="p-5">
-              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+              <div className="overflow-x-auto overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr style={{ whiteSpace: 'nowrap' }}>
+                    <tr className="whitespace-nowrap">
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
                       <th className="text-center">{t('table.invoiceId', { defaultValue: 'Invoice' })}</th>
                       <th className="text-center">{t('table.userId', { defaultValue: 'User' })}</th>
@@ -286,30 +287,30 @@ export default function TempWalletList() {
                     </tr>
                   </thead>
                   <tbody>
-                    {wallets.length === 0 ? (
-                      <TableEmptyState
-                        colSpan={17}
-                        icon="bx-wallet-alt"
-                        message={t('admin.tempWallets.noWallets', { defaultValue: 'No temp wallets found' })}
-                        sub={t('admin.tempWallets.noWalletsSub', { defaultValue: 'No temp wallets match the current filters' })}
-                      />
-                    ) : (
-                      wallets.map((w) => (
-                        <tr key={w.id}>
+                    {wallets.length === 0 ?
+                    <TableEmptyState
+                      colSpan={17}
+                      icon="bx-wallet-alt"
+                      message={t('admin.tempWallets.noWallets', { defaultValue: 'No temp wallets found' })}
+                      sub={t('admin.tempWallets.noWalletsSub', { defaultValue: 'No temp wallets match the current filters' })} /> :
+
+
+                    wallets.map((w) =>
+                    <tr key={w.id}>
                           <td>
                             <span className="font-semibold text-primary">{w.id}</span>
                           </td>
                           <td className="text-center">
-                            {w.invoiceId ? (
-                              <Link
-                                href={`/admin/invoices/${w.invoiceId}`}
-                                className="text-primary font-medium"
-                              >
+                            {w.invoiceId ?
+                        <Link
+                          href={`/admin/invoices/${w.invoiceId}`}
+                          className="text-primary font-medium">
+                          
                                 {w.invoiceId}
-                              </Link>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
+                              </Link> :
+
+                        <span className="text-muted">-</span>
+                        }
                           </td>
                           <td className="text-center">
                             <span className="font-medium">{w.userId || '-'}</span>
@@ -318,36 +319,36 @@ export default function TempWalletList() {
                             <div className="flex items-center gap-2">
                               <CoinImg symbol={w.coinSymbol} networkSymbol={w.networkSymbol} size={28} />
                               <div>
-                                <div className="font-semibold" style={{ fontSize: '0.85rem' }}>{w.coinSymbol || '-'}</div>
-                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{w.networkSymbol || '-'}</div>
+                                <div className="font-semibold text-[0.85rem]">{w.coinSymbol || '-'}</div>
+                                <div className="text-muted text-[0.7rem]">{w.networkSymbol || '-'}</div>
                               </div>
                             </div>
                           </td>
                           <td>
-                            {w.address ? (
-                              <div className="flex items-center">
-                                <span className="mr-2" style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
+                            {w.address ?
+                        <div className="flex items-center">
+                                <span className="mr-2 whitespace-nowrap text-[0.85rem]">
                                   {w.address}
                                 </span>
-                                <button
-                                  className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
-                                  onClick={() => handleCopy(w.address)}
-                                  title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
-                                >
-                                  <i className="bx bx-copy" style={{ fontSize: '1.25rem' }}></i>
-                                </button>
-                              </div>
-                            ) : (
-                              <span className="text-muted">-</span>
-                            )}
+                                <Button
+
+                            onClick={() => handleCopy(w.address)}
+                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                            
+                                  <i className="bx bx-copy text-xl"></i>
+                                </Button>
+                              </div> :
+
+                        <span className="text-muted">-</span>
+                        }
                           </td>
                           <td className="whitespace-nowrap text-center">
                             <span className={statusBadgeClass(w.status)}>
                               {String(w.status || '').toUpperCase()}
                             </span>
-                            {w.isExpired && (
-                              <span className="badge bg-red-50 text-red-700 ml-1" style={{ fontSize: '0.6rem' }}>EXPIRED</span>
-                            )}
+                            {w.isExpired &&
+                        <Badge className="bg-red-50 text-red-700 ml-1 text-[0.6rem]">EXPIRED</Badge>
+                        }
                           </td>
                           <td className="text-center">
                             <span className="font-medium">{w.reuseCount ?? 0}</span>
@@ -368,71 +369,71 @@ export default function TempWalletList() {
                             <span className="font-medium">{w.lastLeftoverTokenAmount || '-'}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(w.lastAssignedAt)}</span>
+                            <span className="whitespace-nowrap">{fmtDate(w.lastAssignedAt)}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(w.expiresAt)}</span>
+                            <span className="whitespace-nowrap">{fmtDate(w.expiresAt)}</span>
                           </td>
                           <td>
-                            <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(w.createdAt)}</span>
+                            <span className="whitespace-nowrap">{fmtDate(w.createdAt)}</span>
                           </td>
                           <td>
-                            <Link
-                              href={`/admin/temp-wallets/${w.id}`}
-                              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
-                              title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
-                            >
-                              <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
-                            </Link>
+                            <Button variant="text-secondary" size="icon"
+                        href={`/admin/temp-wallets/${w.id}`}
+
+                        title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}>
+                          
+                              <i className="bx bx-show text-xl"></i>
+                            </Button>
                           </td>
                         </tr>
-                      ))
-                    )}
+                    )
+                    }
                   </tbody>
                 </table>
               </div>
 
               {/* Pagination */}
-              {pagination && pagination.total > 0 && (
-                <div className="flex justify-between items-center mt-4">
+              {pagination && pagination.total > 0 &&
+              <div className="flex justify-between items-center mt-4">
                   <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
-                      start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                      end: Math.min(pagination.page * pagination.limit, pagination.total),
-                      total: pagination.total,
-                      defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                    })}
+                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
+                    end: Math.min(pagination.page * pagination.limit, pagination.total),
+                    total: pagination.total,
+                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+                  })}
                   </div>
                   <div className="inline-flex rounded-lg shadow-sm">
-                    <button
-                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                      disabled={!pagination.hasPrev || loading}
-                      onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
-                    >
+                    <Button
+
+                    disabled={!pagination.hasPrev || loading}
+                    onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
+                    
                       <i className="bx bx-chevron-left"></i>
                       {t('actions.prev', { defaultValue: 'Previous' })}
-                    </button>
-                    <button
-                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                      disabled
-                    >
+                    </Button>
+                    <Button
+
+                    disabled variant="outline-secondary" size="sm">
+                    
                       {pagination.page} / {pagination.totalPages}
-                    </button>
-                    <button
-                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                      disabled={!pagination.hasNext || loading}
-                      onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
-                    >
+                    </Button>
+                    <Button
+
+                    disabled={!pagination.hasNext || loading}
+                    onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
+                    
                       {t('actions.next', { defaultValue: 'Next' })}
                       <i className="bx bx-chevron-right"></i>
-                    </button>
+                    </Button>
                   </div>
                 </div>
-              )}
+              }
             </div>
-          </div>
+          </Card>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

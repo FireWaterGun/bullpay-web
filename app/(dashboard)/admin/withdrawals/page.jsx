@@ -14,6 +14,7 @@ import WithdrawalTxTable from '@/components/admin/WithdrawalTxTable'
 import WithdrawalTxModals from '@/components/admin/WithdrawalTxModals'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
+import { badgeBase } from '../../../../components/ui'
 
 export default function WithdrawalTransactions() {
   return <Suspense><WithdrawalTransactionsContent /></Suspense>
@@ -206,12 +207,12 @@ function WithdrawalTransactionsContent() {
 
   function statusBadgeClass(s) {
     const v = String(s || '').toUpperCase()
-    if (v === 'PENDING') return 'badge bg-amber-50 text-amber-700'
-    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-cyan-50 text-cyan-700'
-    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-green-50 text-green-700'
-    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-red-50 text-red-700'
-    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-surface-100 text-surface-600'
-    return 'badge bg-surface-100 text-surface-600'
+    if (v === 'PENDING') return `${badgeBase} bg-amber-50 text-amber-700`
+    if (v === 'PROCESSING' || v === 'APPROVED') return `${badgeBase} bg-cyan-50 text-cyan-700`
+    if (v === 'COMPLETED' || v === 'SUCCESS') return `${badgeBase} bg-green-50 text-green-700`
+    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return `${badgeBase} bg-red-50 text-red-700`
+    if (v === 'CANCELLED' || v === 'CANCELED') return `${badgeBase} bg-surface-100 text-surface-600`
+    return `${badgeBase} bg-surface-100 text-surface-600`
   }
 
   if (loading && withdrawals.length === 0) {

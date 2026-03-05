@@ -1,28 +1,29 @@
-'use client'
+'use client';
 
-import CoinImg from '@/components/CoinImg'
-import { formatCoinAmount } from '@/lib/utils/format'
-import { useDateFormat } from '@/hooks/useDateFormat'
-import { statusBadgeClass, formatStatusLabel } from './withdrawalHelpers'
+import CoinImg from '@/components/CoinImg';
+import { formatCoinAmount } from '@/lib/utils/format';
+import { useDateFormat } from '@/hooks/useDateFormat';
+import { statusBadgeClass, formatStatusLabel } from './withdrawalHelpers';
+import { Card } from '../ui'
 
 export default function WithdrawalTransactionCard({ withdrawal, onClick, t }) {
-  const { fmtDate } = useDateFormat()
-  if (!withdrawal) return null
+  const { fmtDate } = useDateFormat();
+  if (!withdrawal) return null;
 
   return (
-    <div
-      className="card mb-2 border"
+    <Card
+
       onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : undefined }}
-    >
+      style={{ cursor: onClick ? 'pointer' : undefined }} className="mb-2 border">
+      
       <div className="py-2 px-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <CoinImg
               symbol={withdrawal.coinSymbol || withdrawal.coin?.symbol}
               networkSymbol={withdrawal.networkSymbol || withdrawal.network?.symbol}
-              size={28}
-            />
+              size={28} />
+            
             <div>
               <div className="font-semibold text-sm">
                 {formatCoinAmount(withdrawal.amountDecimal || withdrawal.amount || 0)}{' '}
@@ -38,6 +39,6 @@ export default function WithdrawalTransactionCard({ withdrawal, onClick, t }) {
           </span>
         </div>
       </div>
-    </div>
-  )
+    </Card>);
+
 }

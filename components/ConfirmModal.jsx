@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import React, { useEffect, useCallback, useRef } from 'react'
+import React, { useEffect, useCallback, useRef } from 'react';
+import { Button, Spinner } from './ui'
 
 /**
- * ConfirmModal – pure React / Tailwind replacement (no Bootstrap JS dependency).
+ * ConfirmModal – confirmation dialog.
  * API is kept identical so every existing consumer works unchanged.
  */
 export default function ConfirmModal({
@@ -21,63 +22,62 @@ export default function ConfirmModal({
   staticBackdrop = false,
   keyboard = true,
   confirmVariant = 'danger',
-  cancelVariant = 'outline-secondary',
+  cancelVariant = 'outline-secondary'
 }) {
-  const overlayRef = useRef(null)
+  const overlayRef = useRef(null);
 
   // ESC key handler
   const handleKeyDown = useCallback(
     (e) => {
-      if (e.key === 'Escape' && keyboard && !busy && onCancel) onCancel()
+      if (e.key === 'Escape' && keyboard && !busy && onCancel) onCancel();
     },
-    [keyboard, busy, onCancel],
-  )
+    [keyboard, busy, onCancel]
+  );
 
   useEffect(() => {
     if (show) {
-      document.addEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = 'hidden'
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
     }
     return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
-    }
-  }, [show, handleKeyDown])
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [show, handleKeyDown]);
 
-  if (!show) return null
+  if (!show) return null;
 
   const handleBackdropClick = (e) => {
-    if (e.target === overlayRef.current && !staticBackdrop && !busy && onCancel) onCancel()
-  }
+    if (e.target === overlayRef.current && !staticBackdrop && !busy && onCancel) onCancel();
+  };
 
-  const maxWidthMap = { sm: '300px', lg: '600px', xl: '800px' }
-  const maxW = maxWidthMap[size] || '500px'
+  const maxWidthMap = { sm: '300px', lg: '600px', xl: '800px' };
+  const maxW = maxWidthMap[size] || '500px';
 
-  const confirmBtnClass = `btn btn-${confirmVariant}`
-  const cancelBtnClass = `btn btn-${cancelVariant}`
+
 
   return (
     <div
       ref={overlayRef}
-      className={`fixed inset-0 z-50 flex ${centered ?'items-center' : 'items-start pt-10'} justify-center`}
-      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-      onClick={handleBackdropClick}
-    >
+      className={`fixed inset-0 z-50 flex ${centered ? 'items-center' : 'items-start pt-10'} justify-center bg-black/50`}
+
+      onClick={handleBackdropClick}>
+      
       <div
         className="bg-white rounded-xl shadow-xl mx-4 w-full"
-        style={{ maxWidth: maxW }}
-      >
-        {variant === 'basic' ? (
-          <>
+        style={{ maxWidth: maxW }}>
+        
+        {variant === 'basic' ?
+        <>
             <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
               <h5 className="font-semibold text-lg">{title}</h5>
               <button
-                type="button"
-                className="text-surface-400 hover:text-surface-700 text-xl leading-none"
-                aria-label="Close"
-                onClick={busy ? undefined : onCancel}
-                disabled={busy}
-              >
+              type="button"
+              className="text-surface-400 hover:text-surface-700 text-xl leading-none"
+              aria-label="Close"
+              onClick={busy ? undefined : onCancel}
+              disabled={busy}>
+              
                 &times;
               </button>
             </div>
@@ -85,26 +85,26 @@ export default function ConfirmModal({
               {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
             </div>
             <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
-              <button type="button" className={cancelBtnClass} onClick={onCancel} disabled={busy}>
+              <Button type="button" variant={cancelVariant} onClick={onCancel} disabled={busy}>
                 {cancelText}
-              </button>
-              <button type="button" className={confirmBtnClass} onClick={onConfirm} disabled={busy}>
-                {busy ? (
-                  <span className="spinner w-4 h-4 border-2 mr-2 inline-block align-middle" role="status" aria-hidden="true"></span>
-                ) : null}
+              </Button>
+              <Button type="button" variant={confirmVariant} onClick={onConfirm} disabled={busy}>
+                {busy ?
+              <Spinner role="status" aria-hidden="true" className="w-4 h-4 mr-2 inline-block align-middle" /> :
+              null}
                 {confirmText}
-              </button>
+              </Button>
             </div>
-          </>
-        ) : (
-          <div className="p-6 relative">
+          </> :
+
+        <div className="p-6 relative">
             <button
-              type="button"
-              className="absolute top-4 right-4 text-surface-400 hover:text-surface-700 text-xl leading-none"
-              aria-label="Close"
-              onClick={busy ? undefined : onCancel}
-              disabled={busy}
-            >
+            type="button"
+            className="absolute top-4 right-4 text-surface-400 hover:text-surface-700 text-xl leading-none"
+            aria-label="Close"
+            onClick={busy ? undefined : onCancel}
+            disabled={busy}>
+            
               &times;
             </button>
             <div className="text-center mb-6">
@@ -112,19 +112,19 @@ export default function ConfirmModal({
               {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
             </div>
             <div className="flex justify-center gap-2">
-              <button type="button" className={cancelBtnClass} onClick={onCancel} disabled={busy}>
+              <Button type="button" variant={cancelVariant} onClick={onCancel} disabled={busy}>
                 {cancelText}
-              </button>
-              <button type="button" className={confirmBtnClass} onClick={onConfirm} disabled={busy}>
-                {busy ? (
-                  <span className="spinner w-4 h-4 border-2 mr-2 inline-block align-middle" role="status" aria-hidden="true"></span>
-                ) : null}
+              </Button>
+              <Button type="button" variant={confirmVariant} onClick={onConfirm} disabled={busy}>
+                {busy ?
+              <Spinner role="status" aria-hidden="true" className="w-4 h-4 mr-2 inline-block align-middle" /> :
+              null}
                 {confirmText}
-              </button>
+              </Button>
             </div>
           </div>
-        )}
+        }
       </div>
-    </div>
-  )
+    </div>);
+
 }

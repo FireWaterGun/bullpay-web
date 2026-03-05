@@ -1,77 +1,78 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth } from '@/app/providers'
-import { getSweepSettings, updateSweepSetting } from '@/lib/api/admin'
-import { useToast } from '@/app/providers'
-import SweepOverrideTable from '@/components/admin/SweepOverrideTable'
-import SweepOverrideFormModal from '@/components/admin/SweepOverrideFormModal'
-import SweepDeleteModal from '@/components/admin/SweepDeleteModal'
-import { logger } from '@/lib/utils/logger'
-import PageSpinner from '@/components/PageSpinner'
+import { useState, useEffect } from 'react';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAuth } from '@/app/providers';
+import { getSweepSettings, updateSweepSetting } from '@/lib/api/admin';
+import { useToast } from '@/app/providers';
+import SweepOverrideTable from '@/components/admin/SweepOverrideTable';
+import SweepOverrideFormModal from '@/components/admin/SweepOverrideFormModal';
+import SweepDeleteModal from '@/components/admin/SweepDeleteModal';
+import { logger } from '@/lib/utils/logger';
+import PageSpinner from '@/components/PageSpinner';
+import { Badge, Card } from '../ui'
 
 export default function SweepOverrides() {
-  const { t } = useAdminTranslation()
-  const { user, token } = useAuth()
-  const toast = useToast()
-  const [loading, setLoading] = useState(false)
-  const [loadingData, setLoadingData] = useState(true)
-  const [coinOverrides, setCoinOverrides] = useState({})
-  const [networkOverrides, setNetworkOverrides] = useState({})
+  const { t } = useAdminTranslation();
+  const { user, token } = useAuth();
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
+  const [coinOverrides, setCoinOverrides] = useState({});
+  const [networkOverrides, setNetworkOverrides] = useState({});
 
   // Coin Override Form State
-  const [showCoinForm, setShowCoinForm] = useState(false)
+  const [showCoinForm, setShowCoinForm] = useState(false);
   const [coinForm, setCoinForm] = useState({
     coin: '',
     minBalance: '',
     gasBuffer: ''
-  })
-  const [editingCoin, setEditingCoin] = useState(null)
+  });
+  const [editingCoin, setEditingCoin] = useState(null);
 
   // Network Override Form State
-  const [showNetworkForm, setShowNetworkForm] = useState(false)
+  const [showNetworkForm, setShowNetworkForm] = useState(false);
   const [networkForm, setNetworkForm] = useState({
     coinNetworkId: '',
     minBalance: '',
     gasBuffer: ''
-  })
-  const [editingNetwork, setEditingNetwork] = useState(null)
+  });
+  const [editingNetwork, setEditingNetwork] = useState(null);
 
   // Delete Confirmation Modal State
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState({ id: '', type: '' })
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState({ id: '', type: '' });
 
   useEffect(() => {
-    loadSettings()
-  }, [])
+    loadSettings();
+  }, []);
 
   async function loadSettings() {
     try {
-      setLoadingData(true)
-      const data = await getSweepSettings(token)
+      setLoadingData(true);
+      const data = await getSweepSettings(token);
 
-      const settingsMap = {}
-      data.forEach(setting => {
-        const key = setting.keyName.replace('sweep.', '')
-        settingsMap[key] = setting
-      })
+      const settingsMap = {};
+      data.forEach((setting) => {
+        const key = setting.keyName.replace('sweep.', '');
+        settingsMap[key] = setting;
+      });
 
-      setCoinOverrides(settingsMap.coin_specific_settings?.parsedValue || {})
-      setNetworkOverrides(settingsMap.network_specific_settings?.parsedValue || {})
+      setCoinOverrides(settingsMap.coin_specific_settings?.parsedValue || {});
+      setNetworkOverrides(settingsMap.network_specific_settings?.parsedValue || {});
     } catch (error) {
-      logger.error('Failed to load sweep overrides:', error)
-      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load settings' }))
+      logger.error('Failed to load sweep overrides:', error);
+      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load settings' }));
     } finally {
-      setLoadingData(false)
+      setLoadingData(false);
     }
   }
 
   // Coin Override Handlers
   function handleAddCoin() {
-    setCoinForm({ coin: '', minBalance: '', gasBuffer: '' })
-    setEditingCoin(null)
-    setShowCoinForm(true)
+    setCoinForm({ coin: '', minBalance: '', gasBuffer: '' });
+    setEditingCoin(null);
+    setShowCoinForm(true);
   }
 
   function handleEditCoin(coin, config) {
@@ -79,81 +80,81 @@ export default function SweepOverrides() {
       coin: coin,
       minBalance: config.minBalance || '',
       gasBuffer: config.gasBuffer || ''
-    })
-    setEditingCoin(coin)
-    setShowCoinForm(true)
+    });
+    setEditingCoin(coin);
+    setShowCoinForm(true);
   }
 
   async function handleSaveCoin() {
     try {
       if (!coinForm.coin.trim()) {
-        toast.error(t('admin.sweep.coinRequired', { defaultValue: 'Coin symbol is required' }))
-        return
+        toast.error(t('admin.sweep.coinRequired', { defaultValue: 'Coin symbol is required' }));
+        return;
       }
 
-      const newOverrides = { ...coinOverrides }
-      const override = {}
+      const newOverrides = { ...coinOverrides };
+      const override = {};
 
-      if (coinForm.minBalance !== '') override.minBalance = parseFloat(coinForm.minBalance)
-      if (coinForm.gasBuffer !== '') override.gasBuffer = parseFloat(coinForm.gasBuffer)
+      if (coinForm.minBalance !== '') override.minBalance = parseFloat(coinForm.minBalance);
+      if (coinForm.gasBuffer !== '') override.gasBuffer = parseFloat(coinForm.gasBuffer);
 
       if (Object.keys(override).length === 0) {
-        toast.error(t('admin.sweep.oneFieldRequired', { defaultValue: 'At least one field is required' }))
-        return
+        toast.error(t('admin.sweep.oneFieldRequired', { defaultValue: 'At least one field is required' }));
+        return;
       }
 
-      newOverrides[coinForm.coin.toUpperCase()] = override
+      newOverrides[coinForm.coin.toUpperCase()] = override;
 
-      setLoading(true)
-      await updateSweepSetting(token, 'sweep.coin_specific_settings', newOverrides)
+      setLoading(true);
+      await updateSweepSetting(token, 'sweep.coin_specific_settings', newOverrides);
 
-      setCoinOverrides(newOverrides)
-      setShowCoinForm(false)
-      toast.success(t('admin.sweep.saveSuccess', { defaultValue: 'Override saved successfully' }))
+      setCoinOverrides(newOverrides);
+      setShowCoinForm(false);
+      toast.success(t('admin.sweep.saveSuccess', { defaultValue: 'Override saved successfully' }));
     } catch (error) {
-      logger.error('Failed to save coin override:', error)
-      toast.error(error?.message || t('admin.sweep.saveError', { defaultValue: 'Failed to save override' }))
+      logger.error('Failed to save coin override:', error);
+      toast.error(error?.message || t('admin.sweep.saveError', { defaultValue: 'Failed to save override' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function handleDeleteCoin(coin) {
-    setDeleteTarget({ id: coin, type: 'coin' })
-    setShowDeleteModal(true)
+    setDeleteTarget({ id: coin, type: 'coin' });
+    setShowDeleteModal(true);
   }
 
   async function confirmDelete() {
     try {
-      setLoading(true)
+      setLoading(true);
 
       if (deleteTarget.type === 'coin') {
-        const newOverrides = { ...coinOverrides }
-        delete newOverrides[deleteTarget.id]
-        await updateSweepSetting(token, 'sweep.coin_specific_settings', newOverrides)
-        setCoinOverrides(newOverrides)
+        const newOverrides = { ...coinOverrides };
+        delete newOverrides[deleteTarget.id];
+        await updateSweepSetting(token, 'sweep.coin_specific_settings', newOverrides);
+        setCoinOverrides(newOverrides);
       } else if (deleteTarget.type === 'network') {
-        const newOverrides = { ...networkOverrides }
-        delete newOverrides[deleteTarget.id]
-        await updateSweepSetting(token, 'sweep.network_specific_settings', newOverrides)
-        setNetworkOverrides(newOverrides)
+        const newOverrides = { ...networkOverrides };
+        delete newOverrides[deleteTarget.id];
+        await updateSweepSetting(token, 'sweep.network_specific_settings', newOverrides);
+        setNetworkOverrides(newOverrides);
       }
 
-      setShowDeleteModal(false)
-      toast.success(t('admin.sweep.deleteSuccess', { defaultValue: 'Override deleted successfully' }))
+      setShowDeleteModal(false);
+      toast.success(t('admin.sweep.deleteSuccess', { defaultValue: 'Override deleted successfully' }));
     } catch (error) {
-      logger.error('Failed to delete:', error)
-      toast.error(error?.message || t('admin.sweep.deleteError', { defaultValue: 'Failed to delete override' }))
+      logger.error('Failed to delete:', error);
+      toast.error(error?.message || t('admin.sweep.deleteError', { defaultValue: 'Failed to delete override' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   // Network Override Handlers
   function handleAddNetwork() {
-    setNetworkForm({ coinNetworkId: '', minBalance: '', gasBuffer: '' })
-    setEditingNetwork(null)
-    setShowNetworkForm(true)
+    setNetworkForm({ coinNetworkId: '', minBalance: '', gasBuffer: '' });
+    setEditingNetwork(null);
+    setShowNetworkForm(true);
   }
 
   function handleEditNetwork(coinNetworkId, config) {
@@ -161,59 +162,59 @@ export default function SweepOverrides() {
       coinNetworkId: coinNetworkId,
       minBalance: config.minBalance || '',
       gasBuffer: config.gasBuffer || ''
-    })
-    setEditingNetwork(coinNetworkId)
-    setShowNetworkForm(true)
+    });
+    setEditingNetwork(coinNetworkId);
+    setShowNetworkForm(true);
   }
 
   async function handleSaveNetwork() {
     try {
       if (!networkForm.coinNetworkId.trim()) {
-        toast.error(t('admin.sweep.coinNetworkIdRequired', { defaultValue: 'Coin-Network ID is required' }))
-        return
+        toast.error(t('admin.sweep.coinNetworkIdRequired', { defaultValue: 'Coin-Network ID is required' }));
+        return;
       }
 
-      const newOverrides = { ...networkOverrides }
-      const override = {}
+      const newOverrides = { ...networkOverrides };
+      const override = {};
 
-      if (networkForm.minBalance !== '') override.minBalance = parseFloat(networkForm.minBalance)
-      if (networkForm.gasBuffer !== '') override.gasBuffer = parseFloat(networkForm.gasBuffer)
+      if (networkForm.minBalance !== '') override.minBalance = parseFloat(networkForm.minBalance);
+      if (networkForm.gasBuffer !== '') override.gasBuffer = parseFloat(networkForm.gasBuffer);
 
       if (Object.keys(override).length === 0) {
-        toast.error(t('admin.sweep.oneFieldRequired', { defaultValue: 'At least one field is required' }))
-        return
+        toast.error(t('admin.sweep.oneFieldRequired', { defaultValue: 'At least one field is required' }));
+        return;
       }
 
-      newOverrides[networkForm.coinNetworkId] = override
+      newOverrides[networkForm.coinNetworkId] = override;
 
-      setLoading(true)
-      await updateSweepSetting(token, 'sweep.network_specific_settings', newOverrides)
+      setLoading(true);
+      await updateSweepSetting(token, 'sweep.network_specific_settings', newOverrides);
 
-      setNetworkOverrides(newOverrides)
-      setShowNetworkForm(false)
-      toast.success(t('admin.sweep.saveSuccess', { defaultValue: 'Override saved successfully' }))
+      setNetworkOverrides(newOverrides);
+      setShowNetworkForm(false);
+      toast.success(t('admin.sweep.saveSuccess', { defaultValue: 'Override saved successfully' }));
     } catch (error) {
-      logger.error('Failed to save network override:', error)
-      toast.error(error?.message || t('admin.sweep.saveError', { defaultValue: 'Failed to save override' }))
+      logger.error('Failed to save network override:', error);
+      toast.error(error?.message || t('admin.sweep.saveError', { defaultValue: 'Failed to save override' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function handleDeleteNetwork(coinNetworkId) {
-    setDeleteTarget({ id: coinNetworkId, type: 'network' })
-    setShowDeleteModal(true)
+    setDeleteTarget({ id: coinNetworkId, type: 'network' });
+    setShowDeleteModal(true);
   }
 
   if (loadingData) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
   return (
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <div className="card mb-4">
+          <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">{t('admin.sweep.overridesTitle', { defaultValue: 'Sweep Overrides' })}</h5>
               <p className="text-muted text-sm mb-0 mt-1">
@@ -226,9 +227,9 @@ export default function SweepOverrides() {
                 <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.sweep.coinOverrides', { defaultValue: 'Coin Overrides' })}
-                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <Badge className="rounded-full bg-primary ml-2 text-xs py-[0.35em] px-[0.65em]">
                       {Object.keys(coinOverrides).length}
-                    </span>
+                    </Badge>
                   </h6>
                   {/* Hidden: Add button */}
                 </div>
@@ -236,8 +237,8 @@ export default function SweepOverrides() {
                   overrides={coinOverrides}
                   type="coin"
                   loading={loading}
-                  onEdit={handleEditCoin}
-                />
+                  onEdit={handleEditCoin} />
+                
               </div>
 
               {/* Network Overrides */}
@@ -245,9 +246,9 @@ export default function SweepOverrides() {
                 <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.sweep.networkOverrides', { defaultValue: 'Network Overrides' })}
-                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <Badge className="rounded-full bg-primary ml-2 text-xs py-[0.35em] px-[0.65em]">
                       {Object.keys(networkOverrides).length}
-                    </span>
+                    </Badge>
                   </h6>
                   {/* Hidden: Add button */}
                 </div>
@@ -255,11 +256,11 @@ export default function SweepOverrides() {
                   overrides={networkOverrides}
                   type="network"
                   loading={loading}
-                  onEdit={handleEditNetwork}
-                />
+                  onEdit={handleEditNetwork} />
+                
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
@@ -272,8 +273,8 @@ export default function SweepOverrides() {
         form={coinForm}
         onFormChange={setCoinForm}
         onSave={handleSaveCoin}
-        onClose={() => setShowCoinForm(false)}
-      />
+        onClose={() => setShowCoinForm(false)} />
+      
 
       {/* Network Override Modal */}
       <SweepOverrideFormModal
@@ -284,8 +285,8 @@ export default function SweepOverrides() {
         form={networkForm}
         onFormChange={setNetworkForm}
         onSave={handleSaveNetwork}
-        onClose={() => setShowNetworkForm(false)}
-      />
+        onClose={() => setShowNetworkForm(false)} />
+      
 
       {/* Delete Confirmation Modal */}
       <SweepDeleteModal
@@ -293,8 +294,8 @@ export default function SweepOverrides() {
         loading={loading}
         target={deleteTarget}
         onConfirm={confirmDelete}
-        onClose={() => setShowDeleteModal(false)}
-      />
-    </div>
-  )
+        onClose={() => setShowDeleteModal(false)} />
+      
+    </div>);
+
 }

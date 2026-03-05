@@ -1,29 +1,30 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import CardEmptyState from '@/components/CardEmptyState'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import CardEmptyState from '@/components/CardEmptyState';
+import { Badge, Button } from '../../ui'
 
 function FeeTypeBadge({ config }) {
   if (config.fee?.fixed) {
-    return <span className="badge bg-cyan-50 text-cyan-700">fixed</span>
+    return <Badge className="bg-cyan-50 text-cyan-700">fixed</Badge>;
   }
   if (config.fee?.percentage || config.fee?.min) {
-    return <span className="badge bg-cyan-50 text-cyan-700">percentage</span>
+    return <Badge className="bg-cyan-50 text-cyan-700">percentage</Badge>;
   }
   if (config.fee?.type) {
-    return <span className="badge bg-cyan-50 text-cyan-700">{config.fee.type}</span>
+    return <Badge className="bg-cyan-50 text-cyan-700">{config.fee.type}</Badge>;
   }
-  return <span className="text-muted">-</span>
+  return <span className="text-muted">-</span>;
 }
 
 function FeeConfigDisplay({ config }) {
   if (config.fee?.fixed) {
-    return <code>Fixed: {config.fee.fixed}</code>
+    return <code>Fixed: {config.fee.fixed}</code>;
   }
   if (config.fee?.percentage || config.fee?.min) {
-    return <code>{config.fee.percentage || '0'}% (min: {config.fee.min}{config.fee.max ? `, max: ${config.fee.max}` : ''})</code>
+    return <code>{config.fee.percentage || '0'}% (min: {config.fee.min}{config.fee.max ? `, max: ${config.fee.max}` : ''})</code>;
   }
-  return <span className="text-muted">-</span>
+  return <span className="text-muted">-</span>;
 }
 
 const TABLE_CONFIG = {
@@ -54,12 +55,12 @@ const TABLE_CONFIG = {
     firstColDefault: 'CoinNetwork ID',
     showMaximum: true
   }
-}
+};
 
 export default function OverrideTable({ type, data, onEdit, loading }) {
-  const { t } = useAdminTranslation()
-  const cfg = TABLE_CONFIG[type]
-  const entries = Object.entries(data)
+  const { t } = useAdminTranslation();
+  const cfg = TABLE_CONFIG[type];
+  const entries = Object.entries(data);
 
   return (
     <div className={type !== 'coinNetwork' ? 'mb-5' : undefined}>
@@ -68,73 +69,73 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
           <div className="grow">
             <h6 className="mb-0">
               {t(cfg.titleKey, { defaultValue: cfg.titleDefault })}
-              <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+              <Badge className="rounded-full bg-primary ml-2 text-xs py-[0.35em] px-[0.65em]">
                 {entries.length}
-              </span>
+              </Badge>
             </h6>
           </div>
           {/* Hidden: Add button */}
         </div>
       </div>
 
-      {entries.length > 0 ? (
-        <div className="overflow-x-auto">
+      {entries.length > 0 ?
+      <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr>
                 <th>{t(cfg.firstColKey, { defaultValue: cfg.firstColDefault })}</th>
                 <th>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</th>
-                {cfg.showMaximum && (
-                  <th>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</th>
-                )}
+                {cfg.showMaximum &&
+              <th>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</th>
+              }
                 <th>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</th>
                 <th>{t('admin.withdrawal.feeConfig', { defaultValue: 'Fee Config' })}</th>
                 <th className="text-right">{t('admin.detail.actions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
             <tbody>
-              {entries.map(([key, config]) => (
-                <tr key={key}>
+              {entries.map(([key, config]) =>
+            <tr key={key}>
                   <td><strong>{key}</strong></td>
                   <td>
-                    {config.minimum ? (
-                      <code>{config.minimum}</code>
-                    ) : (
-                      <span className="text-muted">-</span>
-                    )}
+                    {config.minimum ?
+                <code>{config.minimum}</code> :
+
+                <span className="text-muted">-</span>
+                }
                   </td>
-                  {cfg.showMaximum && (
-                    <td>
-                      {config.maximum ? (
-                        <code>{config.maximum}</code>
-                      ) : (
-                        <span className="text-muted">-</span>
-                      )}
+                  {cfg.showMaximum &&
+              <td>
+                      {config.maximum ?
+                <code>{config.maximum}</code> :
+
+                <span className="text-muted">-</span>
+                }
                     </td>
-                  )}
+              }
                   <td><FeeTypeBadge config={config} /></td>
                   <td><FeeConfigDisplay config={config} /></td>
                   <td className="text-right">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-icon mr-1"
-                      onClick={() => onEdit(type, key, config)}
-                      disabled={loading}
-                    >
-                      <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                    </button>
+                    <Button
+                  type="button"
+
+                  onClick={() => onEdit(type, key, config)}
+                  disabled={loading} size="icon" className="mr-1">
+                  
+                      <i className="bx bx-edit text-primary text-xl"></i>
+                    </Button>
                   </td>
                 </tr>
-              ))}
+            )}
             </tbody>
           </table>
-        </div>
-      ) : (
-        <CardEmptyState
-          icon="bx-data"
-          message={t(cfg.emptyKey, { defaultValue: cfg.emptyDefault })}
-        />
-      )}
-    </div>
-  )
+        </div> :
+
+      <CardEmptyState
+        icon="bx-data"
+        message={t(cfg.emptyKey, { defaultValue: cfg.emptyDefault })} />
+
+      }
+    </div>);
+
 }

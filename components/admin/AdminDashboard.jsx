@@ -1,21 +1,22 @@
-'use client'
+'use client';
 
-import { useAuth } from '@/app/providers'
+import { useAuth } from '@/app/providers';
+import { Alert, AvatarInitial, Badge, Card } from '../ui'
 
 export default function AdminDashboard() {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   return (
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <div className="card mb-6">
+          <Card className="mb-6">
             <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
               <h5 className="mb-0">Admin Dashboard</h5>
-              <span className="badge bg-primary-50 text-primary-600">Admin Panel</span>
+              <Badge className="bg-primary-50 text-primary-600">Admin Panel</Badge>
             </div>
             <div className="p-5">
-              <div className="alert alert bg-cyan-50 text-cyan-700 border-cyan-200 mb-4" role="alert">
+              <Alert variant="info" className="mb-4">
                 <h6 className="font-semibold mb-2 mb-2">
                   <i className="bx bx-shield mr-2"></i>
                   Welcome, {user?.fullName || 'Administrator'}!
@@ -23,63 +24,63 @@ export default function AdminDashboard() {
                 <p className="mb-0">
                   You are logged in as an administrator. You have full access to all system features.
                 </p>
-              </div>
+              </Alert>
 
               <div className="grid grid-cols-12 gap-x-6 gap-4">
                 <div className="md:col-span-3 sm:col-span-6">
-                  <div className="card border shadow-none">
+                  <Card className="border shadow-none">
                     <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-full bg-primary-50 text-primary-600">
+                        <AvatarInitial className="!rounded-full bg-primary-50 text-primary-600">
                           <i className="bx bx-user bx-lg"></i>
-                        </span>
+                        </AvatarInitial>
                       </div>
                       <h4 className="mb-1">1,234</h4>
                       <p className="mb-0">Total Users</p>
                     </div>
-                  </div>
+                  </Card>
                 </div>
 
                 <div className="md:col-span-3 sm:col-span-6">
-                  <div className="card border shadow-none">
+                  <Card className="border shadow-none">
                     <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-full bg-green-50 text-green-700">
+                        <AvatarInitial className="!rounded-full bg-green-50 text-green-700">
                           <i className="bx bx-receipt bx-lg"></i>
-                        </span>
+                        </AvatarInitial>
                       </div>
                       <h4 className="mb-1">5,678</h4>
                       <p className="mb-0">Total Invoices</p>
                     </div>
-                  </div>
+                  </Card>
                 </div>
 
                 <div className="md:col-span-3 sm:col-span-6">
-                  <div className="card border shadow-none">
+                  <Card className="border shadow-none">
                     <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-full bg-amber-50 text-amber-700">
+                        <AvatarInitial className="!rounded-full bg-amber-50 text-amber-700">
                           <i className="bx bx-dollar bx-lg"></i>
-                        </span>
+                        </AvatarInitial>
                       </div>
                       <h4 className="mb-1">$123,456</h4>
                       <p className="mb-0">Total Revenue</p>
                     </div>
-                  </div>
+                  </Card>
                 </div>
 
                 <div className="md:col-span-3 sm:col-span-6">
-                  <div className="card border shadow-none">
+                  <Card className="border shadow-none">
                     <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-full bg-cyan-50 text-cyan-700">
+                        <AvatarInitial className="!rounded-full bg-cyan-50 text-cyan-700">
                           <i className="bx bx-time bx-lg"></i>
-                        </span>
+                        </AvatarInitial>
                       </div>
                       <h4 className="mb-1">89</h4>
                       <p className="mb-0">Pending Payments</p>
                     </div>
-                  </div>
+                  </Card>
                 </div>
               </div>
 
@@ -129,9 +130,9 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

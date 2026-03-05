@@ -12,6 +12,7 @@ import CardEmptyState from '@/components/CardEmptyState'
 const DeleteConfirmModal = dynamic(() => import('@/components/admin/DeleteConfirmModal'), { ssr: false })
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
+import { Badge, Button, Card } from '../ui'
 
 export default function NetworkFees() {
   const { t } = useAdminTranslation()
@@ -176,7 +177,7 @@ export default function NetworkFees() {
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <div className="card mb-4">
+          <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">{t('admin.network.title', { defaultValue: 'Network Fees' })}</h5>
               <p className="text-muted text-sm mb-0 mt-1">
@@ -189,9 +190,9 @@ export default function NetworkFees() {
                 <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.network.baseFees', { defaultValue: 'Base Fees by Network' })}
-                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <Badge className="ml-2">
                       {Object.keys(baseFees).length}
-                    </span>
+                    </Badge>
                   </h6>
                 </div>
 
@@ -211,14 +212,14 @@ export default function NetworkFees() {
                             <td><strong>{network}</strong></td>
                             <td><code>{fee}</code></td>
                             <td className="text-right">
-                              <button
+                              <Button
                                 type="button"
-                                className="btn btn-sm btn-icon mr-1"
+                                variant="text-secondary" size="icon" className="mr-1"
                                 onClick={() => handleEditBaseFee(network, fee)}
                                 disabled={loading}
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
+                              </Button>
                             </td>
                           </tr>
                         ))}
@@ -239,9 +240,9 @@ export default function NetworkFees() {
                 <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.network.slippageByNetwork', { defaultValue: 'Slippage by Network' })}
-                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <Badge className="ml-2">
                       {Object.keys(slippageByNetwork).length}
-                    </span>
+                    </Badge>
                   </h6>
                 </div>
 
@@ -261,14 +262,14 @@ export default function NetworkFees() {
                             <td><strong>{network}</strong></td>
                             <td><code>{percent}</code></td>
                             <td className="text-right">
-                              <button
+                              <Button
                                 type="button"
-                                className="btn btn-sm btn-icon mr-1"
+                                variant="text-secondary" size="icon" className="mr-1"
                                 onClick={() => handleEditSlippage(network, percent)}
                                 disabled={loading}
                               >
                                 <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                              </button>
+                              </Button>
                             </td>
                           </tr>
                         ))}
@@ -284,7 +285,7 @@ export default function NetworkFees() {
                 )}
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 

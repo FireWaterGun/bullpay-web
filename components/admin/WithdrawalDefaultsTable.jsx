@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Badge } from '../ui'
 
 export default function WithdrawalDefaultsTable({ defaults }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
   return (
     <div className="mb-5">
@@ -31,10 +32,10 @@ export default function WithdrawalDefaultsTable({ defaults }) {
             </tr>
             <tr>
               <td><strong>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</strong></td>
-              <td><span className="badge bg-cyan-50 text-cyan-700">{defaults.fee?.type || '-'}</span></td>
+              <td><Badge className="bg-cyan-50 text-cyan-700">{defaults.fee?.type || '-'}</Badge></td>
             </tr>
-            {defaults.fee?.type === 'percentage' && (
-              <>
+            {defaults.fee?.type === 'percentage' &&
+            <>
                 <tr>
                   <td><strong>{t('admin.withdrawal.feePercentage', { defaultValue: 'Fee %' })}</strong></td>
                   <td><code>{defaults.fee?.percentage || '-'}</code></td>
@@ -48,10 +49,10 @@ export default function WithdrawalDefaultsTable({ defaults }) {
                   <td><code>{defaults.fee?.max || '-'}</code></td>
                 </tr>
               </>
-            )}
+            }
           </tbody>
         </table>
       </div>
-    </div>
-  )
+    </div>);
+
 }

@@ -1,11 +1,12 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Badge, Card } from '../ui';
 
 function SettingsCard({ title, children }) {
   return (
     <div className="md:col-span-6">
-      <div className="card">
+      <Card>
         <div className="px-5 py-4 border-b border-surface-200">
           <h6 className="mb-0">{title}</h6>
         </div>
@@ -16,21 +17,21 @@ function SettingsCard({ title, children }) {
           </table>
           </div>
         </div>
-      </div>
-    </div>
-  )
+      </Card>
+    </div>);
+
 }
 
 function BooleanBadge({ value }) {
   return (
-    <span className={`badge ${value ?'bg-success' : 'bg-secondary'}`}>
+    <Badge className={`${value ? 'bg-success' : 'bg-secondary'}`}>
       {value ? 'Yes' : 'No'}
-    </span>
-  )
+    </Badge>);
+
 }
 
 function AutoApproveCard({ autoApprove }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
   return (
     <SettingsCard title={t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}>
       <tr>
@@ -41,12 +42,12 @@ function AutoApproveCard({ autoApprove }) {
         <td><strong>{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</strong></td>
         <td><code>{autoApprove.thresholdUsd || 0}</code></td>
       </tr>
-    </SettingsCard>
-  )
+    </SettingsCard>);
+
 }
 
 function GasSettingsCard({ gasSettings }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
   return (
     <SettingsCard title={t('admin.withdrawal.gasSettings', { defaultValue: 'Gas Settings' })}>
       <tr>
@@ -56,29 +57,29 @@ function GasSettingsCard({ gasSettings }) {
       <tr>
         <td><strong>{t('admin.withdrawal.minNativeByNetwork', { defaultValue: 'Min Native/Network' })}</strong></td>
         <td>
-          <span className="badge rounded-full bg-primary" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+          <Badge className="rounded-full bg-primary text-xs py-[0.35em] px-[0.65em]">
             {Object.keys(gasSettings.minNativeByNetwork || {}).length}
-          </span>
+          </Badge>
         </td>
       </tr>
-    </SettingsCard>
-  )
+    </SettingsCard>);
+
 }
 
 function PolicyCard({ policy }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
   return (
     <SettingsCard title={t('admin.withdrawal.policy', { defaultValue: 'Policy' })}>
       <tr>
         <td><strong>{t('admin.withdrawal.countPendingInUsage', { defaultValue: 'Count Pending' })}</strong></td>
         <td><BooleanBadge value={policy.countPendingInUsage} /></td>
       </tr>
-    </SettingsCard>
-  )
+    </SettingsCard>);
+
 }
 
 function ReservationCard({ reservation }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
   return (
     <SettingsCard title={t('admin.withdrawal.reservation', { defaultValue: 'Reservation' })}>
       <tr>
@@ -89,12 +90,12 @@ function ReservationCard({ reservation }) {
         <td><strong>{t('admin.withdrawal.headroomPercent', { defaultValue: 'Headroom %' })}</strong></td>
         <td><code>{reservation.headroomPercent || '-'}</code></td>
       </tr>
-    </SettingsCard>
-  )
+    </SettingsCard>);
+
 }
 
 function ReconciliationCard({ reconciliation }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
   return (
     <SettingsCard title={t('admin.withdrawal.reconciliation', { defaultValue: 'Reconciliation' })}>
       <tr>
@@ -108,15 +109,15 @@ function ReconciliationCard({ reconciliation }) {
       <tr>
         <td><strong>{t('admin.withdrawal.jitterMs', { defaultValue: 'Jitter (ms)' })}</strong></td>
         <td>
-          {reconciliation.jitterMs ? (
-            <code>{reconciliation.jitterMs.min} - {reconciliation.jitterMs.max}</code>
-          ) : (
-            <span className="text-muted">-</span>
-          )}
+          {reconciliation.jitterMs ?
+          <code>{reconciliation.jitterMs.min} - {reconciliation.jitterMs.max}</code> :
+
+          <span className="text-muted">-</span>
+          }
         </td>
       </tr>
-    </SettingsCard>
-  )
+    </SettingsCard>);
+
 }
 
 export default function WithdrawalSettingsCards({
@@ -124,7 +125,7 @@ export default function WithdrawalSettingsCards({
   gasSettings,
   policy,
   reservation,
-  reconciliation,
+  reconciliation
 }) {
   return (
     <div className="grid grid-cols-12 gap-x-6 gap-4">
@@ -133,6 +134,6 @@ export default function WithdrawalSettingsCards({
       <PolicyCard policy={policy} />
       <ReservationCard reservation={reservation} />
       <ReconciliationCard reconciliation={reconciliation} />
-    </div>
-  )
+    </div>);
+
 }

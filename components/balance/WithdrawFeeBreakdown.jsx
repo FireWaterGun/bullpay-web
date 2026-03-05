@@ -36,7 +36,7 @@ export default function WithdrawFeeBreakdown({ feeEstimate, sym, t }) {
           <div className="text-right">
             <div className="text-sm font-medium">{feeEstimate.display?.totalFee || `${formatCoinAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
             {feeEstimate.displayUsd?.totalFeeUsd && (
-              <div className="text-surface-500" style={{ fontSize: '0.75rem' }}>&asymp; {feeEstimate.displayUsd.totalFeeUsd}</div>
+              <div className="text-surface-500 text-xs">&asymp; {feeEstimate.displayUsd.totalFeeUsd}</div>
             )}
           </div>
         </div>
@@ -45,15 +45,15 @@ export default function WithdrawFeeBreakdown({ feeEstimate, sym, t }) {
           <span className="text-sm text-surface-500 flex items-center">
             {t('balance.total', { defaultValue: 'Total' })}
             <i
-              className="bx bx-info-circle ml-1"
-              style={{ cursor: 'pointer' }}
+              className="bx bx-info-circle ml-1 cursor-pointer"
+             
               title={t('balance.totalTooltip', { defaultValue: 'Amount you will receive after fees' })}
             ></i>
           </span>
           <div className="text-right">
             <div className="font-semibold">{feeEstimate.display?.netAmount || `${formatCoinAmount(fromRaw(feeEstimate.netAmountRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
             {feeEstimate.displayUsd?.netAmountUsd && (
-              <div className="text-surface-500" style={{ fontSize: '0.75rem' }}>&asymp; {feeEstimate.displayUsd.netAmountUsd}</div>
+              <div className="text-surface-500 text-xs">&asymp; {feeEstimate.displayUsd.netAmountUsd}</div>
             )}
           </div>
         </div>

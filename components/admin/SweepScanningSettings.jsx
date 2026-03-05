@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Input, Label } from '../ui'
 
 export default function SweepScanningSettings({ formData, handleNestedChange, validateNumberInput }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
   return (
     <>
@@ -15,61 +16,61 @@ export default function SweepScanningSettings({ formData, handleNestedChange, va
       </div>
 
       <div className="md:col-span-4">
-        <label htmlFor="maxDiscoverPerRun" className="form-label">
+        <Label htmlFor="maxDiscoverPerRun">
           {t('admin.sweep.maxDiscoverPerRun', { defaultValue: 'Max Discover/Run' })}
-        </label>
-        <input
+        </Label>
+        <Input
           type="number"
-          className="form-input"
+
           id="maxDiscoverPerRun"
           placeholder="10"
           min="1"
           value={formData.batchProcessingLimits.maxDiscoverPerRun || ''}
           onChange={(e) => handleNestedChange('batchProcessingLimits', 'maxDiscoverPerRun', parseInt(e.target.value) || '')}
-          onInput={validateNumberInput}
-        />
+          onInput={validateNumberInput} />
+        
         <small className="text-muted">
           {t('admin.sweep.maxDiscoverPerRunHelp', { defaultValue: 'Max wallets to discover' })}
         </small>
       </div>
 
       <div className="md:col-span-4">
-        <label htmlFor="maxPendingPerRun" className="form-label">
+        <Label htmlFor="maxPendingPerRun">
           {t('admin.sweep.maxPendingPerRun', { defaultValue: 'Max Pending/Run' })}
-        </label>
-        <input
+        </Label>
+        <Input
           type="number"
-          className="form-input"
+
           id="maxPendingPerRun"
           placeholder="50"
           min="1"
           value={formData.batchProcessingLimits.maxPendingPerRun || ''}
           onChange={(e) => handleNestedChange('batchProcessingLimits', 'maxPendingPerRun', parseInt(e.target.value) || '')}
-          onInput={validateNumberInput}
-        />
+          onInput={validateNumberInput} />
+        
         <small className="text-muted">
           {t('admin.sweep.maxPendingPerRunHelp', { defaultValue: 'Max pending to process' })}
         </small>
       </div>
 
       <div className="md:col-span-4">
-        <label htmlFor="maxUnlockPerRun" className="form-label">
+        <Label htmlFor="maxUnlockPerRun">
           {t('admin.sweep.maxUnlockPerRun', { defaultValue: 'Max Unlock/Run' })}
-        </label>
-        <input
+        </Label>
+        <Input
           type="number"
-          className="form-input"
+
           id="maxUnlockPerRun"
           placeholder="100"
           min="1"
           value={formData.batchProcessingLimits.maxUnlockPerRun || ''}
           onChange={(e) => handleNestedChange('batchProcessingLimits', 'maxUnlockPerRun', parseInt(e.target.value) || '')}
-          onInput={validateNumberInput}
-        />
+          onInput={validateNumberInput} />
+        
         <small className="text-muted">
           {t('admin.sweep.maxUnlockPerRunHelp', { defaultValue: 'Max wallets to unlock' })}
         </small>
       </div>
-    </>
-  )
+    </>);
+
 }

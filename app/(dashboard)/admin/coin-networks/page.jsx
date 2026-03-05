@@ -1,24 +1,25 @@
-'use client'
+'use client';
 
-import { useEffect, useState, useMemo } from 'react'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import Link from 'next/link'
-import { useAuth } from '@/app/providers'
-import { useToast } from '@/app/providers'
-import { getCoinNetworks } from '@/lib/api/admin'
-import CoinImg from '@/components/CoinImg'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import TableEmptyState from '@/components/TableEmptyState'
+import { useEffect, useState, useMemo } from 'react';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+
+import { useAuth } from '@/app/providers';
+import { useToast } from '@/app/providers';
+import { getCoinNetworks } from '@/lib/api/admin';
+import CoinImg from '@/components/CoinImg';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import TableEmptyState from '@/components/TableEmptyState';
+import { Alert, Badge, Button, Card, Input, Label } from '../../../../components/ui';
 
 export default function SupportedCrypto() {
-  const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
-  const [coinNetworks, setCoinNetworks] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [draftSearch, setDraftSearch] = useState('')
+  const { t } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
+  const [coinNetworks, setCoinNetworks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [draftSearch, setDraftSearch] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -26,33 +27,33 @@ export default function SupportedCrypto() {
     totalPages: 0,
     hasNext: false,
     hasPrev: false
-  })
+  });
 
   useEffect(() => {
-    loadCoinNetworks()
+    loadCoinNetworks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   function handleApplyFilter() {
-    setSearchQuery(draftSearch)
-    loadCoinNetworks(1, pagination.limit, draftSearch)
+    setSearchQuery(draftSearch);
+    loadCoinNetworks(1, pagination.limit, draftSearch);
   }
 
   function handleResetFilter() {
-    setDraftSearch('')
-    setSearchQuery('')
-    loadCoinNetworks(1, pagination.limit, '')
+    setDraftSearch('');
+    setSearchQuery('');
+    loadCoinNetworks(1, pagination.limit, '');
   }
 
   async function loadCoinNetworks(page = pagination.page, limit = pagination.limit, search = searchQuery) {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
     try {
-      const response = await getCoinNetworks(token, page, limit, search, '', '')
-      const items = response?.items || []
-      const paginationData = response?.pagination || {}
+      const response = await getCoinNetworks(token, page, limit, search, '', '');
+      const items = response?.items || [];
+      const paginationData = response?.pagination || {};
 
-      setCoinNetworks(items)
+      setCoinNetworks(items);
       setPagination({
         page: paginationData.page || page,
         limit: paginationData.limit || limit,
@@ -60,22 +61,22 @@ export default function SupportedCrypto() {
         totalPages: paginationData.totalPages || 0,
         hasNext: paginationData.hasNext || false,
         hasPrev: paginationData.hasPrev || false
-      })
+      });
     } catch (e) {
-      setError(e?.message || 'Failed to load supported crypto')
+      setError(e?.message || 'Failed to load supported crypto');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function handlePageChange(newPage) {
-    loadCoinNetworks(newPage, pagination.limit)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    loadCoinNetworks(newPage, pagination.limit);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (
     <div className="grow py-6">
-      <div className="card">
+      <Card>
         <div className="px-5 py-4 border-b border-surface-200">
           <div className="flex justify-between items-center flex-wrap gap-3 mb-3">
             <div>
@@ -90,38 +91,38 @@ export default function SupportedCrypto() {
           {/* Filters */}
           <div className="grid grid-cols-12 gap-x-6 gap-3 items-end">
             <div className="md:col-span-3 sm:col-span-6">
-              <label className="form-label">{t('filter.search', { defaultValue: 'Search' })}</label>
-              <input
+              <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
+              <Input
                 type="text"
-                className="form-input"
+
                 placeholder={t('crypto.searchSupported', { defaultValue: 'Search by coin or network...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
-              />
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()} />
+              
             </div>
             <div className="col-auto flex gap-2">
-              <button className="btn btn-primary" onClick={handleApplyFilter} disabled={loading}>
+              <Button onClick={handleApplyFilter} disabled={loading}>
                 <i className="bx bx-filter-alt mr-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
-              </button>
-              <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={handleResetFilter} disabled={loading}>
+              </Button>
+              <Button onClick={handleResetFilter} disabled={loading} variant="outline-secondary">
                 <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Error Alert */}
-        {error && (
-          <div className="p-5">
-            <div className="alert alert-danger mb-0" role="alert">
+        {error &&
+        <div className="p-5">
+            <Alert role="alert" className="mb-0">
               <i className="bx bx-error-circle mr-2"></i>
               {error}
-            </div>
+            </Alert>
           </div>
-        )}
+        }
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -136,132 +137,132 @@ export default function SupportedCrypto() {
               </tr>
             </thead>
             <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
-              {coinNetworks.length === 0 ? (
-                <TableEmptyState
-                  colSpan={5}
-                  icon="bx-coin-stack"
-                  message={searchQuery
-                    ? t('crypto.noSupportedFound', { defaultValue: 'No supported crypto found' })
-                    : t('crypto.noSupported', { defaultValue: 'No supported crypto yet' })
-                  }
-                />
-              ) : (
-                coinNetworks.map((coinNetwork) => (
-                  <tr key={coinNetwork.id}>
-                    <td style={{ verticalAlign: 'middle' }}>
+              {coinNetworks.length === 0 ?
+              <TableEmptyState
+                colSpan={5}
+                icon="bx-coin-stack"
+                message={searchQuery ?
+                t('crypto.noSupportedFound', { defaultValue: 'No supported crypto found' }) :
+                t('crypto.noSupported', { defaultValue: 'No supported crypto yet' })
+                } /> :
+
+
+              coinNetworks.map((coinNetwork) =>
+              <tr key={coinNetwork.id}>
+                    <td className="align-middle">
                       <div className="flex items-center">
                         <CoinImg
-                          coin={coinNetwork.coin}
-                          symbol={coinNetwork.coin?.symbol}
-                          networkSymbol={coinNetwork.network?.symbol}
-                          size={40}
-                          className="mr-3"
-                          showFallback
-                        />
+                      coin={coinNetwork.coin}
+                      symbol={coinNetwork.coin?.symbol}
+                      networkSymbol={coinNetwork.network?.symbol}
+                      size={40}
+                      className="mr-3"
+                      showFallback />
+                    
                         <div>
                           <div className="font-medium">{coinNetwork.coin?.name || 'N/A'}</div>
                           <small className="text-muted">{coinNetwork.coin?.symbol || 'N/A'}</small>
                         </div>
                       </div>
                     </td>
-                    <td style={{ verticalAlign: 'middle' }}>
+                    <td className="align-middle">
                       <div>
                         <div className="font-medium">{coinNetwork.network?.name || 'N/A'}</div>
-                        {coinNetwork.network?.chainId && (
-                          <small className="text-muted">Chain ID: {coinNetwork.network.chainId}</small>
-                        )}
+                        {coinNetwork.network?.chainId &&
+                    <small className="text-muted">Chain ID: {coinNetwork.network.chainId}</small>
+                    }
                       </div>
                     </td>
-                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                      {coinNetwork.contractAddress ? (
-                        <div className="inline-flex items-center gap-2">
-                          <code className="text-dark text-sm" style={{ fontSize: '0.75rem' }}>
+                    <td className="text-center align-middle">
+                      {coinNetwork.contractAddress ?
+                  <div className="inline-flex items-center gap-2">
+                          <code className="text-surface-900 text-sm text-xs">
                             {coinNetwork.contractAddress}
                           </code>
-                          <button
-                            className="btn btn-sm btn-icon btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
-                            onClick={async () => {
-                              const ok = await copyText(coinNetwork.contractAddress)
-                              if (ok) toast.success(t('actions.copied', { defaultValue: 'Copied' }))
-                            }}
-                            title={t('actions.copy', { defaultValue: 'Copy' })}
-                          >
+                          <Button
+
+                      onClick={async () => {
+                        const ok = await copyText(coinNetwork.contractAddress);
+                        if (ok) toast.success(t('actions.copied', { defaultValue: 'Copied' }));
+                      }}
+                      title={t('actions.copy', { defaultValue: 'Copy' })} variant="outline-secondary" size="icon">
+                      
                             <i className="bx bx-copy"></i>
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-muted">{t('admin.detail.native', { defaultValue: 'Native' })}</span>
-                      )}
+                          </Button>
+                        </div> :
+
+                  <span className="text-muted">{t('admin.detail.native', { defaultValue: 'Native' })}</span>
+                  }
                     </td>
-                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                      <span className={`badge bg-label-${ coinNetwork.status ==='active' ? 'success' : 
-                        coinNetwork.status === 'maintenance' ? 'warning' : 
-                        'secondary'
-                      }`}>
-                        {coinNetwork.status === 'active' 
-                          ? t('admin.active', { defaultValue: 'Active' })
-                          : coinNetwork.status === 'maintenance'
-                          ? t('crypto.maintenance', { defaultValue: 'Maintenance' })
-                          : t('crypto.inactive', { defaultValue: 'Inactive' })
-                        }
-                      </span>
+                    <td className="text-center align-middle">
+                      <Badge color={coinNetwork.status === 'active' ? 'success' :
+                  coinNetwork.status === 'maintenance' ? 'warning' :
+                  'secondary'} label>
+                    
+                        {coinNetwork.status === 'active' ?
+                    t('admin.active', { defaultValue: 'Active' }) :
+                    coinNetwork.status === 'maintenance' ?
+                    t('crypto.maintenance', { defaultValue: 'Maintenance' }) :
+                    t('crypto.inactive', { defaultValue: 'Inactive' })
+                    }
+                      </Badge>
                     </td>
-                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                      <Link
-                        href={`/admin/coin-networks/${coinNetwork.id}`}
-                        className="btn btn-sm btn-icon"
-                        title={t('actions.edit', { defaultValue: 'Edit' })}
-                      >
-                        <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                      </Link>
+                    <td className="text-center align-middle">
+                      <Button size="icon"
+                  href={`/admin/coin-networks/${coinNetwork.id}`}
+
+                  title={t('actions.edit', { defaultValue: 'Edit' })}>
+                    
+                        <i className="bx bx-edit text-primary text-xl"></i>
+                      </Button>
                     </td>
                   </tr>
-                ))
-              )}
+              )
+              }
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="px-5 py-3 border-t border-surface-200">
+        {pagination.totalPages > 1 &&
+        <div className="px-5 py-3 border-t border-surface-200">
             <div className="flex justify-between items-center">
               <div className="text-muted text-sm">
                 {t('invoices.showingEntries', {
-                  start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                  end: Math.min(pagination.page * pagination.limit, pagination.total),
-                  total: pagination.total,
-                  defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                })}
+                start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
+                end: Math.min(pagination.page * pagination.limit, pagination.total),
+                total: pagination.total,
+                defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+              })}
               </div>
               <div className="inline-flex rounded-lg shadow-sm">
-                <button
-                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                  disabled={!pagination.hasPrev || loading}
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                >
+                <Button
+
+                disabled={!pagination.hasPrev || loading}
+                onClick={() => handlePageChange(pagination.page - 1)} variant="outline-secondary" size="sm">
+                
                   <i className="bx bx-chevron-left"></i>
                   {t('actions.prev', { defaultValue: 'Previous' })}
-                </button>
-                <button
-                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                  disabled
-                >
+                </Button>
+                <Button
+
+                disabled variant="outline-secondary" size="sm">
+                
                   {pagination.page} / {pagination.totalPages}
-                </button>
-                <button
-                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                  disabled={!pagination.hasNext || loading}
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                >
+                </Button>
+                <Button
+
+                disabled={!pagination.hasNext || loading}
+                onClick={() => handlePageChange(pagination.page + 1)} variant="outline-secondary" size="sm">
+                
                   {t('actions.next', { defaultValue: 'Next' })}
                   <i className="bx bx-chevron-right"></i>
-                </button>
+                </Button>
               </div>
             </div>
           </div>
-        )}
-      </div>
-    </div>
-  )
+        }
+      </Card>
+    </div>);
+
 }

@@ -33,12 +33,12 @@ const FEATURES = [
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="landing-section">
+    <section id="features" className="py-6">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-        <div className="landing-tile landing-tile-slate">
+        <div className="py-10 px-6 rounded-2xl sm:py-12 sm:px-8 sm:rounded-[20px] lg:py-20 lg:px-16 lg:rounded-3xl bg-slate-200">
           <div className="text-center mb-5">
-            <h2 className="landing-section-title mb-3">Why businesses choose us</h2>
-            <p className="landing-section-subtitle mb-0" style={{ color: '#475569' }}>
+            <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-surface-900 tracking-[-0.025em] leading-[1.15] mb-3">Why businesses choose us</h2>
+            <p className="text-slate-500 text-[1.1rem] leading-[1.6] mb-0 text-surface-600">
               Everything you need to accept crypto at scale
             </p>
           </div>
@@ -46,34 +46,34 @@ export default function FeaturesSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {FEATURES.map((f) => (
               <div key={f.title}>
-                <div className="landing-feature-card">
-                  <div className="landing-feature-icon" style={{ background: f.bg, color: f.color }}>
+                <div className="bg-white rounded-[20px] p-7 sm:rounded-2xl sm:p-9 h-full transition-transform duration-200 hover:-translate-y-0.5">
+                  <div className="w-12 h-12 rounded-[14px] flex items-center justify-center text-[1.3rem] mb-5" style={{ background: f.bg, color: f.color }}>
                     <i className={`bx ${f.icon}`}></i>
                   </div>
-                  <h5 className="font-bold mb-2" style={{ color: '#1a1a2e', fontSize: '1.05rem' }}>{f.title}</h5>
-                  <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0, lineHeight: 1.6 }}>{f.desc}</p>
+                  <h5 className="font-bold mb-2 text-surface-900 text-[1.05rem]">{f.title}</h5>
+                  <p className="text-surface-500 text-[0.9rem] m-[0px] leading-[1.6]">{f.desc}</p>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Fee comparison */}
-          <div className="landing-fee-strip">
+          <div className="bg-white rounded-[20px] py-5 px-5 sm:py-6 sm:px-6 lg:py-8 lg:px-10">
             <div className="flex flex-col md:flex-row items-center gap-4">
               <div className="md:flex-1 mb-3 md:mb-0">
-                <h5 className="font-bold mb-1" style={{ color: '#1a1a2e' }}>Save up to 83% on processing fees</h5>
-                <p style={{ color: '#6b7280', fontSize: '0.92rem', margin: 0 }}>
+                <h5 className="font-bold mb-1 text-surface-900">Save up to 83% on processing fees</h5>
+                <p className="text-surface-500 text-[0.92rem] m-[0px]">
                   Traditional processors charge 2.9% + $0.30. We charge just 0.5%.
                 </p>
               </div>
               <div className="flex md:justify-end gap-5">
                 <div className="text-center">
-                  <div style={{ fontSize: '2.25rem', fontWeight: 800, color: '#2563eb' }}>0.5%</div>
-                  <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: 600 }}>BULL PAY</div>
+                  <div className="text-[2.25rem] font-extrabold text-primary-600">0.5%</div>
+                  <div className="text-[0.78rem] text-surface-500 font-semibold">BULL PAY</div>
                 </div>
                 <div className="text-center">
-                  <div style={{ fontSize: '2.25rem', fontWeight: 800, color: '#d1d5db', textDecoration: 'line-through' }}>2.9%</div>
-                  <div style={{ fontSize: '0.78rem', color: '#d1d5db', fontWeight: 600 }}>Traditional</div>
+                  <div className="text-[2.25rem] font-extrabold text-surface-300 line-through">2.9%</div>
+                  <div className="text-[0.78rem] text-surface-300 font-semibold">Traditional</div>
                 </div>
               </div>
             </div>

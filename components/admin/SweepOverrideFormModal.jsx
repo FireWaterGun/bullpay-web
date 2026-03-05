@@ -1,6 +1,7 @@
-'use client'
+'use client';
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Button, Input, Label, Spinner } from '../ui'
 
 /**
  * Modal form for adding/editing a coin or network sweep override.
@@ -25,45 +26,45 @@ export default function SweepOverrideFormModal({
   onSave,
   onClose
 }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
-  if (!show) return null
+  if (!show) return null;
 
-  const isCoin = type === 'coin'
+  const isCoin = type === 'coin';
 
-  const title = isCoin
-    ? (isEditing
-        ? t('admin.sweep.editCoinOverride', { defaultValue: 'Edit Coin Override' })
-        : t('admin.sweep.addCoinOverride', { defaultValue: 'Add Coin Override' }))
-    : (isEditing
-        ? t('admin.sweep.editNetworkOverride', { defaultValue: 'Edit Network Override' })
-        : t('admin.sweep.addNetworkOverride', { defaultValue: 'Add Network Override' }))
+  const title = isCoin ?
+  isEditing ?
+  t('admin.sweep.editCoinOverride', { defaultValue: 'Edit Coin Override' }) :
+  t('admin.sweep.addCoinOverride', { defaultValue: 'Add Coin Override' }) :
+  isEditing ?
+  t('admin.sweep.editNetworkOverride', { defaultValue: 'Edit Network Override' }) :
+  t('admin.sweep.addNetworkOverride', { defaultValue: 'Add Network Override' });
 
-  const idLabel = isCoin
-    ? t('admin.sweep.coinSymbol', { defaultValue: 'Coin Symbol' })
-    : t('admin.sweep.coinNetworkId', { defaultValue: 'Coin-Network ID' })
+  const idLabel = isCoin ?
+  t('admin.sweep.coinSymbol', { defaultValue: 'Coin Symbol' }) :
+  t('admin.sweep.coinNetworkId', { defaultValue: 'Coin-Network ID' });
 
-  const idPlaceholder = isCoin ? 'BTC, ETH, USDT...' : '1, 2, 3...'
-  const idFieldKey = isCoin ? 'coin' : 'coinNetworkId'
-  const idValue = form[idFieldKey] || ''
+  const idPlaceholder = isCoin ? 'BTC, ETH, USDT...' : '1, 2, 3...';
+  const idFieldKey = isCoin ? 'coin' : 'coinNetworkId';
+  const idValue = form[idFieldKey] || '';
 
   function handleIdChange(e) {
-    const value = e.target.value
+    const value = e.target.value;
     if (isCoin) {
-      const upper = value.toUpperCase()
+      const upper = value.toUpperCase();
       if (/^[A-Z0-9]*$/.test(upper) && upper.length <= 20) {
-        onFormChange({ ...form, coin: upper })
+        onFormChange({ ...form, coin: upper });
       }
     } else {
       if (/^[0-9]*$/.test(value) && value.length <= 20) {
-        onFormChange({ ...form, coinNetworkId: value })
+        onFormChange({ ...form, coinNetworkId: value });
       }
     }
   }
 
   function handleNumericField(field, value) {
     if (/^[0-9.]*$/.test(value) && value.length <= 20) {
-      onFormChange({ ...form, [field]: value })
+      onFormChange({ ...form, [field]: value });
     }
   }
 
@@ -80,77 +81,77 @@ export default function SweepOverrideFormModal({
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="col-span-12">
-                  <label className="form-label">{idLabel} *</label>
-                  <input
+                  <Label>{idLabel} *</Label>
+                  <Input
                     type="text"
-                    className="form-input"
+
                     placeholder={idPlaceholder}
                     value={idValue}
                     onChange={handleIdChange}
                     disabled={isEditing}
-                    maxLength={20}
-                  />
-                  {!isCoin && (
-                    <small className="text-muted">
+                    maxLength={20} />
+                  
+                  {!isCoin &&
+                  <small className="text-muted">
                       {t('admin.sweep.coinNetworkIdHelp', { defaultValue: 'Numeric coin_network_id' })}
                     </small>
-                  )}
+                  }
                 </div>
                 <div className="md:col-span-6">
-                  <label className="form-label">{t('admin.sweep.minBalance', { defaultValue: 'Min Balance' })}</label>
-                  <input
+                  <Label>{t('admin.sweep.minBalance', { defaultValue: 'Min Balance' })}</Label>
+                  <Input
                     type="text"
-                    className="form-input"
+
                     placeholder="0.0001"
                     value={form.minBalance}
                     onChange={(e) => handleNumericField('minBalance', e.target.value)}
-                    maxLength={20}
-                  />
+                    maxLength={20} />
+                  
                 </div>
                 <div className="md:col-span-6">
-                  <label className="form-label">{t('admin.sweep.gasBuffer', { defaultValue: 'Gas Buffer' })}</label>
-                  <input
+                  <Label>{t('admin.sweep.gasBuffer', { defaultValue: 'Gas Buffer' })}</Label>
+                  <Input
                     type="text"
-                    className="form-input"
+
                     placeholder="0.00005"
                     value={form.gasBuffer}
                     onChange={(e) => handleNumericField('gasBuffer', e.target.value)}
-                    maxLength={20}
-                  />
+                    maxLength={20} />
+                  
                 </div>
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-              <button
+              <Button
                 type="button"
-                className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
+
                 onClick={onClose}
-                disabled={loading}
-              >
+                disabled={loading} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
+                
                 {t('actions.cancel', { defaultValue: 'Cancel' })}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="btn btn-primary"
+
                 onClick={onSave}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner w-4 h-4 mr-2"></span>
+                disabled={loading}>
+                
+                {loading ?
+                <>
+                    <Spinner className="w-4 h-4 mr-2" />
                     {t('actions.saving', { defaultValue: 'Saving...' })}
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     <i className="bx bx-save mr-1"></i>
                     {t('actions.save', { defaultValue: 'Save' })}
                   </>
-                )}
-              </button>
+                }
+              </Button>
             </div>
           </div>
         </div>
       </div>
-    </>
-  )
+    </>);
+
 }

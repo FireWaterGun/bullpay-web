@@ -1,29 +1,30 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth } from '@/app/providers'
-import { getCoinById, createCoin, updateCoin, deleteCoin } from '@/lib/api/admin'
-const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
-const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false })
-import { useToast } from '@/app/providers'
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+
+import dynamic from 'next/dynamic';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAuth } from '@/app/providers';
+import { getCoinById, createCoin, updateCoin, deleteCoin } from '@/lib/api/admin';
+const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false });
+const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false });
+import { useToast } from '@/app/providers';
+import { Alert, Button, Card, Input, Label, Select, Spinner } from '../../../../../components/ui';
 
 export default function CoinForm() {
-  const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const router = useRouter()
-  const { id } = useParams()
-  const toast = useToast()
-  const isEdit = !!id
+  const { t } = useAdminTranslation();
+  const { token } = useAuth();
+  const router = useRouter();
+  const { id } = useParams();
+  const toast = useToast();
+  const isEdit = !!id;
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [showErrorModal, setShowErrorModal] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     type: 'native',
     symbol: '',
@@ -31,21 +32,21 @@ export default function CoinForm() {
     decimals: 8,
     logoUrl: '',
     status: 'active'
-  })
+  });
 
   useEffect(() => {
     if (isEdit && id) {
-      loadCoin()
+      loadCoin();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id])
+  }, [id]);
 
   async function loadCoin() {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
     try {
-      const coin = await getCoinById(token, parseInt(id))
-      
+      const coin = await getCoinById(token, parseInt(id));
+
       if (coin) {
         setFormData({
           type: coin.type || 'native',
@@ -54,90 +55,90 @@ export default function CoinForm() {
           decimals: coin.decimals || 8,
           logoUrl: coin.logoUrl || '',
           status: coin.status || 'active'
-        })
+        });
       } else {
-        setError('Coin not found')
+        setError('Coin not found');
       }
     } catch (e) {
-      setError(e?.message || 'Failed to load coin')
+      setError(e?.message || 'Failed to load coin');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function handleChange(e) {
-    const { name, value, type, checked } = e.target
-    let processedValue = value
-    
+    const { name, value, type, checked } = e.target;
+    let processedValue = value;
+
     // Auto-uppercase symbol
     if (name === 'symbol') {
-      processedValue = value.toUpperCase()
+      processedValue = value.toUpperCase();
     }
-    
+
     // Validate decimals field (0-18 only)
     if (name === 'decimals' && value !== '') {
-      const num = parseInt(value)
+      const num = parseInt(value);
       if (num < 0 || num > 18) {
-        return // Don't update if out of range
+        return; // Don't update if out of range
       }
     }
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : processedValue
-    }))
+    }));
   }
 
   async function handleDelete() {
-    if (!isEdit || !id) return
-    
-    setLoading(true)
-    setError('')
-    setShowDeleteConfirm(false)
+    if (!isEdit || !id) return;
+
+    setLoading(true);
+    setError('');
+    setShowDeleteConfirm(false);
 
     try {
-      await deleteCoin(token, parseInt(id))
-      router.push('/admin/coins')
+      await deleteCoin(token, parseInt(id));
+      router.push('/admin/coins');
     } catch (e) {
-      const message = e?.message || 'Failed to delete coin'
-      setErrorMessage(message)
-      setShowErrorModal(true)
+      const message = e?.message || 'Failed to delete coin';
+      setErrorMessage(message);
+      setShowErrorModal(true);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
     try {
       // Validation
       if (!isEdit) {
         // Create mode - validate required fields
         if (!formData.symbol || formData.symbol.length > 10) {
-          throw new Error('Symbol is required and must be max 10 characters')
+          throw new Error('Symbol is required and must be max 10 characters');
         }
         if (!formData.name || formData.name.length > 100) {
-          throw new Error('Name is required and must be max 100 characters')
+          throw new Error('Name is required and must be max 100 characters');
         }
       }
-      
+
       // Validate decimals (always check for both create and edit)
       if (formData.decimals !== '' && formData.decimals !== null && formData.decimals !== undefined) {
-        const decimals = parseInt(formData.decimals)
+        const decimals = parseInt(formData.decimals);
         if (decimals < 0 || decimals > 18) {
-          throw new Error(t('crypto.decimalsRangeError', { defaultValue: 'Decimals must be between 0 and 18' }))
+          throw new Error(t('crypto.decimalsRangeError', { defaultValue: 'Decimals must be between 0 and 18' }));
         }
       }
 
       // Validate logoUrl if provided
       if (formData.logoUrl) {
         try {
-          new URL(formData.logoUrl)
+          new URL(formData.logoUrl);
         } catch {
-          throw new Error('Logo URL must be a valid URL')
+          throw new Error('Logo URL must be a valid URL');
         }
       }
 
@@ -148,22 +149,22 @@ export default function CoinForm() {
         type: formData.type,
         logoUrl: formData.logoUrl || undefined,
         status: formData.status || 'active'
-      }
+      };
 
       if (isEdit) {
-        await updateCoin(token, parseInt(id), data)
-        toast.success(t('crypto.coinUpdateSuccess', { defaultValue: 'Coin updated successfully' }))
+        await updateCoin(token, parseInt(id), data);
+        toast.success(t('crypto.coinUpdateSuccess', { defaultValue: 'Coin updated successfully' }));
       } else {
-        await createCoin(token, data)
-        toast.success(t('crypto.coinCreateSuccess', { defaultValue: 'Coin created successfully' }))
+        await createCoin(token, data);
+        toast.success(t('crypto.coinCreateSuccess', { defaultValue: 'Coin created successfully' }));
       }
-      router.push('/admin/coins')
+      router.push('/admin/coins');
     } catch (e) {
-      const message = e?.message || (isEdit ? 'Failed to update coin' : 'Failed to create coin')
-      setErrorMessage(message)
-      setShowErrorModal(true)
+      const message = e?.message || (isEdit ? 'Failed to update coin' : 'Failed to create coin');
+      setErrorMessage(message);
+      setShowErrorModal(true);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -171,24 +172,24 @@ export default function CoinForm() {
     return (
       <div className="grow py-6">
         <div className="text-center py-6">
-          <div className="spinner text-primary" role="status">
-            <span className="visually-hidden">{t('invoices.loading')}</span>
-          </div>
+          <Spinner role="status" className="text-primary" />
+
+          
         </div>
-      </div>
-    )
+      </div>);
+
   }
 
   return (
     <div className="grow py-6">
       {/* Header */}
       <div className="flex items-center mb-4">
-        <Link
-          href="/admin/coins"
-          className="btn btn-icon btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mr-3"
-        >
+        <Button variant="outline-secondary" size="icon" className="mr-3"
+        href="/admin/coins">
+          
+          
           <i className="bx bx-arrow-back"></i>
-        </Link>
+        </Button>
         <div>
           <h4 className="mb-1">
             {isEdit ? t('crypto.editCoin', { defaultValue: 'Edit Coin' }) : t('crypto.createCoin', { defaultValue: 'Create Coin' })}
@@ -201,26 +202,26 @@ export default function CoinForm() {
 
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 xl:col-span-8">
-          <div className="card mb-4">
+          <Card className="mb-4">
             <h5 className="px-5 py-4 border-b border-surface-200">{t('crypto.coinInformation', { defaultValue: 'Coin Information' })}</h5>
             <div className="p-5">
-              {error && (
-                <div className="alert alert-danger mb-4" role="alert">
+              {error &&
+              <Alert role="alert" className="mb-4">
                   <i className="bx bx-error-circle mr-2"></i>
                   {error}
-                </div>
-              )}
+                </Alert>
+              }
 
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-12 gap-x-6 gap-4">
                   {/* Symbol */}
                   <div className="md:col-span-6">
-                    <label className="form-label" htmlFor="symbol">
+                    <Label htmlFor="symbol">
                       {t('crypto.symbol', { defaultValue: 'Symbol' })} <span className="text-danger">*</span>
-                    </label>
-                    <input
+                    </Label>
+                    <Input
                       type="text"
-                      className="form-input"
+
                       id="symbol"
                       name="symbol"
                       value={formData.symbol}
@@ -229,59 +230,59 @@ export default function CoinForm() {
                       maxLength={10}
                       pattern="[A-Z0-9]+"
                       required
-                      disabled={isEdit}
-                      style={{ textTransform: 'uppercase' }}
-                    />
+                      disabled={isEdit} className="uppercase" />
+
+                    
                     <small className="text-muted">{t('crypto.symbolHelp', { defaultValue: 'Coin ticker symbol (e.g., BTC, ETH)' })}</small>
                   </div>
 
                   {/* Name */}
                   <div className="md:col-span-6">
-                    <label className="form-label" htmlFor="name">
+                    <Label htmlFor="name">
                       {t('crypto.coinName', { defaultValue: 'Name' })} <span className="text-danger">*</span>
-                    </label>
-                    <input
+                    </Label>
+                    <Input
                       type="text"
-                      className="form-input"
+
                       id="name"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Bitcoin"
                       maxLength={30}
-                      required
-                    />
+                      required />
+                    
                     <small className="text-muted">{t('crypto.nameHelp', { defaultValue: 'Full coin name' })}</small>
                   </div>
 
                   {/* Type */}
                   <div className="md:col-span-6">
-                    <label className="form-label" htmlFor="type">
+                    <Label htmlFor="type">
                       {t('crypto.type', { defaultValue: 'Type' })} <span className="text-danger">*</span>
-                    </label>
-                    <select
-                      className="form-input"
+                    </Label>
+                    <Select
+
                       id="type"
                       name="type"
                       value={formData.type}
                       onChange={handleChange}
                       required
-                      disabled={isEdit}
-                    >
+                      disabled={isEdit}>
+                      
                       <option value="native">{t('crypto.native', { defaultValue: 'Native' })}</option>
                       <option value="token">{t('crypto.token', { defaultValue: 'Token' })}</option>
-                    </select>
+                    </Select>
                     <small className="text-muted">{t('crypto.typeHelp', { defaultValue: 'Native blockchain coin or ERC-20/BEP-20 token' })}</small>
                   </div>
 
                   {/* Decimals */}
                   <div className="md:col-span-6">
-                    <label className="form-label" htmlFor="decimals">
+                    <Label htmlFor="decimals">
                       {t('crypto.decimals', { defaultValue: 'Decimals' })} <span className="text-danger">*</span>
-                    </label>
-                    <input
+                    </Label>
+                    <Input
                       type="number"
-                      className="form-input"
+
                       id="decimals"
                       name="decimals"
                       value={formData.decimals}
@@ -289,42 +290,42 @@ export default function CoinForm() {
                       min="0"
                       max="18"
                       required
-                      disabled={isEdit}
-                    />
+                      disabled={isEdit} />
+                    
                     <small className="text-muted">{t('crypto.decimalsHelp', { defaultValue: 'Number of decimal places (0-18)' })}</small>
                   </div>
 
                   {/* Status */}
                   <div className="md:col-span-6">
-                    <label className="form-label" htmlFor="status">
+                    <Label htmlFor="status">
                       {t('invoices.statusCol')}
-                    </label>
-                    <select
-                      className="form-input"
+                    </Label>
+                    <Select
+
                       id="status"
                       name="status"
                       value={formData.status}
-                      onChange={handleChange}
-                    >
+                      onChange={handleChange}>
+                      
                       <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>
                       <option value="inactive">{t('crypto.inactive', { defaultValue: 'Inactive' })}</option>
-                    </select>
+                    </Select>
                   </div>
 
                   {/* Logo URL */}
                   <div className="col-span-12">
-                    <label className="form-label" htmlFor="logoUrl">
+                    <Label htmlFor="logoUrl">
                       {t('crypto.logoUrl', { defaultValue: 'Logo URL' })}
-                    </label>
-                    <input
+                    </Label>
+                    <Input
                       type="url"
-                      className="form-input"
+
                       id="logoUrl"
                       name="logoUrl"
                       value={formData.logoUrl}
                       onChange={handleChange}
-                      placeholder="https://example.com/logo.png"
-                    />
+                      placeholder="https://example.com/logo.png" />
+                    
                     <small className="text-muted">{t('crypto.logoUrlHelp', { defaultValue: 'External URL to coin logo image' })}</small>
                   </div>
 
@@ -332,36 +333,36 @@ export default function CoinForm() {
                   <div className="col-span-12 pt-3">
                     <div className="flex gap-3 justify-between">
                       <div className="flex gap-3 ml-auto">
-                        <Link
-                          href="/admin/coins"
-                          className={`btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none${loading ?' disabled' : ''}`}
-                        >
+                        <Button variant="label-secondary"
+                        href="/admin/coins">
+                          
+                          
                           {t('actions.cancel', { defaultValue: 'Cancel' })}
-                        </Link>
-                        <button 
-                          type="submit" 
-                          className="btn btn-primary"
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <>
-                              <span className="spinner w-4 h-4 mr-2" role="status"></span>
+                        </Button>
+                        <Button
+                          type="submit"
+
+                          disabled={loading}>
+                          
+                          {loading ?
+                          <>
+                              <Spinner role="status" className="w-4 h-4 mr-2" />
                               {t('actions.saving', { defaultValue: 'Saving...' })}
-                            </>
-                          ) : (
-                            <>
+                            </> :
+
+                          <>
                               <i className="bx bx-save mr-2"></i>
                               {isEdit ? t('actions.update', { defaultValue: 'Update' }) : t('actions.create', { defaultValue: 'Create' })}
                             </>
-                          )}
-                        </button>
+                          }
+                        </Button>
                       </div>
                     </div>
                   </div>
                 </div>
               </form>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
@@ -372,14 +373,14 @@ export default function CoinForm() {
         loading={loading}
         message={t('crypto.deleteConfirmMessage', { defaultValue: 'Are you sure you want to delete this coin?' })}
         itemName={formData.symbol}
-        itemDetails={`- ${formData.name}`}
-      />
+        itemDetails={`- ${formData.name}`} />
+      
 
       <ErrorModal
         show={showErrorModal}
         onClose={() => setShowErrorModal(false)}
-        message={errorMessage}
-      />
-    </div>
-  )
+        message={errorMessage} />
+      
+    </div>);
+
 }

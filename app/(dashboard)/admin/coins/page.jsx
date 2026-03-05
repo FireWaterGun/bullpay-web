@@ -1,21 +1,22 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth } from '@/app/providers'
-import { getCoins } from '@/lib/api/admin'
-import CoinImg from '@/components/CoinImg'
-import TableEmptyState from '@/components/TableEmptyState'
+import { useEffect, useState } from 'react';
+
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAuth } from '@/app/providers';
+import { getCoins } from '@/lib/api/admin';
+import CoinImg from '@/components/CoinImg';
+import TableEmptyState from '@/components/TableEmptyState';
+import { Alert, Badge, Button, Card, Input, Label } from '../../../../components/ui';
 
 export default function CoinList() {
-  const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const [coins, setCoins] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [draftSearch, setDraftSearch] = useState('')
+  const { t } = useAdminTranslation();
+  const { token } = useAuth();
+  const [coins, setCoins] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [draftSearch, setDraftSearch] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -23,33 +24,33 @@ export default function CoinList() {
     totalPages: 0,
     hasNext: false,
     hasPrev: false
-  })
+  });
 
   useEffect(() => {
-    loadCoins()
+    loadCoins();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   function handleApplyFilter() {
-    setSearchQuery(draftSearch)
-    loadCoins(1, pagination.limit, draftSearch)
+    setSearchQuery(draftSearch);
+    loadCoins(1, pagination.limit, draftSearch);
   }
 
   function handleResetFilter() {
-    setDraftSearch('')
-    setSearchQuery('')
-    loadCoins(1, pagination.limit, '')
+    setDraftSearch('');
+    setSearchQuery('');
+    loadCoins(1, pagination.limit, '');
   }
 
   async function loadCoins(page = pagination.page, limit = pagination.limit, search = searchQuery) {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
     try {
-      const response = await getCoins(token, page, limit, search)
-      const coinList = response?.items || []
-      const paginationData = response?.pagination || {}
-      
-      setCoins(coinList)
+      const response = await getCoins(token, page, limit, search);
+      const coinList = response?.items || [];
+      const paginationData = response?.pagination || {};
+
+      setCoins(coinList);
       setPagination({
         page: paginationData.page || page,
         limit: paginationData.limit || limit,
@@ -57,23 +58,23 @@ export default function CoinList() {
         totalPages: paginationData.totalPages || 0,
         hasNext: paginationData.hasNext || false,
         hasPrev: paginationData.hasPrev || false
-      })
-      
+      });
+
     } catch (e) {
-      setError(e?.message || 'Failed to load coins')
+      setError(e?.message || 'Failed to load coins');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function handlePageChange(newPage) {
-    loadCoins(newPage, pagination.limit)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    loadCoins(newPage, pagination.limit);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (
     <div className="grow py-6">
-      <div className="card">
+      <Card>
         <div className="px-5 py-4 border-b border-surface-200">
           <div className="flex justify-between items-center flex-wrap gap-3 mb-3">
             <div>
@@ -88,38 +89,38 @@ export default function CoinList() {
           {/* Filters */}
           <div className="grid grid-cols-12 gap-x-6 gap-3 items-end">
             <div className="md:col-span-3 sm:col-span-6">
-              <label className="form-label">{t('filter.search', { defaultValue: 'Search' })}</label>
-              <input
+              <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
+              <Input
                 type="text"
-                className="form-input"
+
                 placeholder={t('crypto.searchCoins', { defaultValue: 'Search by name or symbol...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
-              />
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()} />
+              
             </div>
             <div className="col-auto flex gap-2">
-              <button className="btn btn-primary" onClick={handleApplyFilter} disabled={loading}>
+              <Button onClick={handleApplyFilter} disabled={loading}>
                 <i className="bx bx-filter-alt mr-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
-              </button>
-              <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={handleResetFilter} disabled={loading}>
+              </Button>
+              <Button onClick={handleResetFilter} disabled={loading} variant="outline-secondary">
                 <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Error Alert */}
-        {error && (
-          <div className="p-5">
-            <div className="alert alert-danger mb-0" role="alert">
+        {error &&
+        <div className="p-5">
+            <Alert role="alert" className="mb-0">
               <i className="bx bx-error-circle mr-2"></i>
               {error}
-            </div>
+            </Alert>
           </div>
-        )}
+        }
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -135,103 +136,103 @@ export default function CoinList() {
               </tr>
             </thead>
             <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
-              {coins.length === 0 ? (
-                <TableEmptyState
-                  colSpan={6}
-                  icon="bx-coin"
-                  message={searchQuery
-                    ? t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' })
-                    : t('crypto.noCoins', { defaultValue: 'No coins found' })
-                  }
-                />
-              ) : (
-                coins.map((coin) => (
-                  <tr key={coin.id}>
-                    <td style={{ verticalAlign: 'middle' }}>
+              {coins.length === 0 ?
+              <TableEmptyState
+                colSpan={6}
+                icon="bx-coin"
+                message={searchQuery ?
+                t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' }) :
+                t('crypto.noCoins', { defaultValue: 'No coins found' })
+                } /> :
+
+
+              coins.map((coin) =>
+              <tr key={coin.id}>
+                    <td className="align-middle">
                       <div className="flex items-center">
                         <CoinImg
-                          symbol={coin.symbol}
-                          logoUrl={coin.logoUrl}
-                          size={40}
-                          className="mr-3"
-                          showFallback
-                        />
+                      symbol={coin.symbol}
+                      logoUrl={coin.logoUrl}
+                      size={40}
+                      className="mr-3"
+                      showFallback />
+                    
                         <div>
                           <div className="font-medium">{coin.name || 'N/A'}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ verticalAlign: 'middle' }}>
+                    <td className="align-middle">
                       <span className="font-medium">{coin.symbol}</span>
                     </td>
-                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                      {coin.type === 'native' 
-                        ? t('crypto.native', { defaultValue: 'Native' })
-                        : t('crypto.token', { defaultValue: 'Token' })
-                      }
+                    <td className="text-center align-middle">
+                      {coin.type === 'native' ?
+                  t('crypto.native', { defaultValue: 'Native' }) :
+                  t('crypto.token', { defaultValue: 'Token' })
+                  }
                     </td>
-                    <td className="text-center" style={{ verticalAlign: 'middle' }}>{coin.decimals || 0}</td>
-                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                      {coin.status === 'active' ? (
-                        <span className="badge bg-green-50 text-green-700">{t('admin.active')}</span>
-                      ) : (
-                        <span className="badge bg-surface-100 text-surface-600">{coin.status}</span>
-                      )}
+                    <td className="text-center align-middle">{coin.decimals || 0}</td>
+                    <td className="text-center align-middle">
+                      {coin.status === 'active' ?
+                  <Badge className="bg-green-50 text-green-700">{t('admin.active')}</Badge> :
+
+                  <Badge className="bg-surface-100 text-surface-600">{coin.status}</Badge>
+                  }
                     </td>
-                    <td className="text-center" style={{ verticalAlign: 'middle' }}>
-                      <Link
-                        href={`/admin/coins/${coin.id}`}
-                        className="btn btn-sm btn-icon"
-                        title={t('actions.edit', { defaultValue: 'Edit' })}
-                      >
-                        <i className="bx bx-edit text-primary" style={{ fontSize: '1.25rem' }}></i>
-                      </Link>
+                    <td className="text-center align-middle">
+                      <Button size="icon"
+                  href={`/admin/coins/${coin.id}`}
+
+                  title={t('actions.edit', { defaultValue: 'Edit' })}>
+                    
+                        <i className="bx bx-edit text-primary text-xl"></i>
+                      </Button>
                     </td>
                   </tr>
-                ))
-              )}
+              )
+              }
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        {!error && coins.length > 0 && (
-          <div className="px-5 py-3 border-t border-surface-200 flex justify-between items-center">
+        {!error && coins.length > 0 &&
+        <div className="px-5 py-3 border-t border-surface-200 flex justify-between items-center">
             <div className="text-muted text-sm">
               {t('invoices.showingEntries', {
-                start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                end: Math.min(pagination.page * pagination.limit, pagination.total),
-                total: pagination.total,
-                defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-              })}
+              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
+              end: Math.min(pagination.page * pagination.limit, pagination.total),
+              total: pagination.total,
+              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+            })}
             </div>
             <div className="inline-flex rounded-lg shadow-sm">
-              <button
-                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                disabled={!pagination.hasPrev || loading}
-                onClick={() => handlePageChange(pagination.page - 1)}
-              >
+              <Button
+
+              disabled={!pagination.hasPrev || loading}
+              onClick={() => handlePageChange(pagination.page - 1)} variant="outline-secondary" size="sm">
+              
                 <i className="bx bx-chevron-left"></i>
                 {t('actions.prev', { defaultValue: 'Previous' })}
-              </button>
-              <button
-                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                disabled
-              >
+              </Button>
+              <Button
+
+              disabled variant="outline-secondary" size="sm">
+              
                 {pagination.page} / {pagination.totalPages}
-              </button>
-              <button
-                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                disabled={!pagination.hasNext || loading}
-                onClick={() => handlePageChange(pagination.page + 1)}
-              >
+              </Button>
+              <Button
+
+              disabled={!pagination.hasNext || loading}
+              onClick={() => handlePageChange(pagination.page + 1)} variant="outline-secondary" size="sm">
+              
                 {t('actions.next', { defaultValue: 'Next' })}
                 <i className="bx bx-chevron-right"></i>
-              </button>
+              </Button>
             </div>
           </div>
-        )}
-      </div>
-    </div>
-  )
+        }
+      </Card>
+    </div>);
+
 }

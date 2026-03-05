@@ -1,21 +1,22 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth } from '@/app/providers'
-import { getSweepSettings, updateSweepSetting } from '@/lib/api/admin'
-import { useToast } from '@/app/providers'
-import { logger } from '@/lib/utils/logger'
-import PageSpinner from '@/components/PageSpinner'
+import { useState, useEffect } from 'react';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAuth } from '@/app/providers';
+import { getSweepSettings, updateSweepSetting } from '@/lib/api/admin';
+import { useToast } from '@/app/providers';
+import { logger } from '@/lib/utils/logger';
+import PageSpinner from '@/components/PageSpinner';
+import { Badge, Button, Card, Input, Label, Select, Spinner } from '../ui'
 
 export default function WithdrawalDefaults() {
-  const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
-  const [loading, setLoading] = useState(false)
-  const [loadingData, setLoadingData] = useState(true)
-  const [defaults, setDefaults] = useState({})
-  const [showModal, setShowModal] = useState(false)
+  const { t } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
+  const [defaults, setDefaults] = useState({});
+  const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     minimum: '',
     maximum: '',
@@ -26,39 +27,39 @@ export default function WithdrawalDefaults() {
     feeMin: '',
     feeMax: '',
     feeFixed: ''
-  })
+  });
 
   useEffect(() => {
-    loadSettings()
-  }, [])
+    loadSettings();
+  }, []);
 
   async function loadSettings() {
     try {
-      setLoadingData(true)
-      const data = await getSweepSettings(token, 'payment', 'global', 1, 100)
-      
-      const settingsMap = {}
-      data.forEach(setting => {
-        const key = setting.keyName.replace('payment.withdraw.', '')
-        settingsMap[key] = setting
-      })
-      
-      setDefaults(settingsMap.defaults?.parsedValue || {})
+      setLoadingData(true);
+      const data = await getSweepSettings(token, 'payment', 'global', 1, 100);
+
+      const settingsMap = {};
+      data.forEach((setting) => {
+        const key = setting.keyName.replace('payment.withdraw.', '');
+        settingsMap[key] = setting;
+      });
+
+      setDefaults(settingsMap.defaults?.parsedValue || {});
     } catch (error) {
-      logger.error('Failed to load withdrawal settings:', error)
-      toast.error(t('admin.withdrawal.loadError', { defaultValue: 'Failed to load settings' }))
+      logger.error('Failed to load withdrawal settings:', error);
+      toast.error(t('admin.withdrawal.loadError', { defaultValue: 'Failed to load settings' }));
     } finally {
-      setLoadingData(false)
+      setLoadingData(false);
     }
   }
 
   function handleEdit() {
     // Determine fee type
-    let feeType = 'percentage'
+    let feeType = 'percentage';
     if (defaults.fee?.type) {
-      feeType = defaults.fee.type
+      feeType = defaults.fee.type;
     } else if (defaults.fee?.fixed) {
-      feeType = 'fixed'
+      feeType = 'fixed';
     }
 
     setFormData({
@@ -71,8 +72,8 @@ export default function WithdrawalDefaults() {
       feeMin: defaults.fee?.min || '',
       feeMax: defaults.fee?.max || '',
       feeFixed: defaults.fee?.fixed || ''
-    })
-    setShowModal(true)
+    });
+    setShowModal(true);
   }
 
   async function handleSave() {
@@ -83,38 +84,38 @@ export default function WithdrawalDefaults() {
         dailyLimit: formData.dailyLimit,
         monthlyLimit: formData.monthlyLimit,
         fee: { type: formData.feeType }
-      }
+      };
 
       if (formData.feeType === 'percentage') {
-        config.fee.percentage = formData.feePercentage
-        config.fee.min = formData.feeMin
-        if (formData.feeMax) config.fee.max = formData.feeMax
+        config.fee.percentage = formData.feePercentage;
+        config.fee.min = formData.feeMin;
+        if (formData.feeMax) config.fee.max = formData.feeMax;
       } else if (formData.feeType === 'fixed') {
-        config.fee.fixed = formData.feeFixed
+        config.fee.fixed = formData.feeFixed;
       }
 
-      setLoading(true)
-      await updateSweepSetting(token, 'payment.withdraw.defaults', config)
-      setDefaults(config)
-      setShowModal(false)
-      toast.success(t('admin.withdrawal.saveSuccess', { defaultValue: 'Settings saved successfully' }))
+      setLoading(true);
+      await updateSweepSetting(token, 'payment.withdraw.defaults', config);
+      setDefaults(config);
+      setShowModal(false);
+      toast.success(t('admin.withdrawal.saveSuccess', { defaultValue: 'Settings saved successfully' }));
     } catch (error) {
-      logger.error('Failed to save:', error)
-      toast.error(error?.message || t('admin.withdrawal.saveError', { defaultValue: 'Failed to save settings' }))
+      logger.error('Failed to save:', error);
+      toast.error(error?.message || t('admin.withdrawal.saveError', { defaultValue: 'Failed to save settings' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   if (loadingData) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
   return (
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <div className="card mb-4">
+          <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">{t('admin.withdrawal.defaults', { defaultValue: 'Defaults & Limits' })}</h5>
               <p className="text-muted text-sm mb-0 mt-1">
@@ -126,10 +127,10 @@ export default function WithdrawalDefaults() {
               {/* Default Settings */}
               <div>
                 <div className="flex justify-end mb-3">
-                  <button type="button" className="btn btn-sm btn-primary" onClick={handleEdit}>
+                  <Button type="button" onClick={handleEdit} size="sm">
                     <i className="bx bx-edit mr-1"></i>
                     {t('actions.edit', { defaultValue: 'Edit' })}
-                  </button>
+                  </Button>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -153,13 +154,13 @@ export default function WithdrawalDefaults() {
                       <tr>
                         <td><strong>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</strong></td>
                         <td>
-                          <span className="badge bg-cyan-50 text-cyan-700">
+                          <Badge className="bg-cyan-50 text-cyan-700">
                             {defaults.fee?.fixed ? 'fixed' : defaults.fee?.percentage || defaults.fee?.min ? 'percentage' : defaults.fee?.type || '-'}
-                          </span>
+                          </Badge>
                         </td>
                       </tr>
-                      {(defaults.fee?.percentage || defaults.fee?.min) && !defaults.fee?.fixed && (
-                        <>
+                      {(defaults.fee?.percentage || defaults.fee?.min) && !defaults.fee?.fixed &&
+                      <>
                           <tr>
                             <td><strong>{t('admin.withdrawal.feePercentage', { defaultValue: 'Fee %' })}</strong></td>
                             <td><code>{defaults.fee?.percentage || '-'}</code></td>
@@ -173,26 +174,26 @@ export default function WithdrawalDefaults() {
                             <td><code>{defaults.fee?.max || '-'}</code></td>
                           </tr>
                         </>
-                      )}
-                      {defaults.fee?.fixed && (
-                        <tr>
+                      }
+                      {defaults.fee?.fixed &&
+                      <tr>
                           <td><strong>{t('admin.withdrawal.feeFixed', { defaultValue: 'Fixed Fee' })}</strong></td>
                           <td><code>{defaults.fee?.fixed || '-'}</code></td>
                         </tr>
-                      )}
+                      }
                     </tbody>
                   </table>
                 </div>
               </div>
 
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
       {/* Edit Modal */}
-      {showModal && (
-        <>
+      {showModal &&
+      <>
           <div className="fixed inset-0 bg-black/50 z-40"></div>
           <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
             <div className="w-full max-w-lg mx-4 max-w-2xl">
@@ -206,177 +207,177 @@ export default function WithdrawalDefaults() {
                 <div className="p-5">
                   <div className="grid grid-cols-12 gap-x-6 gap-3">
                     <div className="md:col-span-6">
-                      <label className="form-label">{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</label>
-                      <input 
-                        type="text"
-                        className="form-input"
-                        value={formData.minimum}
-                        onChange={(e) => {
-                          const value = e.target.value
-                          if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                            setFormData({ ...formData, minimum: value })
-                          }
-                        }}
-                        maxLength={20}
-                      />
+                      <Label>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</Label>
+                      <Input
+                      type="text"
+
+                      value={formData.minimum}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                          setFormData({ ...formData, minimum: value });
+                        }
+                      }}
+                      maxLength={20} />
+                    
                     </div>
                     <div className="md:col-span-6">
-                      <label className="form-label">{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</label>
-                      <input 
-                        type="text"
-                        className="form-input"
-                        value={formData.maximum}
-                        onChange={(e) => {
-                          const value = e.target.value
-                          if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                            setFormData({ ...formData, maximum: value })
-                          }
-                        }}
-                        maxLength={20}
-                      />
+                      <Label>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</Label>
+                      <Input
+                      type="text"
+
+                      value={formData.maximum}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                          setFormData({ ...formData, maximum: value });
+                        }
+                      }}
+                      maxLength={20} />
+                    
                     </div>
                     <div className="md:col-span-6">
-                      <label className="form-label">{t('admin.withdrawal.dailyLimit', { defaultValue: 'Daily Limit' })}</label>
-                      <input 
-                        type="text"
-                        className="form-input"
-                        value={formData.dailyLimit}
-                        onChange={(e) => {
-                          const value = e.target.value
-                          if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                            setFormData({ ...formData, dailyLimit: value })
-                          }
-                        }}
-                        maxLength={20}
-                      />
+                      <Label>{t('admin.withdrawal.dailyLimit', { defaultValue: 'Daily Limit' })}</Label>
+                      <Input
+                      type="text"
+
+                      value={formData.dailyLimit}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                          setFormData({ ...formData, dailyLimit: value });
+                        }
+                      }}
+                      maxLength={20} />
+                    
                     </div>
                     <div className="md:col-span-6">
-                      <label className="form-label">{t('admin.withdrawal.monthlyLimit', { defaultValue: 'Monthly Limit' })}</label>
-                      <input 
-                        type="text"
-                        className="form-input"
-                        value={formData.monthlyLimit}
-                        onChange={(e) => {
-                          const value = e.target.value
-                          if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                            setFormData({ ...formData, monthlyLimit: value })
-                          }
-                        }}
-                        maxLength={20}
-                      />
+                      <Label>{t('admin.withdrawal.monthlyLimit', { defaultValue: 'Monthly Limit' })}</Label>
+                      <Input
+                      type="text"
+
+                      value={formData.monthlyLimit}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                          setFormData({ ...formData, monthlyLimit: value });
+                        }
+                      }}
+                      maxLength={20} />
+                    
                     </div>
                     <div className="col-span-12">
-                      <label className="form-label">{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</label>
-                      <select 
-                        className="form-input"
-                        value={formData.feeType}
-                        onChange={(e) => setFormData({ ...formData, feeType: e.target.value })}
-                      >
+                      <Label>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</Label>
+                      <Select
+
+                      value={formData.feeType}
+                      onChange={(e) => setFormData({ ...formData, feeType: e.target.value })}>
+                      
                         <option value="percentage">Percentage</option>
                         <option value="fixed">Fixed</option>
-                      </select>
+                      </Select>
                     </div>
-                    {formData.feeType === 'percentage' && (
-                      <>
+                    {formData.feeType === 'percentage' &&
+                  <>
                         <div className="md:col-span-4">
-                          <label className="form-label">{t('admin.withdrawal.feePercentage', { defaultValue: 'Fee %' })}</label>
-                          <input 
-                            type="text"
-                            className="form-input"
-                            value={formData.feePercentage}
-                            onChange={(e) => {
-                              const value = e.target.value
-                              if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                                setFormData({ ...formData, feePercentage: value })
-                              }
-                            }}
-                            maxLength={20}
-                          />
+                          <Label>{t('admin.withdrawal.feePercentage', { defaultValue: 'Fee %' })}</Label>
+                          <Input
+                        type="text"
+
+                        value={formData.feePercentage}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                            setFormData({ ...formData, feePercentage: value });
+                          }
+                        }}
+                        maxLength={20} />
+                      
                         </div>
                         <div className="md:col-span-4">
-                          <label className="form-label">{t('admin.withdrawal.feeMin', { defaultValue: 'Min Fee' })}</label>
-                          <input 
-                            type="text"
-                            className="form-input"
-                            value={formData.feeMin}
-                            onChange={(e) => {
-                              const value = e.target.value
-                              if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                                setFormData({ ...formData, feeMin: value })
-                              }
-                            }}
-                            maxLength={20}
-                          />
+                          <Label>{t('admin.withdrawal.feeMin', { defaultValue: 'Min Fee' })}</Label>
+                          <Input
+                        type="text"
+
+                        value={formData.feeMin}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                            setFormData({ ...formData, feeMin: value });
+                          }
+                        }}
+                        maxLength={20} />
+                      
                         </div>
                         <div className="md:col-span-4">
-                          <label className="form-label">{t('admin.withdrawal.feeMax', { defaultValue: 'Max Fee' })}</label>
-                          <input 
-                            type="text"
-                            className="form-input"
-                            value={formData.feeMax}
-                            onChange={(e) => {
-                              const value = e.target.value
-                              if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                                setFormData({ ...formData, feeMax: value })
-                              }
-                            }}
-                            maxLength={20}
-                          />
+                          <Label>{t('admin.withdrawal.feeMax', { defaultValue: 'Max Fee' })}</Label>
+                          <Input
+                        type="text"
+
+                        value={formData.feeMax}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                            setFormData({ ...formData, feeMax: value });
+                          }
+                        }}
+                        maxLength={20} />
+                      
                         </div>
                       </>
-                    )}
-                    {formData.feeType === 'fixed' && (
-                      <div className="col-span-12">
-                        <label className="form-label">{t('admin.withdrawal.feeFixed', { defaultValue: 'Fixed Fee' })}</label>
-                        <input 
-                          type="text"
-                          className="form-input"
-                          value={formData.feeFixed}
-                          onChange={(e) => {
-                            const value = e.target.value
-                            if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
-                              setFormData({ ...formData, feeFixed: value })
-                            }
-                          }}
-                          maxLength={20}
-                        />
+                  }
+                    {formData.feeType === 'fixed' &&
+                  <div className="col-span-12">
+                        <Label>{t('admin.withdrawal.feeFixed', { defaultValue: 'Fixed Fee' })}</Label>
+                        <Input
+                      type="text"
+
+                      value={formData.feeFixed}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
+                          setFormData({ ...formData, feeFixed: value });
+                        }
+                      }}
+                      maxLength={20} />
+                    
                       </div>
-                    )}
+                  }
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-                  <button 
-                    type="button" 
-                    className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
-                    onClick={() => setShowModal(false)}
-                    disabled={loading}
-                  >
+                  <Button
+                  type="button"
+
+                  onClick={() => setShowModal(false)}
+                  disabled={loading} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
+                  
                     {t('actions.cancel', { defaultValue: 'Cancel' })}
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn btn-primary"
-                    onClick={handleSave}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span className="spinner w-4 h-4 mr-2"></span>
+                  </Button>
+                  <Button
+                  type="button"
+
+                  onClick={handleSave}
+                  disabled={loading}>
+                  
+                    {loading ?
+                  <>
+                        <Spinner className="w-4 h-4 mr-2" />
                         {t('actions.saving', { defaultValue: 'Saving...' })}
-                      </>
-                    ) : (
-                      <>
+                      </> :
+
+                  <>
                         <i className="bx bx-save mr-1"></i>
                         {t('actions.save', { defaultValue: 'Save' })}
                       </>
-                    )}
-                  </button>
+                  }
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </>
-      )}
-    </div>
-  )
+      }
+    </div>);
+
 }

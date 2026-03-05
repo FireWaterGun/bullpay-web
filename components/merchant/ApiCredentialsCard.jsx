@@ -1,30 +1,31 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useState, useEffect, useRef } from 'react';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { Button, Card, Input, InputGroup, InputIcon, Label } from '../ui'
 
 export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, onRegenerate, toast, t }) {
-  const [showApiKey, setShowApiKey] = useState(false)
-  const apiKeyTimerRef = useRef(null)
+  const [showApiKey, setShowApiKey] = useState(false);
+  const apiKeyTimerRef = useRef(null);
 
   useEffect(() => {
     if (showApiKey) {
-      apiKeyTimerRef.current = setTimeout(() => setShowApiKey(false), 30_000)
-      return () => clearTimeout(apiKeyTimerRef.current)
+      apiKeyTimerRef.current = setTimeout(() => setShowApiKey(false), 30_000);
+      return () => clearTimeout(apiKeyTimerRef.current);
     }
-  }, [showApiKey])
+  }, [showApiKey]);
 
-  const displayKey = apiKey
-    ? showApiKey
-      ? apiKey
-      : `${apiKey.slice(0, 8)}${'••••••••••••••••'}${apiKey.slice(-6)}`
-    : '-'
+  const displayKey = apiKey ?
+  showApiKey ?
+  apiKey :
+  `${apiKey.slice(0, 8)}${'••••••••••••••••'}${apiKey.slice(-6)}` :
+  '-';
 
   return (
-    <div className="card mb-4">
+    <Card className="mb-4">
       <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
         <h6 className="mb-0 font-semibold">
-          <i className="bx bx-key mr-2 text-primary-600" style={{ fontSize: '1.1rem' }}></i>
+          <i className="bx bx-key mr-2 text-primary-600 text-[1.1rem]"></i>
           {t('merchant.apiCredentials', { defaultValue: 'API Credentials' })}
         </h6>
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
@@ -35,87 +36,87 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
       <div className="p-6">
         {/* API Key */}
         <div className="mb-3">
-          <label className="form-label font-semibold text-sm mb-1">
+          <Label className="font-semibold text-sm mb-1">
             <i className="bx bx-fingerprint mr-1 text-surface-500"></i>
             {t('merchant.apiKey', { defaultValue: 'API Key' })}
-          </label>
-          <div className="bp-input-group">
-            <span className="bp-input-suffix" style={{ background: 'var(--color-surface-100, #f3f4f6)' }}>
-              <i className="bx bx-key text-surface-500" style={{ fontSize: '0.9rem' }}></i>
-            </span>
-            <input
+          </Label>
+          <InputGroup>
+            <InputIcon className="bg-surface-100">
+              <i className="bx bx-key text-surface-500 text-[0.9rem]"></i>
+            </InputIcon>
+            <Input
               type="text"
-              className="form-input font-mono"
+
               value={displayKey}
-              readOnly
-              style={{ fontSize: '0.85rem', letterSpacing: '0.02em' }}
-            />
-            {apiKey && (
-              <>
-                <button
-                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
-                  onClick={() => setShowApiKey(v => !v)}
-                  title={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })}
-                >
-                  <i className={`bx ${showApiKey ?'bx-hide' : 'bx-show'}`}></i>
-                </button>
-                <button
-                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
-                  onClick={async () => {
-                    const ok = await copyText(apiKey)
-                    if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
-                  }}
-                  title={t('actions.copy', { defaultValue: 'Copy' })}
-                >
+              readOnly className="font-mono text-[0.85rem] tracking-[0.02em]" />
+
+            
+            {apiKey &&
+            <>
+                <Button
+
+                onClick={() => setShowApiKey((v) => !v)}
+                title={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })} variant="outline-secondary">
+                
+                  <i className={`bx ${showApiKey ? 'bx-hide' : 'bx-show'}`}></i>
+                </Button>
+                <Button
+
+                onClick={async () => {
+                  const ok = await copyText(apiKey);
+                  if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }));
+                }}
+                title={t('actions.copy', { defaultValue: 'Copy' })} variant="outline-secondary">
+                
                   <i className="bx bx-copy"></i>
-                </button>
+                </Button>
               </>
-            )}
-          </div>
-          {showApiKey && (
-            <small className="text-amber-500 block mt-1">
+            }
+          </InputGroup>
+          {showApiKey &&
+          <small className="text-amber-500 block mt-1">
               <i className="bx bx-info-circle mr-1"></i>
               {t('merchant.autoHide', { defaultValue: 'Auto-hides after 30 seconds' })}
             </small>
-          )}
+          }
         </div>
 
         {/* API Secret */}
         <div className="mb-4">
-          <label className="form-label font-semibold text-sm mb-1">
+          <Label className="font-semibold text-sm mb-1">
             <i className="bx bx-lock-alt mr-1 text-surface-500"></i>
             {t('merchant.apiSecret', { defaultValue: 'API Secret' })}
-          </label>
-          <div className="bp-input-group">
-            <span className="bp-input-suffix" style={{ background: 'var(--color-surface-100, #f3f4f6)' }}>
-              <i className="bx bx-shield text-surface-500" style={{ fontSize: '0.9rem' }}></i>
-            </span>
-            <input
+          </Label>
+          <InputGroup>
+            <InputIcon className="bg-surface-100">
+              <i className="bx bx-shield text-surface-500 text-[0.9rem]"></i>
+            </InputIcon>
+            <Input
               type="text"
-              className="form-input font-mono"
+
               value={apiSecretMasked || '••••••••••••••••••••••••'}
-              readOnly
-              style={{ fontSize: '0.85rem', letterSpacing: '0.02em' }}
-            />
-            <span className="bp-input-suffix text-surface-500 text-sm" style={{ background: 'var(--color-surface-100, #f3f4f6)' }}>
-              <i className="bx bx-lock-alt mr-1" style={{ fontSize: '0.75rem' }}></i>
+              readOnly className="font-mono text-[0.85rem] tracking-[0.02em]" />
+
+            
+            <InputIcon className="text-surface-500 text-sm bg-surface-100">
+              <i className="bx bx-lock-alt mr-1 text-xs"></i>
               {t('merchant.secretMasked', { defaultValue: 'masked' })}
-            </span>
-          </div>
+            </InputIcon>
+          </InputGroup>
         </div>
 
         {/* Actions */}
         <div className="flex flex-wrap gap-2 pt-2 border-t border-surface-200">
-          <button className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white btn-sm" onClick={onRotate}>
+          <Button onClick={onRotate} variant="outline-primary" size="sm" className="bg-transparent hover:bg-primary-600 hover:text-white">
             <i className="bx bx-refresh mr-1"></i>
             {t('merchant.rotateSecret', { defaultValue: 'Rotate Secret' })}
-          </button>
-          <button className="btn btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white btn-sm" onClick={onRegenerate}>
+          </Button>
+          <Button onClick={onRegenerate} size="sm" className="border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white">
             <i className="bx bx-reset mr-1"></i>
             {t('merchant.regenerateKey', { defaultValue: 'Regenerate Key & Secret' })}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
-  )
+    </Card>);
+
 }

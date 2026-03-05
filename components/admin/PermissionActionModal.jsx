@@ -1,39 +1,40 @@
-'use client'
+'use client';
 
-import { formatRoleLabel } from '@/lib/utils/roles'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { formatRoleLabel } from '@/lib/utils/roles';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { Button, Input, Label } from '../ui';
 
 export default function PermissionActionModal({ action, role, permission, reason, onPermissionChange, onReasonChange, onSubmit, onClose, disabled }) {
-  const { t } = useAdminTranslation()
+  const { t } = useAdminTranslation();
 
   const MODAL_CONFIG = {
     grant: {
       title: t('admin.permissions.grantTitle', { defaultValue: 'Grant Permission' }),
       icon: 'bx-plus-circle',
       iconColor: 'text-success',
-      btnClass: 'btn-success',
+      btnVariant: 'success',
       btnIcon: 'bx-check',
       btnLabel: t('admin.roles.grant', { defaultValue: 'Grant' }),
       placeholder: t('admin.permissions.grantPlaceholder', { defaultValue: 'e.g. admin.users.view' }),
       reasonPlaceholder: t('admin.permissions.grantReason', { defaultValue: 'Why is this permission being granted?' }),
-      verb: t('admin.permissions.grantVerb', { defaultValue: 'grant to' }),
+      verb: t('admin.permissions.grantVerb', { defaultValue: 'grant to' })
     },
     deny: {
       title: t('admin.permissions.denyTitle', { defaultValue: 'Deny Permission' }),
       icon: 'bx-minus-circle',
       iconColor: 'text-danger',
-      btnClass: 'btn-danger',
+      btnVariant: 'danger',
       btnIcon: 'bx-x',
       btnLabel: t('admin.roles.deny', { defaultValue: 'Deny' }),
       placeholder: t('admin.permissions.denyPlaceholder', { defaultValue: 'e.g. admin.users.delete' }),
       reasonPlaceholder: t('admin.permissions.denyReason', { defaultValue: 'Why is this permission being denied?' }),
-      verb: t('admin.permissions.denyVerb', { defaultValue: 'deny for' }),
-    },
-  }
+      verb: t('admin.permissions.denyVerb', { defaultValue: 'deny for' })
+    }
+  };
 
-  const cfg = MODAL_CONFIG[action]
+  const cfg = MODAL_CONFIG[action];
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={onClose}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="bg-white rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
@@ -45,42 +46,43 @@ export default function PermissionActionModal({ action, role, permission, reason
           </div>
           <div className="p-5">
             <div className="mb-3">
-              <label className="form-label">{t('admin.permissions.permissionName', { defaultValue: 'Permission Name' })}</label>
-              <input
+              <Label>{t('admin.permissions.permissionName', { defaultValue: 'Permission Name' })}</Label>
+              <Input
                 type="text"
-                className="form-input"
+
                 placeholder={cfg.placeholder}
                 value={permission}
                 onChange={(e) => onPermissionChange(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-              />
+                onKeyDown={(e) => e.key === 'Enter' && onSubmit()} />
+              
               <small className="text-muted mt-1 block">
                 {t('admin.permissions.enterPermission', { defaultValue: 'Enter the permission to {{verb}} {{role}}', verb: cfg.verb, role: formatRoleLabel(role) })}
               </small>
             </div>
             <div>
-              <label className="form-label">{t('admin.permissions.reason', { defaultValue: 'Reason' })} <span className="text-muted">{t('admin.permissions.optional', { defaultValue: '(optional)' })}</span></label>
-              <textarea
-                className="form-input"
+              <Label>{t('admin.permissions.reason', { defaultValue: 'Reason' })} <span className="text-muted">{t('admin.permissions.optional', { defaultValue: '(optional)' })}</span></Label>
+              <Input
+
                 rows="2"
                 placeholder={cfg.reasonPlaceholder}
                 value={reason}
-                onChange={(e) => onReasonChange(e.target.value)}
-              />
+                onChange={(e) => onReasonChange(e.target.value)} />
+              
             </div>
           </div>
           <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-            <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose}>{t('actions.cancel', { defaultValue: 'Cancel' })}</button>
-            <button
-              className={`btn ${cfg.btnClass}`}
+            <Button onClick={onClose} variant="outline-secondary">{t('actions.cancel', { defaultValue: 'Cancel' })}</Button>
+            <Button
+
               onClick={onSubmit}
-              disabled={!permission.trim() || disabled}
-            >
+              variant={cfg.btnVariant}
+              disabled={!permission.trim() || disabled}>
+              
               <i className={`bx ${cfg.btnIcon} mr-1`}></i>{cfg.btnLabel}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

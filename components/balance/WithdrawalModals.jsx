@@ -1,12 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
+import { Button, Input, Label, Spinner } from '../ui'
 
 export function ApproveWithdrawalModal({ show, withdrawal, loading, onConfirm, onClose, t }) {
-  if (!show || !withdrawal) return null
+  if (!show || !withdrawal) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !loading && onClose()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !loading && onClose()}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="bg-white rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
@@ -24,26 +25,26 @@ export function ApproveWithdrawalModal({ show, withdrawal, loading, onConfirm, o
             </div>
           </div>
           <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-            <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={loading}>
+            <Button onClick={onClose} disabled={loading} variant="outline-secondary">
               {t?.('actions.cancel', { defaultValue: 'Cancel' }) || 'Cancel'}
-            </button>
-            <button className="btn btn-success" onClick={onConfirm} disabled={loading}>
-              {loading ? <span className="spinner w-4 h-4"></span> : t?.('common.approve', { defaultValue: 'Approve' }) || 'Approve'}
-            </button>
+            </Button>
+            <Button onClick={onConfirm} disabled={loading} variant="success">
+              {loading ? <Spinner className="w-4 h-4" /> : t?.('common.approve', { defaultValue: 'Approve' }) || 'Approve'}
+            </Button>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }
 
 export function RejectWithdrawalModal({ show, withdrawal, loading, onConfirm, onClose, t }) {
-  const [reason, setReason] = useState('')
+  const [reason, setReason] = useState('');
 
-  if (!show || !withdrawal) return null
+  if (!show || !withdrawal) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !loading && onClose()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !loading && onClose()}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="bg-white rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
@@ -58,26 +59,26 @@ export function RejectWithdrawalModal({ show, withdrawal, loading, onConfirm, on
               <div>Amount: {withdrawal.amountDecimal || withdrawal.amount} {withdrawal.coinSymbol || ''}</div>
             </div>
             <div className="mb-3">
-              <label className="form-label">{t?.('withdrawals.reason', { defaultValue: 'Reason' }) || 'Reason'}</label>
-              <textarea
-                className="form-input"
+              <Label>{t?.('withdrawals.reason', { defaultValue: 'Reason' }) || 'Reason'}</Label>
+              <Input
+
                 rows={3}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder={t?.('withdrawals.reasonPlaceholder', { defaultValue: 'Enter rejection reason...' }) || 'Enter rejection reason...'}
-              />
+                placeholder={t?.('withdrawals.reasonPlaceholder', { defaultValue: 'Enter rejection reason...' }) || 'Enter rejection reason...'} />
+              
             </div>
           </div>
           <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-            <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={loading}>
+            <Button onClick={onClose} disabled={loading} variant="outline-secondary">
               {t?.('actions.cancel', { defaultValue: 'Cancel' }) || 'Cancel'}
-            </button>
-            <button className="btn btn-danger" onClick={() => onConfirm(reason)} disabled={loading}>
-              {loading ? <span className="spinner w-4 h-4"></span> : t?.('common.reject', { defaultValue: 'Reject' }) || 'Reject'}
-            </button>
+            </Button>
+            <Button onClick={() => onConfirm(reason)} disabled={loading} variant="danger">
+              {loading ? <Spinner className="w-4 h-4" /> : t?.('common.reject', { defaultValue: 'Reject' }) || 'Reject'}
+            </Button>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }

@@ -103,7 +103,7 @@ export function Toast({ message, type = 'success', duration = 5000, onClose }) {
         >
           <i className={`bx ${styles.icon}`} style={iconStyle}></i>
         </div>
-        <div className="grow" style={{ minWidth: 0 }}>
+        <div className="grow min-w-0">
           <div className="flex justify-between items-start mb-1">
             <strong className="toast-title" style={titleStyle}>
               {title}

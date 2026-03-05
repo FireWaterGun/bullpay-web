@@ -1,77 +1,78 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useMemo } from 'react'
-import { useParams } from 'next/navigation'
-import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth } from '@/app/providers'
-import { useToast } from '@/app/providers'
-import { getSystemWallet, getSystemWalletLedger } from '@/lib/api/admin'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
-import WalletInfoCard from '@/components/admin/WalletInfoCard'
-import WalletLedgerTable from '@/components/admin/WalletLedgerTable'
-import { logger } from '@/lib/utils/logger'
-import PageSpinner from '@/components/PageSpinner'
+import { useState, useEffect, useMemo } from 'react';
+import { useParams } from 'next/navigation';
+import { useSearchParams as useNextSearchParams } from 'next/navigation';
+
+import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAuth } from '@/app/providers';
+import { useToast } from '@/app/providers';
+import { getSystemWallet, getSystemWalletLedger } from '@/lib/api/admin';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
+import WalletInfoCard from '@/components/admin/WalletInfoCard';
+import WalletLedgerTable from '@/components/admin/WalletLedgerTable';
+import { logger } from '@/lib/utils/logger';
+import PageSpinner from '@/components/PageSpinner';
+import { Button, Card, Input, Label, Select } from '../ui';
 
 export default function WalletTransaction() {
-  const { t, i18n } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
-  const { walletId } = useParams()
-  const searchParams = useNextSearchParams()
+  const { t, i18n } = useAdminTranslation();
+  const { token } = useAuth();
+  const toast = useToast();
+  const { walletId } = useParams();
+  const searchParams = useNextSearchParams();
 
   const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
-    return map[i18n.language] || 'en-US'
-  }, [i18n.language])
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
+    return map[i18n.language] || 'en-US';
+  }, [i18n.language]);
 
-  const [loading, setLoading] = useState(false)
-  const [walletLoading, setWalletLoading] = useState(true)
-  const [entries, setEntries] = useState([])
-  const [pagination, setPagination] = useState(null)
-  const [wallet, setWallet] = useState(null)
-  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1)
+  const [loading, setLoading] = useState(false);
+  const [walletLoading, setWalletLoading] = useState(true);
+  const [entries, setEntries] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [wallet, setWallet] = useState(null);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
 
-  const initState = searchParams.get('state') || ''
-  const initEntryType = searchParams.get('entryType') || ''
-  const initEntryCode = searchParams.get('entryCode') || ''
-  const initTxHash = searchParams.get('txHash') || ''
-  const initStartDate = searchParams.get('startDate') || ''
-  const initEndDate = searchParams.get('endDate') || ''
+  const initState = searchParams.get('state') || '';
+  const initEntryType = searchParams.get('entryType') || '';
+  const initEntryCode = searchParams.get('entryCode') || '';
+  const initTxHash = searchParams.get('txHash') || '';
+  const initStartDate = searchParams.get('startDate') || '';
+  const initEndDate = searchParams.get('endDate') || '';
 
-  const [stateFilter, setStateFilter] = useState(initState)
-  const [entryTypeFilter, setEntryTypeFilter] = useState(initEntryType)
-  const [entryCodeFilter, setEntryCodeFilter] = useState(initEntryCode)
-  const [txHashFilter, setTxHashFilter] = useState(initTxHash)
-  const [startDateFilter, setStartDateFilter] = useState(initStartDate)
-  const [endDateFilter, setEndDateFilter] = useState(initEndDate)
+  const [stateFilter, setStateFilter] = useState(initState);
+  const [entryTypeFilter, setEntryTypeFilter] = useState(initEntryType);
+  const [entryCodeFilter, setEntryCodeFilter] = useState(initEntryCode);
+  const [txHashFilter, setTxHashFilter] = useState(initTxHash);
+  const [startDateFilter, setStartDateFilter] = useState(initStartDate);
+  const [endDateFilter, setEndDateFilter] = useState(initEndDate);
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
-    const f = {}
-    if (initState) f.state = initState
-    if (initEntryType) f.entryType = initEntryType
-    if (initEntryCode) f.entryCode = initEntryCode
-    if (initTxHash) f.txHash = initTxHash
-    if (initStartDate) f.startDate = initStartDate
-    if (initEndDate) f.endDate = initEndDate
-    return f
-  })
+    const f = {};
+    if (initState) f.state = initState;
+    if (initEntryType) f.entryType = initEntryType;
+    if (initEntryCode) f.entryCode = initEntryCode;
+    if (initTxHash) f.txHash = initTxHash;
+    if (initStartDate) f.startDate = initStartDate;
+    if (initEndDate) f.endDate = initEndDate;
+    return f;
+  });
 
   useEffect(() => {
-    loadWallet()
-  }, [walletId])
+    loadWallet();
+  }, [walletId]);
 
   useEffect(() => {
-    if (wallet) loadLedger()
-  }, [currentPage, appliedFilters, wallet])
+    if (wallet) loadLedger();
+  }, [currentPage, appliedFilters, wallet]);
 
   function syncSearchParams(filters, page) {
-    const params = new URLSearchParams()
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
-    if (page > 1) params.set('page', page)
-    window.history.replaceState(null, '', `?${params.toString()}`)
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([k, v]) => {if (v !== undefined && v !== '') params.set(k, v);});
+    if (page > 1) params.set('page', page);
+    window.history.replaceState(null, '', `?${params.toString()}`);
   }
 
   function applyFilters() {
@@ -81,79 +82,79 @@ export default function WalletTransaction() {
       entryCode: entryCodeFilter || undefined,
       txHash: txHashFilter || undefined,
       startDate: startDateFilter || undefined,
-      endDate: endDateFilter || undefined,
-    }
-    setAppliedFilters(f)
-    setCurrentPage(1)
-    syncSearchParams(f, 1)
+      endDate: endDateFilter || undefined
+    };
+    setAppliedFilters(f);
+    setCurrentPage(1);
+    syncSearchParams(f, 1);
   }
 
   function resetFilters() {
-    setStateFilter('')
-    setEntryTypeFilter('')
-    setEntryCodeFilter('')
-    setTxHashFilter('')
-    setStartDateFilter('')
-    setEndDateFilter('')
-    setAppliedFilters({})
-    setCurrentPage(1)
-    window.history.replaceState(null, '', window.location.pathname)
+    setStateFilter('');
+    setEntryTypeFilter('');
+    setEntryCodeFilter('');
+    setTxHashFilter('');
+    setStartDateFilter('');
+    setEndDateFilter('');
+    setAppliedFilters({});
+    setCurrentPage(1);
+    window.history.replaceState(null, '', window.location.pathname);
   }
 
   async function loadWallet() {
     try {
-      setWalletLoading(true)
-      const data = await getSystemWallet(token, parseInt(walletId))
-      setWallet(data)
+      setWalletLoading(true);
+      const data = await getSystemWallet(token, parseInt(walletId));
+      setWallet(data);
     } catch (error) {
-      logger.error('Failed to load wallet:', error)
-      toast.error(t('admin.wallet.loadError', { defaultValue: 'Failed to load wallet details' }))
+      logger.error('Failed to load wallet:', error);
+      toast.error(t('admin.wallet.loadError', { defaultValue: 'Failed to load wallet details' }));
     } finally {
-      setWalletLoading(false)
+      setWalletLoading(false);
     }
   }
 
   async function loadLedger() {
     try {
-      setLoading(true)
+      setLoading(true);
       const data = await getSystemWalletLedger(token, parseInt(walletId), {
         page: currentPage,
         limit: 20,
-        ...appliedFilters,
-      })
-      setEntries(data.items || [])
-      setPagination(data.pagination || null)
+        ...appliedFilters
+      });
+      setEntries(data.items || []);
+      setPagination(data.pagination || null);
     } catch (error) {
-      logger.error('Failed to load ledger:', error)
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load transactions' }))
+      logger.error('Failed to load ledger:', error);
+      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load transactions' }));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleCopy(text, e) {
-    if (e) e.stopPropagation()
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
+    if (e) e.stopPropagation();
+    const ok = await copyText(text);
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));
   }
 
   if (walletLoading && !wallet) {
-    return <PageSpinner />
+    return <PageSpinner />;
   }
 
-  const assets = wallet?.assets || []
+  const assets = wallet?.assets || [];
 
   return (
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <Link
-            href="/admin/system-wallets"
-            className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mb-3"
-          >
+          <Button variant="outline-secondary" className="mb-3"
+          href="/admin/system-wallets">
+            
+            
             <i className="bx bx-arrow-back mr-2"></i>
             {t('actions.back', { defaultValue: 'Back' })}
-          </Link>
+          </Button>
 
           <WalletInfoCard
             wallet={wallet}
@@ -161,11 +162,11 @@ export default function WalletTransaction() {
             t={t}
             loading={loading}
             onRefresh={loadLedger}
-            onCopy={handleCopy}
-          />
+            onCopy={handleCopy} />
+          
 
           {/* Filters */}
-          <div className="card mb-4">
+          <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">
                 <i className="bx bx-filter mr-2"></i>
@@ -175,16 +176,16 @@ export default function WalletTransaction() {
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.entryType', { defaultValue: 'Entry Type' })}</label>
-                  <select className="form-input" value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
+                  <Label>{t('filter.entryType', { defaultValue: 'Entry Type' })}</Label>
+                  <Select value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="credit">{t('admin.detail.credit', { defaultValue: 'Credit' })}</option>
                     <option value="debit">{t('admin.detail.debit', { defaultValue: 'Debit' })}</option>
-                  </select>
+                  </Select>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.entryCode', { defaultValue: 'Entry Code' })}</label>
-                  <select className="form-input" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
+                  <Label>{t('filter.entryCode', { defaultValue: 'Entry Code' })}</Label>
+                  <Select value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="WA">WA - Wallet Actual</option>
                     <option value="WF">WF - Wallet Fee</option>
@@ -194,90 +195,90 @@ export default function WalletTransaction() {
                     <option value="SC">SC - Sweep Cost</option>
                     <option value="XI">XI - Internal In</option>
                     <option value="XO">XO - Internal Out</option>
-                  </select>
+                  </Select>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.state', { defaultValue: 'State' })}</label>
-                  <select className="form-input" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
+                  <Label>{t('filter.state', { defaultValue: 'State' })}</Label>
+                  <Select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="committed">Committed</option>
                     <option value="settled">Settled</option>
                     <option value="reversed">Reversed</option>
-                  </select>
+                  </Select>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.txHash', { defaultValue: 'Tx Hash' })}</label>
-                  <input type="text" className="form-input" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+                  <Label>{t('filter.txHash', { defaultValue: 'Tx Hash' })}</Label>
+                  <Input type="text" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
-                  <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
-                  <LocaleDateRangePicker
-                    startDate={startDateFilter}
-                    endDate={endDateFilter}
-                    onChangeStart={setStartDateFilter}
-                    onChangeEnd={setEndDateFilter}
-                    locale={locale}
-                    placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
-                    t={t}
-                    style={{ width: '100%' }}
-                  />
+                  <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
+                  <LocaleDateRangePicker className="w-full"
+                  startDate={startDateFilter}
+                  endDate={endDateFilter}
+                  onChangeStart={setStartDateFilter}
+                  onChangeEnd={setEndDateFilter}
+                  locale={locale}
+                  placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
+                  t={t} />
+
+                  
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={loading}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
-                </button>
-                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
+                </Button>
+                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Ledger Table */}
-          <div className="card">
+          <Card>
             <div className="p-5">
               <WalletLedgerTable entries={entries} loading={loading} t={t} />
 
-              {pagination && pagination.total > 0 && (
-                <div className="flex justify-between items-center mt-4">
+              {pagination && pagination.total > 0 &&
+              <div className="flex justify-between items-center mt-4">
                   <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
-                      start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
-                      end: Math.min(pagination.page * pagination.limit, pagination.total),
-                      total: pagination.total,
-                      defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                    })}
+                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
+                    end: Math.min(pagination.page * pagination.limit, pagination.total),
+                    total: pagination.total,
+                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
+                  })}
                   </div>
                   <div className="inline-flex rounded-lg shadow-sm">
-                    <button
-                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                      disabled={!pagination.hasPrev || loading}
-                      onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
-                    >
+                    <Button
+
+                    disabled={!pagination.hasPrev || loading}
+                    onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
+                    
                       <i className="bx bx-chevron-left"></i>
                       {t('actions.prev', { defaultValue: 'Previous' })}
-                    </button>
-                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>
+                    </Button>
+                    <Button disabled variant="outline-secondary" size="sm">
                       {pagination.page} / {pagination.totalPages}
-                    </button>
-                    <button
-                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
-                      disabled={!pagination.hasNext || loading}
-                      onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
-                    >
+                    </Button>
+                    <Button
+
+                    disabled={!pagination.hasNext || loading}
+                    onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
+                    
                       {t('actions.next', { defaultValue: 'Next' })}
                       <i className="bx bx-chevron-right"></i>
-                    </button>
+                    </Button>
                   </div>
                 </div>
-              )}
+              }
             </div>
-          </div>
+          </Card>
         </div>
       </div>
-    </div>
-  )
+    </div>);
+
 }
