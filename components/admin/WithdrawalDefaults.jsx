@@ -111,28 +111,28 @@ export default function WithdrawalDefaults() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">{t('admin.withdrawal.defaults', { defaultValue: 'Defaults & Limits' })}</h5>
-              <p className="text-muted small mb-0 mt-1">
+              <p className="text-muted text-sm mb-0 mt-1">
                 {t('admin.withdrawal.defaultsDescription', { defaultValue: 'Default withdrawal limits and fees applied globally' })}
               </p>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               
               {/* Default Settings */}
               <div>
-                <div className="d-flex justify-content-end mb-3">
+                <div className="flex justify-end mb-3">
                   <button type="button" className="btn btn-sm btn-primary" onClick={handleEdit}>
-                    <i className="bx bx-edit me-1"></i>
+                    <i className="bx bx-edit mr-1"></i>
                     {t('actions.edit', { defaultValue: 'Edit' })}
                   </button>
                 </div>
-                <div className="table-responsive">
-                  <table className="table table-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
                     <tbody>
                       <tr>
                         <td width="30%"><strong>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</strong></td>
@@ -153,7 +153,7 @@ export default function WithdrawalDefaults() {
                       <tr>
                         <td><strong>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</strong></td>
                         <td>
-                          <span className="badge bg-label-info">
+                          <span className="badge bg-cyan-50 text-cyan-700">
                             {defaults.fee?.fixed ? 'fixed' : defaults.fee?.percentage || defaults.fee?.min ? 'percentage' : defaults.fee?.type || '-'}
                           </span>
                         </td>
@@ -193,23 +193,23 @@ export default function WithdrawalDefaults() {
       {/* Edit Modal */}
       {showModal && (
         <>
-          <div className="modal-backdrop fade show"></div>
-          <div className="modal fade show d-block" tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered modal-lg">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">
+          <div className="fixed inset-0 bg-black/50 z-40"></div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
+            <div className="w-full max-w-lg mx-4 max-w-2xl">
+              <div className="bg-white rounded-xl shadow-xl">
+                <div className="flex items-center justify-between p-5 border-b border-surface-200">
+                  <h5 className="text-lg font-semibold text-surface-800">
                     {t('admin.withdrawal.editDefaults', { defaultValue: 'Edit Default Settings' })}
                   </h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)} disabled={loading}></button>
+                  <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={() => setShowModal(false)} disabled={loading}></button>
                 </div>
-                <div className="modal-body">
-                  <div className="row g-3">
-                    <div className="col-md-6">
+                <div className="p-5">
+                  <div className="grid grid-cols-12 gap-x-6 gap-3">
+                    <div className="md:col-span-6">
                       <label className="form-label">{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</label>
                       <input 
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={formData.minimum}
                         onChange={(e) => {
                           const value = e.target.value
@@ -220,11 +220,11 @@ export default function WithdrawalDefaults() {
                         maxLength={20}
                       />
                     </div>
-                    <div className="col-md-6">
+                    <div className="md:col-span-6">
                       <label className="form-label">{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</label>
                       <input 
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={formData.maximum}
                         onChange={(e) => {
                           const value = e.target.value
@@ -235,11 +235,11 @@ export default function WithdrawalDefaults() {
                         maxLength={20}
                       />
                     </div>
-                    <div className="col-md-6">
+                    <div className="md:col-span-6">
                       <label className="form-label">{t('admin.withdrawal.dailyLimit', { defaultValue: 'Daily Limit' })}</label>
                       <input 
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={formData.dailyLimit}
                         onChange={(e) => {
                           const value = e.target.value
@@ -250,11 +250,11 @@ export default function WithdrawalDefaults() {
                         maxLength={20}
                       />
                     </div>
-                    <div className="col-md-6">
+                    <div className="md:col-span-6">
                       <label className="form-label">{t('admin.withdrawal.monthlyLimit', { defaultValue: 'Monthly Limit' })}</label>
                       <input 
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={formData.monthlyLimit}
                         onChange={(e) => {
                           const value = e.target.value
@@ -265,10 +265,10 @@ export default function WithdrawalDefaults() {
                         maxLength={20}
                       />
                     </div>
-                    <div className="col-12">
+                    <div className="col-span-12">
                       <label className="form-label">{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</label>
                       <select 
-                        className="form-select"
+                        className="form-input"
                         value={formData.feeType}
                         onChange={(e) => setFormData({ ...formData, feeType: e.target.value })}
                       >
@@ -278,11 +278,11 @@ export default function WithdrawalDefaults() {
                     </div>
                     {formData.feeType === 'percentage' && (
                       <>
-                        <div className="col-md-4">
+                        <div className="md:col-span-4">
                           <label className="form-label">{t('admin.withdrawal.feePercentage', { defaultValue: 'Fee %' })}</label>
                           <input 
                             type="text"
-                            className="form-control"
+                            className="form-input"
                             value={formData.feePercentage}
                             onChange={(e) => {
                               const value = e.target.value
@@ -293,11 +293,11 @@ export default function WithdrawalDefaults() {
                             maxLength={20}
                           />
                         </div>
-                        <div className="col-md-4">
+                        <div className="md:col-span-4">
                           <label className="form-label">{t('admin.withdrawal.feeMin', { defaultValue: 'Min Fee' })}</label>
                           <input 
                             type="text"
-                            className="form-control"
+                            className="form-input"
                             value={formData.feeMin}
                             onChange={(e) => {
                               const value = e.target.value
@@ -308,11 +308,11 @@ export default function WithdrawalDefaults() {
                             maxLength={20}
                           />
                         </div>
-                        <div className="col-md-4">
+                        <div className="md:col-span-4">
                           <label className="form-label">{t('admin.withdrawal.feeMax', { defaultValue: 'Max Fee' })}</label>
                           <input 
                             type="text"
-                            className="form-control"
+                            className="form-input"
                             value={formData.feeMax}
                             onChange={(e) => {
                               const value = e.target.value
@@ -326,11 +326,11 @@ export default function WithdrawalDefaults() {
                       </>
                     )}
                     {formData.feeType === 'fixed' && (
-                      <div className="col-12">
+                      <div className="col-span-12">
                         <label className="form-label">{t('admin.withdrawal.feeFixed', { defaultValue: 'Fixed Fee' })}</label>
                         <input 
                           type="text"
-                          className="form-control"
+                          className="form-input"
                           value={formData.feeFixed}
                           onChange={(e) => {
                             const value = e.target.value
@@ -344,10 +344,10 @@ export default function WithdrawalDefaults() {
                     )}
                   </div>
                 </div>
-                <div className="modal-footer">
+                <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
                   <button 
                     type="button" 
-                    className="btn btn-secondary"
+                    className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
                     onClick={() => setShowModal(false)}
                     disabled={loading}
                   >
@@ -361,12 +361,12 @@ export default function WithdrawalDefaults() {
                   >
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        <span className="spinner w-4 h-4 mr-2"></span>
                         {t('actions.saving', { defaultValue: 'Saving...' })}
                       </>
                     ) : (
                       <>
-                        <i className="bx bx-save me-1"></i>
+                        <i className="bx bx-save mr-1"></i>
                         {t('actions.save', { defaultValue: 'Save' })}
                       </>
                     )}

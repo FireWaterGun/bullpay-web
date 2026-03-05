@@ -18,7 +18,7 @@ export default function AuthError({
         <button className="btn btn-primary" onClick={reset}>
           Try Again
         </button>
-        <Link href="/login" className="btn btn-outline-secondary">
+        <Link href="/login" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
           Back to Login
         </Link>
       </div>

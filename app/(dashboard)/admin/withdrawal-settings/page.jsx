@@ -260,8 +260,8 @@ export default function WithdrawalSettingsPage() {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
-        <div className="spinner-border text-primary" role="status">
+      <div className="flex justify-center items-center" style={{ minHeight: '50vh' }}>
+        <div className="spinner text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -274,12 +274,12 @@ export default function WithdrawalSettingsPage() {
   const alertThreshold = dbSettings['withdrawal.base_fee.alert_threshold'] || '0.2'
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Header */}
-      <div className="d-flex align-items-center justify-content-between mb-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h4 className="mb-1">
-            <i className="bx bx-transfer me-2 text-primary"></i>
+            <i className="bx bx-transfer mr-2 text-primary"></i>
             {t('admin.withdrawalSettings.title', { defaultValue: 'Withdrawal Settings' })}
           </h4>
           <p className="text-muted mb-0">
@@ -289,7 +289,7 @@ export default function WithdrawalSettingsPage() {
       </div>
 
       {/* Quick Status Cards */}
-      <div className="row g-3 mb-4">
+      <div className="grid grid-cols-12 gap-x-6 gap-3 mb-4">
         <StatusCard
           icon="bx-check-shield"
           color="success"
@@ -324,17 +324,17 @@ export default function WithdrawalSettingsPage() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="nav-align-top mb-4">
-        <ul className="nav nav-tabs" role="tablist">
+      <div className="mb-4">
+        <ul className="nav flex border-b border-surface-200 gap-1" role="tablist">
           {TABS.map((tab) => (
-            <li key={tab.key} className="nav-item" role="presentation">
+            <li key={tab.key} className="" role="presentation">
               <button
-                className={`nav-link ${activeTab === tab.key ? 'active' : ''}`}
+                className={`px-4 py-2 text-sm font-medium text-surface-500 hover:text-surface-700 border-b-2 border-transparent hover:border-surface-300 ${activeTab === tab.key ?'active' : ''}`}
                 onClick={() => setActiveTab(tab.key)}
                 type="button"
                 role="tab"
               >
-                <i className={`bx ${tab.icon} me-1`}></i>
+                <i className={`bx ${tab.icon} mr-1`}></i>
                 {t(tab.labelKey, { defaultValue: tab.defaultLabel })}
               </button>
             </li>
@@ -344,44 +344,44 @@ export default function WithdrawalSettingsPage() {
 
       {/* ── Policy Tab ── */}
       {activeTab === 'policy' && (
-        <div className="row">
-          <div className="col-lg-8">
+        <div className="grid grid-cols-12 gap-x-6">
+          <div className="lg:col-span-8">
             {/* Auto-Approve Section */}
             <div className="card mb-4">
-              <div className="card-body">
+              <div className="p-5">
                 <AutoApproveForm autoApprove={autoApprove} setAutoApprove={setAutoApprove} />
               </div>
             </div>
 
             {/* Max Pending Per User */}
             <div className="card mb-4">
-              <div className="card-header d-flex align-items-center justify-content-between">
-                <h5 className="card-title mb-0">
-                  <i className="bx bx-lock-alt me-2 text-warning"></i>
+              <div className="px-5 py-4 border-b border-surface-200 flex items-center justify-between">
+                <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-lock-alt mr-2 text-warning"></i>
                   {t('admin.withdrawalSettings.maxPendingTitle', { defaultValue: 'Max Pending Withdrawals' })}
                 </h5>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                   onClick={() => {
                     setMaxPendingForm(maxPending)
                     setShowMaxPendingModal(true)
                   }}
                 >
-                  <i className="bx bx-edit me-1"></i>
+                  <i className="bx bx-edit mr-1"></i>
                   {t('actions.edit', { defaultValue: 'Edit' })}
                 </button>
               </div>
-              <div className="card-body">
+              <div className="p-5">
                 <p className="text-muted mb-3" style={{ fontSize: '0.875rem' }}>
                   {t('admin.withdrawalSettings.maxPendingDesc', { defaultValue: 'Maximum number of pending (unprocessed) withdrawal requests allowed per user at any time.' })}
                 </p>
-                <div className="d-flex align-items-center gap-3 p-3 rounded" style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
+                <div className="flex items-center gap-3 p-3 rounded" style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
                   <div>
-                    <small className="text-muted d-block">{t('admin.withdrawalSettings.currentValue', { defaultValue: 'Current Value' })}</small>
-                    <h4 className="mb-0 fw-bold">{maxPending}</h4>
+                    <small className="text-muted block">{t('admin.withdrawalSettings.currentValue', { defaultValue: 'Current Value' })}</small>
+                    <h4 className="mb-0 font-bold">{maxPending}</h4>
                   </div>
-                  <div className="ms-auto">
+                  <div className="ml-auto">
                     <small className="text-muted">
                       withdrawal.security.max_pending_per_user
                     </small>
@@ -392,34 +392,34 @@ export default function WithdrawalSettingsPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="col-lg-4">
+          <div className="lg:col-span-4">
             <div className="card mb-3">
-              <div className="card-header">
-                <h6 className="card-title mb-0">
-                  <i className="bx bx-info-circle me-1"></i>
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-info-circle mr-1"></i>
                   {t('admin.withdrawalSettings.howItWorks', { defaultValue: 'How It Works' })}
                 </h6>
               </div>
-              <div className="card-body">
-                <div className="d-flex flex-column gap-3">
-                  <div className="d-flex align-items-start gap-2">
-                    <span className="badge bg-label-success rounded-pill mt-1">1</span>
+              <div className="p-5">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start gap-2">
+                    <span className="badge bg-green-50 text-green-700 rounded-full mt-1">1</span>
                     <div>
-                      <small className="fw-semibold d-block">{t('admin.withdrawalSettings.howItWorksStep1', { defaultValue: 'User requests withdrawal' })}</small>
+                      <small className="font-semibold block">{t('admin.withdrawalSettings.howItWorksStep1', { defaultValue: 'User requests withdrawal' })}</small>
                       <small className="text-muted">{t('admin.withdrawalSettings.howItWorksStep1Desc', { defaultValue: 'System checks max pending limit per user' })}</small>
                     </div>
                   </div>
-                  <div className="d-flex align-items-start gap-2">
-                    <span className="badge bg-label-success rounded-pill mt-1">2</span>
+                  <div className="flex items-start gap-2">
+                    <span className="badge bg-green-50 text-green-700 rounded-full mt-1">2</span>
                     <div>
-                      <small className="fw-semibold d-block">{t('admin.withdrawalSettings.howItWorksStep2', { defaultValue: 'Auto-approve check' })}</small>
+                      <small className="font-semibold block">{t('admin.withdrawalSettings.howItWorksStep2', { defaultValue: 'Auto-approve check' })}</small>
                       <small className="text-muted">{t('admin.withdrawalSettings.howItWorksStep2Desc', { defaultValue: 'If enabled and amount ≤ threshold → auto-approved' })}</small>
                     </div>
                   </div>
-                  <div className="d-flex align-items-start gap-2">
-                    <span className="badge bg-label-warning rounded-pill mt-1">3</span>
+                  <div className="flex items-start gap-2">
+                    <span className="badge bg-amber-50 text-amber-700 rounded-full mt-1">3</span>
                     <div>
-                      <small className="fw-semibold d-block">{t('admin.withdrawalSettings.howItWorksStep3', { defaultValue: 'Manual review' })}</small>
+                      <small className="font-semibold block">{t('admin.withdrawalSettings.howItWorksStep3', { defaultValue: 'Manual review' })}</small>
                       <small className="text-muted">{t('admin.withdrawalSettings.howItWorksStep3Desc', { defaultValue: 'Large or flagged requests require admin approval' })}</small>
                     </div>
                   </div>
@@ -428,24 +428,24 @@ export default function WithdrawalSettingsPage() {
             </div>
 
             <div className="card">
-              <div className="card-header">
-                <h6 className="card-title mb-0">
-                  <i className="bx bx-bulb me-1"></i>
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-bulb mr-1"></i>
                   {t('admin.withdrawalSettings.tips', { defaultValue: 'Tips' })}
                 </h6>
               </div>
-              <div className="card-body">
-                <ul className="list-unstyled mb-0 small text-muted">
+              <div className="p-5">
+                <ul className="list-unstyled mb-0 text-sm text-muted">
                   <li className="mb-2">
-                    <i className="bx bx-right-arrow-alt me-1"></i>
+                    <i className="bx bx-right-arrow-alt mr-1"></i>
                     {t('admin.withdrawalSettings.tip1', { defaultValue: 'Auto-approve is great for small withdrawals to reduce admin workload.' })}
                   </li>
                   <li className="mb-2">
-                    <i className="bx bx-right-arrow-alt me-1"></i>
+                    <i className="bx bx-right-arrow-alt mr-1"></i>
                     {t('admin.withdrawalSettings.tip3', { defaultValue: 'Keep max pending low (3–5) to prevent withdrawal queue abuse.' })}
                   </li>
                   <li>
-                    <i className="bx bx-right-arrow-alt me-1"></i>
+                    <i className="bx bx-right-arrow-alt mr-1"></i>
                     {t('admin.withdrawalSettings.tip4', { defaultValue: 'Changes take effect immediately — no restart required.' })}
                   </li>
                 </ul>
@@ -457,33 +457,33 @@ export default function WithdrawalSettingsPage() {
 
       {/* ── Base Fee Tab ── */}
       {activeTab === 'basefee' && (
-        <div className="row">
-          <div className="col-lg-8">
+        <div className="grid grid-cols-12 gap-x-6">
+          <div className="lg:col-span-8">
             {/* Auto-Update Toggle */}
             <div className="card mb-4">
-              <div className="card-header">
-                <h5 className="card-title mb-0">
-                  <i className="bx bx-refresh me-2 text-info"></i>
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-refresh mr-2 text-info"></i>
                   {t('admin.withdrawalSettings.baseFeeAutoUpdate', { defaultValue: 'Base Fee Auto-Update' })}
                 </h5>
               </div>
-              <div className="card-body">
+              <div className="p-5">
                 <p className="text-muted mb-3" style={{ fontSize: '0.875rem' }}>
                   {t('admin.withdrawalSettings.baseFeeAutoUpdateDesc', { defaultValue: 'When enabled, base fees are automatically recalculated every minute based on current network gas prices.' })}
                 </p>
-                <div className="d-flex align-items-center justify-content-between p-3 rounded" style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`badge bg-label-${autoUpdateOn ? 'success' : 'secondary'}`}>
+                <div className="flex items-center justify-between p-3 rounded" style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className={`badge bg-label-${autoUpdateOn ?'success' : 'secondary'}`}>
                       {autoUpdateOn ? 'ON' : 'OFF'}
                     </span>
                     <span style={{ fontSize: '0.875rem' }}>
                       {t('admin.withdrawalSettings.autoUpdateToggleLabel', { defaultValue: 'Auto-update base fees from gas prices' })}
                     </span>
                   </div>
-                  <div className="form-check form-switch mb-0">
+                  <div className="flex items-center gap-2 relative inline-flex items-center mb-0">
                     <input
                       type="checkbox"
-                      className="form-check-input"
+                      className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
                       checked={autoUpdateOn}
                       onChange={handleToggleAutoUpdate}
                       disabled={savingAutoUpdate}
@@ -496,20 +496,20 @@ export default function WithdrawalSettingsPage() {
 
             {/* Buffer & Alert */}
             <div className="card mb-4">
-              <div className="card-header">
-                <h5 className="card-title mb-0">
-                  <i className="bx bx-slider-alt me-2 text-primary"></i>
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-slider-alt mr-2 text-primary"></i>
                   {t('admin.withdrawalSettings.baseFeeParams', { defaultValue: 'Base Fee Parameters' })}
                 </h5>
               </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  <table className="table table-borderless mb-0">
+              <div className="p-5">
+                <div className="overflow-x-auto">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
-                        <td className="py-3 ps-3" style={{ width: '40%' }}>
+                        <td className="py-3 pl-3" style={{ width: '40%' }}>
                           <div>
-                            <span className="fw-semibold" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawalSettings.bufferMultiplier', { defaultValue: 'Buffer Multiplier' })}</span>
+                            <span className="font-semibold" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawalSettings.bufferMultiplier', { defaultValue: 'Buffer Multiplier' })}</span>
                             <br />
                             <small className="text-muted">{t('admin.withdrawalSettings.bufferMultiplierDesc', { defaultValue: 'Multiplied on gas cost (1.2 = 20% safety margin)' })}</small>
                           </div>
@@ -517,10 +517,10 @@ export default function WithdrawalSettingsPage() {
                         <td className="py-3">
                           <code className="fs-5">{bufferMultiplier}x</code>
                         </td>
-                        <td className="py-3 text-end pe-3">
+                        <td className="py-3 text-right pr-3">
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-primary"
+                            className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                             onClick={() => { setBufferForm(bufferMultiplier); setShowBufferModal(true) }}
                           >
                             <i className="bx bx-edit"></i>
@@ -528,9 +528,9 @@ export default function WithdrawalSettingsPage() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="py-3 ps-3">
+                        <td className="py-3 pl-3">
                           <div>
-                            <span className="fw-semibold" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawalSettings.alertThreshold', { defaultValue: 'Alert Threshold' })}</span>
+                            <span className="font-semibold" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawalSettings.alertThreshold', { defaultValue: 'Alert Threshold' })}</span>
                             <br />
                             <small className="text-muted">{t('admin.withdrawalSettings.alertThresholdDesc', { defaultValue: 'Notify admin when base fee changes by more than this %' })}</small>
                           </div>
@@ -538,10 +538,10 @@ export default function WithdrawalSettingsPage() {
                         <td className="py-3">
                           <code className="fs-5">{(parseFloat(alertThreshold) * 100).toFixed(0)}%</code>
                         </td>
-                        <td className="py-3 text-end pe-3">
+                        <td className="py-3 text-right pr-3">
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-primary"
+                            className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                             onClick={() => { setAlertForm(alertThreshold); setShowAlertModal(true) }}
                           >
                             <i className="bx bx-edit"></i>
@@ -556,13 +556,13 @@ export default function WithdrawalSettingsPage() {
 
             {/* Formula */}
             <div className="card mb-4">
-              <div className="card-header">
-                <h5 className="card-title mb-0">
-                  <i className="bx bx-math me-2"></i>
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-math mr-2"></i>
                   {t('admin.withdrawalSettings.feeFormula', { defaultValue: 'Fee Calculation Formula' })}
                 </h5>
               </div>
-              <div className="card-body">
+              <div className="p-5">
                 <div className="p-3 rounded mb-3" style={{ backgroundColor: 'var(--bs-tertiary-bg)', fontFamily: 'monospace', fontSize: '0.9rem' }}>
                   <div className="mb-2"><strong>Base Fee</strong> = {t('admin.withdrawalSettings.baseFeeFormula', { defaultValue: 'Gas Limit × Gas Price × Buffer Multiplier' })}</div>
                   <div className="mb-2"><strong>Platform Fee</strong> = {t('admin.withdrawalSettings.platformFeeFormula', { defaultValue: 'Amount × Fee Percent (%)' })}</div>
@@ -576,34 +576,34 @@ export default function WithdrawalSettingsPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="col-lg-4">
+          <div className="lg:col-span-4">
             <div className="card mb-3">
-              <div className="card-header">
-                <h6 className="card-title mb-0">
-                  <i className="bx bx-dollar-circle me-1"></i>
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-dollar-circle mr-1"></i>
                   {t('admin.withdrawalSettings.feeModel', { defaultValue: 'Fee Model' })}
                 </h6>
               </div>
-              <div className="card-body">
-                <div className="d-flex flex-column gap-3">
-                  <div className="d-flex align-items-start gap-2">
-                    <span className="badge bg-label-primary rounded-pill mt-1">1</span>
+              <div className="p-5">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start gap-2">
+                    <span className="badge bg-primary-50 text-primary-600 rounded-full mt-1">1</span>
                     <div>
-                      <small className="fw-semibold d-block">{t('admin.withdrawalSettings.feeModelStep1', { defaultValue: 'Base Fee (gas cost)' })}</small>
+                      <small className="font-semibold block">{t('admin.withdrawalSettings.feeModelStep1', { defaultValue: 'Base Fee (gas cost)' })}</small>
                       <small className="text-muted">{t('admin.withdrawalSettings.feeModelStep1Desc', { defaultValue: 'Auto-calculated from on-chain gas price × buffer multiplier' })}</small>
                     </div>
                   </div>
-                  <div className="d-flex align-items-start gap-2">
-                    <span className="badge bg-label-primary rounded-pill mt-1">2</span>
+                  <div className="flex items-start gap-2">
+                    <span className="badge bg-primary-50 text-primary-600 rounded-full mt-1">2</span>
                     <div>
-                      <small className="fw-semibold d-block">{t('admin.withdrawalSettings.feeModelStep2', { defaultValue: 'Platform Fee (%)' })}</small>
+                      <small className="font-semibold block">{t('admin.withdrawalSettings.feeModelStep2', { defaultValue: 'Platform Fee (%)' })}</small>
                       <small className="text-muted">{t('admin.withdrawalSettings.feeModelStep2Desc', { defaultValue: 'Percentage fee on withdrawal amount — your revenue margin' })}</small>
                     </div>
                   </div>
-                  <div className="d-flex align-items-start gap-2">
-                    <span className="badge bg-label-success rounded-pill mt-1">3</span>
+                  <div className="flex items-start gap-2">
+                    <span className="badge bg-green-50 text-green-700 rounded-full mt-1">3</span>
                     <div>
-                      <small className="fw-semibold d-block">{t('admin.withdrawalSettings.feeModelStep3', { defaultValue: 'Total = Base + Platform' })}</small>
+                      <small className="font-semibold block">{t('admin.withdrawalSettings.feeModelStep3', { defaultValue: 'Total = Base + Platform' })}</small>
                       <small className="text-muted">{t('admin.withdrawalSettings.feeModelStep3Desc', { defaultValue: 'Charged to user on each withdrawal. Edit per coin-network in Fee & Limits.' })}</small>
                     </div>
                   </div>
@@ -612,24 +612,24 @@ export default function WithdrawalSettingsPage() {
             </div>
 
             <div className="card">
-              <div className="card-header">
-                <h6 className="card-title mb-0">
-                  <i className="bx bx-bulb me-1"></i>
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                  <i className="bx bx-bulb mr-1"></i>
                   {t('admin.withdrawalSettings.tips', { defaultValue: 'Tips' })}
                 </h6>
               </div>
-              <div className="card-body">
-                <ul className="list-unstyled mb-0 small text-muted">
+              <div className="p-5">
+                <ul className="list-unstyled mb-0 text-sm text-muted">
                   <li className="mb-2">
-                    <i className="bx bx-right-arrow-alt me-1"></i>
+                    <i className="bx bx-right-arrow-alt mr-1"></i>
                     {t('admin.withdrawalSettings.tip2', { defaultValue: 'Gas buffer of 1.2–1.5x ensures transactions confirm without running out of gas.' })}
                   </li>
                   <li className="mb-2">
-                    <i className="bx bx-right-arrow-alt me-1"></i>
+                    <i className="bx bx-right-arrow-alt mr-1"></i>
                     {t('admin.withdrawalSettings.tip5', { defaultValue: 'Set alert threshold to 20–30% to get notified of significant gas price spikes.' })}
                   </li>
                   <li>
-                    <i className="bx bx-right-arrow-alt me-1"></i>
+                    <i className="bx bx-right-arrow-alt mr-1"></i>
                     {t('admin.withdrawalSettings.tip6', { defaultValue: 'Auto-update runs every minute. Disable only if you want to set base fees manually.' })}
                   </li>
                 </ul>
@@ -642,29 +642,29 @@ export default function WithdrawalSettingsPage() {
       {/* ── Fee & Limits Tab ── */}
       {activeTab === 'feeLimits' && (
         <div className="card">
-          <div className="card-header">
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div className="px-5 py-4 border-b border-surface-200">
+            <div className="flex justify-between items-center flex-wrap gap-3">
               <div>
-                <h5 className="card-title mb-1">
-                  <i className="bx bx-table me-2"></i>
+                <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-1">
+                  <i className="bx bx-table mr-2"></i>
                   {t('admin.withdrawalSettings.perCoinNetworkTitle', { defaultValue: 'Per Coin-Network Fee & Limits' })}
                 </h5>
                 <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>
                   {t('admin.withdrawalSettings.perCoinNetworkDesc', { defaultValue: 'Each row is a coin-network pair with its own withdrawal configuration. Click Edit to modify.' })}
                 </p>
               </div>
-              <div className="d-flex gap-2">
-                <div className="input-group input-group-sm" style={{ width: 220 }}>
+              <div className="flex gap-2">
+                <div className="flex items-stretch flex items-stretch text-sm" style={{ width: 220 }}>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder={t('admin.withdrawalSettings.searchPlaceholder', { defaultValue: 'Search coin/network...' })}
                     value={cnSearch}
                     onChange={(e) => setCnSearch(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && loadCoinNetworks(1, cnSearch)}
                   />
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                     type="button"
                     onClick={() => loadCoinNetworks(1, cnSearch)}
                   >
@@ -675,10 +675,10 @@ export default function WithdrawalSettingsPage() {
             </div>
           </div>
 
-          <div className="table-responsive">
+          <div className="overflow-x-auto">
             {cnLoading ? (
               <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               </div>
@@ -688,16 +688,16 @@ export default function WithdrawalSettingsPage() {
                 message={t('admin.withdrawalSettings.noCoinNetworks', { defaultValue: 'No coin-networks found' })}
               />
             ) : (
-              <table className="table table-hover mb-0">
-                <thead className="table-light">
+              <table className="w-full mb-0">
+                <thead className="">
                   <tr>
                     <th style={{ fontSize: '0.8rem' }}>{t('admin.withdrawalSettings.colCoinNetwork', { defaultValue: 'Coin / Network' })}</th>
                     <th style={{ fontSize: '0.8rem' }} className="text-center">{t('admin.withdrawalSettings.colEnabled', { defaultValue: 'Enabled' })}</th>
-                    <th style={{ fontSize: '0.8rem' }} className="text-end">{t('admin.withdrawalSettings.colMin', { defaultValue: 'Min' })}</th>
-                    <th style={{ fontSize: '0.8rem' }} className="text-end">{t('admin.withdrawalSettings.colMax', { defaultValue: 'Max' })}</th>
-                    <th style={{ fontSize: '0.8rem' }} className="text-end">{t('admin.withdrawalSettings.colFeeBase', { defaultValue: 'Fee Base' })}</th>
-                    <th style={{ fontSize: '0.8rem' }} className="text-end">{t('admin.withdrawalSettings.colFeePercent', { defaultValue: 'Fee %' })}</th>
-                    <th style={{ fontSize: '0.8rem' }} className="text-end">{t('admin.withdrawalSettings.colDailyLimit', { defaultValue: 'Daily Limit (USD)' })}</th>
+                    <th style={{ fontSize: '0.8rem' }} className="text-right">{t('admin.withdrawalSettings.colMin', { defaultValue: 'Min' })}</th>
+                    <th style={{ fontSize: '0.8rem' }} className="text-right">{t('admin.withdrawalSettings.colMax', { defaultValue: 'Max' })}</th>
+                    <th style={{ fontSize: '0.8rem' }} className="text-right">{t('admin.withdrawalSettings.colFeeBase', { defaultValue: 'Fee Base' })}</th>
+                    <th style={{ fontSize: '0.8rem' }} className="text-right">{t('admin.withdrawalSettings.colFeePercent', { defaultValue: 'Fee %' })}</th>
+                    <th style={{ fontSize: '0.8rem' }} className="text-right">{t('admin.withdrawalSettings.colDailyLimit', { defaultValue: 'Daily Limit (USD)' })}</th>
                     <th style={{ fontSize: '0.8rem' }} className="text-center">{t('admin.withdrawalSettings.colActions', { defaultValue: 'Actions' })}</th>
                   </tr>
                 </thead>
@@ -708,41 +708,41 @@ export default function WithdrawalSettingsPage() {
                     return (
                       <tr key={cn.id}>
                         <td>
-                          <div className="d-flex align-items-center gap-2">
+                          <div className="flex items-center gap-2">
                             <CoinImg symbol={coinSymbol} size={28} />
                             <div>
-                              <span className="fw-semibold">{coinSymbol}</span>
-                              <small className="text-muted ms-1">/ {networkSymbol}</small>
+                              <span className="font-semibold">{coinSymbol}</span>
+                              <small className="text-muted ml-1">/ {networkSymbol}</small>
                             </div>
                           </div>
                         </td>
                         <td className="text-center">
-                          <span className={`badge bg-label-${cn.withdrawEnabled ? 'success' : 'secondary'}`}>
+                          <span className={`badge bg-label-${cn.withdrawEnabled ?'success' : 'secondary'}`}>
                             {cn.withdrawEnabled ? 'ON' : 'OFF'}
                           </span>
                         </td>
-                        <td className="text-end">
+                        <td className="text-right">
                           <code className="text-body">{formatAmount(cn.minWithdrawAmount)}</code>
                         </td>
-                        <td className="text-end">
+                        <td className="text-right">
                           <code className="text-body">{formatAmount(cn.maxWithdrawAmount)}</code>
                         </td>
-                        <td className="text-end">
+                        <td className="text-right">
                           <code className="text-body">{formatAmount(cn.withdrawFeeBase)}</code>
                           {cn.withdrawFeeBase && cn.withdrawFeeBase !== '0' && (
-                            <small className="text-muted d-block" style={{ fontSize: '0.7rem' }}>auto</small>
+                            <small className="text-muted block" style={{ fontSize: '0.7rem' }}>auto</small>
                           )}
                         </td>
-                        <td className="text-end">
+                        <td className="text-right">
                           <code className="text-body">{cn.withdrawFeePercent ? `${cn.withdrawFeePercent}%` : '-'}</code>
                         </td>
-                        <td className="text-end">
+                        <td className="text-right">
                           <code className="text-body">{cn.dailyWithdrawLimitUsd ? `$${Number(cn.dailyWithdrawLimitUsd).toLocaleString()}` : '-'}</code>
                         </td>
                         <td className="text-center">
                           <button
                             type="button"
-                            className="btn btn-sm btn-icon btn-outline-primary"
+                            className="btn btn-sm btn-icon btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                             title={t('actions.edit', { defaultValue: 'Edit' })}
                             onClick={() => openCnEditModal(cn)}
                           >
@@ -759,14 +759,14 @@ export default function WithdrawalSettingsPage() {
 
           {/* Pagination */}
           {cnPagination.totalPages > 1 && (
-            <div className="card-footer d-flex justify-content-between align-items-center">
+            <div className="px-5 py-3 border-t border-surface-200 flex justify-between items-center">
               <small className="text-muted">
                 {t('admin.withdrawalSettings.showing', { defaultValue: 'Showing {{from}}–{{to}} of {{total}}', from: ((cnPagination.page - 1) * cnPagination.limit) + 1, to: Math.min(cnPagination.page * cnPagination.limit, cnPagination.total), total: cnPagination.total })}
               </small>
               <nav>
                 <ul className="pagination pagination-sm mb-0">
-                  <li className={`page-item ${cnPagination.page <= 1 ? 'disabled' : ''}`}>
-                    <button className="page-link" onClick={() => loadCoinNetworks(cnPagination.page - 1, cnSearch)}>
+                  <li className={`inline-flex ${cnPagination.page <= 1 ?'disabled' : ''}`}>
+                    <button className="px-3 py-1.5 text-sm border border-surface-300 text-surface-600 hover:bg-surface-50 rounded" onClick={() => loadCoinNetworks(cnPagination.page - 1, cnSearch)}>
                       <i className="bx bx-chevron-left"></i>
                     </button>
                   </li>
@@ -775,15 +775,15 @@ export default function WithdrawalSettingsPage() {
                     const pageNum = start + i
                     if (pageNum > cnPagination.totalPages) return null
                     return (
-                      <li key={pageNum} className={`page-item ${cnPagination.page === pageNum ? 'active' : ''}`}>
-                        <button className="page-link" onClick={() => loadCoinNetworks(pageNum, cnSearch)}>
+                      <li key={pageNum} className={`inline-flex ${cnPagination.page === pageNum ?'active' : ''}`}>
+                        <button className="px-3 py-1.5 text-sm border border-surface-300 text-surface-600 hover:bg-surface-50 rounded" onClick={() => loadCoinNetworks(pageNum, cnSearch)}>
                           {pageNum}
                         </button>
                       </li>
                     )
                   })}
-                  <li className={`page-item ${cnPagination.page >= cnPagination.totalPages ? 'disabled' : ''}`}>
-                    <button className="page-link" onClick={() => loadCoinNetworks(cnPagination.page + 1, cnSearch)}>
+                  <li className={`inline-flex ${cnPagination.page >= cnPagination.totalPages ?'disabled' : ''}`}>
+                    <button className="px-3 py-1.5 text-sm border border-surface-300 text-surface-600 hover:bg-surface-50 rounded" onClick={() => loadCoinNetworks(cnPagination.page + 1, cnSearch)}>
                       <i className="bx bx-chevron-right"></i>
                     </button>
                   </li>
@@ -804,7 +804,7 @@ export default function WithdrawalSettingsPage() {
           t={t}
         >
           <label className="form-label">{t('admin.withdrawalSettings.editMaxPendingLabel', { defaultValue: 'Max pending withdrawals per user' })}</label>
-          <input type="number" className="form-control" min="1" max="100" value={maxPendingForm} onChange={(e) => setMaxPendingForm(e.target.value)} />
+          <input type="number" className="form-input" min="1" max="100" value={maxPendingForm} onChange={(e) => setMaxPendingForm(e.target.value)} />
           <small className="text-muted">{t('admin.withdrawalSettings.editMaxPendingHint', { defaultValue: 'Recommended: 3–10' })}</small>
         </SettingModal>
       )}
@@ -817,7 +817,7 @@ export default function WithdrawalSettingsPage() {
           t={t}
         >
           <label className="form-label">{t('admin.withdrawalSettings.editBufferLabel', { defaultValue: 'Buffer multiplier on gas cost' })}</label>
-          <input type="number" className="form-control" min="1" max="5" step="0.1" value={bufferForm} onChange={(e) => setBufferForm(e.target.value)} />
+          <input type="number" className="form-input" min="1" max="5" step="0.1" value={bufferForm} onChange={(e) => setBufferForm(e.target.value)} />
           <small className="text-muted">{t('admin.withdrawalSettings.editBufferHint', { defaultValue: '1.0 = no buffer, 1.2 = 20% safety margin, 1.5 = 50% buffer' })}</small>
         </SettingModal>
       )}
@@ -830,7 +830,7 @@ export default function WithdrawalSettingsPage() {
           t={t}
         >
           <label className="form-label">{t('admin.withdrawalSettings.editAlertLabel', { defaultValue: 'Alert when fee changes by more than (decimal)' })}</label>
-          <input type="number" className="form-control" min="0.01" max="1" step="0.01" value={alertForm} onChange={(e) => setAlertForm(e.target.value)} />
+          <input type="number" className="form-input" min="0.01" max="1" step="0.01" value={alertForm} onChange={(e) => setAlertForm(e.target.value)} />
           <small className="text-muted">{t('admin.withdrawalSettings.editAlertHint', { defaultValue: '0.1 = 10%, 0.2 = 20%, 0.5 = 50%' })}</small>
         </SettingModal>
       )}
@@ -855,23 +855,23 @@ export default function WithdrawalSettingsPage() {
 
 function StatusCard({ icon, color, label, value, sub, active }) {
   return (
-    <div className="col-sm-6 col-xl-3">
-      <div className="card h-100">
-        <div className="card-body">
-          <div className="d-flex align-items-center gap-3">
-            <div className="avatar avatar-sm flex-shrink-0" style={{ width: 42, height: 42 }}>
+    <div className="sm:col-span-6 xl:col-span-3">
+      <div className="card h-full">
+        <div className="p-5">
+          <div className="flex items-center gap-3">
+            <div className="avatar avatar-sm shrink-0" style={{ width: 42, height: 42 }}>
               <span className={`avatar-initial rounded bg-label-${color}`}>
                 <i className={`bx ${icon}`} style={{ fontSize: '1.25rem' }}></i>
               </span>
             </div>
-            <div className="d-flex flex-column">
-              <small className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
+            <div className="flex flex-col">
+              <small className="text-muted uppercase font-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
                 {label}
               </small>
-              <div className="d-flex align-items-center gap-2">
-                <h5 className="mb-0 fw-bold" style={{ fontSize: '1.1rem' }}>{value}</h5>
+              <div className="flex items-center gap-2">
+                <h5 className="mb-0 font-bold" style={{ fontSize: '1.1rem' }}>{value}</h5>
                 {active !== undefined && (
-                  <span className={`badge bg-label-${active ? 'success' : 'secondary'}`} style={{ fontSize: '0.65rem' }}>
+                  <span className={`badge bg-label-${active ?'success' : 'secondary'}`} style={{ fontSize: '0.65rem' }}>
                     {active ? 'ACTIVE' : 'OFF'}
                   </span>
                 )}
@@ -920,29 +920,29 @@ function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t })
 
   return (
     <>
-      <div className="modal-backdrop fade show"></div>
-      <div className="modal fade show d-block" tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title d-flex align-items-center gap-2">
+      <div className="fixed inset-0 bg-black/50 z-40"></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
+        <div className="w-full max-w-lg mx-4 max-w-2xl">
+          <div className="bg-white rounded-xl shadow-xl">
+            <div className="flex items-center justify-between p-5 border-b border-surface-200">
+              <h5 className="text-lg font-semibold text-surface-800 flex items-center gap-2">
                 <CoinImg symbol={coinSymbol} size={24} />
                 {t('admin.withdrawalSettings.editCnTitle', { defaultValue: 'Edit Withdrawal — {{coin}} / {{network}}', coin: coinSymbol, network: networkSymbol })}
               </h5>
-              <button type="button" className="btn-close" onClick={onClose} disabled={saving}></button>
+              <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={saving}></button>
             </div>
-            <div className="modal-body">
+            <div className="p-5">
               {/* Withdraw Enabled Toggle */}
-              <div className="d-flex align-items-center justify-content-between mb-4 p-3 rounded" style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
+              <div className="flex items-center justify-between mb-4 p-3 rounded" style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
                 <div>
-                  <span className="fw-semibold">{t('admin.withdrawalSettings.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</span>
+                  <span className="font-semibold">{t('admin.withdrawalSettings.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</span>
                   <br />
                   <small className="text-muted">{t('admin.withdrawalSettings.withdrawEnabledDesc', { defaultValue: 'Allow users to withdraw this coin on this network' })}</small>
                 </div>
-                <div className="form-check form-switch mb-0">
+                <div className="flex items-center gap-2 relative inline-flex items-center mb-0">
                   <input
                     type="checkbox"
-                    className="form-check-input"
+                    className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
                     checked={form.withdrawEnabled}
                     onChange={(e) => updateField('withdrawEnabled', e.target.checked)}
                     style={{ cursor: 'pointer' }}
@@ -950,13 +950,13 @@ function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t })
                 </div>
               </div>
 
-              <div className="row g-3">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
                 {/* Min Withdraw */}
-                <div className="col-md-6">
+                <div className="md:col-span-6">
                   <label className="form-label">{t('admin.withdrawalSettings.minWithdraw', { defaultValue: 'Min Withdraw Amount' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder="0.001"
                     value={form.minWithdrawAmount}
                     onChange={(e) => handleAmountChange('minWithdrawAmount', e.target.value)}
@@ -964,11 +964,11 @@ function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t })
                 </div>
 
                 {/* Max Withdraw */}
-                <div className="col-md-6">
+                <div className="md:col-span-6">
                   <label className="form-label">{t('admin.withdrawalSettings.maxWithdraw', { defaultValue: 'Max Withdraw Amount' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder="1000"
                     value={form.maxWithdrawAmount}
                     onChange={(e) => handleAmountChange('maxWithdrawAmount', e.target.value)}
@@ -976,14 +976,14 @@ function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t })
                 </div>
 
                 {/* Fee Base (read-only) */}
-                <div className="col-md-6">
+                <div className="md:col-span-6">
                   <label className="form-label">
                     {t('admin.withdrawalSettings.feeBase', { defaultValue: 'Fee Base' })}
-                    <span className="badge bg-label-info ms-2" style={{ fontSize: '0.65rem' }}>{t('admin.withdrawalSettings.autoCalculated', { defaultValue: 'Auto-calculated' })}</span>
+                    <span className="badge bg-cyan-50 text-cyan-700 ml-2" style={{ fontSize: '0.65rem' }}>{t('admin.withdrawalSettings.autoCalculated', { defaultValue: 'Auto-calculated' })}</span>
                   </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     value={cn.withdrawFeeBase || '-'}
                     disabled
                     readOnly
@@ -992,11 +992,11 @@ function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t })
                 </div>
 
                 {/* Fee Percent */}
-                <div className="col-md-6">
+                <div className="md:col-span-6">
                   <label className="form-label">{t('admin.withdrawalSettings.feePercent', { defaultValue: 'Fee Percent (%)' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder="1.5"
                     value={form.withdrawFeePercent}
                     onChange={(e) => handleAmountChange('withdrawFeePercent', e.target.value)}
@@ -1005,11 +1005,11 @@ function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t })
                 </div>
 
                 {/* Daily Limit USD */}
-                <div className="col-md-6">
+                <div className="md:col-span-6">
                   <label className="form-label">{t('admin.withdrawalSettings.dailyLimitUsd', { defaultValue: 'Daily Withdraw Limit (USD)' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder="10000"
                     value={form.dailyWithdrawLimitUsd}
                     onChange={(e) => handleUsdChange('dailyWithdrawLimitUsd', e.target.value)}
@@ -1018,15 +1018,15 @@ function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t })
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose} disabled={saving}>
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+              <button type="button" className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300" onClick={onClose} disabled={saving}>
                 {t('actions.cancel', { defaultValue: 'Cancel' })}
               </button>
               <button type="button" className="btn btn-primary" onClick={onSave} disabled={saving}>
                 {saving ? (
-                  <><span className="spinner-border spinner-border-sm me-2"></span>{t('actions.saving', { defaultValue: 'Saving...' })}</>
+                  <><span className="spinner w-4 h-4 mr-2"></span>{t('actions.saving', { defaultValue: 'Saving...' })}</>
                 ) : (
-                  <><i className="bx bx-save me-1"></i>{t('actions.save', { defaultValue: 'Save' })}</>
+                  <><i className="bx bx-save mr-1"></i>{t('actions.save', { defaultValue: 'Save' })}</>
                 )}
               </button>
             </div>
@@ -1051,24 +1051,24 @@ function SettingModal({ title, onClose, onSave, saving, children, t }) {
 
   return (
     <>
-      <div className="modal-backdrop fade show"></div>
-      <div className="modal fade show d-block" tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">{title}</h5>
-              <button type="button" className="btn-close" onClick={onClose} disabled={saving}></button>
+      <div className="fixed inset-0 bg-black/50 z-40"></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
+        <div className="w-full max-w-lg mx-4">
+          <div className="bg-white rounded-xl shadow-xl">
+            <div className="flex items-center justify-between p-5 border-b border-surface-200">
+              <h5 className="text-lg font-semibold text-surface-800">{title}</h5>
+              <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={saving}></button>
             </div>
-            <div className="modal-body">{children}</div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose} disabled={saving}>
+            <div className="p-5">{children}</div>
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+              <button type="button" className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300" onClick={onClose} disabled={saving}>
                 {t('actions.cancel', { defaultValue: 'Cancel' })}
               </button>
               <button type="button" className="btn btn-primary" onClick={onSave} disabled={saving}>
                 {saving ? (
-                  <><span className="spinner-border spinner-border-sm me-2"></span>{t('actions.saving', { defaultValue: 'Saving...' })}</>
+                  <><span className="spinner w-4 h-4 mr-2"></span>{t('actions.saving', { defaultValue: 'Saving...' })}</>
                 ) : (
-                  <><i className="bx bx-save me-1"></i>{t('actions.save', { defaultValue: 'Save' })}</>
+                  <><i className="bx bx-save mr-1"></i>{t('actions.save', { defaultValue: 'Save' })}</>
                 )}
               </button>
             </div>

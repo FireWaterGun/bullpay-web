@@ -178,17 +178,17 @@ export default function WithdrawalOverrides() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">{t('admin.withdrawal.overrides', { defaultValue: 'Overrides' })}</h5>
-              <p className="text-muted small mb-0 mt-1">
+              <p className="text-muted text-sm mb-0 mt-1">
                 {t('admin.withdrawal.overridesDescription', { defaultValue: 'Coin, network, and coin-network specific withdrawal configurations' })}
               </p>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               <OverrideTable type="coin" data={coinOverrides} onEdit={handleEdit} loading={loading} />
               <OverrideTable type="network" data={networkOverrides} onEdit={handleEdit} loading={loading} />
               <OverrideTable type="coinNetwork" data={coinNetworkOverrides} onEdit={handleEdit} loading={loading} />

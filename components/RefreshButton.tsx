@@ -34,7 +34,7 @@ interface RefreshButtonProps {
   onClick: () => void | Promise<void>
   /** Whether data is currently loading */
   loading?: boolean
-  /** Button className override (default: btn btn-text-secondary) */
+  /** Button className override (default: btn btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none) */
   className?: string
   /** Extra title for accessibility */
   title?: string
@@ -51,7 +51,7 @@ interface RefreshButtonProps {
 export default function RefreshButton({
   onClick,
   loading = false,
-  className = 'btn btn-text-secondary',
+  className = 'btn btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none',
   title = 'Refresh',
 }: RefreshButtonProps) {
   const [progress, setProgress] = useState(0)

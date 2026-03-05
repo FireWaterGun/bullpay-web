@@ -240,9 +240,9 @@ export default function HeroSection() {
                           )}
                           {/* Circle */}
                           <div
-                            className={`landing-mockup-step-circle ${done ? 'is-done' : ''} ${active ? 'is-active' : ''}`}
+                            className={`landing-mockup-step-circle ${done ?'is-done' : ''} ${active ? 'is-active' : ''}`}
                           >
-                            <i className={`bx ${done ? 'bx-check' : step.icon}`}></i>
+                            <i className={`bx ${done ?'bx-check' : step.icon}`}></i>
                           </div>
                           {/* Text */}
                           <div

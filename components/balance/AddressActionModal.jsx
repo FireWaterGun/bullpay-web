@@ -78,7 +78,7 @@ export default function AddressActionModal({
           )}
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t">
-          <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={actionLoading}>
+          <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={actionLoading}>
             Cancel
           </button>
           <button

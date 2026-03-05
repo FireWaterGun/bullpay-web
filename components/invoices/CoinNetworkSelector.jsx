@@ -67,7 +67,7 @@ export default function CoinNetworkSelector({
                   <div key={sym}>
                     <div
                       role="button"
-                      className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ? 'border-primary-600 bg-primary-50 shadow-sm' : 'border-surface-200 hover:border-surface-300'}`}
+                      className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ?'border-primary-600 bg-primary-50 shadow-sm' : 'border-surface-200 hover:border-surface-300'}`}
                       onClick={() => {
                         setSelectedCoin(sym)
                         if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
@@ -110,7 +110,7 @@ export default function CoinNetworkSelector({
                   <button
                     type="button"
                     key={n.id}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-surface-700 border-surface-300 hover:border-primary-400'}`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ?'bg-primary-600 text-white border-primary-600' : 'bg-white text-surface-700 border-surface-300 hover:border-primary-400'}`}
                     onClick={() => setCoinNetworkId(String(n.id))}
                   >
                     <NetworkIcon networkSymbol={n.network?.symbol || ''} size={18} />

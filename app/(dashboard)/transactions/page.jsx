@@ -61,10 +61,10 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
       <div className="flex items-start justify-between">
         <div className="min-w-0">
           <p className="text-sm text-surface-500 mb-1">{title}</p>
-          <p className={`text-2xl font-bold mb-0 ${valueColor ? `text-${valueColor}-600` : 'text-surface-900'}`}>{value}</p>
+          <p className={`text-2xl font-bold mb-0 ${valueColor ?`text-${valueColor}-600` : 'text-surface-900'}`}>{value}</p>
           {change !== undefined && change !== null && !isNaN(numChange) && (
-            <span className={`text-xs ${isPositive ? 'text-success-600' : 'text-danger-600'}`}>
-              <i className={`bx ${isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'}`}></i>
+            <span className={`text-xs ${isPositive ?'text-success-600' : 'text-danger-600'}`}>
+              <i className={`bx ${isPositive ?'bx-up-arrow-alt' : 'bx-down-arrow-alt'}`}></i>
               {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
             </span>
           )}

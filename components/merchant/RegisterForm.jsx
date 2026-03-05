@@ -108,7 +108,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
             <div key={i} className="card h-full">
               <div className="p-3 flex gap-3">
                 <span
-                  className={`inline-flex items-center justify-center rounded-lg shrink-0 ${featureColors[f.color] || 'bg-surface-100 text-surface-700'}`}
+                  className={`inline-flex items-center justify-center rounded-lg shrink-0 ${featureColors[f.color] ||'bg-surface-100 text-surface-700'}`}
                   style={{ width: 44, height: 44 }}
                 >
                   <i className={`bx ${f.icon}`} style={{ fontSize: '1.35rem' }}></i>
@@ -167,14 +167,13 @@ export default function RegisterForm({ onRegistered, token, t }) {
             ].map((s, i) => (
               <div key={i} className="flex items-center gap-2">
                 <span
-                  className={`inline-flex items-center justify-center rounded-full shrink-0 ${
-                    s.active ? 'bg-primary-600 text-white' : s.done ? 'bg-green-100 text-green-700' : 'bg-surface-100 text-surface-500'
+                  className={`inline-flex items-center justify-center rounded-full shrink-0 ${ s.active ?'bg-primary-600 text-white' : s.done ? 'bg-green-100 text-green-700' : 'bg-surface-100 text-surface-500'
                   }`}
                   style={{ width: 28, height: 28, fontSize: '0.75rem', fontWeight: 600 }}
                 >
                   {s.done ? <i className="bx bx-check"></i> : s.num}
                 </span>
-                <span className={`text-sm ${s.active ? 'font-semibold' : 'text-surface-500'} hidden sm:inline`}>{s.label}</span>
+                <span className={`text-sm ${s.active ?'font-semibold' : 'text-surface-500'} hidden sm:inline`}>{s.label}</span>
                 {i < 2 && <i className="bx bx-chevron-right text-surface-400 ml-1"></i>}
               </div>
             ))}
@@ -241,7 +240,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
 
             {/* Submit */}
             <div className="flex justify-between gap-3 mt-4 pt-3 border-t border-surface-200">
-              <button type="button" className="btn btn-outline-secondary" onClick={() => setStep(1)}>
+              <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => setStep(1)}>
                 <i className="bx bx-arrow-back mr-1"></i>
                 {t('actions.back', { defaultValue: 'Back' })}
               </button>

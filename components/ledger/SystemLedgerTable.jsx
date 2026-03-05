@@ -58,9 +58,9 @@ export default function SystemLedgerTable({
 
   return (
     <div className="card">
-      <div className="card-body">
-        <div className="table-responsive" style={{ overflowX: 'auto' }}>
-          <table className="table table-hover" style={{ minWidth: '1200px' }}>
+      <div className="p-5">
+        <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+          <table className="w-full" style={{ minWidth: '1200px' }}>
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
                 <th>ID</th>
@@ -68,8 +68,8 @@ export default function SystemLedgerTable({
                 <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
                 <th>Code</th>
                 <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-                <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
-                <th className="text-end">USD</th>
+                <th className="text-right">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                <th className="text-right">USD</th>
                 <th>Purpose</th>
                 <th>Tx Hash</th>
                 <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
@@ -92,24 +92,24 @@ export default function SystemLedgerTable({
                   return (
                     <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/admin/system-ledger/${entry.id}`)}>
                       <td>
-                        <span className="fw-semibold text-primary">{entry.id}</span>
+                        <span className="font-semibold text-primary">{entry.id}</span>
                       </td>
                       <td>
-                        <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-danger' : 'bg-label-success')}`}>
-                          <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
+                        <span className={`badge ${entry.state ==='reversed' ? 'bg-surface-100 text-surface-600' : (isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700')}`}>
+                          <i className={`bx ${isCredit ?'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
                           {isCredit ? 'Credit' : 'Debit'}
                         </span>
                       </td>
                       <td style={{ whiteSpace: 'nowrap' }}>
-                        <div className="d-flex align-items-center">
+                        <div className="flex items-center">
                           <CoinImg
                             symbol={entry.coinSymbol}
                             networkSymbol={entry.networkSymbol}
                             size={24}
-                            className="me-2"
+                            className="mr-2"
                           />
                           <div>
-                            <div className="fw-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
+                            <div className="font-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
                             {entry.networkName && (
                               <small className="text-muted" style={{ fontSize: '0.75rem' }}>{entry.networkName}</small>
                             )}
@@ -118,7 +118,7 @@ export default function SystemLedgerTable({
                       </td>
                       <td>
                         {entry.entryCode ? (
-                          <span className="fw-medium">{entry.entryCode}</span>
+                          <span className="font-medium">{entry.entryCode}</span>
                         ) : (
                           <span className="text-muted">-</span>
                         )}
@@ -126,21 +126,21 @@ export default function SystemLedgerTable({
                       <td>
                         {stateBadge(entry.state)}
                       </td>
-                      <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                        <span className={`fw-medium ${entry.state === 'reversed' ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
+                      <td className="text-right" style={{ whiteSpace: 'nowrap' }}>
+                        <span className={`font-medium ${entry.state ==='reversed' ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
                           {entry.state === 'reversed' ? '' : (isCredit ? '-' : '+')}{formatAmount(entry.amount)}
                         </span>
                       </td>
-                      <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                      <td className="text-right" style={{ whiteSpace: 'nowrap' }}>
                         <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
                       </td>
                       <td>
                         <div>
                           {purposeLabel && (
-                            <div className="fw-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
+                            <div className="font-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
                           )}
                           {metadata?.invoiceNumber && (
-                            <small className="badge bg-label-primary">{metadata.invoiceNumber}</small>
+                            <small className="badge bg-primary-50 text-primary-600">{metadata.invoiceNumber}</small>
                           )}
                           {metadata?.sweepId && !metadata?.invoiceNumber && (
                             <small className="text-muted">Sweep #{metadata.sweepId}</small>
@@ -152,14 +152,14 @@ export default function SystemLedgerTable({
                       </td>
                       <td>
                         {entry.txHash ? (
-                          <div className="d-flex align-items-center">
-                            <span className="me-2">{entry.txHash}</span>
+                          <div className="flex items-center">
+                            <span className="mr-2">{entry.txHash}</span>
                             {entry.explorerUrl && (
                               <a
                                 href={`${entry.explorerUrl}/tx/${entry.txHash}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                                 onClick={(e) => e.stopPropagation()}
                                 title="View on explorer"
                               >
@@ -177,7 +177,7 @@ export default function SystemLedgerTable({
                       <td>
                         <Link
                           href={`/admin/system-ledger/${entry.id}`}
-                          className="btn btn-sm btn-icon btn-outline-primary"
+                          className="btn btn-sm btn-icon btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                           onClick={(e) => e.stopPropagation()}
                           title={t('actions.view', { defaultValue: 'View' })}
                         >
@@ -193,8 +193,8 @@ export default function SystemLedgerTable({
         </div>
 
         {pagination && pagination.total > 0 && (
-          <div className="d-flex justify-content-between align-items-center mt-4">
-            <div className="text-muted small">
+          <div className="flex justify-between items-center mt-4">
+            <div className="text-muted text-sm">
               {t('invoices.showingEntries', {
                 start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                 end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -202,20 +202,20 @@ export default function SystemLedgerTable({
                 defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
               })}
             </div>
-            <div className="btn-group">
+            <div className="inline-flex rounded-lg shadow-sm">
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasPrev || loading}
                 onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
               >
                 <i className="bx bx-chevron-left"></i>
                 {t('actions.prev', { defaultValue: 'Previous' })}
               </button>
-              <button className="btn btn-outline-secondary btn-sm" disabled>
+              <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>
                 {pagination.page} / {pagination.totalPages}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasNext || loading}
                 onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
               >

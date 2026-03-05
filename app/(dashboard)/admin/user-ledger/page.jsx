@@ -133,16 +133,16 @@ export default function UserLedgerList() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-user me-2"></i>
+                    <i className="bx bx-user mr-2"></i>
                     {t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })}
                   </h4>
                   <p className="text-muted mb-0">
@@ -180,9 +180,9 @@ export default function UserLedgerList() {
 
           {/* Table */}
           <div className="card">
-            <div className="card-body">
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover" style={{ minWidth: '1200px' }}>
+            <div className="p-5">
+              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+                <table className="w-full" style={{ minWidth: '1200px' }}>
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -191,8 +191,8 @@ export default function UserLedgerList() {
                       <th>{t('admin.ledger.coin', { defaultValue: 'Coin' })}</th>
                       <th>{t('admin.detail.code', { defaultValue: 'Code' })}</th>
                       <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-                      <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end">USD</th>
+                      <th className="text-right">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-right">USD</th>
                       <th>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
                       <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
                       <th></th>
@@ -217,8 +217,8 @@ export default function UserLedgerList() {
 
               {/* Pagination */}
               {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
                       start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                       end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -226,20 +226,20 @@ export default function UserLedgerList() {
                       defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
                     })}
                   </div>
-                  <div className="btn-group">
+                  <div className="inline-flex rounded-lg shadow-sm">
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasPrev || loading}
                       onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
                     >
                       <i className="bx bx-chevron-left"></i>
                       {t('actions.prev', { defaultValue: 'Previous' })}
                     </button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled>
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>
                       {pagination.page} / {pagination.totalPages}
                     </button>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasNext || loading}
                       onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
                     >

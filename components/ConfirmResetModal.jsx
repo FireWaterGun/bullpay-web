@@ -16,7 +16,7 @@ export default function ConfirmResetModal({ title, message, onConfirm, onClose, 
             <p className="mb-0">{message}</p>
           </div>
           <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>{cancelLabel}</button>
+            <button type="button" className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300" onClick={onClose}>{cancelLabel}</button>
             <button type="button" className="btn btn-primary" onClick={onConfirm}>{confirmLabel}</button>
           </div>
       </div>

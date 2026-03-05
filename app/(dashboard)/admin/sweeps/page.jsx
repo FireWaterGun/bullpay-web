@@ -172,12 +172,12 @@ export default function SweepTransactions() {
 
   function statusBadgeClass(s) {
     const v = String(s || '').toUpperCase()
-    if (v === 'PENDING') return 'badge bg-label-warning'
-    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-label-info'
-    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-label-success'
-    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-label-danger'
-    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-label-secondary'
-    return 'badge bg-label-secondary'
+    if (v === 'PENDING') return 'badge bg-amber-50 text-amber-700'
+    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-cyan-50 text-cyan-700'
+    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-green-50 text-green-700'
+    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-red-50 text-red-700'
+    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-surface-100 text-surface-600'
+    return 'badge bg-surface-100 text-surface-600'
   }
 
   function handlePageChange(page) {
@@ -190,15 +190,15 @@ export default function SweepTransactions() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-transfer me-2"></i>
+                    <i className="bx bx-transfer mr-2"></i>
                     {t('admin.sweep.transactions', { defaultValue: 'Sweeps' })}
                   </h4>
                   <p className="text-muted mb-0">

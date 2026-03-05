@@ -8,14 +8,14 @@ import { useDateFormat } from '@/hooks/useDateFormat'
 export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-link me-2"></i>
+          <i className="bx bx-link mr-2"></i>
           Transaction
         </h5>
       </div>
-      <div className="card-body">
-        <table className="table table-borderless">
+      <div className="p-5">
+        <table className="w-full">
           <tbody>
             {entry.reservationId && (
               <tr>
@@ -33,25 +33,25 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
               <tr>
                 <td className="text-muted">Tx Hash</td>
                 <td>
-                  <code className="text-break" style={{ fontSize: '0.75rem' }}>{entry.txHash}</code>
-                  <div className="d-flex gap-1 mt-2">
+                  <code className="break-words" style={{ fontSize: '0.75rem' }}>{entry.txHash}</code>
+                  <div className="flex gap-1 mt-2">
                     {explorerUrl && (
                       <a
                         href={`${explorerUrl}/tx/${entry.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn btn-sm btn-outline-primary"
+                        className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                         style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
                       >
-                        <i className="bx bx-link-external me-1"></i>View on Explorer
+                        <i className="bx bx-link-external mr-1"></i>View on Explorer
                       </a>
                     )}
                     <button
-                      className="btn btn-sm btn-outline-secondary"
+                      className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                       onClick={() => onCopy(entry.txHash)}
                       style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
                     >
-                      <i className="bx bx-copy me-1"></i>Copy
+                      <i className="bx bx-copy mr-1"></i>Copy
                     </button>
                   </div>
                 </td>
@@ -60,7 +60,7 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
             {metadata?.invoiceNumber && (
               <tr>
                 <td className="text-muted">Invoice</td>
-                <td><span className="badge bg-label-primary">{metadata.invoiceNumber}</span></td>
+                <td><span className="badge bg-primary-50 text-primary-600">{metadata.invoiceNumber}</span></td>
               </tr>
             )}
             {metadata?.sweepId && (
@@ -89,14 +89,14 @@ export function TimestampsCard({ entry }) {
   const { fmtDateTime } = useDateFormat()
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-time me-2"></i>
+          <i className="bx bx-time mr-2"></i>
           Timestamps
         </h5>
       </div>
-      <div className="card-body">
-        <table className="table table-borderless">
+      <div className="p-5">
+        <table className="w-full">
           <tbody>
             <tr>
               <td className="text-muted" style={{ width: '40%' }}>Created</td>
@@ -141,13 +141,13 @@ export function MetadataCard({ metadata }) {
 
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-code-block me-2"></i>
+          <i className="bx bx-code-block mr-2"></i>
           Metadata
         </h5>
       </div>
-      <div className="card-body">
+      <div className="p-5">
         <pre className="mb-0 p-3 rounded" style={{ fontSize: '0.8rem', maxHeight: '300px', overflow: 'auto', backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
           {JSON.stringify(metadata, null, 2)}
         </pre>

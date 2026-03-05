@@ -33,24 +33,24 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
   const isValid = isValidEmail && password.length >= 8 && password.length <= 128
 
   return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !loading && onClose()}>
-      <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
-              <i className="bx bx-user-plus me-2"></i>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !loading && onClose()}>
+      <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-xl shadow-xl">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800">
+              <i className="bx bx-user-plus mr-2"></i>
               {t('admin.users.createUser', { defaultValue: 'Create User' })}
             </h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={loading}></button>
           </div>
-          <div className="modal-body">
+          <div className="p-5">
             <div className="mb-3">
               <label className="form-label">
                 {t('admin.users.email', { defaultValue: 'Email' })} <span className="text-danger">*</span>
               </label>
               <input
                 type="email"
-                className="form-control"
+                className="form-input"
                 placeholder={t('admin.users.emailPlaceholder', { defaultValue: 'user@example.com' })}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -65,7 +65,7 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
               </label>
               <input
                 type="text"
-                className="form-control"
+                className="form-input"
                 placeholder={t('admin.users.fullNamePlaceholder', { defaultValue: 'John Doe' })}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -77,10 +77,10 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
               <label className="form-label">
                 {t('admin.users.password', { defaultValue: 'Password' })} <span className="text-danger">*</span>
               </label>
-              <div className="input-group">
+              <div className="flex items-stretch">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="form-control"
+                  className="form-input"
                   placeholder={t('admin.users.passwordPlaceholder', { defaultValue: 'Minimum 8 characters' })}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -90,11 +90,11 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
                 />
                 <button
                   type="button"
-                  className="btn btn-outline-secondary"
+                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  <i className={`bx ${showPassword ? 'bx-hide' : 'bx-show'}`}></i>
+                  <i className={`bx ${showPassword ?'bx-hide' : 'bx-show'}`}></i>
                 </button>
               </div>
               {password && password.length < 8 && (
@@ -113,7 +113,7 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
                 {t('admin.users.role', { defaultValue: 'Role' })} <span className="text-danger">*</span>
               </label>
               <select
-                className="form-select"
+                className="form-input"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 disabled={loading}
@@ -123,13 +123,13 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
                 ))}
               </select>
             </div>
-            <div className="alert alert-info py-2 mb-0" role="alert">
-              <i className="bx bx-info-circle me-1"></i>
+            <div className="alert alert bg-cyan-50 text-cyan-700 border-cyan-200 py-2 mb-0" role="alert">
+              <i className="bx bx-info-circle mr-1"></i>
               {t('admin.users.createInfo', { defaultValue: 'Admin-created users are set as active with email verified by default.' })}
             </div>
           </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={loading}>
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={loading}>
               {t('actions.cancel', { defaultValue: 'Cancel' })}
             </button>
             <button
@@ -140,12 +140,12 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
             >
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-1"></span>
+                  <span className="spinner w-4 h-4 mr-1"></span>
                   {t('invoices.loading', { defaultValue: 'Loading...' })}
                 </>
               ) : (
                 <>
-                  <i className="bx bx-user-plus me-1"></i>
+                  <i className="bx bx-user-plus mr-1"></i>
                   {t('admin.users.createUserBtn', { defaultValue: 'Create User' })}
                 </>
               )}

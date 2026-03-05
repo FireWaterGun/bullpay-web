@@ -8,22 +8,22 @@ export default function CoinSelector({ coins, formData, setFormData, isEdit }) {
 
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <span className="badge bg-primary rounded-pill me-2">1</span>
+          <span className="badge bg-primary rounded-full mr-2">1</span>
           {isEdit ? t('crypto.coin', { defaultValue: 'Coin' }) : t('crypto.selectCoin', { defaultValue: 'Select a coin' })}
-          <span className="text-danger ms-1">*</span>
+          <span className="text-danger ml-1">*</span>
         </h5>
       </div>
-      <div className="card-body">
-        <div className="row g-3">
+      <div className="p-5">
+        <div className="grid grid-cols-12 gap-x-6 gap-3">
           {(isEdit ? coins.filter(c => c.id === parseInt(formData.coinId)) : coins).map(coin => {
             const isActive = formData.coinId === String(coin.id)
             return (
-              <div className="col-6 col-sm-4 col-md-3" key={coin.id}>
+              <div className="col-span-6 sm:col-span-4 md:col-span-3" key={coin.id}>
                 <div
                   role="button"
-                  className={`card h-100 border-2 rounded-3 overflow-hidden ${isActive ? 'border-primary bg-label-primary shadow-sm' : 'border-2'}`}
+                  className={`card h-full border-2 rounded-lg overflow-hidden ${isActive ?'border-primary bg-primary-50 text-primary-600 shadow-sm' : 'border-2'}`}
                   onClick={() => {
                     if (!isEdit) {
                       setFormData(prev => ({
@@ -34,11 +34,11 @@ export default function CoinSelector({ coins, formData, setFormData, isEdit }) {
                   }}
                   style={isEdit ? { cursor: 'default' } : {}}
                 >
-                  <div className="card-body d-flex align-items-center gap-3 p-3">
+                  <div className="p-5 flex items-center gap-3 p-3">
                     <CoinImg coin={coin} symbol={coin.symbol} size={40} showFallback />
-                    <div className="flex-grow-1 min-width-0">
-                      <div className="fw-bold">{coin.symbol}</div>
-                      <div className="text-muted small text-truncate">{coin.name}</div>
+                    <div className="grow min-width-0">
+                      <div className="font-bold">{coin.symbol}</div>
+                      <div className="text-muted text-sm truncate">{coin.name}</div>
                     </div>
                   </div>
                 </div>
@@ -46,7 +46,7 @@ export default function CoinSelector({ coins, formData, setFormData, isEdit }) {
             )
           })}
           {coins.length === 0 && (
-            <div className="col-12 text-muted">{t('common.noData', { defaultValue: 'No data' })}</div>
+            <div className="col-span-12 text-muted">{t('common.noData', { defaultValue: 'No data' })}</div>
           )}
         </div>
       </div>

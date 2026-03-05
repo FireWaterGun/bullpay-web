@@ -99,7 +99,7 @@ export default function RegisterPage() {
             <label htmlFor="fullName" className="form-label">Full name</label>
             <input
               type="text"
-              className={`form-input ${errors.fullName ? '!border-danger-500' : ''}`}
+              className={`form-input ${errors.fullName ?'!border-danger-500' : ''}`}
               id="fullName"
               placeholder="John Doe"
               maxLength={50}
@@ -113,7 +113,7 @@ export default function RegisterPage() {
             <label htmlFor="email" className="form-label">Email</label>
             <input
               type="email"
-              className={`form-input ${errors.email ? '!border-danger-500' : ''}`}
+              className={`form-input ${errors.email ?'!border-danger-500' : ''}`}
               id="email"
               placeholder="Enter your email"
               maxLength={50}
@@ -129,7 +129,7 @@ export default function RegisterPage() {
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
-                className={`form-input pr-10 ${errors.password ? '!border-danger-500' : ''}`}
+                className={`form-input pr-10 ${errors.password ?'!border-danger-500' : ''}`}
                 placeholder="••••••••••••"
                 maxLength={50}
                 {...register('password')}
@@ -140,7 +140,7 @@ export default function RegisterPage() {
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
+                <i className={`bx ${showPassword ?'bx-show' : 'bx-hide'} text-lg`}></i>
               </button>
             </div>
             {errors.password && <p className="mt-1 text-sm text-danger-500">{errors.password.message}</p>}
@@ -153,7 +153,7 @@ export default function RegisterPage() {
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
-                className={`form-input pr-10 ${errors.confirmPassword ? '!border-danger-500' : ''}`}
+                className={`form-input pr-10 ${errors.confirmPassword ?'!border-danger-500' : ''}`}
                 placeholder="••••••••••••"
                 maxLength={50}
                 {...register('confirmPassword')}
@@ -164,7 +164,7 @@ export default function RegisterPage() {
                 onClick={() => setShowConfirmPassword((v) => !v)}
                 aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
               >
-                <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
+                <i className={`bx ${showConfirmPassword ?'bx-show' : 'bx-hide'} text-lg`}></i>
               </button>
             </div>
             {errors.confirmPassword && <p className="mt-1 text-sm text-danger-500">{errors.confirmPassword.message}</p>}

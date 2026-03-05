@@ -59,7 +59,7 @@ export default function ConfirmModal({
   return (
     <div
       ref={overlayRef}
-      className={`fixed inset-0 z-50 flex ${centered ? 'items-center' : 'items-start pt-10'} justify-center`}
+      className={`fixed inset-0 z-50 flex ${centered ?'items-center' : 'items-start pt-10'} justify-center`}
       style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
       onClick={handleBackdropClick}
     >

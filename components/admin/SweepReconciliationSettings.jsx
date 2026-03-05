@@ -17,20 +17,20 @@ export default function SweepReconciliationSettings({ formData, setFormData, val
 
   return (
     <>
-      <div className="col-12 mt-5">
+      <div className="col-span-12 mt-5">
         <hr className="my-4" />
         <h6 className="text-primary mb-4">
           {t('admin.sweep.reconciliationSettings', { defaultValue: 'Reconciliation' })}
         </h6>
       </div>
 
-      <div className="col-md-3">
+      <div className="md:col-span-3">
         <label htmlFor="staleMinutes" className="form-label">
           {t('admin.sweep.staleMinutes', { defaultValue: 'Stale Minutes' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="staleMinutes"
           placeholder="2"
           min="1"
@@ -43,13 +43,13 @@ export default function SweepReconciliationSettings({ formData, setFormData, val
         </small>
       </div>
 
-      <div className="col-md-3">
+      <div className="md:col-span-3">
         <label htmlFor="reconciliationMaxPerRun" className="form-label">
           {t('admin.sweep.maxPerRun', { defaultValue: 'Max/Run' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="reconciliationMaxPerRun"
           placeholder="50"
           min="1"
@@ -62,13 +62,13 @@ export default function SweepReconciliationSettings({ formData, setFormData, val
         </small>
       </div>
 
-      <div className="col-md-3">
+      <div className="md:col-span-3">
         <label htmlFor="jitterMin" className="form-label">
           {t('admin.sweep.jitterMin', { defaultValue: 'Jitter Min (ms)' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="jitterMin"
           placeholder="5000"
           min="0"
@@ -88,13 +88,13 @@ export default function SweepReconciliationSettings({ formData, setFormData, val
         </small>
       </div>
 
-      <div className="col-md-3">
+      <div className="md:col-span-3">
         <label htmlFor="jitterMax" className="form-label">
           {t('admin.sweep.jitterMax', { defaultValue: 'Jitter Max (ms)' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="jitterMax"
           placeholder="20000"
           min="0"

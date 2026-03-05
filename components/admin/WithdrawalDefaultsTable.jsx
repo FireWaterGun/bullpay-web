@@ -10,8 +10,8 @@ export default function WithdrawalDefaultsTable({ defaults }) {
       <h6 className="text-primary mb-3">
         {t('admin.withdrawal.defaultSettings', { defaultValue: 'Default Settings' })}
       </h6>
-      <div className="table-responsive">
-        <table className="table table-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
           <tbody>
             <tr>
               <td width="30%"><strong>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</strong></td>
@@ -31,7 +31,7 @@ export default function WithdrawalDefaultsTable({ defaults }) {
             </tr>
             <tr>
               <td><strong>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</strong></td>
-              <td><span className="badge bg-label-info">{defaults.fee?.type || '-'}</span></td>
+              <td><span className="badge bg-cyan-50 text-cyan-700">{defaults.fee?.type || '-'}</span></td>
             </tr>
             {defaults.fee?.type === 'percentage' && (
               <>

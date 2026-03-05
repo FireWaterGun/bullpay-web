@@ -75,7 +75,7 @@ export default function ForgotPage() {
             <label htmlFor="email" className="form-label">Email</label>
             <input
               type="text"
-              className={`form-input ${emailInvalid ? '!border-danger-500' : ''}`}
+              className={`form-input ${emailInvalid ?'!border-danger-500' : ''}`}
               id="email"
               name="email"
               placeholder="Enter your email"

@@ -15,68 +15,68 @@ export default function MerchantConfirmModal({
   if (!merchant) return null
 
   return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !loading && onClose()}>
-      <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
-              <i className={`bx ${action === 'activate' ? 'bx-check-circle text-primary' : 'bx-block text-danger'} me-2`}></i>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !loading && onClose()}>
+      <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-xl shadow-xl">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800">
+              <i className={`bx ${action ==='activate' ? 'bx-check-circle text-primary' : 'bx-block text-danger'} mr-2`}></i>
               {action === 'activate'
                 ? t('admin.merchants.activateTitle', { defaultValue: 'Activate Merchant' })
                 : t('admin.merchants.suspendTitle', { defaultValue: 'Suspend Merchant' })
               }
             </h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={loading}></button>
           </div>
-          <div className="modal-body">
+          <div className="p-5">
             <div className="rounded p-3 mb-3" style={{ backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
-              <div className="row g-2">
-                <div className="col-6">
-                  <small className="text-muted d-block">Merchant ID</small>
+              <div className="grid grid-cols-12 gap-x-6 gap-2">
+                <div className="col-span-6">
+                  <small className="text-muted block">Merchant ID</small>
                   <strong>{merchant.id}</strong>
                 </div>
-                <div className="col-6">
-                  <small className="text-muted d-block">{t('admin.merchants.name', { defaultValue: 'Name' })}</small>
+                <div className="col-span-6">
+                  <small className="text-muted block">{t('admin.merchants.name', { defaultValue: 'Name' })}</small>
                   <strong>{merchant.name || '-'}</strong>
                 </div>
-                <div className="col-6">
-                  <small className="text-muted d-block">{t('table.status', { defaultValue: 'Status' })}</small>
+                <div className="col-span-6">
+                  <small className="text-muted block">{t('table.status', { defaultValue: 'Status' })}</small>
                   <span className={statusBadgeClass(merchant.status)}>
                     {String(merchant.status || '').toUpperCase()}
                   </span>
                 </div>
-                <div className="col-6">
-                  <small className="text-muted d-block">{t('admin.merchants.email', { defaultValue: 'Email' })}</small>
+                <div className="col-span-6">
+                  <small className="text-muted block">{t('admin.merchants.email', { defaultValue: 'Email' })}</small>
                   <span>{merchant.email || '-'}</span>
                 </div>
               </div>
             </div>
 
             {action === 'activate' ? (
-              <div className="alert alert-primary py-2 mb-0" role="alert">
-                <i className="bx bx-check-circle me-1"></i>
+              <div className="alert alert bg-primary-50 text-primary-700 border-primary-200 py-2 mb-0" role="alert">
+                <i className="bx bx-check-circle mr-1"></i>
                 {t('admin.merchants.activateConfirm', { defaultValue: 'Are you sure you want to activate this merchant?' })}
               </div>
             ) : (
               <div className="alert alert-danger py-2 mb-0" role="alert">
-                <i className="bx bx-error me-1"></i>
+                <i className="bx bx-error mr-1"></i>
                 {t('admin.merchants.suspendConfirm', { defaultValue: 'Are you sure you want to suspend this merchant? They will lose access to merchant features.' })}
               </div>
             )}
           </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={loading}>
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={loading}>
               {t('actions.cancel', { defaultValue: 'Cancel' })}
             </button>
             <button
               type="button"
-              className={`btn ${action === 'activate' ? 'btn-primary' : 'btn-danger'}`}
+              className={`btn ${action ==='activate' ? 'btn-primary' : 'btn-danger'}`}
               onClick={onConfirm}
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-1"></span>
+                  <span className="spinner w-4 h-4 mr-1"></span>
                   {t('invoices.loading', { defaultValue: 'Loading...' })}
                 </>
               ) : (

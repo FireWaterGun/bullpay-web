@@ -174,7 +174,7 @@ export default function WalletBalancePage() {
             {formatCoinAmount(fiat.amount)} {fiat.currency}
           </div>
           <div className="flex gap-2 flex-wrap mt-4">
-            <Link href="/invoices/create" className="btn btn-outline-primary">
+            <Link href="/invoices/create" className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white">
               <i className="bx bx-receipt mr-1"></i>
               {t('actions.createInvoice', { defaultValue: 'Create Invoice' })}
             </Link>

@@ -148,28 +148,28 @@ export default function PlatformLedgerList() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-book-open me-2"></i>
+                    <i className="bx bx-book-open mr-2"></i>
                     {t('admin.platformLedger.title', { defaultValue: 'Revenue & Expenses' })}
                   </h4>
                   <p className="text-muted mb-0">
                     {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
                   </p>
                 </div>
-                <div className="d-flex align-items-center gap-2">
+                <div className="flex items-center gap-2">
                   {isSuperAdmin && (
                     <button
                       className="btn btn-primary"
                       onClick={() => setShowAdjustModal(true)}
                     >
-                      <i className="bx bx-transfer-alt me-1"></i>
+                      <i className="bx bx-transfer-alt mr-1"></i>
                       {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
                     </button>
                   )}

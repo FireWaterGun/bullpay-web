@@ -22,9 +22,9 @@ function formatGroupLabel(groupKey) {
 }
 
 function sourceBadge(source) {
-  if (source === 'granted') return { cls: 'bg-label-success', label: 'granted' }
-  if (source === 'denied') return { cls: 'bg-label-danger', label: 'denied' }
-  return { cls: 'bg-label-secondary', label: 'default' }
+  if (source === 'granted') return { cls: 'bg-green-50 text-green-700', label: 'granted' }
+  if (source === 'denied') return { cls: 'bg-red-50 text-red-700', label: 'denied' }
+  return { cls: 'bg-surface-100 text-surface-600', label: 'default' }
 }
 
 function getPermAction(permName) {
@@ -40,24 +40,24 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
   return (
     <div className="card mb-3">
       <div
-        className="card-header py-3"
+        className="px-5 py-4 border-b border-surface-200 py-3"
         style={{ cursor: 'pointer' }}
         onClick={() => onToggle(group)}
       >
-        <div className="d-flex align-items-center justify-content-between">
-          <h6 className="mb-0 d-flex align-items-center gap-2">
-            <i className={`bx ${isCollapsed ? 'bx-chevron-right' : 'bx-chevron-down'} text-muted`}></i>
+        <div className="flex items-center justify-between">
+          <h6 className="mb-0 flex items-center gap-2">
+            <i className={`bx ${isCollapsed ?'bx-chevron-right' : 'bx-chevron-down'} text-muted`}></i>
             <i className={`bx ${groupIcon} text-${color}`}></i>
             {formatGroupLabel(group)}
           </h6>
-          <div className="d-flex align-items-center gap-2">
+          <div className="flex items-center gap-2">
             <small className="text-muted">{activeInGroup}/{perms.length} {t('admin.roles.active', { defaultValue: 'active' }).toLowerCase()}</small>
-            <span className={`badge bg-label-${color} rounded-pill`} style={{ fontSize: '0.7rem' }}>{perms.length}</span>
+            <span className={`badge bg-label-${color} rounded-full`} style={{ fontSize: '0.7rem' }}>{perms.length}</span>
           </div>
         </div>
       </div>
       {!isCollapsed && (
-        <div className="card-body p-0">
+        <div className="p-5 p-0">
           <ul className="list-group list-group-flush">
             {perms.map((p) => {
               const override = overrideMap[p.permission]
@@ -67,7 +67,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
               const action = getPermAction(p.permission)
 
               return (
-                <li key={p.permission} className="list-group-item d-flex align-items-center gap-3 py-2 px-3">
+                <li key={p.permission} className="list-group-item flex items-center gap-3 py-2 px-3">
                   {/* Status icon */}
                   <div style={{ width: '24px', textAlign: 'center', flexShrink: 0 }}>
                     {p.active ? (
@@ -78,19 +78,19 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
                   </div>
 
                   {/* Permission info */}
-                  <div className="flex-grow-1 overflow-hidden">
-                    <div className="d-flex align-items-center gap-2 flex-wrap">
+                  <div className="grow overflow-hidden">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <code style={{ fontSize: '0.8rem' }}>{p.permission}</code>
                       <span className={`badge ${badge.cls}`} style={{ fontSize: '0.6rem' }}>{badge.label}</span>
                       {isOverridden && (
-                        <span className="badge bg-label-warning" style={{ fontSize: '0.6rem' }}>
+                        <span className="badge bg-amber-50 text-amber-700" style={{ fontSize: '0.6rem' }}>
                           <i className="bx bx-edit-alt" style={{ fontSize: '0.55rem' }}></i> {t('admin.roles.override', { defaultValue: 'override' })}
                         </span>
                       )}
                     </div>
                     {isOverridden && override.reason && (
-                      <small className="text-muted d-block mt-1" style={{ fontSize: '0.75rem' }}>
-                        <i className="bx bx-message-detail me-1"></i>{override.reason}
+                      <small className="text-muted block mt-1" style={{ fontSize: '0.75rem' }}>
+                        <i className="bx bx-message-detail mr-1"></i>{override.reason}
                       </small>
                     )}
                   </div>
@@ -98,36 +98,36 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
                   {/* Actions */}
                   <div style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
                     {isLoading ? (
-                      <span className="spinner-border spinner-border-sm text-primary"></span>
+                      <span className="spinner w-4 h-4 text-primary"></span>
                     ) : (
-                      <div className="d-flex gap-1">
+                      <div className="flex gap-1">
                         {isOverridden && (
                           <button
-                            className="btn btn-xs btn-outline-warning"
+                            className="btn btn btn-sm text-xs py-0.5 px-2 btn border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white"
                             style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem' }}
                             onClick={(e) => { e.stopPropagation(); onRevert(override.id, p.permission) }}
                             title={t('admin.roles.revertToDefault', { defaultValue: 'Revert to default' })}
                           >
-                            <i className="bx bx-undo me-1"></i>{t('admin.roles.revert', { defaultValue: 'Revert' })}
+                            <i className="bx bx-undo mr-1"></i>{t('admin.roles.revert', { defaultValue: 'Revert' })}
                           </button>
                         )}
                         {p.active ? (
                           <button
-                            className="btn btn-xs btn-outline-danger"
+                            className="btn btn btn-sm text-xs py-0.5 px-2 btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white"
                             style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem' }}
                             onClick={(e) => { e.stopPropagation(); onDeny(p.permission) }}
                             title={t('admin.roles.denyPermission', { defaultValue: 'Deny this permission' })}
                           >
-                            <i className="bx bx-x me-1"></i>{t('admin.roles.deny', { defaultValue: 'Deny' })}
+                            <i className="bx bx-x mr-1"></i>{t('admin.roles.deny', { defaultValue: 'Deny' })}
                           </button>
                         ) : (
                           <button
-                            className="btn btn-xs btn-outline-success"
+                            className="btn btn btn-sm text-xs py-0.5 px-2 btn border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white"
                             style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem' }}
                             onClick={(e) => { e.stopPropagation(); onGrant(p.permission) }}
                             title={t('admin.roles.grantPermission', { defaultValue: 'Grant this permission' })}
                           >
-                            <i className="bx bx-check me-1"></i>{t('admin.roles.grant', { defaultValue: 'Grant' })}
+                            <i className="bx bx-check mr-1"></i>{t('admin.roles.grant', { defaultValue: 'Grant' })}
                           </button>
                         )}
                       </div>

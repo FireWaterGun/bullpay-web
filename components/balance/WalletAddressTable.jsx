@@ -70,7 +70,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                       aria-label={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
                       title={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
                     >
-                      <i className={`bx ${copiedMap[w.id || idx] ? 'bx-check text-green-600' : 'bx-copy'}`}></i>
+                      <i className={`bx ${copiedMap[w.id || idx] ?'bx-check text-green-600' : 'bx-copy'}`}></i>
                     </button>
                   </div>
                 </td>

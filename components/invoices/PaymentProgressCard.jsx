@@ -15,7 +15,7 @@ export default function PaymentProgressCard({ invoice, t }) {
 
   return (
     <div className="card mb-3">
-      <div className="card-body">
+      <div className="p-5">
         <h6 className="mb-3">
           {t?.('invoices.paymentProgress', { defaultValue: 'Payment Progress' }) || 'Payment Progress'}
         </h6>
@@ -23,29 +23,28 @@ export default function PaymentProgressCard({ invoice, t }) {
         {/* Progress bar */}
         <div className="progress mb-3" style={{ height: 8 }}>
           <div
-            className={`progress-bar ${status === 'expired' || status === 'cancelled' ? 'bg-danger' : 'bg-success'}`}
+            className={`progress-bar ${status ==='expired' || status === 'cancelled' ? 'bg-danger' : 'bg-success'}`}
             style={{ width: `${percentage}%` }}
           ></div>
         </div>
 
-        <div className="d-flex justify-content-between small text-muted mb-3">
+        <div className="flex justify-between text-sm text-muted mb-3">
           <span>{amountReceived} / {amountRequired} {invoice?.coinSymbol || ''}</span>
           <span>{percentage.toFixed(1)}%</span>
         </div>
 
         {/* Steps */}
-        <div className="d-flex justify-content-between">
+        <div className="flex justify-between">
           {steps.map((step) => (
             <div key={step.key} className="text-center">
               <div
-                className={`rounded-circle d-inline-flex align-items-center justify-content-center mb-1 ${
-                  step.done ? 'bg-success text-white' : 'bg-label-secondary'
+                className={`rounded-full inline-flex items-center justify-center mb-1 ${ step.done ?'bg-success text-white' : 'bg-surface-100 text-surface-600'
                 }`}
                 style={{ width: 28, height: 28 }}
               >
-                {step.done ? <i className="bx bx-check small"></i> : <span className="small">&bull;</span>}
+                {step.done ? <i className="bx bx-check text-sm"></i> : <span className="text-sm">&bull;</span>}
               </div>
-              <div className="small text-muted">{step.label}</div>
+              <div className="text-sm text-muted">{step.label}</div>
             </div>
           ))}
         </div>

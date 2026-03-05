@@ -248,8 +248,8 @@ export default function AdminMaintenancePage() {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
-        <div className="spinner-border text-primary" role="status">
+      <div className="flex justify-center items-center" style={{ minHeight: '50vh' }}>
+        <div className="spinner text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -257,12 +257,12 @@ export default function AdminMaintenancePage() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Header */}
-      <div className="d-flex align-items-center justify-content-between mb-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h4 className="mb-1">
-            <i className="bx bx-wrench me-2 text-warning"></i>
+            <i className="bx bx-wrench mr-2 text-warning"></i>
             {t('admin.maintenance.title', { defaultValue: 'Maintenance Mode' })}
           </h4>
           <p className="text-muted mb-0">
@@ -273,8 +273,8 @@ export default function AdminMaintenancePage() {
 
       {/* Live Status Banner */}
       {liveStatus && (
-        <div className={`alert border-0 d-flex align-items-center mb-4 ${liveStatus.maintenance ? 'bg-label-warning text-warning' : 'bg-label-success text-success'}`} style={{ borderLeft: `4px solid`, borderLeftColor: 'currentColor' }}>
-          <i className={`bx ${liveStatus.maintenance ? 'bx-error' : 'bx-check-circle'} me-2`} style={{ fontSize: '1.25rem' }}></i>
+        <div className={`alert border-0 flex items-center mb-4 ${liveStatus.maintenance ?'bg-amber-50 text-amber-700 text-warning' : 'bg-green-50 text-green-700 text-success'}`} style={{ borderLeft: `4px solid`, borderLeftColor: 'currentColor' }}>
+          <i className={`bx ${liveStatus.maintenance ?'bx-error' : 'bx-check-circle'} mr-2`} style={{ fontSize: '1.25rem' }}></i>
           <div>
             <strong>{t('admin.maintenance.liveStatus', { defaultValue: 'Live Status' })}:</strong>{' '}
             {liveStatus.maintenance
@@ -285,29 +285,29 @@ export default function AdminMaintenancePage() {
         </div>
       )}
 
-      <div className="row">
+      <div className="grid grid-cols-12 gap-x-6">
         {/* Quick Toggle Cards */}
-        <div className="col-12 mb-4">
+        <div className="col-span-12 mb-4">
           <div className="card">
-            <div className="card-header">
-              <h5 className="card-title mb-0">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
                 {t('admin.maintenance.quickToggle', { defaultValue: 'Quick Toggle' })}
               </h5>
             </div>
-            <div className="card-body">
-              <div className="row g-3">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
                 {levelOptions.map((opt) => (
-                  <div key={opt.value} className="col-md-4">
+                  <div key={opt.value} className="md:col-span-4">
                     <div
-                      className={`card border ${level === opt.value ? `border-${opt.color} shadow-sm` : 'border-light'}`}
+                      className={`card border ${level === opt.value ?`border-${opt.color} shadow-sm` : 'border-light'}`}
                       style={{ cursor: level === opt.value ? 'default' : 'pointer', transition: 'all 0.2s', opacity: level === opt.value ? 0.7 : 1 }}
                       onClick={() => requestQuickToggle(opt.value)}
                     >
-                      <div className="card-body text-center py-4">
+                      <div className="p-5 text-center py-4">
                         <i className={`bx ${opt.icon} text-${opt.color} mb-2`} style={{ fontSize: '2rem' }}></i>
-                        <h6 className={`mb-1 ${level === opt.value ? `text-${opt.color}` : ''}`}>
+                        <h6 className={`mb-1 ${level === opt.value ?`text-${opt.color}` : ''}`}>
                           {opt.label}
-                          {level === opt.value && <i className="bx bx-check ms-1"></i>}
+                          {level === opt.value && <i className="bx bx-check ml-1"></i>}
                         </h6>
                         <small className="text-muted">{opt.description}</small>
                       </div>
@@ -320,17 +320,17 @@ export default function AdminMaintenancePage() {
         </div>
 
         {/* Configuration Form */}
-        <div className="col-lg-8">
+        <div className="lg:col-span-8">
           <div className="card">
-            <div className="card-header d-flex align-items-center justify-content-between">
-              <h5 className="card-title mb-0">
+            <div className="px-5 py-4 border-b border-surface-200 flex items-center justify-between">
+              <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
                 {t('admin.maintenance.configuration', { defaultValue: 'Configuration' })}
               </h5>
               <span className={`badge bg-label-${currentLevelInfo.color}`}>
                 {currentLevelInfo.label}
               </span>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {/* Message */}
               <div className="mb-3">
                 <label className="form-label">
@@ -338,13 +338,13 @@ export default function AdminMaintenancePage() {
                   {level !== 'none' && <span className="text-danger"> *</span>}
                 </label>
                 <textarea
-                  className={`form-control${errors.messageEn ? ' is-invalid' : ''}`}
+                  className={`form-input${errors.messageEn ?' is-invalid' : ''}`}
                   rows={2}
                   value={messageEn}
                   onChange={(e) => { setMessageEn(e.target.value); setErrors(prev => ({ ...prev, messageEn: undefined })) }}
                   placeholder="System is under maintenance. Please try again later."
                 />
-                {errors.messageEn && <div className="invalid-feedback d-block">{errors.messageEn}</div>}
+                {errors.messageEn && <div className="text-xs text-danger-500 mt-1 block">{errors.messageEn}</div>}
               </div>
 
               {/* Estimated End */}
@@ -352,11 +352,11 @@ export default function AdminMaintenancePage() {
                 <label className="form-label">
                   {t('admin.maintenance.estimatedEnd', { defaultValue: 'Estimated End Time' })}
                 </label>
-                <div className="row g-2">
+                <div className="grid grid-cols-12 gap-x-6 gap-2">
                   <div className="col-7">
                     <input
                       type="date"
-                      className="form-control"
+                      className="form-input"
                       value={estimatedEnd ? estimatedEnd.slice(0, 10) : ''}
                       onChange={(e) => {
                         const dateVal = e.target.value
@@ -370,7 +370,7 @@ export default function AdminMaintenancePage() {
                   <div className="col-5">
                     <input
                       type="time"
-                      className="form-control"
+                      className="form-input"
                       value={estimatedEnd ? estimatedEnd.slice(11, 16) : ''}
                       disabled={!estimatedEnd}
                       onChange={(e) => {
@@ -382,7 +382,7 @@ export default function AdminMaintenancePage() {
                     />
                   </div>
                 </div>
-                <div className="form-text">
+                <div className="text-xs text-surface-500 mt-1">
                   {t('admin.maintenance.estimatedEndHelp', { defaultValue: 'Leave empty if unknown. Shown to users and in Retry-After header.' })}
                 </div>
               </div>
@@ -394,14 +394,14 @@ export default function AdminMaintenancePage() {
                 </label>
                 <input
                   type="text"
-                  className={`form-control${errors.allowedIps ? ' is-invalid' : ''}`}
+                  className={`form-input${errors.allowedIps ?' is-invalid' : ''}`}
                   value={allowedIps}
                   onChange={(e) => { setAllowedIps(e.target.value); setErrors(prev => ({ ...prev, allowedIps: undefined })) }}
                   placeholder='["1.2.3.4", "5.6.7.8"]'
                 />
                 {errors.allowedIps
-                  ? <div className="invalid-feedback d-block">{errors.allowedIps}</div>
-                  : <div className="form-text">
+                  ? <div className="text-xs text-danger-500 mt-1 block">{errors.allowedIps}</div>
+                  : <div className="text-xs text-surface-500 mt-1">
                       {t('admin.maintenance.allowedIpsHelp', { defaultValue: 'JSON array of IPs that can access the system during maintenance.' })}
                     </div>
                 }
@@ -411,12 +411,12 @@ export default function AdminMaintenancePage() {
               <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
                 {saving ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    <span className="spinner w-4 h-4 mr-1" role="status" aria-hidden="true"></span>
                     {t('common.saving', { defaultValue: 'Saving...' })}
                   </>
                 ) : (
                   <>
-                    <i className="bx bx-save me-1"></i>
+                    <i className="bx bx-save mr-1"></i>
                     {t('admin.maintenance.saveAll', { defaultValue: 'Save Configuration' })}
                   </>
                 )}
@@ -426,18 +426,18 @@ export default function AdminMaintenancePage() {
         </div>
 
         {/* Info Sidebar */}
-        <div className="col-lg-4">
+        <div className="lg:col-span-4">
           {/* Level Explanation */}
           <div className="card mb-3">
-            <div className="card-header">
-              <h6 className="card-title mb-0">
-                <i className="bx bx-info-circle me-1"></i>
+            <div className="px-5 py-4 border-b border-surface-200">
+              <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                <i className="bx bx-info-circle mr-1"></i>
                 {t('admin.maintenance.levelInfo', { defaultValue: 'Maintenance Levels' })}
               </h6>
             </div>
-            <div className="card-body p-0">
-              <div className="table-responsive">
-              <table className="table table-sm mb-0">
+            <div className="p-5 p-0">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm mb-0">
                 <thead>
                   <tr>
                     <th>{t('admin.maintenance.component', { defaultValue: 'Component' })}</th>
@@ -491,28 +491,28 @@ export default function AdminMaintenancePage() {
 
           {/* Tips */}
           <div className="card">
-            <div className="card-header">
-              <h6 className="card-title mb-0">
-                <i className="bx bx-bulb me-1"></i>
+            <div className="px-5 py-4 border-b border-surface-200">
+              <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+                <i className="bx bx-bulb mr-1"></i>
                 {t('admin.maintenance.tips', { defaultValue: 'Tips' })}
               </h6>
             </div>
-            <div className="card-body">
-              <ul className="list-unstyled mb-0 small text-muted">
+            <div className="p-5">
+              <ul className="list-unstyled mb-0 text-sm text-muted">
                 <li className="mb-2">
-                  <i className="bx bx-right-arrow-alt me-1"></i>
+                  <i className="bx bx-right-arrow-alt mr-1"></i>
                   {t('admin.maintenance.tip1', { defaultValue: 'Use Partial for UI/frontend updates — merchants can still check payment status.' })}
                 </li>
                 <li className="mb-2">
-                  <i className="bx bx-right-arrow-alt me-1"></i>
+                  <i className="bx bx-right-arrow-alt mr-1"></i>
                   {t('admin.maintenance.tip2', { defaultValue: 'Use Full only for database migrations or critical infrastructure changes.' })}
                 </li>
                 <li className="mb-2">
-                  <i className="bx bx-right-arrow-alt me-1"></i>
+                  <i className="bx bx-right-arrow-alt mr-1"></i>
                   {t('admin.maintenance.tip3', { defaultValue: 'Background jobs (watchers, sweeps, webhooks) continue running in both modes.' })}
                 </li>
                 <li>
-                  <i className="bx bx-right-arrow-alt me-1"></i>
+                  <i className="bx bx-right-arrow-alt mr-1"></i>
                   {t('admin.maintenance.tip4', { defaultValue: 'Changes take effect immediately via Redis cache invalidation.' })}
                 </li>
               </ul>

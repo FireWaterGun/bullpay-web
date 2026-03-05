@@ -79,7 +79,7 @@ export default function InvoiceFilterPanel({
           </button>
           <button
             type="button"
-            className="btn btn-outline-secondary"
+            className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
             onClick={onReset}
             disabled={loading}
           >
@@ -132,7 +132,7 @@ function CoinNetworkDropdown({ coinNetworks, coinNetworkIdFilter, setCoinNetwork
         ) : (
           <span className="text-surface-500">{t('filter.all', { defaultValue: 'All' })}</span>
         )}
-        <i className={`bx bx-chevron-${open ? 'up' : 'down'} text-surface-400`}></i>
+        <i className={`bx bx-chevron-${open ?'up' : 'down'} text-surface-400`}></i>
       </button>
       {open && (
         <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-white shadow-lg max-h-[280px] overflow-y-auto">

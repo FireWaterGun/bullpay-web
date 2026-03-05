@@ -52,7 +52,7 @@ export default function SystemLedgerDetail() {
 
   if (!entry) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
@@ -71,23 +71,23 @@ export default function SystemLedgerDetail() {
   const explorerUrl = entry.explorerUrl || null
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Back Button */}
           <button
             onClick={() => router.back()}
-            className="btn btn-outline-secondary mb-3"
+            className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mb-3"
           >
-            <i className="bx bx-arrow-back me-2"></i>
+            <i className="bx bx-arrow-back mr-2"></i>
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
 
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                <div className="d-flex align-items-center gap-3">
+            <div className="p-5">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex items-center gap-3">
                   {entry.coinSymbol && (
                     <CoinImg
                       symbol={entry.coinSymbol}
@@ -99,13 +99,13 @@ export default function SystemLedgerDetail() {
                     <h4 className="mb-1">
                       {t('admin.ledger.systemLedgerEntry', { defaultValue: 'System Ledger Entry' })} #{entry.id}
                     </h4>
-                    <div className="d-flex align-items-center gap-2 flex-wrap">
-                      <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-danger' : 'bg-label-success')}`}>
-                        <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`badge ${entry.state ==='reversed' ? 'bg-surface-100 text-surface-600' : (isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700')}`}>
+                        <i className={`bx ${isCredit ?'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </span>
                       {entry.entryCode && (
-                        <span className="badge bg-label-secondary">
+                        <span className="badge bg-surface-100 text-surface-600">
                           {entryCodeLabels[entry.entryCode] || entry.entryCode}
                         </span>
                       )}
@@ -113,8 +113,8 @@ export default function SystemLedgerDetail() {
                     </div>
                   </div>
                 </div>
-                <div className="text-end">
-                  <div className={`fs-4 fw-bold ${isReversed ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
+                <div className="text-right">
+                  <div className={`fs-4 font-bold ${isReversed ?'' : (isCredit ? 'text-danger' : 'text-success')}`}>
                     {isReversed ? '' : (isCredit ? '-' : '+')}{formatAmount(entry.amount)} <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{entry.coinSymbol}</span>
                   </div>
                   <div className="text-muted">
@@ -128,23 +128,23 @@ export default function SystemLedgerDetail() {
             </div>
           </div>
 
-          <div className="row">
+          <div className="grid grid-cols-12 gap-x-6">
             {/* Entry Details */}
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
-                    <i className="bx bx-detail me-2"></i>
+                    <i className="bx bx-detail mr-2"></i>
                     {t('admin.ledger.details', { defaultValue: 'Details' })}
                   </h5>
                 </div>
-                <div className="card-body">
-                  <div className="table-responsive">
-                  <table className="table table-borderless">
+                <div className="p-5">
+                  <div className="overflow-x-auto">
+                  <table className="w-full">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
-                        <td className="fw-medium">{entry.id}</td>
+                        <td className="font-medium">{entry.id}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.walletId', { defaultValue: 'Wallet ID' })}</td>
@@ -153,12 +153,12 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.coin', { defaultValue: 'Coin' })}</td>
                         <td>
-                          <div className="d-flex align-items-center">
-                            <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="me-3" />
+                          <div className="flex items-center">
+                            <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="mr-3" />
                             <div>
-                              <span className="fw-medium">{entry.coinSymbol || 'N/A'}</span>
+                              <span className="font-medium">{entry.coinSymbol || 'N/A'}</span>
                               {entry.networkName && (
-                                <small className="text-muted ms-1">/ {entry.networkName}</small>
+                                <small className="text-muted ml-1">/ {entry.networkName}</small>
                               )}
                             </div>
                           </div>
@@ -167,7 +167,7 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
                         <td>
-                          <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-danger' : 'bg-label-success')}`}>
+                          <span className={`badge ${entry.state ==='reversed' ? 'bg-surface-100 text-surface-600' : (isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700')}`}>
                             {isCredit ? 'Credit' : 'Debit'}
                           </span>
                         </td>
@@ -177,7 +177,7 @@ export default function SystemLedgerDetail() {
                           <td className="text-muted">Entry Code</td>
                           <td>
                             <code>{entry.entryCode}</code>
-                            <span className="text-muted ms-2">({entryCodeLabels[entry.entryCode] || entry.entryCode})</span>
+                            <span className="text-muted ml-2">({entryCodeLabels[entry.entryCode] || entry.entryCode})</span>
                           </td>
                         </tr>
                       )}
@@ -188,7 +188,7 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
                         <td>
-                          <span className={`fw-bold ${isReversed ? '' : (isCredit ? 'text-danger' : 'text-success')}`}>
+                          <span className={`font-bold ${isReversed ?'' : (isCredit ? 'text-danger' : 'text-success')}`}>
                             {isReversed ? '' : (isCredit ? '-' : '+')}{formatAmount(entry.amount)}
                           </span>
                         </td>
@@ -205,7 +205,7 @@ export default function SystemLedgerDetail() {
                         <td className="text-muted">USD Rate</td>
                         <td>
                           {entry.usdRate ? formatUsd(entry.usdRate) : 'N/A'}
-                          {entry.rateSource && <small className="text-muted ms-1">({entry.rateSource})</small>}
+                          {entry.rateSource && <small className="text-muted ml-1">({entry.rateSource})</small>}
                         </td>
                       </tr>
                       <tr>
@@ -215,7 +215,7 @@ export default function SystemLedgerDetail() {
                       {purposeLabel && (
                         <tr>
                           <td className="text-muted">{t('admin.detail.purpose', { defaultValue: 'Purpose' })}</td>
-                          <td className="fw-medium">{purposeLabel}</td>
+                          <td className="font-medium">{purposeLabel}</td>
                         </tr>
                       )}
                     </tbody>
@@ -226,7 +226,7 @@ export default function SystemLedgerDetail() {
             </div>
 
             {/* Transaction, Timestamps & Metadata */}
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <TransactionCard entry={entry} metadata={metadata} explorerUrl={explorerUrl} onCopy={handleCopy} />
               <TimestampsCard entry={entry} />
               <MetadataCard metadata={metadata} />

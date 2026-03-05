@@ -217,7 +217,7 @@ export default function UserTransactionsDashboard() {
                 <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
               </select>
               <button
-                className="btn btn-outline-secondary whitespace-nowrap"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 whitespace-nowrap"
                 onClick={() => setShowCustom(true)}
               >
                 <i className="bx bx-calendar mr-1"></i>
@@ -246,7 +246,7 @@ export default function UserTransactionsDashboard() {
                 maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <button
-                className="btn btn-outline-secondary whitespace-nowrap"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 whitespace-nowrap"
                 onClick={() => {
                   setShowCustom(false)
                   setCustomFrom('')

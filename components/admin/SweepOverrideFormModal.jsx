@@ -69,21 +69,21 @@ export default function SweepOverrideFormModal({
 
   return (
     <>
-      <div className="modal-backdrop fade show"></div>
-      <div className="modal fade show d-block" tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">{title}</h5>
-              <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
+      <div className="fixed inset-0 bg-black/50 z-40"></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
+        <div className="w-full max-w-lg mx-4">
+          <div className="bg-white rounded-xl shadow-xl">
+            <div className="flex items-center justify-between p-5 border-b border-surface-200">
+              <h5 className="text-lg font-semibold text-surface-800">{title}</h5>
+              <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={loading}></button>
             </div>
-            <div className="modal-body">
-              <div className="row g-3">
-                <div className="col-12">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="col-span-12">
                   <label className="form-label">{idLabel} *</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder={idPlaceholder}
                     value={idValue}
                     onChange={handleIdChange}
@@ -96,22 +96,22 @@ export default function SweepOverrideFormModal({
                     </small>
                   )}
                 </div>
-                <div className="col-md-6">
+                <div className="md:col-span-6">
                   <label className="form-label">{t('admin.sweep.minBalance', { defaultValue: 'Min Balance' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder="0.0001"
                     value={form.minBalance}
                     onChange={(e) => handleNumericField('minBalance', e.target.value)}
                     maxLength={20}
                   />
                 </div>
-                <div className="col-md-6">
+                <div className="md:col-span-6">
                   <label className="form-label">{t('admin.sweep.gasBuffer', { defaultValue: 'Gas Buffer' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder="0.00005"
                     value={form.gasBuffer}
                     onChange={(e) => handleNumericField('gasBuffer', e.target.value)}
@@ -120,10 +120,10 @@ export default function SweepOverrideFormModal({
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
                 onClick={onClose}
                 disabled={loading}
               >
@@ -137,12 +137,12 @@ export default function SweepOverrideFormModal({
               >
                 {loading ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    <span className="spinner w-4 h-4 mr-2"></span>
                     {t('actions.saving', { defaultValue: 'Saving...' })}
                   </>
                 ) : (
                   <>
-                    <i className="bx bx-save me-1"></i>
+                    <i className="bx bx-save mr-1"></i>
                     {t('actions.save', { defaultValue: 'Save' })}
                   </>
                 )}

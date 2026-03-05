@@ -96,19 +96,19 @@ export default function AdminRoles() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+      <div className="flex justify-between items-center flex-wrap gap-3 mb-4">
         <div>
           <h4 className="mb-1">
-            <i className="bx bx-shield-alt-2 text-primary me-2"></i>
+            <i className="bx bx-shield-alt-2 text-primary mr-2"></i>
             {t('admin.roles.title', { defaultValue: 'Roles & Permissions' })}
           </h4>
           <p className="text-muted mb-0">
             {t('admin.roles.description', { defaultValue: 'Manage role-based access control (RBAC)' })}
             {requesterRole && (
-              <span className="ms-2">
-                — {t('admin.roles.loggedInAs', { defaultValue: 'logged in as' })} <span className={`badge bg-label-${ROLE_COLOR[requesterRole] || 'secondary'}`}>{formatRoleLabel(requesterRole)}</span>
+              <span className="ml-2">
+                — {t('admin.roles.loggedInAs', { defaultValue: 'logged in as' })} <span className={`badge bg-label-${ROLE_COLOR[requesterRole] ||'secondary'}`}>{formatRoleLabel(requesterRole)}</span>
               </span>
             )}
           </p>
@@ -117,7 +117,7 @@ export default function AdminRoles() {
       </div>
 
       {/* Summary Stats */}
-      <div className="row g-4 mb-4">
+      <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
         <SummaryCard
           title={t('admin.roles.totalUsers', { defaultValue: 'Total Users' })}
           value={totalUsers ?? '—'}
@@ -135,12 +135,12 @@ export default function AdminRoles() {
       {/* Role Hierarchy */}
       {hierarchyRoles.length > 0 && (
         <div className="card mb-4">
-          <div className="card-body">
+          <div className="p-5">
             <h6 className="mb-3">
-              <i className="bx bx-sitemap me-2 text-muted"></i>
+              <i className="bx bx-sitemap mr-2 text-muted"></i>
               {t('admin.roles.roleHierarchy', { defaultValue: 'Role Hierarchy' })}
             </h6>
-            <div className="d-flex align-items-end gap-3 flex-wrap justify-content-center">
+            <div className="flex items-end gap-3 flex-wrap justify-center">
               {hierarchyRoles.map((roleKey) => {
                 const level = ROLE_LEVEL[roleKey] || 1
                 const color = ROLE_COLOR[roleKey] || 'secondary'
@@ -156,7 +156,7 @@ export default function AdminRoles() {
                     onClick={() => router.push(`/admin/roles/${roleKey}`)}
                   >
                     <div
-                      className={`d-flex flex-column align-items-center justify-content-end mx-auto rounded-top bg-label-${color}`}
+                      className={`flex flex-col items-center justify-end mx-auto rounded-top bg-label-${color}`}
                       style={{ width: '100%', maxWidth: '120px', height: `${barHeight}px`, transition: 'opacity 0.2s' }}
                       onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8' }}
                       onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
@@ -165,7 +165,7 @@ export default function AdminRoles() {
                       <span className={`badge bg-${color} mb-2`} style={{ fontSize: '0.65rem' }}>L{level}</span>
                     </div>
                     <div className="mt-2">
-                      <small className="fw-semibold d-block" style={{ fontSize: '0.75rem' }}>{formatRoleLabel(roleKey)}</small>
+                      <small className="font-semibold block" style={{ fontSize: '0.75rem' }}>{formatRoleLabel(roleKey)}</small>
                       <small className="text-muted" style={{ fontSize: '0.7rem' }}>
                         {rs.count} {rs.count === 1 ? t('admin.roles.user', { defaultValue: 'user' }) : t('admin.roles.users', { defaultValue: 'users' })} · {rs.percentage.toFixed(0)}%
                       </small>
@@ -179,7 +179,7 @@ export default function AdminRoles() {
       )}
 
       {/* Role Cards */}
-      <div className="row g-4">
+      <div className="grid grid-cols-12 gap-x-6 gap-4">
         {sortedRoles.filter((role) => {
           const canAssign = typeof role === 'object' ? role.canAssign : undefined
           const roleLevel = ROLE_LEVEL[getRoleKey(role)] || 0
@@ -194,9 +194,9 @@ export default function AdminRoles() {
           const rs = getRoleStats(roleKey)
 
           return (
-            <div key={roleKey} className="col-md-6">
+            <div key={roleKey} className="md:col-span-6">
               <div
-                className="card h-100"
+                className="card h-full"
                 style={{
                   cursor: 'pointer',
                   transition: 'transform 0.15s, box-shadow 0.15s',
@@ -205,10 +205,10 @@ export default function AdminRoles() {
                 onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)' }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
               >
-                <div className="card-body">
+                <div className="p-5">
                   {/* Role header */}
-                  <div className="d-flex align-items-start justify-content-between mb-2">
-                    <div className="d-flex align-items-center gap-3">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-3">
                       <div className="avatar">
                         <span className={`avatar-initial rounded bg-label-${color}`}>
                           <i className={`bx ${icon} bx-sm`}></i>
@@ -219,7 +219,7 @@ export default function AdminRoles() {
                         <small className="text-muted">{roleKey}</small>
                       </div>
                     </div>
-                    <div className="d-flex align-items-center gap-2">
+                    <div className="flex items-center gap-2">
                       {level > 0 && (
                         <span className={`badge bg-label-${color}`}>L{level}</span>
                       )}
@@ -232,15 +232,15 @@ export default function AdminRoles() {
                   )}
 
                   {/* Stats */}
-                  <div className="d-flex align-items-center gap-4 mb-3">
+                  <div className="flex items-center gap-4 mb-3">
                     <div>
                       <h4 className="mb-0">{rs.count}</h4>
                       <small className="text-muted">{t('admin.roles.users', { defaultValue: 'Users' })}</small>
                     </div>
-                    <div className="flex-grow-1">
-                      <div className="d-flex justify-content-between mb-1">
+                    <div className="grow">
+                      <div className="flex justify-between mb-1">
                         <small className="text-muted">{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</small>
-                        <small className={`fw-medium text-${color}`}>{rs.percentage.toFixed(1)}%</small>
+                        <small className={`font-medium text-${color}`}>{rs.percentage.toFixed(1)}%</small>
                       </div>
                       <div className="progress" style={{ height: '6px' }}>
                         <div
@@ -253,8 +253,8 @@ export default function AdminRoles() {
                   </div>
 
                   {/* Footer link */}
-                  <div className="d-flex align-items-center justify-content-between pt-2 border-top">
-                    <small className="fw-medium">{t('admin.roles.managePermissions', { defaultValue: 'Manage Permissions' })}</small>
+                  <div className="flex items-center justify-between pt-2 border-top">
+                    <small className="font-medium">{t('admin.roles.managePermissions', { defaultValue: 'Manage Permissions' })}</small>
                     <i className={`bx bx-chevron-right text-${color}`}></i>
                   </div>
                 </div>
@@ -264,9 +264,9 @@ export default function AdminRoles() {
         })}
 
         {roles.length === 0 && (
-          <div className="col-12">
+          <div className="col-span-12">
             <div className="card">
-              <div className="card-body">
+              <div className="p-5">
                 <CardEmptyState
                   icon="bx-shield-x"
                   message={t('admin.roles.noRoles', { defaultValue: 'No roles found' })}

@@ -141,9 +141,7 @@ export default function WalletNewAddressPage() {
                   <button
                     type="button"
                     key={sym}
-                    className={`text-left rounded-xl border-2 p-3 transition-all cursor-pointer ${
-                      isActive
-                        ? 'border-primary-500 bg-primary-50 shadow-sm'
+                    className={`text-left rounded-xl border-2 p-3 transition-all cursor-pointer ${ isActive ?'border-primary-500 bg-primary-50 shadow-sm'
                         : 'border-surface-200 hover:border-surface-300 bg-white'
                     }`}
                     onClick={() => {
@@ -186,7 +184,7 @@ export default function WalletNewAddressPage() {
                   <button
                     type="button"
                     key={n.id}
-                    className={`btn ${selected ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    className={`btn ${selected ?'btn-primary' : 'btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100'}`}
                     onClick={() => setCoinNetworkId(String(n.id))}
                   >
                     {networkLabel}
@@ -246,7 +244,7 @@ export default function WalletNewAddressPage() {
           </div>
         </div>
         <div className="px-6 py-4 border-t border-surface-100 flex justify-end gap-2">
-          <button type="button" className="btn btn-outline-secondary" onClick={() => router.back()} disabled={saving}>
+          <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => router.back()} disabled={saving}>
             {t('actions.back') || 'Back'}
           </button>
           <button type="submit" className="btn btn-primary" disabled={saving}>

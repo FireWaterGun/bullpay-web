@@ -169,9 +169,9 @@ export default function CoinForm() {
 
   if (loading && isEdit) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="text-center py-6">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner text-primary" role="status">
             <span className="visually-hidden">{t('invoices.loading')}</span>
           </div>
         </div>
@@ -180,12 +180,12 @@ export default function CoinForm() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Header */}
-      <div className="d-flex align-items-center mb-4">
+      <div className="flex items-center mb-4">
         <Link
           href="/admin/coins"
-          className="btn btn-icon btn-outline-secondary me-3"
+          className="btn btn-icon btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mr-3"
         >
           <i className="bx bx-arrow-back"></i>
         </Link>
@@ -199,28 +199,28 @@ export default function CoinForm() {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-12 col-xl-8">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12 xl:col-span-8">
           <div className="card mb-4">
-            <h5 className="card-header">{t('crypto.coinInformation', { defaultValue: 'Coin Information' })}</h5>
-            <div className="card-body">
+            <h5 className="px-5 py-4 border-b border-surface-200">{t('crypto.coinInformation', { defaultValue: 'Coin Information' })}</h5>
+            <div className="p-5">
               {error && (
                 <div className="alert alert-danger mb-4" role="alert">
-                  <i className="bx bx-error-circle me-2"></i>
+                  <i className="bx bx-error-circle mr-2"></i>
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit}>
-                <div className="row g-4">
+                <div className="grid grid-cols-12 gap-x-6 gap-4">
                   {/* Symbol */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label className="form-label" htmlFor="symbol">
                       {t('crypto.symbol', { defaultValue: 'Symbol' })} <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-input"
                       id="symbol"
                       name="symbol"
                       value={formData.symbol}
@@ -236,13 +236,13 @@ export default function CoinForm() {
                   </div>
 
                   {/* Name */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label className="form-label" htmlFor="name">
                       {t('crypto.coinName', { defaultValue: 'Name' })} <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-input"
                       id="name"
                       name="name"
                       value={formData.name}
@@ -255,12 +255,12 @@ export default function CoinForm() {
                   </div>
 
                   {/* Type */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label className="form-label" htmlFor="type">
                       {t('crypto.type', { defaultValue: 'Type' })} <span className="text-danger">*</span>
                     </label>
                     <select
-                      className="form-select"
+                      className="form-input"
                       id="type"
                       name="type"
                       value={formData.type}
@@ -275,13 +275,13 @@ export default function CoinForm() {
                   </div>
 
                   {/* Decimals */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label className="form-label" htmlFor="decimals">
                       {t('crypto.decimals', { defaultValue: 'Decimals' })} <span className="text-danger">*</span>
                     </label>
                     <input
                       type="number"
-                      className="form-control"
+                      className="form-input"
                       id="decimals"
                       name="decimals"
                       value={formData.decimals}
@@ -295,12 +295,12 @@ export default function CoinForm() {
                   </div>
 
                   {/* Status */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label className="form-label" htmlFor="status">
                       {t('invoices.statusCol')}
                     </label>
                     <select
-                      className="form-select"
+                      className="form-input"
                       id="status"
                       name="status"
                       value={formData.status}
@@ -312,13 +312,13 @@ export default function CoinForm() {
                   </div>
 
                   {/* Logo URL */}
-                  <div className="col-12">
+                  <div className="col-span-12">
                     <label className="form-label" htmlFor="logoUrl">
                       {t('crypto.logoUrl', { defaultValue: 'Logo URL' })}
                     </label>
                     <input
                       type="url"
-                      className="form-control"
+                      className="form-input"
                       id="logoUrl"
                       name="logoUrl"
                       value={formData.logoUrl}
@@ -329,12 +329,12 @@ export default function CoinForm() {
                   </div>
 
                   {/* Actions */}
-                  <div className="col-12 pt-3">
-                    <div className="d-flex gap-3 justify-content-between">
-                      <div className="d-flex gap-3 ms-auto">
+                  <div className="col-span-12 pt-3">
+                    <div className="flex gap-3 justify-between">
+                      <div className="flex gap-3 ml-auto">
                         <Link
                           href="/admin/coins"
-                          className={`btn btn-label-secondary${loading ? ' disabled' : ''}`}
+                          className={`btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none${loading ?' disabled' : ''}`}
                         >
                           {t('actions.cancel', { defaultValue: 'Cancel' })}
                         </Link>
@@ -345,12 +345,12 @@ export default function CoinForm() {
                         >
                           {loading ? (
                             <>
-                              <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                              <span className="spinner w-4 h-4 mr-2" role="status"></span>
                               {t('actions.saving', { defaultValue: 'Saving...' })}
                             </>
                           ) : (
                             <>
-                              <i className="bx bx-save me-2"></i>
+                              <i className="bx bx-save mr-2"></i>
                               {isEdit ? t('actions.update', { defaultValue: 'Update' }) : t('actions.create', { defaultValue: 'Create' })}
                             </>
                           )}

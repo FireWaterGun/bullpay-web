@@ -72,13 +72,13 @@ export default function CoinList() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       <div className="card">
-        <div className="card-header">
-          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <div className="px-5 py-4 border-b border-surface-200">
+          <div className="flex justify-between items-center flex-wrap gap-3 mb-3">
             <div>
               <h4 className="mb-1">
-                <i className="bx bx-coin me-2"></i>
+                <i className="bx bx-coin mr-2"></i>
                 {t('nav.coins', { defaultValue: 'Coins' })}
               </h4>
               <p className="text-muted mb-0">{t('crypto.manageCoinsList', { defaultValue: 'Manage cryptocurrency coins' })}</p>
@@ -86,25 +86,25 @@ export default function CoinList() {
           </div>
           
           {/* Filters */}
-          <div className="row g-3 align-items-end">
-            <div className="col-md-3 col-sm-6">
+          <div className="grid grid-cols-12 gap-x-6 gap-3 items-end">
+            <div className="md:col-span-3 sm:col-span-6">
               <label className="form-label">{t('filter.search', { defaultValue: 'Search' })}</label>
               <input
                 type="text"
-                className="form-control"
+                className="form-input"
                 placeholder={t('crypto.searchCoins', { defaultValue: 'Search by name or symbol...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
               />
             </div>
-            <div className="col-auto d-flex gap-2">
+            <div className="col-auto flex gap-2">
               <button className="btn btn-primary" onClick={handleApplyFilter} disabled={loading}>
-                <i className="bx bx-filter-alt me-1"></i>
+                <i className="bx bx-filter-alt mr-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
               </button>
-              <button className="btn btn-outline-secondary" onClick={handleResetFilter} disabled={loading}>
-                <i className="bx bx-reset me-1"></i>
+              <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={handleResetFilter} disabled={loading}>
+                <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </button>
             </div>
@@ -113,17 +113,17 @@ export default function CoinList() {
 
         {/* Error Alert */}
         {error && (
-          <div className="card-body">
+          <div className="p-5">
             <div className="alert alert-danger mb-0" role="alert">
-              <i className="bx bx-error-circle me-2"></i>
+              <i className="bx bx-error-circle mr-2"></i>
               {error}
             </div>
           </div>
         )}
 
         {/* Table */}
-        <div className="table-responsive">
-          <table className="table table-hover">
+        <div className="overflow-x-auto">
+          <table className="w-full">
             <thead>
               <tr>
                 <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
@@ -148,21 +148,21 @@ export default function CoinList() {
                 coins.map((coin) => (
                   <tr key={coin.id}>
                     <td style={{ verticalAlign: 'middle' }}>
-                      <div className="d-flex align-items-center">
+                      <div className="flex items-center">
                         <CoinImg
                           symbol={coin.symbol}
                           logoUrl={coin.logoUrl}
                           size={40}
-                          className="me-3"
+                          className="mr-3"
                           showFallback
                         />
                         <div>
-                          <div className="fw-medium">{coin.name || 'N/A'}</div>
+                          <div className="font-medium">{coin.name || 'N/A'}</div>
                         </div>
                       </div>
                     </td>
                     <td style={{ verticalAlign: 'middle' }}>
-                      <span className="fw-medium">{coin.symbol}</span>
+                      <span className="font-medium">{coin.symbol}</span>
                     </td>
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       {coin.type === 'native' 
@@ -173,9 +173,9 @@ export default function CoinList() {
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>{coin.decimals || 0}</td>
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
                       {coin.status === 'active' ? (
-                        <span className="badge bg-label-success">{t('admin.active')}</span>
+                        <span className="badge bg-green-50 text-green-700">{t('admin.active')}</span>
                       ) : (
-                        <span className="badge bg-label-secondary">{coin.status}</span>
+                        <span className="badge bg-surface-100 text-surface-600">{coin.status}</span>
                       )}
                     </td>
                     <td className="text-center" style={{ verticalAlign: 'middle' }}>
@@ -196,8 +196,8 @@ export default function CoinList() {
 
         {/* Pagination */}
         {!error && coins.length > 0 && (
-          <div className="card-footer d-flex justify-content-between align-items-center">
-            <div className="text-muted small">
+          <div className="px-5 py-3 border-t border-surface-200 flex justify-between items-center">
+            <div className="text-muted text-sm">
               {t('invoices.showingEntries', {
                 start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                 end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -205,9 +205,9 @@ export default function CoinList() {
                 defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
               })}
             </div>
-            <div className="btn-group">
+            <div className="inline-flex rounded-lg shadow-sm">
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasPrev || loading}
                 onClick={() => handlePageChange(pagination.page - 1)}
               >
@@ -215,13 +215,13 @@ export default function CoinList() {
                 {t('actions.prev', { defaultValue: 'Previous' })}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled
               >
                 {pagination.page} / {pagination.totalPages}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasNext || loading}
                 onClick={() => handlePageChange(pagination.page + 1)}
               >

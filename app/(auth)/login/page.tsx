@@ -195,7 +195,7 @@ export default function LoginPage() {
                 <label htmlFor="email" className="form-label">Email</label>
                 <input
                   type="text"
-                  className={`form-input ${emailInvalid ? '!border-danger-500' : ''}`}
+                  className={`form-input ${emailInvalid ?'!border-danger-500' : ''}`}
                   id="email"
                   name="email"
                   placeholder="Enter your email"
@@ -218,7 +218,7 @@ export default function LoginPage() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     id="password"
-                    className={`form-input pr-10 ${passwordInvalid ? '!border-danger-500' : ''}`}
+                    className={`form-input pr-10 ${passwordInvalid ?'!border-danger-500' : ''}`}
                     name="password"
                     placeholder="••••••••••••"
                     maxLength={50}
@@ -233,7 +233,7 @@ export default function LoginPage() {
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
+                    <i className={`bx ${showPassword ?'bx-show' : 'bx-hide'} text-lg`}></i>
                   </button>
                 </div>
                 {passwordInvalid && (
@@ -272,9 +272,7 @@ export default function LoginPage() {
                   className="flex items-center cursor-pointer select-none bg-transparent border-0 p-0"
                 >
                   <span
-                    className={`flex items-center justify-center w-[18px] h-[18px] shrink-0 mr-2.5 rounded-[4px] border-[1.5px] transition-colors ${
-                      rememberMe
-                        ? 'bg-primary-600 border-primary-600 text-white'
+                    className={`flex items-center justify-center w-[18px] h-[18px] shrink-0 mr-2.5 rounded-[4px] border-[1.5px] transition-colors ${ rememberMe ?'bg-primary-600 border-primary-600 text-white'
                         : 'bg-white border-surface-300'
                     }`}
                   >

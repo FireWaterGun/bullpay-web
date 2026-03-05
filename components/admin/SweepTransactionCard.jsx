@@ -11,23 +11,23 @@ function AddressRow({ label, address, explorerUrl, onCopy }) {
       <td>
         {address ? (
           <>
-            <code className="text-break" style={{ fontSize: '0.75rem' }}>{address}</code>
-            <div className="d-flex gap-1 mt-2">
+            <code className="break-words" style={{ fontSize: '0.75rem' }}>{address}</code>
+            <div className="flex gap-1 mt-2">
               {explorerUrl && (
                 <a
                   href={`${explorerUrl}/address/${address}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                 >
-                  <i className="bx bx-link-external me-1"></i>Explorer
+                  <i className="bx bx-link-external mr-1"></i>Explorer
                 </a>
               )}
               <button
-                className="btn btn-sm btn-outline-secondary"
+                className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                 onClick={() => onCopy(address)}
               >
-                <i className="bx bx-copy me-1"></i>Copy
+                <i className="bx bx-copy mr-1"></i>Copy
               </button>
             </div>
           </>
@@ -44,38 +44,38 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
   const { fmtDate } = useDateFormat()
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-link me-2"></i>
+          <i className="bx bx-link mr-2"></i>
           Transaction
         </h5>
       </div>
-      <div className="card-body">
-        <div className="table-responsive">
-        <table className="table table-borderless">
+      <div className="p-5">
+        <div className="overflow-x-auto">
+        <table className="w-full">
           <tbody>
             <tr>
               <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
               <td>
                 {sweep.txHash ? (
                   <>
-                    <code className="text-break" style={{ fontSize: '0.75rem' }}>{sweep.txHash}</code>
-                    <div className="d-flex gap-1 mt-2">
+                    <code className="break-words" style={{ fontSize: '0.75rem' }}>{sweep.txHash}</code>
+                    <div className="flex gap-1 mt-2">
                       {explorerUrl && (
                         <a
                           href={`${explorerUrl}/tx/${sweep.txHash}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-sm btn-outline-primary"
+                          className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                         >
-                          <i className="bx bx-link-external me-1"></i>Explorer
+                          <i className="bx bx-link-external mr-1"></i>Explorer
                         </a>
                       )}
                       <button
-                        className="btn btn-sm btn-outline-secondary"
+                        className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                         onClick={() => onCopy(sweep.txHash)}
                       >
-                        <i className="bx bx-copy me-1"></i>Copy
+                        <i className="bx bx-copy mr-1"></i>Copy
                       </button>
                     </div>
                   </>
@@ -122,15 +122,15 @@ export function SweepTimestampsCard({ sweep, metadata }) {
   const { t } = useAdminTranslation()
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-time me-2"></i>
+          <i className="bx bx-time mr-2"></i>
           Timestamps
         </h5>
       </div>
-      <div className="card-body">
-        <div className="table-responsive">
-        <table className="table table-borderless">
+      <div className="p-5">
+        <div className="overflow-x-auto">
+        <table className="w-full">
           <tbody>
             <tr>
               <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.created', { defaultValue: 'Created' })}</td>

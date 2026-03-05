@@ -76,9 +76,9 @@ export default function InvoicePayment({ code }) {
 
   if (error || !invoice) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="alert alert-danger">
-          <i className="bx bx-error-circle me-1"></i>
+          <i className="bx bx-error-circle mr-1"></i>
           {error || t('invoices.notFound', { defaultValue: 'Invoice not found' })}
         </div>
       </div>
@@ -90,20 +90,20 @@ export default function InvoicePayment({ code }) {
   const isExpired = status === 'expired'
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row justify-content-center">
-        <div className="col-lg-8 col-xl-6">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6 justify-center">
+        <div className="lg:col-span-8 xl:col-span-6">
           {/* Status badge */}
           <div className="text-center mb-4">
             {isPaid && (
-              <div className="alert alert-success py-2">
-                <i className="bx bx-check-circle me-1"></i>
+              <div className="alert alert bg-green-50 text-green-800 border-green-200 py-2">
+                <i className="bx bx-check-circle mr-1"></i>
                 {t('invoices.paidSuccess', { defaultValue: 'Payment received successfully!' })}
               </div>
             )}
             {isExpired && (
               <div className="alert alert-danger py-2">
-                <i className="bx bx-time-five me-1"></i>
+                <i className="bx bx-time-five mr-1"></i>
                 {t('invoices.expired', { defaultValue: 'This invoice has expired' })}
               </div>
             )}
@@ -115,7 +115,7 @@ export default function InvoicePayment({ code }) {
           {/* QR Code + Address */}
           {!isPaid && !isExpired && (
             <div className="card mb-3">
-              <div className="card-body text-center">
+              <div className="p-5 text-center">
                 {qr?.dataUrl && (
                   <div className="mb-3">
                     <PaymentQRCode qrDataUrl={qr.dataUrl} size={220} />
@@ -124,18 +124,18 @@ export default function InvoicePayment({ code }) {
 
                 {invoice.paymentAddress && (
                   <div className="mb-3">
-                    <label className="form-label small text-muted">
+                    <label className="form-label text-sm text-muted">
                       {t('invoices.sendTo', { defaultValue: 'Send to this address' })}
                     </label>
-                    <div className="input-group">
+                    <div className="flex items-stretch">
                       <input
                         type="text"
-                        className="form-control font-monospace"
+                        className="form-input font-monospace"
                         value={invoice.paymentAddress}
                         readOnly
                         style={{ fontSize: '0.85rem' }}
                       />
-                      <button className="btn btn-outline-secondary" onClick={() => handleCopy(invoice.paymentAddress)}>
+                      <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => handleCopy(invoice.paymentAddress)}>
                         <i className="bx bx-copy"></i>
                       </button>
                     </div>
@@ -143,10 +143,10 @@ export default function InvoicePayment({ code }) {
                 )}
 
                 <div className="mb-3">
-                  <span className="text-muted small">{t('invoices.amount', { defaultValue: 'Amount' })}:</span>
-                  <div className="d-flex align-items-center justify-content-center gap-2 mt-1">
+                  <span className="text-muted text-sm">{t('invoices.amount', { defaultValue: 'Amount' })}:</span>
+                  <div className="flex items-center justify-center gap-2 mt-1">
                     <CoinImg symbol={invoice.coinSymbol} size={24} />
-                    <span className="fs-4 fw-bold">
+                    <span className="fs-4 font-bold">
                       {formatCoinAmount(invoice.amountDecimal || invoice.amount || 0)}
                     </span>
                     <span className="text-muted">{invoice.coinSymbol || ''}</span>
@@ -169,15 +169,15 @@ export default function InvoicePayment({ code }) {
 
           {/* Invoice Details */}
           <div className="card">
-            <div className="card-header">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h6 className="mb-0">{t('invoices.details', { defaultValue: 'Invoice Details' })}</h6>
             </div>
-            <div className="card-body">
-              <table className="table table-borderless table-sm mb-0">
+            <div className="p-5">
+              <table className="w-full text-sm mb-0">
                 <tbody>
                   <tr>
                     <td className="text-muted">ID</td>
-                    <td className="fw-semibold">{invoice.id || invoice.code}</td>
+                    <td className="font-semibold">{invoice.id || invoice.code}</td>
                   </tr>
                   {invoice.description && (
                     <tr>

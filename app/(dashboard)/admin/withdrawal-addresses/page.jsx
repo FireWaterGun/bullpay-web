@@ -202,9 +202,9 @@ export default function WithdrawalAddresses() {
   const actionConfig = getActionConfig()
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <AddressFilters
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}

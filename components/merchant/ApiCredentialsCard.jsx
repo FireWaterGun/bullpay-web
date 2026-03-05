@@ -53,14 +53,14 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             {apiKey && (
               <>
                 <button
-                  className="btn btn-outline-secondary"
+                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                   onClick={() => setShowApiKey(v => !v)}
                   title={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })}
                 >
-                  <i className={`bx ${showApiKey ? 'bx-hide' : 'bx-show'}`}></i>
+                  <i className={`bx ${showApiKey ?'bx-hide' : 'bx-show'}`}></i>
                 </button>
                 <button
-                  className="btn btn-outline-secondary"
+                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                   onClick={async () => {
                     const ok = await copyText(apiKey)
                     if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
@@ -106,11 +106,11 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
 
         {/* Actions */}
         <div className="flex flex-wrap gap-2 pt-2 border-t border-surface-200">
-          <button className="btn btn-outline-primary btn-sm" onClick={onRotate}>
+          <button className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white btn-sm" onClick={onRotate}>
             <i className="bx bx-refresh mr-1"></i>
             {t('merchant.rotateSecret', { defaultValue: 'Rotate Secret' })}
           </button>
-          <button className="btn btn-outline-danger btn-sm" onClick={onRegenerate}>
+          <button className="btn btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white btn-sm" onClick={onRegenerate}>
             <i className="bx bx-reset mr-1"></i>
             {t('merchant.regenerateKey', { defaultValue: 'Regenerate Key & Secret' })}
           </button>

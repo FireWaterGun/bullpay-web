@@ -108,7 +108,7 @@ export default function MaintenanceBanner() {
   return (
     <Link
       href="/admin/maintenance"
-      className="d-flex align-items-center gap-2 text-decoration-none me-auto"
+      className="flex items-center gap-2 no-underline mr-auto"
       style={{
         fontSize: '0.8125rem',
         whiteSpace: 'nowrap',

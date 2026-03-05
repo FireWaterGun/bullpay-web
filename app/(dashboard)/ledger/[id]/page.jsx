@@ -95,7 +95,7 @@ export default function MyLedgerDetail() {
   return (
     <>
       {/* Back Button */}
-      <Link href="/ledger" className="btn btn-outline-secondary mb-4 inline-flex items-center gap-2">
+      <Link href="/ledger" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mb-4 inline-flex items-center gap-2">
         <i className="bx bx-arrow-back"></i>
         {t('actions.back', { defaultValue: 'Back' })}
       </Link>
@@ -123,7 +123,7 @@ export default function MyLedgerDetail() {
               </div>
             </div>
             <div className="text-right">
-              <div className={`text-2xl font-bold ${isReversed ? '' : (isCredit ? 'text-green-600' : 'text-red-600')}`}>
+              <div className={`text-2xl font-bold ${isReversed ?'' : (isCredit ? 'text-green-600' : 'text-red-600')}`}>
                 {isReversed ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)} <span className="text-sm font-normal">{entry.coinSymbol}</span>
               </div>
               <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
@@ -177,7 +177,7 @@ export default function MyLedgerDetail() {
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('userLedger.amount', { defaultValue: 'Amount' })}</td>
                   <td className="py-2">
-                    <span className={`font-bold ${isReversed ? '' : (isCredit ? 'text-green-600' : 'text-red-600')}`}>
+                    <span className={`font-bold ${isReversed ?'' : (isCredit ? 'text-green-600' : 'text-red-600')}`}>
                       {isReversed ? '' : (isCredit ? '+' : '-')}{formatAmount(entry.amount)}
                     </span>
                   </td>

@@ -40,7 +40,7 @@ function OverrideRow({ label, config, showMaximum }) {
       )}
       <td>
         {config.fee?.type ? (
-          <span className="badge bg-label-info">{config.fee.type}</span>
+          <span className="badge bg-cyan-50 text-cyan-700">{config.fee.type}</span>
         ) : (
           <span className="text-muted">-</span>
         )}
@@ -67,11 +67,11 @@ export default function WithdrawalOverridesSection({
 
   return (
     <div className="mb-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="flex justify-between items-center mb-3">
         <h6 className="mb-0">
           {title}
           <span
-            className={`badge rounded-pill ${badgeColor} ms-2`}
+            className={`badge rounded-full ${badgeColor} ml-2`}
             style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}
           >
             {entries.length}
@@ -80,8 +80,8 @@ export default function WithdrawalOverridesSection({
       </div>
 
       {entries.length > 0 ? (
-        <div className="table-responsive">
-          <table className="table table-hover">
+        <div className="overflow-x-auto">
+          <table className="w-full">
             <thead>
               <tr>
                 <th>{t(labelColumnKey, { defaultValue: labelColumnDefault })}</th>

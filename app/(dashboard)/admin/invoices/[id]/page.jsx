@@ -54,7 +54,7 @@ export default function AdminInvoiceDetail() {
 
   if (!invoice) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="alert alert-warning">{t('admin.invoiceDetail.notFound', { defaultValue: 'Invoice not found' })}</div>
       </div>
     )
@@ -66,31 +66,31 @@ export default function AdminInvoiceDetail() {
   const payments = invoice.payments || []
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Back button */}
           <div className="mb-4">
-            <Link href="/admin/invoices" className="btn btn-label-secondary">
-              <i className="bx bx-arrow-back me-1"></i>
+            <Link href="/admin/invoices" className="btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none">
+              <i className="bx bx-arrow-back mr-1"></i>
               Back to Invoices
             </Link>
           </div>
 
           {/* Invoice Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div className="d-flex align-items-center gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
+                <div className="flex items-center gap-3">
                   <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={40} />
                   <div>
                     <h4 className="mb-0">
                       Invoice #{invoice.id}
                       {invoice.invoiceNumber && (
-                        <small className="text-muted ms-2">({invoice.invoiceNumber})</small>
+                        <small className="text-muted ml-2">({invoice.invoiceNumber})</small>
                       )}
                     </h4>
-                    <div className="d-flex align-items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1">
                       <span className={statusBadgeClass(invoice.status)}>
                         {String(invoice.status || '').toUpperCase()}
                       </span>
@@ -105,26 +105,26 @@ export default function AdminInvoiceDetail() {
           </div>
 
           {/* Invoice Details */}
-          <div className="row">
-            <div className="col-md-6">
+          <div className="grid grid-cols-12 gap-x-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Invoice Details</h5>
                 </div>
-                <div className="card-body">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
-                        <td className="fw-medium">{invoice.id}</td>
+                        <td className="font-medium">{invoice.id}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Invoice Number</td>
-                        <td className="fw-medium">{invoice.invoiceNumber || '-'}</td>
+                        <td className="font-medium">{invoice.invoiceNumber || '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Public Code</td>
-                        <td className="fw-medium">{invoice.publicCode || '-'}</td>
+                        <td className="font-medium">{invoice.publicCode || '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
@@ -136,25 +136,25 @@ export default function AdminInvoiceDetail() {
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
-                        <td className="fw-medium">{formatAmount(invoice.amount)} {coinSymbol}</td>
+                        <td className="font-medium">{formatAmount(invoice.amount)} {coinSymbol}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Paid Amount</td>
-                        <td className="fw-medium">{formatAmount(invoice.paidAmount)} {coinSymbol}</td>
+                        <td className="font-medium">{formatAmount(invoice.paidAmount)} {coinSymbol}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Remaining</td>
-                        <td className="fw-medium">
+                        <td className="font-medium">
                           {formatAmount(invoice.remainingAmount)} {coinSymbol}
                           {invoice.isFullyPaid && (
-                            <span className="badge bg-label-success ms-2">Fully Paid</span>
+                            <span className="badge bg-green-50 text-green-700 ml-2">Fully Paid</span>
                           )}
                         </td>
                       </tr>
                       {invoice.amountUsd && (
                         <tr>
                           <td className="text-muted">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
-                          <td className="fw-medium">${formatAmount(invoice.amountUsd)}</td>
+                          <td className="font-medium">${formatAmount(invoice.amountUsd)}</td>
                         </tr>
                       )}
                       {invoice.usdRate && (
@@ -163,7 +163,7 @@ export default function AdminInvoiceDetail() {
                           <td>
                             ${formatAmount(invoice.usdRate)}
                             {invoice.rateSource && (
-                              <small className="text-muted ms-1">({invoice.rateSource})</small>
+                              <small className="text-muted ml-1">({invoice.rateSource})</small>
                             )}
                           </td>
                         </tr>
@@ -171,8 +171,8 @@ export default function AdminInvoiceDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
-                          <div className="d-flex align-items-center">
-                            <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="me-2" />
+                          <div className="flex items-center">
+                            <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-2" />
                             <span>{coinSymbol}</span>
                           </div>
                         </td>
@@ -201,40 +201,40 @@ export default function AdminInvoiceDetail() {
               </div>
             </div>
 
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">User & Address</h5>
                 </div>
-                <div className="card-body">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
-                        <td className="fw-medium">{invoice.userId || invoice.user?.id || '-'}</td>
+                        <td className="font-medium">{invoice.userId || invoice.user?.id || '-'}</td>
                       </tr>
                       {invoice.user?.email && (
                         <tr>
                           <td className="text-muted">{t('admin.detail.email', { defaultValue: 'Email' })}</td>
-                          <td className="fw-medium">{invoice.user.email}</td>
+                          <td className="font-medium">{invoice.user.email}</td>
                         </tr>
                       )}
                       {invoice.merchantId && (
                         <tr>
                           <td className="text-muted">Merchant ID</td>
-                          <td className="fw-medium">{invoice.merchantId}</td>
+                          <td className="font-medium">{invoice.merchantId}</td>
                         </tr>
                       )}
                       <tr>
                         <td className="text-muted">Payment Address</td>
                         <td>
                           {invoice.paymentAddress ? (
-                            <div className="d-flex align-items-center">
-                              <code className="text-body me-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                            <div className="flex items-center">
+                              <code className="text-body mr-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
                                 {invoice.paymentAddress}
                               </code>
                               <button
-                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
+                                className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0"
                                 onClick={() => handleCopy(invoice.paymentAddress)}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
                               >

@@ -92,7 +92,7 @@ export function Toast({ message, type = 'success', duration = 5000, onClose }) {
 
   return (
     <div
-      className={`${isExiting ? 'toast-exit' : 'toast-enter'}`}
+      className={`${isExiting ?'toast-exit' : 'toast-enter'}`}
       role="alert"
       style={toastStyle}
     >

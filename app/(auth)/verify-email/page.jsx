@@ -121,26 +121,26 @@ function VerifyEmailContent() {
             )}
             {status === 'error' && !isInvalidToken && (
               <>
-                <button type="button" className="btn btn-outline-primary" onClick={onBack}>
+                <button type="button" className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white" onClick={onBack}>
                   Back
                 </button>
-                <Link href="/register" className="btn btn-outline-secondary">
+                <Link href="/register" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
                   Register
                 </Link>
               </>
             )}
             {status === 'error' && isInvalidToken && (
               <>
-                <Link href="/login" className="btn btn-outline-primary">
+                <Link href="/login" className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white">
                   Go to Login
                 </Link>
-                <Link href="/register" className="btn btn-outline-secondary">
+                <Link href="/register" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
                   Register
                 </Link>
               </>
             )}
             {status === 'pending' && (
-              <button type="button" className="btn btn-outline-secondary" disabled>
+              <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" disabled>
                 Checking...
               </button>
             )}

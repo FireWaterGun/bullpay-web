@@ -144,7 +144,7 @@ export default function BalancePage() {
                   <div className="flex gap-2">
                     <Link
                       href={`/wallet/withdraw/${b.coinNetworkId}`}
-                      className="btn btn-sm btn-outline-primary flex-1"
+                      className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white flex-1"
                     >
                       <i className="bx bx-upload mr-1"></i>
                       {t('balance.withdraw', { defaultValue: 'Withdraw' })}

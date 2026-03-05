@@ -210,23 +210,23 @@ export default function SweepOverrides() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">{t('admin.sweep.overridesTitle', { defaultValue: 'Sweep Overrides' })}</h5>
-              <p className="text-muted small mb-0 mt-1">
+              <p className="text-muted text-sm mb-0 mt-1">
                 {t('admin.sweep.overridesDesc', { defaultValue: 'Configure specific sweep settings for individual coins and networks' })}
               </p>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {/* Coin Overrides */}
               <div className="mb-5">
-                <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.sweep.coinOverrides', { defaultValue: 'Coin Overrides' })}
-                    <span className="badge rounded-pill bg-primary ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
                       {Object.keys(coinOverrides).length}
                     </span>
                   </h6>
@@ -242,10 +242,10 @@ export default function SweepOverrides() {
 
               {/* Network Overrides */}
               <div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.sweep.networkOverrides', { defaultValue: 'Network Overrides' })}
-                    <span className="badge rounded-pill bg-primary ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
                       {Object.keys(networkOverrides).length}
                     </span>
                   </h6>

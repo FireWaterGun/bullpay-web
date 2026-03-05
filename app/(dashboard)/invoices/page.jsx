@@ -181,7 +181,7 @@ export default function InvoiceList() {
             <div className="text-surface-500 py-4">{t('invoices.loading')}</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="table w-full">
+              <table className="w-full w-full">
                 <thead>
                   <tr>
                     <th className="whitespace-nowrap">{t('invoices.invoice') || 'Invoice'}</th>
@@ -222,7 +222,7 @@ export default function InvoiceList() {
                               title={t('actions.copyAddress') || t('actions.copy') || 'Copy'}
                               onClick={() => handleCopy(it.paymentAddress, it.id)}
                             >
-                              <i className={`bx ${copiedId === it.id ? 'bx-check text-green-500' : 'bx-copy'} text-base`}></i>
+                              <i className={`bx ${copiedId === it.id ?'bx-check text-green-500' : 'bx-copy'} text-base`}></i>
                             </button>
                           )}
                         </div>
@@ -251,8 +251,7 @@ export default function InvoiceList() {
                       </td>
                       <td>
                         <span
-                          className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full capitalize ${
-                            statusBadge[it.status?.toLowerCase()] || 'bg-surface-100 text-surface-600'
+                          className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full capitalize ${ statusBadge[it.status?.toLowerCase()] ||'bg-surface-100 text-surface-600'
                           }`}
                         >
                           {it.status ? t(`invoices.${it.status.toLowerCase()}`, { defaultValue: it.status }) : '-'}

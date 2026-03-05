@@ -5,15 +5,15 @@ export default function SweepMetadataCard({ metadata }) {
 
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-info-circle me-2"></i>
+          <i className="bx bx-info-circle mr-2"></i>
           Metadata
         </h5>
       </div>
-      <div className="card-body">
-        <div className="table-responsive">
-        <table className="table table-borderless">
+      <div className="p-5">
+        <div className="overflow-x-auto">
+        <table className="w-full">
           <tbody>
             {metadata.strategy && (
               <tr>
@@ -27,7 +27,7 @@ export default function SweepMetadataCard({ metadata }) {
                 <td>
                   <code>{metadata.invoiceNumber}</code>
                   {metadata.invoiceStatus && (
-                    <span className="badge bg-label-secondary ms-2">{metadata.invoiceStatus}</span>
+                    <span className="badge bg-surface-100 text-surface-600 ml-2">{metadata.invoiceStatus}</span>
                   )}
                 </td>
               </tr>

@@ -49,19 +49,19 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
     <>
       <div className="mb-4">
         <div className="mb-3">
-          <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}</h6>
+          <h6 className="font-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}</h6>
           <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.autoApproveDesc', { defaultValue: 'Automatically approve small withdrawals' })}</p>
         </div>
-        <div className="table-responsive">
-          <table className="table table-borderless mb-0">
+        <div className="overflow-x-auto">
+          <table className="w-full mb-0">
             <tbody>
               <tr style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
-                <td width="35%" className="py-3 ps-3" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</td>
+                <td width="35%" className="py-3 pl-3" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</td>
                 <td className="py-3">
-                  <div className="form-check form-switch mb-0">
+                  <div className="flex items-center gap-2 relative inline-flex items-center mb-0">
                     <input
                       type="checkbox"
-                      className="form-check-input"
+                      className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
                       checked={autoApprove.enabled || false}
                       disabled={toggling}
                       onChange={async (e) => {
@@ -85,9 +85,9 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
                 </td>
               </tr>
               <tr>
-                <td className="py-3 ps-3" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</td>
+                <td className="py-3 pl-3" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</td>
                 <td className="py-3">
-                  <div className="d-flex align-items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <code>{autoApprove.thresholdUsd || 0}</code>
                     <button type="button" className="btn btn-sm btn-icon" onClick={handleEdit} disabled={toggling} style={{ marginLeft: 'auto' }}>
                       <i className="bx bx-edit text-primary" style={{ fontSize: '1rem' }}></i>
@@ -128,34 +128,34 @@ function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }
 
   return (
     <>
-      <div className="modal-backdrop fade show"></div>
-      <div className="modal fade show d-block" tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-                  <h5 className="modal-title">
+      <div className="fixed inset-0 bg-black/50 z-40"></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
+        <div className="w-full max-w-lg mx-4">
+          <div className="bg-white rounded-xl shadow-xl">
+            <div className="flex items-center justify-between p-5 border-b border-surface-200">
+                  <h5 className="text-lg font-semibold text-surface-800">
                     {t('admin.withdrawal.editAutoApprove', { defaultValue: 'Edit Auto Approve' })}
                   </h5>
-                  <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
+                  <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={loading}></button>
                 </div>
-                <div className="modal-body">
-                  <div className="row g-3">
-                    <div className="col-12">
-                      <div className="form-check form-switch">
+                <div className="p-5">
+                  <div className="grid grid-cols-12 gap-x-6 gap-3">
+                    <div className="col-span-12">
+                      <div className="flex items-center gap-2 relative inline-flex items-center">
                         <input
                           type="checkbox"
-                          className="form-check-input"
+                          className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
                           checked={formData.enabled || false}
                           onChange={(e) => setFormData({ ...formData, enabled: e.target.checked })}
                         />
-                        <label className="form-check-label">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</label>
+                        <label className="text-sm text-surface-700">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</label>
                       </div>
                     </div>
-                    <div className="col-12">
+                    <div className="col-span-12">
                       <label className="form-label">{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={formData.thresholdUsd || ''}
                         onChange={(e) => {
                           const value = e.target.value
@@ -168,10 +168,10 @@ function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }
                     </div>
                   </div>
                 </div>
-                <div className="modal-footer">
+                <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
                     onClick={onClose}
                     disabled={loading}
                   >
@@ -185,12 +185,12 @@ function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }
                   >
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        <span className="spinner w-4 h-4 mr-2"></span>
                         {t('actions.saving', { defaultValue: 'Saving...' })}
                       </>
                     ) : (
                       <>
-                        <i className="bx bx-save me-1"></i>
+                        <i className="bx bx-save mr-1"></i>
                         {t('actions.save', { defaultValue: 'Save' })}
                       </>
                     )}

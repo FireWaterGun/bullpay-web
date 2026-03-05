@@ -7,12 +7,12 @@ const formatCurrency = formatUsdAuto
 export default function RevenueBarChart({ data, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
-      <div className="d-flex flex-column align-items-center justify-content-center" style={{ height }}>
-        <div className="rounded-circle bg-label-secondary d-flex align-items-center justify-content-center mb-3" style={{ width: 64, height: 64 }}>
+      <div className="flex flex-col items-center justify-center" style={{ height }}>
+        <div className="rounded-full bg-surface-100 text-surface-600 flex items-center justify-center mb-3" style={{ width: 64, height: 64 }}>
           <i className="bx bx-bar-chart-alt-2 fs-2"></i>
         </div>
-        <span className="fw-medium text-dark">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
-        <span className="text-muted small mt-1">{t ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' }) : 'Select a date range with data'}</span>
+        <span className="font-medium text-dark">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
+        <span className="text-muted text-sm mt-1">{t ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' }) : 'Select a date range with data'}</span>
       </div>
     )
   }
@@ -176,15 +176,15 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
           </div>
           {/* Legend */}
           <div style={{ width: 100, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
-            <div className="d-flex align-items-center gap-2">
+            <div className="flex items-center gap-2">
               <span style={{ width: 14, height: 14, backgroundColor: 'var(--bs-primary)', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
               <small>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}</small>
             </div>
-            <div className="d-flex align-items-center gap-2">
+            <div className="flex items-center gap-2">
               <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(var(--bs-gray-400) 0% 25%, var(--bs-gray-500) 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
               <small>{t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}</small>
             </div>
-            <div className="d-flex align-items-center gap-2">
+            <div className="flex items-center gap-2">
               <span style={{ width: 16, borderBottom: '2px solid var(--bs-info)', display: 'inline-block', flexShrink: 0 }}></span>
               <small>{t ? t('admin.operatingProfit', { defaultValue: 'Operating Profit' }) : 'Operating Profit'}</small>
             </div>

@@ -79,11 +79,11 @@ export default function ConfirmActionModal({ action, loading, is2FAEnabled, onCo
                 />
                 <button
                   type="button"
-                  className="btn btn-outline-secondary"
+                  className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  <i className={`bx ${showPassword ? 'bx-hide' : 'bx-show'}`}></i>
+                  <i className={`bx ${showPassword ?'bx-hide' : 'bx-show'}`}></i>
                 </button>
               </div>
             </div>
@@ -122,12 +122,12 @@ export default function ConfirmActionModal({ action, loading, is2FAEnabled, onCo
             )}
           </div>
           <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={loading}>
+            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={loading}>
               {t('actions.cancel', { defaultValue: 'Cancel' })}
             </button>
             <button
               type="submit"
-              className={`btn ${action === 'rotate-secret' ? 'btn-primary' : 'btn-danger'}`}
+              className={`btn ${action ==='rotate-secret' ? 'btn-primary' : 'btn-danger'}`}
               disabled={!canSubmit}
             >
               {loading ? (

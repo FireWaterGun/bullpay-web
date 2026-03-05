@@ -27,19 +27,19 @@ export default function WithdrawalTxTable({
 
   return (
     <div className="card">
-      <div className="card-body">
-        <div className="table-responsive" style={{ overflowX: 'auto' }}>
-          <table className="table table-hover" style={{ minWidth: '1200px' }}>
+      <div className="p-5">
+        <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+          <table className="w-full" style={{ minWidth: '1200px' }}>
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
                 <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                 <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
                 <th>{t('withdrawal.chain', { defaultValue: 'Chain' })}</th>
                 <th>{t('withdrawal.coin', { defaultValue: 'Coin' })}</th>
-                <th className="text-end">{t('withdrawal.amount', { defaultValue: 'Amount' })}</th>
-                <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
-                <th className="text-end">{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
-                <th className="text-end">{t('withdrawal.feeUsd', { defaultValue: 'Fee USD' })}</th>
+                <th className="text-right">{t('withdrawal.amount', { defaultValue: 'Amount' })}</th>
+                <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>
+                <th className="text-right">{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
+                <th className="text-right">{t('withdrawal.feeUsd', { defaultValue: 'Fee USD' })}</th>
                 <th className="text-center">{t('withdrawal.status', { defaultValue: 'Status' })}</th>
                 <th className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
                 <th>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
@@ -59,10 +59,10 @@ export default function WithdrawalTxTable({
               withdrawals.map((withdrawal) => (
                 <tr key={withdrawal.id}>
                   <td>
-                    <span className="fw-semibold text-primary">{withdrawal.id}</span>
+                    <span className="font-semibold text-primary">{withdrawal.id}</span>
                   </td>
                   <td className="text-center">
-                    <span className="fw-medium">{withdrawal.userId || withdrawal.user?.id || '-'}</span>
+                    <span className="font-medium">{withdrawal.userId || withdrawal.user?.id || '-'}</span>
                   </td>
                   <td>
                     <span className="text-muted">
@@ -70,55 +70,55 @@ export default function WithdrawalTxTable({
                     </span>
                   </td>
                   <td style={{ whiteSpace: 'nowrap' }}>
-                    <div className="d-flex align-items-center">
+                    <div className="flex items-center">
                       <CoinImg
                         symbol={(withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || '').toUpperCase()}
                         networkSymbol={(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase()}
                         size={24}
-                        className="me-3"
+                        className="mr-3"
                       />
                       <div>
-                        <div className="fw-medium" style={{ lineHeight: 1.2 }}>{(withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || '-').toUpperCase()}</div>
+                        <div className="font-medium" style={{ lineHeight: 1.2 }}>{(withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || '-').toUpperCase()}</div>
                         {(withdrawal.network?.name || withdrawal.coinNetwork?.network?.name) && (
                           <small className="text-muted" style={{ fontSize: '0.75rem' }}>{withdrawal.network?.name || withdrawal.coinNetwork?.network?.name}</small>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="text-end text-nowrap">
-                    <span className="fw-medium">
+                  <td className="text-right whitespace-nowrap">
+                    <span className="font-medium">
                       {formatAmount(withdrawal.amountRaw || withdrawal.amount, withdrawal.decimals || 18)} {withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || ''}
                     </span>
                   </td>
-                  <td className="text-end text-nowrap">
+                  <td className="text-right whitespace-nowrap">
                     {withdrawal.amountUsd ? (
-                      <span className="fw-medium">{formatUsd(withdrawal.amountUsd)}</span>
+                      <span className="font-medium">{formatUsd(withdrawal.amountUsd)}</span>
                     ) : (
                       <span className="text-muted">-</span>
                     )}
                   </td>
-                  <td className="text-end text-nowrap">
+                  <td className="text-right whitespace-nowrap">
                     <span className="text-muted">
                       {formatAmount(withdrawal.totalFeeRaw || withdrawal.totalFee || withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
                     </span>
                   </td>
-                  <td className="text-end text-nowrap">
+                  <td className="text-right whitespace-nowrap">
                     {withdrawal.totalFeeUsd ? (
                       <span className="text-muted">${withdrawal.totalFeeUsd}</span>
                     ) : (
                       <span className="text-muted">-</span>
                     )}
                   </td>
-                  <td className="text-center text-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
+                  <td className="text-center whitespace-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
                   <td className="text-center">
                     {withdrawal.status?.toLowerCase() === 'pending' ? (
-                      <div className="d-flex gap-1 justify-content-center">
+                      <div className="flex gap-1 justify-center">
                         <button
                           className="btn btn-sm btn-primary"
                           onClick={() => onApproveClick(withdrawal)}
                           disabled={approving || rejecting}
                         >
-                          <i className="bx bx-check me-1"></i>
+                          <i className="bx bx-check mr-1"></i>
                           {t('withdrawal.approve', { defaultValue: 'Approve' })}
                         </button>
                         <button
@@ -126,7 +126,7 @@ export default function WithdrawalTxTable({
                           onClick={() => onRejectClick(withdrawal)}
                           disabled={approving || rejecting}
                         >
-                          <i className="bx bx-x me-1"></i>
+                          <i className="bx bx-x mr-1"></i>
                           {t('withdrawal.reject', { defaultValue: 'Reject' })}
                         </button>
                       </div>
@@ -136,8 +136,8 @@ export default function WithdrawalTxTable({
                   </td>
                   <td>
                     {withdrawal.txHash ? (
-                      <div className="d-flex align-items-center">
-                        <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                      <div className="flex items-center">
+                        <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
                           {withdrawal.txHash}
                         </span>
                         {(withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl) && (
@@ -145,7 +145,7 @@ export default function WithdrawalTxTable({
                             href={`${withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl}/tx/${withdrawal.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                            className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                             title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                           >
                             <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
@@ -157,13 +157,13 @@ export default function WithdrawalTxTable({
                     )}
                   </td>
                   <td>
-                    <div className="d-flex align-items-center">
-                      <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                    <div className="flex items-center">
+                      <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
                         {withdrawal.fromAddress || 'N/A'}
                       </span>
                       {withdrawal.fromAddress && (
                         <button
-                          className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                          className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                           onClick={() => onCopy(withdrawal.fromAddress)}
                           title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         >
@@ -173,13 +173,13 @@ export default function WithdrawalTxTable({
                     </div>
                   </td>
                   <td>
-                    <div className="d-flex align-items-center">
-                      <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                    <div className="flex items-center">
+                      <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
                         {withdrawal.toAddress || 'N/A'}
                       </span>
                       {withdrawal.toAddress && (
                         <button
-                          className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                          className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                           onClick={() => onCopy(withdrawal.toAddress)}
                           title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         >
@@ -199,8 +199,8 @@ export default function WithdrawalTxTable({
         </div>
 
         {pagination && pagination.total > 0 && (
-          <div className="d-flex justify-content-between align-items-center mt-4">
-            <div className="text-muted small">
+          <div className="flex justify-between items-center mt-4">
+            <div className="text-muted text-sm">
               {t('invoices.showingEntries', {
                 start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                 end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -208,9 +208,9 @@ export default function WithdrawalTxTable({
                 defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
               })}
             </div>
-            <div className="btn-group">
+            <div className="inline-flex rounded-lg shadow-sm">
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasPrev || loading}
                 onClick={() => { onPageChange(currentPage - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
               >
@@ -218,13 +218,13 @@ export default function WithdrawalTxTable({
                 {t('actions.prev', { defaultValue: 'Previous' })}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled
               >
                 {pagination.page} / {pagination.totalPages}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasNext || loading}
                 onClick={() => { onPageChange(currentPage + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
               >

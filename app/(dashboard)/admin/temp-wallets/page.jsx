@@ -20,11 +20,11 @@ const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned'
 
 function statusBadgeClass(s) {
   const v = String(s || '').toLowerCase()
-  if (v === 'active' || v === 'pooled') return 'badge bg-label-success'
-  if (v === 'assigned') return 'badge bg-label-info'
-  if (v === 'used' || v === 'sweeped') return 'badge bg-label-warning'
-  if (v === 'expired' || v === 'disabled') return 'badge bg-label-danger'
-  return 'badge bg-label-secondary'
+  if (v === 'active' || v === 'pooled') return 'badge bg-green-50 text-green-700'
+  if (v === 'assigned') return 'badge bg-cyan-50 text-cyan-700'
+  if (v === 'used' || v === 'sweeped') return 'badge bg-amber-50 text-amber-700'
+  if (v === 'expired' || v === 'disabled') return 'badge bg-red-50 text-red-700'
+  return 'badge bg-surface-100 text-surface-600'
 }
 
 export default function TempWalletList() {
@@ -139,25 +139,25 @@ export default function TempWalletList() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-wallet me-2"></i>
+                    <i className="bx bx-wallet mr-2"></i>
                     {t('admin.tempWallets.title', { defaultValue: 'Temp Wallets' })}
                   </h4>
                   <p className="text-muted mb-0">
                     {t('admin.tempWallets.description', { defaultValue: 'Monitor temporary payment wallets' })}
                   </p>
                 </div>
-                <div className="d-flex gap-2">
-                  <Link href="/admin/temp-wallet-histories" className="btn btn-outline-secondary">
-                    <i className="bx bx-history me-1"></i>
+                <div className="flex gap-2">
+                  <Link href="/admin/temp-wallet-histories" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
+                    <i className="bx bx-history mr-1"></i>
                     {t('admin.tempWallets.usageHistories', { defaultValue: 'Usage Histories' })}
                   </Link>
                   <RefreshButton onClick={loadWallets} loading={loading} />
@@ -166,24 +166,23 @@ export default function TempWalletList() {
             </div>
 
             {/* Filters */}
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <select className="form-input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     {WALLET_STATUS_OPTIONS.map(s => (
                       <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                     ))}
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</label>
                   <div className="dropdown">
                     <button
-                      className="form-select d-flex align-items-center justify-content-between"
+                      className="form-input flex items-center justify-between"
                       type="button"
-                      data-bs-toggle="dropdown"
                       aria-expanded="false"
                       style={{ textAlign: 'left' }}
                     >
@@ -193,17 +192,17 @@ export default function TempWalletList() {
                         const sym = (cn.coin?.symbol || '').toUpperCase()
                         const net = (cn.network?.symbol || '').toUpperCase()
                         return (
-                          <span className="d-flex align-items-center gap-2">
+                          <span className="flex items-center gap-2">
                             <CoinImg symbol={sym} networkSymbol={net} size={22} />
-                            <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
+                            <span className="font-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
                             <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
                           </span>
                         )
                       })() : <span className="text-muted">All</span>}
                     </button>
-                    <ul className="dropdown-menu w-100" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+                    <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 w-full" style={{ maxHeight: '280px', overflowY: 'auto' }}>
                       <li>
-                        <button className="dropdown-item" onClick={() => setCoinNetworkIdFilter('')}>
+                        <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => setCoinNetworkIdFilter('')}>
                           <span className="text-muted">All</span>
                         </button>
                       </li>
@@ -213,10 +212,10 @@ export default function TempWalletList() {
                         const net = (cn.network?.symbol || '').toUpperCase()
                         return (
                           <li key={cn.id}>
-                            <button className="dropdown-item d-flex align-items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
+                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer flex items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
                               <CoinImg symbol={sym} networkSymbol={net} size={28} />
                               <div>
-                                <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
+                                <div className="font-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
                                 <div className="text-muted" style={{ fontSize: '0.7rem' }}>{net}</div>
                               </div>
                             </button>
@@ -226,35 +225,35 @@ export default function TempWalletList() {
                     </ul>
                   </div>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.address', { defaultValue: 'Address' })}</label>
-                  <input type="text" className="form-control" placeholder="0x..." value={addressFilter} onChange={(e) => setAddressFilter(e.target.value)} />
+                  <input type="text" className="form-input" placeholder="0x..." value={addressFilter} onChange={(e) => setAddressFilter(e.target.value)} />
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-select" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+                  <select className="form-input" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     {SORT_BY_OPTIONS.map(o => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
-                  <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
+                  <select className="form-input" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) }) }) })}</option>
                     <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: t('admin.detail.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) }) }) })}</option>
                   </select>
                 </div>
               </div>
-              <div className="d-flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3">
                 <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt me-1"></i>
+                  <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
-                  <i className="bx bx-reset me-1"></i>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>
               </div>
@@ -263,9 +262,9 @@ export default function TempWalletList() {
 
           {/* Table */}
           <div className="card">
-            <div className="card-body">
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover">
+            <div className="p-5">
+              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+                <table className="w-full">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -275,11 +274,11 @@ export default function TempWalletList() {
                       <th>{t('table.address', { defaultValue: 'Address' })}</th>
                       <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
                       <th className="text-center">{t('admin.tempWallets.reuseCount', { defaultValue: 'Reuse' })}</th>
-                      <th className="text-end">{t('admin.tempWallets.totalReceived', { defaultValue: 'Received' })}</th>
-                      <th className="text-end">{t('admin.tempWallets.totalSwept', { defaultValue: 'Swept' })}</th>
-                      <th className="text-end">Last Sweep Amt</th>
-                      <th className="text-end">Leftover Native</th>
-                      <th className="text-end">Leftover Token</th>
+                      <th className="text-right">{t('admin.tempWallets.totalReceived', { defaultValue: 'Received' })}</th>
+                      <th className="text-right">{t('admin.tempWallets.totalSwept', { defaultValue: 'Swept' })}</th>
+                      <th className="text-right">Last Sweep Amt</th>
+                      <th className="text-right">Leftover Native</th>
+                      <th className="text-right">Leftover Token</th>
                       <th>{t('admin.tempWallets.lastAssigned', { defaultValue: t('admin.tempWallet.lastAssigned', { defaultValue: t('admin.tempWallet.lastAssigned', { defaultValue: 'Last Assigned' }) }) })}</th>
                       <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
                       <th>{t('table.created', { defaultValue: 'Created' })}</th>
@@ -298,13 +297,13 @@ export default function TempWalletList() {
                       wallets.map((w) => (
                         <tr key={w.id}>
                           <td>
-                            <span className="fw-semibold text-primary">{w.id}</span>
+                            <span className="font-semibold text-primary">{w.id}</span>
                           </td>
                           <td className="text-center">
                             {w.invoiceId ? (
                               <Link
                                 href={`/admin/invoices/${w.invoiceId}`}
-                                className="text-primary fw-medium"
+                                className="text-primary font-medium"
                               >
                                 {w.invoiceId}
                               </Link>
@@ -313,25 +312,25 @@ export default function TempWalletList() {
                             )}
                           </td>
                           <td className="text-center">
-                            <span className="fw-medium">{w.userId || '-'}</span>
+                            <span className="font-medium">{w.userId || '-'}</span>
                           </td>
                           <td>
-                            <div className="d-flex align-items-center gap-2">
+                            <div className="flex items-center gap-2">
                               <CoinImg symbol={w.coinSymbol} networkSymbol={w.networkSymbol} size={28} />
                               <div>
-                                <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{w.coinSymbol || '-'}</div>
+                                <div className="font-semibold" style={{ fontSize: '0.85rem' }}>{w.coinSymbol || '-'}</div>
                                 <div className="text-muted" style={{ fontSize: '0.7rem' }}>{w.networkSymbol || '-'}</div>
                               </div>
                             </div>
                           </td>
                           <td>
                             {w.address ? (
-                              <div className="d-flex align-items-center">
-                                <span className="me-2" style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
+                              <div className="flex items-center">
+                                <span className="mr-2" style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
                                   {w.address}
                                 </span>
                                 <button
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                  className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                                   onClick={() => handleCopy(w.address)}
                                   title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                                 >
@@ -342,31 +341,31 @@ export default function TempWalletList() {
                               <span className="text-muted">-</span>
                             )}
                           </td>
-                          <td className="text-nowrap text-center">
+                          <td className="whitespace-nowrap text-center">
                             <span className={statusBadgeClass(w.status)}>
                               {String(w.status || '').toUpperCase()}
                             </span>
                             {w.isExpired && (
-                              <span className="badge bg-label-danger ms-1" style={{ fontSize: '0.6rem' }}>EXPIRED</span>
+                              <span className="badge bg-red-50 text-red-700 ml-1" style={{ fontSize: '0.6rem' }}>EXPIRED</span>
                             )}
                           </td>
                           <td className="text-center">
-                            <span className="fw-medium">{w.reuseCount ?? 0}</span>
+                            <span className="font-medium">{w.reuseCount ?? 0}</span>
                           </td>
-                          <td className="text-end text-nowrap">
-                            <span className="fw-medium">{w.totalReceivedAmount || '0'}</span>
+                          <td className="text-right whitespace-nowrap">
+                            <span className="font-medium">{w.totalReceivedAmount || '0'}</span>
                           </td>
-                          <td className="text-end text-nowrap">
-                            <span className="fw-medium">{w.totalSweptAmount || '0'}</span>
+                          <td className="text-right whitespace-nowrap">
+                            <span className="font-medium">{w.totalSweptAmount || '0'}</span>
                           </td>
-                          <td className="text-end text-nowrap">
-                            <span className="fw-medium">{w.lastSweepAmount || '-'}</span>
+                          <td className="text-right whitespace-nowrap">
+                            <span className="font-medium">{w.lastSweepAmount || '-'}</span>
                           </td>
-                          <td className="text-end text-nowrap">
-                            <span className="fw-medium">{w.lastLeftoverNativeAmount || '-'}</span>
+                          <td className="text-right whitespace-nowrap">
+                            <span className="font-medium">{w.lastLeftoverNativeAmount || '-'}</span>
                           </td>
-                          <td className="text-end text-nowrap">
-                            <span className="fw-medium">{w.lastLeftoverTokenAmount || '-'}</span>
+                          <td className="text-right whitespace-nowrap">
+                            <span className="font-medium">{w.lastLeftoverTokenAmount || '-'}</span>
                           </td>
                           <td>
                             <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(w.lastAssignedAt)}</span>
@@ -380,7 +379,7 @@ export default function TempWalletList() {
                           <td>
                             <Link
                               href={`/admin/temp-wallets/${w.id}`}
-                              className="btn btn-sm btn-icon btn-text-secondary"
+                              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
                               title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
                             >
                               <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
@@ -395,8 +394,8 @@ export default function TempWalletList() {
 
               {/* Pagination */}
               {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
                       start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                       end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -404,9 +403,9 @@ export default function TempWalletList() {
                       defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
                     })}
                   </div>
-                  <div className="btn-group">
+                  <div className="inline-flex rounded-lg shadow-sm">
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasPrev || loading}
                       onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
                     >
@@ -414,13 +413,13 @@ export default function TempWalletList() {
                       {t('actions.prev', { defaultValue: 'Previous' })}
                     </button>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled
                     >
                       {pagination.page} / {pagination.totalPages}
                     </button>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasNext || loading}
                       onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
                     >

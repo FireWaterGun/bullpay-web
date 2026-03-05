@@ -96,23 +96,23 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
   const disabled = submitting || loadingWallets
 
   return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !disabled && onClose()}>
-      <div className="modal-dialog modal-dialog-centered modal-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
-              <i className="bx bx-transfer-alt me-2"></i>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !disabled && onClose()}>
+      <div className="w-full max-w-lg mx-4 max-w-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-xl shadow-xl">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800">
+              <i className="bx bx-transfer-alt mr-2"></i>
               {t('admin.adjustment.title', { defaultValue: 'Balance Adjustment (XI / XO)' })}
             </h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={disabled}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={disabled}></button>
           </div>
-          <div className="modal-body">
+          <div className="p-5">
             {/* Warning alert */}
-            <div className="alert alert-warning d-flex align-items-start mb-4" role="alert">
-              <i className="bx bx-error-circle me-2 mt-1"></i>
+            <div className="alert alert-warning flex items-start mb-4" role="alert">
+              <i className="bx bx-error-circle mr-2 mt-1"></i>
               <div>
                 <strong>{t('admin.adjustment.warning', { defaultValue: 'Warning' })}</strong>
-                <p className="mb-0 mt-1 small">
+                <p className="mb-0 mt-1 text-sm">
                   {t('admin.adjustment.warningText', { defaultValue: 'This action directly modifies system wallet balances. Please verify all details carefully before submitting.' })}
                 </p>
               </div>
@@ -124,17 +124,17 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                 {t('admin.adjustment.wallet', { defaultValue: 'System Wallet' })} <span className="text-danger">*</span>
               </label>
               {loadingWallets ? (
-                <div className="d-flex align-items-center gap-2 py-2">
-                  <div className="spinner-border spinner-border-sm text-primary" role="status"></div>
-                  <span className="text-muted small">{t('admin.adjustment.loadingWallets', { defaultValue: 'Loading wallets...' })}</span>
+                <div className="flex items-center gap-2 py-2">
+                  <div className="spinner w-4 h-4 text-primary" role="status"></div>
+                  <span className="text-muted text-sm">{t('admin.adjustment.loadingWallets', { defaultValue: 'Loading wallets...' })}</span>
                 </div>
               ) : wallets.length === 0 ? (
-                <div className="text-muted small py-2">
+                <div className="text-muted text-sm py-2">
                   {t('admin.adjustment.noWallets', { defaultValue: 'No wallets found with balance' })}
                 </div>
               ) : (
                 <select
-                  className="form-select"
+                  className="form-input"
                   value={selectedAssetKey}
                   onChange={(e) => setSelectedAssetKey(e.target.value)}
                   disabled={disabled}
@@ -147,12 +147,12 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                 </select>
               )}
               {selectedWallet && (
-                <div className="d-flex align-items-center gap-2 mt-2">
+                <div className="flex items-center gap-2 mt-2">
                   <CoinImg symbol={selectedWallet.coinSymbol} networkSymbol={selectedWallet.networkSymbol} size={20} />
                   <small className="text-muted">
                     {selectedWallet.coinSymbol} on {selectedWallet.networkName}
                     {' · '}
-                    <span className="badge bg-label-secondary">{selectedWallet.purpose}</span>
+                    <span className="badge bg-surface-100 text-surface-600">{selectedWallet.purpose}</span>
                   </small>
                 </div>
               )}
@@ -163,10 +163,10 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
               <label className="form-label">
                 {t('admin.adjustment.direction', { defaultValue: 'Direction' })} <span className="text-danger">*</span>
               </label>
-              <div className="d-flex gap-3">
-                <div className="form-check">
+              <div className="flex gap-3">
+                <div className="flex items-center gap-2">
                   <input
-                    className="form-check-input"
+                    className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
                     type="radio"
                     name="direction"
                     id="dir-in"
@@ -175,14 +175,14 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                     onChange={() => setDirection('in')}
                     disabled={disabled}
                   />
-                  <label className="form-check-label text-success fw-medium" htmlFor="dir-in">
-                    <i className="bx bx-plus-circle me-1"></i>
+                  <label className="text-sm text-surface-700 text-success font-medium" htmlFor="dir-in">
+                    <i className="bx bx-plus-circle mr-1"></i>
                     XI — {t('admin.adjustment.increase', { defaultValue: 'Increase' })}
                   </label>
                 </div>
-                <div className="form-check">
+                <div className="flex items-center gap-2">
                   <input
-                    className="form-check-input"
+                    className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
                     type="radio"
                     name="direction"
                     id="dir-out"
@@ -191,8 +191,8 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                     onChange={() => setDirection('out')}
                     disabled={disabled}
                   />
-                  <label className="form-check-label text-danger fw-medium" htmlFor="dir-out">
-                    <i className="bx bx-minus-circle me-1"></i>
+                  <label className="text-sm text-surface-700 text-danger font-medium" htmlFor="dir-out">
+                    <i className="bx bx-minus-circle mr-1"></i>
                     XO — {t('admin.adjustment.decrease', { defaultValue: 'Decrease' })}
                   </label>
                 </div>
@@ -204,10 +204,10 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
               <label className="form-label">
                 {t('admin.adjustment.amount', { defaultValue: 'Amount' })} <span className="text-danger">*</span>
               </label>
-              <div className="input-group">
+              <div className="flex items-stretch">
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-input"
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
@@ -216,7 +216,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                   autoFocus
                 />
                 {selectedWallet && (
-                  <span className="input-group-text">{selectedWallet.coinSymbol}</span>
+                  <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">{selectedWallet.coinSymbol}</span>
                 )}
               </div>
               {amountTrimmed && !isValidAmount && (
@@ -232,7 +232,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                 {t('admin.adjustment.reason', { defaultValue: 'Reason' })} <span className="text-danger">*</span>
               </label>
               <textarea
-                className="form-control"
+                className="form-input"
                 rows={3}
                 placeholder={t('admin.adjustment.reasonPlaceholder', { defaultValue: 'Describe why this adjustment is needed (min 10 characters)' })}
                 value={reason}
@@ -240,7 +240,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                 maxLength={500}
                 disabled={disabled}
               />
-              <small className={`${reasonTrimmed.length > 0 && reasonTrimmed.length < 10 ? 'text-danger' : 'text-muted'}`}>
+              <small className={`${reasonTrimmed.length > 0 && reasonTrimmed.length < 10 ?'text-danger' : 'text-muted'}`}>
                 {reasonTrimmed.length}/500
                 {reasonTrimmed.length > 0 && reasonTrimmed.length < 10 && (
                   <> — {t('admin.adjustment.reasonTooShort', { defaultValue: 'Minimum 10 characters' })}</>
@@ -251,11 +251,11 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
             {/* Tx Hash (optional) */}
             <div className="mb-3">
               <label className="form-label">
-                {t('admin.adjustment.txHash', { defaultValue: 'Tx Hash' })} <span className="text-muted small">({t('admin.adjustment.optional', { defaultValue: 'optional' })})</span>
+                {t('admin.adjustment.txHash', { defaultValue: 'Tx Hash' })} <span className="text-muted text-sm">({t('admin.adjustment.optional', { defaultValue: 'optional' })})</span>
               </label>
               <input
                 type="text"
-                className="form-control"
+                className="form-input"
                 placeholder="0x..."
                 value={txHash}
                 onChange={(e) => setTxHash(e.target.value)}
@@ -265,24 +265,24 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
             </div>
           </div>
 
-          <div className="modal-footer">
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={disabled}>
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose} disabled={disabled}>
               {t('actions.cancel', { defaultValue: 'Cancel' })}
             </button>
             <button
               type="button"
-              className={`btn ${direction === 'in' ? 'btn-success' : 'btn-danger'}`}
+              className={`btn ${direction ==='in' ? 'btn-success' : 'btn-danger'}`}
               onClick={handleSubmit}
               disabled={!isValid || disabled}
             >
               {submitting ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <span className="spinner w-4 h-4 mr-2" role="status"></span>
                   {t('actions.submitting', { defaultValue: 'Submitting...' })}
                 </>
               ) : (
                 <>
-                  <i className={`bx ${direction === 'in' ? 'bx-plus-circle' : 'bx-minus-circle'} me-1`}></i>
+                  <i className={`bx ${direction ==='in' ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
                   {direction === 'in'
                     ? t('admin.adjustment.submitIncrease', { defaultValue: 'Apply XI (Increase)' })
                     : t('admin.adjustment.submitDecrease', { defaultValue: 'Apply XO (Decrease)' })

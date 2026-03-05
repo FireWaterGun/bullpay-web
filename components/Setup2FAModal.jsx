@@ -194,8 +194,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
               {[1, 2, 3].map((s) => (
                 <div key={s} className="flex items-center">
                   <div
-                    className={`rounded-full flex items-center justify-center ${
-                      step >= s ? "bg-primary-600 text-white" : "bg-surface-100 text-surface-500"
+                    className={`rounded-full flex items-center justify-center ${ step >= s ?"bg-primary-600 text-white" : "bg-surface-100 text-surface-500"
                     }`}
                     style={{ width: 32, height: 32, fontSize: 14 }}
                   >
@@ -203,7 +202,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                   </div>
                   {s < 3 && (
                     <div
-                      className={`mx-2 ${step > s ? "bg-primary-600" : "bg-surface-100"}`}
+                      className={`mx-2 ${step > s ?"bg-primary-600" : "bg-surface-100"}`}
                       style={{ width: 40, height: 2 }}
                     ></div>
                   )}
@@ -249,11 +248,11 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                         />
                         <button
                           type="button"
-                          className="btn btn-outline-secondary"
+                          className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                           onClick={handleCopySecret}
                           title={t("actions.copy", { defaultValue: "Copy" })}
                         >
-                          <i className={`bx ${copiedSecret ? "bx-check" : "bx-copy"}`}></i>
+                          <i className={`bx ${copiedSecret ?"bx-check" : "bx-copy"}`}></i>
                         </button>
                       </div>
                     </div>
@@ -287,13 +286,13 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                       </div>
                     </div>
                     <div className="flex justify-center gap-2">
-                      <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleCopyBackupCodes}>
-                        <i className={`bx ${copiedCodes ? "bx-check" : "bx-copy"} mr-1`}></i>
+                      <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" onClick={handleCopyBackupCodes}>
+                        <i className={`bx ${copiedCodes ?"bx-check" : "bx-copy"} mr-1`}></i>
                         {copiedCodes
                           ? t("common.copied", { defaultValue: "Copied!" })
                           : t("common.copy", { defaultValue: "Copy" })}
                       </button>
-                      <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleDownloadBackupCodes}>
+                      <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" onClick={handleDownloadBackupCodes}>
                         <i className="bx bx-download mr-1"></i>
                         {t("common.download", { defaultValue: "Download" })}
                       </button>
@@ -346,13 +345,13 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
 
           <div className="px-6 py-4 border-t border-surface-200 flex items-center">
             {step > 1 && (
-              <button type="button" className="btn btn-outline-secondary" onClick={() => setStep(s => s - 1)} disabled={loading}>
+              <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => setStep(s => s - 1)} disabled={loading}>
                 <i className="bx bx-chevron-left mr-1"></i>
                 {t("common.back", { defaultValue: "Back" })}
               </button>
             )}
             <div className="grow"></div>
-            <button type="button" className="btn btn-outline-secondary mr-2" onClick={handleClose} disabled={loading}>
+            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mr-2" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             {step < 3 ? (

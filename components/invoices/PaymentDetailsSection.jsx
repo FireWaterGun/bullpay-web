@@ -14,17 +14,17 @@ export default function PaymentDetailsSection({ invoice, toast, t }) {
 
   return (
     <div className="card mb-3">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h6 className="mb-0">{t?.('invoices.paymentDetails', { defaultValue: 'Payment Details' }) || 'Payment Details'}</h6>
       </div>
-      <div className="card-body">
-        <div className="table-responsive">
-          <table className="table table-borderless mb-0">
+      <div className="p-5">
+        <div className="overflow-x-auto">
+          <table className="w-full mb-0">
             <tbody>
               <tr>
                 <td className="text-muted" style={{ width: 160 }}>{t?.('invoices.coin', { defaultValue: 'Coin' }) || 'Coin'}</td>
                 <td>
-                  <div className="d-flex align-items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <CoinImg symbol={invoice?.coinSymbol} networkSymbol={invoice?.networkSymbol} size={20} />
                     <span>{invoice?.coinSymbol || '-'}</span>
                     {invoice?.networkSymbol && <small className="text-muted">({invoice.networkSymbol})</small>}
@@ -33,15 +33,15 @@ export default function PaymentDetailsSection({ invoice, toast, t }) {
               </tr>
               <tr>
                 <td className="text-muted">{t?.('invoices.amount', { defaultValue: 'Amount' }) || 'Amount'}</td>
-                <td className="fw-semibold">{formatCoinAmount(invoice?.amountDecimal || invoice?.amount || 0)} {invoice?.coinSymbol || ''}</td>
+                <td className="font-semibold">{formatCoinAmount(invoice?.amountDecimal || invoice?.amount || 0)} {invoice?.coinSymbol || ''}</td>
               </tr>
               {invoice?.paymentAddress && (
                 <tr>
                   <td className="text-muted">{t?.('invoices.address', { defaultValue: 'Address' }) || 'Address'}</td>
                   <td>
-                    <div className="d-flex align-items-center gap-1">
-                      <span className="font-monospace small text-break">{invoice.paymentAddress}</span>
-                      <button className="btn btn-sm btn-icon btn-text-secondary flex-shrink-0" onClick={() => handleCopy(invoice.paymentAddress)}>
+                    <div className="flex items-center gap-1">
+                      <span className="font-monospace text-sm break-words">{invoice.paymentAddress}</span>
+                      <button className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none shrink-0" onClick={() => handleCopy(invoice.paymentAddress)}>
                         <i className="bx bx-copy"></i>
                       </button>
                     </div>

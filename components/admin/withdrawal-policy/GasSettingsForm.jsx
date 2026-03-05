@@ -113,16 +113,16 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
     <>
       <div className="mb-4">
         <div className="mb-3">
-          <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.gasSettings', { defaultValue: 'Gas Settings' })}</h6>
+          <h6 className="font-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.gasSettings', { defaultValue: 'Gas Settings' })}</h6>
           <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.gasSettingsDesc', { defaultValue: 'Native gas guard configuration' })}</p>
         </div>
-        <div className="table-responsive">
-          <table className="table table-borderless mb-0">
+        <div className="overflow-x-auto">
+          <table className="w-full mb-0">
             <tbody>
               <tr style={{ backgroundColor: 'var(--bs-tertiary-bg)' }}>
-                <td width="35%" className="py-3 ps-3" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.bufferMultiplier', { defaultValue: 'Buffer Multiplier' })}</td>
+                <td width="35%" className="py-3 pl-3" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.bufferMultiplier', { defaultValue: 'Buffer Multiplier' })}</td>
                 <td className="py-3">
-                  <div className="d-flex align-items-center gap-2">
+                  <div className="flex items-center gap-2">
                     {gasSettings.bufferMultiplier !== undefined && gasSettings.bufferMultiplier !== null ? (
                       <code>{gasSettings.bufferMultiplier}</code>
                     ) : (
@@ -143,14 +143,14 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
 
       <div className="mb-4">
         <div className="mb-3">
-          <div className="d-flex align-items-center">
-            <div className="flex-grow-1">
-              <h6 className="fw-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.minNativeByNetwork', { defaultValue: 'Min Native by Network' })}</h6>
+          <div className="flex items-center">
+            <div className="grow">
+              <h6 className="font-semibold mb-1" style={{ fontSize: '1rem' }}>{t('admin.withdrawal.minNativeByNetwork', { defaultValue: 'Min Native by Network' })}</h6>
               <p className="text-muted mb-0" style={{ fontSize: '0.875rem' }}>{t('admin.withdrawal.minNativeByNetworkDesc', { defaultValue: 'Minimum native balance required per network' })}</p>
             </div>
-            <div className="d-flex justify-content-end" style={{ width: '120px', paddingRight: '12px' }}>
+            <div className="flex justify-end" style={{ width: '120px', paddingRight: '12px' }}>
               <button type="button" className="btn btn-sm btn-primary" onClick={handleAddGasNetwork}>
-                <i className="bx bx-plus me-1"></i>
+                <i className="bx bx-plus mr-1"></i>
                 {t('actions.add', { defaultValue: 'Add' })}
               </button>
             </div>
@@ -158,13 +158,13 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
         </div>
 
         {Object.keys(gasSettings.minNativeByNetwork || {}).length > 0 ? (
-          <div className="table-responsive">
-            <table className="table table-hover">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead>
                 <tr>
                   <th>{t('admin.withdrawal.network', { defaultValue: 'Network' })}</th>
                   <th>{t('admin.withdrawal.minNative', { defaultValue: 'Min Native' })}</th>
-                  <th className="text-end">{t('actions.actions', { defaultValue: 'Actions' })}</th>
+                  <th className="text-right">{t('actions.actions', { defaultValue: 'Actions' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -172,10 +172,10 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
                   <tr key={network}>
                     <td><strong>{network}</strong></td>
                     <td><code>{minNative}</code></td>
-                    <td className="text-end">
+                    <td className="text-right">
                       <button
                         type="button"
-                        className="btn btn-sm btn-icon me-1"
+                        className="btn btn-sm btn-icon mr-1"
                         onClick={() => handleEditGasNetwork(network, minNative)}
                         disabled={loading}
                       >
@@ -205,23 +205,23 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
 
       {showModal && (
         <>
-          <div className="modal-backdrop fade show"></div>
-          <div className="modal fade show d-block" tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">
+          <div className="fixed inset-0 bg-black/50 z-40"></div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
+            <div className="w-full max-w-lg mx-4">
+              <div className="bg-white rounded-xl shadow-xl">
+                <div className="flex items-center justify-between p-5 border-b border-surface-200">
+                  <h5 className="text-lg font-semibold text-surface-800">
                     {t('admin.withdrawal.editGasSettings', { defaultValue: 'Edit Gas Settings' })}
                   </h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)} disabled={loading}></button>
+                  <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={() => setShowModal(false)} disabled={loading}></button>
                 </div>
-                <div className="modal-body">
-                  <div className="row g-3">
-                    <div className="col-12">
+                <div className="p-5">
+                  <div className="grid grid-cols-12 gap-x-6 gap-3">
+                    <div className="col-span-12">
                       <label className="form-label">{t('admin.withdrawal.bufferMultiplier', { defaultValue: 'Buffer Multiplier' })}</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={formData.bufferMultiplier || ''}
                         onChange={(e) => {
                           const value = e.target.value
@@ -234,10 +234,10 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
                     </div>
                   </div>
                 </div>
-                <div className="modal-footer">
+                <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
                     onClick={() => setShowModal(false)}
                     disabled={loading}
                   >
@@ -251,12 +251,12 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
                   >
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        <span className="spinner w-4 h-4 mr-2"></span>
                         {t('actions.saving', { defaultValue: 'Saving...' })}
                       </>
                     ) : (
                       <>
-                        <i className="bx bx-save me-1"></i>
+                        <i className="bx bx-save mr-1"></i>
                         {t('actions.save', { defaultValue: 'Save' })}
                       </>
                     )}
@@ -270,26 +270,26 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
 
       {showGasNetworkForm && (
         <>
-          <div className="modal-backdrop fade show"></div>
-          <div className="modal fade show d-block" tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">
+          <div className="fixed inset-0 bg-black/50 z-40"></div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
+            <div className="w-full max-w-lg mx-4">
+              <div className="bg-white rounded-xl shadow-xl">
+                <div className="flex items-center justify-between p-5 border-b border-surface-200">
+                  <h5 className="text-lg font-semibold text-surface-800">
                     {editingGasNetwork
                       ? t('admin.withdrawal.editNetwork', { defaultValue: 'Edit Network' })
                       : t('admin.withdrawal.addNetwork', { defaultValue: 'Add Network' })
                     }
                   </h5>
-                  <button type="button" className="btn-close" onClick={() => setShowGasNetworkForm(false)} disabled={loading}></button>
+                  <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={() => setShowGasNetworkForm(false)} disabled={loading}></button>
                 </div>
-                <div className="modal-body">
-                  <div className="row g-3">
-                    <div className="col-12">
+                <div className="p-5">
+                  <div className="grid grid-cols-12 gap-x-6 gap-3">
+                    <div className="col-span-12">
                       <label className="form-label">{t('admin.withdrawal.network', { defaultValue: 'Network' })}*</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={gasNetworkFormData.network}
                         onChange={(e) => {
                           const value = e.target.value
@@ -302,11 +302,11 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
                         maxLength={20}
                       />
                     </div>
-                    <div className="col-12">
+                    <div className="col-span-12">
                       <label className="form-label">{t('admin.withdrawal.minNative', { defaultValue: 'Min Native' })}*</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-input"
                         value={gasNetworkFormData.minNative}
                         onChange={(e) => {
                           const value = e.target.value
@@ -320,10 +320,10 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
                     </div>
                   </div>
                 </div>
-                <div className="modal-footer">
+                <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn btn bg-surface-200 text-surface-700 hover:bg-surface-300"
                     onClick={() => setShowGasNetworkForm(false)}
                     disabled={loading}
                   >
@@ -337,12 +337,12 @@ export default function GasSettingsForm({ gasSettings, setGasSettings }) {
                   >
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        <span className="spinner w-4 h-4 mr-2"></span>
                         {t('actions.saving', { defaultValue: 'Saving...' })}
                       </>
                     ) : (
                       <>
-                        <i className="bx bx-save me-1"></i>
+                        <i className="bx bx-save mr-1"></i>
                         {t('actions.save', { defaultValue: 'Save' })}
                       </>
                     )}

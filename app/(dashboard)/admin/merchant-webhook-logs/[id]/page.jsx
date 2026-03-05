@@ -102,7 +102,7 @@ export default function MerchantWebhookLogDetail() {
 
   if (!log) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="alert alert-warning">{t('admin.webhookLog.notFound', { defaultValue: 'Webhook log not found' })}</div>
       </div>
     )
@@ -111,31 +111,31 @@ export default function MerchantWebhookLogDetail() {
   const canRetry = hasPermission && hasPermission('admin.merchants.manage')
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Back button */}
           <div className="mb-4">
-            <Link href="/admin/merchant-webhook-logs" className="btn btn-label-secondary">
-              <i className="bx bx-arrow-back me-1"></i>
+            <Link href="/admin/merchant-webhook-logs" className="btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none">
+              <i className="bx bx-arrow-back mr-1"></i>
               Back to Webhook Logs
             </Link>
           </div>
 
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div className="d-flex align-items-center gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
+                <div className="flex items-center gap-3">
                   <div
-                    className={`rounded-circle d-flex align-items-center justify-content-center bg-label-${log.success ? 'success' : 'danger'}`}
+                    className={`rounded-full flex items-center justify-center bg-label-${log.success ?'success' : 'danger'}`}
                     style={{ width: 48, height: 48 }}
                   >
-                    <i className={`bx ${log.success ? 'bx-check' : 'bx-x'} fs-4`}></i>
+                    <i className={`bx ${log.success ?'bx-check' : 'bx-x'} fs-4`}></i>
                   </div>
                   <div>
                     <h4 className="mb-0">Webhook Log #{log.id}</h4>
-                    <div className="d-flex align-items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1">
                       {eventBadge(log.event)}
                       <span className="text-muted">•</span>
                       <span>{successText(log.success)}</span>
@@ -144,21 +144,21 @@ export default function MerchantWebhookLogDetail() {
                     </div>
                   </div>
                 </div>
-                <div className="d-flex gap-2">
+                <div className="flex gap-2">
                   {canRetry && (
                     <button
-                      className="btn btn-warning"
+                      className="btn btn bg-warning-500 text-white hover:bg-warning-600"
                       onClick={handleRetry}
                       disabled={retrying}
                     >
                       {retrying ? (
                         <>
-                          <span className="spinner-border spinner-border-sm me-1"></span>
+                          <span className="spinner w-4 h-4 mr-1"></span>
                           Retrying...
                         </>
                       ) : (
                         <>
-                          <i className="bx bx-revision me-1"></i>
+                          <i className="bx bx-revision mr-1"></i>
                           Retry Webhook
                         </>
                       )}
@@ -170,28 +170,28 @@ export default function MerchantWebhookLogDetail() {
             </div>
           </div>
 
-          <div className="row">
+          <div className="grid grid-cols-12 gap-x-6">
             {/* Left: Webhook Details */}
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Webhook Details</h5>
                 </div>
-                <div className="card-body">
-                  <div className="table-responsive">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <div className="overflow-x-auto">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
-                        <td className="fw-medium">{log.id}</td>
+                        <td className="font-medium">{log.id}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Merchant ID</td>
-                        <td className="fw-medium">{log.merchantId || '-'}</td>
+                        <td className="font-medium">{log.merchantId || '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Payment ID</td>
-                        <td className="fw-medium">{log.merchantPaymentId || '-'}</td>
+                        <td className="font-medium">{log.merchantPaymentId || '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.event', { defaultValue: 'Event' })}</td>
@@ -219,14 +219,14 @@ export default function MerchantWebhookLogDetail() {
             </div>
 
             {/* Right: Response Info */}
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Response Info</h5>
                 </div>
-                <div className="card-body">
-                  <div className="table-responsive">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <div className="overflow-x-auto">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>HTTP Status</td>
@@ -240,7 +240,7 @@ export default function MerchantWebhookLogDetail() {
                         <td className="text-muted">Duration</td>
                         <td>
                           {log.durationMs != null ? (
-                            <span className={log.durationMs > 5000 ? 'text-danger fw-medium' : ''}>
+                            <span className={log.durationMs > 5000 ? 'text-danger font-medium' : ''}>
                               {log.durationMs.toLocaleString()}ms
                             </span>
                           ) : '-'}
@@ -271,13 +271,13 @@ export default function MerchantWebhookLogDetail() {
           {/* Request Payload */}
           {log.requestPayload && (
             <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
+              <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
                 <h5 className="mb-0">
-                  <i className="bx bx-upload me-2 text-primary"></i>
+                  <i className="bx bx-upload mr-2 text-primary"></i>
                   Request Payload
                 </h5>
               </div>
-              <div className="card-body">
+              <div className="p-5">
                 <pre
                   className="bg-dark text-light p-3 rounded mb-0"
                   style={{ fontSize: '0.8rem', maxHeight: 400, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
@@ -291,13 +291,13 @@ export default function MerchantWebhookLogDetail() {
           {/* Response Body */}
           {log.responseBody && (
             <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
+              <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
                 <h5 className="mb-0">
-                  <i className="bx bx-download me-2 text-info"></i>
+                  <i className="bx bx-download mr-2 text-info"></i>
                   Response Body
                 </h5>
               </div>
-              <div className="card-body">
+              <div className="p-5">
                 <pre
                   className="bg-dark text-light p-3 rounded mb-0"
                   style={{ fontSize: '0.8rem', maxHeight: 400, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}

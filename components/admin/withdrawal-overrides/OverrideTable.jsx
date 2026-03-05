@@ -5,13 +5,13 @@ import CardEmptyState from '@/components/CardEmptyState'
 
 function FeeTypeBadge({ config }) {
   if (config.fee?.fixed) {
-    return <span className="badge bg-label-info">fixed</span>
+    return <span className="badge bg-cyan-50 text-cyan-700">fixed</span>
   }
   if (config.fee?.percentage || config.fee?.min) {
-    return <span className="badge bg-label-info">percentage</span>
+    return <span className="badge bg-cyan-50 text-cyan-700">percentage</span>
   }
   if (config.fee?.type) {
-    return <span className="badge bg-label-info">{config.fee.type}</span>
+    return <span className="badge bg-cyan-50 text-cyan-700">{config.fee.type}</span>
   }
   return <span className="text-muted">-</span>
 }
@@ -64,11 +64,11 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
   return (
     <div className={type !== 'coinNetwork' ? 'mb-5' : undefined}>
       <div className="mb-3">
-        <div className="d-flex align-items-center">
-          <div className="flex-grow-1">
+        <div className="flex items-center">
+          <div className="grow">
             <h6 className="mb-0">
               {t(cfg.titleKey, { defaultValue: cfg.titleDefault })}
-              <span className="badge rounded-pill bg-primary ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+              <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
                 {entries.length}
               </span>
             </h6>
@@ -78,8 +78,8 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
       </div>
 
       {entries.length > 0 ? (
-        <div className="table-responsive">
-          <table className="table table-hover">
+        <div className="overflow-x-auto">
+          <table className="w-full">
             <thead>
               <tr>
                 <th>{t(cfg.firstColKey, { defaultValue: cfg.firstColDefault })}</th>
@@ -89,7 +89,7 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
                 )}
                 <th>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</th>
                 <th>{t('admin.withdrawal.feeConfig', { defaultValue: 'Fee Config' })}</th>
-                <th className="text-end">{t('admin.detail.actions', { defaultValue: 'Actions' })}</th>
+                <th className="text-right">{t('admin.detail.actions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
             <tbody>
@@ -114,10 +114,10 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
                   )}
                   <td><FeeTypeBadge config={config} /></td>
                   <td><FeeConfigDisplay config={config} /></td>
-                  <td className="text-end">
+                  <td className="text-right">
                     <button
                       type="button"
-                      className="btn btn-sm btn-icon me-1"
+                      className="btn btn-sm btn-icon mr-1"
                       onClick={() => onEdit(type, key, config)}
                       disabled={loading}
                     >

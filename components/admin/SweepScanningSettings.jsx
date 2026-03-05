@@ -7,20 +7,20 @@ export default function SweepScanningSettings({ formData, handleNestedChange, va
 
   return (
     <>
-      <div className="col-12 mt-5">
+      <div className="col-span-12 mt-5">
         <hr className="my-4" />
         <h6 className="text-primary mb-4">
           {t('admin.sweep.scanningSettings', { defaultValue: 'Scanning Settings' })}
         </h6>
       </div>
 
-      <div className="col-md-4">
+      <div className="md:col-span-4">
         <label htmlFor="maxDiscoverPerRun" className="form-label">
           {t('admin.sweep.maxDiscoverPerRun', { defaultValue: 'Max Discover/Run' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="maxDiscoverPerRun"
           placeholder="10"
           min="1"
@@ -33,13 +33,13 @@ export default function SweepScanningSettings({ formData, handleNestedChange, va
         </small>
       </div>
 
-      <div className="col-md-4">
+      <div className="md:col-span-4">
         <label htmlFor="maxPendingPerRun" className="form-label">
           {t('admin.sweep.maxPendingPerRun', { defaultValue: 'Max Pending/Run' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="maxPendingPerRun"
           placeholder="50"
           min="1"
@@ -52,13 +52,13 @@ export default function SweepScanningSettings({ formData, handleNestedChange, va
         </small>
       </div>
 
-      <div className="col-md-4">
+      <div className="md:col-span-4">
         <label htmlFor="maxUnlockPerRun" className="form-label">
           {t('admin.sweep.maxUnlockPerRun', { defaultValue: 'Max Unlock/Run' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="maxUnlockPerRun"
           placeholder="100"
           min="1"

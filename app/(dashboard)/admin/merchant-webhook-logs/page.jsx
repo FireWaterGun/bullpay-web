@@ -134,16 +134,16 @@ export default function MerchantWebhookLogList() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-broadcast me-2"></i>
+                    <i className="bx bx-broadcast mr-2"></i>
                     Merchant Webhook Logs
                   </h4>
                   <p className="text-muted mb-0">View and monitor webhook delivery attempts to merchants</p>
@@ -153,46 +153,46 @@ export default function MerchantWebhookLogList() {
             </div>
 
             {/* Filters */}
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">Merchant ID</label>
                   <input
                     type="number"
-                    className="form-control"
+                    className="form-input"
                     placeholder={t('admin.webhookLog.merchantId', { defaultValue: 'Merchant ID' })}
                     value={merchantIdFilter}
                     onChange={e => setMerchantIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">Payment ID</label>
                   <input
                     type="number"
-                    className="form-control"
+                    className="form-input"
                     placeholder={t('admin.webhookLog.paymentId', { defaultValue: 'Payment ID' })}
                     value={paymentIdFilter}
                     onChange={e => setPaymentIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('admin.detail.event', { defaultValue: 'Event' })}</label>
-                  <select className="form-select" value={eventFilter} onChange={e => setEventFilter(e.target.value)}>
+                  <select className="form-input" value={eventFilter} onChange={e => setEventFilter(e.target.value)}>
                     <option value="">{t('filter.allEvents', { defaultValue: 'All Events' })}</option>
                     {EVENT_OPTIONS.map(ev => (
                       <option key={ev.value} value={ev.value}>{ev.label}</option>
                     ))}
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('admin.detail.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select" value={successFilter} onChange={e => setSuccessFilter(e.target.value)}>
+                  <select className="form-input" value={successFilter} onChange={e => setSuccessFilter(e.target.value)}>
                     <option value="">All</option>
                     <option value="true">{t('admin.detail.success', { defaultValue: 'Success' })}</option>
                     <option value="false">{t('status.failed', { defaultValue: 'Failed' })}</option>
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
                   <LocaleDateRangePicker
                     startDate={fromDateFilter}
@@ -205,31 +205,31 @@ export default function MerchantWebhookLogList() {
                     style={{ width: '100%' }}
                   />
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-select" value={sortByFilter} onChange={e => setSortByFilter(e.target.value)}>
+                  <select className="form-input" value={sortByFilter} onChange={e => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     {SORT_BY_OPTIONS.map(o => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
-                  <select className="form-select" value={sortOrderFilter} onChange={e => setSortOrderFilter(e.target.value)}>
+                  <select className="form-input" value={sortOrderFilter} onChange={e => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
                     <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
                   </select>
                 </div>
               </div>
-              <div className="d-flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3">
                 <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt me-1"></i>
+                  <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
-                  <i className="bx bx-reset me-1"></i>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>
               </div>
@@ -238,9 +238,9 @@ export default function MerchantWebhookLogList() {
 
           {/* Table */}
           <div className="card">
-            <div className="card-body">
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover">
+            <div className="p-5">
+              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+                <table className="w-full">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -249,7 +249,7 @@ export default function MerchantWebhookLogList() {
                       <th>{t('admin.detail.event', { defaultValue: 'Event' })}</th>
                       <th className="text-center">HTTP</th>
                       <th className="text-center">{t('admin.detail.success', { defaultValue: 'Success' })}</th>
-                      <th className="text-end">Duration</th>
+                      <th className="text-right">Duration</th>
                       <th className="text-center">Attempt</th>
                       <th>{t('admin.detail.callbackUrl', { defaultValue: 'Callback URL' })}</th>
                       <th>{t('admin.detail.error', { defaultValue: 'Error' })}</th>
@@ -268,15 +268,15 @@ export default function MerchantWebhookLogList() {
                     ) : (
                       logs.map(log => (
                         <tr key={log.id} style={{ whiteSpace: 'nowrap' }}>
-                          <td className="fw-medium">{log.id}</td>
+                          <td className="font-medium">{log.id}</td>
                           <td className="text-center">{log.merchantId || '-'}</td>
                           <td className="text-center">{log.merchantPaymentId || '-'}</td>
                           <td>{eventText(log.event)}</td>
                           <td className="text-center">{httpStatusText(log.httpStatus)}</td>
                           <td className="text-center">{successText(log.success)}</td>
-                          <td className="text-end">
+                          <td className="text-right">
                             {log.durationMs != null ? (
-                              <span className={log.durationMs > 5000 ? 'text-danger fw-medium' : ''}>
+                              <span className={log.durationMs > 5000 ? 'text-danger font-medium' : ''}>
                                 {log.durationMs.toLocaleString()}ms
                               </span>
                             ) : '-'}
@@ -287,7 +287,7 @@ export default function MerchantWebhookLogList() {
                           </td>
                           <td>
                             {log.errorMessage ? (
-                              <span className="text-danger text-truncate d-inline-block" style={{ maxWidth: 180 }} title={log.errorMessage}>
+                              <span className="text-danger truncate inline-block" style={{ maxWidth: 180 }} title={log.errorMessage}>
                                 {log.errorMessage}
                               </span>
                             ) : '-'}
@@ -296,7 +296,7 @@ export default function MerchantWebhookLogList() {
                           <td>
                             <Link
                               href={`/admin/merchant-webhook-logs/${log.id}`}
-                              className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                               title={t('admin.detail.viewDetails', { defaultValue: 'View details' })}
                             >
                               <i className="bx bx-chevron-right"></i>
@@ -311,25 +311,25 @@ export default function MerchantWebhookLogList() {
 
               {/* Pagination */}
               {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-muted text-sm">
                     Showing {pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0} to{' '}
                     {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
                   </div>
-                  <div className="btn-group">
+                  <div className="inline-flex rounded-lg shadow-sm">
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasPrev || loading}
                       onClick={() => setCurrentPage(p => p - 1)}
                     >
                       <i className="bx bx-chevron-left"></i>
                       Previous
                     </button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled>
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>
                       {pagination.page} / {pagination.totalPages}
                     </button>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasNext || loading}
                       onClick={() => setCurrentPage(p => p + 1)}
                     >

@@ -22,15 +22,15 @@ function handleMouseLeave(e) {
 
 export function StatCard({ icon, color, value, label }) {
   return (
-    <div className="col-lg-3 col-md-6">
+    <div className="lg:col-span-3 md:col-span-6">
       <div
-        className="card h-100"
+        className="card h-full"
         style={cardStyle}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="card-body">
-          <div className="d-flex align-items-center mb-3">
+        <div className="p-5">
+          <div className="flex items-center mb-3">
             <div style={{
               width: 48,
               height: 48,
@@ -69,7 +69,7 @@ export function DailyTrendCard({ date, currencies, isToday }) {
         flexShrink: 0
       }}
     >
-      <div className="d-flex justify-content-between align-items-center mb-2">
+      <div className="flex justify-between items-center mb-2">
         <span style={{
           fontSize: '0.8125rem',
           fontWeight: 500,
@@ -88,7 +88,7 @@ export function DailyTrendCard({ date, currencies, isToday }) {
       </div>
       <div className="mt-2">
         <div
-          className="d-flex justify-content-between mb-1"
+          className="flex justify-between mb-1"
           style={{
             fontSize: '0.6875rem',
             opacity: 0.7,
@@ -103,7 +103,7 @@ export function DailyTrendCard({ date, currencies, isToday }) {
         {Object.entries(currencies).map(([currency, data]) => (
           <div
             key={currency}
-            className="d-flex justify-content-between align-items-center"
+            className="flex justify-between items-center"
             style={{
               padding: '0.25rem 0',
               fontSize: '0.8125rem'

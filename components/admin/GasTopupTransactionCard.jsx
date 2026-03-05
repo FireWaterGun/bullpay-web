@@ -7,38 +7,38 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
   return (
     <>
       <div className="card mb-4">
-        <div className="card-header">
+        <div className="px-5 py-4 border-b border-surface-200">
           <h5 className="mb-0">
-            <i className="bx bx-link me-2"></i>
+            <i className="bx bx-link mr-2"></i>
             {t('admin.gasTopup.transaction', { defaultValue: 'Transaction' })}
           </h5>
         </div>
-        <div className="card-body">
-          <div className="table-responsive">
-          <table className="table table-borderless">
+        <div className="p-5">
+          <div className="overflow-x-auto">
+          <table className="w-full">
             <tbody>
               <tr>
                 <td className="text-muted" style={{ width: '40%' }}>{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</td>
                 <td>
                   {topup.txHash ? (
                     <>
-                      <code className="text-break" style={{ fontSize: '0.75rem' }}>{topup.txHash}</code>
-                      <div className="d-flex gap-1 mt-2">
+                      <code className="break-words" style={{ fontSize: '0.75rem' }}>{topup.txHash}</code>
+                      <div className="flex gap-1 mt-2">
                         {explorerUrl && (
                           <a
                             href={`${explorerUrl}/tx/${topup.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-sm btn-outline-primary"
+                            className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                           >
-                            <i className="bx bx-link-external me-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                            <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </a>
                         )}
                         <button
-                          className="btn btn-sm btn-outline-secondary"
+                          className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                           onClick={() => onCopy(topup.txHash)}
                         >
-                          <i className="bx bx-copy me-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                          <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </button>
                       </div>
                     </>
@@ -70,23 +70,23 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
                 <td>
                   {topup.fromAddress ? (
                     <>
-                      <code className="text-break" style={{ fontSize: '0.75rem' }}>{topup.fromAddress}</code>
-                      <div className="d-flex gap-1 mt-2">
+                      <code className="break-words" style={{ fontSize: '0.75rem' }}>{topup.fromAddress}</code>
+                      <div className="flex gap-1 mt-2">
                         {explorerUrl && (
                           <a
                             href={`${explorerUrl}/address/${topup.fromAddress}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-sm btn-outline-primary"
+                            className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                           >
-                            <i className="bx bx-link-external me-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                            <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </a>
                         )}
                         <button
-                          className="btn btn-sm btn-outline-secondary"
+                          className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                           onClick={() => onCopy(topup.fromAddress)}
                         >
-                          <i className="bx bx-copy me-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                          <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </button>
                       </div>
                     </>
@@ -100,23 +100,23 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
                 <td>
                   {topup.toAddress ? (
                     <>
-                      <code className="text-break" style={{ fontSize: '0.75rem' }}>{topup.toAddress}</code>
-                      <div className="d-flex gap-1 mt-2">
+                      <code className="break-words" style={{ fontSize: '0.75rem' }}>{topup.toAddress}</code>
+                      <div className="flex gap-1 mt-2">
                         {explorerUrl && (
                           <a
                             href={`${explorerUrl}/address/${topup.toAddress}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-sm btn-outline-primary"
+                            className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white"
                           >
-                            <i className="bx bx-link-external me-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                            <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </a>
                         )}
                         <button
-                          className="btn btn-sm btn-outline-secondary"
+                          className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                           onClick={() => onCopy(topup.toAddress)}
                         >
-                          <i className="bx bx-copy me-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                          <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </button>
                       </div>
                     </>
@@ -132,15 +132,15 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
       </div>
 
       <div className="card mb-4">
-        <div className="card-header">
+        <div className="px-5 py-4 border-b border-surface-200">
           <h5 className="mb-0">
-            <i className="bx bx-time me-2"></i>
+            <i className="bx bx-time mr-2"></i>
             {t('admin.gasTopup.timestamps', { defaultValue: 'Timestamps' })}
           </h5>
         </div>
-        <div className="card-body">
-          <div className="table-responsive">
-          <table className="table table-borderless">
+        <div className="p-5">
+          <div className="overflow-x-auto">
+          <table className="w-full">
             <tbody>
               <tr>
                 <td className="text-muted" style={{ width: '40%' }}>{t('admin.gasTopup.created', { defaultValue: 'Created' })}</td>

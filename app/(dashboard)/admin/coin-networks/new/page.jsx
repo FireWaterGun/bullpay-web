@@ -187,9 +187,9 @@ export default function SupportedCryptoForm() {
 
   if (loading && isEdit) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="text-center py-6">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner text-primary" role="status">
             <span className="visually-hidden">{t('invoices.loading')}</span>
           </div>
         </div>
@@ -198,12 +198,12 @@ export default function SupportedCryptoForm() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Header */}
-      <div className="d-flex align-items-center mb-4">
+      <div className="flex items-center mb-4">
         <Link
           href="/admin/coin-networks"
-          className="btn btn-icon btn-outline-secondary me-3"
+          className="btn btn-icon btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mr-3"
         >
           <i className="bx bx-arrow-back"></i>
         </Link>
@@ -225,13 +225,13 @@ export default function SupportedCryptoForm() {
 
       {error && (
         <div className="alert alert-danger mb-4" role="alert">
-          <i className="bx bx-error-circle me-2"></i>
+          <i className="bx bx-error-circle mr-2"></i>
           {error}
         </div>
       )}
 
-      <div className="row">
-        <div className="col-12">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
             <CoinSelector
               coins={coins}
               formData={formData}

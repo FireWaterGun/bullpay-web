@@ -43,12 +43,12 @@ export default function AdminPaymentDetail() {
 
   function statusBadgeClass(s) {
     const v = String(s || '').toLowerCase()
-    if (v === 'confirmed' || v === 'completed') return 'badge bg-label-success'
-    if (v === 'detecting' || v === 'pending') return 'badge bg-label-warning'
-    if (v === 'confirming' || v === 'processing') return 'badge bg-label-info'
-    if (v === 'failed' || v === 'unconfirmed') return 'badge bg-label-danger'
-    if (v === 'expired' || v === 'cancelled' || v === 'canceled') return 'badge bg-label-secondary'
-    return 'badge bg-label-secondary'
+    if (v === 'confirmed' || v === 'completed') return 'badge bg-green-50 text-green-700'
+    if (v === 'detecting' || v === 'pending') return 'badge bg-amber-50 text-amber-700'
+    if (v === 'confirming' || v === 'processing') return 'badge bg-cyan-50 text-cyan-700'
+    if (v === 'failed' || v === 'unconfirmed') return 'badge bg-red-50 text-red-700'
+    if (v === 'expired' || v === 'cancelled' || v === 'canceled') return 'badge bg-surface-100 text-surface-600'
+    return 'badge bg-surface-100 text-surface-600'
   }
 
   async function handleCopy(text) {
@@ -62,7 +62,7 @@ export default function AdminPaymentDetail() {
 
   if (!payment) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="alert alert-warning">{t('admin.paymentDetail.notFound', { defaultValue: 'Payment not found' })}</div>
       </div>
     )
@@ -74,26 +74,26 @@ export default function AdminPaymentDetail() {
   const explorerUrl = payment.explorerUrl || payment.network?.explorerUrl || payment.invoice?.network?.explorerUrl || ''
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Back button */}
           <div className="mb-4">
-            <Link href="/admin/payments" className="btn btn-label-secondary">
-              <i className="bx bx-arrow-back me-1"></i>
+            <Link href="/admin/payments" className="btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none">
+              <i className="bx bx-arrow-back mr-1"></i>
               Back to Payments
             </Link>
           </div>
 
           {/* Payment Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div className="d-flex align-items-center gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
+                <div className="flex items-center gap-3">
                   <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={40} />
                   <div>
                     <h4 className="mb-0">Payment #{payment.id}</h4>
-                    <div className="d-flex align-items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1">
                       <span className={statusBadgeClass(payment.status)}>
                         {String(payment.status || '').toUpperCase()}
                       </span>
@@ -108,19 +108,19 @@ export default function AdminPaymentDetail() {
           </div>
 
           {/* Payment Details */}
-          <div className="row">
-            <div className="col-md-6">
+          <div className="grid grid-cols-12 gap-x-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Payment Details</h5>
                 </div>
-                <div className="card-body">
-                  <div className="table-responsive">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <div className="overflow-x-auto">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
-                        <td className="fw-medium">{payment.id}</td>
+                        <td className="font-medium">{payment.id}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Invoice ID</td>
@@ -128,7 +128,7 @@ export default function AdminPaymentDetail() {
                           {payment.invoiceId ? (
                             <Link
                               href={`/admin/invoices/${payment.invoiceId}`}
-                              className="btn btn-sm btn-text-primary p-0 fw-medium"
+                              className="btn btn-sm btn bg-transparent text-primary-600 hover:bg-primary-50 shadow-none p-0 font-medium"
                             >
                               #{payment.invoiceId}
                             </Link>
@@ -147,16 +147,16 @@ export default function AdminPaymentDetail() {
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
-                        <td className="fw-medium">{formatAmount(payment.amount)} {coinSymbol}</td>
+                        <td className="font-medium">{formatAmount(payment.amount)} {coinSymbol}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">Actual Amount</td>
-                        <td className="fw-medium">{formatAmount(payment.actualAmount)} {coinSymbol}</td>
+                        <td className="font-medium">{formatAmount(payment.actualAmount)} {coinSymbol}</td>
                       </tr>
                       {payment.amountUsd && (
                         <tr>
                           <td className="text-muted">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
-                          <td className="fw-medium">${formatAmount(payment.amountUsd)}</td>
+                          <td className="font-medium">${formatAmount(payment.amountUsd)}</td>
                         </tr>
                       )}
                       {payment.usdRate && (
@@ -165,7 +165,7 @@ export default function AdminPaymentDetail() {
                           <td>
                             ${formatAmount(payment.usdRate)}
                             {payment.rateSource && (
-                              <small className="text-muted ms-1">({payment.rateSource})</small>
+                              <small className="text-muted ml-1">({payment.rateSource})</small>
                             )}
                           </td>
                         </tr>
@@ -173,8 +173,8 @@ export default function AdminPaymentDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
-                          <div className="d-flex align-items-center">
-                            <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="me-2" />
+                          <div className="flex items-center">
+                            <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-2" />
                             <span>{coinSymbol}</span>
                           </div>
                         </td>
@@ -227,25 +227,25 @@ export default function AdminPaymentDetail() {
               </div>
             </div>
 
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Transaction Info</h5>
                 </div>
-                <div className="card-body">
-                  <div className="table-responsive">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <div className="overflow-x-auto">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
-                        <td className="fw-medium">{payment.userId || '-'}</td>
+                        <td className="font-medium">{payment.userId || '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                         <td>
                           {payment.txHash ? (
-                            <div className="d-flex align-items-center">
-                              <code className="text-body me-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                            <div className="flex items-center">
+                              <code className="text-body mr-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
                                 {payment.txHash}
                               </code>
                               {explorerUrl && (
@@ -253,7 +253,7 @@ export default function AdminPaymentDetail() {
                                   href={`${explorerUrl}/tx/${payment.txHash}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
+                                  className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0"
                                   title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                                 >
                                   <i className="bx bx-link-external"></i>
@@ -269,12 +269,12 @@ export default function AdminPaymentDetail() {
                         <td className="text-muted">{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</td>
                         <td>
                           {payment.fromAddress ? (
-                            <div className="d-flex align-items-center">
-                              <code className="text-body me-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                            <div className="flex items-center">
+                              <code className="text-body mr-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
                                 {payment.fromAddress}
                               </code>
                               <button
-                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
+                                className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0"
                                 onClick={() => handleCopy(payment.fromAddress)}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
                               >
@@ -290,12 +290,12 @@ export default function AdminPaymentDetail() {
                         <td className="text-muted">{t('admin.detail.toAddress', { defaultValue: 'To Address' })}</td>
                         <td>
                           {payment.toAddress ? (
-                            <div className="d-flex align-items-center">
-                              <code className="text-body me-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                            <div className="flex items-center">
+                              <code className="text-body mr-2" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>
                                 {payment.toAddress}
                               </code>
                               <button
-                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill flex-shrink-0"
+                                className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0"
                                 onClick={() => handleCopy(payment.toAddress)}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
                               >

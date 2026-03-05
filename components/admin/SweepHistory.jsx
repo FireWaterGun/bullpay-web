@@ -12,61 +12,61 @@ export default function SweepHistory() {
   const [history, setHistory] = useState([])
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
+            <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
               <div>
                 <h5 className="mb-0">{t('admin.sweep.historyTitle', { defaultValue: 'Sweep History' })}</h5>
-                <p className="text-muted small mb-0 mt-1">
+                <p className="text-muted text-sm mb-0 mt-1">
                   {t('admin.sweep.historyDesc', { defaultValue: 'View all sweep transactions and their status' })}
                 </p>
               </div>
-              <div className="d-flex gap-2">
-                <button type="button" className="btn btn-sm btn-outline-secondary">
-                  <i className="bx bx-filter me-1"></i>
+              <div className="flex gap-2">
+                <button type="button" className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
+                  <i className="bx bx-filter mr-1"></i>
                   {t('actions.filters', { defaultValue: 'Filters' })}
                 </button>
-                <button type="button" className="btn btn-sm btn-outline-primary">
-                  <i className="bx bx-refresh me-1"></i>
+                <button type="button" className="btn btn-sm btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white">
+                  <i className="bx bx-refresh mr-1"></i>
                   {t('actions.refresh', { defaultValue: 'Refresh' })}
                 </button>
               </div>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {/* Filters */}
-              <div className="row g-3 mb-4">
-                <div className="col-md-3">
+              <div className="grid grid-cols-12 gap-x-6 gap-3 mb-4">
+                <div className="md:col-span-3">
                   <label className="form-label">{t('admin.sweep.coin', { defaultValue: 'Coin' })}</label>
-                  <select className="form-select">
+                  <select className="form-input">
                     <option value="">{t('crypto.allCoins', { defaultValue: 'All Coins' })}</option>
                     <option value="BTC">BTC</option>
                     <option value="ETH">ETH</option>
                     <option value="USDT">USDT</option>
                   </select>
                 </div>
-                <div className="col-md-3">
+                <div className="md:col-span-3">
                   <label className="form-label">{t('admin.sweep.network', { defaultValue: 'Network' })}</label>
-                  <select className="form-select">
+                  <select className="form-input">
                     <option value="">{t('crypto.allNetworks', { defaultValue: 'All Networks' })}</option>
                     <option value="Ethereum">Ethereum</option>
                     <option value="BSC">BSC</option>
                     <option value="Polygon">Polygon</option>
                   </select>
                 </div>
-                <div className="col-md-3">
+                <div className="md:col-span-3">
                   <label className="form-label">{t('admin.sweep.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select">
+                  <select className="form-input">
                     <option value="">{t('invoices.allStatus', { defaultValue: 'All Status' })}</option>
                     <option value="pending">{t('admin.sweep.pending', { defaultValue: 'Pending' })}</option>
                     <option value="completed">{t('admin.sweep.completed', { defaultValue: 'Completed' })}</option>
                     <option value="failed">{t('admin.sweep.failed', { defaultValue: 'Failed' })}</option>
                   </select>
                 </div>
-                <div className="col-md-3">
+                <div className="md:col-span-3">
                   <label className="form-label">{t('admin.sweep.dateRange', { defaultValue: 'Date Range' })}</label>
-                  <select className="form-select">
+                  <select className="form-input">
                     <option value="today">{t('admin.sweep.today', { defaultValue: 'Today' })}</option>
                     <option value="week">{t('admin.sweep.thisWeek', { defaultValue: 'This Week' })}</option>
                     <option value="month">{t('admin.sweep.thisMonth', { defaultValue: 'This Month' })}</option>
@@ -75,69 +75,69 @@ export default function SweepHistory() {
               </div>
 
               {/* Summary Cards */}
-              <div className="row g-3 mb-4">
-                <div className="col-md-3">
+              <div className="grid grid-cols-12 gap-x-6 gap-3 mb-4">
+                <div className="md:col-span-3">
                   <div className="card border shadow-none mb-0">
-                    <div className="card-body p-3">
-                      <div className="d-flex align-items-center">
-                        <div className="avatar flex-shrink-0 me-3">
-                          <span className="avatar-initial rounded bg-label-primary">
+                    <div className="p-5 p-3">
+                      <div className="flex items-center">
+                        <div className="avatar shrink-0 mr-3">
+                          <span className="avatar-initial rounded bg-primary-50 text-primary-600">
                             <i className="bx bx-check-circle"></i>
                           </span>
                         </div>
                         <div>
-                          <small className="text-muted d-block">{t('admin.sweep.totalSweeps', { defaultValue: 'Total Sweeps' })}</small>
+                          <small className="text-muted block">{t('admin.sweep.totalSweeps', { defaultValue: 'Total Sweeps' })}</small>
                           <h6 className="mb-0">0</h6>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-md-3">
+                <div className="md:col-span-3">
                   <div className="card border shadow-none mb-0">
-                    <div className="card-body p-3">
-                      <div className="d-flex align-items-center">
-                        <div className="avatar flex-shrink-0 me-3">
-                          <span className="avatar-initial rounded bg-label-success">
+                    <div className="p-5 p-3">
+                      <div className="flex items-center">
+                        <div className="avatar shrink-0 mr-3">
+                          <span className="avatar-initial rounded bg-green-50 text-green-700">
                             <i className="bx bx-check-double"></i>
                           </span>
                         </div>
                         <div>
-                          <small className="text-muted d-block">{t('admin.sweep.completed', { defaultValue: 'Completed' })}</small>
+                          <small className="text-muted block">{t('admin.sweep.completed', { defaultValue: 'Completed' })}</small>
                           <h6 className="mb-0">0</h6>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-md-3">
+                <div className="md:col-span-3">
                   <div className="card border shadow-none mb-0">
-                    <div className="card-body p-3">
-                      <div className="d-flex align-items-center">
-                        <div className="avatar flex-shrink-0 me-3">
-                          <span className="avatar-initial rounded bg-label-warning">
+                    <div className="p-5 p-3">
+                      <div className="flex items-center">
+                        <div className="avatar shrink-0 mr-3">
+                          <span className="avatar-initial rounded bg-amber-50 text-amber-700">
                             <i className="bx bx-time"></i>
                           </span>
                         </div>
                         <div>
-                          <small className="text-muted d-block">{t('admin.sweep.pending', { defaultValue: 'Pending' })}</small>
+                          <small className="text-muted block">{t('admin.sweep.pending', { defaultValue: 'Pending' })}</small>
                           <h6 className="mb-0">0</h6>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-md-3">
+                <div className="md:col-span-3">
                   <div className="card border shadow-none mb-0">
-                    <div className="card-body p-3">
-                      <div className="d-flex align-items-center">
-                        <div className="avatar flex-shrink-0 me-3">
-                          <span className="avatar-initial rounded bg-label-danger">
+                    <div className="p-5 p-3">
+                      <div className="flex items-center">
+                        <div className="avatar shrink-0 mr-3">
+                          <span className="avatar-initial rounded bg-red-50 text-red-700">
                             <i className="bx bx-x-circle"></i>
                           </span>
                         </div>
                         <div>
-                          <small className="text-muted d-block">{t('admin.sweep.failed', { defaultValue: 'Failed' })}</small>
+                          <small className="text-muted block">{t('admin.sweep.failed', { defaultValue: 'Failed' })}</small>
                           <h6 className="mb-0">0</h6>
                         </div>
                       </div>
@@ -147,8 +147,8 @@ export default function SweepHistory() {
               </div>
 
               {/* History Table */}
-              <div className="table-responsive">
-                <table className="table table-hover">
+              <div className="overflow-x-auto">
+                <table className="w-full">
                   <thead>
                     <tr>
                       <th>{t('admin.sweep.date', { defaultValue: 'Date' })}</th>
@@ -173,22 +173,22 @@ export default function SweepHistory() {
               </div>
 
               {/* Pagination */}
-              <div className="d-flex justify-content-between align-items-center mt-4">
-                <div className="text-muted small">
+              <div className="flex justify-between items-center mt-4">
+                <div className="text-muted text-sm">
                   {t('invoices.showingEntries', { start: 0, end: 0, total: 0, defaultValue: 'Showing 0 to 0 of 0 entries' })}
                 </div>
                 <nav>
                   <ul className="pagination pagination-sm mb-0">
-                    <li className="page-item disabled">
-                      <a className="page-link" href="#">
+                    <li className="inline-flex disabled">
+                      <a className="px-3 py-1.5 text-sm border border-surface-300 text-surface-600 hover:bg-surface-50 rounded" href="#">
                         <i className="bx bx-chevron-left"></i>
                       </a>
                     </li>
-                    <li className="page-item active">
-                      <a className="page-link" href="#">1</a>
+                    <li className="inline-flex active">
+                      <a className="px-3 py-1.5 text-sm border border-surface-300 text-surface-600 hover:bg-surface-50 rounded" href="#">1</a>
                     </li>
-                    <li className="page-item disabled">
-                      <a className="page-link" href="#">
+                    <li className="inline-flex disabled">
+                      <a className="px-3 py-1.5 text-sm border border-surface-300 text-surface-600 hover:bg-surface-50 rounded" href="#">
                         <i className="bx bx-chevron-right"></i>
                       </a>
                     </li>

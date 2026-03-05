@@ -32,10 +32,10 @@ export function formatAmount(val) {
 }
 
 export function stateBadge(state) {
-  if (state === 'settled') return <span className="badge bg-label-success">Settled</span>
-  if (state === 'committed') return <span className="badge bg-label-info">Committed</span>
-  if (state === 'pending') return <span className="badge bg-label-warning">Pending</span>
-  if (state === 'reversed') return <span className="badge bg-label-secondary">Reversed</span>
+  if (state === 'settled') return <span className="badge bg-green-50 text-green-700">Settled</span>
+  if (state === 'committed') return <span className="badge bg-cyan-50 text-cyan-700">Committed</span>
+  if (state === 'pending') return <span className="badge bg-amber-50 text-amber-700">Pending</span>
+  if (state === 'reversed') return <span className="badge bg-surface-100 text-surface-600">Reversed</span>
   return <span className="text-muted">{state || 'N/A'}</span>
 }
 
@@ -57,20 +57,20 @@ export function parseMetadata(entry) {
 // Additional helpers
 export function entryTypeBadgeClass(type) {
   const v = String(type || '').toLowerCase()
-  if (v === 'credit' || v === 'deposit' || v === 'payment_received') return 'badge bg-label-success'
-  if (v === 'debit' || v === 'withdrawal' || v === 'fee') return 'badge bg-label-danger'
-  if (v === 'adjustment') return 'badge bg-label-warning'
-  if (v === 'conversion_in') return 'badge bg-label-info'
-  if (v === 'conversion_out') return 'badge bg-label-primary'
-  return 'badge bg-label-secondary'
+  if (v === 'credit' || v === 'deposit' || v === 'payment_received') return 'badge bg-green-50 text-green-700'
+  if (v === 'debit' || v === 'withdrawal' || v === 'fee') return 'badge bg-red-50 text-red-700'
+  if (v === 'adjustment') return 'badge bg-amber-50 text-amber-700'
+  if (v === 'conversion_in') return 'badge bg-cyan-50 text-cyan-700'
+  if (v === 'conversion_out') return 'badge bg-primary-50 text-primary-600'
+  return 'badge bg-surface-100 text-surface-600'
 }
 
 export function stateBadgeClass(state) {
   const v = String(state || '').toLowerCase()
-  if (v === 'confirmed' || v === 'completed') return 'badge bg-label-success'
-  if (v === 'pending') return 'badge bg-label-warning'
-  if (v === 'failed' || v === 'reversed') return 'badge bg-label-danger'
-  return 'badge bg-label-secondary'
+  if (v === 'confirmed' || v === 'completed') return 'badge bg-green-50 text-green-700'
+  if (v === 'pending') return 'badge bg-amber-50 text-amber-700'
+  if (v === 'failed' || v === 'reversed') return 'badge bg-red-50 text-red-700'
+  return 'badge bg-surface-100 text-surface-600'
 }
 
 export function formatEntryType(type) {

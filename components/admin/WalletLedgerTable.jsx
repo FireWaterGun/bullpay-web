@@ -39,7 +39,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
   if (loading) {
     return (
       <div className="text-center py-4">
-        <div className="spinner-border spinner-border-sm text-primary" role="status">
+        <div className="spinner w-4 h-4 text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -57,8 +57,8 @@ export default function WalletLedgerTable({ entries, loading, t }) {
   }
 
   return (
-    <div className="table-responsive" style={{ overflowX: 'auto' }}>
-      <table className="table table-hover" style={{ minWidth: '1200px' }}>
+    <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+      <table className="w-full" style={{ minWidth: '1200px' }}>
         <thead>
           <tr style={{ whiteSpace: 'nowrap' }}>
             <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -66,8 +66,8 @@ export default function WalletLedgerTable({ entries, loading, t }) {
             <th>{t('admin.detail.coin', { defaultValue: 'Coin' })}</th>
             <th>{t('admin.detail.code', { defaultValue: 'Code' })}</th>
             <th>{t('admin.ledger.state', { defaultValue: 'State' })}</th>
-            <th className="text-end">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
-            <th className="text-end">USD</th>
+            <th className="text-right">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</th>
+            <th className="text-right">USD</th>
             <th>{t('admin.detail.purpose', { defaultValue: 'Purpose' })}</th>
             <th>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
             <th>{t('admin.ledger.createdAt', { defaultValue: 'Created' })}</th>
@@ -84,24 +84,24 @@ export default function WalletLedgerTable({ entries, loading, t }) {
             return (
               <tr key={entry.id}>
                 <td>
-                  <span className="fw-semibold text-primary">{entry.id}</span>
+                  <span className="font-semibold text-primary">{entry.id}</span>
                 </td>
                 <td>
-                  <span className={`badge ${entry.state === 'reversed' ? 'bg-label-secondary' : (isCredit ? 'bg-label-danger' : 'bg-label-success')}`}>
-                    <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} me-1`}></i>
+                  <span className={`badge ${entry.state ==='reversed' ? 'bg-surface-100 text-surface-600' : (isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700')}`}>
+                    <i className={`bx ${isCredit ?'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
                     {isCredit ? 'Credit' : 'Debit'}
                   </span>
                 </td>
                 <td style={{ whiteSpace: 'nowrap' }}>
-                  <div className="d-flex align-items-center">
+                  <div className="flex items-center">
                     <CoinImg
                       symbol={entry.coinSymbol || metadata?.coin}
                       networkSymbol={entry.networkSymbol || metadata?.network}
                       size={24}
-                      className="me-3"
+                      className="mr-3"
                     />
                     <div>
-                      <div className="fw-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || metadata?.coin || '-'}</div>
+                      <div className="font-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || metadata?.coin || '-'}</div>
                       {(entry.networkName || metadata?.networkName) && (
                         <small className="text-muted" style={{ fontSize: '0.75rem' }}>{entry.networkName || metadata?.networkName}</small>
                       )}
@@ -110,33 +110,33 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                 </td>
                 <td>
                   {entry.entryCode ? (
-                    <span className="fw-medium">{entry.entryCode}</span>
+                    <span className="font-medium">{entry.entryCode}</span>
                   ) : (
                     <span className="text-muted">-</span>
                   )}
                 </td>
                 <td>
-                  {entry.state === 'settled' ? <span className="badge bg-label-success">Settled</span>
-                    : entry.state === 'committed' ? <span className="badge bg-label-info">Committed</span>
-                    : entry.state === 'pending' ? <span className="badge bg-label-warning">{t('status.pending', { defaultValue: 'Pending' })}</span>
-                    : entry.state === 'reversed' ? <span className="badge bg-label-secondary">Reversed</span>
+                  {entry.state === 'settled' ? <span className="badge bg-green-50 text-green-700">Settled</span>
+                    : entry.state === 'committed' ? <span className="badge bg-cyan-50 text-cyan-700">Committed</span>
+                    : entry.state === 'pending' ? <span className="badge bg-amber-50 text-amber-700">{t('status.pending', { defaultValue: 'Pending' })}</span>
+                    : entry.state === 'reversed' ? <span className="badge bg-surface-100 text-surface-600">Reversed</span>
                     : <span className="text-muted">{entry.state || 'N/A'}</span>}
                 </td>
-                <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                  <span className={`fw-medium ${isCredit ? 'text-danger' : 'text-success'}`}>
+                <td className="text-right" style={{ whiteSpace: 'nowrap' }}>
+                  <span className={`font-medium ${isCredit ?'text-danger' : 'text-success'}`}>
                     {isCredit ? '-' : '+'}{formatAmount(amount)}
                   </span>
                 </td>
-                <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
+                <td className="text-right" style={{ whiteSpace: 'nowrap' }}>
                   <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
                 </td>
                 <td>
                   <div>
                     {purposeLabel && (
-                      <div className="fw-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
+                      <div className="font-medium" style={{ fontSize: '0.85rem' }}>{purposeLabel}</div>
                     )}
                     {metadata?.invoiceNumber && (
-                      <small className="badge bg-label-primary">{metadata.invoiceNumber}</small>
+                      <small className="badge bg-primary-50 text-primary-600">{metadata.invoiceNumber}</small>
                     )}
                     {metadata?.sweepId && !metadata?.invoiceNumber && (
                       <small className="text-muted">Sweep #{metadata.sweepId}</small>
@@ -148,14 +148,14 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                 </td>
                 <td>
                   {entry.txHash ? (
-                    <div className="d-flex align-items-center">
-                      <span className="me-2">{entry.txHash}</span>
+                    <div className="flex items-center">
+                      <span className="mr-2">{entry.txHash}</span>
                       {entry.explorerUrl && (
                         <a
                           href={`${entry.explorerUrl}/tx/${entry.txHash}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                          className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                           onClick={(e) => e.stopPropagation()}
                           title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                         >

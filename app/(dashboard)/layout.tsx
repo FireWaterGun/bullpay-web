@@ -284,7 +284,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <>
       {/* ── Sidebar ── */}
       <aside
-        className={`bp-sidebar ${collapsed ? 'bp-collapsed' : ''} ${mobileOpen ? 'bp-mobile-open' : ''}`}
+        className={`bp-sidebar ${collapsed ?'bp-collapsed' : ''} ${mobileOpen ? 'bp-mobile-open' : ''}`}
       >
         {/* Brand (Sneat: app-brand with toggle button) */}
         <div className="relative flex items-center h-[64px] px-[calc(0.9375rem*2.1333)] shrink-0">
@@ -303,7 +303,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             className="bp-collapse-btn absolute z-[3] hidden xl:flex items-center justify-center rounded-full bg-primary-600 border-[7px] border-[#f5f5f9] cursor-pointer transition-colors"
             style={{ left: '15.2rem' }}
           >
-            <i className={`bx ${collapsed ? 'bx-chevron-right' : 'bx-chevron-left'} text-white text-[1.375rem] leading-none w-[1.375rem] h-[1.375rem] flex items-center justify-center`}></i>
+            <i className={`bx ${collapsed ?'bx-chevron-right' : 'bx-chevron-left'} text-white text-[1.375rem] leading-none w-[1.375rem] h-[1.375rem] flex items-center justify-center`}></i>
           </button>
           <button
             onClick={() => setMobileOpen(false)}
@@ -343,14 +343,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* ── Mobile backdrop ── */}
       <div
-        className={`bp-backdrop ${mobileOpen ? 'bp-backdrop-visible' : ''}`}
+        className={`bp-backdrop ${mobileOpen ?'bp-backdrop-visible' : ''}`}
         onClick={() => setMobileOpen(false)}
         role="button"
         aria-label="Close menu"
       />
 
       {/* ── Main area ── */}
-      <div className={`bp-main ${collapsed ? 'bp-main-collapsed' : ''}`}>
+      <div className={`bp-main ${collapsed ?'bp-main-collapsed' : ''}`}>
         {/* Navbar */}
         <nav className="bp-navbar">
           {/* Mobile hamburger */}

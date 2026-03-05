@@ -50,10 +50,10 @@ export default function Dashboard() {
   const hasMoreTrends = sortedTrendDates.length > 7
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
-          <div className="row g-4 mb-4">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
+          <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
             <StatCard
               icon="bx-receipt"
               color="primary"
@@ -80,46 +80,46 @@ export default function Dashboard() {
             />
           </div>
 
-          <div className="row g-4">
-            <div className="col-lg-8">
+          <div className="grid grid-cols-12 gap-x-6 gap-4">
+            <div className="lg:col-span-8">
               <div className="card">
-                <div className="card-header d-flex justify-content-between align-items-center">
+                <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
                   <h5 className="mb-0">
                     {t('admin.dashboard.byCurrency', { defaultValue: 'Volume by Currency' })}
                   </h5>
                 </div>
-                <div className="card-body">
+                <div className="p-5">
                   {Object.keys(byCurrency).length === 0 ? (
                     <CardEmptyState
                       icon="bx-data"
                       message={t('admin.dashboard.noData', { defaultValue: 'No data available' })}
                     />
                   ) : (
-                    <div className="table-responsive">
-                      <table className="table table-hover">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
                         <thead>
                           <tr>
                             <th>{t('admin.dashboard.currency', { defaultValue: 'Currency' })}</th>
-                            <th className="text-end">{t('admin.dashboard.count', { defaultValue: 'Count' })}</th>
-                            <th className="text-end">{t('admin.dashboard.totalVolume', { defaultValue: 'Total Volume' })}</th>
-                            <th className="text-end">{t('admin.dashboard.avgAmount', { defaultValue: 'Avg Amount' })}</th>
+                            <th className="text-right">{t('admin.dashboard.count', { defaultValue: 'Count' })}</th>
+                            <th className="text-right">{t('admin.dashboard.totalVolume', { defaultValue: 'Total Volume' })}</th>
+                            <th className="text-right">{t('admin.dashboard.avgAmount', { defaultValue: 'Avg Amount' })}</th>
                           </tr>
                         </thead>
                         <tbody>
                           {Object.entries(byCurrency).map(([currency, data]) => (
                             <tr key={currency}>
                               <td>
-                                <span className="fw-medium">{currency}</span>
+                                <span className="font-medium">{currency}</span>
                               </td>
-                              <td className="text-end">
-                                <span className="badge bg-label-secondary">{data.count}</span>
+                              <td className="text-right">
+                                <span className="badge bg-surface-100 text-surface-600">{data.count}</span>
                               </td>
-                              <td className="text-end">
-                                <span className="fw-medium">
+                              <td className="text-right">
+                                <span className="font-medium">
                                   {formatCoinAmount(data.totalVolume)}
                                 </span>
                               </td>
-                              <td className="text-end text-muted">
+                              <td className="text-right text-muted">
                                 {formatCoinAmount(data.averageAmount)}
                               </td>
                             </tr>
@@ -132,14 +132,14 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="col-lg-4">
+            <div className="lg:col-span-4">
               <div className="card">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
                     {t('admin.dashboard.topUsers', { defaultValue: 'Top Users' })}
                   </h5>
                 </div>
-                <div className="card-body">
+                <div className="p-5">
                   {topUsers.length === 0 ? (
                     <CardEmptyState
                       icon="bx-user"
@@ -149,18 +149,18 @@ export default function Dashboard() {
                     <div className="list-group list-group-flush">
                       {topUsers.map((user, index) => (
                         <div key={user.userId} className="list-group-item px-0">
-                          <div className="d-flex justify-content-between align-items-center">
+                          <div className="flex justify-between items-center">
                             <div>
                               <h6 className="mb-0">
-                                <span className="badge bg-label-primary me-2">{index + 1}</span>
+                                <span className="badge bg-primary-50 text-primary-600 mr-2">{index + 1}</span>
                                 {user.email}
                               </h6>
                               <small className="text-muted">
                                 {user.paymentCount} {t('admin.dashboard.payments', { defaultValue: 'payments' })}
                               </small>
                             </div>
-                            <div className="text-end">
-                              <div className="fw-medium">
+                            <div className="text-right">
+                              <div className="font-medium">
                                 {formatUsd(user.totalAmountUsd || user.totalAmount || 0)}
                               </div>
                             </div>
@@ -174,14 +174,14 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="row g-4 mt-2">
-            <div className="col-12">
+          <div className="grid grid-cols-12 gap-x-6 gap-4 mt-2">
+            <div className="col-span-12">
               <div className="card" style={{
                 borderRadius: '0.75rem',
                 border: 'none',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
               }}>
-                <div className="card-header d-flex align-items-center" style={{ border: 'none' }}>
+                <div className="px-5 py-4 border-b border-surface-200 flex items-center" style={{ border: 'none' }}>
                   <div style={{
                     width: 36,
                     height: 36,
@@ -198,7 +198,7 @@ export default function Dashboard() {
                     {t('admin.dashboard.dailyTrends', { defaultValue: 'Daily Trends' })}
                   </h5>
                 </div>
-                <div className="card-body">
+                <div className="p-5">
                   {Object.keys(trends).length === 0 ? (
                     <CardEmptyState
                       icon="bx-line-chart"
@@ -207,7 +207,7 @@ export default function Dashboard() {
                   ) : (
                     <>
                       <div
-                        className="d-flex gap-3 pb-2"
+                        className="flex gap-3 pb-2"
                         style={{
                           overflowX: 'auto',
                           scrollbarWidth: 'thin'
@@ -223,9 +223,9 @@ export default function Dashboard() {
                         ))}
                       </div>
                       {hasMoreTrends && (
-                        <div className="text-end mt-2">
+                        <div className="text-right mt-2">
                           <button
-                            className="btn btn-sm btn-link text-muted p-0"
+                            className="btn btn-sm btn bg-transparent text-primary-600 hover:underline shadow-none p-0 text-muted p-0"
                             onClick={() => setShowAllTrends(!showAllTrends)}
                           >
                             {showAllTrends ? t('common.showLess', { defaultValue: 'Show Less' }) : `+${sortedTrendDates.length - 7} more`}

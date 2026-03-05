@@ -33,35 +33,35 @@ export default function PermissionActionModal({ action, role, permission, reason
 
   const cfg = MODAL_CONFIG[action]
   return (
-    <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
-      <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
-              <i className={`bx ${cfg.icon} ${cfg.iconColor} me-2`}></i>
+    <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
+      <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-xl shadow-xl">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800">
+              <i className={`bx ${cfg.icon} ${cfg.iconColor} mr-2`}></i>
               {cfg.title}
             </h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose}></button>
           </div>
-          <div className="modal-body">
+          <div className="p-5">
             <div className="mb-3">
               <label className="form-label">{t('admin.permissions.permissionName', { defaultValue: 'Permission Name' })}</label>
               <input
                 type="text"
-                className="form-control"
+                className="form-input"
                 placeholder={cfg.placeholder}
                 value={permission}
                 onChange={(e) => onPermissionChange(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
               />
-              <small className="text-muted mt-1 d-block">
+              <small className="text-muted mt-1 block">
                 {t('admin.permissions.enterPermission', { defaultValue: 'Enter the permission to {{verb}} {{role}}', verb: cfg.verb, role: formatRoleLabel(role) })}
               </small>
             </div>
             <div>
               <label className="form-label">{t('admin.permissions.reason', { defaultValue: 'Reason' })} <span className="text-muted">{t('admin.permissions.optional', { defaultValue: '(optional)' })}</span></label>
               <textarea
-                className="form-control"
+                className="form-input"
                 rows="2"
                 placeholder={cfg.reasonPlaceholder}
                 value={reason}
@@ -69,14 +69,14 @@ export default function PermissionActionModal({ action, role, permission, reason
               />
             </div>
           </div>
-          <div className="modal-footer">
-            <button className="btn btn-outline-secondary" onClick={onClose}>{t('actions.cancel', { defaultValue: 'Cancel' })}</button>
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+            <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onClose}>{t('actions.cancel', { defaultValue: 'Cancel' })}</button>
             <button
               className={`btn ${cfg.btnClass}`}
               onClick={onSubmit}
               disabled={!permission.trim() || disabled}
             >
-              <i className={`bx ${cfg.btnIcon} me-1`}></i>{cfg.btnLabel}
+              <i className={`bx ${cfg.btnIcon} mr-1`}></i>{cfg.btnLabel}
             </button>
           </div>
         </div>

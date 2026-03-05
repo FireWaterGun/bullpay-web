@@ -149,9 +149,9 @@ export default function NetworkForm() {
 
   if (loading && isEdit) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="text-center py-6">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
           <p className="text-muted mt-2">{t('common.loading', { defaultValue: 'Loading...' })}</p>
@@ -161,12 +161,12 @@ export default function NetworkForm() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Header */}
-      <div className="d-flex align-items-center mb-4">
+      <div className="flex items-center mb-4">
         <Link
           href="/admin/networks"
-          className="btn btn-icon btn-label-secondary me-3"
+          className="btn btn-icon btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none mr-3"
         >
           <i className="bx bx-arrow-back"></i>
         </Link>
@@ -186,14 +186,14 @@ export default function NetworkForm() {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-12 col-xl-8">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12 xl:col-span-8">
           <div className="card mb-4">
-            <h5 className="card-header">{t('crypto.networkInformation', { defaultValue: 'Network Information' })}</h5>
-            <div className="card-body">
+            <h5 className="px-5 py-4 border-b border-surface-200">{t('crypto.networkInformation', { defaultValue: 'Network Information' })}</h5>
+            <div className="p-5">
               {error && (
                 <div className="alert alert-danger mb-4" role="alert">
-                  <i className="bx bx-error-circle me-2"></i>
+                  <i className="bx bx-error-circle mr-2"></i>
                   {error}
                 </div>
               )}
@@ -228,23 +228,23 @@ export default function NetworkForm() {
 
       {/* Error Modal */}
       {showErrorModal && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => setShowErrorModal(false)}>
-          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
+        <div className="fixed inset-0 z-50 flex items-center justify-center block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => setShowErrorModal(false)}>
+          <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-xl shadow-xl">
+              <div className="flex items-center justify-between p-5 border-b border-surface-200">
+                <h5 className="text-lg font-semibold text-surface-800">
                   {t('crypto.operationFailed', { defaultValue: 'Operation Failed' })}
                 </h5>
                 <button
                   type="button"
-                  className="btn-close"
+                  className="cursor-pointer text-surface-500 hover:text-surface-700"
                   onClick={() => setShowErrorModal(false)}
                 ></button>
               </div>
-              <div className="modal-body">
+              <div className="p-5">
                 <p className="mb-0">{errorMessage}</p>
               </div>
-              <div className="modal-footer">
+              <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
                 <button
                   type="button"
                   className="btn btn-primary"

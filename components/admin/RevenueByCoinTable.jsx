@@ -9,31 +9,31 @@ const formatPercent = formatPercentShared
 
 export function RevenueByCoinTable({ byCoinData, totals, loading, t }) {
   return (
-    <div className="row mb-4">
-      <div className="col-12">
+    <div className="grid grid-cols-12 gap-x-6 mb-4">
+      <div className="col-span-12">
         <div className="card">
-          <div className="card-header">
-            <h5 className="card-title mb-0">
+          <div className="px-5 py-4 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
               {t('admin.revenueByCoin', { defaultValue: 'Revenue by Coin' })}
             </h5>
           </div>
-          <div className="card-body p-0">
+          <div className="p-5 p-0">
             {loading ? (
-              <div className="d-flex justify-content-center py-5">
-                <div className="spinner-border text-primary" role="status">
+              <div className="flex justify-center py-5">
+                <div className="spinner text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               </div>
             ) : (
-              <div className="table-responsive">
-                <table className="table table-hover mb-0">
-                  <thead className="table-light">
+              <div className="overflow-x-auto">
+                <table className="w-full mb-0">
+                  <thead className="">
                     <tr>
-                      <th className="text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
-                      <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
-                      <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.cost', { defaultValue: 'Cost' })}</th>
-                      <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}</th>
-                      <th className="text-end text-uppercase fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.margin', { defaultValue: 'Margin' })}</th>
+                      <th className="uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.coin', { defaultValue: 'Coin' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.revenue', { defaultValue: 'Revenue' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.cost', { defaultValue: 'Cost' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.operatingProfit', { defaultValue: 'Operating Profit' })}</th>
+                      <th className="text-right uppercase font-semibold text-muted" style={{ fontSize: '0.8rem' }}>{t('admin.margin', { defaultValue: 'Margin' })}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -54,31 +54,31 @@ export function RevenueByCoinTable({ byCoinData, totals, loading, t }) {
                           return (
                             <tr key={`${item.coinSymbol}-${item.networkName || 'all'}`}>
                               <td>
-                                <div className="d-flex align-items-center">
-                                  <CoinImg symbol={item.coinSymbol} size={24} className="me-2" />
-                                  <span className="fw-medium">{item.coinSymbol}</span>
+                                <div className="flex items-center">
+                                  <CoinImg symbol={item.coinSymbol} size={24} className="mr-2" />
+                                  <span className="font-medium">{item.coinSymbol}</span>
                                   {item.networkName && (
-                                    <small className="text-muted ms-1">/ {item.networkName}</small>
+                                    <small className="text-muted ml-1">/ {item.networkName}</small>
                                   )}
                                 </div>
                               </td>
-                              <td className="text-end">{formatCurrency(revenue)}</td>
-                              <td className="text-end">{formatCurrency(cost)}</td>
-                              <td className={`text-end ${profit > 0 ? 'text-success' : profit < 0 ? 'text-danger' : ''}`}>
+                              <td className="text-right">{formatCurrency(revenue)}</td>
+                              <td className="text-right">{formatCurrency(cost)}</td>
+                              <td className={`text-right ${profit > 0 ?'text-success' : profit < 0 ? 'text-danger' : ''}`}>
                                 {formatCurrency(profit)}
                               </td>
-                              <td className="text-end">{formatPercent(margin)}</td>
+                              <td className="text-right">{formatPercent(margin)}</td>
                             </tr>
                           )
                         })}
-                        <tr className="table-light fw-bold">
+                        <tr className="font-bold">
                           <td>{t('common.total', { defaultValue: 'TOTAL' })}</td>
-                          <td className="text-end">{formatCurrency(totals.revenue)}</td>
-                          <td className="text-end">{formatCurrency(totals.cost)}</td>
-                          <td className={`text-end ${totals.profit > 0 ? 'text-success' : totals.profit < 0 ? 'text-danger' : ''}`}>
+                          <td className="text-right">{formatCurrency(totals.revenue)}</td>
+                          <td className="text-right">{formatCurrency(totals.cost)}</td>
+                          <td className={`text-right ${totals.profit > 0 ?'text-success' : totals.profit < 0 ? 'text-danger' : ''}`}>
                             {formatCurrency(totals.profit)}
                           </td>
-                          <td className="text-end">{formatPercent(totals.margin)}</td>
+                          <td className="text-right">{formatPercent(totals.margin)}</td>
                         </tr>
                       </>
                     )}
@@ -95,32 +95,32 @@ export function RevenueByCoinTable({ byCoinData, totals, loading, t }) {
 
 export function RevenueVolumeSummary({ summary, t }) {
   return (
-    <div className="row">
-      <div className="col-12">
+    <div className="grid grid-cols-12 gap-x-6">
+      <div className="col-span-12">
         <div className="card">
-          <div className="card-body py-3">
-            <div className="d-flex flex-wrap justify-content-between gap-3">
+          <div className="p-5 py-3">
+            <div className="flex flex-wrap justify-between gap-3">
               <div>
-                <span className="text-muted me-2">{t('admin.volume', { defaultValue: 'Volume' })}:</span>
-                <span className="fw-medium me-3">
+                <span className="text-muted mr-2">{t('admin.volume', { defaultValue: 'Volume' })}:</span>
+                <span className="font-medium mr-3">
                   Sweep {formatCurrency(summary?.totalSweepVolumeUsd || 0)}
                 </span>
                 <span className="text-muted">|</span>
-                <span className="fw-medium ms-3">
+                <span className="font-medium ml-3">
                   Withdrawal {formatCurrency(summary?.totalWithdrawalVolumeUsd || 0)}
                 </span>
               </div>
               <div>
-                <span className="text-muted me-2">{t('admin.counts', { defaultValue: 'Counts' })}:</span>
-                <span className="fw-medium me-3">
+                <span className="text-muted mr-2">{t('admin.counts', { defaultValue: 'Counts' })}:</span>
+                <span className="font-medium mr-3">
                   {summary?.counts?.sweeps || 0} sweeps
                 </span>
                 <span className="text-muted">|</span>
-                <span className="fw-medium mx-3">
+                <span className="font-medium mx-3">
                   {summary?.counts?.withdrawals || 0} withdrawals
                 </span>
                 <span className="text-muted">|</span>
-                <span className="fw-medium mx-3">
+                <span className="font-medium mx-3">
                   {summary?.counts?.gasTopups || 0} gas topups
                 </span>
               </div>

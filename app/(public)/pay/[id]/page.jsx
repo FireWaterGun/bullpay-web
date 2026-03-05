@@ -105,7 +105,7 @@ export default function InvoicePaymentV2() {
                         }}></div>
                         <div className="text-center relative" style={{ zIndex: 1 }}>
                           <div className="inline-flex items-center gap-2">
-                            <i className={`bx ${uiStatus === 'paid' ? 'bx-check-circle' : uiStatus === 'pending' ? 'bx-time-five' : uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'} text-white`} style={{ fontSize: 20 }}></i>
+                            <i className={`bx ${uiStatus ==='paid' ? 'bx-check-circle' : uiStatus === 'pending' ? 'bx-time-five' : uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'} text-white`} style={{ fontSize: 20 }}></i>
                             <span className="font-bold uppercase text-white" style={{ letterSpacing: '2px', fontSize: '0.875rem' }}>
                               {statusLabel(uiStatus, t)}
                             </span>
@@ -283,7 +283,7 @@ export default function InvoicePaymentV2() {
                                 padding: 0,
                                 transition: 'all 0.2s ease',
                               }} onClick={handleCopy}>
-                                <i className={`bx ${copied ? 'bx-check' : 'bx-copy'}`} style={{ fontSize: 16 }}></i>
+                                <i className={`bx ${copied ?'bx-check' : 'bx-copy'}`} style={{ fontSize: 16 }}></i>
                               </button>
                             )}
                           </div>

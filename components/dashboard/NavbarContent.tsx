@@ -78,7 +78,7 @@ export default function NavbarContent({
         >
           <i className="bx bx-globe text-xl"></i>
         </button>
-        <div className={`bp-dropdown-menu ${langDd.open ? 'bp-dropdown-open' : ''}`}>
+        <div className={`bp-absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 ${langDd.open ?'bp-dropdown-open' : ''}`}>
           {LANGS.map((lang) => (
             <button
               key={lang.code}
@@ -86,7 +86,7 @@ export default function NavbarContent({
                 setLanguage(lang)
                 langDd.setOpen(false)
               }}
-              className={`bp-dropdown-item w-full ${i18n.language === lang.code ? 'text-primary-600 font-medium' : ''}`}
+              className={`bp-block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer w-full ${i18n.language === lang.code ?'text-primary-600 font-medium' : ''}`}
             >
               {lang.label}
             </button>
@@ -100,7 +100,7 @@ export default function NavbarContent({
         className="flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors cursor-pointer"
         title={theme === 'dark' ? t('theme.light') : t('theme.dark')}
       >
-        <i className={`bx ${theme === 'dark' ? 'bx-sun' : 'bx-moon'} text-xl`}></i>
+        <i className={`bx ${theme ==='dark' ? 'bx-sun' : 'bx-moon'} text-xl`}></i>
       </button>
 
       {/* Notifications */}
@@ -128,7 +128,7 @@ export default function NavbarContent({
           )}
         </button>
         <div
-          className={`bp-dropdown-menu min-w-[220px] ${userDd.open ? 'bp-dropdown-open' : ''}`}
+          className={`bp-absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 min-w-[220px] ${userDd.open ?'bp-dropdown-open' : ''}`}
         >
           {/* User info header */}
           <div className="px-4 py-3 border-b border-surface-100">

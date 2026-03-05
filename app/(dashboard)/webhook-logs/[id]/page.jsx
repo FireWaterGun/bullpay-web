@@ -88,7 +88,7 @@ export default function WebhookLogDetailPage() {
     <>
       {/* Back button */}
       <div className="mb-4">
-        <Link href="/webhook-logs" className="btn btn-outline-secondary inline-flex items-center gap-1">
+        <Link href="/webhook-logs" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 inline-flex items-center gap-1">
           <i className="bx bx-arrow-back"></i>
           {t('webhookLog.backToList', { defaultValue: 'Back to Webhook Logs' })}
         </Link>
@@ -100,10 +100,10 @@ export default function WebhookLogDetailPage() {
           <div className="flex justify-between items-center flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <div
-                className={`rounded-full flex items-center justify-center ${log.success ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
+                className={`rounded-full flex items-center justify-center ${log.success ?'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
                 style={{ width: 48, height: 48 }}
               >
-                <i className={`bx ${log.success ? 'bx-check' : 'bx-x'} text-2xl`}></i>
+                <i className={`bx ${log.success ?'bx-check' : 'bx-x'} text-2xl`}></i>
               </div>
               <div>
                 <h4 className="font-semibold text-surface-900 mb-0">
@@ -174,7 +174,7 @@ export default function WebhookLogDetailPage() {
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('webhookLog.success', { defaultValue: 'Success' })}</td>
                   <td className="py-2">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${log.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${log.success ?'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {log.success ? t('webhookLog.success', { defaultValue: 'Success' }) : t('webhookLog.failed', { defaultValue: 'Failed' })}
                     </span>
                   </td>

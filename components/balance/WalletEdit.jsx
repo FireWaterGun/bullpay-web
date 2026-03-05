@@ -153,7 +153,7 @@ export default function WalletEdit() {
                       <><i className="bx bx-check mr-1"></i>{t('wallets.save', { defaultValue: 'Save Changes' })}</>
                     )}
                   </button>
-                  <button type="button" className="btn btn-outline-danger" onClick={() => setShowDeleteConfirm(true)}>
+                  <button type="button" className="btn btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white" onClick={() => setShowDeleteConfirm(true)}>
                     <i className="bx bx-trash"></i>
                   </button>
                 </div>

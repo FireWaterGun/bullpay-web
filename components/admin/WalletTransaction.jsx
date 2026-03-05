@@ -144,14 +144,14 @@ export default function WalletTransaction() {
   const assets = wallet?.assets || []
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <Link
             href="/admin/system-wallets"
-            className="btn btn-outline-secondary mb-3"
+            className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mb-3"
           >
-            <i className="bx bx-arrow-back me-2"></i>
+            <i className="bx bx-arrow-back mr-2"></i>
             {t('actions.back', { defaultValue: 'Back' })}
           </Link>
 
@@ -166,25 +166,25 @@ export default function WalletTransaction() {
 
           {/* Filters */}
           <div className="card mb-4">
-            <div className="card-header">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">
-                <i className="bx bx-filter me-2"></i>
+                <i className="bx bx-filter mr-2"></i>
                 {t('admin.ledger.filters', { defaultValue: 'Filters' })}
               </h5>
             </div>
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.entryType', { defaultValue: 'Entry Type' })}</label>
-                  <select className="form-select" value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
+                  <select className="form-input" value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="credit">{t('admin.detail.credit', { defaultValue: 'Credit' })}</option>
                     <option value="debit">{t('admin.detail.debit', { defaultValue: 'Debit' })}</option>
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.entryCode', { defaultValue: 'Entry Code' })}</label>
-                  <select className="form-select" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
+                  <select className="form-input" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="WA">WA - Wallet Actual</option>
                     <option value="WF">WF - Wallet Fee</option>
@@ -196,20 +196,20 @@ export default function WalletTransaction() {
                     <option value="XO">XO - Internal Out</option>
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.state', { defaultValue: 'State' })}</label>
-                  <select className="form-select" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
+                  <select className="form-input" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="committed">Committed</option>
                     <option value="settled">Settled</option>
                     <option value="reversed">Reversed</option>
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.txHash', { defaultValue: 'Tx Hash' })}</label>
-                  <input type="text" className="form-control" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+                  <input type="text" className="form-input" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
                   <LocaleDateRangePicker
                     startDate={startDateFilter}
@@ -223,13 +223,13 @@ export default function WalletTransaction() {
                   />
                 </div>
               </div>
-              <div className="d-flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3">
                 <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt me-1"></i>
+                  <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
-                  <i className="bx bx-reset me-1"></i>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>
               </div>
@@ -238,12 +238,12 @@ export default function WalletTransaction() {
 
           {/* Ledger Table */}
           <div className="card">
-            <div className="card-body">
+            <div className="p-5">
               <WalletLedgerTable entries={entries} loading={loading} t={t} />
 
               {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
                       start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                       end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -251,20 +251,20 @@ export default function WalletTransaction() {
                       defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
                     })}
                   </div>
-                  <div className="btn-group">
+                  <div className="inline-flex rounded-lg shadow-sm">
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasPrev || loading}
                       onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}
                     >
                       <i className="bx bx-chevron-left"></i>
                       {t('actions.prev', { defaultValue: 'Previous' })}
                     </button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled>
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>
                       {pagination.page} / {pagination.totalPages}
                     </button>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasNext || loading}
                       onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}
                     >

@@ -63,13 +63,13 @@ export default function LandingPage() {
             aria-label="Toggle navigation"
             onClick={() => setNavOpen(!navOpen)}
           >
-            <i className={`bx ${navOpen ? 'bx-x' : 'bx-menu'} text-2xl`} style={{ color: '#0f172a' }}></i>
+            <i className={`bx ${navOpen ?'bx-x' : 'bx-menu'} text-2xl`} style={{ color: '#0f172a' }}></i>
           </button>
         </div>
 
         {/* Mobile menu */}
         <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${navOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${navOpen ?'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}
         >
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pb-5 pt-2 flex flex-col gap-1 border-t border-slate-200/60">
             <a className="landing-nav-link-mobile" href="#features" onClick={() => setNavOpen(false)}>Features</a>

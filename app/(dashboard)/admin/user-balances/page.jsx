@@ -15,11 +15,11 @@ import TableEmptyState from '@/components/TableEmptyState'
 
 function roleBadgeClass(role) {
   const v = String(role || '').toLowerCase()
-  if (v === 'super_admin') return 'badge bg-label-danger'
-  if (v === 'admin') return 'badge bg-label-warning'
-  if (v === 'business_user') return 'badge bg-label-info'
-  if (v === 'support_agent') return 'badge bg-label-secondary'
-  return 'badge bg-label-primary'
+  if (v === 'super_admin') return 'badge bg-red-50 text-red-700'
+  if (v === 'admin') return 'badge bg-amber-50 text-amber-700'
+  if (v === 'business_user') return 'badge bg-cyan-50 text-cyan-700'
+  if (v === 'support_agent') return 'badge bg-surface-100 text-surface-600'
+  return 'badge bg-primary-50 text-primary-600'
 }
 
 export default function UserBalanceListPage() {
@@ -122,15 +122,15 @@ export default function UserBalanceListPage() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-wallet me-2"></i>
+                    <i className="bx bx-wallet mr-2"></i>
                     {t('admin.userBalances.title', { defaultValue: 'User Balances' })}
                   </h4>
                   <p className="text-muted mb-0">
@@ -143,7 +143,7 @@ export default function UserBalanceListPage() {
           </div>
 
           {summary && (
-            <div className="row g-4 mb-4">
+            <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
               <SummaryCard title={t('admin.userBalance.totalUsers', { defaultValue: 'Total Users' })} value={summary.totalUsers ?? 0} icon="bx-group" color="primary" />
               <SummaryCard title={t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' })} value={`$${summary.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
               <SummaryCard title={t('admin.userBalance.averageUsd', { defaultValue: 'Average (USD)' })} value={`$${summary.averageValueUsd ?? '0.00'}`} icon="bx-bar-chart-alt-2" color="info" />
@@ -152,37 +152,37 @@ export default function UserBalanceListPage() {
           )}
 
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-select" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+                  <select className="form-input" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     {SORT_BY_OPTIONS.map(o => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
-                  <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
+                  <select className="form-input" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
                     <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('admin.userBalances.minValue', { defaultValue: 'Min Value (USD)' })}</label>
-                  <input type="number" className="form-control" placeholder="0.00" value={minValueFilter} onChange={(e) => setMinValueFilter(e.target.value)} min="0" step="0.01" />
+                  <input type="number" className="form-input" placeholder="0.00" value={minValueFilter} onChange={(e) => setMinValueFilter(e.target.value)} min="0" step="0.01" />
                 </div>
               </div>
-              <div className="d-flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3">
                 <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt me-1"></i>
+                  <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
-                  <i className="bx bx-reset me-1"></i>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>
               </div>
@@ -190,9 +190,9 @@ export default function UserBalanceListPage() {
           </div>
 
           <div className="card">
-            <div className="card-body">
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover">
+            <div className="p-5">
+              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+                <table className="w-full">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>{t('table.userId', { defaultValue: 'User ID' })}</th>
@@ -200,7 +200,7 @@ export default function UserBalanceListPage() {
                       <th>{t('table.name', { defaultValue: 'Name' })}</th>
                       <th className="text-center">{t('table.role', { defaultValue: 'Role' })}</th>
                       <th className="text-center">{t('admin.userBalances.totalAssets', { defaultValue: 'Assets' })}</th>
-                      <th className="text-end">{t('admin.userBalances.totalValueUsd', { defaultValue: 'Value (USD)' })}</th>
+                      <th className="text-right">{t('admin.userBalances.totalValueUsd', { defaultValue: 'Value (USD)' })}</th>
                       <th>{t('admin.userBalances.valuedAt', { defaultValue: 'Valued At' })}</th>
                       <th></th>
                     </tr>
@@ -216,21 +216,21 @@ export default function UserBalanceListPage() {
                     ) : (
                       users.map((u) => (
                         <tr key={u.userId}>
-                          <td><span className="fw-semibold text-primary">{u.userId}</span></td>
+                          <td><span className="font-semibold text-primary">{u.userId}</span></td>
                           <td><span style={{ fontSize: '0.85rem' }}>{u.email || '-'}</span></td>
-                          <td><span className="fw-medium">{u.fullName || '-'}</span></td>
+                          <td><span className="font-medium">{u.fullName || '-'}</span></td>
                           <td className="text-center">
                             <span className={roleBadgeClass(u.role)}>
                               {String(u.role || '').replace(/_/g, ' ').toUpperCase()}
                             </span>
                           </td>
-                          <td className="text-center"><span className="fw-medium">{u.totalAssets ?? 0}</span></td>
-                          <td className="text-end text-nowrap"><span className="fw-bold">${u.totalValueUsd || '0.00'}</span></td>
+                          <td className="text-center"><span className="font-medium">{u.totalAssets ?? 0}</span></td>
+                          <td className="text-right whitespace-nowrap"><span className="font-bold">${u.totalValueUsd || '0.00'}</span></td>
                           <td><span style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{fmtDate(u.valuedAt)}</span></td>
                           <td>
                             <Link
                               href={`/admin/user-balances/${u.userId}`}
-                              className="btn btn-sm btn-icon btn-text-secondary"
+                              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
                               title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
                             >
                               <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
@@ -244,8 +244,8 @@ export default function UserBalanceListPage() {
               </div>
 
               {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
                       start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                       end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -253,12 +253,12 @@ export default function UserBalanceListPage() {
                       defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
                     })}
                   </div>
-                  <div className="btn-group">
-                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasPrev || loading} onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}>
+                  <div className="inline-flex rounded-lg shadow-sm">
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled={!pagination.hasPrev || loading} onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}>
                       <i className="bx bx-chevron-left"></i> {t('actions.prev', { defaultValue: 'Previous' })}
                     </button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled>{pagination.page} / {pagination.totalPages}</button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasNext || loading} onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}>
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>{pagination.page} / {pagination.totalPages}</button>
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled={!pagination.hasNext || loading} onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}>
                       {t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right"></i>
                     </button>
                   </div>

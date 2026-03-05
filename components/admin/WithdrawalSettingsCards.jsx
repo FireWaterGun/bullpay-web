@@ -4,14 +4,14 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
 function SettingsCard({ title, children }) {
   return (
-    <div className="col-md-6">
+    <div className="md:col-span-6">
       <div className="card">
-        <div className="card-header">
+        <div className="px-5 py-4 border-b border-surface-200">
           <h6 className="mb-0">{title}</h6>
         </div>
-        <div className="card-body">
-          <div className="table-responsive">
-          <table className="table table-sm mb-0">
+        <div className="p-5">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm mb-0">
             <tbody>{children}</tbody>
           </table>
           </div>
@@ -23,7 +23,7 @@ function SettingsCard({ title, children }) {
 
 function BooleanBadge({ value }) {
   return (
-    <span className={`badge ${value ? 'bg-success' : 'bg-secondary'}`}>
+    <span className={`badge ${value ?'bg-success' : 'bg-secondary'}`}>
       {value ? 'Yes' : 'No'}
     </span>
   )
@@ -56,7 +56,7 @@ function GasSettingsCard({ gasSettings }) {
       <tr>
         <td><strong>{t('admin.withdrawal.minNativeByNetwork', { defaultValue: 'Min Native/Network' })}</strong></td>
         <td>
-          <span className="badge rounded-pill bg-primary" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+          <span className="badge rounded-full bg-primary" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
             {Object.keys(gasSettings.minNativeByNetwork || {}).length}
           </span>
         </td>
@@ -127,7 +127,7 @@ export default function WithdrawalSettingsCards({
   reconciliation,
 }) {
   return (
-    <div className="row g-4">
+    <div className="grid grid-cols-12 gap-x-6 gap-4">
       <AutoApproveCard autoApprove={autoApprove} />
       <GasSettingsCard gasSettings={gasSettings} />
       <PolicyCard policy={policy} />

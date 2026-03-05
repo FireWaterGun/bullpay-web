@@ -161,7 +161,7 @@ export default function Verify2FAModal({
             </div>
           </div>
           <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
-            <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
+            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             <button

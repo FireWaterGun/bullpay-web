@@ -36,9 +36,7 @@ export function MenuItem({
     <li className={isActive ? 'bp-active-item' : ''}>
       <Link
         href={to}
-        className={`bp-menu-link flex items-center gap-2 mx-4 px-[0.9375rem] py-[0.3125rem] text-[0.9375rem] relative ${
-          isActive
-            ? 'bp-active'
+        className={`bp-menu-link flex items-center gap-2 mx-4 px-[0.9375rem] py-[0.3125rem] text-[0.9375rem] relative ${ isActive ?'bp-active'
             : ''
         }`}
       >
@@ -94,9 +92,7 @@ export function SubItem({
     <li>
       <Link
         href={to}
-        className={`bp-menu-link flex items-center pl-10 pr-[0.9375rem] py-[0.3125rem] mx-4 text-[0.9375rem] relative ${
-          isActive
-            ? 'bp-active'
+        className={`bp-menu-link flex items-center pl-10 pr-[0.9375rem] py-[0.3125rem] mx-4 text-[0.9375rem] relative ${ isActive ?'bp-active'
             : ''
         }`}
       >
@@ -147,7 +143,7 @@ export function SubMenuGroup({
       <a
         href="#"
         onClick={toggle}
-        className={`bp-menu-link bp-menu-toggle flex items-center pl-10 pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] mx-4 text-[0.9375rem] cursor-pointer relative ${open ? 'bp-open' : ''}`}
+        className={`bp-menu-link bp-menu-toggle flex items-center pl-10 pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] mx-4 text-[0.9375rem] cursor-pointer relative ${open ?'bp-open' : ''}`}
       >
         <span className="bp-label truncate flex-1 leading-[1.375rem]">{label}</span>
       </a>
@@ -213,7 +209,7 @@ export function MenuGroup({
       <a
         href="#"
         onClick={toggle}
-        className={`bp-menu-link bp-menu-toggle flex items-center gap-2 mx-4 px-[0.9375rem] pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] text-[0.9375rem] cursor-pointer relative ${open ? 'bp-open' : ''} ${
+        className={`bp-menu-link bp-menu-toggle flex items-center gap-2 mx-4 px-[0.9375rem] pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] text-[0.9375rem] cursor-pointer relative ${open ?'bp-open' : ''} ${
           isMatched && open
             ? 'bp-active-toggle'
             : isMatched && !open

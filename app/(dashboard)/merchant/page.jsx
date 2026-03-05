@@ -437,7 +437,7 @@ export default function MerchantPage() {
                         onClick={() => setWebhookShowPassword(!webhookShowPassword)}
                         tabIndex={-1}
                       >
-                        <i className={`bx ${webhookShowPassword ? 'bx-hide' : 'bx-show'}`}></i>
+                        <i className={`bx ${webhookShowPassword ?'bx-hide' : 'bx-show'}`}></i>
                       </button>
                     </div>
                   </div>
@@ -540,13 +540,13 @@ export default function MerchantPage() {
                 { step: 3, icon: 'bx-receipt', text: t('merchant.step3', { defaultValue: 'Create your first invoice' }), done: false },
                 { step: 4, icon: 'bx-wallet', text: t('merchant.step4', { defaultValue: 'Accept crypto payments' }), done: false },
               ].map(({ step, icon, text, done }) => (
-                <div key={step} className={`flex items-center gap-3 py-2.5 ${step < 4 ? 'border-b border-surface-50' : ''}`}>
-                  <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 ${done ? 'bg-success-50 text-success-600' : 'bg-surface-100 text-surface-500'}`}>
+                <div key={step} className={`flex items-center gap-3 py-2.5 ${step < 4 ?'border-b border-surface-50' : ''}`}>
+                  <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 ${done ?'bg-success-50 text-success-600' : 'bg-surface-100 text-surface-500'}`}>
                     {done ? <i className="bx bx-check text-base"></i> : step}
                   </span>
                   <div className="flex items-center gap-2 min-w-0">
-                    <i className={`bx ${icon} ${done ? 'text-success-600' : 'text-surface-400'}`}></i>
-                    <span className={`text-sm ${done ? 'text-surface-800' : 'text-surface-500'}`}>{text}</span>
+                    <i className={`bx ${icon} ${done ?'text-success-600' : 'text-surface-400'}`}></i>
+                    <span className={`text-sm ${done ?'text-surface-800' : 'text-surface-500'}`}>{text}</span>
                   </div>
                 </div>
               ))}
@@ -570,7 +570,7 @@ export default function MerchantPage() {
               ].map(({ icon, color, text }, i) => {
                 const c = tileColors[color] || tileColors.primary
                 return (
-                  <div key={i} className={`flex items-start gap-3 py-2.5 ${i < 3 ? 'border-b border-surface-50' : ''}`}>
+                  <div key={i} className={`flex items-start gap-3 py-2.5 ${i < 3 ?'border-b border-surface-50' : ''}`}>
                     <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${c.bg} shrink-0`}>
                       <i className={`bx ${icon} text-sm ${c.icon}`}></i>
                     </span>

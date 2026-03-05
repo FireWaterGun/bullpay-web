@@ -21,9 +21,9 @@ export default function UserListTable({
   const { fmtDate } = useDateFormat()
   return (
     <div className="card">
-      <div className="card-body">
-        <div className="table-responsive" style={{ overflowX: 'auto' }}>
-          <table className="table table-hover">
+      <div className="p-5">
+        <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+          <table className="w-full">
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
                 <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -48,13 +48,13 @@ export default function UserListTable({
                 users.map((user) => (
                   <tr key={user.id}>
                     <td>
-                      <span className="fw-semibold text-primary">{user.id}</span>
+                      <span className="font-semibold text-primary">{user.id}</span>
                     </td>
                     <td>
-                      <div className="d-flex align-items-center">
-                        <span className="me-2">{user.email}</span>
+                      <div className="flex items-center">
+                        <span className="mr-2">{user.email}</span>
                         <button
-                          className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                          className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                           onClick={() => onCopy(user.email)}
                           title={t('admin.detail.copyEmail', { defaultValue: 'Copy email' })}
                         >
@@ -68,58 +68,58 @@ export default function UserListTable({
                         : <span className="text-muted">-</span>
                       }
                     </td>
-                    <td className="text-center text-nowrap">
+                    <td className="text-center whitespace-nowrap">
                       <span className={roleBadgeClass(user.role)}>
                         {formatRoleLabel(user.role)}
                       </span>
                     </td>
-                    <td className="text-center text-nowrap">
+                    <td className="text-center whitespace-nowrap">
                       <span className={statusBadgeClass(user.status)}>
                         {String(user.status || '').toUpperCase()}
                       </span>
                     </td>
                     <td className="text-center">
                       {user.twoFactorEnabled || user.is2FAEnabled ? (
-                        <span className="badge bg-label-success"><i className="bx bx-check"></i></span>
+                        <span className="badge bg-green-50 text-green-700"><i className="bx bx-check"></i></span>
                       ) : (
-                        <span className="badge bg-label-secondary"><i className="bx bx-x"></i></span>
+                        <span className="badge bg-surface-100 text-surface-600"><i className="bx bx-x"></i></span>
                       )}
                     </td>
-                    <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
+                    <td className="whitespace-nowrap" style={{ fontSize: '0.85rem' }}>
                       {fmtDate(user.lastLoginAt)}
                     </td>
-                    <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>
+                    <td className="whitespace-nowrap" style={{ fontSize: '0.85rem' }}>
                       {fmtDate(user.createdAt)}
                     </td>
                     <td className="text-center">
                       <div className="dropdown">
-                        <button className="btn btn-sm btn-icon btn-text-secondary rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                        <button className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full cursor-pointer hide-arrow">
                           <i className="bx bx-dots-vertical-rounded"></i>
                         </button>
-                        <ul className="dropdown-menu dropdown-menu-end">
+                        <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 right-0">
                           <li>
-                            <button className="dropdown-item" onClick={() => onOpenModal('changeStatus', user)}>
-                              <i className="bx bx-user-check me-2 text-warning"></i>
+                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('changeStatus', user)}>
+                              <i className="bx bx-user-check mr-2 text-warning"></i>
                               {t('admin.users.changeStatus', { defaultValue: 'Change Status' })}
                             </button>
                           </li>
                           <li>
-                            <button className="dropdown-item" onClick={() => onOpenModal('changeRole', user)}>
-                              <i className="bx bx-shield me-2 text-primary"></i>
+                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('changeRole', user)}>
+                              <i className="bx bx-shield mr-2 text-primary"></i>
                               {t('admin.users.changeRole', { defaultValue: 'Change Role' })}
                             </button>
                           </li>
                           <li><hr className="dropdown-divider" /></li>
                           <li>
-                            <button className="dropdown-item" onClick={() => onOpenModal('resetPassword', user)}>
-                              <i className="bx bx-lock-open me-2 text-danger"></i>
+                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('resetPassword', user)}>
+                              <i className="bx bx-lock-open mr-2 text-danger"></i>
                               {t('admin.users.resetPassword', { defaultValue: 'Reset Password' })}
                             </button>
                           </li>
                           {(user.twoFactorEnabled || user.is2FAEnabled) && (
                             <li>
-                              <button className="dropdown-item" onClick={() => onOpenModal('disable2FA', user)}>
-                                <i className="bx bx-shield-x me-2 text-danger"></i>
+                              <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('disable2FA', user)}>
+                                <i className="bx bx-shield-x mr-2 text-danger"></i>
                                 {t('admin.users.disable2FA', { defaultValue: 'Disable 2FA' })}
                               </button>
                             </li>
@@ -135,8 +135,8 @@ export default function UserListTable({
         </div>
 
         {pagination && pagination.total > 0 && (
-          <div className="d-flex justify-content-between align-items-center mt-4">
-            <div className="text-muted small">
+          <div className="flex justify-between items-center mt-4">
+            <div className="text-muted text-sm">
               {t('invoices.showingEntries', {
                 start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                 end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -144,9 +144,9 @@ export default function UserListTable({
                 defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
               })}
             </div>
-            <div className="btn-group">
+            <div className="inline-flex rounded-lg shadow-sm">
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasPrev || loading}
                 onClick={() => { onPageChange(currentPage - 1); onSyncSearchParams(appliedFilters, currentPage - 1) }}
               >
@@ -154,13 +154,13 @@ export default function UserListTable({
                 {t('actions.prev', { defaultValue: 'Previous' })}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled
               >
                 {pagination.page} / {pagination.totalPages}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                 disabled={!pagination.hasNext || loading}
                 onClick={() => { onPageChange(currentPage + 1); onSyncSearchParams(appliedFilters, currentPage + 1) }}
               >

@@ -14,29 +14,29 @@ export default function WithdrawalFilters({ filters, onFilterChange, coins = EMP
 
   return (
     <div className="card mb-3">
-      <div className="card-header py-2 d-flex justify-content-between align-items-center">
-        <span className="fw-semibold small">
-          <i className="bx bx-filter-alt me-1"></i>
+      <div className="px-5 py-4 border-b border-surface-200 py-2 flex justify-between items-center">
+        <span className="font-semibold text-sm">
+          <i className="bx bx-filter-alt mr-1"></i>
           {t?.('withdrawals.filters', { defaultValue: 'Filters' }) || 'Filters'}
         </span>
-        <div className="d-flex gap-2">
+        <div className="flex gap-2">
           {onReset && (
-            <button className="btn btn-sm btn-text-secondary" onClick={onReset}>
+            <button className="btn btn-sm btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none" onClick={onReset}>
               {t?.('actions.reset', { defaultValue: 'Reset' }) || 'Reset'}
             </button>
           )}
-          <button className="btn btn-sm btn-text-secondary" onClick={() => setExpanded(!expanded)}>
-            <i className={`bx ${expanded ? 'bx-chevron-up' : 'bx-chevron-down'}`}></i>
+          <button className="btn btn-sm btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none" onClick={() => setExpanded(!expanded)}>
+            <i className={`bx ${expanded ?'bx-chevron-up' : 'bx-chevron-down'}`}></i>
           </button>
         </div>
       </div>
       {expanded && (
-        <div className="card-body py-2">
-          <div className="row g-2">
-            <div className="col-md-3">
-              <label className="form-label small">{t?.('withdrawals.status', { defaultValue: 'Status' }) || 'Status'}</label>
+        <div className="p-5 py-2">
+          <div className="grid grid-cols-12 gap-x-6 gap-2">
+            <div className="md:col-span-3">
+              <label className="form-label text-sm">{t?.('withdrawals.status', { defaultValue: 'Status' }) || 'Status'}</label>
               <select
-                className="form-select form-select-sm"
+                className="form-input form-input text-sm py-1"
                 value={filters.status || ''}
                 onChange={(e) => update('status', e.target.value)}
               >
@@ -46,11 +46,11 @@ export default function WithdrawalFilters({ filters, onFilterChange, coins = EMP
                 ))}
               </select>
             </div>
-            <div className="col-md-3">
-              <label className="form-label small">{t?.('withdrawals.search', { defaultValue: 'Search' }) || 'Search'}</label>
+            <div className="md:col-span-3">
+              <label className="form-label text-sm">{t?.('withdrawals.search', { defaultValue: 'Search' }) || 'Search'}</label>
               <input
                 type="text"
-                className="form-control form-control-sm"
+                className="form-input form-input text-sm py-1"
                 placeholder={t?.('withdrawals.searchPlaceholder', { defaultValue: 'Search...' }) || 'Search...'}
                 value={filters.q || ''}
                 onChange={(e) => update('q', e.target.value)}

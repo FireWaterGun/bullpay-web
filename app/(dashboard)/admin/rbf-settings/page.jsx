@@ -312,9 +312,9 @@ export default function RbfSettingsPage() {
 
   if (loading) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="d-flex justify-content-center align-items-center py-5">
-          <div className="spinner-border text-primary" role="status">
+      <div className="grow py-6">
+        <div className="flex justify-center items-center py-5">
+          <div className="spinner text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -325,12 +325,12 @@ export default function RbfSettingsPage() {
   // ─── Render: Page ────────────────────────────────────────
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="flex justify-between items-center mb-4">
         <div>
           <h4 className="mb-1">
-            <i className="bx bx-refresh me-2 text-primary"></i>
+            <i className="bx bx-refresh mr-2 text-primary"></i>
             {t('admin.rbfSettings.title', { defaultValue: 'RBF Settings' })}
           </h4>
           <p className="text-muted mb-0">
@@ -340,17 +340,17 @@ export default function RbfSettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="nav-align-top">
-        <ul className="nav nav-tabs" role="tablist">
+      <div className="">
+        <ul className="nav flex border-b border-surface-200 gap-1" role="tablist">
           {TABS.map((tab) => (
-            <li key={tab.key} className="nav-item" role="presentation">
+            <li key={tab.key} className="" role="presentation">
               <button
-                className={`nav-link ${activeTab === tab.key ? 'active' : ''}`}
+                className={`px-4 py-2 text-sm font-medium text-surface-500 hover:text-surface-700 border-b-2 border-transparent hover:border-surface-300 ${activeTab === tab.key ?'active' : ''}`}
                 onClick={() => setActiveTab(tab.key)}
                 type="button"
                 role="tab"
               >
-                <i className={`bx ${tab.icon} me-1`}></i>
+                <i className={`bx ${tab.icon} mr-1`}></i>
                 {t(tab.labelKey, { defaultValue: tab.defaultLabel })}
               </button>
             </li>
@@ -373,8 +373,8 @@ export default function RbfSettingsPage() {
   function renderGlobalTab() {
     return (
       <>
-        <div className="alert alert-primary mb-4" role="alert">
-          <i className="bx bx-info-circle me-1"></i>
+        <div className="alert alert bg-primary-50 text-primary-700 border-primary-200 mb-4" role="alert">
+          <i className="bx bx-info-circle mr-1"></i>
           {t('admin.rbfSettings.globalInfo', {
             defaultValue: 'Global RBF settings apply across all networks. These control dropped transaction detection, system-wide rate limiting, and safety limits.',
           })}
@@ -382,10 +382,10 @@ export default function RbfSettingsPage() {
 
         {/* Dropped Detection */}
         <div className="card mb-3">
-          <div className="card-header d-flex justify-content-between align-items-center">
+          <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
             <div>
               <h6 className="mb-0">
-                <i className="bx bx-search-alt me-1 text-warning"></i>
+                <i className="bx bx-search-alt mr-1 text-warning"></i>
                 {t('admin.rbfSettings.droppedDetection', { defaultValue: 'Dropped Transaction Detection' })}
               </h6>
               <small className="text-muted">
@@ -400,29 +400,29 @@ export default function RbfSettingsPage() {
               <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
             </button>
           </div>
-          <div className="card-body">
-            <div className="row g-4">
-              <div className="col-md-6">
-                <div className="text-muted small">{t('admin.rbfSettings.minNotFoundCount', { defaultValue: 'Min Not-Found Checks' })}</div>
+          <div className="p-5">
+            <div className="grid grid-cols-12 gap-x-6 gap-4">
+              <div className="md:col-span-6">
+                <div className="text-muted text-sm">{t('admin.rbfSettings.minNotFoundCount', { defaultValue: 'Min Not-Found Checks' })}</div>
                 {(() => {
                   const val = getVal('rbf.dropped_detection.min_not_found_count')
                   return (
                     <>
-                      <div className="fw-semibold fs-5">{val}</div>
-                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.consecutiveChecks', { defaultValue: 'consecutive checks' })}</div>}
+                      <div className="font-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted text-sm">{t('admin.rbfSettings.consecutiveChecks', { defaultValue: 'consecutive checks' })}</div>}
                     </>
                   )
                 })()}
               </div>
-              <div className="col-md-6">
-                <div className="text-muted small">{t('admin.rbfSettings.minNotFoundDuration', { defaultValue: 'Min Not-Found Duration' })}</div>
+              <div className="md:col-span-6">
+                <div className="text-muted text-sm">{t('admin.rbfSettings.minNotFoundDuration', { defaultValue: 'Min Not-Found Duration' })}</div>
                 {(() => {
                   const raw = getVal('rbf.dropped_detection.min_not_found_duration', '')
                   const formatted = formatMs(raw)
                   return (
                     <>
-                      <div className="fw-semibold fs-5">{formatted}</div>
-                      {formatted !== '—' && <div className="text-muted small">{raw} ms</div>}
+                      <div className="font-semibold fs-5">{formatted}</div>
+                      {formatted !== '—' && <div className="text-muted text-sm">{raw} ms</div>}
                     </>
                   )
                 })()}
@@ -433,10 +433,10 @@ export default function RbfSettingsPage() {
 
         {/* Rate Limiting */}
         <div className="card mb-3">
-          <div className="card-header d-flex justify-content-between align-items-center">
+          <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
             <div>
               <h6 className="mb-0">
-                <i className="bx bx-shield me-1 text-info"></i>
+                <i className="bx bx-shield mr-1 text-info"></i>
                 {t('admin.rbfSettings.rateLimiting', { defaultValue: 'Rate Limiting' })}
               </h6>
               <small className="text-muted">
@@ -451,28 +451,28 @@ export default function RbfSettingsPage() {
               <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
             </button>
           </div>
-          <div className="card-body">
-            <div className="row g-4">
-              <div className="col-md-6">
-                <div className="text-muted small">{t('admin.rbfSettings.maxRbfPerHour', { defaultValue: 'Max RBF Per Hour' })}</div>
+          <div className="p-5">
+            <div className="grid grid-cols-12 gap-x-6 gap-4">
+              <div className="md:col-span-6">
+                <div className="text-muted text-sm">{t('admin.rbfSettings.maxRbfPerHour', { defaultValue: 'Max RBF Per Hour' })}</div>
                 {(() => {
                   const val = getVal('rbf.rate_limiting.max_rbf_per_hour')
                   return (
                     <>
-                      <div className="fw-semibold fs-5">{val}</div>
-                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.systemWide', { defaultValue: 'system-wide' })}</div>}
+                      <div className="font-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted text-sm">{t('admin.rbfSettings.systemWide', { defaultValue: 'system-wide' })}</div>}
                     </>
                   )
                 })()}
               </div>
-              <div className="col-md-6">
-                <div className="text-muted small">{t('admin.rbfSettings.maxRbfPerAddress', { defaultValue: 'Max RBF Per Address' })}</div>
+              <div className="md:col-span-6">
+                <div className="text-muted text-sm">{t('admin.rbfSettings.maxRbfPerAddress', { defaultValue: 'Max RBF Per Address' })}</div>
                 {(() => {
                   const val = getVal('rbf.rate_limiting.max_rbf_per_address')
                   return (
                     <>
-                      <div className="fw-semibold fs-5">{val}</div>
-                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.perAddress', { defaultValue: 'per address' })}</div>}
+                      <div className="font-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted text-sm">{t('admin.rbfSettings.perAddress', { defaultValue: 'per address' })}</div>}
                     </>
                   )
                 })()}
@@ -483,10 +483,10 @@ export default function RbfSettingsPage() {
 
         {/* Safety */}
         <div className="card mb-3">
-          <div className="card-header d-flex justify-content-between align-items-center">
+          <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
             <div>
               <h6 className="mb-0">
-                <i className="bx bx-lock-alt me-1 text-danger"></i>
+                <i className="bx bx-lock-alt mr-1 text-danger"></i>
                 {t('admin.rbfSettings.safety', { defaultValue: 'Safety Limits' })}
               </h6>
               <small className="text-muted">
@@ -501,16 +501,16 @@ export default function RbfSettingsPage() {
               <i className="bx bx-edit" style={{ fontSize: '1rem' }}></i>
             </button>
           </div>
-          <div className="card-body">
-            <div className="row g-4">
-              <div className="col-md-6">
-                <div className="text-muted small">{t('admin.rbfSettings.maxReplacementsPerTx', { defaultValue: 'Max Replacements Per Tx' })}</div>
+          <div className="p-5">
+            <div className="grid grid-cols-12 gap-x-6 gap-4">
+              <div className="md:col-span-6">
+                <div className="text-muted text-sm">{t('admin.rbfSettings.maxReplacementsPerTx', { defaultValue: 'Max Replacements Per Tx' })}</div>
                 {(() => {
                   const val = getVal('rbf.safety.max_replacements_per_tx')
                   return (
                     <>
-                      <div className="fw-semibold fs-5">{val}</div>
-                      {val !== '—' && <div className="text-muted small">{t('admin.rbfSettings.perTransaction', { defaultValue: 'per transaction' })}</div>}
+                      <div className="font-semibold fs-5">{val}</div>
+                      {val !== '—' && <div className="text-muted text-sm">{t('admin.rbfSettings.perTransaction', { defaultValue: 'per transaction' })}</div>}
                     </>
                   )
                 })()}
@@ -527,15 +527,15 @@ export default function RbfSettingsPage() {
   function renderNetworkTab() {
     return (
       <>
-        <div className="alert alert-primary mb-4" role="alert">
-          <i className="bx bx-info-circle me-1"></i>
+        <div className="alert alert bg-primary-50 text-primary-700 border-primary-200 mb-4" role="alert">
+          <i className="bx bx-info-circle mr-1"></i>
           {t('admin.rbfSettings.networkInfo', {
             defaultValue: 'Per-network RBF settings control gas bump percentages, timing thresholds, and cost limits. Each network has different optimal values based on block times and gas price volatility.',
           })}
         </div>
 
-        <div className="table-responsive">
-          <table className="table table-hover border-top">
+        <div className="overflow-x-auto">
+          <table className="w-full border-top">
             <thead>
               <tr>
                 <th>{t('admin.rbfSettings.colNetwork', { defaultValue: 'Network' })}</th>
@@ -545,7 +545,7 @@ export default function RbfSettingsPage() {
                 <th className="text-center">{t('admin.rbfSettings.colReplaceInterval', { defaultValue: 'Replace Interval' })}</th>
                 <th className="text-center">{t('admin.rbfSettings.colMinAmount', { defaultValue: 'Min Amount' })}</th>
                 <th className="text-center">{t('admin.rbfSettings.colMaxCost', { defaultValue: 'Max Cost' })}</th>
-                <th className="text-end">{t('admin.rbfSettings.colActions', { defaultValue: 'Actions' })}</th>
+                <th className="text-right">{t('admin.rbfSettings.colActions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
             <tbody>
@@ -561,13 +561,12 @@ export default function RbfSettingsPage() {
                   <tr key={net.key}>
                     <td>
                       <strong>{net.name}</strong>
-                      <div className="text-muted small">{net.symbol}</div>
+                      <div className="text-muted text-sm">{net.symbol}</div>
                     </td>
                     <td className="text-center">
-                      <span className={`badge rounded-pill ${
-                        enabled === 'true' ? 'bg-label-success' :
-                        enabled === 'false' ? 'bg-label-danger' :
-                        'bg-label-secondary'
+                      <span className={`badge rounded-full ${ enabled ==='true' ? 'bg-green-50 text-green-700' :
+                        enabled === 'false' ? 'bg-red-50 text-red-700' :
+                        'bg-surface-100 text-surface-600'
                       }`}>
                         {enabled === 'true'
                           ? t('admin.rbfSettings.enabled', { defaultValue: 'Enabled' })
@@ -577,21 +576,21 @@ export default function RbfSettingsPage() {
                       </span>
                     </td>
                     <td className="text-center">
-                      <span className="fw-semibold">{formatPercent(gasBump)}</span>
+                      <span className="font-semibold">{formatPercent(gasBump)}</span>
                     </td>
                     <td className="text-center">
-                      <span className="fw-semibold">{formatMs(minPending)}</span>
+                      <span className="font-semibold">{formatMs(minPending)}</span>
                     </td>
                     <td className="text-center">
-                      <span className="fw-semibold">{formatMs(replaceInterval)}</span>
+                      <span className="font-semibold">{formatMs(replaceInterval)}</span>
                     </td>
                     <td className="text-center">
-                      <span className="fw-semibold">{formatUsd(minAmount)}</span>
+                      <span className="font-semibold">{formatUsd(minAmount)}</span>
                     </td>
                     <td className="text-center">
-                      <span className="fw-semibold">{formatUsd(maxCost)}</span>
+                      <span className="font-semibold">{formatUsd(maxCost)}</span>
                     </td>
-                    <td className="text-end">
+                    <td className="text-right">
                       <button
                         className="btn btn-icon btn-sm text-secondary"
                         title={t('admin.rbfSettings.edit', { defaultValue: 'Edit' })}
@@ -609,12 +608,12 @@ export default function RbfSettingsPage() {
 
         {/* Info card */}
         <div className="card bg-lighter mt-3">
-          <div className="card-body py-3">
+          <div className="p-5 py-3">
             <h6 className="mb-2">
-              <i className="bx bx-info-circle me-1"></i>
+              <i className="bx bx-info-circle mr-1"></i>
               {t('admin.rbfSettings.howRbfWorks', { defaultValue: 'How RBF Works' })}
             </h6>
-            <div className="text-muted small">
+            <div className="text-muted text-sm">
               {t('admin.rbfSettings.howRbfWorksDesc', {
                 defaultValue: 'When a transaction is stuck pending longer than Min Pending duration, the system bumps the gas price by the Gas Bump percentage and resubmits. Replacements are spaced by the Replace Interval. Cost guards (Min Amount, Max Cost Ratio, Max Cost USD) prevent uneconomical replacements.',
               })}
@@ -655,30 +654,30 @@ export default function RbfSettingsPage() {
 
     return (
       <div
-        className="modal fade show d-block"
+        className="fixed inset-0 z-50 flex items-center justify-center block"
         tabIndex="-1"
         style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
         onClick={(e) => { if (e.target === e.currentTarget && !saving) setEditModal(null) }}
       >
-        <div className={`modal-dialog modal-dialog-centered ${modalSize}`}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">
-                <i className={`bx ${modalIcon} me-2`}></i>
+        <div className={`w-full max-w-lg mx-4 ${modalSize}`}>
+          <div className="bg-white rounded-xl shadow-xl">
+            <div className="flex items-center justify-between p-5 border-b border-surface-200">
+              <h5 className="text-lg font-semibold text-surface-800">
+                <i className={`bx ${modalIcon} mr-2`}></i>
                 {modalTitle}
               </h5>
-              <button type="button" className="btn-close" onClick={() => setEditModal(null)} disabled={saving}></button>
+              <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={() => setEditModal(null)} disabled={saving}></button>
             </div>
-            <div className="modal-body">
+            <div className="p-5">
               {tab === 'global' && renderGlobalForm()}
               {tab === 'network' && renderNetworkForm()}
             </div>
-            <div className="modal-footer">
-              <button className="btn btn-outline-secondary" onClick={() => setEditModal(null)} disabled={saving}>
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+              <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => setEditModal(null)} disabled={saving}>
                 {t('admin.rbfSettings.cancel', { defaultValue: 'Cancel' })}
               </button>
               <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-                {saving && <span className="spinner-border spinner-border-sm me-1" role="status"></span>}
+                {saving && <span className="spinner w-4 h-4 mr-1" role="status"></span>}
                 {t('admin.rbfSettings.save', { defaultValue: 'Save Changes' })}
               </button>
             </div>
@@ -697,46 +696,46 @@ export default function RbfSettingsPage() {
       return (
         <>
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label font-semibold">
               {t('admin.rbfSettings.minNotFoundCount', { defaultValue: 'Min Not-Found Checks' })}
             </label>
             <input
               type="text"
               inputMode="numeric"
-              className={`form-control ${formErrors.minNotFoundCount ? 'is-invalid' : ''}`}
+              className={`form-input ${formErrors.minNotFoundCount ?'is-invalid' : ''}`}
               value={editForm.minNotFoundCount ?? ''}
               onChange={(e) => updateField('minNotFoundCount', e.target.value)}
             />
-            {formErrors.minNotFoundCount && <div className="invalid-feedback">{formErrors.minNotFoundCount}</div>}
-            <div className="form-text">
+            {formErrors.minNotFoundCount && <div className="text-xs text-danger-500 mt-1">{formErrors.minNotFoundCount}</div>}
+            <div className="text-xs text-surface-500 mt-1">
               {t('admin.rbfSettings.minNotFoundCountDesc', {
                 defaultValue: 'Number of consecutive checks where transaction is not found before considering it dropped.',
               })}
             </div>
           </div>
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label font-semibold">
               {t('admin.rbfSettings.minNotFoundDuration', { defaultValue: 'Min Not-Found Duration' })}
             </label>
-            <div className="input-group">
+            <div className="flex items-stretch">
               <input
                 type="text"
                 inputMode="numeric"
-                className={`form-control ${formErrors.minNotFoundDuration ? 'is-invalid' : ''}`}
+                className={`form-input ${formErrors.minNotFoundDuration ?'is-invalid' : ''}`}
                 value={editForm.minNotFoundDuration ?? ''}
                 onChange={(e) => updateField('minNotFoundDuration', e.target.value)}
               />
-              <span className="input-group-text">ms</span>
+              <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">ms</span>
             </div>
-            {formErrors.minNotFoundDuration && <div className="invalid-feedback d-block">{formErrors.minNotFoundDuration}</div>}
-            <div className="form-text">
+            {formErrors.minNotFoundDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minNotFoundDuration}</div>}
+            <div className="text-xs text-surface-500 mt-1">
               {t('admin.rbfSettings.minNotFoundDurationDesc', {
                 defaultValue: 'Minimum time (milliseconds) a transaction must be missing before considering it dropped.',
               })}
             </div>
             {editForm.minNotFoundDuration && !isNaN(Number(editForm.minNotFoundDuration)) && (
-              <div className="alert alert-info mt-2 mb-0 py-2">
-                <i className="bx bx-time me-1"></i>
+              <div className="alert alert bg-cyan-50 text-cyan-700 border-cyan-200 mt-2 mb-0 py-2">
+                <i className="bx bx-time mr-1"></i>
                 ≈ {formatMs(editForm.minNotFoundDuration)}
               </div>
             )}
@@ -749,36 +748,36 @@ export default function RbfSettingsPage() {
       return (
         <>
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label font-semibold">
               {t('admin.rbfSettings.maxRbfPerHour', { defaultValue: 'Max RBF Per Hour' })}
             </label>
             <input
               type="text"
               inputMode="numeric"
-              className={`form-control ${formErrors.maxRbfPerHour ? 'is-invalid' : ''}`}
+              className={`form-input ${formErrors.maxRbfPerHour ?'is-invalid' : ''}`}
               value={editForm.maxRbfPerHour ?? ''}
               onChange={(e) => updateField('maxRbfPerHour', e.target.value)}
             />
-            {formErrors.maxRbfPerHour && <div className="invalid-feedback">{formErrors.maxRbfPerHour}</div>}
-            <div className="form-text">
+            {formErrors.maxRbfPerHour && <div className="text-xs text-danger-500 mt-1">{formErrors.maxRbfPerHour}</div>}
+            <div className="text-xs text-surface-500 mt-1">
               {t('admin.rbfSettings.maxRbfPerHourDesc', {
                 defaultValue: 'Maximum number of RBF replacement transactions the system can submit per hour (global).',
               })}
             </div>
           </div>
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label font-semibold">
               {t('admin.rbfSettings.maxRbfPerAddress', { defaultValue: 'Max RBF Per Address' })}
             </label>
             <input
               type="text"
               inputMode="numeric"
-              className={`form-control ${formErrors.maxRbfPerAddress ? 'is-invalid' : ''}`}
+              className={`form-input ${formErrors.maxRbfPerAddress ?'is-invalid' : ''}`}
               value={editForm.maxRbfPerAddress ?? ''}
               onChange={(e) => updateField('maxRbfPerAddress', e.target.value)}
             />
-            {formErrors.maxRbfPerAddress && <div className="invalid-feedback">{formErrors.maxRbfPerAddress}</div>}
-            <div className="form-text">
+            {formErrors.maxRbfPerAddress && <div className="text-xs text-danger-500 mt-1">{formErrors.maxRbfPerAddress}</div>}
+            <div className="text-xs text-surface-500 mt-1">
               {t('admin.rbfSettings.maxRbfPerAddressDesc', {
                 defaultValue: 'Maximum number of RBF replacement transactions per wallet address.',
               })}
@@ -791,18 +790,18 @@ export default function RbfSettingsPage() {
     if (group === 'safety') {
       return (
         <div className="mb-3">
-          <label className="form-label fw-semibold">
+          <label className="form-label font-semibold">
             {t('admin.rbfSettings.maxReplacementsPerTx', { defaultValue: 'Max Replacements Per Tx' })}
           </label>
           <input
             type="text"
             inputMode="numeric"
-            className={`form-control ${formErrors.maxReplacementsPerTx ? 'is-invalid' : ''}`}
+            className={`form-input ${formErrors.maxReplacementsPerTx ?'is-invalid' : ''}`}
             value={editForm.maxReplacementsPerTx ?? ''}
             onChange={(e) => updateField('maxReplacementsPerTx', e.target.value)}
           />
-          {formErrors.maxReplacementsPerTx && <div className="invalid-feedback">{formErrors.maxReplacementsPerTx}</div>}
-          <div className="form-text">
+          {formErrors.maxReplacementsPerTx && <div className="text-xs text-danger-500 mt-1">{formErrors.maxReplacementsPerTx}</div>}
+          <div className="text-xs text-surface-500 mt-1">
             {t('admin.rbfSettings.maxReplacementsPerTxDesc', {
               defaultValue: 'Maximum number of times a single transaction can be replaced. Prevents infinite replacement loops.',
             })}
@@ -826,11 +825,11 @@ export default function RbfSettingsPage() {
 
         {/* Enabled toggle */}
         <div className="mb-4">
-          <label className="form-label fw-semibold">
+          <label className="form-label font-semibold">
             {t('admin.rbfSettings.enabledLabel', { defaultValue: 'RBF Enabled' })}
           </label>
           <select
-            className="form-select"
+            className="form-input"
             value={editForm.enabled ?? ''}
             onChange={(e) => setEditForm((f) => ({ ...f, enabled: e.target.value }))}
           >
@@ -838,7 +837,7 @@ export default function RbfSettingsPage() {
             <option value="true">{t('admin.rbfSettings.enabled', { defaultValue: 'Enabled' })}</option>
             <option value="false">{t('admin.rbfSettings.disabled', { defaultValue: 'Disabled' })}</option>
           </select>
-          <div className="form-text">
+          <div className="text-xs text-surface-500 mt-1">
             {t('admin.rbfSettings.enabledDesc', { defaultValue: 'Enable or disable RBF for this network.' })}
           </div>
         </div>
@@ -848,26 +847,26 @@ export default function RbfSettingsPage() {
           className="card mb-3"
           style={{ borderLeft: '3px solid var(--bs-warning)' }}
         >
-          <div className="card-body py-3">
-            <h6 className="mb-3 d-flex align-items-center text-warning">
-              <i className="bx bx-trending-up me-2"></i>
+          <div className="p-5 py-3">
+            <h6 className="mb-3 flex items-center text-warning">
+              <i className="bx bx-trending-up mr-2"></i>
               {t('admin.rbfSettings.gasBumpSection', { defaultValue: 'Gas Price Bump' })}
             </h6>
-            <label className="form-label small text-muted mb-1">
+            <label className="form-label text-sm text-muted mb-1">
               {t('admin.rbfSettings.gasBumpPercent', { defaultValue: 'Gas Bump Percent' })}
             </label>
-            <div className="input-group">
+            <div className="flex items-stretch">
               <input
                 type="text"
                 inputMode="numeric"
-                className={`form-control ${formErrors.gasBumpPercent ? 'is-invalid' : ''}`}
+                className={`form-input ${formErrors.gasBumpPercent ?'is-invalid' : ''}`}
                 value={editForm.gasBumpPercent ?? ''}
                 onChange={(e) => updateField('gasBumpPercent', e.target.value)}
               />
-              <span className="input-group-text">%</span>
+              <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">%</span>
             </div>
-            {formErrors.gasBumpPercent && <div className="invalid-feedback d-block">{formErrors.gasBumpPercent}</div>}
-            <div className="form-text">
+            {formErrors.gasBumpPercent && <div className="text-xs text-danger-500 mt-1 block">{formErrors.gasBumpPercent}</div>}
+            <div className="text-xs text-surface-500 mt-1">
               {t('admin.rbfSettings.gasBumpPercentDesc', { defaultValue: 'Percentage to increase gas price when submitting RBF replacement.' })}
             </div>
           </div>
@@ -878,65 +877,65 @@ export default function RbfSettingsPage() {
           className="card mb-3"
           style={{ borderLeft: '3px solid var(--bs-info)' }}
         >
-          <div className="card-body py-3">
-            <h6 className="mb-3 d-flex align-items-center text-info">
-              <i className="bx bx-time me-2"></i>
+          <div className="p-5 py-3">
+            <h6 className="mb-3 flex items-center text-info">
+              <i className="bx bx-time mr-2"></i>
               {t('admin.rbfSettings.timingSection', { defaultValue: 'Timing Thresholds' })}
             </h6>
-            <div className="row g-3">
-              <div className="col-md-4">
-                <label className="form-label small text-muted mb-1">
+            <div className="grid grid-cols-12 gap-x-6 gap-3">
+              <div className="md:col-span-4">
+                <label className="form-label text-sm text-muted mb-1">
                   {t('admin.rbfSettings.minPendingDuration', { defaultValue: 'Min Pending Duration' })}
                 </label>
-                <div className="input-group">
+                <div className="flex items-stretch">
                   <input
                     type="text"
                     inputMode="numeric"
-                    className={`form-control ${formErrors.minPendingDuration ? 'is-invalid' : ''}`}
+                    className={`form-input ${formErrors.minPendingDuration ?'is-invalid' : ''}`}
                     value={editForm.minPendingDuration ?? ''}
                     onChange={(e) => updateField('minPendingDuration', e.target.value)}
                   />
-                  <span className="input-group-text">ms</span>
+                  <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">ms</span>
                 </div>
-                {formErrors.minPendingDuration && <div className="invalid-feedback d-block">{formErrors.minPendingDuration}</div>}
+                {formErrors.minPendingDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minPendingDuration}</div>}
                 {editForm.minPendingDuration && !isNaN(Number(editForm.minPendingDuration)) && (
                   <small className="text-muted">≈ {formatMs(editForm.minPendingDuration)}</small>
                 )}
               </div>
-              <div className="col-md-4">
-                <label className="form-label small text-muted mb-1">
+              <div className="md:col-span-4">
+                <label className="form-label text-sm text-muted mb-1">
                   {t('admin.rbfSettings.maxPendingDuration', { defaultValue: 'Max Pending Duration' })}
                 </label>
-                <div className="input-group">
+                <div className="flex items-stretch">
                   <input
                     type="text"
                     inputMode="numeric"
-                    className={`form-control ${formErrors.maxPendingDuration ? 'is-invalid' : ''}`}
+                    className={`form-input ${formErrors.maxPendingDuration ?'is-invalid' : ''}`}
                     value={editForm.maxPendingDuration ?? ''}
                     onChange={(e) => updateField('maxPendingDuration', e.target.value)}
                   />
-                  <span className="input-group-text">ms</span>
+                  <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">ms</span>
                 </div>
-                {formErrors.maxPendingDuration && <div className="invalid-feedback d-block">{formErrors.maxPendingDuration}</div>}
+                {formErrors.maxPendingDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxPendingDuration}</div>}
                 {editForm.maxPendingDuration && !isNaN(Number(editForm.maxPendingDuration)) && (
                   <small className="text-muted">≈ {formatMs(editForm.maxPendingDuration)}</small>
                 )}
               </div>
-              <div className="col-md-4">
-                <label className="form-label small text-muted mb-1">
+              <div className="md:col-span-4">
+                <label className="form-label text-sm text-muted mb-1">
                   {t('admin.rbfSettings.minTimeBetweenReplaces', { defaultValue: 'Min Replace Interval' })}
                 </label>
-                <div className="input-group">
+                <div className="flex items-stretch">
                   <input
                     type="text"
                     inputMode="numeric"
-                    className={`form-control ${formErrors.minTimeBetweenReplaces ? 'is-invalid' : ''}`}
+                    className={`form-input ${formErrors.minTimeBetweenReplaces ?'is-invalid' : ''}`}
                     value={editForm.minTimeBetweenReplaces ?? ''}
                     onChange={(e) => updateField('minTimeBetweenReplaces', e.target.value)}
                   />
-                  <span className="input-group-text">ms</span>
+                  <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">ms</span>
                 </div>
-                {formErrors.minTimeBetweenReplaces && <div className="invalid-feedback d-block">{formErrors.minTimeBetweenReplaces}</div>}
+                {formErrors.minTimeBetweenReplaces && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minTimeBetweenReplaces}</div>}
                 {editForm.minTimeBetweenReplaces && !isNaN(Number(editForm.minTimeBetweenReplaces)) && (
                   <small className="text-muted">≈ {formatMs(editForm.minTimeBetweenReplaces)}</small>
                 )}
@@ -950,66 +949,66 @@ export default function RbfSettingsPage() {
           className="card mb-0"
           style={{ borderLeft: '3px solid var(--bs-success)' }}
         >
-          <div className="card-body py-3">
-            <h6 className="mb-3 d-flex align-items-center text-success">
-              <i className="bx bx-dollar me-2"></i>
+          <div className="p-5 py-3">
+            <h6 className="mb-3 flex items-center text-success">
+              <i className="bx bx-dollar mr-2"></i>
               {t('admin.rbfSettings.costSection', { defaultValue: 'Cost Limits' })}
             </h6>
-            <div className="row g-3">
-              <div className="col-md-4">
-                <label className="form-label small text-muted mb-1">
+            <div className="grid grid-cols-12 gap-x-6 gap-3">
+              <div className="md:col-span-4">
+                <label className="form-label text-sm text-muted mb-1">
                   {t('admin.rbfSettings.minAmountUsd', { defaultValue: 'Min Amount (USD)' })}
                 </label>
-                <div className="input-group">
-                  <span className="input-group-text">$</span>
+                <div className="flex items-stretch">
+                  <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">$</span>
                   <input
                     type="text"
                     inputMode="decimal"
-                    className={`form-control ${formErrors.minAmountUsd ? 'is-invalid' : ''}`}
+                    className={`form-input ${formErrors.minAmountUsd ?'is-invalid' : ''}`}
                     value={editForm.minAmountUsd ?? ''}
                     onChange={(e) => updateField('minAmountUsd', e.target.value)}
                   />
                 </div>
-                {formErrors.minAmountUsd && <div className="invalid-feedback d-block">{formErrors.minAmountUsd}</div>}
-                <div className="form-text">
+                {formErrors.minAmountUsd && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minAmountUsd}</div>}
+                <div className="text-xs text-surface-500 mt-1">
                   {t('admin.rbfSettings.minAmountUsdDesc', { defaultValue: 'Minimum transaction USD value to allow RBF.' })}
                 </div>
               </div>
-              <div className="col-md-4">
-                <label className="form-label small text-muted mb-1">
+              <div className="md:col-span-4">
+                <label className="form-label text-sm text-muted mb-1">
                   {t('admin.rbfSettings.maxCostRatio', { defaultValue: 'Max Cost Ratio' })}
                 </label>
                 <input
                   type="text"
                   inputMode="decimal"
-                  className={`form-control ${formErrors.maxCostRatio ? 'is-invalid' : ''}`}
+                  className={`form-input ${formErrors.maxCostRatio ?'is-invalid' : ''}`}
                   value={editForm.maxCostRatio ?? ''}
                   onChange={(e) => updateField('maxCostRatio', e.target.value)}
                 />
-                {formErrors.maxCostRatio && <div className="invalid-feedback">{formErrors.maxCostRatio}</div>}
-                <div className="form-text">
+                {formErrors.maxCostRatio && <div className="text-xs text-danger-500 mt-1">{formErrors.maxCostRatio}</div>}
+                <div className="text-xs text-surface-500 mt-1">
                   {t('admin.rbfSettings.maxCostRatioDesc', { defaultValue: 'Max gas cost as fraction of tx value (0.05 = 5%).' })}
                 </div>
                 {editForm.maxCostRatio && !isNaN(Number(editForm.maxCostRatio)) && (
                   <small className="text-info">= {formatRatio(editForm.maxCostRatio)}</small>
                 )}
               </div>
-              <div className="col-md-4">
-                <label className="form-label small text-muted mb-1">
+              <div className="md:col-span-4">
+                <label className="form-label text-sm text-muted mb-1">
                   {t('admin.rbfSettings.maxCostUsd', { defaultValue: 'Max Cost (USD)' })}
                 </label>
-                <div className="input-group">
-                  <span className="input-group-text">$</span>
+                <div className="flex items-stretch">
+                  <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">$</span>
                   <input
                     type="text"
                     inputMode="decimal"
-                    className={`form-control ${formErrors.maxCostUsd ? 'is-invalid' : ''}`}
+                    className={`form-input ${formErrors.maxCostUsd ?'is-invalid' : ''}`}
                     value={editForm.maxCostUsd ?? ''}
                     onChange={(e) => updateField('maxCostUsd', e.target.value)}
                   />
                 </div>
-                {formErrors.maxCostUsd && <div className="invalid-feedback d-block">{formErrors.maxCostUsd}</div>}
-                <div className="form-text">
+                {formErrors.maxCostUsd && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxCostUsd}</div>}
+                <div className="text-xs text-surface-500 mt-1">
                   {t('admin.rbfSettings.maxCostUsdDesc', { defaultValue: 'Maximum USD gas cost for a single RBF replacement.' })}
                 </div>
               </div>

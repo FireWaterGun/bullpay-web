@@ -110,7 +110,7 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
 
       {/* Dropdown */}
       <div
-        className={`bp-dropdown-menu !min-w-[360px] !max-w-[calc(100vw-2rem)] !p-0 ${open ? 'bp-dropdown-open' : ''}`}
+        className={`bp-absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 !min-w-[360px] !max-w-[calc(100vw-2rem)] !p-0 ${open ?'bp-dropdown-open' : ''}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-surface-100">
@@ -151,9 +151,7 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
                 return (
                   <li
                     key={notif.id}
-                    className={`px-4 py-3 cursor-pointer transition-colors border-l-[3px] ${
-                      notif.isRead
-                        ? 'border-l-transparent hover:bg-surface-50'
+                    className={`px-4 py-3 cursor-pointer transition-colors border-l-[3px] ${ notif.isRead ?'border-l-transparent hover:bg-surface-50'
                         : 'border-l-primary-500 bg-primary-50/30 hover:bg-primary-50/50 font-medium'
                     }`}
                     onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}

@@ -6,18 +6,18 @@ export default function AdminDashboard() {
   const { user } = useAuth()
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-6">
-            <div className="card-header d-flex justify-content-between align-items-center">
+            <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
               <h5 className="mb-0">Admin Dashboard</h5>
-              <span className="badge bg-label-primary">Admin Panel</span>
+              <span className="badge bg-primary-50 text-primary-600">Admin Panel</span>
             </div>
-            <div className="card-body">
-              <div className="alert alert-info mb-4" role="alert">
-                <h6 className="alert-heading mb-2">
-                  <i className="bx bx-shield me-2"></i>
+            <div className="p-5">
+              <div className="alert alert bg-cyan-50 text-cyan-700 border-cyan-200 mb-4" role="alert">
+                <h6 className="font-semibold mb-2 mb-2">
+                  <i className="bx bx-shield mr-2"></i>
                   Welcome, {user?.fullName || 'Administrator'}!
                 </h6>
                 <p className="mb-0">
@@ -25,12 +25,12 @@ export default function AdminDashboard() {
                 </p>
               </div>
 
-              <div className="row g-4">
-                <div className="col-md-3 col-sm-6">
+              <div className="grid grid-cols-12 gap-x-6 gap-4">
+                <div className="md:col-span-3 sm:col-span-6">
                   <div className="card border shadow-none">
-                    <div className="card-body text-center">
+                    <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-circle bg-label-primary">
+                        <span className="avatar-initial rounded-full bg-primary-50 text-primary-600">
                           <i className="bx bx-user bx-lg"></i>
                         </span>
                       </div>
@@ -40,11 +40,11 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <div className="card border shadow-none">
-                    <div className="card-body text-center">
+                    <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-circle bg-label-success">
+                        <span className="avatar-initial rounded-full bg-green-50 text-green-700">
                           <i className="bx bx-receipt bx-lg"></i>
                         </span>
                       </div>
@@ -54,11 +54,11 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <div className="card border shadow-none">
-                    <div className="card-body text-center">
+                    <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-circle bg-label-warning">
+                        <span className="avatar-initial rounded-full bg-amber-50 text-amber-700">
                           <i className="bx bx-dollar bx-lg"></i>
                         </span>
                       </div>
@@ -68,11 +68,11 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <div className="card border shadow-none">
-                    <div className="card-body text-center">
+                    <div className="p-5 text-center">
                       <div className="avatar mx-auto mb-3">
-                        <span className="avatar-initial rounded-circle bg-label-info">
+                        <span className="avatar-initial rounded-full bg-cyan-50 text-cyan-700">
                           <i className="bx bx-time bx-lg"></i>
                         </span>
                       </div>
@@ -87,9 +87,9 @@ export default function AdminDashboard() {
                 <h6 className="mb-4">Admin Features</h6>
                 <div className="list-group">
                   <a href="#" className="list-group-item list-group-item-action">
-                    <div className="d-flex w-100 justify-content-between">
+                    <div className="flex w-full justify-between">
                       <h6 className="mb-1">
-                        <i className="bx bx-user-circle me-2"></i>
+                        <i className="bx bx-user-circle mr-2"></i>
                         User Management
                       </h6>
                       <small className="text-muted">Coming soon</small>
@@ -97,9 +97,9 @@ export default function AdminDashboard() {
                     <p className="mb-1">Manage users, roles, and permissions</p>
                   </a>
                   <a href="#" className="list-group-item list-group-item-action">
-                    <div className="d-flex w-100 justify-content-between">
+                    <div className="flex w-full justify-between">
                       <h6 className="mb-1">
-                        <i className="bx bx-cog me-2"></i>
+                        <i className="bx bx-cog mr-2"></i>
                         System Settings
                       </h6>
                       <small className="text-muted">Coming soon</small>
@@ -107,9 +107,9 @@ export default function AdminDashboard() {
                     <p className="mb-1">Configure system-wide settings</p>
                   </a>
                   <a href="#" className="list-group-item list-group-item-action">
-                    <div className="d-flex w-100 justify-content-between">
+                    <div className="flex w-full justify-between">
                       <h6 className="mb-1">
-                        <i className="bx bx-bar-chart me-2"></i>
+                        <i className="bx bx-bar-chart mr-2"></i>
                         Analytics & Reports
                       </h6>
                       <small className="text-muted">Coming soon</small>
@@ -117,9 +117,9 @@ export default function AdminDashboard() {
                     <p className="mb-1">View detailed analytics and generate reports</p>
                   </a>
                   <a href="#" className="list-group-item list-group-item-action">
-                    <div className="d-flex w-100 justify-content-between">
+                    <div className="flex w-full justify-between">
                       <h6 className="mb-1">
-                        <i className="bx bx-history me-2"></i>
+                        <i className="bx bx-history mr-2"></i>
                         Activity Logs
                       </h6>
                       <small className="text-muted">Coming soon</small>

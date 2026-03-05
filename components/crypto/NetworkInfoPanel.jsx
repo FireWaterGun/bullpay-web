@@ -12,35 +12,35 @@ export default function NetworkInfoPanel({ networkMeta }) {
   const { fmtDate } = useDateFormat()
 
   return (
-    <div className="col-12 col-xl-4">
+    <div className="col-span-12 xl:col-span-4">
       <div className="card mb-4">
-        <h5 className="card-header">{t('crypto.networkInfo', { defaultValue: 'Network Info' })}</h5>
-        <div className="card-body">
+        <h5 className="px-5 py-4 border-b border-surface-200">{t('crypto.networkInfo', { defaultValue: 'Network Info' })}</h5>
+        <div className="p-5">
           <ul className="list-unstyled mb-0">
-            <li className="d-flex justify-content-between mb-3">
+            <li className="flex justify-between mb-3">
               <span className="text-muted">ID</span>
-              <span className="fw-medium">#{networkMeta.id}</span>
+              <span className="font-medium">#{networkMeta.id}</span>
             </li>
             {networkMeta.wsUrl && (
               <li className="mb-3">
-                <span className="text-muted d-block mb-1">WebSocket URL</span>
-                <code className="small" style={{ wordBreak: 'break-all' }}>{networkMeta.wsUrl}</code>
+                <span className="text-muted block mb-1">WebSocket URL</span>
+                <code className="text-sm" style={{ wordBreak: 'break-all' }}>{networkMeta.wsUrl}</code>
               </li>
             )}
-            <li className="d-flex justify-content-between mb-3">
+            <li className="flex justify-between mb-3">
               <span className="text-muted">{t('crypto.coinsCount', { defaultValue: 'Supported Coins' })}</span>
-              <span className="badge bg-label-primary">{networkMeta.coinsCount}</span>
+              <span className="badge bg-primary-50 text-primary-600">{networkMeta.coinsCount}</span>
             </li>
             {networkMeta.createdAt && (
-              <li className="d-flex justify-content-between mb-3">
+              <li className="flex justify-between mb-3">
                 <span className="text-muted">{t('common.createdAt', { defaultValue: 'Created' })}</span>
-                <span className="small">{fmtDate(networkMeta.createdAt)}</span>
+                <span className="text-sm">{fmtDate(networkMeta.createdAt)}</span>
               </li>
             )}
             {networkMeta.updatedAt && (
-              <li className="d-flex justify-content-between mb-3">
+              <li className="flex justify-between mb-3">
                 <span className="text-muted">{t('common.updatedAt', { defaultValue: 'Updated' })}</span>
-                <span className="small">{fmtDate(networkMeta.updatedAt)}</span>
+                <span className="text-sm">{fmtDate(networkMeta.updatedAt)}</span>
               </li>
             )}
           </ul>
@@ -52,15 +52,15 @@ export default function NetworkInfoPanel({ networkMeta }) {
               <h6 className="mb-3">{t('crypto.supportedCoins', { defaultValue: 'Supported Coins' })}</h6>
               <div className="list-group list-group-flush">
                 {networkMeta.supportedCoins.map((coin) => (
-                  <div key={coin.id} className="list-group-item px-0 d-flex justify-content-between align-items-center">
+                  <div key={coin.id} className="list-group-item px-0 flex justify-between items-center">
                     <div>
-                      <span className="fw-medium">{coin.coinSymbol}</span>
-                      <small className="text-muted d-block">{coin.coinName}</small>
+                      <span className="font-medium">{coin.coinSymbol}</span>
+                      <small className="text-muted block">{coin.coinName}</small>
                     </div>
-                    <div className="text-end">
-                      <span className={`badge bg-label-${coin.status === 'active' ? 'success' : 'secondary'} me-1`}>{coin.status}</span>
-                      {coin.depositEnabled && <span className="badge bg-label-info me-1">Deposit</span>}
-                      {coin.withdrawEnabled && <span className="badge bg-label-warning">Withdraw</span>}
+                    <div className="text-right">
+                      <span className={`badge bg-label-${coin.status ==='active' ? 'success' : 'secondary'} mr-1`}>{coin.status}</span>
+                      {coin.depositEnabled && <span className="badge bg-cyan-50 text-cyan-700 mr-1">Deposit</span>}
+                      {coin.withdrawEnabled && <span className="badge bg-amber-50 text-amber-700">Withdraw</span>}
                     </div>
                   </div>
                 ))}

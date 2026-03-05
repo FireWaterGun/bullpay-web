@@ -171,7 +171,7 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
           <div className="flex justify-between items-center mb-2">
             <button
               type="button"
-              className="btn btn-sm btn-ghost p-1"
+              className="btn btn-sm btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none p-1"
               onClick={prevMonth}
               style={{ border: 'none', background: 'none', cursor: 'pointer' }}
             >
@@ -180,7 +180,7 @@ export default function LocaleDatePicker({ value, onChange, locale = 'en-US', pl
             <span className="font-semibold" style={{ fontSize: '0.9rem' }}>{monthYearLabel}</span>
             <button
               type="button"
-              className="btn btn-sm btn-ghost p-1"
+              className="btn btn-sm btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none p-1"
               onClick={nextMonth}
               style={{ border: 'none', background: 'none', cursor: 'pointer' }}
             >

@@ -206,7 +206,7 @@ export default function InvoiceCreatePage() {
             <div>
               <label className="form-label">{t('form.expiryHours') || 'Expiry (hours)'}</label>
               <input
-                className={`form-input ${expiryHoursError ? 'border-red-400' : ''}`}
+                className={`form-input ${expiryHoursError ?'border-red-400' : ''}`}
                 type="number"
                 min={1}
                 max={24}
@@ -268,7 +268,7 @@ export default function InvoiceCreatePage() {
           </div>
         </div>
         <div className="px-6 py-4 border-t border-surface-100 flex justify-end gap-2">
-          <button type="button" className="btn btn-outline-secondary" onClick={() => router.back()} disabled={loading}>
+          <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => router.back()} disabled={loading}>
             {t('actions.back') || 'Back'}
           </button>
           <button type="submit" className="btn btn-primary" disabled={loading || !selectedCoin || !coinNetworkId || !amount || !!amountError}>

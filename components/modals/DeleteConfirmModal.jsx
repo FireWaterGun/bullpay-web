@@ -30,35 +30,35 @@ export default function DeleteConfirmModal({
 
   return (
     <div
-      className="modal show d-block"
+      className="fixed inset-0 z-50 flex items-center justify-center block"
       style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
       onClick={onClose}
     >
       <div
-        className="modal-dialog modal-dialog-centered"
+        className="w-full max-w-lg mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
+        <div className="bg-white rounded-xl shadow-xl">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800">
               {title || t('crypto.confirmDelete', { defaultValue: 'Confirm Delete' })}
             </h5>
             <button
               type="button"
-              className="btn-close"
+              className="cursor-pointer text-surface-500 hover:text-surface-700"
               onClick={onClose}
               disabled={loading}
             ></button>
           </div>
 
-          <div className="modal-body">
+          <div className="p-5">
             <p className="mb-2">
               {message}
             </p>
 
             <div className="alert alert-danger mt-3 mb-0">
-              <div className="d-flex align-items-start">
-                <i className="bx bx-error-circle fs-4 me-2"></i>
+              <div className="flex items-start">
+                <i className="bx bx-error-circle fs-4 mr-2"></i>
                 <div>
                   <strong>Warning:</strong>
                   <br />
@@ -70,10 +70,10 @@ export default function DeleteConfirmModal({
             </div>
           </div>
 
-          <div className="modal-footer">
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
             <button
               type="button"
-              className="btn btn-label-secondary"
+              className="btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none"
               onClick={onClose}
               disabled={loading}
             >
@@ -87,12 +87,12 @@ export default function DeleteConfirmModal({
             >
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <span className="spinner w-4 h-4 mr-2" role="status"></span>
                   {t('actions.deleting', { defaultValue: 'Deleting...' })}
                 </>
               ) : (
                 <>
-                  <i className="bx bx-trash me-2"></i>
+                  <i className="bx bx-trash mr-2"></i>
                   {t('actions.delete', { defaultValue: 'Delete' })}
                 </>
               )}

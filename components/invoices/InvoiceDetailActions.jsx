@@ -65,18 +65,18 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
           <div className="grid gap-2">
             {invoice.publicCode && (
               <>
-                <button type="button" className="btn btn-outline-primary" onClick={handleOpenPublic}>
+                <button type="button" className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white" onClick={handleOpenPublic}>
                   <i className="bx bx-link-alt mr-1"></i>
                   {t('actions.openPaymentLink') || 'Open payment page'}
                 </button>
-                <button type="button" className="btn btn-outline-info" onClick={handleSharePublic}>
+                <button type="button" className="btn btn border border-info-500 text-info-500 bg-transparent hover:bg-info-500 hover:text-white" onClick={handleSharePublic}>
                   <i className="bx bx-share-alt mr-1"></i>
                   {t('actions.share') || 'Share'}
                 </button>
               </>
             )}
             <a
-              className="btn btn-outline-secondary"
+              className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
               href={
                 explorer && invoice.paymentAddress
                   ? `${explorer.replace(/\/$/, '')}/address/${invoice.paymentAddress}`
@@ -88,7 +88,7 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
               <i className="bx bx-link-external mr-1"></i>
               {t('invoices.viewOnExplorer') || 'View on Explorer'}
             </a>
-            <Link href="/invoices" className="btn btn-outline-secondary">
+            <Link href="/invoices" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
               <i className="bx bx-list-ul mr-1"></i>
               {t('nav.history') || 'All invoices'}
             </Link>
@@ -103,7 +103,7 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
               <small className="text-surface-500 block mb-1">{t('invoices.publicCode') || 'Public Code'}</small>
               <div className="flex items-center mb-3 gap-2">
                 <code>{invoice.publicCode}</code>
-                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={handleOpenPublic} title={t('actions.openPaymentLink') || 'Open payment page'}>
+                <button type="button" className="btn btn-sm btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={handleOpenPublic} title={t('actions.openPaymentLink') || 'Open payment page'}>
                   <i className="bx bx-link-alt"></i>
                 </button>
               </div>

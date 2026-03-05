@@ -215,7 +215,7 @@ export default function WebhookLogsPage() {
               <i className="bx bx-filter-alt mr-1"></i>
               {t('webhookLog.applyFilters', { defaultValue: 'Apply Filters' })}
             </button>
-            <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
+            <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
               <i className="bx bx-reset mr-1"></i>
               {t('webhookLog.resetFilters', { defaultValue: 'Reset' })}
             </button>

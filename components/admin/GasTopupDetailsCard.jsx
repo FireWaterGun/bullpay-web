@@ -14,25 +14,25 @@ export default function GasTopupDetailsCard({
 }) {
   return (
     <div className="card mb-4">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-detail me-2"></i>
+          <i className="bx bx-detail mr-2"></i>
           {t('admin.gasTopup.details', { defaultValue: 'Details' })}
         </h5>
       </div>
-      <div className="card-body">
-        <div className="table-responsive">
-        <table className="table table-borderless">
+      <div className="p-5">
+        <div className="overflow-x-auto">
+        <table className="w-full">
           <tbody>
             <tr>
               <td className="text-muted" style={{ width: '40%' }}>{t('admin.gasTopup.id', { defaultValue: 'ID' })}</td>
-              <td className="fw-medium">{topup.id}</td>
+              <td className="font-medium">{topup.id}</td>
             </tr>
             {topup.sweepId && (
               <tr>
                 <td className="text-muted">{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</td>
                 <td>
-                  <a href={`/admin/sweeps/${topup.sweepId}`} className="fw-medium">
+                  <a href={`/admin/sweeps/${topup.sweepId}`} className="font-medium">
                     {topup.sweepId}
                   </a>
                 </td>
@@ -46,12 +46,12 @@ export default function GasTopupDetailsCard({
               <tr>
                 <td className="text-muted">{t('admin.gasTopup.coin', { defaultValue: 'Coin' })}</td>
                 <td>
-                  <div className="d-flex align-items-center">
-                    <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="me-3" />
+                  <div className="flex items-center">
+                    <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-3" />
                     <div>
-                      <span className="fw-medium">{coinSymbol}</span>
+                      <span className="font-medium">{coinSymbol}</span>
                       {networkName && (
-                        <small className="text-muted ms-1">/ {networkName}</small>
+                        <small className="text-muted ml-1">/ {networkName}</small>
                       )}
                     </div>
                   </div>
@@ -65,7 +65,7 @@ export default function GasTopupDetailsCard({
             <tr>
               <td className="text-muted">{t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}</td>
               <td>
-                <span className="fw-bold">
+                <span className="font-bold">
                   {formatAmount(topup.topupGasRaw, decimals)}
                 </span>
               </td>
@@ -77,7 +77,7 @@ export default function GasTopupDetailsCard({
             <tr>
               <td className="text-muted">{t('admin.gasTopup.requiredGas', { defaultValue: 'Required Gas' })}</td>
               <td>
-                <span className="fw-medium">
+                <span className="font-medium">
                   {formatAmount(topup.requiredGasRaw, decimals)}
                 </span>
               </td>
@@ -99,7 +99,7 @@ export default function GasTopupDetailsCard({
             <tr>
               <td className="text-muted">{t('admin.gasTopup.retryCount', { defaultValue: 'Retry Count' })}</td>
               <td>
-                <span className={topup.retryCount > 0 ? 'text-warning fw-semibold' : ''}>
+                <span className={topup.retryCount > 0 ? 'text-warning font-semibold' : ''}>
                   {topup.retryCount || 0} / {topup.maxRetries ?? 'N/A'}
                 </span>
               </td>

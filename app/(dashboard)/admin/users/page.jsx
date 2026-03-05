@@ -231,9 +231,9 @@ export default function AdminUsersPage() {
 
   if (loading && users.length === 0) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
           <p className="mt-3 text-muted">{t('invoices.loading', { defaultValue: 'Loading...' })}</p>
@@ -243,24 +243,24 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div className="p-5">
+              <div className="flex justify-between items-center flex-wrap gap-2">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-group me-2"></i>
+                    <i className="bx bx-group mr-2"></i>
                     {t('admin.users.title', { defaultValue: 'User Management' })}
                   </h4>
                   <p className="text-muted mb-0">
                     {t('admin.users.description', { defaultValue: 'Manage users, roles, and access' })}
                   </p>
                 </div>
-                <div className="d-flex gap-2 align-items-center">
+                <div className="flex gap-2 items-center">
                   <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
-                    <i className="bx bx-user-plus me-1"></i>
+                    <i className="bx bx-user-plus mr-1"></i>
                     {t('admin.users.createUser', { defaultValue: 'Create User' })}
                   </button>
                   <RefreshButton onClick={loadUsers} loading={loading} />
@@ -270,37 +270,37 @@ export default function AdminUsersPage() {
           </div>
 
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.search', { defaultValue: 'Search' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     placeholder={t('admin.users.searchPlaceholder', { defaultValue: 'Email, name...' })}
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
                   />
                 </div>
-                <div className="col-md-2 col-sm-6">
+                <div className="md:col-span-2 sm:col-span-6">
                   <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <select className="form-input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     {STATUS_OPTIONS.map(s => (
                       <option key={s} value={s}>{formatRoleLabel(s)}</option>
                     ))}
                   </select>
                 </div>
-                <div className="col-md-2 col-sm-6">
+                <div className="md:col-span-2 sm:col-span-6">
                   <label className="form-label">{t('admin.users.role', { defaultValue: 'Role' })}</label>
-                  <select className="form-select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+                  <select className="form-input" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
                     <option value="">{t('admin.users.allRoles', { defaultValue: 'All Roles' })}</option>
                     {ROLE_OPTIONS.map(r => (
                       <option key={r} value={r}>{formatRoleLabel(r)}</option>
                     ))}
                   </select>
                 </div>
-                <div className="col-md-3 col-sm-6">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('admin.users.createdDate', { defaultValue: 'Created Date' })}</label>
                   <LocaleDateRangePicker
                     startDate={dateFromFilter}
@@ -313,9 +313,9 @@ export default function AdminUsersPage() {
                     style={{ width: '100%' }}
                   />
                 </div>
-                <div className="col-md-2 col-sm-6">
+                <div className="md:col-span-2 sm:col-span-6">
                   <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-                  <select className="form-select" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+                  <select className="form-input" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="createdAt">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
                     <option value="lastLoginAt">{t('admin.users.lastLogin', { defaultValue: 'Last Login' })}</option>
@@ -324,13 +324,13 @@ export default function AdminUsersPage() {
                   </select>
                 </div>
               </div>
-              <div className="d-flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3">
                 <button className="btn btn-primary" onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt me-1"></i>
+                  <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}>
-                  <i className="bx bx-reset me-1"></i>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}>
+                  <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </button>
               </div>

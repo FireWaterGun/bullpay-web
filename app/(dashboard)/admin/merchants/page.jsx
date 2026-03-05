@@ -99,9 +99,9 @@ export default function AdminMerchantsPage() {
 
   if (loading && merchants.length === 0) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div>
+          <div className="spinner text-primary" role="status"><span className="visually-hidden">Loading...</span></div>
           <p className="mt-3 text-muted">{t('invoices.loading', { defaultValue: 'Loading...' })}</p>
         </div>
       </div>
@@ -109,14 +109,14 @@ export default function AdminMerchantsPage() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div className="p-5">
+              <div className="flex justify-between items-center flex-wrap gap-2">
                 <div>
-                  <h4 className="mb-1"><i className="bx bx-store me-2"></i>{t('admin.merchants.title', { defaultValue: 'Merchants' })}</h4>
+                  <h4 className="mb-1"><i className="bx bx-store mr-2"></i>{t('admin.merchants.title', { defaultValue: 'Merchants' })}</h4>
                   <p className="text-muted mb-0">{t('admin.merchants.description', { defaultValue: 'Manage merchant accounts and status' })}</p>
                 </div>
                 <RefreshButton onClick={loadMerchants} loading={loading} />
@@ -125,34 +125,34 @@ export default function AdminMerchantsPage() {
           </div>
 
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3 col-sm-6">
+            <div className="p-5">
+              <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="md:col-span-3 sm:col-span-6">
                   <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
-                  <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <select className="form-input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     {STATUS_OPTIONS.map(s => (<option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>))}
                   </select>
                 </div>
               </div>
-              <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}><i className="bx bx-filter-alt me-1"></i>{t('filter.apply', { defaultValue: 'Apply Filters' })}</button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters} disabled={loading}><i className="bx bx-reset me-1"></i>{t('filter.reset', { defaultValue: 'Reset' })}</button>
+              <div className="flex gap-2 mt-3">
+                <button className="btn btn-primary" onClick={applyFilters} disabled={loading}><i className="bx bx-filter-alt mr-1"></i>{t('filter.apply', { defaultValue: 'Apply Filters' })}</button>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={resetFilters} disabled={loading}><i className="bx bx-reset mr-1"></i>{t('filter.reset', { defaultValue: 'Reset' })}</button>
               </div>
             </div>
           </div>
 
           <div className="card">
-            <div className="card-body">
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover">
+            <div className="p-5">
+              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+                <table className="w-full">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
                       <th>{t('admin.merchants.name', { defaultValue: 'Name' })}</th>
                       <th>{t('admin.merchants.email', { defaultValue: 'Email' })}</th>
                       <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
-                      <th className="text-end">{t('admin.merchants.commission', { defaultValue: 'Commission' })}</th>
+                      <th className="text-right">{t('admin.merchants.commission', { defaultValue: 'Commission' })}</th>
                       <th className="text-center">{t('admin.merchants.webhook', { defaultValue: 'Webhook' })}</th>
                       <th>{t('table.created', { defaultValue: 'Created' })}</th>
                       <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
@@ -173,32 +173,32 @@ export default function AdminMerchantsPage() {
                         const canSuspend = status === 'active' || status === 'pending'
                         return (
                           <tr key={merchant.id}>
-                            <td><span className="fw-semibold text-primary">{merchant.id}</span></td>
+                            <td><span className="font-semibold text-primary">{merchant.id}</span></td>
                             <td>
                               <div>
-                                <span className="fw-medium">{merchant.name || '-'}</span>
-                                {merchant.description && <small className="d-block text-muted text-truncate" style={{ maxWidth: '250px' }} title={merchant.description}>{merchant.description}</small>}
+                                <span className="font-medium">{merchant.name || '-'}</span>
+                                {merchant.description && <small className="block text-muted truncate" style={{ maxWidth: '250px' }} title={merchant.description}>{merchant.description}</small>}
                               </div>
                             </td>
                             <td>
                               <div>
                                 <span>{merchant.email || '-'}</span>
-                                {merchant.websiteUrl && <small className="d-block"><a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-muted">{merchant.websiteUrl}</a></small>}
+                                {merchant.websiteUrl && <small className="block"><a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-muted">{merchant.websiteUrl}</a></small>}
                               </div>
                             </td>
-                            <td className="text-center text-nowrap"><span className={statusBadgeClass(merchant.status)}>{String(merchant.status || '').toUpperCase()}</span></td>
-                            <td className="text-end text-nowrap">{merchant.commissionRate ? formatCommission(merchant.commissionRate) : '-'}</td>
+                            <td className="text-center whitespace-nowrap"><span className={statusBadgeClass(merchant.status)}>{String(merchant.status || '').toUpperCase()}</span></td>
+                            <td className="text-right whitespace-nowrap">{merchant.commissionRate ? formatCommission(merchant.commissionRate) : '-'}</td>
                             <td className="text-center">
-                              {merchant.hasWebhook ? <span className="badge bg-label-success"><i className="bx bx-check"></i></span> : <span className="badge bg-label-secondary"><i className="bx bx-x"></i></span>}
+                              {merchant.hasWebhook ? <span className="badge bg-green-50 text-green-700"><i className="bx bx-check"></i></span> : <span className="badge bg-surface-100 text-surface-600"><i className="bx bx-x"></i></span>}
                             </td>
-                            <td className="text-nowrap" style={{ fontSize: '0.85rem' }}>{fmtDate(merchant.createdAt)}</td>
+                            <td className="whitespace-nowrap" style={{ fontSize: '0.85rem' }}>{fmtDate(merchant.createdAt)}</td>
                             <td className="text-center">
                               <div className="dropdown">
-                                <button className="btn btn-sm btn-icon btn-text-secondary rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i className="bx bx-dots-vertical-rounded"></i></button>
-                                <ul className="dropdown-menu dropdown-menu-end">
-                                  {canActivate && <li><button className="dropdown-item" onClick={() => openModal('activate', merchant)}><i className="bx bx-check-circle me-2 text-primary"></i>{t('admin.merchants.activate', { defaultValue: 'Activate' })}</button></li>}
-                                  {canSuspend && <li><button className="dropdown-item" onClick={() => openModal('suspend', merchant)}><i className="bx bx-block me-2 text-danger"></i>{t('admin.merchants.suspend', { defaultValue: 'Suspend' })}</button></li>}
-                                  {!canActivate && !canSuspend && <li><span className="dropdown-item text-muted">{t('admin.merchants.noActions', { defaultValue: 'No actions available' })}</span></li>}
+                                <button className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full cursor-pointer hide-arrow"><i className="bx bx-dots-vertical-rounded"></i></button>
+                                <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 right-0">
+                                  {canActivate && <li><button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => openModal('activate', merchant)}><i className="bx bx-check-circle mr-2 text-primary"></i>{t('admin.merchants.activate', { defaultValue: 'Activate' })}</button></li>}
+                                  {canSuspend && <li><button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => openModal('suspend', merchant)}><i className="bx bx-block mr-2 text-danger"></i>{t('admin.merchants.suspend', { defaultValue: 'Suspend' })}</button></li>}
+                                  {!canActivate && !canSuspend && <li><span className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer text-muted">{t('admin.merchants.noActions', { defaultValue: 'No actions available' })}</span></li>}
                                 </ul>
                               </div>
                             </td>
@@ -211,14 +211,14 @@ export default function AdminMerchantsPage() {
               </div>
 
               {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-muted text-sm">
                     {t('invoices.showingEntries', { start: ((pagination.page - 1) * pagination.limit) + 1, end: Math.min(pagination.page * pagination.limit, pagination.total), total: pagination.total, defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries' })}
                   </div>
-                  <div className="btn-group">
-                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasPrev || loading} onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedStatus, currentPage - 1) }}><i className="bx bx-chevron-left"></i> {t('actions.prev', { defaultValue: 'Previous' })}</button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled>{pagination.page} / {pagination.totalPages}</button>
-                    <button className="btn btn-outline-secondary btn-sm" disabled={!pagination.hasNext || loading} onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedStatus, currentPage + 1) }}>{t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right"></i></button>
+                  <div className="inline-flex rounded-lg shadow-sm">
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled={!pagination.hasPrev || loading} onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedStatus, currentPage - 1) }}><i className="bx bx-chevron-left"></i> {t('actions.prev', { defaultValue: 'Previous' })}</button>
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled>{pagination.page} / {pagination.totalPages}</button>
+                    <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm" disabled={!pagination.hasNext || loading} onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedStatus, currentPage + 1) }}>{t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right"></i></button>
                   </div>
                 </div>
               )}

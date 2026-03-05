@@ -28,11 +28,11 @@ export default function AdminPaymentFilters({
   const { t } = useAdminTranslation()
 
   return (
-    <div className="card-body">
-      <div className="row g-3">
-        <div className="col-md-3 col-sm-6">
+    <div className="p-5">
+      <div className="grid grid-cols-12 gap-x-6 gap-3">
+        <div className="md:col-span-3 sm:col-span-6">
           <label className="form-label">{t('filter.status', { defaultValue: 'Status' })}</label>
-          <select className="form-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <select className="form-input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
             <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
             <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
             <option value="detecting">{t('status.detecting', { defaultValue: 'Detecting' })}</option>
@@ -45,19 +45,19 @@ export default function AdminPaymentFilters({
             <option value="unconfirmed">{t('status.unconfirmed', { defaultValue: 'Unconfirmed' })}</option>
           </select>
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div className="md:col-span-3 sm:col-span-6">
           <label className="form-label">{t('filter.userId', { defaultValue: 'User ID' })}</label>
-          <input type="number" className="form-control" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+          <input type="number" className="form-input" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div className="md:col-span-3 sm:col-span-6">
           <label className="form-label">{t('filter.invoiceId', { defaultValue: 'Invoice ID' })}</label>
-          <input type="number" className="form-control" placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })} value={invoiceIdFilter} onChange={(e) => setInvoiceIdFilter(e.target.value)} />
+          <input type="number" className="form-input" placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })} value={invoiceIdFilter} onChange={(e) => setInvoiceIdFilter(e.target.value)} />
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div className="md:col-span-3 sm:col-span-6">
           <label className="form-label">{t('filter.txHash', { defaultValue: 'Tx Hash' })}</label>
-          <input type="text" className="form-control" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+          <input type="text" className="form-input" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div className="md:col-span-3 sm:col-span-6">
           <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
           <LocaleDateRangePicker
             startDate={fromDateFilter}
@@ -70,9 +70,9 @@ export default function AdminPaymentFilters({
             style={{ width: '100%' }}
           />
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div className="md:col-span-3 sm:col-span-6">
           <label className="form-label">{t('filter.sortBy', { defaultValue: 'Sort By' })}</label>
-          <select className="form-select" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
+          <select className="form-input" value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
             <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
             <option value="created_at">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
             <option value="amount_raw">{t('filter.amount', { defaultValue: 'Amount' })}</option>
@@ -80,22 +80,22 @@ export default function AdminPaymentFilters({
             <option value="confirmations">{t('filter.confirmations', { defaultValue: 'Confirmations' })}</option>
           </select>
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div className="md:col-span-3 sm:col-span-6">
           <label className="form-label">{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</label>
-          <select className="form-select" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
+          <select className="form-input" value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
             <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
             <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
             <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
           </select>
         </div>
       </div>
-      <div className="d-flex gap-2 mt-3">
+      <div className="flex gap-2 mt-3">
         <button className="btn btn-primary" onClick={onApply} disabled={loading}>
-          <i className="bx bx-filter-alt me-1"></i>
+          <i className="bx bx-filter-alt mr-1"></i>
           {t('filter.apply', { defaultValue: 'Apply Filters' })}
         </button>
-        <button className="btn btn-outline-secondary" onClick={onReset} disabled={loading}>
-          <i className="bx bx-reset me-1"></i>
+        <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onReset} disabled={loading}>
+          <i className="bx bx-reset mr-1"></i>
           {t('filter.reset', { defaultValue: 'Reset' })}
         </button>
       </div>

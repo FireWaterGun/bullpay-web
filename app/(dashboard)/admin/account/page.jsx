@@ -116,7 +116,7 @@ export default function AdminAccountPage() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* ══════════════════════════════════════════════════════════
           §1  PROFILE HERO CARD
           ══════════════════════════════════════════════════════════ */}
@@ -124,29 +124,29 @@ export default function AdminAccountPage() {
         {/* Gradient accent bar */}
         <div style={{ height: 4, background: 'linear-gradient(90deg, var(--bs-primary) 0%, #a855f7 50%, #06b6d4 100%)' }} />
 
-        <div className="card-body p-4 pb-3">
-          <div className="d-flex flex-column flex-sm-row align-items-start gap-4">
+        <div className="p-5 p-4 pb-3">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             {/* Avatar */}
             <div
-              className="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
+              className="flex items-center justify-center rounded-lg shrink-0"
               style={{ width: 80, height: 80, background: 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.16) 0%, rgba(var(--bs-primary-rgb), 0.04) 100%)' }}
             >
               <i className="bx bx-user-circle" style={{ fontSize: '2.5rem', color: 'var(--bs-primary)' }}></i>
             </div>
 
             {/* Info */}
-            <div className="flex-grow-1 min-w-0">
-              <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                <h4 className="mb-0 text-truncate">{user?.fullName || user?.email || '-'}</h4>
-                <span className="badge bg-label-primary">{t('admin.account.adminBadge', { defaultValue: 'Admin' })}</span>
+            <div className="grow min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <h4 className="mb-0 truncate">{user?.fullName || user?.email || '-'}</h4>
+                <span className="badge bg-primary-50 text-primary-600">{t('admin.account.adminBadge', { defaultValue: 'Admin' })}</span>
               </div>
 
-              <div className="d-flex flex-wrap gap-3 text-muted small mt-1">
+              <div className="flex flex-wrap gap-3 text-muted text-sm mt-1">
                 {user?.email && (
-                  <span><i className="bx bx-envelope me-1"></i>{user.email}</span>
+                  <span><i className="bx bx-envelope mr-1"></i>{user.email}</span>
                 )}
                 <span>
-                  <i className="bx bx-globe me-1"></i>
+                  <i className="bx bx-globe mr-1"></i>
                   {selectedTimezone}
                 </span>
               </div>
@@ -155,34 +155,34 @@ export default function AdminAccountPage() {
         </div>
 
         {/* Stats strip */}
-        <div className="card-footer bg-transparent border-top py-3 px-4">
-          <div className="row g-3">
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
+        <div className="px-5 py-3 border-t border-surface-200 bg-transparent border-top py-3 px-4">
+          <div className="grid grid-cols-12 gap-x-6 gap-3">
+            <div className="col-span-6 sm:col-span-3">
+              <div className="flex items-center gap-3">
                 <span
-                  className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-success flex-shrink-0"
+                  className="inline-flex items-center justify-center rounded bg-green-50 text-green-700 shrink-0"
                   style={{ width: 40, height: 40 }}
                 >
                   <i className="bx bx-check-shield" style={{ fontSize: '1.25rem' }}></i>
                 </span>
                 <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
+                  <div className="font-semibold truncate" style={{ fontSize: '0.9rem' }}>
                     {t('admin.account.statusActive', { defaultValue: 'Active' })}
                   </div>
                   <small className="text-muted">{t('common.status', { defaultValue: 'Status' })}</small>
                 </div>
               </div>
             </div>
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
+            <div className="col-span-6 sm:col-span-3">
+              <div className="flex items-center gap-3">
                 <span
-                  className={`d-inline-flex align-items-center justify-content-center rounded-2 flex-shrink-0 ${is2FAEnabled ? 'bg-label-success' : 'bg-label-warning'}`}
+                  className={`inline-flex items-center justify-center rounded shrink-0 ${is2FAEnabled ?'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}
                   style={{ width: 40, height: 40 }}
                 >
-                  <i className={`bx ${is2FAEnabled ? 'bx-lock-alt' : 'bx-lock-open-alt'}`} style={{ fontSize: '1.25rem' }}></i>
+                  <i className={`bx ${is2FAEnabled ?'bx-lock-alt' : 'bx-lock-open-alt'}`} style={{ fontSize: '1.25rem' }}></i>
                 </span>
                 <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
+                  <div className="font-semibold truncate" style={{ fontSize: '0.9rem' }}>
                     {twoFALoading ? '...' : is2FAEnabled
                       ? t('admin.account.twoFactorEnabled', { defaultValue: 'Enabled' })
                       : t('admin.account.twoFactorDisabled', { defaultValue: 'Disabled' })}
@@ -191,32 +191,32 @@ export default function AdminAccountPage() {
                 </div>
               </div>
             </div>
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
+            <div className="col-span-6 sm:col-span-3">
+              <div className="flex items-center gap-3">
                 <span
-                  className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-info flex-shrink-0"
+                  className="inline-flex items-center justify-center rounded bg-cyan-50 text-cyan-700 shrink-0"
                   style={{ width: 40, height: 40 }}
                 >
                   <i className="bx bx-time-five" style={{ fontSize: '1.25rem' }}></i>
                 </span>
                 <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
+                  <div className="font-semibold truncate" style={{ fontSize: '0.9rem' }}>
                     {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', hour12: false })}
                   </div>
                   <small className="text-muted">{t('admin.account.statsLocalTime', { defaultValue: 'Local Time' })}</small>
                 </div>
               </div>
             </div>
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
+            <div className="col-span-6 sm:col-span-3">
+              <div className="flex items-center gap-3">
                 <span
-                  className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-primary flex-shrink-0"
+                  className="inline-flex items-center justify-center rounded bg-primary-50 text-primary-600 shrink-0"
                   style={{ width: 40, height: 40 }}
                 >
                   <i className="bx bx-calendar" style={{ fontSize: '1.25rem' }}></i>
                 </span>
                 <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
+                  <div className="font-semibold truncate" style={{ fontSize: '0.9rem' }}>
                     {new Date().toLocaleDateString(undefined, { timeZone: selectedTimezone, month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                   <small className="text-muted">{t('admin.account.statsDate', { defaultValue: 'Date' })}</small>
@@ -230,14 +230,14 @@ export default function AdminAccountPage() {
       {/* ══════════════════════════════════════════════════════════
           §2  MAIN CONTENT — Two columns on large screens
           ══════════════════════════════════════════════════════════ */}
-      <div className="row">
+      <div className="grid grid-cols-12 gap-x-6">
         {/* ── Left Column ── */}
-        <div className="col-xl-8 col-lg-7">
+        <div className="xl:col-span-8 col-lg-7">
           {/* Change Password */}
           <div className="card mb-4">
-            <div className="card-header d-flex align-items-center">
+            <div className="px-5 py-4 border-b border-surface-200 flex items-center">
               <span
-                className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-primary me-3 flex-shrink-0"
+                className="inline-flex items-center justify-center rounded bg-primary-50 text-primary-600 mr-3 shrink-0"
                 style={{ width: 36, height: 36 }}
               >
                 <i className="bx bx-key" style={{ fontSize: '1.1rem' }}></i>
@@ -251,33 +251,33 @@ export default function AdminAccountPage() {
                 </small>
               </div>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               <form onSubmit={handleSubmit(onChangePassword)} noValidate>
-                <div className="row">
-                  <div className="col-md-8">
+                <div className="grid grid-cols-12 gap-x-6">
+                  <div className="md:col-span-8">
                     {/* Current Password */}
                     <div className="mb-3">
                       <label className="form-label" htmlFor="currentPassword">
                         {t('admin.account.currentPassword', { defaultValue: 'Current Password' })}
                       </label>
-                      <div className="input-group input-group-merge">
+                      <div className="flex items-stretch flex items-stretch">
                         <input
                           type={showCurrentPassword ? 'text' : 'password'}
                           id="currentPassword"
-                          className={`form-control ${errors.currentPassword ? 'is-invalid' : ''}`}
+                          className={`form-input ${errors.currentPassword ?'is-invalid' : ''}`}
                           placeholder="••••••••"
                           autoComplete="current-password"
                           {...register('currentPassword')}
                         />
                         <span
-                          className="input-group-text cursor-pointer"
+                          className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg cursor-pointer"
                           onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                         >
-                          <i className={`bx ${showCurrentPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                          <i className={`bx ${showCurrentPassword ?'bx-show' : 'bx-hide'}`}></i>
                         </span>
                       </div>
                       {errors.currentPassword && (
-                        <div className="invalid-feedback d-block">{errors.currentPassword.message}</div>
+                        <div className="text-xs text-danger-500 mt-1 block">{errors.currentPassword.message}</div>
                       )}
                     </div>
 
@@ -286,26 +286,26 @@ export default function AdminAccountPage() {
                       <label className="form-label" htmlFor="newPassword">
                         {t('admin.account.newPassword', { defaultValue: 'New Password' })}
                       </label>
-                      <div className="input-group input-group-merge">
+                      <div className="flex items-stretch flex items-stretch">
                         <input
                           type={showNewPassword ? 'text' : 'password'}
                           id="newPassword"
-                          className={`form-control ${errors.newPassword ? 'is-invalid' : ''}`}
+                          className={`form-input ${errors.newPassword ?'is-invalid' : ''}`}
                           placeholder="••••••••"
                           autoComplete="new-password"
                           {...register('newPassword')}
                         />
                         <span
-                          className="input-group-text cursor-pointer"
+                          className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg cursor-pointer"
                           onClick={() => setShowNewPassword(!showNewPassword)}
                         >
-                          <i className={`bx ${showNewPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                          <i className={`bx ${showNewPassword ?'bx-show' : 'bx-hide'}`}></i>
                         </span>
                       </div>
                       {errors.newPassword && (
-                        <div className="invalid-feedback d-block">{errors.newPassword.message}</div>
+                        <div className="text-xs text-danger-500 mt-1 block">{errors.newPassword.message}</div>
                       )}
-                      <div className="form-text">
+                      <div className="text-xs text-surface-500 mt-1">
                         {t('admin.account.requirements', {
                           defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.',
                         })}
@@ -317,24 +317,24 @@ export default function AdminAccountPage() {
                       <label className="form-label" htmlFor="newPasswordConfirmation">
                         {t('admin.account.confirmPassword', { defaultValue: 'Confirm New Password' })}
                       </label>
-                      <div className="input-group input-group-merge">
+                      <div className="flex items-stretch flex items-stretch">
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
                           id="newPasswordConfirmation"
-                          className={`form-control ${errors.newPasswordConfirmation ? 'is-invalid' : ''}`}
+                          className={`form-input ${errors.newPasswordConfirmation ?'is-invalid' : ''}`}
                           placeholder="••••••••"
                           autoComplete="new-password"
                           {...register('newPasswordConfirmation')}
                         />
                         <span
-                          className="input-group-text cursor-pointer"
+                          className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg cursor-pointer"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
-                          <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                          <i className={`bx ${showConfirmPassword ?'bx-show' : 'bx-hide'}`}></i>
                         </span>
                       </div>
                       {errors.newPasswordConfirmation && (
-                        <div className="invalid-feedback d-block">{errors.newPasswordConfirmation.message}</div>
+                        <div className="text-xs text-danger-500 mt-1 block">{errors.newPasswordConfirmation.message}</div>
                       )}
                     </div>
 
@@ -342,13 +342,13 @@ export default function AdminAccountPage() {
                     {is2FAEnabled && (
                       <div className="mb-3">
                         <label className="form-label" htmlFor="totpCode">
-                          <i className="bx bx-shield-quarter me-1 text-warning"></i>
+                          <i className="bx bx-shield-quarter mr-1 text-warning"></i>
                           {t('admin.account.totpLabel', { defaultValue: '2FA Verification Code' })}
                         </label>
                         <input
                           type="text"
                           id="totpCode"
-                          className={`form-control ${errors.totpCode ? 'is-invalid' : ''}`}
+                          className={`form-input ${errors.totpCode ?'is-invalid' : ''}`}
                           placeholder="000000"
                           inputMode="numeric"
                           maxLength={20}
@@ -356,9 +356,9 @@ export default function AdminAccountPage() {
                           {...register('totpCode')}
                         />
                         {errors.totpCode && (
-                          <div className="invalid-feedback d-block">{errors.totpCode.message}</div>
+                          <div className="text-xs text-danger-500 mt-1 block">{errors.totpCode.message}</div>
                         )}
-                        <div className="form-text">
+                        <div className="text-xs text-surface-500 mt-1">
                           {t('admin.account.totpHint', {
                             defaultValue: 'Enter the code from your authenticator app or a backup code.',
                           })}
@@ -374,12 +374,12 @@ export default function AdminAccountPage() {
                     >
                       {changingPassword ? (
                         <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
+                          <span className="spinner w-4 h-4 mr-2"></span>
                           {t('admin.account.changing', { defaultValue: 'Changing...' })}
                         </>
                       ) : (
                         <>
-                          <i className="bx bx-check me-1"></i>
+                          <i className="bx bx-check mr-1"></i>
                           {t('admin.account.changeButton', { defaultValue: 'Change Password' })}
                         </>
                       )}
@@ -392,12 +392,12 @@ export default function AdminAccountPage() {
         </div>
 
         {/* ── Right Column ── */}
-        <div className="col-xl-4 col-lg-5">
+        <div className="xl:col-span-4 col-lg-5">
           {/* Timezone */}
           <div className="card mb-4">
-            <div className="card-header d-flex align-items-center">
+            <div className="px-5 py-4 border-b border-surface-200 flex items-center">
               <span
-                className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-info me-3 flex-shrink-0"
+                className="inline-flex items-center justify-center rounded bg-cyan-50 text-cyan-700 mr-3 shrink-0"
                 style={{ width: 36, height: 36 }}
               >
                 <i className="bx bx-time-five" style={{ fontSize: '1.1rem' }}></i>
@@ -409,10 +409,10 @@ export default function AdminAccountPage() {
                 </small>
               </div>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {/* Live clock preview */}
-              <div className="text-center mb-4 py-3 rounded-3" style={{ background: 'rgba(var(--bs-primary-rgb), 0.06)' }}>
-                <div className="fw-bold fs-3 text-primary" style={{ fontVariantNumeric: 'tabular-nums', letterSpacing: '0.05em' }}>
+              <div className="text-center mb-4 py-3 rounded-lg" style={{ background: 'rgba(var(--bs-primary-rgb), 0.06)' }}>
+                <div className="font-bold fs-3 text-primary" style={{ fontVariantNumeric: 'tabular-nums', letterSpacing: '0.05em' }}>
                   {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
                 </div>
                 <small className="text-muted">{selectedTimezone.replace(/_/g, ' ')}</small>
@@ -424,7 +424,7 @@ export default function AdminAccountPage() {
                 </label>
                 <select
                   id="timezone"
-                  className="form-select"
+                  className="form-input"
                   value={selectedTimezone}
                   onChange={(e) => setSelectedTimezone(e.target.value)}
                 >
@@ -437,7 +437,7 @@ export default function AdminAccountPage() {
               </div>
               <button
                 type="button"
-                className="btn btn-primary w-100"
+                className="btn btn-primary w-full"
                 disabled={savingTimezone || !timezoneChanged}
                 onClick={async () => {
                   setSavingTimezone(true)
@@ -455,12 +455,12 @@ export default function AdminAccountPage() {
               >
                 {savingTimezone ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    <span className="spinner w-4 h-4 mr-2"></span>
                     {t('common.saving', { defaultValue: 'Saving...' })}
                   </>
                 ) : (
                   <>
-                    <i className="bx bx-check me-1"></i>
+                    <i className="bx bx-check mr-1"></i>
                     {t('common.save', { defaultValue: 'Save' })}
                   </>
                 )}
@@ -470,9 +470,9 @@ export default function AdminAccountPage() {
 
           {/* Security / 2FA */}
           <div className="card mb-4">
-            <div className="card-header d-flex align-items-center">
+            <div className="px-5 py-4 border-b border-surface-200 flex items-center">
               <span
-                className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-warning me-3 flex-shrink-0"
+                className="inline-flex items-center justify-center rounded bg-amber-50 text-amber-700 mr-3 shrink-0"
                 style={{ width: 36, height: 36 }}
               >
                 <i className="bx bx-shield-quarter" style={{ fontSize: '1.1rem' }}></i>
@@ -484,21 +484,21 @@ export default function AdminAccountPage() {
                 </small>
               </div>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {/* 2FA Status indicator */}
-              <div className="d-flex align-items-center mb-3 p-3 rounded-3" style={{
+              <div className="flex items-center mb-3 p-3 rounded-lg" style={{
                 background: is2FAEnabled
                   ? 'rgba(var(--bs-success-rgb), 0.08)'
                   : 'rgba(var(--bs-warning-rgb), 0.08)',
               }}>
                 <div
-                  className={`rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0 ${is2FAEnabled ? 'bg-label-success' : 'bg-label-warning'}`}
+                  className={`rounded-full flex items-center justify-center mr-3 shrink-0 ${is2FAEnabled ?'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}
                   style={{ width: 44, height: 44 }}
                 >
-                  <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} fs-5`}></i>
+                  <i className={`bx ${is2FAEnabled ?'bx-check-shield' : 'bx-error'} fs-5`}></i>
                 </div>
-                <div className="flex-grow-1 min-w-0">
-                  <h6 className="mb-0 small fw-semibold">
+                <div className="grow min-w-0">
+                  <h6 className="mb-0 text-sm font-semibold">
                     {t('admin.account.twoFactorLabel', { defaultValue: 'Two-Factor Authentication' })}
                   </h6>
                   {twoFALoading ? (
@@ -506,9 +506,9 @@ export default function AdminAccountPage() {
                       <span className="placeholder col-8 placeholder-sm"></span>
                     </div>
                   ) : is2FAEnabled ? (
-                    <div className="d-flex align-items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1">
                       <span className="badge bg-success" style={{ fontSize: '0.7rem' }}>
-                        <i className="bx bx-check-circle me-1"></i>
+                        <i className="bx bx-check-circle mr-1"></i>
                         {t('admin.account.twoFactorEnabled', { defaultValue: 'Enabled' })}
                       </span>
                       {twoFAStatus?.verifiedAt && (
@@ -529,7 +529,7 @@ export default function AdminAccountPage() {
               </div>
 
               {/* Description */}
-              <p className="text-muted small mb-3">
+              <p className="text-muted text-sm mb-3">
                 {t('admin.account.twoFactorDescription', {
                   defaultValue: "Add an extra layer of security. We'll ask for a code from your authenticator app when you sign in.",
                 })}
@@ -537,24 +537,24 @@ export default function AdminAccountPage() {
 
               {/* Action button */}
               {twoFALoading ? (
-                <button className="btn btn-outline-primary w-100" disabled>
-                  <span className="spinner-border spinner-border-sm me-2"></span>
+                <button className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white w-full" disabled>
+                  <span className="spinner w-4 h-4 mr-2"></span>
                   {t('common.loading', { defaultValue: 'Loading...' })}
                 </button>
               ) : is2FAEnabled ? (
                 <button
-                  className="btn btn-outline-danger w-100"
+                  className="btn btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white w-full"
                   onClick={() => setShowDisableModal(true)}
                 >
-                  <i className="bx bx-power-off me-1"></i>
+                  <i className="bx bx-power-off mr-1"></i>
                   {t('admin.account.disable2FA', { defaultValue: 'Disable 2FA' })}
                 </button>
               ) : (
                 <button
-                  className="btn btn-primary w-100"
+                  className="btn btn-primary w-full"
                   onClick={() => setShowSetupModal(true)}
                 >
-                  <i className="bx bx-lock me-1"></i>
+                  <i className="bx bx-lock mr-1"></i>
                   {t('admin.account.enable2FA', { defaultValue: 'Enable 2FA' })}
                 </button>
               )}

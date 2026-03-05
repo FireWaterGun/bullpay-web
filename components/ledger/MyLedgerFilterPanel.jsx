@@ -72,7 +72,7 @@ export default function MyLedgerFilterPanel({
           <i className="bx bx-filter-alt mr-1"></i>
           {t('filter.apply', { defaultValue: 'Apply Filters' })}
         </button>
-        <button className="btn btn-outline-secondary" onClick={onReset} disabled={loading}>
+        <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={onReset} disabled={loading}>
           <i className="bx bx-reset mr-1"></i>
           {t('filter.reset', { defaultValue: 'Reset' })}
         </button>
@@ -114,7 +114,7 @@ function CoinNetworkDropdown({ coinNetworks, coinNetworkIdFilter, setCoinNetwork
             </span>
           )
         })() : <span className="text-surface-500">{t('common.all', { defaultValue: 'All' })}</span>}
-        <i className={`bx bx-chevron-${open ? 'up' : 'down'} text-surface-400`}></i>
+        <i className={`bx bx-chevron-${open ?'up' : 'down'} text-surface-400`}></i>
       </button>
       {open && (
         <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-white shadow-lg max-h-[280px] overflow-y-auto">

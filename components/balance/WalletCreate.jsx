@@ -141,7 +141,7 @@ export default function WalletCreate() {
                   <div key={sym}>
                     <div
                       role="button"
-                      className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ? 'border-primary-600 bg-primary-50 shadow-sm' : 'border-surface-200 hover:border-surface-300'}`}
+                      className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ?'border-primary-600 bg-primary-50 shadow-sm' : 'border-surface-200 hover:border-surface-300'}`}
                       onClick={() => {
                         setSelectedCoin(sym)
                         if (!group.items.some(i => String(i.id) === String(coinNetworkId))) setCoinNetworkId('')
@@ -183,7 +183,7 @@ export default function WalletCreate() {
                   <button
                     type="button"
                     key={n.id}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-surface-700 border-surface-300 hover:border-primary-400'}`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ?'bg-primary-600 text-white border-primary-600' : 'bg-white text-surface-700 border-surface-300 hover:border-primary-400'}`}
                     onClick={() => setCoinNetworkId(String(n.id))}
                   >
                     {networkLabel}
@@ -243,7 +243,7 @@ export default function WalletCreate() {
           </div>
         </div>
         <div className="px-6 py-4 border-t flex justify-end gap-2">
-          <button type="button" className="btn btn-outline-secondary" onClick={() => router.back()} disabled={saving}>
+          <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => router.back()} disabled={saving}>
             {t('actions.back') || 'Back'}
           </button>
           <button type="submit" className="btn btn-primary" disabled={saving}>

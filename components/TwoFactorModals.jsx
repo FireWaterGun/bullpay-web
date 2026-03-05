@@ -89,7 +89,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
                   className="bp-input-suffix cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  <i className={`bx ${showPassword ? "bx-hide" : "bx-show"}`}></i>
+                  <i className={`bx ${showPassword ?"bx-hide" : "bx-show"}`}></i>
                 </span>
               </div>
             </div>
@@ -111,7 +111,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
             </div>
           </div>
           <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
-            <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
+            <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             <button type="button" className="btn btn-danger" onClick={handleDisable} disabled={loading || !password || !totpCode}>

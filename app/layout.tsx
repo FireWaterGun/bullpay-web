@@ -41,7 +41,6 @@ export default function RootLayout({
       className={`layout-wide customizer-hide ${publicSans.className}`}
       dir="ltr"
       data-skin="default"
-      data-bs-theme="light"
       data-template="vertical-menu-template"
       data-assets-path="/assets/"
       suppressHydrationWarning

@@ -77,7 +77,7 @@ export default function PaymentQRSection({
                   onClick={handleCopyAmount}
                   title={copiedAmt ? t("actions.copied") : t("actions.copyAmount", { defaultValue: "Copy Amount" })}
                 >
-                  <i className={`bx ${copiedAmt ? 'bx-check' : 'bx-copy'}`} style={{ fontSize: 14 }}></i>
+                  <i className={`bx ${copiedAmt ?'bx-check' : 'bx-copy'}`} style={{ fontSize: 14 }}></i>
                 </button>
               )}
             </div>

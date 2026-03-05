@@ -21,8 +21,8 @@ export default function WithdrawalTable({ withdrawals = EMPTY_WITHDRAWALS, onVie
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-hover">
+    <div className="overflow-x-auto">
+      <table className="w-full">
         <thead>
           <tr>
             <th>ID</th>
@@ -38,17 +38,17 @@ export default function WithdrawalTable({ withdrawals = EMPTY_WITHDRAWALS, onVie
         <tbody>
           {withdrawals.map((w) => (
             <tr key={w.id}>
-              <td className="fw-semibold">#{w.id}</td>
+              <td className="font-semibold">#{w.id}</td>
               <td>{w.user?.email || w.userId || '-'}</td>
               <td>
-                <div className="d-flex align-items-center gap-1">
+                <div className="flex items-center gap-1">
                   <CoinImg symbol={w.coinSymbol || w.coin?.symbol} size={20} />
                   <span>{w.coinSymbol || w.coin?.symbol || '-'}</span>
                 </div>
               </td>
               <td>{formatCoinAmount(w.amountDecimal || w.amount || 0)}</td>
               <td>
-                <span className="font-monospace small text-truncate d-inline-block" style={{ maxWidth: 120 }}>
+                <span className="font-monospace text-sm truncate inline-block" style={{ maxWidth: 120 }}>
                   {w.address || w.withdrawalAddress?.address || '-'}
                 </span>
               </td>
@@ -57,29 +57,29 @@ export default function WithdrawalTable({ withdrawals = EMPTY_WITHDRAWALS, onVie
                   {formatStatusLabel(w.status)}
                 </span>
               </td>
-              <td><span className="small">{fmtDate(w.createdAt)}</span></td>
+              <td><span className="text-sm">{fmtDate(w.createdAt)}</span></td>
               <td>
                 <div className="dropdown">
-                  <button className="btn btn-sm btn-icon btn-text-secondary" data-bs-toggle="dropdown">
+                  <button className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none">
                     <i className="bx bx-dots-vertical-rounded"></i>
                   </button>
-                  <ul className="dropdown-menu dropdown-menu-end">
+                  <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 right-0">
                     <li>
-                      <button className="dropdown-item" onClick={() => onViewDetail?.(w)}>
-                        <i className="bx bx-show me-2"></i>{t?.('common.view', { defaultValue: 'View' }) || 'View'}
+                      <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onViewDetail?.(w)}>
+                        <i className="bx bx-show mr-2"></i>{t?.('common.view', { defaultValue: 'View' }) || 'View'}
                       </button>
                     </li>
                     {w.status === 'pending' && onApprove && (
                       <li>
-                        <button className="dropdown-item text-success" onClick={() => onApprove?.(w)}>
-                          <i className="bx bx-check me-2"></i>{t?.('common.approve', { defaultValue: 'Approve' }) || 'Approve'}
+                        <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer text-success" onClick={() => onApprove?.(w)}>
+                          <i className="bx bx-check mr-2"></i>{t?.('common.approve', { defaultValue: 'Approve' }) || 'Approve'}
                         </button>
                       </li>
                     )}
                     {w.status === 'pending' && onReject && (
                       <li>
-                        <button className="dropdown-item text-danger" onClick={() => onReject?.(w)}>
-                          <i className="bx bx-x me-2"></i>{t?.('common.reject', { defaultValue: 'Reject' }) || 'Reject'}
+                        <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer text-danger" onClick={() => onReject?.(w)}>
+                          <i className="bx bx-x mr-2"></i>{t?.('common.reject', { defaultValue: 'Reject' }) || 'Reject'}
                         </button>
                       </li>
                     )}

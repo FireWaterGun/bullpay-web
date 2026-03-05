@@ -168,20 +168,20 @@ export default function AdminDashboardPage() {
   }), [summary])
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="d-flex flex-wrap align-items-center mb-4 gap-3">
+    <div className="grow py-6">
+      <div className="flex flex-wrap items-center mb-4 gap-3">
         <h4 className="mb-0">
-          <i className="bx bx-bar-chart-alt-2 text-primary me-2"></i>
+          <i className="bx bx-bar-chart-alt-2 text-primary mr-2"></i>
           {t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })}
         </h4>
-        <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
-          <span className="badge bg-label-secondary fs-6 fw-normal px-3">
+        <div className="flex gap-2 flex-wrap items-center ml-auto">
+          <span className="badge bg-surface-100 text-surface-600 fs-6 font-normal px-3">
             {dateRangeLabel}
           </span>
           {!showCustom ? (
             <>
               <select
-                className="form-select"
+                className="form-input"
                 value={datePreset}
                 onChange={(e) => setDatePreset(e.target.value)}
                 style={{ width: 'auto' }}
@@ -194,10 +194,10 @@ export default function AdminDashboardPage() {
                 <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
               </select>
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                 onClick={() => setShowCustom(true)}
               >
-                <i className="bx bx-calendar me-1"></i>
+                <i className="bx bx-calendar mr-1"></i>
                 {t('filter.custom', { defaultValue: 'Custom' })}
               </button>
             </>
@@ -223,14 +223,14 @@ export default function AdminDashboardPage() {
                 maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                 onClick={() => {
                   setShowCustom(false)
                   setCustomFrom('')
                   setCustomTo('')
                 }}
               >
-                <i className="bx bx-reset me-1"></i>
+                <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </button>
             </>
@@ -242,7 +242,7 @@ export default function AdminDashboardPage() {
         <div className="alert alert-danger mb-4">{error}</div>
       )}
 
-      <div className="row g-4 mb-4">
+      <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
         <SummaryCard
           title={t('admin.revenue', { defaultValue: 'Revenue' })}
           value={loadingSummary ? '...' : formatCurrency(summary?.totalRevenueUsd)}
@@ -270,18 +270,18 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <div className="row mb-4">
-        <div className="col-12">
+      <div className="grid grid-cols-12 gap-x-6 mb-4">
+        <div className="col-span-12">
           <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="card-title mb-0">
+            <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
+              <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
                 {t('admin.revenueCostTrend', { defaultValue: 'Revenue & Cost Trend (Daily)' })}
               </h5>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {loadingDaily ? (
-                <div className="d-flex justify-content-center py-5">
-                  <div className="spinner-border text-primary" role="status">
+                <div className="flex justify-center py-5">
+                  <div className="spinner text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
                 </div>

@@ -14,44 +14,44 @@ function valueColor(value) {
 
 function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
   return (
-    <div className="col-md-6 mb-4">
-      <div className="card h-100">
-        <div className="card-header d-flex align-items-center">
-          <i className="bx bx-trending-up text-success me-2 fs-4"></i>
+    <div className="md:col-span-6 mb-4">
+      <div className="card h-full">
+        <div className="px-5 py-4 border-b border-surface-200 flex items-center">
+          <i className="bx bx-trending-up text-success mr-2 fs-4"></i>
           <h5 className="mb-0">REVENUE</h5>
         </div>
-        <div className="card-body">
-          <table className="table table-borderless mb-0">
+        <div className="p-5">
+          <table className="w-full mb-0">
             <tbody>
               {revenueItems.map((item) => (
                 <tr key={item.code}>
                   <td>
-                    <span className="badge bg-label-primary me-2">{item.code}</span>
+                    <span className="badge bg-primary-50 text-primary-600 mr-2">{item.code}</span>
                     <span>{item.name || item.code}</span>
                   </td>
-                  <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
+                  <td className="text-right font-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                 </tr>
               ))}
 
               {/* Deductions */}
               {deductionItems.length > 0 && (
                 <>
-                  <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted fw-semibold">DEDUCTIONS</small></td></tr>
+                  <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted font-semibold">DEDUCTIONS</small></td></tr>
                   {deductionItems.map((item, i) => (
                     <tr key={`d-${i}`}>
                       <td>
-                        <span className="badge bg-label-warning me-2">{item.code}</span>
+                        <span className="badge bg-amber-50 text-amber-700 mr-2">{item.code}</span>
                         <span>{item.name || item.code}</span>
                       </td>
-                      <td className="text-end fw-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
+                      <td className="text-right font-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
                     </tr>
                   ))}
                 </>
               )}
 
               <tr style={{ borderTop: '2px solid var(--bs-border-color)' }}>
-                <td className="fw-bold">Net Revenue</td>
-                <td className={`text-end fw-bold fs-5 ${valueColor(netRevenue).cls}`} style={{ whiteSpace: 'nowrap' }}>{formatUsd(netRevenue)}</td>
+                <td className="font-bold">Net Revenue</td>
+                <td className={`text-right font-bold fs-5 ${valueColor(netRevenue).cls}`} style={{ whiteSpace: 'nowrap' }}>{formatUsd(netRevenue)}</td>
               </tr>
             </tbody>
           </table>
@@ -63,27 +63,27 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
 
 function ExpensesCard({ expenseItems, totalExpenses }) {
   return (
-    <div className="col-md-6 mb-4">
-      <div className="card h-100">
-        <div className="card-header d-flex align-items-center">
-          <i className="bx bx-trending-down text-danger me-2 fs-4"></i>
+    <div className="md:col-span-6 mb-4">
+      <div className="card h-full">
+        <div className="px-5 py-4 border-b border-surface-200 flex items-center">
+          <i className="bx bx-trending-down text-danger mr-2 fs-4"></i>
           <h5 className="mb-0">EXPENSES</h5>
         </div>
-        <div className="card-body">
-          <table className="table table-borderless mb-0">
+        <div className="p-5">
+          <table className="w-full mb-0">
             <tbody>
               {expenseItems.map((item) => (
                 <tr key={item.code}>
                   <td>
-                    <span className="badge bg-label-danger me-2">{item.code}</span>
+                    <span className="badge bg-red-50 text-red-700 mr-2">{item.code}</span>
                     <span>{item.name || item.code}</span>
                   </td>
-                  <td className="text-end fw-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
+                  <td className="text-right font-medium" style={{ whiteSpace: 'nowrap' }}>{formatUsd(item.amountUsd)}</td>
                 </tr>
               ))}
               <tr style={{ borderTop: '2px solid var(--bs-border-color)' }}>
-                <td className="fw-bold">Total Expenses</td>
-                <td className={`text-end fw-bold fs-5 ${valueColor(totalExpenses).cls}`} style={{ whiteSpace: 'nowrap' }}>({formatUsd(totalExpenses)})</td>
+                <td className="font-bold">Total Expenses</td>
+                <td className={`text-right font-bold fs-5 ${valueColor(totalExpenses).cls}`} style={{ whiteSpace: 'nowrap' }}>({formatUsd(totalExpenses)})</td>
               </tr>
             </tbody>
           </table>
@@ -98,24 +98,24 @@ function OperatingIncomeCard({ operatingIncome, profitMargin }) {
   const pm = valueColor(profitMargin)
   return (
     <div className="card mb-4">
-      <div className="card-body">
-        <div className="row align-items-center">
-          <div className="col-md-6">
-            <div className="d-flex align-items-center gap-3">
-              <div className="rounded-3 p-3" style={{ backgroundColor: oi.bgStyle }}>
-                <i className={`bx ${parseFloat(operatingIncome) === 0 ? 'bx-minus-circle' : parseFloat(operatingIncome) > 0 ? 'bx-trending-up' : 'bx-trending-down'} fs-1`} style={{ color: oi.cssColor }}></i>
+      <div className="p-5">
+        <div className="grid grid-cols-12 gap-x-6 items-center">
+          <div className="md:col-span-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg p-3" style={{ backgroundColor: oi.bgStyle }}>
+                <i className={`bx ${parseFloat(operatingIncome) === 0 ?'bx-minus-circle' : parseFloat(operatingIncome) > 0 ? 'bx-trending-up' : 'bx-trending-down'} fs-1`} style={{ color: oi.cssColor }}></i>
               </div>
               <div>
                 <h6 className="text-muted mb-1">OPERATING INCOME</h6>
-                <h2 className={`mb-0 fw-bold ${oi.cls}`}>
+                <h2 className={`mb-0 font-bold ${oi.cls}`}>
                   {formatUsd(operatingIncome)}
                 </h2>
               </div>
             </div>
           </div>
-          <div className="col-md-6 text-md-end mt-3 mt-md-0">
+          <div className="md:col-span-6 md:text-right mt-3 md:mt-0">
             <h6 className="text-muted mb-1">Profit Margin</h6>
-            <h2 className={`mb-0 fw-bold ${pm.cls}`}>
+            <h2 className={`mb-0 font-bold ${pm.cls}`}>
               {formatPercent(profitMargin)}
             </h2>
           </div>
@@ -129,46 +129,46 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
   if (adjustIncrease.length === 0 && adjustDecrease.length === 0) return null
   return (
     <div className="card mb-4">
-      <div className="card-header d-flex align-items-center">
-        <i className="bx bx-transfer-alt text-info me-2 fs-4"></i>
-        <h5 className="mb-0">ADJUSTMENTS <small className="text-muted fw-normal">(Non-operating)</small></h5>
+      <div className="px-5 py-4 border-b border-surface-200 flex items-center">
+        <i className="bx bx-transfer-alt text-info mr-2 fs-4"></i>
+        <h5 className="mb-0">ADJUSTMENTS <small className="text-muted font-normal">(Non-operating)</small></h5>
       </div>
-      <div className="card-body">
-        <table className="table table-borderless mb-0">
+      <div className="p-5">
+        <table className="w-full mb-0">
           <tbody>
             {adjustIncrease.length > 0 && (
               <>
-                <tr><td colSpan="2" className="pb-0 pt-0"><small className="text-muted fw-semibold">INCREASES</small></td></tr>
+                <tr><td colSpan="2" className="pb-0 pt-0"><small className="text-muted font-semibold">INCREASES</small></td></tr>
                 {adjustIncrease.map((item, i) => (
                   <tr key={`ai-${i}`}>
                     <td>
-                      <span className="badge bg-label-success me-2">{item.code}</span>
+                      <span className="badge bg-green-50 text-green-700 mr-2">{item.code}</span>
                       <span>{item.name || item.code}</span>
-                      <small className="text-muted ms-2">({item.entries || 0} entries)</small>
+                      <small className="text-muted ml-2">({item.entries || 0} entries)</small>
                     </td>
-                    <td className="text-end fw-medium text-success" style={{ whiteSpace: 'nowrap' }}>+{formatUsd(item.amountUsd)}</td>
+                    <td className="text-right font-medium text-success" style={{ whiteSpace: 'nowrap' }}>+{formatUsd(item.amountUsd)}</td>
                   </tr>
                 ))}
               </>
             )}
             {adjustDecrease.length > 0 && (
               <>
-                <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted fw-semibold">DECREASES</small></td></tr>
+                <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted font-semibold">DECREASES</small></td></tr>
                 {adjustDecrease.map((item, i) => (
                   <tr key={`ad-${i}`}>
                     <td>
-                      <span className="badge bg-label-danger me-2">{item.code}</span>
+                      <span className="badge bg-red-50 text-red-700 mr-2">{item.code}</span>
                       <span>{item.name || item.code}</span>
-                      <small className="text-muted ms-2">({item.entries || 0} entries)</small>
+                      <small className="text-muted ml-2">({item.entries || 0} entries)</small>
                     </td>
-                    <td className="text-end fw-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
+                    <td className="text-right font-medium text-danger" style={{ whiteSpace: 'nowrap' }}>({formatUsd(item.amountUsd)})</td>
                   </tr>
                 ))}
               </>
             )}
             <tr style={{ borderTop: '2px solid var(--bs-border-color)' }}>
-              <td className="fw-bold">Net Adjustment</td>
-              <td className={`text-end fw-bold fs-5 ${valueColor(netAdjustment).cls}`} style={{ whiteSpace: 'nowrap' }}>
+              <td className="font-bold">Net Adjustment</td>
+              <td className={`text-right font-bold fs-5 ${valueColor(netAdjustment).cls}`} style={{ whiteSpace: 'nowrap' }}>
                 {parseFloat(netAdjustment) > 0 ? '+' : ''}{formatUsd(netAdjustment)}
               </td>
             </tr>
@@ -183,14 +183,14 @@ function NetIncomeCard({ netIncome }) {
   const ni = valueColor(netIncome)
   return (
     <div className="card mb-4">
-      <div className="card-body">
-        <div className="d-flex align-items-center gap-3">
-          <div className="rounded-3 p-3" style={{ backgroundColor: ni.bgStyle }}>
-            <i className={`bx ${parseFloat(netIncome) === 0 ? 'bx-minus-circle' : parseFloat(netIncome) > 0 ? 'bx-wallet' : 'bx-error-circle'} fs-1`} style={{ color: ni.cssColor }}></i>
+      <div className="p-5">
+        <div className="flex items-center gap-3">
+          <div className="rounded-lg p-3" style={{ backgroundColor: ni.bgStyle }}>
+            <i className={`bx ${parseFloat(netIncome) === 0 ?'bx-minus-circle' : parseFloat(netIncome) > 0 ? 'bx-wallet' : 'bx-error-circle'} fs-1`} style={{ color: ni.cssColor }}></i>
           </div>
           <div>
             <h6 className="text-muted mb-1">NET INCOME</h6>
-            <h2 className={`mb-0 fw-bold ${ni.cls}`}>
+            <h2 className={`mb-0 font-bold ${ni.cls}`}>
               {formatUsd(netIncome)}
             </h2>
           </div>
@@ -203,13 +203,13 @@ function NetIncomeCard({ netIncome }) {
 function CountsCard({ allItems }) {
   return (
     <div className="card mb-4">
-      <div className="card-body py-3">
-        <div className="d-flex flex-wrap gap-4">
+      <div className="p-5 py-3">
+        <div className="flex flex-wrap gap-4">
           {allItems.map((item) => (
-            <div key={item.code} className="d-flex align-items-center gap-2">
-              <span className="badge bg-label-secondary">{item.code}</span>
+            <div key={item.code} className="flex items-center gap-2">
+              <span className="badge bg-surface-100 text-surface-600">{item.code}</span>
               <span className="text-muted">{item.name || item.code}:</span>
-              <span className="fw-semibold">{item.entries || 0}</span>
+              <span className="font-semibold">{item.entries || 0}</span>
             </div>
           ))}
         </div>
@@ -246,7 +246,7 @@ export default function IncomeStatementReport({ report }) {
 
   return (
     <>
-      <div className="row">
+      <div className="grid grid-cols-12 gap-x-6">
         <RevenueCard revenueItems={revenueItems} deductionItems={deductionItems} netRevenue={netRevenue} />
         <ExpensesCard expenseItems={expenseItems} totalExpenses={totalExpenses} />
       </div>

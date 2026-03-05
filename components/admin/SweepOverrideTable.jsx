@@ -42,14 +42,14 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-hover">
+    <div className="overflow-x-auto">
+      <table className="w-full">
         <thead>
           <tr>
             <th>{idLabel}</th>
             <th>{t('admin.sweep.minBalance', { defaultValue: 'Min Balance' })}</th>
             <th>{t('admin.sweep.gasBuffer', { defaultValue: 'Gas Buffer' })}</th>
-            <th className="text-end">{t('actions.actions', { defaultValue: 'Actions' })}</th>
+            <th className="text-right">{t('actions.actions', { defaultValue: 'Actions' })}</th>
           </tr>
         </thead>
         <tbody>
@@ -72,10 +72,10 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
                   <span className="text-muted">-</span>
                 )}
               </td>
-              <td className="text-end">
+              <td className="text-right">
                 <button
                   type="button"
-                  className="btn btn-sm btn-icon me-1"
+                  className="btn btn-sm btn-icon mr-1"
                   onClick={() => onEdit(key, config)}
                   disabled={loading}
                 >

@@ -245,14 +245,14 @@ export default function RolePermissions() {
 
   if (accessDenied) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="card">
-          <div className="card-body text-center py-5">
+          <div className="p-5 text-center py-5">
             <i className="bx bx-lock-alt text-danger" style={{ fontSize: '3rem' }}></i>
             <h5 className="mt-3">{t('admin.roles.accessDenied', { defaultValue: 'Access Denied' })}</h5>
             <p className="text-muted">{t('admin.roles.cannotViewHigherRole', { defaultValue: 'You do not have permission to view this role.' })}</p>
             <button className="btn btn-primary" onClick={() => router.push('/admin/roles')}>
-              <i className="bx bx-arrow-back me-1"></i>{t('admin.roles.backToRoles', { defaultValue: 'Back to Roles' })}
+              <i className="bx bx-arrow-back mr-1"></i>{t('admin.roles.backToRoles', { defaultValue: 'Back to Roles' })}
             </button>
           </div>
         </div>
@@ -261,13 +261,13 @@ export default function RolePermissions() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <div className="grow py-6">
       {/* Breadcrumb */}
       <nav aria-label="breadcrumb" className="mb-3">
         <ol className="breadcrumb mb-0">
           <li className="breadcrumb-item">
             <Link href="/admin/roles" className="text-muted">
-              <i className="bx bx-shield-alt-2 me-1"></i>{t('admin.roles.title', { defaultValue: 'Roles' })}
+              <i className="bx bx-shield-alt-2 mr-1"></i>{t('admin.roles.title', { defaultValue: 'Roles' })}
             </Link>
           </li>
           <li className="breadcrumb-item active">{formatRoleLabel(role)}</li>
@@ -275,31 +275,31 @@ export default function RolePermissions() {
       </nav>
 
       {/* Header */}
-      <div className="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
-        <div className="d-flex align-items-center gap-3">
+      <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+        <div className="flex items-center gap-3">
           <div className="avatar avatar-lg">
             <span className={`avatar-initial rounded bg-label-${color}`}>
               <i className={`bx ${icon}`} style={{ fontSize: '1.75rem' }}></i>
             </span>
           </div>
           <div>
-            <div className="d-flex align-items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1">
               <h4 className="mb-0">{formatRoleLabel(role)}</h4>
               {level > 0 && <span className={`badge bg-label-${color}`}>L{level}</span>}
             </div>
             {description && <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>{description}</p>}
           </div>
         </div>
-        <div className="d-flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           <button className="btn btn-success btn-sm" onClick={() => openGrantModal()}>
-            <i className="bx bx-plus-circle me-1"></i>{t('admin.roles.grant', { defaultValue: 'Grant' })}
+            <i className="bx bx-plus-circle mr-1"></i>{t('admin.roles.grant', { defaultValue: 'Grant' })}
           </button>
           <button className="btn btn-danger btn-sm" onClick={() => openDenyModal()}>
-            <i className="bx bx-minus-circle me-1"></i>{t('admin.roles.deny', { defaultValue: 'Deny' })}
+            <i className="bx bx-minus-circle mr-1"></i>{t('admin.roles.deny', { defaultValue: 'Deny' })}
           </button>
           {overrides.length > 0 && (
-            <button className="btn btn-outline-warning btn-sm" onClick={() => setShowResetModal(true)}>
-              <i className="bx bx-reset me-1"></i>{t('admin.roles.resetAll', { defaultValue: 'Reset All' })}
+            <button className="btn btn border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white btn-sm" onClick={() => setShowResetModal(true)}>
+              <i className="bx bx-reset mr-1"></i>{t('admin.roles.resetAll', { defaultValue: 'Reset All' })}
             </button>
           )}
           <RefreshButton onClick={loadData} loading={loading} />
@@ -307,7 +307,7 @@ export default function RolePermissions() {
       </div>
 
       {/* Summary Stats */}
-      <div className="row g-4 mb-4">
+      <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
         <SummaryCard
           title={t('admin.roles.totalPermissions', { defaultValue: 'Total Permissions' })}
           value={permissions.length}
@@ -336,27 +336,27 @@ export default function RolePermissions() {
 
       {/* Search & Filter Toolbar */}
       <div className="card mb-4">
-        <div className="card-body py-3">
-          <div className="row g-3 align-items-center">
-            <div className="col-md-5">
-              <div className="input-group input-group-merge">
-                <span className="input-group-text"><i className="bx bx-search"></i></span>
+        <div className="p-5 py-3">
+          <div className="grid grid-cols-12 gap-x-6 gap-3 items-center">
+            <div className="md:col-span-5">
+              <div className="flex items-stretch flex items-stretch">
+                <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg"><i className="bx bx-search"></i></span>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-input"
                   placeholder={t('admin.roles.searchPermissions', { defaultValue: 'Search permissions...' })}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {searchQuery && (
-                  <span className="input-group-text" style={{ cursor: 'pointer' }} onClick={() => setSearchQuery('')}>
+                  <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg" style={{ cursor: 'pointer' }} onClick={() => setSearchQuery('')}>
                     <i className="bx bx-x"></i>
                   </span>
                 )}
               </div>
             </div>
-            <div className="col-md-3">
-              <select className="form-select" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+            <div className="md:col-span-3">
+              <select className="form-input" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                 <option value="all">{t('admin.roles.all', { defaultValue: 'All' })} ({permissions.length})</option>
                 <option value="active">{t('admin.roles.active', { defaultValue: 'Active' })} ({activeCount})</option>
                 <option value="inactive">{t('admin.roles.inactive', { defaultValue: 'Inactive' })} ({inactiveCount})</option>
@@ -365,14 +365,14 @@ export default function RolePermissions() {
                 <option value="default">{t('admin.roles.default', { defaultValue: 'Default' })} ({defaultCount})</option>
               </select>
             </div>
-            <div className="col-md-4 d-flex align-items-center justify-content-end gap-2">
-              <small className="text-muted me-2">
+            <div className="md:col-span-4 flex items-center justify-end gap-2">
+              <small className="text-muted mr-2">
                 {filteredPermissions.length} / {permissions.length} · {groupCount} {t('admin.roles.groups', { defaultValue: 'groups' })}
               </small>
-              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={expandAll} title={t('admin.roles.expandAll', { defaultValue: 'Expand all' })}>
+              <button className="btn btn btn-sm text-xs py-0.5 px-2 btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={expandAll} title={t('admin.roles.expandAll', { defaultValue: 'Expand all' })}>
                 <i className="bx bx-expand-vertical"></i>
               </button>
-              <button className="btn btn-xs btn-outline-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={collapseAll} title={t('admin.roles.collapseAll', { defaultValue: 'Collapse all' })}>
+              <button className="btn btn btn-sm text-xs py-0.5 px-2 btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }} onClick={collapseAll} title={t('admin.roles.collapseAll', { defaultValue: 'Collapse all' })}>
                 <i className="bx bx-collapse-vertical"></i>
               </button>
             </div>
@@ -383,7 +383,7 @@ export default function RolePermissions() {
       {/* Permission Groups */}
       {groupCount === 0 ? (
         <div className="card">
-          <div className="card-body">
+          <div className="p-5">
             <CardEmptyState
               icon="bx-shield-x"
               message={t('admin.roles.noPermissions', { defaultValue: 'No permissions found' })}

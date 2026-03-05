@@ -15,27 +15,27 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
   const { fmtDate } = useDateFormat()
   return (
     <div className="card">
-      <div className="card-header">
+      <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-transfer me-2"></i>
+          <i className="bx bx-transfer mr-2"></i>
           Payments ({payments.length})
         </h5>
       </div>
-      <div className="card-body">
+      <div className="p-5">
         {payments.length === 0 ? (
           <CardEmptyState
             icon="bx-credit-card"
             message="No payments recorded for this invoice"
           />
         ) : (
-          <div className="table-responsive" style={{ overflowX: 'auto' }}>
-            <table className="table table-hover" style={{ minWidth: '900px' }}>
+          <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+            <table className="w-full" style={{ minWidth: '900px' }}>
               <thead>
                 <tr>
                   <th style={{ minWidth: '60px' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                   <th style={{ minWidth: '100px' }}>{t('admin.detail.status', { defaultValue: 'Status' })}</th>
-                  <th className="text-end" style={{ minWidth: '150px' }}>{t('admin.detail.amount', { defaultValue: 'Amount' })}</th>
-                  <th className="text-end" style={{ minWidth: '150px' }}>{t('admin.detail.actualAmount', { defaultValue: 'Actual Amount' })}</th>
+                  <th className="text-right" style={{ minWidth: '150px' }}>{t('admin.detail.amount', { defaultValue: 'Amount' })}</th>
+                  <th className="text-right" style={{ minWidth: '150px' }}>{t('admin.detail.actualAmount', { defaultValue: 'Actual Amount' })}</th>
                   <th style={{ minWidth: '120px' }}>{t('admin.detail.confirmations', { defaultValue: 'Confirmations' })}</th>
                   <th style={{ minWidth: '680px' }}>{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</th>
                   <th style={{ minWidth: '420px' }}>{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</th>
@@ -49,24 +49,24 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                 {payments.map((payment) => (
                   <tr key={payment.id}>
                     <td>
-                      <span className="fw-semibold text-primary">{payment.id}</span>
+                      <span className="font-semibold text-primary">{payment.id}</span>
                     </td>
-                    <td className="text-nowrap">
+                    <td className="whitespace-nowrap">
                       <span className={paymentStatusBadge(payment.status)}>
                         {String(payment.status || '').toUpperCase()}
                       </span>
                     </td>
-                    <td className="text-end text-nowrap">
-                      <span className="fw-medium">
+                    <td className="text-right whitespace-nowrap">
+                      <span className="font-medium">
                         {formatAmount(payment.amount)} {coinSymbol}
                       </span>
                     </td>
-                    <td className="text-end text-nowrap">
-                      <span className="fw-medium">
+                    <td className="text-right whitespace-nowrap">
+                      <span className="font-medium">
                         {formatAmount(payment.actualAmount)} {coinSymbol}
                       </span>
                     </td>
-                    <td className="text-center text-nowrap">
+                    <td className="text-center whitespace-nowrap">
                       {payment.confirmations != null ? payment.confirmations : '-'}
                       {payment.requiredConfirmations != null && (
                         <small className="text-muted"> / {payment.requiredConfirmations}</small>
@@ -74,8 +74,8 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     </td>
                     <td>
                       {payment.txHash ? (
-                        <div className="d-flex align-items-center">
-                          <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                        <div className="flex items-center">
+                          <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
                             {payment.txHash}
                           </span>
                           {network?.explorerUrl && (
@@ -83,7 +83,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                               href={`${network.explorerUrl}/tx/${payment.txHash}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                               title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                             >
                               <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
@@ -96,12 +96,12 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     </td>
                     <td>
                       {payment.fromAddress ? (
-                        <div className="d-flex align-items-center">
-                          <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                        <div className="flex items-center">
+                          <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
                             {payment.fromAddress}
                           </span>
                           <button
-                            className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                            className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                             onClick={() => onCopy(payment.fromAddress)}
                             title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                           >
@@ -114,12 +114,12 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     </td>
                     <td>
                       {payment.toAddress ? (
-                        <div className="d-flex align-items-center">
-                          <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+                        <div className="flex items-center">
+                          <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
                             {payment.toAddress}
                           </span>
                           <button
-                            className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                            className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                             onClick={() => onCopy(payment.toAddress)}
                             title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                           >

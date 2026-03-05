@@ -130,15 +130,15 @@ export default function SystemLedgerList() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-server me-2"></i>
+                    <i className="bx bx-server mr-2"></i>
                     {t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })}
                   </h4>
                   <p className="text-muted mb-0">
@@ -148,7 +148,7 @@ export default function SystemLedgerList() {
                 <RefreshButton onClick={loadEntries} loading={loading} />
               </div>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               <SystemLedgerFilters
                 locale={locale}
                 loading={loading}

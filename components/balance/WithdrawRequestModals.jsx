@@ -62,7 +62,7 @@ export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address
                   onClick={handleCopy}
                   title={copied ? t('common.copied', { defaultValue: 'Copied!' }) : t('common.copy', { defaultValue: 'Copy' })}
                 >
-                  <i className={`bx ${copied ? 'bx-check text-green-600' : 'bx-copy'}`} style={{ fontSize: '1.1rem' }}></i>
+                  <i className={`bx ${copied ?'bx-check text-green-600' : 'bx-copy'}`} style={{ fontSize: '1.1rem' }}></i>
                 </button>
               </div>
             </div>

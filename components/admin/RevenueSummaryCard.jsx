@@ -8,14 +8,14 @@ export default function RevenueSummaryCard({ title, value, change, changeLabel, 
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
 
   return (
-    <div className="col-6 col-xl">
-      <div className="card h-100">
-        <div className="card-body">
-          <div className="d-flex align-items-start justify-content-between">
+    <div className="col-span-6 col-xl">
+      <div className="card h-full">
+        <div className="p-5">
+          <div className="flex items-start justify-between">
             <div className="content-left">
               <span className="form-label">{title}</span>
-              <div className="d-flex align-items-center">
-                <h4 className={`mb-0 me-2${valueColor ? ` text-${valueColor}` : ''}`}>{value}</h4>
+              <div className="flex items-center">
+                <h4 className={`mb-0 mr-2${valueColor ?` text-${valueColor}` : ''}`}>{value}</h4>
                 {change !== undefined && change !== null && (
                   <small className={changeColor}>
                     <i className={`bx ${changeIcon}`}></i>

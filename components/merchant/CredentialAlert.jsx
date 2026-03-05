@@ -32,8 +32,8 @@ export default function CredentialAlert({ credentials, warning, onDismiss, t }) 
               <label className="form-label font-semibold mb-1">{t('merchant.apiKey', { defaultValue: 'API Key' })}</label>
               <div className="bp-input-group">
                 <input type="text" className="form-input font-mono" value={credentials.apiKey} readOnly style={{ fontSize: '0.85rem' }} />
-                <button className="btn btn-outline-secondary" onClick={() => handleCopy(credentials.apiKey, setCopiedKey)}>
-                  <i className={`bx ${copiedKey ? 'bx-check' : 'bx-copy'} mr-1`}></i>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => handleCopy(credentials.apiKey, setCopiedKey)}>
+                  <i className={`bx ${copiedKey ?'bx-check' : 'bx-copy'} mr-1`}></i>
                   {copiedKey ? t('merchant.copied', { defaultValue: 'Copied!' }) : t('actions.copy', { defaultValue: 'Copy' })}
                 </button>
               </div>
@@ -44,8 +44,8 @@ export default function CredentialAlert({ credentials, warning, onDismiss, t }) 
               <label className="form-label font-semibold mb-1">{t('merchant.apiSecret', { defaultValue: 'API Secret' })}</label>
               <div className="bp-input-group">
                 <input type="text" className="form-input font-mono" value={credentials.apiSecret} readOnly style={{ fontSize: '0.85rem' }} />
-                <button className="btn btn-outline-secondary" onClick={() => handleCopy(credentials.apiSecret, setCopiedSecret)}>
-                  <i className={`bx ${copiedSecret ? 'bx-check' : 'bx-copy'} mr-1`}></i>
+                <button className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100" onClick={() => handleCopy(credentials.apiSecret, setCopiedSecret)}>
+                  <i className={`bx ${copiedSecret ?'bx-check' : 'bx-copy'} mr-1`}></i>
                   {copiedSecret ? t('merchant.copied', { defaultValue: 'Copied!' }) : t('actions.copy', { defaultValue: 'Copy' })}
                 </button>
               </div>

@@ -173,36 +173,36 @@ export default function NetworkFees() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-4">
-            <div className="card-header">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">{t('admin.network.title', { defaultValue: 'Network Fees' })}</h5>
-              <p className="text-muted small mb-0 mt-1">
+              <p className="text-muted text-sm mb-0 mt-1">
                 {t('admin.network.description', { defaultValue: 'Configure base network fees and slippage settings' })}
               </p>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {/* Base Fees */}
               <div className="mb-5">
-                <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.network.baseFees', { defaultValue: 'Base Fees by Network' })}
-                    <span className="badge rounded-pill bg-primary ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
                       {Object.keys(baseFees).length}
                     </span>
                   </h6>
                 </div>
 
                 {Object.keys(baseFees).length > 0 ? (
-                  <div className="table-responsive">
-                    <table className="table table-hover">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
                       <thead>
                         <tr>
                           <th>{t('admin.network.network', { defaultValue: 'Network' })}</th>
                           <th>{t('admin.network.fee', { defaultValue: 'Fee' })}</th>
-                          <th className="text-end">{t('actions.actions', { defaultValue: 'Actions' })}</th>
+                          <th className="text-right">{t('actions.actions', { defaultValue: 'Actions' })}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -210,10 +210,10 @@ export default function NetworkFees() {
                           <tr key={network}>
                             <td><strong>{network}</strong></td>
                             <td><code>{fee}</code></td>
-                            <td className="text-end">
+                            <td className="text-right">
                               <button
                                 type="button"
-                                className="btn btn-sm btn-icon me-1"
+                                className="btn btn-sm btn-icon mr-1"
                                 onClick={() => handleEditBaseFee(network, fee)}
                                 disabled={loading}
                               >
@@ -236,23 +236,23 @@ export default function NetworkFees() {
 
               {/* Slippage by Network */}
               <div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="flex justify-between items-center mb-3">
                   <h6 className="mb-0">
                     {t('admin.network.slippageByNetwork', { defaultValue: 'Slippage by Network' })}
-                    <span className="badge rounded-pill bg-primary ms-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    <span className="badge rounded-full bg-primary ml-2" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
                       {Object.keys(slippageByNetwork).length}
                     </span>
                   </h6>
                 </div>
 
                 {Object.keys(slippageByNetwork).length > 0 ? (
-                  <div className="table-responsive">
-                    <table className="table table-hover">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
                       <thead>
                         <tr>
                           <th>{t('admin.network.network', { defaultValue: 'Network' })}</th>
                           <th>{t('admin.network.slippagePercent', { defaultValue: 'Slippage %' })}</th>
-                          <th className="text-end">{t('actions.actions', { defaultValue: 'Actions' })}</th>
+                          <th className="text-right">{t('actions.actions', { defaultValue: 'Actions' })}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -260,10 +260,10 @@ export default function NetworkFees() {
                           <tr key={network}>
                             <td><strong>{network}</strong></td>
                             <td><code>{percent}</code></td>
-                            <td className="text-end">
+                            <td className="text-right">
                               <button
                                 type="button"
-                                className="btn btn-sm btn-icon me-1"
+                                className="btn btn-sm btn-icon mr-1"
                                 onClick={() => handleEditSlippage(network, percent)}
                                 disabled={loading}
                               >

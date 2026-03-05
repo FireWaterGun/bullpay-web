@@ -10,15 +10,15 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
   const { t } = useAdminTranslation()
 
   return (
-    <div className="row g-4">
+    <div className="grid grid-cols-12 gap-x-6 gap-4">
       {/* Name */}
-      <div className="col-md-6">
+      <div className="md:col-span-6">
         <label className="form-label" htmlFor="name">
           {t('crypto.networkName', { defaultValue: 'Network Name' })} <span className="text-danger">*</span>
         </label>
         <input
           type="text"
-          className="form-control"
+          className="form-input"
           id="name"
           name="name"
           value={formData.name}
@@ -31,13 +31,13 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Symbol */}
-      <div className="col-md-6">
+      <div className="md:col-span-6">
         <label className="form-label" htmlFor="symbol">
           {t('crypto.symbol', { defaultValue: 'Symbol' })} <span className="text-danger">*</span>
         </label>
         <input
           type="text"
-          className="form-control"
+          className="form-input"
           id="symbol"
           name="symbol"
           value={formData.symbol}
@@ -53,12 +53,12 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Type */}
-      <div className="col-md-6">
+      <div className="md:col-span-6">
         <label className="form-label" htmlFor="type">
           {t('crypto.networkType', { defaultValue: 'Network Type' })} <span className="text-danger">*</span>
         </label>
         <select
-          className="form-select"
+          className="form-input"
           id="type"
           name="type"
           value={formData.type}
@@ -76,13 +76,13 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Chain ID */}
-      <div className="col-md-6">
+      <div className="md:col-span-6">
         <label className="form-label" htmlFor="chainId">
           {t('crypto.chainId', { defaultValue: 'Chain ID' })}
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="chainId"
           name="chainId"
           value={formData.chainId}
@@ -94,13 +94,13 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Confirmation Blocks */}
-      <div className="col-md-6">
+      <div className="md:col-span-6">
         <label className="form-label" htmlFor="confirmationBlocks">
           {t('crypto.confirmationBlocks', { defaultValue: 'Confirmation Blocks' })} <span className="text-danger">*</span>
         </label>
         <input
           type="number"
-          className="form-control"
+          className="form-input"
           id="confirmationBlocks"
           name="confirmationBlocks"
           value={formData.confirmationBlocks}
@@ -113,13 +113,13 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* RPC URL */}
-      <div className="col-12">
+      <div className="col-span-12">
         <label className="form-label" htmlFor="rpcUrl">
           {t('crypto.rpcUrl', { defaultValue: 'RPC URL' })}
         </label>
         <input
           type="url"
-          className="form-control"
+          className="form-input"
           id="rpcUrl"
           name="rpcUrl"
           value={formData.rpcUrl}
@@ -130,13 +130,13 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Explorer URL */}
-      <div className="col-12">
+      <div className="col-span-12">
         <label className="form-label" htmlFor="explorerUrl">
           {t('crypto.explorerUrl', { defaultValue: 'Explorer URL' })}
         </label>
         <input
           type="url"
-          className="form-control"
+          className="form-input"
           id="explorerUrl"
           name="explorerUrl"
           value={formData.explorerUrl}
@@ -147,13 +147,13 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* API URL */}
-      <div className="col-12">
+      <div className="col-span-12">
         <label className="form-label" htmlFor="apiUrl">
           {t('crypto.apiUrl', { defaultValue: 'API URL' })}
         </label>
         <input
           type="url"
-          className="form-control"
+          className="form-input"
           id="apiUrl"
           name="apiUrl"
           value={formData.apiUrl}
@@ -164,12 +164,12 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Status */}
-      <div className="col-md-6">
+      <div className="md:col-span-6">
         <label className="form-label" htmlFor="status">
           {t('invoices.statusCol')}
         </label>
         <select
-          className="form-select"
+          className="form-input"
           id="status"
           name="status"
           value={formData.status}
@@ -183,30 +183,30 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Is Testnet */}
-      <div className="col-12">
-        <div className="form-check">
+      <div className="col-span-12">
+        <div className="flex items-center gap-2">
           <input
-            className="form-check-input"
+            className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
             type="checkbox"
             id="isTestnet"
             name="isTestnet"
             checked={formData.isTestnet}
             onChange={handleChange}
           />
-          <label className="form-check-label" htmlFor="isTestnet">
+          <label className="text-sm text-surface-700" htmlFor="isTestnet">
             {t('crypto.isTestnet', { defaultValue: 'Testnet' })}
           </label>
         </div>
-        <small className="text-muted ms-4">{t('crypto.isTestnetHelp', { defaultValue: 'Check if this is a test network' })}</small>
+        <small className="text-muted ml-4">{t('crypto.isTestnetHelp', { defaultValue: 'Check if this is a test network' })}</small>
       </div>
 
       {/* Actions */}
-      <div className="col-12 pt-3">
-        <div className="d-flex gap-3 justify-content-between">
-          <div className="d-flex gap-3 ms-auto">
+      <div className="col-span-12 pt-3">
+        <div className="flex gap-3 justify-between">
+          <div className="flex gap-3 ml-auto">
             <button
               type="button"
-              className="btn btn-label-secondary"
+              className="btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none"
               onClick={onCancel}
               disabled={loading}
             >
@@ -219,12 +219,12 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
             >
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <span className="spinner w-4 h-4 mr-2" role="status"></span>
                   {t('actions.saving', { defaultValue: 'Saving...' })}
                 </>
               ) : (
                 <>
-                  <i className="bx bx-save me-2"></i>
+                  <i className="bx bx-save mr-2"></i>
                   {isEdit ? t('actions.update', { defaultValue: 'Update' }) : t('actions.create', { defaultValue: 'Create' })}
                 </>
               )}

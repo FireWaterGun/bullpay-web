@@ -10,41 +10,41 @@ export default function PaymentSettings() {
   const [loading, setLoading] = useState(false)
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <div className="card mb-6">
-            <div className="card-header d-flex justify-content-between align-items-center">
+            <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
               <div>
                 <h5 className="mb-0">{t('admin.payment.title', { defaultValue: 'Payment Settings' })}</h5>
-                <p className="text-muted small mb-0 mt-1">
+                <p className="text-muted text-sm mb-0 mt-1">
                   {t('admin.payment.description', { defaultValue: 'Configure global payment processing settings' })}
                 </p>
               </div>
-              <span className="badge bg-label-info">Admin Only</span>
+              <span className="badge bg-cyan-50 text-cyan-700">Admin Only</span>
             </div>
-            <div className="card-body">
+            <div className="p-5">
               {/* Global Settings */}
               <div className="mb-5">
                 <h6 className="mb-3">
-                  <i className="bx bx-cog me-2"></i>
+                  <i className="bx bx-cog mr-2"></i>
                   {t('admin.payment.globalSettings', { defaultValue: 'Global Settings' })}
                 </h6>
-                <div className="row g-4">
+                <div className="grid grid-cols-12 gap-x-6 gap-4">
                   {/* Default Invoice Expiry */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label htmlFor="invoiceExpiry" className="form-label">
                       {t('admin.payment.invoiceExpiry', { defaultValue: 'Default Invoice Expiry' })}
                     </label>
-                    <div className="input-group">
+                    <div className="flex items-stretch">
                       <input 
                         type="number" 
-                        className="form-control" 
+                        className="form-input" 
                         id="invoiceExpiry"
                         placeholder="24"
                         min="1"
                       />
-                      <span className="input-group-text">
+                      <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">
                         {t('admin.payment.hours', { defaultValue: 'hours' })}
                       </span>
                     </div>
@@ -54,13 +54,13 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Min Confirmations */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label htmlFor="minConfirmations" className="form-label">
                       {t('admin.payment.minConfirmations', { defaultValue: 'Minimum Confirmations' })}
                     </label>
                     <input 
                       type="number" 
-                      className="form-control" 
+                      className="form-input" 
                       id="minConfirmations"
                       placeholder="3"
                       min="1"
@@ -71,14 +71,14 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Enable Partial Payments */}
-                  <div className="col-12">
-                    <div className="form-check form-switch">
+                  <div className="col-span-12">
+                    <div className="flex items-center gap-2 relative inline-flex items-center">
                       <input 
-                        className="form-check-input" 
+                        className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500" 
                         type="checkbox" 
                         id="partialPayments"
                       />
-                      <label className="form-check-label" htmlFor="partialPayments">
+                      <label className="text-sm text-surface-700" htmlFor="partialPayments">
                         {t('admin.payment.allowPartial', { defaultValue: 'Allow Partial Payments' })}
                       </label>
                     </div>
@@ -88,14 +88,14 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Enable Overpayment */}
-                  <div className="col-12">
-                    <div className="form-check form-switch">
+                  <div className="col-span-12">
+                    <div className="flex items-center gap-2 relative inline-flex items-center">
                       <input 
-                        className="form-check-input" 
+                        className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500" 
                         type="checkbox" 
                         id="overpayment"
                       />
-                      <label className="form-check-label" htmlFor="overpayment">
+                      <label className="text-sm text-surface-700" htmlFor="overpayment">
                         {t('admin.payment.allowOverpayment', { defaultValue: 'Allow Overpayment' })}
                       </label>
                     </div>
@@ -105,15 +105,15 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Auto-cancel expired invoices */}
-                  <div className="col-12">
-                    <div className="form-check form-switch">
+                  <div className="col-span-12">
+                    <div className="flex items-center gap-2 relative inline-flex items-center">
                       <input 
-                        className="form-check-input" 
+                        className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500" 
                         type="checkbox" 
                         id="autoCancel"
                         defaultChecked
                       />
-                      <label className="form-check-label" htmlFor="autoCancel">
+                      <label className="text-sm text-surface-700" htmlFor="autoCancel">
                         {t('admin.payment.autoCancel', { defaultValue: 'Auto-cancel Expired Invoices' })}
                       </label>
                     </div>
@@ -128,29 +128,29 @@ export default function PaymentSettings() {
               <hr />
               <div className="mb-5">
                 <h6 className="mb-3">
-                  <i className="bx bx-money me-2"></i>
+                  <i className="bx bx-money mr-2"></i>
                   {t('admin.payment.feeSettings', { defaultValue: 'Fee Settings' })}
                 </h6>
-                <div className="row g-4">
+                <div className="grid grid-cols-12 gap-x-6 gap-4">
                   {/* Platform Fee Type */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label htmlFor="feeType" className="form-label">
                       {t('admin.payment.feeType', { defaultValue: 'Platform Fee Type' })}
                     </label>
-                    <select className="form-select" id="feeType">
+                    <select className="form-input" id="feeType">
                       <option value="percentage">{t('admin.payment.percentage', { defaultValue: 'Percentage (%)' })}</option>
                       <option value="fixed">{t('admin.payment.fixed', { defaultValue: 'Fixed Amount' })}</option>
                     </select>
                   </div>
 
                   {/* Platform Fee Rate */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label htmlFor="feeRate" className="form-label">
                       {t('admin.payment.feeRate', { defaultValue: 'Platform Fee Rate' })}
                     </label>
                     <input 
                       type="number" 
-                      className="form-control" 
+                      className="form-input" 
                       id="feeRate"
                       placeholder="0.5"
                       step="0.01"
@@ -162,13 +162,13 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Min Fee */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label htmlFor="minFee" className="form-label">
                       {t('admin.payment.minFee', { defaultValue: 'Minimum Fee' })}
                     </label>
                     <input 
                       type="number" 
-                      className="form-control" 
+                      className="form-input" 
                       id="minFee"
                       placeholder="0.00001"
                       step="0.00001"
@@ -177,13 +177,13 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Max Fee */}
-                  <div className="col-md-6">
+                  <div className="md:col-span-6">
                     <label htmlFor="maxFee" className="form-label">
                       {t('admin.payment.maxFee', { defaultValue: 'Maximum Fee' })}
                     </label>
                     <input 
                       type="number" 
-                      className="form-control" 
+                      className="form-input" 
                       id="maxFee"
                       placeholder="10"
                       step="0.01"
@@ -197,20 +197,20 @@ export default function PaymentSettings() {
               <hr />
               <div className="mb-4">
                 <h6 className="mb-3">
-                  <i className="bx bx-bell me-2"></i>
+                  <i className="bx bx-bell mr-2"></i>
                   {t('admin.payment.notificationSettings', { defaultValue: 'Notification Settings' })}
                 </h6>
-                <div className="row g-4">
+                <div className="grid grid-cols-12 gap-x-6 gap-4">
                   {/* Email Notifications */}
-                  <div className="col-12">
-                    <div className="form-check form-switch">
+                  <div className="col-span-12">
+                    <div className="flex items-center gap-2 relative inline-flex items-center">
                       <input 
-                        className="form-check-input" 
+                        className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500" 
                         type="checkbox" 
                         id="emailNotif"
                         defaultChecked
                       />
-                      <label className="form-check-label" htmlFor="emailNotif">
+                      <label className="text-sm text-surface-700" htmlFor="emailNotif">
                         {t('admin.payment.emailNotifications', { defaultValue: 'Email Notifications' })}
                       </label>
                     </div>
@@ -220,14 +220,14 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Webhook Notifications */}
-                  <div className="col-12">
-                    <div className="form-check form-switch">
+                  <div className="col-span-12">
+                    <div className="flex items-center gap-2 relative inline-flex items-center">
                       <input 
-                        className="form-check-input" 
+                        className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500" 
                         type="checkbox" 
                         id="webhookNotif"
                       />
-                      <label className="form-check-label" htmlFor="webhookNotif">
+                      <label className="text-sm text-surface-700" htmlFor="webhookNotif">
                         {t('admin.payment.webhookNotifications', { defaultValue: 'Webhook Notifications' })}
                       </label>
                     </div>
@@ -237,13 +237,13 @@ export default function PaymentSettings() {
                   </div>
 
                   {/* Webhook URL */}
-                  <div className="col-12">
+                  <div className="col-span-12">
                     <label htmlFor="webhookUrl" className="form-label">
                       {t('admin.payment.webhookUrl', { defaultValue: 'Webhook URL' })}
                     </label>
                     <input 
                       type="url" 
-                      className="form-control" 
+                      className="form-input" 
                       id="webhookUrl"
                       placeholder="https://your-domain.com/webhook"
                     />
@@ -255,20 +255,20 @@ export default function PaymentSettings() {
               </div>
 
               {/* Action Buttons */}
-              <div className="d-flex gap-2 justify-content-end mt-4">
-                <button type="button" className="btn btn-outline-secondary">
-                  <i className="bx bx-reset me-1"></i>
+              <div className="flex gap-2 justify-end mt-4">
+                <button type="button" className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100">
+                  <i className="bx bx-reset mr-1"></i>
                   {t('actions.reset', { defaultValue: 'Reset' })}
                 </button>
                 <button type="button" className="btn btn-primary" disabled={loading}>
                   {loading ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      <span className="spinner w-4 h-4 mr-2" role="status" aria-hidden="true"></span>
                       {t('actions.saving', { defaultValue: 'Saving...' })}
                     </>
                   ) : (
                     <>
-                      <i className="bx bx-save me-1"></i>
+                      <i className="bx bx-save mr-1"></i>
                       {t('actions.save', { defaultValue: 'Save Settings' })}
                     </>
                   )}

@@ -77,7 +77,7 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
                           <td className="text-right px-4 py-3">{formatUsd(deposit)}</td>
                           <td className="text-right px-4 py-3">{formatUsd(withdrawal)}</td>
                           <td className="text-right px-4 py-3">{formatUsd(fee)}</td>
-                          <td className={`text-right px-4 py-3 ${netFlow > 0 ? 'text-green-500' : netFlow < 0 ? 'text-red-500' : ''}`}>
+                          <td className={`text-right px-4 py-3 ${netFlow > 0 ?'text-green-500' : netFlow < 0 ? 'text-red-500' : ''}`}>
                             {formatUsd(netFlow)}
                           </td>
                         </tr>
@@ -89,7 +89,7 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
                       <td className="text-right px-4 py-3">{formatUsd(byCoinTotals.deposit)}</td>
                       <td className="text-right px-4 py-3">{formatUsd(byCoinTotals.withdrawal)}</td>
                       <td className="text-right px-4 py-3">{formatUsd(byCoinTotals.fee)}</td>
-                      <td className={`text-right px-4 py-3 ${byCoinTotals.netFlow > 0 ? 'text-green-500' : byCoinTotals.netFlow < 0 ? 'text-red-500' : ''}`}>
+                      <td className={`text-right px-4 py-3 ${byCoinTotals.netFlow > 0 ?'text-green-500' : byCoinTotals.netFlow < 0 ? 'text-red-500' : ''}`}>
                         {formatUsd(byCoinTotals.netFlow)}
                       </td>
                     </tr>

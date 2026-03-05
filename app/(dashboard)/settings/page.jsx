@@ -243,7 +243,7 @@ export default function SettingsPage() {
                     <label className="form-label" htmlFor="currentPassword">
                       {t('settings.password.currentPassword', { defaultValue: 'Current Password' })}
                     </label>
-                    <div className={`bp-input-group ${errors.currentPassword ? 'bp-input-group--error' : ''}`}>
+                    <div className={`bp-flex items-stretch ${errors.currentPassword ?'bp-input-group--error' : ''}`}>
                       <input
                         type={showCurrentPassword ? 'text' : 'password'}
                         id="currentPassword"
@@ -258,7 +258,7 @@ export default function SettingsPage() {
                         tabIndex={-1}
                         onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                       >
-                        <i className={`bx text-lg ${showCurrentPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                        <i className={`bx text-lg ${showCurrentPassword ?'bx-show' : 'bx-hide'}`}></i>
                       </button>
                     </div>
                     {errors.currentPassword && (
@@ -271,7 +271,7 @@ export default function SettingsPage() {
                     <label className="form-label" htmlFor="newPassword">
                       {t('settings.password.newPassword', { defaultValue: 'New Password' })}
                     </label>
-                    <div className={`bp-input-group ${errors.newPassword ? 'bp-input-group--error' : ''}`}>
+                    <div className={`bp-flex items-stretch ${errors.newPassword ?'bp-input-group--error' : ''}`}>
                       <input
                         type={showNewPassword ? 'text' : 'password'}
                         id="newPassword"
@@ -286,7 +286,7 @@ export default function SettingsPage() {
                         tabIndex={-1}
                         onClick={() => setShowNewPassword(!showNewPassword)}
                       >
-                        <i className={`bx text-lg ${showNewPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                        <i className={`bx text-lg ${showNewPassword ?'bx-show' : 'bx-hide'}`}></i>
                       </button>
                     </div>
                     {errors.newPassword && (
@@ -304,7 +304,7 @@ export default function SettingsPage() {
                     <label className="form-label" htmlFor="newPasswordConfirmation">
                       {t('settings.password.confirmPassword', { defaultValue: 'Confirm New Password' })}
                     </label>
-                    <div className={`bp-input-group ${errors.newPasswordConfirmation ? 'bp-input-group--error' : ''}`}>
+                    <div className={`bp-flex items-stretch ${errors.newPasswordConfirmation ?'bp-input-group--error' : ''}`}>
                       <input
                         type={showConfirmPassword ? 'text' : 'password'}
                         id="newPasswordConfirmation"
@@ -319,7 +319,7 @@ export default function SettingsPage() {
                         tabIndex={-1}
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
-                        <i className={`bx text-lg ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                        <i className={`bx text-lg ${showConfirmPassword ?'bx-show' : 'bx-hide'}`}></i>
                       </button>
                     </div>
                     {errors.newPasswordConfirmation && (
@@ -337,7 +337,7 @@ export default function SettingsPage() {
                       <input
                         type="text"
                         id="totpCode"
-                        className={`form-input ${errors.totpCode ? 'border-red-500' : ''}`}
+                        className={`form-input ${errors.totpCode ?'border-red-500' : ''}`}
                         placeholder="000000"
                         inputMode="numeric"
                         maxLength={20}
@@ -466,13 +466,11 @@ export default function SettingsPage() {
             </div>
             <div className="p-6">
               {/* 2FA Status */}
-              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${
-                is2FAEnabled ? 'bg-green-50' : 'bg-amber-50'
+              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${ is2FAEnabled ?'bg-green-50' : 'bg-amber-50'
               }`}>
-                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${
-                  is2FAEnabled ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'
+                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${ is2FAEnabled ?'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'
                 }`}>
-                  <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} text-xl`}></i>
+                  <i className={`bx ${is2FAEnabled ?'bx-check-shield' : 'bx-error'} text-xl`}></i>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h6 className="text-sm font-semibold text-surface-900 mb-0">
@@ -508,7 +506,7 @@ export default function SettingsPage() {
               </p>
 
               {loading ? (
-                <button className="btn btn-outline-primary w-full" disabled>
+                <button className="btn btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white w-full" disabled>
                   <span className="spinner w-4 h-4 border-2 mr-2"></span>
                   {t('common.loading', { defaultValue: 'Loading...' })}
                 </button>

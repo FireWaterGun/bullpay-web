@@ -93,25 +93,25 @@ export default function IncomeStatement() {
   }, [token, fromDate, toDate, coinNetworkId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="d-flex flex-wrap align-items-center gap-3">
+            <div className="p-5">
+              <div className="flex flex-wrap items-center gap-3">
                 <h4 className="mb-0">
-                  <i className="bx bx-line-chart text-primary me-2"></i>
+                  <i className="bx bx-line-chart text-primary mr-2"></i>
                   {t('admin.incomeStatement.title', { defaultValue: 'Income Statement' })}
                 </h4>
-                <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
-                  <span className="badge bg-label-secondary fs-6 fw-normal px-3 py-2">
+                <div className="flex gap-2 flex-wrap items-center ml-auto">
+                  <span className="badge bg-surface-100 text-surface-600 fs-6 font-normal px-3 py-2">
                     {dateRangeLabel}
                   </span>
                   {!showCustom ? (
                     <>
                       <select
-                        className="form-select"
+                        className="form-input"
                         value={datePreset}
                         onChange={(e) => setDatePreset(e.target.value)}
                         style={{ width: 'auto' }}
@@ -124,10 +124,10 @@ export default function IncomeStatement() {
                         <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
                       </select>
                       <button
-                        className="btn btn-outline-secondary"
+                        className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                         onClick={() => setShowCustom(true)}
                       >
-                        <i className="bx bx-calendar me-1"></i>
+                        <i className="bx bx-calendar mr-1"></i>
                         {t('filter.custom', { defaultValue: 'Custom' })}
                       </button>
                     </>
@@ -153,14 +153,14 @@ export default function IncomeStatement() {
                         maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
                       />
                       <button
-                        className="btn btn-outline-secondary"
+                        className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100"
                         onClick={() => {
                           setShowCustom(false)
                           setCustomFrom('')
                           setCustomTo('')
                         }}
                       >
-                        <i className="bx bx-reset me-1"></i>
+                        <i className="bx bx-reset mr-1"></i>
                         {t('filter.reset', { defaultValue: 'Reset' })}
                       </button>
                     </>
@@ -176,7 +176,7 @@ export default function IncomeStatement() {
           {/* Empty state - no data for this period */}
           {report && !hasData && !loading && (
             <div className="card">
-              <div className="card-body">
+              <div className="p-5">
                 <CardEmptyState
                   icon="bx-bar-chart-alt-2"
                   message={t('admin.incomeStatement.noTransactions', { defaultValue: 'No transactions found' })}
@@ -189,7 +189,7 @@ export default function IncomeStatement() {
           {/* Empty state - no report loaded */}
           {!report && !loading && (
             <div className="card">
-              <div className="card-body">
+              <div className="p-5">
                 <CardEmptyState
                   icon="bx-line-chart"
                   message="Select a date range"

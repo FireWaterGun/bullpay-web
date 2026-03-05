@@ -54,12 +54,12 @@ export default function SweepDetail() {
 
   function statusBadgeClass(s) {
     const v = String(s || '').toUpperCase()
-    if (v === 'PENDING') return 'badge bg-label-warning'
-    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-label-info'
-    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-label-success'
-    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-label-danger'
-    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-label-secondary'
-    return 'badge bg-label-secondary'
+    if (v === 'PENDING') return 'badge bg-amber-50 text-amber-700'
+    if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-cyan-50 text-cyan-700'
+    if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-green-50 text-green-700'
+    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-red-50 text-red-700'
+    if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-surface-100 text-surface-600'
+    return 'badge bg-surface-100 text-surface-600'
   }
 
   async function handleCopy(text) {
@@ -73,7 +73,7 @@ export default function SweepDetail() {
 
   if (!sweep) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle" style={{ fontSize: '3rem', color: 'var(--bs-secondary-color)' }}></i>
           <p className="text-muted mt-2">Sweep transaction not found</p>
@@ -98,21 +98,21 @@ export default function SweepDetail() {
   const failureReason = metadata.failureReason || null
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           <button
             onClick={() => router.back()}
-            className="btn btn-outline-secondary mb-3"
+            className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 mb-3"
           >
-            <i className="bx bx-arrow-back me-2"></i>
+            <i className="bx bx-arrow-back mr-2"></i>
             {t('actions.back', { defaultValue: 'Back' })}
           </button>
 
           <div className="card mb-4">
-            <div className="card-body">
-              <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                <div className="d-flex align-items-center gap-3">
+            <div className="p-5">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex items-center gap-3">
                   {coinSymbol && (
                     <CoinImg
                       symbol={coinSymbol}
@@ -124,30 +124,30 @@ export default function SweepDetail() {
                     <h4 className="mb-1">
                       Sweep Transaction #{sweep.id}
                     </h4>
-                    <div className="d-flex align-items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className={statusBadgeClass(sweep.status)}>
                         {String(sweep.status || '').toUpperCase()}
                       </span>
                       {metadata.type && (
-                        <span className="badge bg-label-info">
+                        <span className="badge bg-cyan-50 text-cyan-700">
                           {metadata.type}
                         </span>
                       )}
                       {coinSymbol && (
-                        <span className="badge bg-label-secondary">
+                        <span className="badge bg-surface-100 text-surface-600">
                           {coinSymbol}
                         </span>
                       )}
                       {networkName && (
-                        <span className="badge bg-label-secondary">
+                        <span className="badge bg-surface-100 text-surface-600">
                           {networkName}
                         </span>
                       )}
                     </div>
                   </div>
                 </div>
-                <div className="text-end">
-                  <div className="fs-4 fw-bold">
+                <div className="text-right">
+                  <div className="fs-4 font-bold">
                     {sweep.amount || formatAmount(sweep.amountRaw, sweep.decimals, coinSymbol, networkSymbol)}{' '}
                     <span style={{ fontSize: '0.75em', fontWeight: 'normal' }}>{coinSymbol}</span>
                   </div>
@@ -161,22 +161,22 @@ export default function SweepDetail() {
             </div>
           </div>
 
-          <div className="row">
-            <div className="col-md-6">
+          <div className="grid grid-cols-12 gap-x-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
-                    <i className="bx bx-detail me-2"></i>
+                    <i className="bx bx-detail mr-2"></i>
                     Details
                   </h5>
                 </div>
-                <div className="card-body">
-                  <div className="table-responsive">
-                  <table className="table table-borderless">
+                <div className="p-5">
+                  <div className="overflow-x-auto">
+                  <table className="w-full">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
-                        <td className="fw-medium">{sweep.id}</td>
+                        <td className="font-medium">{sweep.id}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
@@ -190,12 +190,12 @@ export default function SweepDetail() {
                         <tr>
                           <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                           <td>
-                            <div className="d-flex align-items-center">
-                              <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="me-3" />
+                            <div className="flex items-center">
+                              <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-3" />
                               <div>
-                                <span className="fw-medium">{coinSymbol}</span>
+                                <span className="font-medium">{coinSymbol}</span>
                                 {networkName && (
-                                  <small className="text-muted ms-1">/ {networkName}</small>
+                                  <small className="text-muted ml-1">/ {networkName}</small>
                                 )}
                               </div>
                             </div>
@@ -209,7 +209,7 @@ export default function SweepDetail() {
                       <tr>
                         <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td>
-                          <span className="fw-bold">
+                          <span className="font-bold">
                             {sweep.amount || formatAmount(sweep.amountRaw, sweep.decimals, coinSymbol, networkSymbol)}
                           </span>
                         </td>
@@ -217,7 +217,7 @@ export default function SweepDetail() {
                       {sweep.actualAmount && (
                         <tr>
                           <td className="text-muted">Actual Amount</td>
-                          <td><span className="fw-medium">{sweep.actualAmount}</span></td>
+                          <td><span className="font-medium">{sweep.actualAmount}</span></td>
                         </tr>
                       )}
                       <tr>
@@ -235,7 +235,7 @@ export default function SweepDetail() {
                           <td className="text-muted">USD Rate</td>
                           <td>
                             {formatUsd(sweep.usdRate)}
-                            {sweep.rateSource && <small className="text-muted ms-1">({sweep.rateSource})</small>}
+                            {sweep.rateSource && <small className="text-muted ml-1">({sweep.rateSource})</small>}
                           </td>
                         </tr>
                       )}
@@ -264,7 +264,7 @@ export default function SweepDetail() {
               <SweepMetadataCard metadata={metadata} />
             </div>
 
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <SweepTransactionCard sweep={sweep} explorerUrl={explorerUrl} onCopy={handleCopy} />
               <SweepTimestampsCard sweep={sweep} metadata={metadata} />
             </div>
@@ -272,13 +272,13 @@ export default function SweepDetail() {
 
           {failureReason && (
             <div className="card mb-4">
-              <div className="card-header">
+              <div className="px-5 py-4 border-b border-surface-200">
                 <h5 className="mb-0 text-danger">
-                  <i className="bx bx-error me-2"></i>
+                  <i className="bx bx-error mr-2"></i>
                   Failure Reason
                 </h5>
               </div>
-              <div className="card-body">
+              <div className="p-5">
                 <pre className="mb-0 text-danger" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '0.85rem' }}>
                   {failureReason}
                 </pre>

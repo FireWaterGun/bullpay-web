@@ -81,38 +81,38 @@ export default function AuditLogDetail() {
 
   if (!log) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
+      <div className="grow py-6">
         <div className="alert alert-warning">{t('admin.auditLog.notFound', { defaultValue: 'Audit log not found' })}</div>
       </div>
     )
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Back button */}
           <div className="mb-4">
-            <Link href="/admin/audit-logs" className="btn btn-label-secondary">
-              <i className="bx bx-arrow-back me-1"></i>
+            <Link href="/admin/audit-logs" className="btn btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none">
+              <i className="bx bx-arrow-back mr-1"></i>
               Back to Audit Logs
             </Link>
           </div>
 
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div className="d-flex align-items-center gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
+                <div className="flex items-center gap-3">
                   <div
-                    className="rounded-circle d-flex align-items-center justify-content-center bg-label-primary"
+                    className="rounded-full flex items-center justify-center bg-primary-50 text-primary-600"
                     style={{ width: 48, height: 48 }}
                   >
                     <i className="bx bx-history fs-4"></i>
                   </div>
                   <div>
                     <h4 className="mb-0">Audit Log #{log.id}</h4>
-                    <div className="d-flex align-items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1">
                       {actionBadge(log.action)}
                       <span className="text-muted">•</span>
                       {resourceTypeBadge(log.resourceType)}
@@ -124,23 +124,23 @@ export default function AuditLogDetail() {
             </div>
           </div>
 
-          <div className="row">
+          <div className="grid grid-cols-12 gap-x-6">
             {/* Left: Audit Info */}
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Audit Info</h5>
                 </div>
-                <div className="card-body">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.detail.id', { defaultValue: 'ID' })}</td>
-                        <td className="fw-medium">{log.id}</td>
+                        <td className="font-medium">{log.id}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
-                        <td className="fw-medium">{log.userId || '-'}</td>
+                        <td className="font-medium">{log.userId || '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">{t('admin.detail.action', { defaultValue: 'Action' })}</td>
@@ -157,13 +157,13 @@ export default function AuditLogDetail() {
             </div>
 
             {/* Right: Resource & Request Info */}
-            <div className="col-md-6">
+            <div className="md:col-span-6">
               <div className="card mb-4">
-                <div className="card-header">
+                <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Resource & Request Info</h5>
                 </div>
-                <div className="card-body">
-                  <table className="table table-borderless mb-0">
+                <div className="p-5">
+                  <table className="w-full mb-0">
                     <tbody>
                       <tr>
                         <td className="text-muted" style={{ width: '40%' }}>{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</td>
@@ -171,7 +171,7 @@ export default function AuditLogDetail() {
                       </tr>
                       <tr>
                         <td className="text-muted">Resource ID</td>
-                        <td className="fw-medium">{log.resourceId || '-'}</td>
+                        <td className="font-medium">{log.resourceId || '-'}</td>
                       </tr>
                       <tr>
                         <td className="text-muted">IP Address</td>
@@ -201,13 +201,13 @@ export default function AuditLogDetail() {
           {/* Details JSON */}
           {log.details && (
             <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
+              <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
                 <h5 className="mb-0">
-                  <i className="bx bx-code-alt me-2 text-primary"></i>
+                  <i className="bx bx-code-alt mr-2 text-primary"></i>
                   Details
                 </h5>
               </div>
-              <div className="card-body">
+              <div className="p-5">
                 <pre
                   className="bg-dark text-light p-3 rounded mb-0"
                   style={{ fontSize: '0.8rem', maxHeight: 400, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}

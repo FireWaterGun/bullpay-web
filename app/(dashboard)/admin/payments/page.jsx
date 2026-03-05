@@ -99,16 +99,16 @@ export default function AdminPaymentList() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
+    <div className="grow py-6">
+      <div className="grid grid-cols-12 gap-x-6">
+        <div className="col-span-12">
           {/* Header */}
           <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
                   <h4 className="mb-1">
-                    <i className="bx bx-transfer me-2"></i>
+                    <i className="bx bx-transfer mr-2"></i>
                     {t('admin.payments.title', { defaultValue: 'Payments' })}
                   </h4>
                   <p className="text-muted mb-0">
@@ -144,17 +144,17 @@ export default function AdminPaymentList() {
 
           {/* Table */}
           <div className="card">
-            <div className="card-body">
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table table-hover">
+            <div className="p-5">
+              <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+                <table className="w-full">
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
                       <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
                       <th className="text-center">{t('table.invoiceId', { defaultValue: 'Invoice ID' })}</th>
                       <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
-                      <th className="text-end">{t('table.amount', { defaultValue: 'Amount' })}</th>
-                      <th className="text-end">{t('table.usd', { defaultValue: 'USD' })}</th>
+                      <th className="text-right">{t('table.amount', { defaultValue: 'Amount' })}</th>
+                      <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>
                       <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
                       <th>{t('table.confirmations', { defaultValue: 'Confirmations' })}</th>
                       <th>{t('table.txHash', { defaultValue: 'Tx Hash' })}</th>
@@ -188,8 +188,8 @@ export default function AdminPaymentList() {
 
               {/* Pagination */}
               {pagination && pagination.total > 0 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <div className="text-muted small">
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-muted text-sm">
                     {t('invoices.showingEntries', {
                       start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                       end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -197,9 +197,9 @@ export default function AdminPaymentList() {
                       defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
                     })}
                   </div>
-                  <div className="btn-group">
+                  <div className="inline-flex rounded-lg shadow-sm">
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasPrev || loading}
                       onClick={() => setCurrentPage(p => p - 1)}
                     >
@@ -207,13 +207,13 @@ export default function AdminPaymentList() {
                       {t('actions.prev', { defaultValue: 'Previous' })}
                     </button>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled
                     >
                       {pagination.page} / {pagination.totalPages}
                     </button>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100 btn-sm"
                       disabled={!pagination.hasNext || loading}
                       onClick={() => setCurrentPage(p => p + 1)}
                     >

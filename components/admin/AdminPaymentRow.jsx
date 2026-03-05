@@ -8,12 +8,12 @@ import CoinImg from '@/components/CoinImg'
 
 export function statusBadgeClass(s) {
   const v = String(s || '').toLowerCase()
-  if (v === 'confirmed' || v === 'completed') return 'badge bg-label-success'
-  if (v === 'detecting' || v === 'pending') return 'badge bg-label-warning'
-  if (v === 'confirming' || v === 'processing') return 'badge bg-label-info'
-  if (v === 'failed' || v === 'unconfirmed') return 'badge bg-label-danger'
-  if (v === 'expired' || v === 'cancelled' || v === 'canceled') return 'badge bg-label-secondary'
-  return 'badge bg-label-secondary'
+  if (v === 'confirmed' || v === 'completed') return 'badge bg-green-50 text-green-700'
+  if (v === 'detecting' || v === 'pending') return 'badge bg-amber-50 text-amber-700'
+  if (v === 'confirming' || v === 'processing') return 'badge bg-cyan-50 text-cyan-700'
+  if (v === 'failed' || v === 'unconfirmed') return 'badge bg-red-50 text-red-700'
+  if (v === 'expired' || v === 'cancelled' || v === 'canceled') return 'badge bg-surface-100 text-surface-600'
+  return 'badge bg-surface-100 text-surface-600'
 }
 
 export default function AdminPaymentRow({ payment, onCopy }) {
@@ -28,16 +28,16 @@ export default function AdminPaymentRow({ payment, onCopy }) {
   return (
     <tr>
       <td>
-        <span className="fw-semibold text-primary">{payment.id}</span>
+        <span className="font-semibold text-primary">{payment.id}</span>
       </td>
       <td className="text-center">
-        <span className="fw-medium">{payment.userId || '-'}</span>
+        <span className="font-medium">{payment.userId || '-'}</span>
       </td>
       <td className="text-center">
         {payment.invoiceId ? (
           <Link
             href={`/admin/invoices/${payment.invoiceId}`}
-            className="btn btn-sm btn-text-primary p-0 fw-medium"
+            className="btn btn-sm btn bg-transparent text-primary-600 hover:bg-primary-50 shadow-none p-0 font-medium"
           >
             #{payment.invoiceId}
           </Link>
@@ -46,34 +46,34 @@ export default function AdminPaymentRow({ payment, onCopy }) {
         )}
       </td>
       <td style={{ whiteSpace: 'nowrap' }}>
-        <div className="d-flex align-items-center">
+        <div className="flex items-center">
           <CoinImg
             symbol={coinSymbol}
             networkSymbol={networkSymbol}
             size={24}
-            className="me-2"
+            className="mr-2"
           />
           <div>
-            <div className="fw-medium" style={{ lineHeight: 1.2 }}>{coinSymbol || '-'}</div>
+            <div className="font-medium" style={{ lineHeight: 1.2 }}>{coinSymbol || '-'}</div>
             {networkName && (
               <small className="text-muted" style={{ fontSize: '0.75rem' }}>{networkName}</small>
             )}
           </div>
         </div>
       </td>
-      <td className="text-end text-nowrap">
-        <span className="fw-medium">
+      <td className="text-right whitespace-nowrap">
+        <span className="font-medium">
           {formatAmount(payment.amount)} {coinSymbol}
         </span>
       </td>
-      <td className="text-end text-nowrap">
+      <td className="text-right whitespace-nowrap">
         {payment.amountUsd ? (
-          <span className="fw-medium">${formatAmount(payment.amountUsd)}</span>
+          <span className="font-medium">${formatAmount(payment.amountUsd)}</span>
         ) : (
           <span className="text-muted">-</span>
         )}
       </td>
-      <td className="text-nowrap text-center">
+      <td className="whitespace-nowrap text-center">
         <span className={statusBadgeClass(payment.status)}>
           {String(payment.status || '').toUpperCase()}
         </span>
@@ -85,8 +85,8 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       </td>
       <td>
         {payment.txHash ? (
-          <div className="d-flex align-items-center">
-            <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+          <div className="flex items-center">
+            <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
               {payment.txHash}
             </span>
             {explorerUrl && (
@@ -94,7 +94,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
                 href={`${explorerUrl}/tx/${payment.txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
                 title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
               >
                 <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
@@ -107,12 +107,12 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       </td>
       <td>
         {payment.fromAddress ? (
-          <div className="d-flex align-items-center">
-            <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+          <div className="flex items-center">
+            <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
               {payment.fromAddress}
             </span>
             <button
-              className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
               onClick={() => onCopy(payment.fromAddress)}
               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
             >
@@ -125,12 +125,12 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       </td>
       <td>
         {payment.toAddress ? (
-          <div className="d-flex align-items-center">
-            <span className="me-2" style={{ whiteSpace: 'nowrap' }}>
+          <div className="flex items-center">
+            <span className="mr-2" style={{ whiteSpace: 'nowrap' }}>
               {payment.toAddress}
             </span>
             <button
-              className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+              className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full"
               onClick={() => onCopy(payment.toAddress)}
               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
             >
@@ -152,7 +152,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       <td>
         <Link
           href={`/admin/payments/${payment.id}`}
-          className="btn btn-sm btn-icon btn-text-secondary"
+          className="btn btn-sm btn-icon btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
           title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
         >
           <i className="bx bx-show" style={{ fontSize: '1.25rem' }}></i>
