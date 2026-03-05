@@ -46,6 +46,7 @@
     "rolesPermissions": "บทบาทและสิทธิ์",
     "auditLogs": "บันทึกการตรวจสอบ",
     "webhookLogs": "บันทึก Webhook",
+    "apiDocs": "เอกสาร API",
     "maintenance": "ปิดปรับปรุง",
     "withdrawalSettings": "ตั้งค่าการถอน",
     "gasSettings": "ตั้งค่าค่าแก๊ส",

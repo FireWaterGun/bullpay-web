@@ -12,16 +12,16 @@
 export default function TableEmptyState({ colSpan, icon = 'bx-data', message, sub }) {
   return (
     <tr>
-      <td colSpan={colSpan} className="text-center py-5">
-        <div className="d-flex flex-column align-items-center gap-2">
+      <td colSpan={colSpan} className="text-center py-12">
+        <div className="flex flex-col items-center gap-2">
           <div
-            className="rounded-circle bg-label-secondary d-flex align-items-center justify-content-center mb-1"
+            className="rounded-full bg-surface-100 flex items-center justify-center mb-1"
             style={{ width: 64, height: 64 }}
           >
-            <i className={`bx ${icon} fs-2`}></i>
+            <i className={`bx ${icon} text-3xl text-surface-500`}></i>
           </div>
-          <span className="fw-medium text-dark">{message}</span>
-          {sub && <span className="text-muted small">{sub}</span>}
+          <span className="font-medium text-surface-900">{message}</span>
+          {sub && <span className="text-surface-500 text-sm">{sub}</span>}
         </div>
       </td>
     </tr>

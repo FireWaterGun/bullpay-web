@@ -11,9 +11,6 @@ import TransactionByCoinTable from '@/components/dashboard/TransactionByCoinTabl
 import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 
-const summaryValueStyle = { fontSize: '1.75rem' }
-const changeTextStyle = { fontSize: '0.8rem' }
-
 function getDateRange(preset) {
   const now = new Date()
   const to = now.toISOString().split('T')[0]
@@ -57,31 +54,41 @@ function getDateRange(preset) {
   return { from, to }
 }
 
+const colorMap = {
+  primary: 'bg-primary-100 text-primary-600',
+  danger: 'bg-red-100 text-red-600',
+  warning: 'bg-amber-100 text-amber-600',
+  info: 'bg-blue-100 text-blue-600',
+  success: 'bg-green-100 text-green-600',
+}
+
 function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
   const numChange = typeof change === 'number' ? change : parseFloat(change)
   const isPositive = numChange >= 0
-  const changeColor = isPositive ? 'text-success' : 'text-danger'
+  const changeColor = isPositive ? 'text-green-500' : 'text-red-500'
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
 
+  const valueColorClass = valueColor === 'success' ? 'text-green-500'
+    : valueColor === 'danger' ? 'text-red-500'
+    : 'text-surface-900'
+
   return (
-    <div className="col-6 col-xl-3">
-      <div className="card h-100">
-        <div className="card-body">
-          <div className="d-flex align-items-start justify-content-between">
-            <div className="content-left">
-              <span className="text-muted form-label">{title}</span>
-              <h3 className={`mb-0${valueColor ? ` text-${valueColor}` : ''}`} style={summaryValueStyle}>{value}</h3>
+    <div className="col-span-6 xl:col-span-3">
+      <div className="card h-full">
+        <div className="p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-surface-500 text-sm">{title}</span>
+              <h3 className={`mb-0 text-[1.75rem] font-semibold ${valueColorClass}`}>{value}</h3>
               {change !== undefined && change !== null && !isNaN(numChange) && (
-                <small className={changeColor} style={changeTextStyle}>
+                <small className={`${changeColor} text-[0.8rem]`}>
                   <i className={`bx ${changeIcon}`}></i>
                   {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
                 </small>
               )}
             </div>
-            <div className="avatar">
-              <span className={`avatar-initial rounded bg-label-${color}`}>
-                <i className={`bx ${icon} bx-sm`}></i>
-              </span>
+            <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${colorMap[color] || colorMap.primary}`}>
+              <i className={`bx ${icon} text-xl`}></i>
             </div>
           </div>
         </div>
@@ -143,7 +150,6 @@ export default function UserTransactionsDashboard() {
       getUserTransactionByCoin(token, dateRange.from, dateRange.to),
     ])
 
-    // Summary
     if (summaryResult.status === 'fulfilled') {
       setSummary(summaryResult.value)
     } else {
@@ -152,7 +158,6 @@ export default function UserTransactionsDashboard() {
     }
     setLoadingSummary(false)
 
-    // Daily
     if (dailyResult.status === 'fulfilled') {
       const res = dailyResult.value
       const items = res?.items || res || []
@@ -168,7 +173,6 @@ export default function UserTransactionsDashboard() {
     }
     setLoadingDaily(false)
 
-    // By coin
     if (byCoinResult.status === 'fulfilled') {
       const res = byCoinResult.value
       setByCoinData(res?.items || res || [])
@@ -186,25 +190,24 @@ export default function UserTransactionsDashboard() {
   const changes = summary?.changes || {}
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <>
       {/* Header */}
-      <div className="d-flex flex-wrap align-items-center mb-4 gap-3">
-        <h4 className="mb-0">
-          <i className="bx bx-bar-chart-alt-2 text-primary me-2"></i>
+      <div className="flex flex-wrap items-center mb-6 gap-3">
+        <h4 className="text-xl font-semibold text-surface-900 mb-0">
+          <i className="bx bx-bar-chart-alt-2 text-primary-600 mr-2"></i>
           {t('nav.dashboard', { defaultValue: 'Dashboard' })}
         </h4>
         <RefreshButton onClick={loadData} loading={loadingSummary || loadingDaily || loadingByCoin} />
-        <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
-          <span className="badge bg-label-secondary fs-6 fw-normal px-3 py-2">
+        <div className="flex gap-2 flex-nowrap items-center ml-auto">
+          <span className="badge bg-surface-100 text-surface-600 text-base font-normal px-3 py-2 hidden sm:inline rounded-lg">
             {dateRangeLabel}
           </span>
           {!showCustom ? (
             <>
               <select
-                className="form-select"
+                className="form-input w-auto"
                 value={datePreset}
                 onChange={(e) => setDatePreset(e.target.value)}
-                style={{ width: 'auto' }}
               >
                 <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
                 <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
@@ -214,10 +217,10 @@ export default function UserTransactionsDashboard() {
                 <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
               </select>
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary whitespace-nowrap"
                 onClick={() => setShowCustom(true)}
               >
-                <i className="bx bx-calendar me-1"></i>
+                <i className="bx bx-calendar mr-1"></i>
                 {t('filter.custom', { defaultValue: 'Custom' })}
               </button>
             </>
@@ -232,7 +235,7 @@ export default function UserTransactionsDashboard() {
                 maxDate={customTo ? customTo : undefined}
                 minDate={customTo ? (() => { const d = new Date(customTo + 'T00:00:00'); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
               />
-              <span className="align-self-center">–</span>
+              <span className="self-center">–</span>
               <LocaleDatePicker
                 value={customTo}
                 onChange={setCustomTo}
@@ -243,14 +246,14 @@ export default function UserTransactionsDashboard() {
                 maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary whitespace-nowrap"
                 onClick={() => {
                   setShowCustom(false)
                   setCustomFrom('')
                   setCustomTo('')
                 }}
               >
-                <i className="bx bx-reset me-1"></i>
+                <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </button>
             </>
@@ -259,18 +262,16 @@ export default function UserTransactionsDashboard() {
       </div>
 
       {error && (
-        <div className="alert alert-danger mb-4">{error}</div>
+        <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">{error}</div>
       )}
 
-      {/* Section 1: KPI Summary Cards */}
+      {/* KPI Summary Cards */}
       {loadingSummary ? (
-        <div className="d-flex justify-content-center py-5 mb-4">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">{t('common.loading', { defaultValue: 'Loading...' })}</span>
-          </div>
+        <div className="flex justify-center py-10 mb-6">
+          <div className="spinner text-primary-600 w-8 h-8 border-[3px]"></div>
         </div>
       ) : (
-        <div className="row g-4 mb-4">
+        <div className="grid grid-cols-12 gap-4 mb-6">
           <SummaryCard
             title={t('userDashboard.deposits', { defaultValue: 'Deposits' })}
             value={formatUsd(current.totalDepositUsd)}
@@ -307,37 +308,31 @@ export default function UserTransactionsDashboard() {
         </div>
       )}
 
-      {/* Section 2: Daily Trend Chart */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-header">
-              <h5 className="card-title mb-0">
-                <i className="bx bx-bar-chart-alt-2 text-primary me-2"></i>
-                {t('userDashboard.dailyTrend', { defaultValue: 'Daily Trend Chart' })}
-              </h5>
-            </div>
-            <div className="card-body">
-              {loadingDaily ? (
-                <div className="d-flex justify-content-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">{t('common.loading', { defaultValue: 'Loading...' })}</span>
-                  </div>
-                </div>
-              ) : (
-                <DailyTrendChart data={dailyData} meta={dailyMeta} height={300} locale={locale} t={t} />
-              )}
-            </div>
+      {/* Daily Trend Chart */}
+      <div className="mb-6">
+        <div className="card">
+          <div className="px-6 py-4 border-b border-surface-100">
+            <h5 className="text-base font-semibold text-surface-900 mb-0">
+              <i className="bx bx-bar-chart-alt-2 text-primary-600 mr-2"></i>
+              {t('userDashboard.dailyTrend', { defaultValue: 'Daily Trend Chart' })}
+            </h5>
+          </div>
+          <div className="p-6">
+            {loadingDaily ? (
+              <div className="flex justify-center py-10">
+                <div className="spinner text-primary-600 w-8 h-8 border-[3px]"></div>
+              </div>
+            ) : (
+              <DailyTrendChart data={dailyData} meta={dailyMeta} height={300} locale={locale} t={t} />
+            )}
           </div>
         </div>
       </div>
 
-      {/* Section 3: Transaction by Coin */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <TransactionByCoinTable byCoinData={byCoinData} loading={loadingByCoin} t={t} />
-        </div>
+      {/* Transaction by Coin */}
+      <div className="mb-6">
+        <TransactionByCoinTable byCoinData={byCoinData} loading={loadingByCoin} t={t} />
       </div>
-    </div>
+    </>
   )
 }

@@ -51,6 +51,7 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
         </h5>
       </div>
       <div className="card-body">
+        <div className="table-responsive">
         <table className="table table-borderless">
           <tbody>
             <tr>
@@ -111,6 +112,7 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
             <AddressRow label="To Address" address={sweep.toAddress} explorerUrl={explorerUrl} onCopy={onCopy} />
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )
@@ -127,6 +129,7 @@ export function SweepTimestampsCard({ sweep, metadata }) {
         </h5>
       </div>
       <div className="card-body">
+        <div className="table-responsive">
         <table className="table table-borderless">
           <tbody>
             <tr>
@@ -159,6 +162,7 @@ export function SweepTimestampsCard({ sweep, metadata }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

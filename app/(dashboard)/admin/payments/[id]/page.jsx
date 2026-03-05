@@ -115,6 +115,7 @@ export default function AdminPaymentDetail() {
                   <h5 className="mb-0">Payment Details</h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
@@ -221,6 +222,7 @@ export default function AdminPaymentDetail() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -231,6 +233,7 @@ export default function AdminPaymentDetail() {
                   <h5 className="mb-0">Transaction Info</h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
@@ -312,6 +315,7 @@ export default function AdminPaymentDetail() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             </div>

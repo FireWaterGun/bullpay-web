@@ -8,11 +8,11 @@ export default function GlobalError({
   reset: () => void
 }) {
   return (
-    <html lang="en" data-bs-theme="light">
+    <html lang="en">
       <body>
-        <div className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+        <div className="flex flex-col justify-center items-center" style={{ minHeight: '100vh' }}>
           <h2 className="mb-3">Something went wrong</h2>
-          <p className="text-muted mb-4">{error.message || 'An unexpected error occurred.'}</p>
+          <p className="text-surface-500 mb-4">{error.message || 'An unexpected error occurred.'}</p>
           <button className="btn btn-primary" onClick={reset}>
             Try Again
           </button>

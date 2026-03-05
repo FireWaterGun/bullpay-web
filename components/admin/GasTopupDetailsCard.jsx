@@ -21,6 +21,7 @@ export default function GasTopupDetailsCard({
         </h5>
       </div>
       <div className="card-body">
+        <div className="table-responsive">
         <table className="table table-borderless">
           <tbody>
             <tr>
@@ -111,6 +112,7 @@ export default function GasTopupDetailsCard({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

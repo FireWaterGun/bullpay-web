@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const [cfToken, setCfToken] = useState('')
   const [captchaRenderKey, setCaptchaRenderKey] = useState(0)
 
@@ -36,11 +37,7 @@ export default function LoginPage() {
   const [backupCodeWarning, setBackupCodeWarning] = useState('')
 
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
-  const theme = 'light'
 
-  /**
-   * Complete the login after receiving a full token
-   */
   const completeLogin = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (res: any) => {
@@ -54,9 +51,6 @@ export default function LoginPage() {
     [email, login, router]
   )
 
-  /**
-   * Extract error message from API error
-   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const extractErrorMessage = (err: any): string => {
     if (typeof err?.message === 'string') return err.message
@@ -65,18 +59,29 @@ export default function LoginPage() {
     return ''
   }
 
-  /**
-   * Step 1: Submit email + password + CAPTCHA
-   */
   const onSubmitCredentials = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setFieldErrors({})
+
+    // Client-side validation
+    const errors: Record<string, string[]> = {}
+    if (!email.trim()) errors.email = ['Email is required']
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errors.email = ['Please enter a valid email']
+    if (!password) errors.password = ['Password is required']
+    else if (password.length < 6) errors.password = ['Password must be at least 6 characters']
+    if (!cfToken) errors.cfToken = ['Please complete the CAPTCHA']
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      return
+    }
+
     setLoading(true)
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = (await loginApi({ email, password, cfToken })) as any
 
-      // Check if 2FA is required
       if (res?.requires2FA) {
         setTempToken(res.tempToken as string)
         setStep('2fa')
@@ -86,14 +91,12 @@ export default function LoginPage() {
         return
       }
 
-      // Normal login — no 2FA
       completeLogin(res)
-    } catch (err: unknown) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any
-      const details = error?.details || error?.data?.error?.details || error?.data?.details || {}
+    } catch (err: any) {
+      const details = err?.details || err?.data?.error?.details || err?.data?.details || {}
       setFieldErrors(details)
-      const display = extractErrorMessage(error)
+      const display = extractErrorMessage(err)
       if (!display && Array.isArray(details?.cfToken) && details.cfToken.length)
         setError(details.cfToken[0])
       else setError(display || 'Login failed')
@@ -104,9 +107,6 @@ export default function LoginPage() {
     }
   }
 
-  /**
-   * Step 2: Submit 2FA code
-   */
   const onSubmit2FA = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -124,9 +124,9 @@ export default function LoginPage() {
 
     setLoading(true)
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = (await verify2FALoginApi({ tempToken, code })) as any
 
-      // Check if a backup code was used — show warning
       if (res?.isBackupCode) {
         const remaining = res.remainingBackupCodes as number
         setBackupCodeWarning(
@@ -135,13 +135,11 @@ export default function LoginPage() {
       }
 
       completeLogin(res)
-    } catch (err: unknown) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any
-      let display = extractErrorMessage(error)
+    } catch (err: any) {
+      let display = extractErrorMessage(err)
 
-      // Handle rate limiting
-      const retryAfter = error?.data?.error?.retryAfterSeconds ?? error?.data?.retryAfterSeconds
+      const retryAfter = err?.data?.error?.retryAfterSeconds ?? err?.data?.retryAfterSeconds
       if (retryAfter) {
         display = `Too many attempts. Please try again in ${retryAfter} seconds`
       }
@@ -152,9 +150,6 @@ export default function LoginPage() {
     }
   }
 
-  /**
-   * Go back to credentials step
-   */
   const goBackToCredentials = () => {
     setStep('credentials')
     setTempToken('')
@@ -170,39 +165,37 @@ export default function LoginPage() {
   const captchaInvalid = Array.isArray(fieldErrors.cfToken) && fieldErrors.cfToken.length > 0
 
   return (
-    <div className="card px-sm-6 px-0">
-      <div className="card-body">
-        <div className="app-brand justify-content-center mb-4">
-          <Link href="/" className="app-brand-link gap-2 d-flex align-items-center">
-            <div className="brand-icon">
-              <i className="bx bxs-wallet-alt text-primary" style={{ fontSize: '40px' }}></i>
-            </div>
-            <span className="fw-bold" style={{ fontSize: '24px' }}>
-              <span className="text-dark">BULL</span>
-              <span className="text-primary">PAY</span>
+    <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+      <div className="p-8 sm:p-10">
+        {/* Brand */}
+        <div className="flex justify-center mb-6">
+          <Link href="/" className="flex items-center gap-2 no-underline">
+            <i className="bx bxs-wallet-alt text-2xl text-primary-600"></i>
+            <span className="font-bold text-2xl tracking-tight">
+              <span className="text-surface-900">BULL</span>
+              <span className="text-primary-600">PAY</span>
             </span>
           </Link>
         </div>
 
-        {error && <div className="alert alert-danger" role="alert">{error}</div>}
-        {backupCodeWarning && (
-          <div className="alert alert-warning" role="alert">{backupCodeWarning}</div>
-        )}
+        {error && <div className="alert alert-danger mb-4">{error}</div>}
+        {backupCodeWarning && <div className="alert alert-warning mb-4">{backupCodeWarning}</div>}
 
         {/* ── Step 1: Credentials ── */}
         {step === 'credentials' && (
           <>
             {!siteKey && (
-              <div className="alert alert-warning" role="alert">
+              <div className="alert alert-warning mb-4">
                 Turnstile site key not set. Add NEXT_PUBLIC_TURNSTILE_SITE_KEY to your .env.local
               </div>
             )}
-            <form id="formAuthentication" className="mb-6" onSubmit={onSubmitCredentials}>
-              <div className="mb-6 form-control-validation">
+            <form className="space-y-5" onSubmit={onSubmitCredentials} suppressHydrationWarning>
+              {/* Email */}
+              <div>
                 <label htmlFor="email" className="form-label">Email</label>
                 <input
                   type="text"
-                  className={`form-control ${emailInvalid ? 'is-invalid' : ''}`}
+                  className={`form-input ${emailInvalid ? '!border-danger-500' : ''}`}
                   id="email"
                   name="email"
                   placeholder="Enter your email"
@@ -211,49 +204,51 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   aria-invalid={emailInvalid}
+                  suppressHydrationWarning
                 />
                 {emailInvalid && (
-                  <div className="invalid-feedback d-block">{fieldErrors.email[0]}</div>
-                )}
-              </div>
-              <div className="mb-6 form-password-toggle form-control-validation">
-                <label className="form-label" htmlFor="password">Password</label>
-                <div className="input-group input-group-merge">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    className={`form-control ${passwordInvalid ? 'is-invalid' : ''}`}
-                    name="password"
-                    placeholder="••••••••••••"
-                    maxLength={50}
-                    aria-describedby="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    aria-invalid={passwordInvalid}
-                  />
-                  <button
-                    type="button"
-                    className="input-group-text bg-transparent"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    aria-pressed={showPassword}
-                  >
-                    <i className={`icon-base bx ${showPassword ? 'bx-show' : 'bx-hide'}`}></i>
-                  </button>
-                </div>
-                {passwordInvalid && (
-                  <div className="invalid-feedback d-block">{fieldErrors.password[0]}</div>
+                  <p className="mt-1 text-sm text-danger-500">{fieldErrors.email[0]}</p>
                 )}
               </div>
 
-              {/* Cloudflare Turnstile */}
-              <div className="mb-6">
+              {/* Password */}
+              <div>
+                <label htmlFor="password" className="form-label">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    className={`form-input pr-10 ${passwordInvalid ? '!border-danger-500' : ''}`}
+                    name="password"
+                    placeholder="••••••••••••"
+                    maxLength={50}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    aria-invalid={passwordInvalid}
+                    suppressHydrationWarning
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-surface-400 hover:text-surface-600 transition-colors cursor-pointer"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
+                  </button>
+                </div>
+                {passwordInvalid && (
+                  <p className="mt-1 text-sm text-danger-500">{fieldErrors.password[0]}</p>
+                )}
+              </div>
+
+              {/* Captcha */}
+              <div>
                 {siteKey && (
-                  <div className="captcha-box p-0">
+                  <div className="rounded-[10px] overflow-hidden">
                     <Turnstile
                       key={captchaRenderKey}
                       sitekey={siteKey}
-                      theme={theme}
+                      theme="light"
                       appearance="always"
                       size="flexible"
                       onVerify={(token) => setCfToken(token)}
@@ -263,32 +258,52 @@ export default function LoginPage() {
                   </div>
                 )}
                 {captchaInvalid && (
-                  <div className="text-danger small mt-2">CAPTCHA: {fieldErrors.cfToken[0]}</div>
+                  <p className="mt-2 text-sm text-danger-500">CAPTCHA: {fieldErrors.cfToken[0]}</p>
                 )}
               </div>
 
-              <div className="mb-7">
-                <div className="d-flex justify-content-between">
-                  <div className="form-check mb-0">
-                    <input className="form-check-input" type="checkbox" id="remember-me" />
-                    <label className="form-check-label" htmlFor="remember-me"> Remember Me </label>
-                  </div>
-                  <Link href="/forgot"><span>Forgot Password?</span></Link>
-                </div>
-              </div>
-              <div className="mb-6 d-grid">
+              {/* Remember / Forgot */}
+              <div className="flex items-center justify-between">
                 <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={loading || !cfToken}
+                  type="button"
+                  role="checkbox"
+                  aria-checked={rememberMe}
+                  onClick={() => setRememberMe(!rememberMe)}
+                  className="flex items-center cursor-pointer select-none bg-transparent border-0 p-0"
                 >
-                  {loading ? 'Signing in...' : 'Login'}
+                  <span
+                    className={`flex items-center justify-center w-[18px] h-[18px] shrink-0 mr-2.5 rounded-[4px] border-[1.5px] transition-colors ${
+                      rememberMe
+                        ? 'bg-primary-600 border-primary-600 text-white'
+                        : 'bg-white border-surface-300'
+                    }`}
+                  >
+                    {rememberMe && (
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="text-sm text-surface-600">Remember Me</span>
                 </button>
+                <Link href="/forgot" className="text-sm font-medium">
+                  Forgot Password?
+                </Link>
               </div>
+
+              {/* Submit */}
+              <button
+                className="btn btn-primary w-full"
+                type="submit"
+                disabled={loading || !cfToken}
+              >
+                {loading ? 'Signing in...' : 'Login'}
+              </button>
             </form>
-            <p className="text-center">
-              <span>New on our platform? </span>
-              <Link href="/register"><span>Create an account</span></Link>
+
+            <p className="text-center mt-6 text-sm text-surface-500">
+              New on our platform?{' '}
+              <Link href="/register" className="font-medium">Create an account</Link>
             </p>
           </>
         )}
@@ -296,30 +311,27 @@ export default function LoginPage() {
         {/* ── Step 2: Two-Factor Authentication ── */}
         {step === '2fa' && (
           <>
-            <div className="text-center mb-4">
-              <div className="mb-2">
-                <i
-                  className="bx bx-shield-quarter text-primary"
-                  style={{ fontSize: '48px' }}
-                ></i>
+            <div className="text-center mb-6">
+              <div className="mb-3">
+                <i className="bx bx-shield-quarter text-primary-600 text-5xl"></i>
               </div>
-              <h5 className="mb-1">Two-Factor Authentication</h5>
-              <p className="text-muted mb-0">
+              <h5 className="text-lg font-semibold mb-1">Two-Factor Authentication</h5>
+              <p className="text-sm text-surface-500">
                 {useBackupCode
                   ? 'Enter one of your backup codes'
                   : 'Enter the 6-digit code from your authenticator app'}
               </p>
             </div>
 
-            <form id="form2FA" className="mb-6" onSubmit={onSubmit2FA}>
-              <div className="mb-6">
+            <form className="space-y-5" onSubmit={onSubmit2FA}>
+              <div>
                 <label htmlFor="twoFACode" className="form-label">
                   {useBackupCode ? 'Backup Code' : 'Authentication Code'}
                 </label>
                 <input
                   ref={twoFAInputRef}
                   type="text"
-                  className="form-control text-center"
+                  className="form-input text-center"
                   id="twoFACode"
                   placeholder={useBackupCode ? 'ABCD-EFGH' : '000000'}
                   maxLength={useBackupCode ? 20 : 6}
@@ -331,7 +343,6 @@ export default function LoginPage() {
                     if (useBackupCode) {
                       setTwoFACode(e.target.value)
                     } else {
-                      // Only allow digits for TOTP
                       setTwoFACode(e.target.value.replace(/\D/g, '').slice(0, 6))
                     }
                   }}
@@ -344,21 +355,19 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div className="mb-6 d-grid">
-                <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={loading || !twoFACode.trim()}
-                >
-                  {loading ? 'Verifying...' : 'Verify'}
-                </button>
-              </div>
+              <button
+                className="btn btn-primary w-full"
+                type="submit"
+                disabled={loading || !twoFACode.trim()}
+              >
+                {loading ? 'Verifying...' : 'Verify'}
+              </button>
             </form>
 
-            <div className="text-center">
+            <div className="text-center mt-6 space-y-2">
               <button
                 type="button"
-                className="btn btn-link btn-sm p-0 mb-2"
+                className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors cursor-pointer"
                 onClick={() => {
                   setUseBackupCode(!useBackupCode)
                   setTwoFACode('')
@@ -370,10 +379,10 @@ export default function LoginPage() {
               <br />
               <button
                 type="button"
-                className="btn btn-link btn-sm p-0 text-muted"
+                className="text-sm text-surface-400 hover:text-surface-600 transition-colors cursor-pointer"
                 onClick={goBackToCredentials}
               >
-                <i className="bx bx-arrow-back me-1"></i>
+                <i className="bx bx-arrow-back mr-1"></i>
                 Back to login
               </button>
             </div>

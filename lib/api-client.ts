@@ -51,7 +51,10 @@ export async function apiFetch<T = unknown>(
     headers['Authorization'] = `Bearer ${token}`
   }
 
-  const url = path.startsWith('http') ? path : `${API_BASE_URL}${path}`
+  // Client-side: use relative URL so requests go through Next.js rewrite proxy
+  // Server-side: use absolute API_BASE_URL directly
+  const isClient = typeof window !== 'undefined'
+  const url = path.startsWith('http') ? path : isClient ? path : `${API_BASE_URL}${path}`
 
   const res = await fetch(url, {
     ...fetchOptions,
@@ -82,7 +85,6 @@ export async function apiFetch<T = unknown>(
           'maintenance_info',
           JSON.stringify({
             message: errPayload.message,
-            messageTh: errPayload.messageTh,
             estimatedEnd: errPayload.estimatedEnd,
             retryAfterSeconds: errPayload.retryAfterSeconds,
           })

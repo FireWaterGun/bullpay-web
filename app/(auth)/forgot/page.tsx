@@ -17,8 +17,8 @@ export default function ForgotPage() {
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
-  const theme = 'light'
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -26,9 +26,9 @@ export default function ForgotPage() {
     setLoading(true)
     try {
       await forgotPasswordApi({ email, cfToken })
-      // Store email in sessionStorage for the complete page
       try { sessionStorage.setItem('forgot_email', email) } catch {}
       router.replace('/forgot-complete')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {}
       setFieldErrors(details)
@@ -49,37 +49,54 @@ export default function ForgotPage() {
   const captchaInvalid = Array.isArray(fieldErrors.cfToken) && fieldErrors.cfToken.length > 0
 
   return (
-    <div className="card px-sm-6 px-0">
-      <div className="card-body">
-        <div className="app-brand justify-content-center mb-4">
-          <Link href="/" className="app-brand-link gap-2 d-flex align-items-center">
-            <div className="brand-icon">
-              <i className="bx bxs-wallet-alt text-primary" style={{ fontSize: '40px' }}></i>
-            </div>
-            <span className="fw-bold" style={{ fontSize: '24px' }}>
-              <span className="text-dark">BULL</span>
-              <span className="text-primary">PAY</span>
+    <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+      <div className="p-8 sm:p-10">
+        {/* Brand */}
+        <div className="flex justify-center mb-6">
+          <Link href="/" className="flex items-center gap-2 no-underline">
+            <i className="bx bxs-wallet-alt text-2xl text-primary-600"></i>
+            <span className="font-bold text-2xl tracking-tight">
+              <span className="text-surface-900">BULL</span>
+              <span className="text-primary-600">PAY</span>
             </span>
           </Link>
         </div>
-        <h4 className="mb-1">Forgot Password? 🔒</h4>
-        <p className="mb-6">Enter your email and we&apos;ll send you instructions to reset your password</p>
-        {error && <div className="alert alert-danger" role="alert">{error}</div>}
-        <form id="formAuthentication" className="mb-6" onSubmit={onSubmit}>
-          <div className="mb-6 form-control-validation">
+
+        <h4 className="text-xl font-semibold mb-1">Forgot Password? 🔒</h4>
+        <p className="text-sm text-surface-500 mb-6">
+          Enter your email and we&apos;ll send you instructions to reset your password
+        </p>
+
+        {error && <div className="alert alert-danger mb-4">{error}</div>}
+
+        <form className="space-y-5" onSubmit={onSubmit}>
+          {/* Email */}
+          <div>
             <label htmlFor="email" className="form-label">Email</label>
-            <input type="text" className={`form-control ${emailInvalid ? 'is-invalid' : ''}`} id="email" name="email" placeholder="Enter your email" autoFocus value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={emailInvalid} />
-            {emailInvalid && <div className="invalid-feedback d-block">{fieldErrors.email[0]}</div>}
+            <input
+              type="text"
+              className={`form-input ${emailInvalid ? '!border-danger-500' : ''}`}
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={emailInvalid}
+            />
+            {emailInvalid && (
+              <p className="mt-1 text-sm text-danger-500">{fieldErrors.email[0]}</p>
+            )}
           </div>
 
-          {/* Cloudflare Turnstile */}
-          <div className="my-6">
+          {/* Captcha */}
+          <div>
             {siteKey && (
-              <div className="captcha-box p-0">
+              <div className="rounded-[10px] overflow-hidden">
                 <Turnstile
                   key={captchaRenderKey}
                   sitekey={siteKey}
-                  theme={theme}
+                  theme="light"
                   appearance="always"
                   size="flexible"
                   onVerify={(token) => setCfToken(token)}
@@ -89,14 +106,25 @@ export default function ForgotPage() {
               </div>
             )}
             {captchaInvalid && (
-              <div className="text-danger small mt-2">CAPTCHA: {fieldErrors.cfToken[0]}</div>
+              <p className="mt-2 text-sm text-danger-500">CAPTCHA: {fieldErrors.cfToken[0]}</p>
             )}
           </div>
 
-          <button className="btn btn-primary d-grid w-100" type="submit" disabled={loading || !cfToken}>{loading ? 'Submitting...' : 'Send Reset Link'}</button>
+          {/* Submit */}
+          <button
+            className="btn btn-primary w-full"
+            type="submit"
+            disabled={loading || !cfToken}
+          >
+            {loading ? 'Submitting...' : 'Send Reset Link'}
+          </button>
         </form>
-        <div className="text-center">
-          <Link href="/login" className="d-flex justify-content-center"><i className="icon-base bx bx-chevron-left scaleX-n1-rtl me-1"></i>Back to login</Link>
+
+        <div className="text-center mt-6">
+          <Link href="/login" className="inline-flex items-center gap-1 text-sm font-medium">
+            <i className="bx bx-chevron-left text-lg"></i>
+            Back to login
+          </Link>
         </div>
       </div>
     </div>

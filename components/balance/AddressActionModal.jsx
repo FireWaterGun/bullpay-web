@@ -13,95 +13,92 @@ export default function AddressActionModal({
   onClose,
 }) {
   return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !actionLoading && onClose()}>
-      <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
-              <i className={`bx ${actionConfig.icon} me-2`}></i>
-              {actionConfig.title}
-            </h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={actionLoading}></button>
-          </div>
-          <div className="modal-body">
-            <div className="card mb-3" style={{ backgroundColor: 'var(--bs-tertiary-bg)', border: '1px solid var(--bs-border-color)' }}>
-              <div className="card-body py-2 px-3">
-                <div className="row g-2">
-                  <div className="col-6">
-                    <small className="text-muted d-block">Address ID</small>
-                    <strong>#{selectedAddress.id}</strong>
-                  </div>
-                  <div className="col-6">
-                    <small className="text-muted d-block">User ID</small>
-                    <strong>{selectedAddress.userId}</strong>
-                  </div>
-                  <div className="col-12">
-                    <small className="text-muted d-block">Address</small>
-                    <code style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>{selectedAddress.address}</code>
-                  </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => !actionLoading && onClose()}>
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <h5 className="font-semibold text-lg flex items-center">
+            <i className={`bx ${actionConfig.icon} mr-2`}></i>
+            {actionConfig.title}
+          </h5>
+          <button type="button" className="text-surface-400 hover:text-surface-600 text-xl" onClick={onClose} disabled={actionLoading}>
+            <i className="bx bx-x"></i>
+          </button>
+        </div>
+        <div className="px-6 py-4">
+          <div className="rounded-lg bg-surface-50 border border-surface-200 mb-3">
+            <div className="py-2 px-3">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <small className="text-surface-500 block">Address ID</small>
+                  <strong>#{selectedAddress.id}</strong>
+                </div>
+                <div>
+                  <small className="text-surface-500 block">User ID</small>
+                  <strong>{selectedAddress.userId}</strong>
+                </div>
+                <div className="col-span-2">
+                  <small className="text-surface-500 block">Address</small>
+                  <code style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>{selectedAddress.address}</code>
                 </div>
               </div>
             </div>
+          </div>
 
-            {actionType === 'delete' && (
-              <div className="alert alert-danger d-flex align-items-center mb-3" role="alert">
-                <i className="bx bx-error-circle me-2" style={{ fontSize: '1.25rem' }}></i>
-                <div>This action is <strong>irreversible</strong>. The address will be permanently deleted.</div>
-              </div>
-            )}
-
-            <div className="mb-3">
-              <label className="form-label">Reason <span className="text-danger">*</span></label>
-              <textarea
-                className="form-control"
-                rows="3"
-                placeholder="Enter reason (minimum 10 characters)..."
-                value={actionReason}
-                onChange={(e) => setActionReason(e.target.value)}
-                disabled={actionLoading}
-              ></textarea>
-              <small className="text-muted">{actionReason.trim().length}/500 characters</small>
+          {actionType === 'delete' && (
+            <div className="rounded-lg bg-red-50 text-red-700 p-3 flex items-center mb-3" role="alert">
+              <i className="bx bx-error-circle mr-2 text-xl"></i>
+              <div>This action is <strong>irreversible</strong>. The address will be permanently deleted.</div>
             </div>
+          )}
 
-            {actionType === 'forceVerify' && (
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="skipLockPeriod"
-                  checked={skipLockPeriod}
-                  onChange={(e) => setSkipLockPeriod(e.target.checked)}
-                  disabled={actionLoading}
-                />
-                <label className="form-check-label" htmlFor="skipLockPeriod">
-                  Skip lock period
-                </label>
-              </div>
+          <div className="mb-3">
+            <label className="form-label">Reason <span className="text-red-500">*</span></label>
+            <textarea
+              className="form-input w-full"
+              rows="3"
+              placeholder="Enter reason (minimum 10 characters)..."
+              value={actionReason}
+              onChange={(e) => setActionReason(e.target.value)}
+              disabled={actionLoading}
+            ></textarea>
+            <small className="text-surface-500">{actionReason.trim().length}/500 characters</small>
+          </div>
+
+          {actionType === 'forceVerify' && (
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                className="rounded border-surface-300"
+                type="checkbox"
+                checked={skipLockPeriod}
+                onChange={(e) => setSkipLockPeriod(e.target.checked)}
+                disabled={actionLoading}
+              />
+              <span className="text-sm">Skip lock period</span>
+            </label>
+          )}
+        </div>
+        <div className="flex justify-end gap-2 px-6 py-4 border-t">
+          <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={actionLoading}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className={`btn ${actionConfig.btnClass}`}
+            onClick={onAction}
+            disabled={actionLoading || actionReason.trim().length < 10}
+          >
+            {actionLoading ? (
+              <>
+                <span className="spinner w-4 h-4 border-2 mr-1"></span>
+                Processing...
+              </>
+            ) : (
+              <>
+                <i className={`bx ${actionConfig.icon} mr-1`}></i>
+                {actionConfig.btnLabel}
+              </>
             )}
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={actionLoading}>
-              Cancel
-            </button>
-            <button
-              type="button"
-              className={`btn ${actionConfig.btnClass}`}
-              onClick={onAction}
-              disabled={actionLoading || actionReason.trim().length < 10}
-            >
-              {actionLoading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-1"></span>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <i className={`bx ${actionConfig.icon} me-1`}></i>
-                  {actionConfig.btnLabel}
-                </>
-              )}
-            </button>
-          </div>
+          </button>
         </div>
       </div>
     </div>

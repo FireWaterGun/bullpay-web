@@ -5,12 +5,12 @@ import { formatUsd } from '@/lib/utils/format'
 function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
-      <div className="d-flex flex-column align-items-center justify-content-center" style={{ height }}>
-        <div className="rounded-circle bg-label-secondary d-flex align-items-center justify-content-center mb-3" style={{ width: 64, height: 64 }}>
-          <i className="bx bx-line-chart fs-2"></i>
+      <div className="flex flex-col items-center justify-center" style={{ height }}>
+        <div className="rounded-full bg-surface-100 flex items-center justify-center mb-3" style={{ width: 64, height: 64 }}>
+          <i className="bx bx-line-chart text-3xl"></i>
         </div>
-        <span className="fw-medium text-dark">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
-        <span className="text-muted small mt-1">{t ? t('userDashboard.noDataSub', { defaultValue: 'Select a date range with transactions' }) : 'Select a date range with transactions'}</span>
+        <span className="font-medium text-surface-900">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
+        <span className="text-surface-500 text-sm mt-1">{t ? t('userDashboard.noDataSub', { defaultValue: 'Select a date range with transactions' }) : 'Select a date range with transactions'}</span>
       </div>
     )
   }
@@ -85,7 +85,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                   top: yPos(v) - 8,
                   right: 8,
                   fontSize: '0.72rem',
-                  color: 'var(--bs-secondary-color)',
+                  color: 'var(--color-surface-500, #6b7280)',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -104,7 +104,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                   top: yPos(v),
                   left: 0,
                   right: 0,
-                  borderTop: v === 0 ? '1.5px solid var(--bs-secondary-color)' : '1px dashed var(--bs-border-color)',
+                  borderTop: v === 0 ? '1.5px solid var(--color-surface-500, #6b7280)' : '1px dashed var(--color-surface-200, #e5e7eb)',
                 }}
               />
             ))}
@@ -156,16 +156,16 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
           </div>
           {/* Legend */}
           <div style={{ width: 110, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12, paddingLeft: 16 }}>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, backgroundColor: 'var(--bs-primary)', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+            <div className="flex items-center gap-2">
+              <span style={{ width: 14, height: 14, backgroundColor: 'var(--color-primary-600, #696cff)', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
               <small>{t ? t('userDashboard.deposits', { defaultValue: 'Deposit' }) : 'Deposit'}</small>
             </div>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(var(--bs-gray-400) 0% 25%, var(--bs-gray-500) 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
+            <div className="flex items-center gap-2">
+              <span style={{ width: 14, height: 14, background: 'repeating-conic-gradient(#9ca3af 0% 25%, #6b7280 0% 50%) 50%/6px 6px', borderRadius: 3, display: 'inline-block', flexShrink: 0 }}></span>
               <small>{t ? t('userDashboard.withdrawals', { defaultValue: 'Withdrawal' }) : 'Withdrawal'}</small>
             </div>
-            <div className="d-flex align-items-center gap-2">
-              <span style={{ width: 16, borderBottom: '2px solid var(--bs-info)', display: 'inline-block', flexShrink: 0 }}></span>
+            <div className="flex items-center gap-2">
+              <span style={{ width: 16, borderBottom: '2px solid #03c3ec', display: 'inline-block', flexShrink: 0 }}></span>
               <small>{t ? t('userDashboard.netFlow', { defaultValue: 'Net Flow' }) : 'Net Flow'}</small>
             </div>
           </div>
@@ -174,7 +174,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
         <div style={{ display: 'flex', marginLeft: yAxisW, width: barAreaW }}>
           {data.map((item) => (
             <div key={`x-${item.date}`} style={{ width: barGroupW, textAlign: 'center', flexShrink: 0 }}>
-              <small className="text-muted" style={{ fontSize: '0.72rem' }}>
+              <small className="text-surface-500" style={{ fontSize: '0.72rem' }}>
                 {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
             </div>
@@ -183,21 +183,21 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
       </div>
       {/* Footer stats */}
       {meta && (
-        <div className="mt-3 p-3 rounded" style={{ backgroundColor: 'color-mix(in srgb, var(--bs-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--bs-primary) 10%, transparent)' }}>
-          <div className="d-flex flex-wrap gap-3 align-items-center">
+        <div className="mt-3 p-3 rounded-lg bg-primary-50 border border-primary-100">
+          <div className="flex flex-wrap gap-3 items-center">
             <div>
-              <i className="bx bx-calendar text-primary me-1"></i>
-              <small className="fw-medium">{meta.totalDays || 0} {t ? t('userDashboard.daysTotal', { defaultValue: 'days total' }) : 'days total'}</small>
-              <small className="text-muted mx-1">&bull;</small>
+              <i className="bx bx-calendar text-primary-600 mr-1"></i>
+              <small className="font-medium">{meta.totalDays || 0} {t ? t('userDashboard.daysTotal', { defaultValue: 'days total' }) : 'days total'}</small>
+              <small className="text-surface-500 mx-1">&bull;</small>
               <small>{meta.daysWithData || 0} {t ? t('userDashboard.daysWithData', { defaultValue: 'days with data' }) : 'days with data'}</small>
             </div>
             <div>
-              <small className="text-success">
+              <small className="text-green-500">
                 <i className="bx bx-up-arrow-alt"></i>
                 {meta.daysPositiveFlow || 0} {t ? t('userDashboard.daysPositiveFlow', { defaultValue: 'days positive flow' }) : 'days positive flow'}
               </small>
-              <small className="text-muted mx-1">&bull;</small>
-              <small className="text-danger">
+              <small className="text-surface-500 mx-1">&bull;</small>
+              <small className="text-red-500">
                 <i className="bx bx-down-arrow-alt"></i>
                 {meta.daysNegativeFlow || 0} {t ? t('userDashboard.daysNegative', { defaultValue: 'days negative' }) : 'days negative'}
               </small>

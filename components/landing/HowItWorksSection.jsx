@@ -1,97 +1,43 @@
 'use client'
 
+const STEPS = [
+  {
+    num: '01',
+    title: 'Create invoice',
+    desc: 'Generate a payment request via dashboard or API. A unique wallet address is assigned automatically.',
+  },
+  {
+    num: '02',
+    title: 'Customer pays',
+    desc: 'Your customer sends crypto to the invoice address. We monitor the blockchain in real time.',
+  },
+  {
+    num: '03',
+    title: 'Funds settled',
+    desc: 'Once confirmed, funds are swept to your wallet and your balance is credited instantly.',
+  },
+]
+
 export default function HowItWorksSection() {
   return (
-    <section className="position-relative" style={{ background: 'var(--bs-body-bg)', paddingTop: '6rem', paddingBottom: '6rem' }}>
-      {/* Decorative elements */}
-      <div className="position-absolute" style={{ top: '10%', right: '5%', width: '100px', height: '100px', background: 'rgba(var(--bs-primary-rgb), 0.1)', borderRadius: '50%', filter: 'blur(40px)' }}></div>
-      <div className="position-absolute" style={{ bottom: '10%', left: '5%', width: '150px', height: '150px', background: 'rgba(var(--bs-primary-rgb), 0.1)', borderRadius: '50%', filter: 'blur(60px)' }}></div>
-
-      <div className="container-xxl py-5 position-relative">
-        <div className="row justify-content-center mb-5">
-          <div className="col-lg-8 text-center">
-            <h2 className="display-5 fw-bold mb-3">How It Works</h2>
-            <p className="text-muted fs-6 mb-0">Accepting crypto payments through BULL PAY is simple. Here&apos;s how our payment platform works</p>
-          </div>
-        </div>
-
-        <div className="row g-4">
-          {/* Step 1 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm hover-lift">
-              <div className="card-body p-5">
-                <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 100%)', boxShadow: '0 10px 30px rgba(var(--bs-primary-rgb), 0.3)' }}>
-                  <span className="fs-3 fw-bold text-white">1</span>
-                </div>
-                <h4 className="card-title text-center fw-bold mb-3">Customer selects crypto</h4>
-                <p className="card-text text-muted text-center mb-0 fs-6">At checkout, the buyer chooses to pay with cryptocurrency</p>
-              </div>
-            </div>
+    <section className="landing-section">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="landing-tile landing-tile-blue">
+          <div className="text-center mb-5">
+            <h2 className="landing-section-title mb-3">Three steps to get paid</h2>
+            <p className="landing-section-subtitle mb-0" style={{ color: '#1e40af' }}>
+              Simple integration, instant results
+            </p>
           </div>
 
-          {/* Step 2 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm hover-lift">
-              <div className="card-body p-5">
-                <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 100%)', boxShadow: '0 10px 30px rgba(var(--bs-primary-rgb), 0.3)' }}>
-                  <span className="fs-3 fw-bold text-white">2</span>
-                </div>
-                <h4 className="card-title text-center fw-bold mb-3">Payment request is generated</h4>
-                <p className="card-text text-muted text-center mb-0 fs-6">Our system creates a unique payment invoice</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
+            {STEPS.map((step) => (
+              <div key={step.num}>
+                <div className="landing-step-badge mb-3">{step.num}</div>
+                <h4 className="font-bold mb-2" style={{ color: '#1a1a2e', fontSize: '1.25rem' }}>{step.title}</h4>
+                <p style={{ color: '#6b7280', fontSize: '0.95rem', margin: 0, lineHeight: 1.65 }}>{step.desc}</p>
               </div>
-            </div>
-          </div>
-
-          {/* Step 3 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm hover-lift">
-              <div className="card-body p-5">
-                <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 100%)', boxShadow: '0 10px 30px rgba(var(--bs-primary-rgb), 0.3)' }}>
-                  <span className="fs-3 fw-bold text-white">3</span>
-                </div>
-                <h4 className="card-title text-center fw-bold mb-3">Transaction is processed via blockchain</h4>
-                <p className="card-text text-muted text-center mb-0 fs-6">Funds are transferred securely through a decentralized network</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 4 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm hover-lift">
-              <div className="card-body p-5">
-                <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 100%)', boxShadow: '0 10px 30px rgba(var(--bs-primary-rgb), 0.3)' }}>
-                  <span className="fs-3 fw-bold text-white">4</span>
-                </div>
-                <h4 className="card-title text-center fw-bold mb-3">Instant confirmation</h4>
-                <p className="card-text text-muted text-center mb-0 fs-6">Blockchain validates the payment, ensuring fast and transparent transactions</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 5 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm hover-lift">
-              <div className="card-body p-5">
-                <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 100%)', boxShadow: '0 10px 30px rgba(var(--bs-primary-rgb), 0.3)' }}>
-                  <span className="fs-3 fw-bold text-white">5</span>
-                </div>
-                <h4 className="card-title text-center fw-bold mb-3">Funds settlement</h4>
-                <p className="card-text text-muted text-center mb-0 fs-6">You receive payments in crypto or convert them to fiat automatically</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 6 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm hover-lift">
-              <div className="card-body p-5">
-                <div className="d-flex align-items-center justify-content-center rounded-circle mb-4 mx-auto" style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 100%)', boxShadow: '0 10px 30px rgba(var(--bs-primary-rgb), 0.3)' }}>
-                  <span className="fs-3 fw-bold text-white">6</span>
-                </div>
-                <h4 className="card-title text-center fw-bold mb-3">Track and manage transactions</h4>
-                <p className="card-text text-muted text-center mb-0 fs-6">Monitor all payments via your dashboard</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

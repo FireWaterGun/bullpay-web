@@ -46,12 +46,12 @@ export default function CountdownTimer({ expiryAt, expiresAt, onExpired }) {
 
   if (timeLeft.expired) {
     return (
-      <div className="alert alert-danger mb-0">
-        <div className="d-flex align-items-center mb-2">
-          <i className="bx bx-time-five fs-5 me-2"></i>
-          <div className="fw-medium">{t('payment.expired') || 'Expired'}</div>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <div className="flex items-center mb-2">
+          <i className="bx bx-time-five text-xl mr-2 text-red-600"></i>
+          <div className="font-medium text-red-700">{t('payment.expired') || 'Expired'}</div>
         </div>
-        <small>{t('payment.expiredMessage') || 'This invoice has expired'}</small>
+        <small className="text-red-600">{t('payment.expiredMessage') || 'This invoice has expired'}</small>
       </div>
     )
   }
@@ -59,29 +59,29 @@ export default function CountdownTimer({ expiryAt, expiresAt, onExpired }) {
   const pad = (n) => String(n).padStart(2, '0')
 
   return (
-    <div className="alert alert-warning mb-0">
-      <div className="d-flex align-items-center mb-2">
-        <i className="bx bx-time-five fs-5 me-2"></i>
-        <div className="fw-medium">{t('payment.timeRemaining') || 'Time Remaining'}</div>
+    <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+      <div className="flex items-center mb-2">
+        <i className="bx bx-time-five text-xl mr-2 text-yellow-600"></i>
+        <div className="font-medium text-yellow-700">{t('payment.timeRemaining') || 'Time Remaining'}</div>
       </div>
-      <div className="d-flex gap-3 justify-content-center">
+      <div className="flex gap-3 justify-center">
         {timeLeft.days > 0 && (
           <div className="text-center">
-            <div className="fs-3 fw-bold">{pad(timeLeft.days)}</div>
-            <small className="text-muted">{t('time.days') || 'Days'}</small>
+            <div className="text-2xl font-bold text-yellow-800">{pad(timeLeft.days)}</div>
+            <small className="text-surface-500">{t('time.days') || 'Days'}</small>
           </div>
         )}
         <div className="text-center">
-          <div className="fs-3 fw-bold">{pad(timeLeft.hours)}</div>
-          <small className="text-muted">{t('time.hours') || 'Hours'}</small>
+          <div className="text-2xl font-bold text-yellow-800">{pad(timeLeft.hours)}</div>
+          <small className="text-surface-500">{t('time.hours') || 'Hours'}</small>
         </div>
         <div className="text-center">
-          <div className="fs-3 fw-bold">{pad(timeLeft.minutes)}</div>
-          <small className="text-muted">{t('time.minutes') || 'Minutes'}</small>
+          <div className="text-2xl font-bold text-yellow-800">{pad(timeLeft.minutes)}</div>
+          <small className="text-surface-500">{t('time.minutes') || 'Minutes'}</small>
         </div>
         <div className="text-center">
-          <div className="fs-3 fw-bold">{pad(timeLeft.seconds)}</div>
-          <small className="text-muted">{t('time.seconds') || 'Seconds'}</small>
+          <div className="text-2xl font-bold text-yellow-800">{pad(timeLeft.seconds)}</div>
+          <small className="text-surface-500">{t('time.seconds') || 'Seconds'}</small>
         </div>
       </div>
     </div>

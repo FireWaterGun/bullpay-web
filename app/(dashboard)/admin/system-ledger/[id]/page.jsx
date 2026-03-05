@@ -139,6 +139,7 @@ export default function SystemLedgerDetail() {
                   </h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
@@ -219,6 +220,7 @@ export default function SystemLedgerDetail() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             </div>

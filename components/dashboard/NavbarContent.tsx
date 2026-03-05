@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
@@ -22,9 +23,36 @@ interface NavbarContentProps {
   setLanguage: (lang: { code: string; dir: string; label: string }) => void
 }
 
-export default function NavbarContent({ fiatBalance, notificationRefreshRef, theme, setTheme, language, setLanguage }: NavbarContentProps) {
+/** Hook for click-outside-to-close dropdown */
+function useDropdown() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  return { open, setOpen, ref }
+}
+
+export default function NavbarContent({
+  fiatBalance,
+  notificationRefreshRef,
+  theme,
+  setTheme,
+  language,
+  setLanguage,
+}: NavbarContentProps) {
   const { t, i18n } = useTranslation()
   const { user, logout, isAdmin } = useAuth()
+
+  const langDd = useDropdown()
+  const userDd = useDropdown()
 
   const initials = String(user?.fullName || user?.name || user?.email || 'U')
     .split(/\s+|@/)
@@ -34,109 +62,134 @@ export default function NavbarContent({ fiatBalance, notificationRefreshRef, the
     .join('')
 
   return (
-    <div className="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
-      <ul className="navbar-nav flex-row align-items-center ms-md-auto">
-        {/* Balance Display */}
-        <li className="nav-item me-2 me-xl-0">
-          <div className="nav-link d-flex align-items-center" style={{ cursor: 'default' }}>
-            <i className="bx bxs-wallet-alt me-2 text-primary" style={{ fontSize: '1.25rem' }}></i>
-            <span className="d-none d-md-inline" style={{ fontSize: '1.05rem' }}>
-              {formatUsd(fiatBalance.amount)}
+    <div className="flex items-center justify-end flex-1 gap-1">
+      {/* Balance */}
+      <div className="flex items-center gap-2 px-3 py-1.5 text-surface-700">
+        <i className="bx bxs-wallet-alt text-primary-600 text-xl"></i>
+        <span className="hidden md:inline text-[15px] font-medium">{formatUsd(fiatBalance.amount)}</span>
+      </div>
+
+      {/* Language Dropdown */}
+      <div ref={langDd.ref} className="relative">
+        <button
+          onClick={() => langDd.setOpen(!langDd.open)}
+          className="flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors cursor-pointer"
+          title="Language"
+        >
+          <i className="bx bx-globe text-xl"></i>
+        </button>
+        <div className={`bp-dropdown-menu ${langDd.open ? 'bp-dropdown-open' : ''}`}>
+          {LANGS.map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => {
+                setLanguage(lang)
+                langDd.setOpen(false)
+              }}
+              className={`bp-dropdown-item w-full ${i18n.language === lang.code ? 'text-primary-600 font-medium' : ''}`}
+            >
+              {lang.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Theme Toggle */}
+      <button
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors cursor-pointer"
+        title={theme === 'dark' ? t('theme.light') : t('theme.dark')}
+      >
+        <i className={`bx ${theme === 'dark' ? 'bx-sun' : 'bx-moon'} text-xl`}></i>
+      </button>
+
+      {/* Notifications */}
+      <NotificationDropdown refreshRef={notificationRefreshRef} />
+
+      {/* User Dropdown */}
+      <div ref={userDd.ref} className="relative">
+        <button
+          onClick={() => userDd.setOpen(!userDd.open)}
+          className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden cursor-pointer"
+        >
+          {user?.avatarUrl ? (
+            <Image
+              src={user.avatarUrl}
+              alt="avatar"
+              width={38}
+              height={38}
+              className="rounded-full object-cover"
+              unoptimized
+            />
+          ) : (
+            <span className="flex items-center justify-center w-full h-full bg-primary-100 text-primary-600 text-sm font-semibold rounded-full">
+              {initials}
             </span>
-          </div>
-        </li>
-
-        {/* Language */}
-        <li className="nav-item dropdown-language dropdown me-2 me-xl-0">
-          <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
-            <i className="icon-base bx bx-globe icon-md"></i>
-          </a>
-          <ul className="dropdown-menu dropdown-menu-end">
-            {LANGS.map(lang => (
-              <li key={lang.code}>
-                <a
-                  className={`dropdown-item ${i18n.language === lang.code ? 'active' : ''}`}
-                  href="#"
-                  onClick={(e) => { e.preventDefault(); setLanguage(lang) }}
-                  data-language={lang.code}
-                  data-text-direction={lang.dir}
-                >
-                  <span>{lang.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </li>
-
-        {/* Theme Toggle */}
-        <li className="nav-item me-2 me-xl-0">
-          <a
-            className="nav-link"
-            href="#"
-            onClick={(e) => { e.preventDefault(); setTheme(theme === 'dark' ? 'light' : 'dark') }}
-            title={theme === 'dark' ? t('theme.light') : t('theme.dark')}
-          >
-            <i className={`icon-base bx ${theme === 'dark' ? 'bx-sun' : 'bx-moon'} icon-md`}></i>
-          </a>
-        </li>
-
-        {/* Notifications */}
-        <NotificationDropdown refreshRef={notificationRefreshRef} />
-
-        {/* User */}
-        <li className="nav-item navbar-dropdown dropdown-user dropdown">
-          <a className="nav-link dropdown-toggle hide-arrow" href="#" onClick={(e) => e.preventDefault()} data-bs-toggle="dropdown">
-            <div className="avatar avatar-online">
-              {user?.avatarUrl ? (
-                <Image src={user.avatarUrl} alt="avatar" width={38} height={38} className="rounded-circle" unoptimized />
-              ) : (
-                <span className="avatar-initial rounded-circle bg-label-primary">{initials}</span>
-              )}
+          )}
+        </button>
+        <div
+          className={`bp-dropdown-menu min-w-[220px] ${userDd.open ? 'bp-dropdown-open' : ''}`}
+        >
+          {/* User info header */}
+          <div className="px-4 py-3 border-b border-surface-100">
+            <div className="flex items-center gap-3">
+              <div className="shrink-0">
+                {user?.avatarUrl ? (
+                  <Image
+                    src={user.avatarUrl}
+                    alt="avatar"
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <span className="flex items-center justify-center w-10 h-10 bg-primary-100 text-primary-600 text-sm font-semibold rounded-full">
+                    {initials}
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-surface-900 truncate">
+                  {user?.fullName || user?.name || user?.email || 'User'}
+                </p>
+                <p className="text-xs text-surface-400 truncate">
+                  {isAdmin ? (
+                    <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold bg-danger-100 text-danger-600 rounded">
+                      Admin
+                    </span>
+                  ) : (
+                    <span>{user?.role || 'User'}</span>
+                  )}
+                </p>
+              </div>
             </div>
-          </a>
-          <ul className="dropdown-menu dropdown-menu-end">
-            <li>
-              <a className="dropdown-item" href="#" onClick={(e) => e.preventDefault()}>
-                <div className="d-flex">
-                  <div className="flex-shrink-0 me-3">
-                    <div className="avatar avatar-online">
-                      {user?.avatarUrl ? (
-                        <Image src={user.avatarUrl} alt="avatar" width={40} height={40} className="w-px-40 h-auto rounded-circle" unoptimized />
-                      ) : (
-                        <span className="avatar-initial rounded-circle bg-label-primary">{initials}</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex-grow-1">
-                    <span className="fw-medium d-block">{user?.fullName || user?.name || user?.email || 'User'}</span>
-                    <small className="text-muted">
-                      {isAdmin ? (
-                        <span className="badge bg-label-danger badge-sm">Admin</span>
-                      ) : (
-                        <span>{user?.role || 'User'}</span>
-                      )}
-                    </small>
-                  </div>
-                </div>
-              </a>
-            </li>
-            <li><div className="dropdown-divider"></div></li>
-            {!isAdmin && (
-              <li>
-                <Link className="dropdown-item" href="/settings">
-                  <i className="icon-base bx bx-cog icon-md me-3"></i><span>{t('nav.settings')}</span>
-                </Link>
-              </li>
-            )}
-            <li><div className="dropdown-divider"></div></li>
-            <li>
-              <a className="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); logout(); window.location.href = '/login' }}>
-                <i className="icon-base bx bx-log-out icon-md me-3"></i><span>{t('user.logout')}</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
+          </div>
+          {/* Menu items */}
+          {!isAdmin && (
+            <Link
+              href="/settings"
+              onClick={() => userDd.setOpen(false)}
+              className="bp-dropdown-item"
+            >
+              <i className="bx bx-cog text-lg"></i>
+              <span>{t('nav.settings')}</span>
+            </Link>
+          )}
+          <div className="border-t border-surface-100 my-1"></div>
+          <button
+            onClick={() => {
+              userDd.setOpen(false)
+              logout()
+              window.location.href = '/login'
+            }}
+            className="bp-dropdown-item w-full"
+          >
+            <i className="bx bx-log-out text-lg"></i>
+            <span>{t('user.logout')}</span>
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

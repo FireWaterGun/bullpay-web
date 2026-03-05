@@ -176,6 +176,7 @@ export default function UserLedgerDetail() {
                   </h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
@@ -250,6 +251,7 @@ export default function UserLedgerDetail() {
                       </tr>
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -264,6 +266,7 @@ export default function UserLedgerDetail() {
                   </h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless">
                     <tbody>
                       {entry.reservationId && (
@@ -308,6 +311,7 @@ export default function UserLedgerDetail() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
 
@@ -320,6 +324,7 @@ export default function UserLedgerDetail() {
                   </h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
@@ -352,6 +357,7 @@ export default function UserLedgerDetail() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
 

@@ -152,50 +152,44 @@ function MyLedgerListContent() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="row">
-        <div className="col-12">
-          {/* Header + Filters */}
-          <div className="card mb-4">
-            <div className="card-header">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                  <h4 className="mb-1">
-                    <i className="bx bx-book-content me-2"></i>
-                    {t('userLedger.title', { defaultValue: 'My Ledger' })}
-                  </h4>
-                  <p className="text-muted mb-0">
-                    {t('userLedger.description', { defaultValue: 'View your ledger entries and transaction history' })}
-                  </p>
-                </div>
-                <RefreshButton onClick={loadEntries} loading={loading} />
-              </div>
-            </div>
-            <MyLedgerFilterPanel
-              entryCodeFilter={entryCodeFilter} setEntryCodeFilter={setEntryCodeFilter}
-              stateFilter={stateFilter} setStateFilter={setStateFilter}
-              coinNetworkIdFilter={coinNetworkIdFilter} setCoinNetworkIdFilter={setCoinNetworkIdFilter}
-              datePresetFilter={datePresetFilter} setDatePresetFilter={setDatePresetFilter}
-              txHashFilter={txHashFilter} setTxHashFilter={setTxHashFilter}
-              coinNetworks={coinNetworks}
-              loading={loading}
-              onApply={applyFilters}
-              onReset={resetFilters}
-            />
+    <>
+      {/* Header + Filters */}
+      <div className="card mb-6">
+        <div className="px-6 py-4 border-b border-surface-100 flex justify-between items-center flex-wrap gap-3">
+          <div>
+            <h4 className="font-semibold text-surface-900 mb-1">
+              <i className="bx bx-book-content mr-2 text-primary-500"></i>
+              {t('userLedger.title', { defaultValue: 'My Ledger' })}
+            </h4>
+            <p className="text-surface-500 text-sm mb-0">
+              {t('userLedger.description', { defaultValue: 'View your ledger entries and transaction history' })}
+            </p>
           </div>
-
-          {/* Table */}
-          <MyLedgerTable
-            entries={entries}
-            pagination={pagination}
-            loading={loading}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            syncSearchParams={syncSearchParams}
-            appliedFilters={appliedFilters}
-          />
+          <RefreshButton onClick={loadEntries} loading={loading} />
         </div>
+        <MyLedgerFilterPanel
+          entryCodeFilter={entryCodeFilter} setEntryCodeFilter={setEntryCodeFilter}
+          stateFilter={stateFilter} setStateFilter={setStateFilter}
+          coinNetworkIdFilter={coinNetworkIdFilter} setCoinNetworkIdFilter={setCoinNetworkIdFilter}
+          datePresetFilter={datePresetFilter} setDatePresetFilter={setDatePresetFilter}
+          txHashFilter={txHashFilter} setTxHashFilter={setTxHashFilter}
+          coinNetworks={coinNetworks}
+          loading={loading}
+          onApply={applyFilters}
+          onReset={resetFilters}
+        />
       </div>
-    </div>
+
+      {/* Table */}
+      <MyLedgerTable
+        entries={entries}
+        pagination={pagination}
+        loading={loading}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        syncSearchParams={syncSearchParams}
+        appliedFilters={appliedFilters}
+      />
+    </>
   )
 }

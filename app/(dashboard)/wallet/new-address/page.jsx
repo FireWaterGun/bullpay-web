@@ -120,62 +120,65 @@ export default function WalletNewAddressPage() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      {error && <div className="alert alert-danger">{error}</div>}
+    <>
+      {error && <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">{error}</div>}
 
       {/* Step 1: Select Coin */}
-      <div className="card mb-4">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">1</span>
-          <h6 className="mb-0">{t('form.selectCoin')}</h6>
+      <div className="card mb-6">
+        <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">1</span>
+          <h6 className="font-semibold text-surface-900 mb-0">{t('form.selectCoin')}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           {loadingCoins ? (
-            <div className="text-muted">{t('invoices.loading')}</div>
+            <p className="text-surface-500">{t('invoices.loading')}</p>
           ) : (
-            <div className="row g-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {Object.entries(grouped).map(([sym, group]) => {
                 const isActive = selectedCoin === sym
                 const networksCount = group.items.length
                 return (
-                  <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={sym}>
-                    <div
-                      role="button"
-                      className={`card h-100 border-2 rounded-3 overflow-hidden ${isActive ? 'border-primary bg-label-primary shadow-sm' : 'border-2'}`}
-                      onClick={() => {
-                        setSelectedCoin(sym)
-                        if (!group.items.some(i => String(i.id) === String(coinNetworkId))) setCoinNetworkId('')
-                      }}
-                    >
-                      <div className="card-body d-flex align-items-center gap-3">
-                        <CoinImg coin={group.coin} symbol={sym} size={36} showFallback imgClassName="rounded" />
-                        <div>
-                          <div className="fw-bold">{sym}</div>
-                          <div className="text-muted small">{group.coin?.name || ''}</div>
-                          {networksCount > 1 && (
-                            <div className="text-muted small">{t('wallet.networksCount', { count: networksCount, defaultValue: '{{count}} networks' })}</div>
-                          )}
-                        </div>
+                  <button
+                    type="button"
+                    key={sym}
+                    className={`text-left rounded-xl border-2 p-3 transition-all cursor-pointer ${
+                      isActive
+                        ? 'border-primary-500 bg-primary-50 shadow-sm'
+                        : 'border-surface-200 hover:border-surface-300 bg-white'
+                    }`}
+                    onClick={() => {
+                      setSelectedCoin(sym)
+                      if (!group.items.some(i => String(i.id) === String(coinNetworkId))) setCoinNetworkId('')
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <CoinImg coin={group.coin} symbol={sym} size={36} showFallback imgClassName="rounded" />
+                      <div>
+                        <div className="font-bold text-surface-900">{sym}</div>
+                        <div className="text-surface-500 text-xs">{group.coin?.name || ''}</div>
+                        {networksCount > 1 && (
+                          <div className="text-surface-400 text-xs">{t('wallet.networksCount', { count: networksCount, defaultValue: '{{count}} networks' })}</div>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  </button>
                 )
               })}
-              {coins.length === 0 && <div className="col-12 text-muted">{t('common.noData') || 'No coins'}</div>}
+              {coins.length === 0 && <p className="col-span-full text-surface-500">{t('common.noData') || 'No coins'}</p>}
             </div>
           )}
         </div>
       </div>
 
       {/* Step 2: Select Network */}
-      <div className="card mb-4">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">2</span>
-          <h6 className="mb-0">{t('form.selectNetwork')}</h6>
+      <div className="card mb-6">
+        <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">2</span>
+          <h6 className="font-semibold text-surface-900 mb-0">{t('form.selectNetwork')}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           {selectedCoin ? (
-            <div className="d-flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {networks.map(n => {
                 const selected = String(coinNetworkId) === String(n.id)
                 const networkLabel = getNetworkLabel(n, { symbol: selectedCoin })
@@ -190,27 +193,27 @@ export default function WalletNewAddressPage() {
                   </button>
                 )
               })}
-              {networks.length === 0 && <div className="text-muted small">{t('common.noData')}</div>}
+              {networks.length === 0 && <p className="text-surface-500 text-sm">{t('common.noData')}</p>}
             </div>
           ) : (
-            <div className="text-muted">{t('form.selectCoin')}</div>
+            <p className="text-surface-500">{t('form.selectCoin')}</p>
           )}
         </div>
       </div>
 
       {/* Step 3: Address + Save */}
       <form onSubmit={onSubmit} className="card">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">3</span>
-          <h6 className="mb-0">{t('wallet.enterAddress', { defaultValue: 'Enter address' })}</h6>
+        <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">3</span>
+          <h6 className="font-semibold text-surface-900 mb-0">{t('wallet.enterAddress', { defaultValue: 'Enter address' })}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           <input type="hidden" name="coinNetworkId" value={coinNetworkId} />
-          <div className="row g-3">
-            <div className="col-12 col-md-8 col-lg-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
               <label className="form-label">{t('wallet.address', { defaultValue: 'Address' })}</label>
               <input
-                className="form-control"
+                className="form-input"
                 placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })}
                 maxLength={128}
                 value={address}
@@ -218,10 +221,10 @@ export default function WalletNewAddressPage() {
                 required
               />
             </div>
-            <div className="col-12 col-md-8 col-lg-6">
+            <div>
               <label className="form-label">{t('wallet.label', { defaultValue: 'Label' })}</label>
               <input
-                className="form-control"
+                className="form-input"
                 placeholder={t('wallet.labelPlaceholder', { defaultValue: 'e.g., My Binance Wallet' })}
                 maxLength={100}
                 value={label}
@@ -229,10 +232,10 @@ export default function WalletNewAddressPage() {
                 required
               />
             </div>
-            <div className="col-12 col-md-8 col-lg-6">
+            <div className="md:col-span-2">
               <label className="form-label">{t('wallet.memo', { defaultValue: 'Memo (Optional)' })}</label>
               <textarea
-                className="form-control"
+                className="form-input"
                 placeholder={t('wallet.memoPlaceholder', { defaultValue: 'Optional memo text' })}
                 rows={3}
                 maxLength={500}
@@ -242,7 +245,7 @@ export default function WalletNewAddressPage() {
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end gap-2">
+        <div className="px-6 py-4 border-t border-surface-100 flex justify-end gap-2">
           <button type="button" className="btn btn-outline-secondary" onClick={() => router.back()} disabled={saving}>
             {t('actions.back') || 'Back'}
           </button>
@@ -251,6 +254,6 @@ export default function WalletNewAddressPage() {
           </button>
         </div>
       </form>
-    </div>
+    </>
   )
 }

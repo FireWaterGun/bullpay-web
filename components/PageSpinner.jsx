@@ -7,10 +7,10 @@
  */
 export default function PageSpinner() {
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="text-center py-5">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+    <div className="flex-grow py-6">
+      <div className="flex justify-center items-center py-12">
+        <div className="spinner w-8 h-8 border-3 text-primary-600" role="status">
+          <span className="sr-only">Loading...</span>
         </div>
       </div>
     </div>

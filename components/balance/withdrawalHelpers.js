@@ -36,23 +36,25 @@ export function formatAddressStatus(s, t) {
 }
 
 export function addressStatusBadgeClass(s) {
+  const base = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium'
   const v = String(s || '').toLowerCase()
-  if (v === 'pending_verification') return 'badge bg-label-warning'
-  if (v === 'active') return 'badge bg-label-success'
-  if (v === 'suspended') return 'badge bg-label-danger'
-  if (v === 'deleted') return 'badge bg-label-secondary'
-  return 'badge bg-label-secondary'
+  if (v === 'pending_verification') return `${base} bg-amber-100 text-amber-700`
+  if (v === 'active') return `${base} bg-green-100 text-green-700`
+  if (v === 'suspended') return `${base} bg-red-100 text-red-700`
+  if (v === 'deleted') return `${base} bg-surface-100 text-surface-600`
+  return `${base} bg-surface-100 text-surface-600`
 }
 
 export function statusBadgeClass(s) {
+  const base = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium'
   const v = String(s || '').toUpperCase()
-  if (v === 'PENDING') return 'badge bg-label-warning'
-  if (v === 'WAITING_FOR_GAS') return 'badge bg-label-warning'
-  if (v === 'PROCESSING' || v === 'APPROVED') return 'badge bg-label-info'
-  if (v === 'COMPLETED' || v === 'SUCCESS') return 'badge bg-label-success'
-  if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return 'badge bg-label-danger'
-  if (v === 'CANCELLED' || v === 'CANCELED') return 'badge bg-label-secondary'
-  return 'badge bg-label-secondary'
+  if (v === 'PENDING') return `${base} bg-amber-100 text-amber-700`
+  if (v === 'WAITING_FOR_GAS') return `${base} bg-amber-100 text-amber-700`
+  if (v === 'PROCESSING' || v === 'APPROVED') return `${base} bg-blue-100 text-blue-700`
+  if (v === 'COMPLETED' || v === 'SUCCESS') return `${base} bg-green-100 text-green-700`
+  if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return `${base} bg-red-100 text-red-700`
+  if (v === 'CANCELLED' || v === 'CANCELED') return `${base} bg-surface-100 text-surface-600`
+  return `${base} bg-surface-100 text-surface-600`
 }
 
 export function formatStatusLabel(s) {

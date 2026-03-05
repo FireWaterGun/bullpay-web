@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
-import { cleanupModalArtifacts } from '@/hooks/useModalCleanup'
+import React, { useEffect, useCallback, useRef } from 'react'
 
-// ConfirmModal now relies on Bootstrap's Modal JS from the theme for show/hide/backdrop
+/**
+ * ConfirmModal – pure React / Tailwind replacement (no Bootstrap JS dependency).
+ * API is kept identical so every existing consumer works unchanged.
+ */
 export default function ConfirmModal({
   show,
   title = 'Confirm',
@@ -16,108 +18,112 @@ export default function ConfirmModal({
   size, // 'sm' | 'lg' | 'xl' | undefined (default medium)
   centered = true,
   variant = 'basic', // 'basic' | 'simple'
-  staticBackdrop = false, // use theme/Bootstrap backdrop behavior
-  keyboard = true, // allow ESC to close when not busy
-  confirmVariant = 'danger', // bootstrap color for confirm button
-  cancelVariant = 'outline-secondary', // bootstrap color for cancel button
+  staticBackdrop = false,
+  keyboard = true,
+  confirmVariant = 'danger',
+  cancelVariant = 'outline-secondary',
 }) {
-  const modalRef = useRef(null)
-  const instanceRef = useRef(null)
+  const overlayRef = useRef(null)
 
-  // Create bootstrap.Modal instance once and register events
+  // ESC key handler
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Escape' && keyboard && !busy && onCancel) onCancel()
+    },
+    [keyboard, busy, onCancel],
+  )
+
   useEffect(() => {
-    const el = modalRef.current
-    const Modal = window?.bootstrap?.Modal
-    if (!el || !Modal) return
-
-    instanceRef.current = new Modal(el, {
-      backdrop: staticBackdrop ? 'static' : true,
-      keyboard: keyboard && !busy,
-      focus: true,
-    })
-
-    const handleHidden = () => { onCancel && onCancel() }
-    el.addEventListener('hidden.bs.modal', handleHidden)
-
-    return () => {
-      el.removeEventListener('hidden.bs.modal', handleHidden)
-      try {
-        // ensure hidden before dispose to clean backdrops
-        instanceRef.current?.hide()
-        instanceRef.current?.dispose()
-        cleanupModalArtifacts()
-      } catch {}
-      instanceRef.current = null
+    if (show) {
+      document.addEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'hidden'
     }
-  // only run once on mount/unmount
-  }, [])
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [show, handleKeyDown])
 
-  // Sync visibility with props without recreating instance (avoids leftover backdrop)
-  useEffect(() => {
-    const inst = instanceRef.current
-    if (!inst) return
-    if (show) inst.show(); else inst.hide()
-  }, [show])
+  if (!show) return null
 
-  const sizeClass = size === 'lg' ? 'modal-lg' : size === 'xl' ? 'modal-xl' : size === 'sm' ? 'modal-sm' : ''
-  const dialogClasses = ['modal-dialog']
-  if (centered) dialogClasses.push('modal-dialog-centered')
-  if (variant === 'simple') dialogClasses.push('modal-simple')
-  if (sizeClass) dialogClasses.push(sizeClass)
+  const handleBackdropClick = (e) => {
+    if (e.target === overlayRef.current && !staticBackdrop && !busy && onCancel) onCancel()
+  }
+
+  const maxWidthMap = { sm: '300px', lg: '600px', xl: '800px' }
+  const maxW = maxWidthMap[size] || '500px'
+
   const confirmBtnClass = `btn btn-${confirmVariant}`
   const cancelBtnClass = `btn btn-${cancelVariant}`
 
   return (
     <div
-      ref={modalRef}
-      className="modal fade"
-      tabIndex="-1"
-      aria-hidden="true"
-      data-bs-backdrop={staticBackdrop ? 'static' : undefined}
-      data-bs-keyboard={keyboard && !busy ? 'true' : 'false'}
+      ref={overlayRef}
+      className={`fixed inset-0 z-50 flex ${centered ? 'items-center' : 'items-start pt-10'} justify-center`}
+      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      onClick={handleBackdropClick}
     >
-      <div className={dialogClasses.join(' ')} role="document">
-        <div className="modal-content">
-          {variant === 'basic' ? (
-            <>
-              <div className="modal-header">
-                <h5 className="modal-title">{title}</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  aria-label="Close"
-                  onClick={busy ? undefined : onCancel}
-                  disabled={busy}
-                ></button>
-              </div>
-              <div className="modal-body">
-                {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className={cancelBtnClass} onClick={onCancel} disabled={busy}>{cancelText}</button>
-                <button type="button" className={confirmBtnClass} onClick={onConfirm} disabled={busy}>
-                  {busy ? (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>) : null}
-                  {confirmText}
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="modal-body">
-              <button type="button" className="btn-close" aria-label="Close" onClick={busy ? undefined : onCancel} disabled={busy}></button>
-              <div className="text-center mb-6">
-                <h4 className="mb-2">{title}</h4>
-                {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
-              </div>
-              <div className="d-flex justify-content-center gap-2">
-                <button type="button" className={cancelBtnClass} onClick={onCancel} disabled={busy}>{cancelText}</button>
-                <button type="button" className={confirmBtnClass} onClick={onConfirm} disabled={busy}>
-                  {busy ? (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>) : null}
-                  {confirmText}
-                </button>
-              </div>
+      <div
+        className="bg-white rounded-xl shadow-xl mx-4 w-full"
+        style={{ maxWidth: maxW }}
+      >
+        {variant === 'basic' ? (
+          <>
+            <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
+              <h5 className="font-semibold text-lg">{title}</h5>
+              <button
+                type="button"
+                className="text-surface-400 hover:text-surface-700 text-xl leading-none"
+                aria-label="Close"
+                onClick={busy ? undefined : onCancel}
+                disabled={busy}
+              >
+                &times;
+              </button>
             </div>
-          )}
-        </div>
+            <div className="p-6">
+              {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
+            </div>
+            <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
+              <button type="button" className={cancelBtnClass} onClick={onCancel} disabled={busy}>
+                {cancelText}
+              </button>
+              <button type="button" className={confirmBtnClass} onClick={onConfirm} disabled={busy}>
+                {busy ? (
+                  <span className="spinner w-4 h-4 border-2 mr-2 inline-block align-middle" role="status" aria-hidden="true"></span>
+                ) : null}
+                {confirmText}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="p-6 relative">
+            <button
+              type="button"
+              className="absolute top-4 right-4 text-surface-400 hover:text-surface-700 text-xl leading-none"
+              aria-label="Close"
+              onClick={busy ? undefined : onCancel}
+              disabled={busy}
+            >
+              &times;
+            </button>
+            <div className="text-center mb-6">
+              <h4 className="mb-2 font-semibold text-lg">{title}</h4>
+              {typeof message === 'string' ? <p className="mb-0">{message}</p> : message}
+            </div>
+            <div className="flex justify-center gap-2">
+              <button type="button" className={cancelBtnClass} onClick={onCancel} disabled={busy}>
+                {cancelText}
+              </button>
+              <button type="button" className={confirmBtnClass} onClick={onConfirm} disabled={busy}>
+                {busy ? (
+                  <span className="spinner w-4 h-4 border-2 mr-2 inline-block align-middle" role="status" aria-hidden="true"></span>
+                ) : null}
+                {confirmText}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -12,7 +12,7 @@ function ensureStyles() {
   style.id = STYLE_ID
   style.textContent = [
     '@keyframes refresh-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }',
-    '@keyframes topbar-glow { 0%,100% { box-shadow: 0 0 8px var(--bs-primary, #696cff), 0 0 4px var(--bs-primary, #696cff); } 50% { box-shadow: 0 0 16px var(--bs-primary, #696cff), 0 0 8px var(--bs-primary, #696cff); } }',
+    '@keyframes topbar-glow { 0%,100% { box-shadow: 0 0 8px var(--color-primary-600, #696cff), 0 0 4px var(--color-primary-600, #696cff); } 50% { box-shadow: 0 0 16px var(--color-primary-600, #696cff), 0 0 8px var(--color-primary-600, #696cff); } }',
   ].join('\n')
   document.head.appendChild(style)
 }
@@ -217,7 +217,7 @@ const topBarContainerStyle: React.CSSProperties = {
 
 const topBarStyle: React.CSSProperties = {
   height: '100%',
-  backgroundColor: 'var(--bs-primary, #696cff)',
+  backgroundColor: 'var(--color-primary-600, #696cff)',
   position: 'relative',
 }
 

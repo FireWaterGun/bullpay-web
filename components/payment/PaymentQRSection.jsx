@@ -18,12 +18,12 @@ export default function PaymentQRSection({
   return (
     <div className="mb-4">
       {/* QR + Amount Card */}
-      <div className="rounded-3 p-3" style={{ border: '1px solid var(--bs-border-color)' }}>
-        <div className="d-flex gap-3 align-items-center">
+      <div className="rounded-lg p-3" style={{ border: '1px solid var(--color-surface-200)' }}>
+        <div className="flex gap-3 items-center">
           {/* QR Code - Left */}
           {!isPaid && (
-            <div className="text-center flex-shrink-0">
-              <div className="d-inline-block position-relative p-2 rounded-3" style={{ background: 'var(--bs-body-bg)' }}>
+            <div className="text-center shrink-0">
+              <div className="inline-block relative p-2 rounded-lg" style={{ background: 'var(--color-surface-0, #fff)' }}>
                 <QRCode
                   value={paymentValue}
                   size={130}
@@ -31,45 +31,45 @@ export default function PaymentQRSection({
                   level="H"
                 />
               </div>
-              <div className="mt-2" style={{ fontSize: '0.75rem', color: 'var(--bs-secondary-color)', fontWeight: 500 }}>
+              <div className="mt-2" style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)', fontWeight: 500 }}>
                 {t("payment.scanToPay") || "Scan to Pay"}
               </div>
             </div>
           )}
 
           {/* Coin Info + Amount - Right */}
-          <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center" style={{ minWidth: 0 }}>
+          <div className="grow flex flex-col items-center justify-center" style={{ minWidth: 0 }}>
             {/* Coin */}
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={32} imgClassName="rounded-circle" />
+            <div className="flex items-center gap-2 mb-2">
+              <CoinImg symbol={coinSym} logoUrl={invoice?.coin?.logoUrl} size={32} imgClassName="rounded-full" />
               <div>
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--bs-heading-color)', lineHeight: 1.2 }}>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-surface-900)', lineHeight: 1.2 }}>
                   {coinSym}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--bs-secondary-color)', fontWeight: 500 }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--color-surface-500)', fontWeight: 500 }}>
                   on {networkName || 'Network'}
                 </div>
               </div>
             </div>
 
             {/* Amount */}
-            <div className="d-flex align-items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1">
               <span style={{
                 fontSize, fontWeight: 800, letterSpacing: '-0.5px',
-                color: 'var(--bs-primary)', lineHeight: 1,
+                color: 'var(--color-primary-600)', lineHeight: 1,
               }}>
                 {amtStr}
               </span>
               {invoice.amount != null && !isPaid && (
                 <button
                   type="button"
-                  className="btn btn-sm btn-icon flex-shrink-0"
+                  className="btn btn-sm btn-icon shrink-0"
                   style={{
                     width: 30, height: 30,
-                    border: '1px solid var(--bs-border-color)',
+                    border: '1px solid var(--color-surface-200)',
                     borderRadius: 8,
-                    background: copiedAmt ? 'var(--bs-success)' : 'var(--bs-body-bg)',
-                    color: copiedAmt ? '#fff' : 'var(--bs-secondary-color)',
+                    background: copiedAmt ? '#22c55e' : 'var(--color-surface-0, #fff)',
+                    color: copiedAmt ? '#fff' : 'var(--color-surface-500)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: 0,
                     transition: 'all 0.2s ease',
@@ -84,7 +84,7 @@ export default function PaymentQRSection({
 
             {/* Fiat Equivalent */}
             {(invoice.fiatAmount || invoice.fiatCurrency) && (
-              <div style={{ fontSize: '0.78rem', color: 'var(--bs-secondary-color)', fontWeight: 500 }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-surface-500)', fontWeight: 500 }}>
                 ≈ ${invoice.fiatAmount || '0.00'} {invoice.fiatCurrency || 'USD'}
               </div>
             )}

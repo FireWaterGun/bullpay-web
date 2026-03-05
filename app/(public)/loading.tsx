@@ -1,8 +1,8 @@
 export default function PublicLoading() {
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
+    <div className="flex justify-center items-center" style={{ minHeight: '80vh' }}>
+      <div className="spinner w-8 h-8 border-3 text-primary-600" role="status">
+        <span className="sr-only">Loading...</span>
       </div>
     </div>
   )

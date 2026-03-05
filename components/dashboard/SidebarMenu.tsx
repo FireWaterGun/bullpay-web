@@ -4,24 +4,48 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 
+/* ── Section Header (Sneat: short line at left + uppercase label) ── */
 export function SectionHeader({ label }: { label: string }) {
   return (
-    <li className="menu-header small text-uppercase">
-      <span className="menu-header-text">{label}</span>
+    <li className="bp-section-hdr px-[2rem]">
+      <span className="text-[11px] font-bold uppercase tracking-[0.4px] text-surface-400">
+        {label}
+      </span>
     </li>
   )
 }
 
-export function MenuItem({ to, icon, label, end, badge }: { to: string; icon: string; label: string; end?: boolean; badge?: number }) {
+/* ── Single Menu Item ── */
+export function MenuItem({
+  to,
+  icon,
+  label,
+  end,
+  badge,
+}: {
+  to: string
+  icon: string
+  label: string
+  end?: boolean
+  badge?: number
+}) {
   const pathname = usePathname()
-  const isActive = end ? pathname === to : (pathname === to || pathname.startsWith(to + '/'))
+  const isActive = end ? pathname === to : pathname === to || pathname.startsWith(to + '/')
+
   return (
-    <li className={`menu-item ${isActive ? 'active' : ''}`}>
-      <Link href={to} className="menu-link" style={{ position: 'relative' }}>
-        <i className={`menu-icon bx ${icon}`}></i>
-        <div>{label}</div>
+    <li className={isActive ? 'bp-active-item' : ''}>
+      <Link
+        href={to}
+        className={`bp-menu-link flex items-center gap-2 mx-4 px-[0.9375rem] py-[0.3125rem] text-[0.9375rem] relative ${
+          isActive
+            ? 'bp-active'
+            : ''
+        }`}
+      >
+        <i className={`bp-menu-icon bx ${icon} text-[1.375rem] shrink-0 w-[1.375rem] mr-2`}></i>
+        <span className="bp-label truncate leading-[1.375rem]">{label}</span>
         {!!badge && badge > 0 && (
-          <span className="badge rounded-pill bg-danger" style={badgeStyle}>
+          <span className="bp-badge ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-danger-500 rounded-full">
             {badge > 99 ? '99+' : badge}
           </span>
         )}
@@ -30,15 +54,55 @@ export function MenuItem({ to, icon, label, end, badge }: { to: string; icon: st
   )
 }
 
-export function SubItem({ to, label, end, badge }: { to: string; label: string; end?: boolean; badge?: number }) {
+/* ── Sub Item (inside a MenuGroup) ── */
+export function SubItem({
+  to,
+  label,
+  end,
+  badge,
+  external,
+}: {
+  to: string
+  label: string
+  end?: boolean
+  badge?: number
+  external?: boolean
+}) {
   const pathname = usePathname()
-  const isActive = end ? pathname === to : (pathname === to || pathname.startsWith(to + '/'))
+  const isActive =
+    !external && (end ? pathname === to : pathname === to || pathname.startsWith(to + '/'))
+
+  if (external) {
+    return (
+      <li>
+        <a
+          href={to}
+          className="bp-menu-link flex items-center pl-10 pr-[0.9375rem] py-[0.3125rem] mx-4 text-[0.9375rem] relative"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="bp-label truncate leading-[1.375rem]">
+            {label}
+            <i className="bx bx-link-external ml-1 text-[10px] opacity-40 align-super"></i>
+          </span>
+        </a>
+      </li>
+    )
+  }
+
   return (
-    <li className={`menu-item ${isActive ? 'active' : ''}`}>
-      <Link href={to} className="menu-link" style={{ position: 'relative' }}>
-        <div>{label}</div>
+    <li>
+      <Link
+        href={to}
+        className={`bp-menu-link flex items-center pl-10 pr-[0.9375rem] py-[0.3125rem] mx-4 text-[0.9375rem] relative ${
+          isActive
+            ? 'bp-active'
+            : ''
+        }`}
+      >
+        <span className="bp-label truncate leading-[1.375rem]">{label}</span>
         {!!badge && badge > 0 && (
-          <span className="badge rounded-pill bg-danger" style={subBadgeStyle}>
+          <span className="bp-badge ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[9px] font-bold text-white bg-danger-500 rounded-full">
             {badge > 99 ? '99+' : badge}
           </span>
         )}
@@ -47,19 +111,24 @@ export function SubItem({ to, label, end, badge }: { to: string; label: string; 
   )
 }
 
-export function SubMenuGroup({ base, label, children }: { base: string; label: string; children: React.ReactNode }) {
+/* ── Sub Menu Group (nested inside MenuGroup) ── */
+export function SubMenuGroup({
+  base,
+  label,
+  children,
+}: {
+  base: string
+  label: string
+  children: React.ReactNode
+}) {
   const pathname = usePathname()
   const match = pathname.startsWith(base)
   const [open, setOpen] = useState(match)
-  const isActive = match
   const userToggled = useRef(false)
-  const subRef = useRef<HTMLUListElement>(null)
-  const submenuId = `sub-${label.replace(/\s+/g, '-').toLowerCase()}`
 
   const toggle = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    e.nativeEvent.stopImmediatePropagation()
     userToggled.current = true
     setOpen((v) => !v)
   }, [])
@@ -73,90 +142,63 @@ export function SubMenuGroup({ base, label, children }: { base: string; label: s
     }
   }, [match])
 
-  useEffect(() => {
-    const sub = subRef.current
-    if (!sub) return
-    sub.style.overflow = 'hidden'
-    sub.style.transition = 'max-height 0.3s ease-in-out'
-    sub.style.maxHeight = open ? '2000px' : '0px'
-  }, [open])
-
   return (
-    <li className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`}>
-      <a href="#" onClick={toggle} className="menu-link menu-toggle" aria-expanded={open} aria-controls={submenuId}>
-        <div>{label}</div>
+    <li>
+      <a
+        href="#"
+        onClick={toggle}
+        className={`bp-menu-link bp-menu-toggle flex items-center pl-10 pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] mx-4 text-[0.9375rem] cursor-pointer relative ${open ? 'bp-open' : ''}`}
+      >
+        <span className="bp-label truncate flex-1 leading-[1.375rem]">{label}</span>
       </a>
-      <ul id={submenuId} className="menu-sub" ref={subRef} style={{
-        maxHeight: open ? '2000px' : '0px',
-        overflow: 'hidden',
-        transition: 'max-height 0.3s ease-in-out'
-      }}>
+      <ul className="bp-submenu" style={{ maxHeight: open ? '2000px' : '0px' }}>
         {children}
       </ul>
     </li>
   )
 }
 
-const badgeStyle: React.CSSProperties = {
-  fontSize: '0.6rem',
-  lineHeight: '1',
-  padding: '0',
-  width: '20px',
-  height: '20px',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '50%',
-  position: 'absolute',
-  right: '38px',
-}
-
-const subBadgeStyle: React.CSSProperties = {
-  fontSize: '0.55rem',
-  lineHeight: '1',
-  padding: '0',
-  width: '18px',
-  height: '18px',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '50%',
-  position: 'absolute',
-  right: '15px',
-  top: '50%',
-  transform: 'translateY(-50%)',
-}
-
-export function MenuGroup({ base, icon, label, children, matchPaths, badge }: {
-  base: string; icon: string; label: string; children: React.ReactNode; matchPaths?: string[]; badge?: number
+/* ── Menu Group (top-level collapsible with icon) ── */
+export function MenuGroup({
+  base,
+  icon,
+  label,
+  children,
+  matchPaths,
+  badge,
+}: {
+  base: string
+  icon: string
+  label: string
+  children: React.ReactNode
+  matchPaths?: string[]
+  badge?: number
 }) {
   const pathname = usePathname()
 
   const isMatched = useMemo(() => {
-    if (matchPaths) return matchPaths.some(path => pathname.startsWith(path))
+    if (matchPaths) return matchPaths.some((path) => pathname.startsWith(path))
     return pathname.startsWith(base) && pathname !== base
   }, [matchPaths, pathname, base])
 
   const [open, setOpen] = useState(isMatched)
-  const isActive = isMatched
   const userToggled = useRef(false)
-  const submenuId = `menu-${label.replace(/\s+/g, '-').toLowerCase()}`
+  const subRef = useRef<HTMLUListElement>(null)
+  const liRef = useRef<HTMLLIElement>(null)
 
   const getIsCollapsed = useCallback(() => {
-    return typeof document !== 'undefined' && document.documentElement.classList.contains('layout-menu-collapsed')
+    if (typeof document === 'undefined') return false
+    const sidebar = document.querySelector('.bp-sidebar')
+    return sidebar?.classList.contains('bp-collapsed') ?? false
   }, [])
 
   const toggle = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    e.nativeEvent.stopImmediatePropagation()
     userToggled.current = true
     setOpen((v) => !v)
   }, [])
-  const handleEnter = useCallback(() => { if (getIsCollapsed()) setOpen(true) }, [getIsCollapsed])
-  const handleLeave = useCallback(() => { if (getIsCollapsed()) setOpen(false) }, [getIsCollapsed])
 
-  // Auto-open when navigating into this group; only auto-close if user hasn't manually toggled
   useEffect(() => {
     if (isMatched) {
       setOpen(true)
@@ -166,60 +208,32 @@ export function MenuGroup({ base, icon, label, children, matchPaths, badge }: {
     }
   }, [isMatched, getIsCollapsed])
 
-  const subRef = useRef<HTMLUListElement>(null)
-  const liRef = useRef<HTMLLIElement>(null)
-  const prevOpen = useRef(open)
-
-  useEffect(() => {
-    const sub = subRef.current
-    const li = liRef.current
-    if (!sub) return
-
-    sub.style.overflow = 'hidden'
-    sub.style.transition = 'max-height 0.3s ease-in-out'
-
-    const wasOpen = prevOpen.current
-    prevOpen.current = open
-
-    if (open) {
-      requestAnimationFrame(() => { sub.style.maxHeight = '3000px' })
-    } else {
-      if (wasOpen && li) li.classList.add('menu-item-closing')
-      requestAnimationFrame(() => { sub.style.maxHeight = '0px' })
-    }
-  }, [open])
-
-  useEffect(() => {
-    const sub = subRef.current
-    const li = liRef.current
-    if (!sub || !li) return
-    const onEnd = (e: TransitionEvent) => { if (e.propertyName === 'max-height') li.classList.remove('menu-item-closing') }
-    sub.addEventListener('transitionend', onEnd)
-    return () => sub.removeEventListener('transitionend', onEnd)
-  }, [])
-
-  useEffect(() => {
-    const el = subRef.current
-    if (!el) return
-    const handle = () => { if (open) el.style.maxHeight = '3000px' }
-    window.addEventListener('resize', handle)
-    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(handle) : null
-    if (ro) ro.observe(el)
-    return () => { window.removeEventListener('resize', handle); if (ro) ro.disconnect() }
-  }, [open])
-
   return (
-    <li ref={liRef} className={`menu-item ${open ? 'open' : ''} ${isActive ? 'active' : ''}`} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-      <a href="#" className="menu-link menu-toggle" onClick={toggle} aria-expanded={open} aria-controls={submenuId}>
-        <i className={`menu-icon bx ${icon}`}></i>
-        <div data-i18n={label}>{label}</div>
+    <li ref={liRef} className={isMatched && !open ? 'bp-active-item' : ''}>
+      <a
+        href="#"
+        onClick={toggle}
+        className={`bp-menu-link bp-menu-toggle flex items-center gap-2 mx-4 px-[0.9375rem] pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] text-[0.9375rem] cursor-pointer relative ${open ? 'bp-open' : ''} ${
+          isMatched && open
+            ? 'bp-active-toggle'
+            : isMatched && !open
+              ? 'bp-active'
+              : ''
+        }`}
+      >
+        <i className={`bp-menu-icon bx ${icon} text-[1.375rem] shrink-0 w-[1.375rem] mr-2`}></i>
+        <span className="bp-label truncate flex-1 leading-[1.375rem]">{label}</span>
         {!!badge && badge > 0 && (
-          <span className="badge rounded-pill bg-danger" style={badgeStyle}>
+          <span className="bp-badge ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-danger-500 rounded-full mr-1">
             {badge > 99 ? '99+' : badge}
           </span>
         )}
       </a>
-      <ul id={submenuId} className="menu-sub" ref={subRef} style={{ maxHeight: open ? '3000px' : 0, overflow: 'hidden' }}>
+      <ul
+        ref={subRef}
+        className="bp-submenu"
+        style={{ maxHeight: open ? '3000px' : '0px' }}
+      >
         {children}
       </ul>
     </li>

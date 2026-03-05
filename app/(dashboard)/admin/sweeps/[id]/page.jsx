@@ -171,6 +171,7 @@ export default function SweepDetail() {
                   </h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless">
                     <tbody>
                       <tr>
@@ -256,6 +257,7 @@ export default function SweepDetail() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
 

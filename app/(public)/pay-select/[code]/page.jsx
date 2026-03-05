@@ -108,27 +108,27 @@ export default function PaySelect() {
   const invoiceDesc = invoice?.description
 
   return (
-    <div className="min-vh-100 position-relative overflow-hidden d-flex flex-column" style={{
-      background: 'linear-gradient(135deg, var(--bs-body-bg) 0%, var(--bs-tertiary-bg) 100%)'
+    <div className="min-h-screen relative overflow-hidden flex flex-col" style={{
+      background: 'linear-gradient(135deg, var(--color-surface-0, #fff) 0%, var(--color-surface-100) 100%)'
     }}>
       {/* Animated Gradient Background */}
-      <div className="position-absolute w-100 h-100" style={{ zIndex: 0 }}>
-        <div className="position-absolute" style={{
+      <div className="absolute w-full h-full" style={{ zIndex: 0 }}>
+        <div className="absolute" style={{
           width: '150%', height: '150%', top: '-25%', left: '-25%',
-          background: 'radial-gradient(circle at 30% 30%, rgba(var(--bs-primary-rgb), 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(var(--bs-primary-rgb), 0.06) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--color-primary-600) 8%, transparent) 0%, transparent 50%), radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--color-primary-600) 6%, transparent) 0%, transparent 50%)',
           animation: 'gradientShift 15s ease infinite',
           filter: 'blur(60px)'
         }}></div>
-        <div className="position-absolute rounded-circle" style={{
+        <div className="absolute rounded-full" style={{
           width: 200, height: 200,
-          background: 'radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, color-mix(in srgb, var(--color-primary-600) 15%, transparent) 0%, transparent 70%)',
           top: '10%', right: '15%',
           filter: 'blur(40px)',
           animation: 'float 20s ease-in-out infinite'
         }}></div>
-        <div className="position-absolute rounded-circle" style={{
+        <div className="absolute rounded-full" style={{
           width: 250, height: 250,
-          background: 'radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.10) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, color-mix(in srgb, var(--color-primary-600) 10%, transparent) 0%, transparent 70%)',
           bottom: '15%', left: '10%',
           filter: 'blur(50px)',
           animation: 'float 25s ease-in-out infinite reverse'
@@ -136,27 +136,27 @@ export default function PaySelect() {
       </div>
 
       {/* Header */}
-      <div className="position-relative" style={{ zIndex: 1 }}>
+      <div className="relative" style={{ zIndex: 1 }}>
         <div className="container py-3">
-          <div className="d-flex justify-content-center align-items-center gap-3">
-            <div className="position-relative">
-              <div className="position-absolute w-100 h-100 rounded-circle" style={{
-                background: 'var(--bs-primary)',
+          <div className="flex justify-center items-center gap-3">
+            <div className="relative">
+              <div className="absolute w-full h-full rounded-full" style={{
+                background: 'var(--color-primary-600)',
                 filter: 'blur(20px)', opacity: 0.5,
                 animation: 'pulse 3s ease-in-out infinite'
               }}></div>
-              <div className="position-relative d-flex align-items-center justify-content-center" style={{
+              <div className="relative flex items-center justify-center" style={{
                 width: 48, height: 48,
-                background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 25%) 100%)',
+                background: 'linear-gradient(135deg, var(--color-primary-600) 0%, color-mix(in srgb, var(--color-primary-600), #000 25%) 100%)',
                 borderRadius: 16,
-                boxShadow: '0 8px 20px rgba(var(--bs-primary-rgb), 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                boxShadow: '0 8px 20px color-mix(in srgb, var(--color-primary-600) 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
               }}>
                 <i className="bx bx-wallet text-white" style={{ fontSize: 24 }}></i>
               </div>
             </div>
             <div>
-              <h2 className="fw-bold mb-0" style={{ fontSize: '1.25rem', letterSpacing: '-0.5px', color: 'var(--bs-heading-color)' }}>BULL PAY</h2>
-              <p className="mb-0" style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Crypto Payment Gateway</p>
+              <h2 className="font-bold mb-0" style={{ fontSize: '1.25rem', letterSpacing: '-0.5px', color: 'var(--color-surface-900)' }}>BULL PAY</h2>
+              <p className="mb-0" style={{ color: 'var(--color-surface-500)', fontSize: '0.75rem', letterSpacing: '0.5px' }}>Crypto Payment Gateway</p>
             </div>
           </div>
         </div>
@@ -183,54 +183,54 @@ export default function PaySelect() {
       `}</style>
 
       {/* Main Content */}
-      <div className="flex-grow-1 d-flex align-items-start py-3 position-relative" style={{ zIndex: 1 }}>
+      <div className="grow flex items-start py-3 relative" style={{ zIndex: 1 }}>
         <div className="container">
           {loading ? (
             <div className="text-center py-5">
-              <div className="spinner-border" style={{ color: 'var(--bs-primary)' }} role="status">
-                <span className="visually-hidden">Loading...</span>
+              <div className="spinner w-8 h-8 border-3" style={{ color: 'var(--color-primary-600)' }} role="status">
+                <span className="sr-only">Loading...</span>
               </div>
             </div>
           ) : error && !invoice ? (
-            <div className="card border-0 shadow-lg mx-auto" style={{ maxWidth: 500, borderRadius: 12 }}>
-              <div className="card-body text-center p-5">
+            <div className="bg-white rounded-xl shadow-lg mx-auto p-0" style={{ maxWidth: 500 }}>
+              <div className="text-center p-5">
                 <div className="mb-4">
-                  <i className="bx bx-error-circle" style={{ fontSize: 64, color: 'var(--bs-danger)' }}></i>
+                  <i className="bx bx-error-circle" style={{ fontSize: 64, color: '#ef4444' }}></i>
                 </div>
                 <h4 className="mb-3">{t('common.error', { defaultValue: 'Error' })}</h4>
-                <p className="text-muted">{error}</p>
+                <p className="text-surface-500">{error}</p>
               </div>
             </div>
           ) : (
-            <div className="row justify-content-center">
-              <div className="col-12 col-md-10 col-lg-7 col-xl-6">
+            <div className="flex justify-center">
+              <div className="w-full md:max-w-[83%] lg:max-w-[58%] xl:max-w-[50%]">
                 {/* Main Card */}
-                <div className="position-relative">
-                  <div className="position-absolute w-100 h-100" style={{
-                    background: 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.2), rgba(var(--bs-primary-rgb), 0.15))',
+                <div className="relative">
+                  <div className="absolute w-full h-full" style={{
+                    background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-primary-600) 20%, transparent), color-mix(in srgb, var(--color-primary-600) 15%, transparent))',
                     borderRadius: 12, filter: 'blur(30px)', opacity: 0.6
                   }}></div>
 
-                  <div className="card border-0 position-relative" style={{
+                  <div className="relative" style={{
                     borderRadius: 12, overflow: 'hidden',
                     background: 'rgba(255, 255, 255, 0.95)',
                     backdropFilter: 'blur(20px)',
                     boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-                    border: '1px solid rgba(var(--bs-primary-rgb), 0.15)'
+                    border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)'
                   }}>
                     {/* Title Banner */}
-                    <div className="position-relative overflow-hidden" style={{
-                      background: 'linear-gradient(135deg, var(--bs-primary), color-mix(in srgb, var(--bs-primary), #000 25%))',
+                    <div className="relative overflow-hidden" style={{
+                      background: 'linear-gradient(135deg, var(--color-primary-600), color-mix(in srgb, var(--color-primary-600), #000 25%))',
                       padding: '16px 24px'
                     }}>
-                      <div className="position-absolute w-100 h-100" style={{
+                      <div className="absolute w-full h-full" style={{
                         background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
                         animation: 'shimmer 3s infinite', zIndex: 0, top: 0, left: 0
                       }}></div>
-                      <div className="text-center position-relative" style={{ zIndex: 1 }}>
-                        <div className="d-inline-flex align-items-center gap-2">
+                      <div className="text-center relative" style={{ zIndex: 1 }}>
+                        <div className="inline-flex items-center gap-2">
                           <i className="bx bx-coin-stack text-white" style={{ fontSize: 20 }}></i>
-                          <span className="fw-bold text-uppercase text-white" style={{
+                          <span className="font-bold uppercase text-white" style={{
                             letterSpacing: '2px', fontSize: '0.875rem'
                           }}>
                             {t('payment.selectAsset', { defaultValue: 'Select Payment Asset' })}
@@ -240,21 +240,21 @@ export default function PaySelect() {
                     </div>
 
                     {/* Card Body */}
-                    <div className="card-body p-3 p-md-4">
+                    <div className="p-3 md:p-4">
                       {/* Invoice Info */}
                       {(invoiceAmount || invoiceDesc) && (
-                        <div className="mb-3 p-3 rounded-3 text-center" style={{
-                          background: 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.05), rgba(var(--bs-primary-rgb), 0.08))',
-                          border: '1px solid rgba(var(--bs-primary-rgb), 0.15)'
+                        <div className="mb-3 p-3 rounded-lg text-center" style={{
+                          background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-primary-600) 5%, transparent), color-mix(in srgb, var(--color-primary-600) 8%, transparent))',
+                          border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)'
                         }}>
                           {invoiceAmount && (
                             <div className="mb-1">
-                              <span className="small text-uppercase fw-semibold" style={{ color: 'var(--bs-secondary-color)', letterSpacing: '1px', fontSize: '0.7rem' }}>
+                              <span className="text-sm uppercase font-semibold" style={{ color: 'var(--color-surface-500)', letterSpacing: '1px', fontSize: '0.7rem' }}>
                                 {t('invoices.amount', { defaultValue: 'Amount' })}
                               </span>
                               <div style={{
                                 fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px',
-                                background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 25%) 100%)',
+                                background: 'linear-gradient(135deg, var(--color-primary-600) 0%, color-mix(in srgb, var(--color-primary-600), #000 25%) 100%)',
                                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                                 backgroundClip: 'text', lineHeight: 1.2
                               }}>
@@ -263,27 +263,27 @@ export default function PaySelect() {
                             </div>
                           )}
                           {invoiceDesc && (
-                            <div className="small" style={{ color: 'var(--bs-secondary-color)' }}>{invoiceDesc}</div>
+                            <div className="text-sm" style={{ color: 'var(--color-surface-500)' }}>{invoiceDesc}</div>
                           )}
                         </div>
                       )}
 
                       {/* Search */}
-                      <div className="mb-3 position-relative">
-                        <i className="bx bx-search position-absolute" style={{
+                      <div className="mb-3 relative">
+                        <i className="bx bx-search absolute" style={{
                           left: 12, top: '50%', transform: 'translateY(-50%)',
-                          color: 'var(--bs-secondary-color)', fontSize: 18
+                          color: 'var(--color-surface-500)', fontSize: 18
                         }}></i>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-input"
                           placeholder={t('payment.searchCoin', { defaultValue: 'Search coin or network...' })}
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           style={{
                             paddingLeft: 38, borderRadius: 10,
-                            border: '1px solid rgba(var(--bs-primary-rgb), 0.2)',
-                            background: 'rgba(var(--bs-primary-rgb), 0.03)',
+                            border: '1px solid color-mix(in srgb, var(--color-primary-600) 20%, transparent)',
+                            background: 'color-mix(in srgb, var(--color-primary-600) 3%, transparent)',
                             fontSize: '0.875rem'
                           }}
                         />
@@ -301,25 +301,25 @@ export default function PaySelect() {
                       {/* Confirm Button */}
                       <div className="mt-3">
                         <button
-                          className="btn w-100 py-3 fw-bold"
+                          className="w-full py-3 font-bold cursor-pointer"
                           disabled={!selectedCoinId}
                           onClick={handleConfirm}
                           style={{
                             background: selectedCoinId
-                              ? 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 25%) 100%)'
-                              : 'var(--bs-border-color)',
-                            color: selectedCoinId ? 'white' : 'var(--bs-secondary-color)',
+                              ? 'linear-gradient(135deg, var(--color-primary-600) 0%, color-mix(in srgb, var(--color-primary-600), #000 25%) 100%)'
+                              : 'var(--color-surface-200)',
+                            color: selectedCoinId ? 'white' : 'var(--color-surface-500)',
                             border: 'none',
                             borderRadius: 12,
                             fontSize: '1rem',
                             letterSpacing: '0.5px',
                             transition: 'all 0.3s ease',
                             boxShadow: selectedCoinId
-                              ? '0 8px 24px rgba(var(--bs-primary-rgb), 0.4)'
+                              ? '0 8px 24px color-mix(in srgb, var(--color-primary-600) 40%, transparent)'
                               : 'none',
                           }}
                         >
-                          <i className="bx bx-check-circle me-2"></i>
+                          <i className="bx bx-check-circle mr-2"></i>
                           {t('payment.confirmSelection', { defaultValue: 'Continue with Selected Asset' })}
                         </button>
                       </div>
@@ -333,17 +333,17 @@ export default function PaySelect() {
       </div>
 
       {/* Footer */}
-      <footer className="py-3 position-relative" style={{ zIndex: 1 }}>
+      <footer className="py-3 relative" style={{ zIndex: 1 }}>
         <div className="container text-center">
           <div className="mb-2" style={{
-            color: 'var(--bs-secondary-color)', fontSize: '0.75rem', letterSpacing: '1px', fontWeight: '600'
+            color: 'var(--color-surface-500)', fontSize: '0.75rem', letterSpacing: '1px', fontWeight: '600'
           }}>{t('common.poweredBy', { defaultValue: 'Powered by' })}</div>
           <div className="mb-2" style={{
             fontSize: '1.1rem', fontWeight: '700',
-            color: 'var(--bs-primary)',
+            color: 'var(--color-primary-600)',
             letterSpacing: '1px'
           }}>BULL PAY</div>
-          <div style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem' }}>
+          <div style={{ color: 'var(--color-surface-500)', fontSize: '0.75rem' }}>
             {t('common.copyright', { year }) || `© ${year} · All rights reserved`}
           </div>
         </div>

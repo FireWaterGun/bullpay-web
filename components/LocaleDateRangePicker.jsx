@@ -232,11 +232,11 @@ export default function LocaleDateRangePicker({
     <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-block', ...style }} className={className}>
       {/* Input */}
       <div
-        className="form-control d-flex align-items-center gap-1"
+        className="form-input flex items-center gap-1"
         style={{ cursor: 'pointer', minWidth: 220, userSelect: 'none' }}
         onClick={() => setOpen(!open)}
       >
-        <span className={displayValue ? '' : 'text-muted'} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <span className={displayValue ? '' : 'text-surface-500'} style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {displayValue || placeholder}
         </span>
         <i className="bx bx-calendar" style={{ fontSize: '1rem', opacity: 0.5 }}></i>
@@ -251,25 +251,25 @@ export default function LocaleDateRangePicker({
             left: 0,
             zIndex: 1050,
             marginTop: 4,
-            width: 300,
-            backgroundColor: 'var(--bs-body-bg)',
+            width: 'min(300px, calc(100vw - 2rem))',
+            backgroundColor: 'var(--color-surface-0, #fff)',
             borderRadius: 8,
             boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
             padding: 12,
-            border: '1px solid var(--bs-border-color)',
+            border: '1px solid var(--color-surface-200)',
           }}
         >
           {/* Hint */}
-          <div className="text-center mb-2" style={{ fontSize: '0.75rem', color: 'var(--bs-secondary-color)' }}>
+          <div className="text-center mb-2" style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)' }}>
             {pickHint}
           </div>
 
           {/* Header */}
-          <div className="d-flex justify-content-between align-items-center mb-2">
+          <div className="flex justify-between items-center mb-2">
             <button type="button" style={{ border: 'none', background: 'none', cursor: 'pointer' }} onClick={prevMonth}>
               <i className="bx bx-chevron-left" style={{ fontSize: '1.2rem' }}></i>
             </button>
-            <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>{monthYearLabel}</span>
+            <span className="font-semibold" style={{ fontSize: '0.9rem' }}>{monthYearLabel}</span>
             <button type="button" style={{ border: 'none', background: 'none', cursor: 'pointer' }} onClick={nextMonth}>
               <i className="bx bx-chevron-right" style={{ fontSize: '1.2rem' }}></i>
             </button>
@@ -278,7 +278,7 @@ export default function LocaleDateRangePicker({
           {/* Weekday headers */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', marginBottom: 4 }}>
             {weekDayHeaders.map((h, i) => (
-              <div key={i} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--bs-secondary-color)', padding: '2px 0' }}>
+              <div key={i} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-surface-500)', padding: '2px 0' }}>
                 {h}
               </div>
             ))}
@@ -295,23 +295,23 @@ export default function LocaleDateRangePicker({
               const isTodayCell = item.date === todayStr
 
               let bgColor = 'transparent'
-              let textColor = !item.current || isDisabled ? 'var(--bs-tertiary-color)' : 'var(--bs-body-color)'
+              let textColor = !item.current || isDisabled ? 'var(--color-surface-300)' : 'var(--color-surface-900)'
               let fontWeight = 400
               let borderRadius = '6px'
 
               if (rangeStart || rangeEnd) {
-                bgColor = 'var(--bs-primary)'
-                textColor = 'var(--bs-white)'
+                bgColor = 'var(--color-primary-600)'
+                textColor = '#fff'
                 fontWeight = 600
                 borderRadius = rangeStart && rangeEnd ? '6px' : rangeStart ? '6px 0 0 6px' : '0 6px 6px 0'
               } else if (inRange) {
-                bgColor = 'rgba(var(--bs-primary-rgb), 0.12)'
-                textColor = 'var(--bs-primary)'
+                bgColor = 'rgba(99, 102, 241, 0.12)'
+                textColor = 'var(--color-primary-600)'
                 borderRadius = '0'
               }
 
               if (!inRange && !rangeStart && !rangeEnd && isTodayCell && item.current) {
-                textColor = 'var(--bs-primary)'
+                textColor = 'var(--color-primary-600)'
                 fontWeight = 600
               }
 
@@ -339,10 +339,10 @@ export default function LocaleDateRangePicker({
           </div>
 
           {/* Footer */}
-          <div className="d-flex justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid var(--bs-border-color)' }}>
+          <div className="flex justify-between mt-2 pt-2" style={{ borderTop: '1px solid var(--color-surface-200)' }}>
             <button
               type="button"
-              className="btn btn-sm text-muted p-0"
+              className="btn btn-sm text-surface-500 p-0"
               onClick={handleClear}
               style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.8rem' }}
             >
@@ -350,7 +350,7 @@ export default function LocaleDateRangePicker({
             </button>
             <button
               type="button"
-              className="btn btn-sm text-primary p-0"
+              className="btn btn-sm text-primary-600 p-0"
               onClick={handleToday}
               style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.8rem' }}
             >

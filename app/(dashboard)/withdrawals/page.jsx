@@ -109,23 +109,26 @@ export default function WithdrawalsPage() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <>
       {/* Wallet Addresses */}
-      <div className="mb-4">
+      <div className="mb-6">
         <div className="card">
-          <div className="card-header d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center gap-2">
-              <h5 className="card-title mb-0">{t('balance.withdrawals', { defaultValue: 'Withdrawals' })}</h5>
+          <div className="px-6 py-4 border-b border-surface-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h5 className="font-semibold text-surface-900 mb-0">{t('balance.withdrawals', { defaultValue: 'Withdrawals' })}</h5>
               <RefreshButton onClick={loadWithdrawals} loading={loading} />
             </div>
             <Link href="/wallet/new-address" className="btn btn-primary">
+              <i className="bx bx-plus mr-1"></i>
               {t('balance.newAddress', { defaultValue: 'New Address' })}
             </Link>
           </div>
-          <div className="card-body">
-            {walletError && <div className="alert alert-danger" role="alert">{walletError}</div>}
+          <div className="p-6">
+            {walletError && <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">{walletError}</div>}
             {walletLoading ? (
-              <div className="text-center py-4"><div className="spinner-border" role="status" aria-hidden="true"></div></div>
+              <div className="flex justify-center py-8">
+                <span className="spinner w-8 h-8 border-3"></span>
+              </div>
             ) : walletItems.length === 0 ? (
               <CardEmptyState
                 icon="bx-wallet"
@@ -141,25 +144,31 @@ export default function WithdrawalsPage() {
 
       {/* Withdrawal Transactions */}
       <div className="card">
-        <div className="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-          <h5 className="card-title mb-0">{t('balance.withdrawalsList', { defaultValue: 'Withdraw transactions' })}</h5>
-          <ul className="nav nav-pills flex-wrap">
+        <div className="px-6 py-4 border-b border-surface-100 flex items-center justify-between flex-wrap gap-2">
+          <h5 className="font-semibold text-surface-900 mb-0">{t('balance.withdrawalsList', { defaultValue: 'Withdraw transactions' })}</h5>
+          <div className="flex flex-wrap gap-1">
             {WITHDRAWAL_STATUSES.map(s => (
-              <li className="nav-item" key={s}>
-                <button
-                  className={`nav-link ${status === s ? 'active' : ''}`}
-                  onClick={() => changeStatus(s)}
-                >
-                  {t(`status.${s.toLowerCase()}`, { defaultValue: formatStatusLabel(s) })}
-                </button>
-              </li>
+              <button
+                key={s}
+                type="button"
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
+                  status === s
+                    ? 'bg-primary-600 text-white'
+                    : 'text-surface-600 hover:bg-surface-100'
+                }`}
+                onClick={() => changeStatus(s)}
+              >
+                {t(`status.${s.toLowerCase()}`, { defaultValue: formatStatusLabel(s) })}
+              </button>
             ))}
-          </ul>
+          </div>
         </div>
-        <div className="card-body">
-          {error && <div className="alert alert-danger" role="alert">{error}</div>}
+        <div className="p-6">
+          {error && <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">{error}</div>}
           {loading ? (
-            <div className="text-center py-4"><div className="spinner-border" role="status" aria-hidden="true"></div></div>
+            <div className="flex justify-center py-8">
+              <span className="spinner w-8 h-8 border-3"></span>
+            </div>
           ) : items.length === 0 ? (
               <CardEmptyState
                 icon="bx-transfer"
@@ -167,30 +176,19 @@ export default function WithdrawalsPage() {
                 sub={t('balance.noWithdrawalsSub', { defaultValue: 'Your withdrawal history will appear here' })}
               />
           ) : (
-            <div className="table-responsive">
-              <table className="table table-sm align-middle">
-                <colgroup>
-                  <col style={{ width: '6%' }} />
-                  <col style={{ width: '10%' }} />
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: '10%' }} />
-                  <col />
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: '16%' }} />
-                  <col style={{ width: '80px' }} />
-                </colgroup>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr>
-                    <th className="text-nowrap cell-fit">{t('common.id', { defaultValue: 'ID' })}</th>
-                    <th>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
-                    <th style={{ minWidth: '180px' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
-                    <th className="text-nowrap">{t('balance.amount', { defaultValue: 'Amount' })}</th>
-                    <th className="text-nowrap">{t('balance.fee', { defaultValue: 'Fee' })}</th>
-                    <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
-                    <th className="text-nowrap cell-fit">{t('common.status', { defaultValue: 'Status' })}</th>
-                    <th className="text-nowrap text-end cell-fit">{t('common.createdAt', { defaultValue: 'Created at' })}</th>
-                    <th className="text-center cell-fit">{t('actions.action', { defaultValue: 'Action' })}</th>
+                  <tr className="border-b border-surface-100 text-surface-500 text-xs uppercase tracking-wider">
+                    <th className="py-3 px-3 text-left whitespace-nowrap font-medium">ID</th>
+                    <th className="py-3 px-3 text-left font-medium">{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
+                    <th className="py-3 px-3 text-left font-medium" style={{ minWidth: '180px' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+                    <th className="py-3 px-3 text-left whitespace-nowrap font-medium">{t('balance.amount', { defaultValue: 'Amount' })}</th>
+                    <th className="py-3 px-3 text-left whitespace-nowrap font-medium">{t('balance.fee', { defaultValue: 'Fee' })}</th>
+                    <th className="py-3 px-3 text-left whitespace-nowrap font-medium">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
+                    <th className="py-3 px-3 text-left whitespace-nowrap font-medium">{t('common.status', { defaultValue: 'Status' })}</th>
+                    <th className="py-3 px-3 text-right whitespace-nowrap font-medium">{t('common.createdAt', { defaultValue: 'Created at' })}</th>
+                    <th className="py-3 px-3 text-center font-medium">{t('actions.action', { defaultValue: 'Action' })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -201,50 +199,43 @@ export default function WithdrawalsPage() {
                     const networkSym = (network?.symbol || '').toString().toUpperCase()
                     const networkName = network?.name || getNetworkLabel({ network }, coin)
                     return (
-                      <tr key={it.id}>
-                        <td className="cell-fit">
+                      <tr key={it.id} className="border-b border-surface-50 hover:bg-surface-50/50 transition-colors">
+                        <td className="py-3 px-3">
                           <Link
                             href={`/withdrawals/${it.id}`}
-                            className="font-monospace fw-semibold text-primary"
-                            style={{ textDecoration: 'none' }}
+                            className="font-mono font-semibold text-primary-600 no-underline hover:underline"
                           >
                             {it.id}
                           </Link>
                         </td>
-                        <td>
-                          <span className="text-muted">{networkSym || sym}</span>
-                        </td>
-                        <td>
-                          <div className="d-flex align-items-center">
-                            <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} className="me-3" showFallback />
+                        <td className="py-3 px-3 text-surface-500">{networkSym || sym}</td>
+                        <td className="py-3 px-3">
+                          <div className="flex items-center gap-3">
+                            <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} showFallback />
                             <div>
-                              <div>{sym}</div>
-                              <small className="text-muted">{networkName}</small>
+                              <div className="font-medium text-surface-900">{sym}</div>
+                              <div className="text-surface-500 text-xs">{networkName}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="text-nowrap">{Number(it.amount) || it.amount} {sym}</td>
-                        <td className="text-nowrap">
-                          <span className="text-muted">
-                            {formatAmount(it.totalFeeRaw || it.totalFee || it.feeRaw || it.fee, it.decimals || coin?.decimals || 18, 8, true)}
-                          </span>
+                        <td className="py-3 px-3 whitespace-nowrap font-medium text-surface-900">{Number(it.amount) || it.amount} {sym}</td>
+                        <td className="py-3 px-3 whitespace-nowrap text-surface-500">
+                          {formatAmount(it.totalFeeRaw || it.totalFee || it.feeRaw || it.fee, it.decimals || coin?.decimals || 18, 8, true)}
                         </td>
-                        <td>
-                          <span className="font-monospace d-block text-truncate align-middle" title={it.toAddress}>{it.toAddress}</span>
+                        <td className="py-3 px-3">
+                          <span className="font-mono block truncate max-w-[200px]" title={it.toAddress}>{it.toAddress}</span>
                         </td>
-                        <td className="text-nowrap">
+                        <td className="py-3 px-3 whitespace-nowrap">
                           <span className={statusBadgeClass(it.status)}>{formatStatusLabel(String(it.status || '').toUpperCase())}</span>
                         </td>
-                        <td className="text-nowrap text-end">
-                          <span className="text-muted small">{fmtDate(it.createdAt)}</span>
-                        </td>
-                        <td className="text-center">
+                        <td className="py-3 px-3 whitespace-nowrap text-right text-surface-500 text-xs">{fmtDate(it.createdAt)}</td>
+                        <td className="py-3 px-3 text-center">
                           <Link
                             href={`/withdrawals/${it.id}`}
-                            className="btn btn-sm btn-icon btn-outline-primary"
+                            className="inline-flex items-center justify-center w-7 h-7 rounded-lg border border-primary-200 text-primary-600 hover:bg-primary-50 transition-colors"
                             title={t('actions.view', { defaultValue: 'View' })}
                           >
-                            <i className="bx bx-show"></i>
+                            <i className="bx bx-show text-sm"></i>
                           </Link>
                         </td>
                       </tr>
@@ -256,8 +247,8 @@ export default function WithdrawalsPage() {
           )}
 
           {/* Pagination */}
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <div className="text-muted small">
+          <div className="flex justify-between items-center mt-4">
+            <span className="text-surface-500 text-xs">
               {pagination && items.length > 0 && (
                 t('invoices.showingEntries', {
                   start: (page - 1) * limit + 1,
@@ -266,17 +257,17 @@ export default function WithdrawalsPage() {
                   defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
                 })
               )}
-            </div>
-            <div className="btn-group">
+            </span>
+            <div className="flex">
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="px-3 py-1.5 text-sm border border-surface-200 rounded-l-lg text-surface-600 hover:bg-surface-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 disabled={page <= 1}
                 onClick={() => changePage(-1)}
               >
                 {t('actions.prev', { defaultValue: 'Previous' })}
               </button>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                className="px-3 py-1.5 text-sm border border-l-0 border-surface-200 rounded-r-lg text-surface-600 hover:bg-surface-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 disabled={page >= (pagination?.totalPages || 1)}
                 onClick={() => changePage(1)}
               >
@@ -286,6 +277,6 @@ export default function WithdrawalsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

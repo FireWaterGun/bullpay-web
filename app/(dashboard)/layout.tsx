@@ -5,14 +5,13 @@ import type { NavigationItem, NavigationSection } from '@/app/providers'
 import { useRouter } from 'next/navigation'
 import React, { Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { THEME_STORAGE_KEY, LANG_STORAGE_KEY } from '@/lib/constants'
+import { THEME_STORAGE_KEY, LANG_STORAGE_KEY, SIDEBAR_COLLAPSED_KEY, API_BASE_URL } from '@/lib/constants'
 import { initAudioContext } from '@/lib/utils/notification'
 import { SectionHeader, MenuItem, SubItem, MenuGroup } from '@/components/dashboard/SidebarMenu'
 import NavbarContent from '@/components/dashboard/NavbarContent'
 import MaintenanceBanner from '@/components/admin/MaintenanceBanner'
 import { checkMaintenanceBlocked } from '@/lib/api/system'
 import useDashboardData from '@/hooks/useDashboardData'
-import '@/components/dashboard/notification-badge.css'
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { t, i18n } = useTranslation()
@@ -23,48 +22,45 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const maintenanceChannelRef = useRef<any>(null)
 
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try { return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1' } catch { return false }
+  })
+  const [mobileOpen, setMobileOpen] = useState(false)
   const [theme, setTheme] = useState('light')
   const [language, setLanguage] = useState({ code: 'en', dir: 'ltr', label: 'English' })
 
-  const isXlUp = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(min-width: 1200px)').matches
-  const openMobileMenu = () => { document.documentElement.classList.add('layout-menu-expanded') }
-  const closeMobileMenu = () => { document.documentElement.classList.remove('layout-menu-expanded'); document.documentElement.classList.remove('layout-menu-hover') }
+  const isXlUp = () =>
+    typeof window !== 'undefined' && window.matchMedia('(min-width: 1200px)').matches
 
-  // Redirect if not authenticated
+  // ── Redirect if not authenticated ──
   useEffect(() => {
-    if (isReady && !token) {
-      router.replace('/login')
-    }
+    if (isReady && !token) router.replace('/login')
   }, [isReady, token, router])
 
-  // Real-time maintenance redirect for non-admin users via Pusher
+  // ── Real-time maintenance redirect ──
   useEffect(() => {
     if (!subscribe || !isConnected || isAdmin || !isReady) return
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const channel = subscribe('system-maintenance') as any
     maintenanceChannelRef.current = channel
-
     if (channel) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       channel.bind('maintenance-status-changed', (data: any) => {
         if (data.maintenance) {
-          // Verify the user is actually blocked (not on allowed-IP list)
           checkMaintenanceBlocked(token || undefined).then((blocked) => {
-            if (!blocked) return // IP is allowed — stay on dashboard
+            if (!blocked) return
             try {
-              sessionStorage.setItem('maintenance_info', JSON.stringify({
-                message: data.message,
-                messageTh: data.messageTh,
-                estimatedEnd: data.estimatedEnd,
-              }))
-            } catch { /* sessionStorage may not be available */ }
+              sessionStorage.setItem(
+                'maintenance_info',
+                JSON.stringify({ message: data.message, estimatedEnd: data.estimatedEnd })
+              )
+            } catch {}
             window.location.href = '/maintenance'
           })
         }
       })
     }
-
     return () => {
       if (maintenanceChannelRef.current) {
         maintenanceChannelRef.current.unbind_all()
@@ -74,25 +70,26 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
   }, [subscribe, unsubscribe, isConnected, isAdmin, isReady, token])
 
+  // ── Audio init ──
   useEffect(() => {
-    const html = document.documentElement
-    const body = document.body
-    html.setAttribute('data-template', 'vertical-menu-template')
-    if (!html.getAttribute('data-bs-theme')) html.setAttribute('data-bs-theme', 'light')
-    html.classList.add('layout-navbar-fixed', 'layout-menu-fixed', 'layout-compact')
-    body.classList.add('animation-enabled')
-
     const initAudio = () => {
       initAudioContext()
       document.removeEventListener('click', initAudio)
       document.removeEventListener('touchstart', initAudio)
       document.removeEventListener('keydown', initAudio)
     }
-
     document.addEventListener('click', initAudio)
     document.addEventListener('touchstart', initAudio, { passive: true })
     document.addEventListener('keydown', initAudio)
+    return () => {
+      document.removeEventListener('click', initAudio)
+      document.removeEventListener('touchstart', initAudio)
+      document.removeEventListener('keydown', initAudio)
+    }
+  }, [])
 
+  // ── Persist & apply theme ──
+  useEffect(() => {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
       if (savedTheme === 'light' || savedTheme === 'dark') setTheme(savedTheme)
@@ -101,89 +98,73 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(savedLang)
         if (parsed?.code) setLanguage(parsed)
       }
-    } catch { }
-
-    return () => {
-      html.classList.remove('layout-navbar-fixed', 'layout-menu-fixed', 'layout-compact', 'layout-menu-collapsed', 'layout-menu-hover', 'layout-menu-expanded')
-      body.classList.remove('animation-enabled')
-      document.removeEventListener('click', initAudio)
-      document.removeEventListener('touchstart', initAudio)
-      document.removeEventListener('keydown', initAudio)
-    }
+    } catch {}
   }, [])
 
-  // Apply theme
   useEffect(() => {
     document.documentElement.setAttribute('data-bs-theme', theme)
-    try { localStorage.setItem(THEME_STORAGE_KEY, theme) } catch { }
+    document.documentElement.setAttribute('data-theme', theme)
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme)
+    } catch {}
   }, [theme])
 
-  // Apply language
+  // ── Persist sidebar collapsed state ──
+  useEffect(() => {
+    try { localStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed ? '1' : '0') } catch {}
+  }, [collapsed])
+
   useEffect(() => {
     const html = document.documentElement
     const localeMap: Record<string, string> = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
     html.setAttribute('lang', localeMap[language.code] || language.code || 'en')
     html.setAttribute('dir', language.dir || 'ltr')
-    if (i18n.language !== language.code) {
-      i18n.changeLanguage(language.code)
-    }
-    try { localStorage.setItem(LANG_STORAGE_KEY, JSON.stringify(language)) } catch { }
+    if (i18n.language !== language.code) i18n.changeLanguage(language.code)
+    try {
+      localStorage.setItem(LANG_STORAGE_KEY, JSON.stringify(language))
+    } catch {}
   }, [language, i18n])
 
+  // ── Close mobile menu on route change ──
   useEffect(() => {
-    const html = document.documentElement
-    if (collapsed) html.classList.add('layout-menu-collapsed')
-    else { html.classList.remove('layout-menu-collapsed'); html.classList.remove('layout-menu-hover') }
-  }, [collapsed])
+    setMobileOpen(false)
+  }, [children])
 
+  // ── Toggle sidebar ──
   const toggleMenu = (e?: React.MouseEvent) => {
     e?.preventDefault?.()
     if (isXlUp()) {
-      setCollapsed(c => !c)
+      setCollapsed((c) => !c)
     } else {
-      const html = document.documentElement
-      if (html.classList.contains('layout-menu-expanded')) closeMobileMenu()
-      else openMobileMenu()
+      setMobileOpen((v) => !v)
     }
   }
 
-  const onAsideEnter = () => { if (document.documentElement.classList.contains('layout-menu-collapsed')) document.documentElement.classList.add('layout-menu-hover') }
-  const onAsideLeave = () => { document.documentElement.classList.remove('layout-menu-hover') }
-  const onAsideClick = (e: React.MouseEvent) => {
-    if (isXlUp()) return
-    const target = e.target as HTMLElement
-    const link = target.closest?.('a.menu-link')
-    const isToggle = target.closest?.('.menu-toggle')
-    if (link && !isToggle) closeMobileMenu()
-  }
-
+  // ── Loading state ──
   if (!isReady || !token) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="spinner text-primary-600 w-8 h-8 border-[3px]"></div>
       </div>
     )
   }
 
-  // Map API navigation keys → i18n translation keys
+  // ── i18n label maps ──
   const navLabel = (key: string, fallback: string) => {
     const keyMap: Record<string, string> = {
-      // User menu
-      'dashboard': 'nav.dashboard',
-      'reports': 'nav.reports',
-      'wallet': 'nav.wallet',
+      dashboard: 'nav.dashboard',
+      reports: 'nav.reports',
+      wallet: 'nav.wallet',
       'wallet-overview': 'nav.balance',
-      'withdrawal': 'nav.withdrawals',
-      'invoices': 'nav.invoice',
-      'activity': 'nav.activity',
-      'settings': 'nav.settings',
+      withdrawal: 'nav.withdrawals',
+      invoices: 'nav.invoice',
+      activity: 'nav.activity',
+      settings: 'nav.settings',
       '2fa': 'nav.twoFactor',
-      'integration': 'nav.integration',
+      integration: 'nav.integration',
       'merchant-overview': 'nav.apiCredentials',
       'webhook-logs': 'nav.webhookLogs',
-      // Admin menu
+      'api-docs': 'nav.apiDocs',
       'admin-dashboard': 'nav.revenueDashboard',
       'income-statement': 'nav.incomeStatement',
       'admin-platform-ledger': 'nav.revenueExpense',
@@ -220,27 +201,28 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   const sectionLabel = (section: string) => {
     const sectionMap: Record<string, string> = {
-      'Overview': 'nav.sectionOverview',
-      'Payments': 'nav.sectionPayments',
-      'Account': 'nav.sectionAccount',
-      'Reports': 'nav.sectionReports',
-      'Operations': 'nav.sectionOperations',
-      'Management': 'nav.sectionManagement',
-      'System': 'nav.sectionSystem',
+      Overview: 'nav.sectionOverview',
+      Payments: 'nav.sectionPayments',
+      Account: 'nav.sectionAccount',
+      Reports: 'nav.sectionReports',
+      Operations: 'nav.sectionOperations',
+      Management: 'nav.sectionManagement',
+      System: 'nav.sectionSystem',
     }
     return sectionMap[section] ? t(sectionMap[section], { defaultValue: section }) : section
+  }
+
+  // ── Badge maps ──
+  const badgeMap: Record<string, number | undefined> = {
+    'admin-operations': pendingWithdrawalCount,
+  }
+  const childBadgeMap: Record<string, number | undefined> = {
+    '/admin/withdrawals': pendingWithdrawalCount,
   }
 
   const renderMenus = () => {
     const sections = navigation?.menus || []
     if (!sections.length) return null
-
-    const badgeMap: Record<string, number | undefined> = {
-      'admin-operations': pendingWithdrawalCount,
-    }
-    const childBadgeMap: Record<string, number | undefined> = {
-      '/admin/withdrawals': pendingWithdrawalCount,
-    }
 
     return sections.map((section: NavigationSection) => {
       const items = section.items || []
@@ -257,7 +239,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
             if (!children.length) {
               const itemBadge = badge || childBadgeMap[item.path]
-              return <MenuItem key={item.key} to={item.path} end icon={icon} label={navLabel(item.key, item.label)} badge={itemBadge} />
+              return (
+                <MenuItem
+                  key={item.key}
+                  to={item.path}
+                  end
+                  icon={icon}
+                  label={navLabel(item.key, item.label)}
+                  badge={itemBadge}
+                />
+              )
             }
 
             return (
@@ -269,9 +260,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 matchPaths={[...new Set([item.path, ...childPaths])]}
                 badge={badge}
               >
-                {children.map((child: NavigationItem) => (
-                  <SubItem key={child.key} to={child.path} label={navLabel(child.key, child.label)} badge={childBadgeMap[child.path]} />
-                ))}
+                {children.map((child: NavigationItem) => {
+                  const childTo = child.external ? `${API_BASE_URL}${child.path}` : child.path
+                  return (
+                    <SubItem
+                      key={child.key}
+                      to={childTo}
+                      label={navLabel(child.key, child.label)}
+                      badge={childBadgeMap[child.path]}
+                      external={child.external}
+                    />
+                  )
+                })}
               </MenuGroup>
             )
           })}
@@ -281,64 +281,116 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="layout-wrapper layout-content-navbar">
-      <div className="layout-container">
-        <aside id="layout-menu" className="layout-menu menu-vertical menu" onMouseEnter={onAsideEnter} onMouseLeave={onAsideLeave} onClick={onAsideClick}>
-          <div className="app-brand demo">
-            <a href="#" className="app-brand-link" onClick={(e) => e.preventDefault()}>
-              <span className="app-brand-logo demo">
-                <i className="bx bxs-wallet-alt text-primary" style={{ fontSize: '32px' }}></i>
-              </span>
-              <span className="app-brand-text demo menu-text fw-bold ms-2">
-                <span className="text-body">BULL</span>
-                <span className="text-primary">PAY</span>
-              </span>
-            </a>
-            <a href="#" onClick={toggleMenu} className="layout-menu-toggle menu-link text-large ms-auto">
-              <i className="icon-base bx bx-chevron-left"></i>
-            </a>
-          </div>
-          <div className="menu-inner-shadow"></div>
-          <ul className="menu-inner py-1">
-            {renderMenus()}
-          </ul>
-        </aside>
-        <div className="menu-mobile-toggler d-xl-none rounded-1">
-          <a href="#" onClick={toggleMenu} className="layout-menu-toggle menu-link text-large text-bg-secondary p-2 rounded-1">
-            <i className="bx bx-menu icon-base"></i>
-            <i className="bx bx-chevron-right icon-base"></i>
+    <>
+      {/* ── Sidebar ── */}
+      <aside
+        className={`bp-sidebar ${collapsed ? 'bp-collapsed' : ''} ${mobileOpen ? 'bp-mobile-open' : ''}`}
+      >
+        {/* Brand (Sneat: app-brand with toggle button) */}
+        <div className="relative flex items-center h-[64px] px-[calc(0.9375rem*2.1333)] shrink-0">
+          <a href="/dashboard" className="flex items-center gap-2.5 no-underline">
+            <span className="flex items-center justify-center w-[25px] h-[34px] text-primary-600 shrink-0">
+              <i className="bx bxs-wallet-alt text-[22px]"></i>
+            </span>
+            <span className="bp-brand-text font-bold text-[1.25rem] tracking-tight whitespace-nowrap ms-0.5">
+              <span className="text-surface-800">BULL</span>
+              <span className="text-primary-600">PAY</span>
+            </span>
           </a>
+          {/* Sneat collapse toggle — absolute positioned at sidebar edge */}
+          <button
+            onClick={toggleMenu}
+            className="bp-collapse-btn absolute z-[3] hidden xl:flex items-center justify-center rounded-full bg-primary-600 border-[7px] border-[#f5f5f9] cursor-pointer transition-colors"
+            style={{ left: '15.2rem' }}
+          >
+            <i className={`bx ${collapsed ? 'bx-chevron-right' : 'bx-chevron-left'} text-white text-[1.375rem] leading-none w-[1.375rem] h-[1.375rem] flex items-center justify-center`}></i>
+          </button>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="bp-collapse-btn ml-auto flex items-center justify-center w-7 h-7 rounded-md text-surface-400 hover:bg-surface-100 transition-colors cursor-pointer xl:hidden"
+          >
+            <i className="bx bx-x text-xl"></i>
+          </button>
         </div>
-        <div className="layout-page">
-          <nav className="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
-            <div className="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
-              <a className="nav-item nav-link px-0 me-xl-6" href="#" onClick={toggleMenu}><i className="icon-base bx bx-menu icon-md"></i></a>
+
+        {/* Menu */}
+        <nav className="bp-sidebar-scroll">
+          <ul className="list-none p-0 m-0 py-2">{renderMenus()}</ul>
+        </nav>
+
+        {/* User info at bottom */}
+        <div className="bp-sidebar-user">
+          <div className="flex items-center gap-3">
+            <span className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-primary-100 text-primary-600 text-sm font-semibold shrink-0">
+              {String(user?.fullName || user?.name || user?.email || 'U')
+                .split(/\s+|@/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((s: string) => s[0].toUpperCase())
+                .join('')}
+            </span>
+            <div className="bp-sidebar-user-info min-w-0 flex-1">
+              <p className="text-[13px] font-semibold text-surface-800 truncate mb-0">
+                {user?.fullName || user?.name || user?.email || '-'}
+              </p>
+              <p className="text-[11px] text-surface-400 truncate mb-0">
+                {user?.email || ''}
+              </p>
             </div>
-            {isAdmin && <MaintenanceBanner />}
-            <NavbarContent
-              fiatBalance={fiatBalance}
-              notificationRefreshRef={notificationRefreshRef}
-              theme={theme}
-              setTheme={setTheme}
-              language={language}
-              setLanguage={setLanguage}
-            />
-          </nav>
-          <div className="content-wrapper">
-            <Suspense fallback={<div className="d-flex justify-content-center align-items-center py-5"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div></div>}>
-              {children}
-            </Suspense>
-            <footer className="content-footer footer bg-footer-theme">
-              <div className="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-                <div className="mb-2 mb-md-0">© {new Date().getFullYear()} Bull Pay</div>
-              </div>
-            </footer>
-            <div className="content-backdrop fade"></div>
           </div>
         </div>
+      </aside>
+
+      {/* ── Mobile backdrop ── */}
+      <div
+        className={`bp-backdrop ${mobileOpen ? 'bp-backdrop-visible' : ''}`}
+        onClick={() => setMobileOpen(false)}
+        role="button"
+        aria-label="Close menu"
+      />
+
+      {/* ── Main area ── */}
+      <div className={`bp-main ${collapsed ? 'bp-main-collapsed' : ''}`}>
+        {/* Navbar */}
+        <nav className="bp-navbar">
+          {/* Mobile hamburger */}
+          <button
+            onClick={toggleMenu}
+            className="flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors cursor-pointer xl:hidden"
+          >
+            <i className="bx bx-menu text-xl"></i>
+          </button>
+
+          {isAdmin && <MaintenanceBanner />}
+
+          <NavbarContent
+            fiatBalance={fiatBalance}
+            notificationRefreshRef={notificationRefreshRef}
+            theme={theme}
+            setTheme={setTheme}
+            language={language}
+            setLanguage={setLanguage}
+          />
+        </nav>
+
+        {/* Content */}
+        <div className="flex-1 px-4 sm:px-6 py-4">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center py-12">
+                <div className="spinner text-primary-600 w-8 h-8 border-[3px]"></div>
+              </div>
+            }
+          >
+            {children}
+          </Suspense>
+        </div>
+
+        {/* Footer */}
+        <footer className="px-6 py-3 text-center text-sm text-surface-400">
+          © {new Date().getFullYear()} Bull Pay
+        </footer>
       </div>
-      <div className="layout-overlay layout-menu-toggle" onClick={toggleMenu} role="button" aria-label="Close menu"></div>
-      <div className="drag-target"></div>
-    </div>
+    </>
   )
 }

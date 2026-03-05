@@ -30,10 +30,14 @@ function formatAmount(val) {
 }
 
 function stateText(state, t) {
-  if (state === 'settled') return <span className="badge bg-label-success">{t('userLedger.settled', { defaultValue: 'Settled' })}</span>
-  if (state === 'committed') return <span className="badge bg-label-info">{t('userLedger.committed', { defaultValue: 'Committed' })}</span>
-  if (state === 'reversed') return <span className="badge bg-label-secondary">{t('userLedger.reversed', { defaultValue: 'Reversed' })}</span>
-  return <span className="text-muted">{state || 'N/A'}</span>
+  const colorMap = {
+    settled: 'bg-green-100 text-green-700',
+    committed: 'bg-blue-100 text-blue-700',
+    reversed: 'bg-surface-100 text-surface-600',
+  }
+  const cls = colorMap[state] || ''
+  if (cls) return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cls}`}>{t(`userLedger.${state}`, { defaultValue: state.charAt(0).toUpperCase() + state.slice(1) })}</span>
+  return <span className="text-surface-500">{state || 'N/A'}</span>
 }
 
 export default function MyLedgerTable({
@@ -51,23 +55,23 @@ export default function MyLedgerTable({
 
   return (
     <div className="card">
-      <div className="card-body">
-        <div className="table-responsive" style={{ overflowX: 'auto' }}>
-          <table className="table table-hover" style={{ minWidth: '900px' }}>
+      <div className="p-6">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm" style={{ minWidth: '900px' }}>
             <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>{t('userLedger.id', { defaultValue: 'ID' })}</th>
-                <th>{t('userLedger.coin', { defaultValue: 'Coin' })}</th>
-                <th>{t('userLedger.code', { defaultValue: 'Code' })}</th>
-                <th>{t('userLedger.state', { defaultValue: 'State' })}</th>
-                <th className="text-end">{t('userLedger.amount', { defaultValue: 'Amount' })}</th>
-                <th className="text-end">{t('userLedger.usd', { defaultValue: 'USD' })}</th>
-                <th>{t('userLedger.txHash', { defaultValue: 'Tx Hash' })}</th>
-                <th>{t('userLedger.createdAt', { defaultValue: 'Created' })}</th>
-                <th></th>
+              <tr className="border-b text-left text-xs uppercase text-surface-500" style={{ whiteSpace: 'nowrap' }}>
+                <th className="px-3 py-2">{t('userLedger.id', { defaultValue: 'ID' })}</th>
+                <th className="px-3 py-2">{t('userLedger.coin', { defaultValue: 'Coin' })}</th>
+                <th className="px-3 py-2">{t('userLedger.code', { defaultValue: 'Code' })}</th>
+                <th className="px-3 py-2">{t('userLedger.state', { defaultValue: 'State' })}</th>
+                <th className="px-3 py-2 text-right">{t('userLedger.amount', { defaultValue: 'Amount' })}</th>
+                <th className="px-3 py-2 text-right">{t('userLedger.usd', { defaultValue: 'USD' })}</th>
+                <th className="px-3 py-2">{t('userLedger.txHash', { defaultValue: 'Tx Hash' })}</th>
+                <th className="px-3 py-2">{t('userLedger.createdAt', { defaultValue: 'Created' })}</th>
+                <th className="px-3 py-2"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y">
               {entries.length === 0 ? (
                 <TableEmptyState
                   colSpan={9}
@@ -80,58 +84,58 @@ export default function MyLedgerTable({
                   const isCredit = entry.entryType === 'credit'
 
                   return (
-                    <tr key={entry.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/ledger/${entry.id}`)}>
-                      <td>
-                        <span className="fw-semibold text-primary">{entry.id}</span>
+                    <tr key={entry.id} className="hover:bg-surface-50 cursor-pointer" onClick={() => router.push(`/ledger/${entry.id}`)}>
+                      <td className="px-3 py-2">
+                        <span className="font-semibold text-primary-600">{entry.id}</span>
                       </td>
-                      <td style={{ whiteSpace: 'nowrap' }}>
-                        <div className="d-flex align-items-center">
-                          <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="me-2" />
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="mr-2" />
                           <div>
-                            <div className="fw-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
+                            <div className="font-medium" style={{ lineHeight: 1.2 }}>{entry.coinSymbol || '-'}</div>
                             {entry.networkName && (
-                              <small className="text-muted" style={{ fontSize: '0.75rem' }}>{entry.networkName}</small>
+                              <small className="text-surface-500" style={{ fontSize: '0.75rem' }}>{entry.networkName}</small>
                             )}
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td className="px-3 py-2">
                         {entry.entryCode ? (
-                          <span className="me-2" title={getEntryCodeLabel(entry.entryCode, t)}>{entry.entryCode}</span>
+                          <span className="mr-2" title={getEntryCodeLabel(entry.entryCode, t)}>{entry.entryCode}</span>
                         ) : (
-                          <span className="text-muted">-</span>
+                          <span className="text-surface-500">-</span>
                         )}
                       </td>
-                      <td>{stateText(entry.state, t)}</td>
-                      <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                        <span className="fw-medium">
+                      <td className="px-3 py-2">{stateText(entry.state, t)}</td>
+                      <td className="px-3 py-2 text-right whitespace-nowrap">
+                        <span className="font-medium">
                           {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
                         </span>
                       </td>
-                      <td className="text-end" style={{ whiteSpace: 'nowrap' }}>
-                        <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
+                      <td className="px-3 py-2 text-right whitespace-nowrap">
+                        <span className="text-surface-500">{formatUsd(entry.amountUsd)}</span>
                       </td>
-                      <td>
+                      <td className="px-3 py-2">
                         {entry.txHash ? (
-                          <div className="d-flex align-items-center">
-                            <span className="me-2">{entry.txHash}</span>
+                          <div className="flex items-center">
+                            <span className="mr-2">{entry.txHash}</span>
                             {entry.explorerUrl && (
                               <a href={`${entry.explorerUrl}/tx/${entry.txHash}`} target="_blank" rel="noopener noreferrer"
-                                className="btn btn-sm btn-icon btn-text-secondary rounded-pill"
+                                className="text-surface-400 hover:text-primary-600"
                                 onClick={(e) => e.stopPropagation()} title={t('userLedger.viewExplorer', { defaultValue: 'View on Explorer' })}>
                                 <i className="bx bx-link-external" style={{ fontSize: '1.25rem' }}></i>
                               </a>
                             )}
                           </div>
                         ) : (
-                          <span className="text-muted">-</span>
+                          <span className="text-surface-500">-</span>
                         )}
                       </td>
-                      <td>
-                        <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(entry.createdAt)}</span>
+                      <td className="px-3 py-2">
+                        <span className="whitespace-nowrap">{fmtDate(entry.createdAt)}</span>
                       </td>
-                      <td>
-                        <Link href={`/ledger/${entry.id}`} className="btn btn-sm btn-icon btn-outline-primary"
+                      <td className="px-3 py-2">
+                        <Link href={`/ledger/${entry.id}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-primary-300 text-primary-600 hover:bg-primary-50"
                           onClick={(e) => e.stopPropagation()}
                           title={t('actions.view', { defaultValue: 'View' })}>
                           <i className="bx bx-show"></i>
@@ -147,8 +151,8 @@ export default function MyLedgerTable({
 
         {/* Pagination */}
         {pagination && pagination.total > 0 && (
-          <div className="d-flex justify-content-between align-items-center mt-4">
-            <div className="text-muted small">
+          <div className="flex justify-between items-center mt-4">
+            <div className="text-surface-500 text-sm">
               {t('invoices.showingEntries', {
                 start: pagination.total > 0 ? ((pagination.page - 1) * pagination.limit) + 1 : 0,
                 end: Math.min(pagination.page * pagination.limit, pagination.total),
@@ -156,17 +160,17 @@ export default function MyLedgerTable({
                 defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
               })}
             </div>
-            <div className="btn-group">
-              <button className="btn btn-outline-secondary btn-sm"
+            <div className="flex">
+              <button className="px-3 py-1.5 text-sm border border-surface-300 rounded-l-lg hover:bg-surface-50 disabled:opacity-50"
                 disabled={!pagination.hasPrev || loading}
                 onClick={() => { setCurrentPage(p => p - 1); syncSearchParams(appliedFilters, currentPage - 1) }}>
                 <i className="bx bx-chevron-left"></i>
                 {t('actions.prev', { defaultValue: 'Previous' })}
               </button>
-              <button className="btn btn-outline-secondary btn-sm" disabled>
+              <button className="px-3 py-1.5 text-sm border-y border-surface-300 bg-surface-50" disabled>
                 {pagination.page} / {pagination.totalPages}
               </button>
-              <button className="btn btn-outline-secondary btn-sm"
+              <button className="px-3 py-1.5 text-sm border border-surface-300 rounded-r-lg hover:bg-surface-50 disabled:opacity-50"
                 disabled={!pagination.hasNext || loading}
                 onClick={() => { setCurrentPage(p => p + 1); syncSearchParams(appliedFilters, currentPage + 1) }}>
                 {t('actions.next', { defaultValue: 'Next' })}

@@ -10,9 +10,11 @@ function SettingsCard({ title, children }) {
           <h6 className="mb-0">{title}</h6>
         </div>
         <div className="card-body">
+          <div className="table-responsive">
           <table className="table table-sm mb-0">
             <tbody>{children}</tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

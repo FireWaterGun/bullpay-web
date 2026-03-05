@@ -20,16 +20,16 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
   }
 
   return (
-    <div className="mt-4 mb-3 py-3 px-2 rounded-3" style={{
-      border: '1px solid var(--bs-border-color)',
+    <div className="mt-4 mb-3 py-3 px-2 rounded-lg" style={{
+      border: '1px solid var(--color-surface-200)',
     }}>
-      <div className="d-flex align-items-start justify-content-between position-relative">
+      <div className="flex items-start justify-between relative">
         {/* Connector lines */}
-        <div className="position-absolute" style={{ top: 22, left: 0, right: 0, zIndex: 0, padding: '0 60px' }}>
-          <div style={{ height: 2, background: 'var(--bs-border-color)', borderRadius: 2 }}>
+        <div className="absolute" style={{ top: 22, left: 0, right: 0, zIndex: 0, padding: '0 60px' }}>
+          <div style={{ height: 2, background: 'var(--color-surface-200)', borderRadius: 2 }}>
             <div style={{
               height: '100%', borderRadius: 2,
-              background: isPaid ? 'var(--bs-success)' : currentStep >= 2 ? 'var(--bs-primary)' : 'transparent',
+              background: isPaid ? '#22c55e' : currentStep >= 2 ? 'var(--color-primary-600)' : 'transparent',
               width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%',
               transition: 'width 0.4s ease',
             }}></div>
@@ -45,47 +45,47 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
 
           return (
             <div key={step.key} className="text-center" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-              <div className="d-flex justify-content-center" style={{ height: 44, alignItems: 'center' }}>
+              <div className="flex justify-center" style={{ height: 44, alignItems: 'center' }}>
                 {isActive ? (
-                  <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
+                  <div className="flex items-center justify-center rounded-full" style={{
                     width: circleSize, height: circleSize,
-                    border: `2px solid var(--bs-primary)`,
-                    background: 'rgba(var(--bs-primary-rgb), 0.08)',
+                    border: `2px solid var(--color-primary-600)`,
+                    background: 'color-mix(in srgb, var(--color-primary-600) 8%, transparent)',
                     transition: 'all 0.3s ease',
                   }}>
-                    <i className={`bx ${step.icon}`} style={{ fontSize: 20, color: 'var(--bs-primary)' }}></i>
+                    <i className={`bx ${step.icon}`} style={{ fontSize: 20, color: 'var(--color-primary-600)' }}></i>
                   </div>
                 ) : isDone ? (
-                  <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
+                  <div className="flex items-center justify-center rounded-full" style={{
                     width: 44, height: 44,
-                    background: 'var(--bs-success)',
+                    background: '#22c55e',
                     transition: 'all 0.3s ease',
                     animation: step.key === 3 ? 'progressBounce 0.6s ease' : 'none',
                   }}>
                     <i className="bx bx-check text-white" style={{ fontSize: 22 }}></i>
                   </div>
                 ) : isError ? (
-                  <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
+                  <div className="flex items-center justify-center rounded-full" style={{
                     width: 44, height: 44,
-                    background: 'var(--bs-danger)',
+                    background: '#ef4444',
                     transition: 'all 0.3s ease',
                   }}>
                     <i className="bx bx-x text-white" style={{ fontSize: 22 }}></i>
                   </div>
                 ) : (
-                  <div className="rounded-circle" style={{
+                  <div className="rounded-full" style={{
                     width: circleSize, height: circleSize,
-                    background: 'var(--bs-border-color)',
+                    background: 'var(--color-surface-200)',
                     transition: 'all 0.3s ease',
                   }}></div>
                 )}
               </div>
               <div className="mt-1" style={{
                 fontSize: '0.7rem', fontWeight: 600,
-                color: isDone ? 'var(--bs-success)'
-                  : isError ? 'var(--bs-danger)'
-                  : isActive ? 'var(--bs-primary)'
-                  : 'var(--bs-secondary-color)',
+                color: isDone ? '#22c55e'
+                  : isError ? '#ef4444'
+                  : isActive ? 'var(--color-primary-600)'
+                  : 'var(--color-surface-500)',
               }}>
                 {step.label}
               </div>

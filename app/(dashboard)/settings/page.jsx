@@ -16,6 +16,25 @@ import { useDateFormat } from '@/hooks/useDateFormat'
 import { logger } from '@/lib/utils/logger'
 import { COMMON_TIMEZONES } from '@/lib/constants'
 
+const iconBoxColors = {
+  primary: 'bg-primary-100 text-primary-600',
+  success: 'bg-green-100 text-green-600',
+  warning: 'bg-amber-100 text-amber-600',
+  info: 'bg-blue-100 text-blue-600',
+  danger: 'bg-red-100 text-red-600',
+}
+
+function IconBox({ icon, color = 'primary', size = 40 }) {
+  return (
+    <span
+      className={`inline-flex items-center justify-center rounded-lg shrink-0 ${iconBoxColors[color] || iconBoxColors.primary}`}
+      style={{ width: size, height: size }}
+    >
+      <i className={`bx ${icon} text-xl`}></i>
+    </span>
+  )
+}
+
 export default function SettingsPage() {
   const { t } = useTranslation()
   const { fmtDate } = useDateFormat()
@@ -76,7 +95,6 @@ export default function SettingsPage() {
         newPassword: formData.newPassword,
         newPasswordConfirmation: formData.newPasswordConfirmation,
       }
-      // Include TOTP code if 2FA is enabled and user provided one
       if (is2FAEnabled && formData.totpCode) {
         payload.totpCode = formData.totpCode
       }
@@ -88,12 +106,10 @@ export default function SettingsPage() {
         })
       )
       resetForm()
-      // Server revoked all tokens, log out client side
       setTimeout(() => logout(), 1500)
     } catch (err) {
       const errorMsg = err?.message || err?.details || 'Password change failed'
       const errorCode = err?.code || ''
-      // Handle 2FA required error (in case status wasn't loaded correctly)
       if (errorCode === 'TWO_FACTOR_REQUIRED') {
         setFormError('totpCode', {
           message: t('settings.password.totpRequired', { defaultValue: 'Please enter your 2FA code' }),
@@ -114,39 +130,33 @@ export default function SettingsPage() {
   const timezoneChanged = selectedTimezone !== (user?.timezone || 'UTC')
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      {/* ══════════════════════════════════════════════════════════
-          §1  PROFILE HERO CARD
-          ══════════════════════════════════════════════════════════ */}
-      <div className="card mb-4 overflow-hidden">
-        {/* Gradient accent bar */}
-        <div style={{ height: 4, background: 'linear-gradient(90deg, var(--bs-primary) 0%, #a855f7 50%, #06b6d4 100%)' }} />
-
-        <div className="card-body p-4 pb-3">
-          <div className="d-flex flex-column flex-sm-row align-items-start gap-4">
+    <>
+      {/* ══ §1 PROFILE HERO CARD ══ */}
+      <div className="card mb-6 overflow-hidden">
+        <div className="p-5 pb-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             {/* Avatar */}
-            <div
-              className="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
-              style={{ width: 80, height: 80, background: 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.16) 0%, rgba(var(--bs-primary-rgb), 0.04) 100%)' }}
-            >
-              <i className="bx bx-user-circle" style={{ fontSize: '2.5rem', color: 'var(--bs-primary)' }}></i>
+            <div className="flex items-center justify-center w-20 h-20 rounded-xl bg-primary-50 shrink-0">
+              <i className="bx bx-user-circle text-[2.5rem] text-primary-600"></i>
             </div>
 
             {/* Info */}
-            <div className="flex-grow-1 min-w-0">
-              <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                <h4 className="mb-0 text-truncate">{user?.fullName || user?.email || '-'}</h4>
-                <div className="ms-auto">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <h4 className="text-xl font-semibold text-surface-900 truncate mb-0">
+                  {user?.fullName || user?.email || '-'}
+                </h4>
+                <div className="ml-auto">
                   <RefreshButton onClick={fetchStatus} loading={loading} />
                 </div>
               </div>
 
-              <div className="d-flex flex-wrap gap-3 text-muted small mt-1">
+              <div className="flex flex-wrap gap-3 text-surface-500 text-sm mt-1">
                 {user?.email && (
-                  <span><i className="bx bx-envelope me-1"></i>{user.email}</span>
+                  <span><i className="bx bx-envelope mr-1"></i>{user.email}</span>
                 )}
                 <span>
-                  <i className="bx bx-globe me-1"></i>
+                  <i className="bx bx-globe mr-1"></i>
                   {selectedTimezone}
                 </span>
               </div>
@@ -155,236 +165,214 @@ export default function SettingsPage() {
         </div>
 
         {/* Stats strip */}
-        <div className="card-footer bg-transparent border-top py-3 px-4">
-          <div className="row g-3">
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
-                <span
-                  className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-success flex-shrink-0"
-                  style={{ width: 40, height: 40 }}
-                >
-                  <i className="bx bx-check-shield" style={{ fontSize: '1.25rem' }}></i>
-                </span>
-                <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
-                    {t('settings.stats.active', { defaultValue: 'Active' })}
-                  </div>
-                  <small className="text-muted">{t('common.status', { defaultValue: 'Status' })}</small>
+        <div className="border-t border-surface-100 py-3 px-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {/* Active */}
+            <div className="flex items-center gap-3">
+              <IconBox icon="bx-check-shield" color="success" />
+              <div className="min-w-0">
+                <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
+                  {t('settings.stats.active', { defaultValue: 'Active' })}
                 </div>
+                <small className="text-surface-500">{t('common.status', { defaultValue: 'Status' })}</small>
               </div>
             </div>
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
-                <span
-                  className={`d-inline-flex align-items-center justify-content-center rounded-2 flex-shrink-0 ${is2FAEnabled ? 'bg-label-success' : 'bg-label-warning'}`}
-                  style={{ width: 40, height: 40 }}
-                >
-                  <i className={`bx ${is2FAEnabled ? 'bx-lock-alt' : 'bx-lock-open-alt'}`} style={{ fontSize: '1.25rem' }}></i>
-                </span>
-                <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
-                    {loading ? '...' : is2FAEnabled
-                      ? t('settings.2fa.enabled', { defaultValue: 'Enabled' })
-                      : t('settings.2fa.disabled', { defaultValue: 'Disabled' })}
-                  </div>
-                  <small className="text-muted">{t('settings.stats.twoFA', { defaultValue: '2FA' })}</small>
+            {/* 2FA */}
+            <div className="flex items-center gap-3">
+              <IconBox
+                icon={is2FAEnabled ? 'bx-lock-alt' : 'bx-lock-open-alt'}
+                color={is2FAEnabled ? 'success' : 'warning'}
+              />
+              <div className="min-w-0">
+                <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
+                  {loading ? '...' : is2FAEnabled
+                    ? t('settings.2fa.enabled', { defaultValue: 'Enabled' })
+                    : t('settings.2fa.disabled', { defaultValue: 'Disabled' })}
                 </div>
+                <small className="text-surface-500">{t('settings.stats.twoFA', { defaultValue: '2FA' })}</small>
               </div>
             </div>
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
-                <span
-                  className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-info flex-shrink-0"
-                  style={{ width: 40, height: 40 }}
-                >
-                  <i className="bx bx-time-five" style={{ fontSize: '1.25rem' }}></i>
-                </span>
-                <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
-                    {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', hour12: false })}
-                  </div>
-                  <small className="text-muted">{t('settings.stats.localTime', { defaultValue: 'Local Time' })}</small>
+            {/* Time */}
+            <div className="flex items-center gap-3">
+              <IconBox icon="bx-time-five" color="info" />
+              <div className="min-w-0">
+                <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
+                  {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', hour12: false })}
                 </div>
+                <small className="text-surface-500">{t('settings.stats.localTime', { defaultValue: 'Local Time' })}</small>
               </div>
             </div>
-            <div className="col-6 col-sm-3">
-              <div className="d-flex align-items-center gap-3">
-                <span
-                  className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-primary flex-shrink-0"
-                  style={{ width: 40, height: 40 }}
-                >
-                  <i className="bx bx-calendar" style={{ fontSize: '1.25rem' }}></i>
-                </span>
-                <div className="min-w-0">
-                  <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>
-                    {new Date().toLocaleDateString(undefined, { timeZone: selectedTimezone, month: 'short', day: 'numeric', year: 'numeric' })}
-                  </div>
-                  <small className="text-muted">{t('settings.stats.date', { defaultValue: 'Date' })}</small>
+            {/* Date */}
+            <div className="flex items-center gap-3">
+              <IconBox icon="bx-calendar" color="primary" />
+              <div className="min-w-0">
+                <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
+                  {new Date().toLocaleDateString(undefined, { timeZone: selectedTimezone, month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
+                <small className="text-surface-500">{t('settings.stats.date', { defaultValue: 'Date' })}</small>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          §2  MAIN CONTENT — Two columns on large screens
-          ══════════════════════════════════════════════════════════ */}
-      <div className="row">
+      {/* ══ §2 MAIN CONTENT ══ */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* ── Left Column ── */}
-        <div className="col-xl-8 col-lg-7">
+        <div className="lg:col-span-8">
           {/* Change Password */}
-          <div className="card mb-4">
-            <div className="card-header d-flex align-items-center">
-              <span
-                className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-primary me-3 flex-shrink-0"
-                style={{ width: 36, height: 36 }}
-              >
-                <i className="bx bx-key" style={{ fontSize: '1.1rem' }}></i>
-              </span>
+          <div className="card mb-6">
+            <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-3">
+              <IconBox icon="bx-key" color="primary" size={36} />
               <div>
-                <h6 className="mb-0">{t('settings.password.title', { defaultValue: 'Change Password' })}</h6>
-                <small className="text-muted">
+                <h6 className="font-semibold text-surface-900 mb-0">
+                  {t('settings.password.title', { defaultValue: 'Change Password' })}
+                </h6>
+                <small className="text-surface-500">
                   {t('settings.password.description', {
-                    defaultValue: 'For security, you\'ll be logged out of all devices after changing your password.',
+                    defaultValue: "For security, you'll be logged out of all devices after changing your password.",
                   })}
                 </small>
               </div>
             </div>
-            <div className="card-body">
+            <div className="p-6">
               <form onSubmit={handleSubmit(onChangePassword)} noValidate>
-                <div className="row">
-                  <div className="col-md-8">
-                    {/* Current Password */}
-                    <div className="mb-3">
-                      <label className="form-label" htmlFor="currentPassword">
-                        {t('settings.password.currentPassword', { defaultValue: 'Current Password' })}
-                      </label>
-                      <div className="input-group input-group-merge">
-                        <input
-                          type={showCurrentPassword ? 'text' : 'password'}
-                          id="currentPassword"
-                          className={`form-control ${errors.currentPassword ? 'is-invalid' : ''}`}
-                          placeholder="••••••••"
-                          autoComplete="current-password"
-                          {...register('currentPassword')}
-                        />
-                        <span
-                          className="input-group-text cursor-pointer"
-                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        >
-                          <i className={`bx ${showCurrentPassword ? 'bx-show' : 'bx-hide'}`}></i>
-                        </span>
-                      </div>
-                      {errors.currentPassword && (
-                        <div className="invalid-feedback d-block">{errors.currentPassword.message}</div>
-                      )}
+                <div className="max-w-lg">
+                  {/* Current Password */}
+                  <div className="mb-4">
+                    <label className="form-label" htmlFor="currentPassword">
+                      {t('settings.password.currentPassword', { defaultValue: 'Current Password' })}
+                    </label>
+                    <div className={`bp-input-group ${errors.currentPassword ? 'bp-input-group--error' : ''}`}>
+                      <input
+                        type={showCurrentPassword ? 'text' : 'password'}
+                        id="currentPassword"
+                        className="form-input"
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        {...register('currentPassword')}
+                      />
+                      <button
+                        type="button"
+                        className="bp-input-suffix"
+                        tabIndex={-1}
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      >
+                        <i className={`bx text-lg ${showCurrentPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                      </button>
                     </div>
-
-                    {/* New Password */}
-                    <div className="mb-3">
-                      <label className="form-label" htmlFor="newPassword">
-                        {t('settings.password.newPassword', { defaultValue: 'New Password' })}
-                      </label>
-                      <div className="input-group input-group-merge">
-                        <input
-                          type={showNewPassword ? 'text' : 'password'}
-                          id="newPassword"
-                          className={`form-control ${errors.newPassword ? 'is-invalid' : ''}`}
-                          placeholder="••••••••"
-                          autoComplete="new-password"
-                          {...register('newPassword')}
-                        />
-                        <span
-                          className="input-group-text cursor-pointer"
-                          onClick={() => setShowNewPassword(!showNewPassword)}
-                        >
-                          <i className={`bx ${showNewPassword ? 'bx-show' : 'bx-hide'}`}></i>
-                        </span>
-                      </div>
-                      {errors.newPassword && (
-                        <div className="invalid-feedback d-block">{errors.newPassword.message}</div>
-                      )}
-                      <div className="form-text">
-                        {t('settings.password.requirements', {
-                          defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.',
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Confirm New Password */}
-                    <div className="mb-3">
-                      <label className="form-label" htmlFor="newPasswordConfirmation">
-                        {t('settings.password.confirmPassword', { defaultValue: 'Confirm New Password' })}
-                      </label>
-                      <div className="input-group input-group-merge">
-                        <input
-                          type={showConfirmPassword ? 'text' : 'password'}
-                          id="newPasswordConfirmation"
-                          className={`form-control ${errors.newPasswordConfirmation ? 'is-invalid' : ''}`}
-                          placeholder="••••••••"
-                          autoComplete="new-password"
-                          {...register('newPasswordConfirmation')}
-                        />
-                        <span
-                          className="input-group-text cursor-pointer"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                          <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
-                        </span>
-                      </div>
-                      {errors.newPasswordConfirmation && (
-                        <div className="invalid-feedback d-block">{errors.newPasswordConfirmation.message}</div>
-                      )}
-                    </div>
-
-                    {/* 2FA Code (only if 2FA is enabled) */}
-                    {is2FAEnabled && (
-                      <div className="mb-3">
-                        <label className="form-label" htmlFor="totpCode">
-                          <i className="bx bx-shield-quarter me-1 text-warning"></i>
-                          {t('settings.password.totpLabel', { defaultValue: '2FA Verification Code' })}
-                        </label>
-                        <input
-                          type="text"
-                          id="totpCode"
-                          className={`form-control ${errors.totpCode ? 'is-invalid' : ''}`}
-                          placeholder="000000"
-                          inputMode="numeric"
-                          maxLength={20}
-                          autoComplete="one-time-code"
-                          {...register('totpCode')}
-                        />
-                        {errors.totpCode && (
-                          <div className="invalid-feedback d-block">{errors.totpCode.message}</div>
-                        )}
-                        <div className="form-text">
-                          {t('settings.password.totpHint', {
-                            defaultValue: 'Enter the code from your authenticator app or a backup code.',
-                          })}
-                        </div>
-                      </div>
+                    {errors.currentPassword && (
+                      <p className="text-red-500 text-xs mt-1">{errors.currentPassword.message}</p>
                     )}
-
-                    {/* Submit */}
-                    <button
-                      type="submit"
-                      className="btn btn-primary mt-2"
-                      disabled={changingPassword || !isValid}
-                    >
-                      {changingPassword ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
-                          {t('settings.password.changing', { defaultValue: 'Changing...' })}
-                        </>
-                      ) : (
-                        <>
-                          <i className="bx bx-check me-1"></i>
-                          {t('settings.password.changeButton', { defaultValue: 'Change Password' })}
-                        </>
-                      )}
-                    </button>
                   </div>
+
+                  {/* New Password */}
+                  <div className="mb-4">
+                    <label className="form-label" htmlFor="newPassword">
+                      {t('settings.password.newPassword', { defaultValue: 'New Password' })}
+                    </label>
+                    <div className={`bp-input-group ${errors.newPassword ? 'bp-input-group--error' : ''}`}>
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        id="newPassword"
+                        className="form-input"
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        {...register('newPassword')}
+                      />
+                      <button
+                        type="button"
+                        className="bp-input-suffix"
+                        tabIndex={-1}
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        <i className={`bx text-lg ${showNewPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                      </button>
+                    </div>
+                    {errors.newPassword && (
+                      <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>
+                    )}
+                    <p className="text-surface-400 text-xs mt-1">
+                      {t('settings.password.requirements', {
+                        defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.',
+                      })}
+                    </p>
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div className="mb-4">
+                    <label className="form-label" htmlFor="newPasswordConfirmation">
+                      {t('settings.password.confirmPassword', { defaultValue: 'Confirm New Password' })}
+                    </label>
+                    <div className={`bp-input-group ${errors.newPasswordConfirmation ? 'bp-input-group--error' : ''}`}>
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        id="newPasswordConfirmation"
+                        className="form-input"
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        {...register('newPasswordConfirmation')}
+                      />
+                      <button
+                        type="button"
+                        className="bp-input-suffix"
+                        tabIndex={-1}
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        <i className={`bx text-lg ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
+                      </button>
+                    </div>
+                    {errors.newPasswordConfirmation && (
+                      <p className="text-red-500 text-xs mt-1">{errors.newPasswordConfirmation.message}</p>
+                    )}
+                  </div>
+
+                  {/* 2FA Code */}
+                  {is2FAEnabled && (
+                    <div className="mb-4">
+                      <label className="form-label" htmlFor="totpCode">
+                        <i className="bx bx-shield-quarter mr-1 text-amber-500"></i>
+                        {t('settings.password.totpLabel', { defaultValue: '2FA Verification Code' })}
+                      </label>
+                      <input
+                        type="text"
+                        id="totpCode"
+                        className={`form-input ${errors.totpCode ? 'border-red-500' : ''}`}
+                        placeholder="000000"
+                        inputMode="numeric"
+                        maxLength={20}
+                        autoComplete="one-time-code"
+                        {...register('totpCode')}
+                      />
+                      {errors.totpCode && (
+                        <p className="text-red-500 text-xs mt-1">{errors.totpCode.message}</p>
+                      )}
+                      <p className="text-surface-400 text-xs mt-1">
+                        {t('settings.password.totpHint', {
+                          defaultValue: 'Enter the code from your authenticator app or a backup code.',
+                        })}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    className="btn btn-primary mt-2"
+                    disabled={changingPassword || !isValid}
+                  >
+                    {changingPassword ? (
+                      <>
+                        <span className="spinner w-4 h-4 border-2 mr-2"></span>
+                        {t('settings.password.changing', { defaultValue: 'Changing...' })}
+                      </>
+                    ) : (
+                      <>
+                        <i className="bx bx-check mr-1"></i>
+                        {t('settings.password.changeButton', { defaultValue: 'Change Password' })}
+                      </>
+                    )}
+                  </button>
                 </div>
               </form>
             </div>
@@ -392,52 +380,47 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Right Column ── */}
-        <div className="col-xl-4 col-lg-5">
+        <div className="lg:col-span-4">
           {/* Timezone */}
-          <div className="card mb-4">
-            <div className="card-header d-flex align-items-center">
-              <span
-                className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-info me-3 flex-shrink-0"
-                style={{ width: 36, height: 36 }}
-              >
-                <i className="bx bx-time-five" style={{ fontSize: '1.1rem' }}></i>
-              </span>
+          <div className="card mb-6">
+            <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-3">
+              <IconBox icon="bx-time-five" color="info" size={36} />
               <div>
-                <h6 className="mb-0">{t('settings.timezone.title', { defaultValue: 'Timezone' })}</h6>
-                <small className="text-muted">
+                <h6 className="font-semibold text-surface-900 mb-0">
+                  {t('settings.timezone.title', { defaultValue: 'Timezone' })}
+                </h6>
+                <small className="text-surface-500">
                   {t('settings.timezone.description', { defaultValue: 'Set your preferred timezone for displaying dates and times.' })}
                 </small>
               </div>
             </div>
-            <div className="card-body">
-              {/* Live clock preview */}
-              <div className="text-center mb-4 py-3 rounded-3" style={{ background: 'rgba(var(--bs-primary-rgb), 0.06)' }}>
-                <div className="fw-bold fs-3 text-primary" style={{ fontVariantNumeric: 'tabular-nums', letterSpacing: '0.05em' }}>
+            <div className="p-6">
+              {/* Clock preview */}
+              <div className="text-center mb-4 py-3 rounded-xl bg-primary-50">
+                <div className="font-bold text-3xl text-primary-600 tabular-nums tracking-wider">
                   {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
                 </div>
-                <small className="text-muted">{selectedTimezone.replace(/_/g, ' ')}</small>
+                <small className="text-surface-500">{selectedTimezone.replace(/_/g, ' ')}</small>
               </div>
 
-              <div className="mb-3">
+              <div className="mb-4">
                 <label className="form-label" htmlFor="timezone">
                   {t('settings.timezone.label', { defaultValue: 'Timezone' })}
                 </label>
                 <select
                   id="timezone"
-                  className="form-select"
+                  className="form-input w-full"
                   value={selectedTimezone}
                   onChange={(e) => setSelectedTimezone(e.target.value)}
                 >
                   {COMMON_TIMEZONES.map((tz) => (
-                    <option key={tz.value} value={tz.value}>
-                      {tz.label}
-                    </option>
+                    <option key={tz.value} value={tz.value}>{tz.label}</option>
                   ))}
                 </select>
               </div>
               <button
                 type="button"
-                className="btn btn-primary w-100"
+                className="btn btn-primary w-full"
                 disabled={savingTimezone || !timezoneChanged}
                 onClick={async () => {
                   setSavingTimezone(true)
@@ -455,12 +438,12 @@ export default function SettingsPage() {
               >
                 {savingTimezone ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    <span className="spinner w-4 h-4 border-2 mr-2"></span>
                     {t('common.saving', { defaultValue: 'Saving...' })}
                   </>
                 ) : (
                   <>
-                    <i className="bx bx-check me-1"></i>
+                    <i className="bx bx-check mr-1"></i>
                     {t('common.save', { defaultValue: 'Save' })}
                   </>
                 )}
@@ -469,88 +452,80 @@ export default function SettingsPage() {
           </div>
 
           {/* Security / 2FA */}
-          <div className="card mb-4">
-            <div className="card-header d-flex align-items-center">
-              <span
-                className="d-inline-flex align-items-center justify-content-center rounded-2 bg-label-warning me-3 flex-shrink-0"
-                style={{ width: 36, height: 36 }}
-              >
-                <i className="bx bx-shield-quarter" style={{ fontSize: '1.1rem' }}></i>
-              </span>
+          <div className="card mb-6">
+            <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-3">
+              <IconBox icon="bx-shield-quarter" color="warning" size={36} />
               <div>
-                <h6 className="mb-0">{t('settings.security.title', { defaultValue: 'Security' })}</h6>
-                <small className="text-muted">
+                <h6 className="font-semibold text-surface-900 mb-0">
+                  {t('settings.security.title', { defaultValue: 'Security' })}
+                </h6>
+                <small className="text-surface-500">
                   {t('settings.security.subtitle', { defaultValue: 'Two-factor authentication & security options' })}
                 </small>
               </div>
             </div>
-            <div className="card-body">
-              {/* 2FA Status indicator */}
-              <div className="d-flex align-items-center mb-3 p-3 rounded-3" style={{
-                background: is2FAEnabled
-                  ? 'rgba(var(--bs-success-rgb), 0.08)'
-                  : 'rgba(var(--bs-warning-rgb), 0.08)',
-              }}>
-                <div
-                  className={`rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0 ${is2FAEnabled ? 'bg-label-success' : 'bg-label-warning'}`}
-                  style={{ width: 44, height: 44 }}
-                >
-                  <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} fs-5`}></i>
+            <div className="p-6">
+              {/* 2FA Status */}
+              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${
+                is2FAEnabled ? 'bg-green-50' : 'bg-amber-50'
+              }`}>
+                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${
+                  is2FAEnabled ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'
+                }`}>
+                  <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} text-xl`}></i>
                 </div>
-                <div className="flex-grow-1 min-w-0">
-                  <h6 className="mb-0 small fw-semibold">{t('settings.2fa.title', { defaultValue: 'Two-Factor Authentication' })}</h6>
+                <div className="flex-1 min-w-0">
+                  <h6 className="text-sm font-semibold text-surface-900 mb-0">
+                    {t('settings.2fa.title', { defaultValue: 'Two-Factor Authentication' })}
+                  </h6>
                   {loading ? (
-                    <div className="placeholder-glow">
-                      <span className="placeholder col-8 placeholder-sm"></span>
-                    </div>
+                    <div className="h-3 w-24 bg-surface-100 rounded animate-pulse mt-1"></div>
                   ) : is2FAEnabled ? (
-                    <div className="d-flex align-items-center gap-2 mt-1">
-                      <span className="badge bg-success" style={{ fontSize: '0.7rem' }}>
-                        <i className="bx bx-check-circle me-1"></i>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="inline-flex items-center px-1.5 py-0.5 text-[0.7rem] font-semibold text-white bg-green-500 rounded">
+                        <i className="bx bx-check-circle mr-1"></i>
                         {t('settings.2fa.enabled', { defaultValue: 'Enabled' })}
                       </span>
                       {twoFAStatus?.verifiedAt && (
-                        <small className="text-muted">
+                        <small className="text-surface-500">
                           {t('settings.2fa.enabledSince', { defaultValue: 'Since' })}{' '}
                           {fmtDate(twoFAStatus.verifiedAt)}
                         </small>
                       )}
                     </div>
                   ) : (
-                    <small className="text-muted">
+                    <small className="text-surface-500">
                       {t('settings.2fa.disabledHint', { defaultValue: 'Not enabled — your account is less secure' })}
                     </small>
                   )}
                 </div>
               </div>
 
-              {/* Description */}
-              <p className="text-muted small mb-3">
+              <p className="text-surface-500 text-sm mb-4">
                 {t('settings.2fa.description', {
-                  defaultValue: 'Add an extra layer of security. We\'ll ask for a code from your authenticator app when you sign in.',
+                  defaultValue: "Add an extra layer of security. We'll ask for a code from your authenticator app when you sign in.",
                 })}
               </p>
 
-              {/* Action button */}
               {loading ? (
-                <button className="btn btn-outline-primary w-100" disabled>
-                  <span className="spinner-border spinner-border-sm me-2"></span>
+                <button className="btn btn-outline-primary w-full" disabled>
+                  <span className="spinner w-4 h-4 border-2 mr-2"></span>
                   {t('common.loading', { defaultValue: 'Loading...' })}
                 </button>
               ) : is2FAEnabled ? (
                 <button
-                  className="btn btn-outline-danger w-100"
+                  className="btn w-full border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer rounded-[10px] py-2"
                   onClick={() => setShowDisableModal(true)}
                 >
-                  <i className="bx bx-power-off me-1"></i>
+                  <i className="bx bx-power-off mr-1"></i>
                   {t('settings.2fa.disable', { defaultValue: 'Disable 2FA' })}
                 </button>
               ) : (
                 <button
-                  className="btn btn-primary w-100"
+                  className="btn btn-primary w-full"
                   onClick={() => setShowSetupModal(true)}
                 >
-                  <i className="bx bx-lock me-1"></i>
+                  <i className="bx bx-lock mr-1"></i>
                   {t('settings.2fa.enable', { defaultValue: 'Enable 2FA' })}
                 </button>
               )}
@@ -578,6 +553,6 @@ export default function SettingsPage() {
         }}
         token={token}
       />
-    </div>
+    </>
   )
 }

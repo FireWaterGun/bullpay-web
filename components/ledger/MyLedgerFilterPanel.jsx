@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 
@@ -17,11 +18,11 @@ export default function MyLedgerFilterPanel({
   const { t } = useTranslation()
 
   return (
-    <div className="card-body">
-      <div className="row g-3">
-        <div className="col-md-3 col-sm-6">
+    <div className="p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+        <div>
           <label className="form-label">{t('filter.entryCode', { defaultValue: 'Entry Code' })}</label>
-          <select className="form-select" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
+          <select className="form-input" value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
             <option value="DP">DP - {t('userLedger.code.DP', { defaultValue: 'Deposit' })}</option>
             <option value="WA">WA - {t('userLedger.code.WA', { defaultValue: 'Withdrawal Amount' })}</option>
@@ -32,71 +33,30 @@ export default function MyLedgerFilterPanel({
             <option value="XO">XO - {t('userLedger.code.XO', { defaultValue: 'Internal Transfer Out' })}</option>
           </select>
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div>
           <label className="form-label">{t('filter.state', { defaultValue: 'State' })}</label>
-          <select className="form-select" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
+          <select className="form-input" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
             <option value="committed">{t('filter.committed', { defaultValue: 'Committed' })}</option>
             <option value="settled">{t('filter.settled', { defaultValue: 'Settled' })}</option>
             <option value="reversed">{t('filter.reversed', { defaultValue: 'Reversed' })}</option>
           </select>
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div>
           <label className="form-label">{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</label>
-          <div className="dropdown">
-            <button
-              className="form-select d-flex align-items-center justify-content-between"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              style={{ textAlign: 'left' }}
-            >
-              {coinNetworkIdFilter ? (() => {
-                const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
-                if (!cn) return t('common.all', { defaultValue: 'All' })
-                const sym = (cn.coin?.symbol || '').toUpperCase()
-                const net = (cn.network?.symbol || '').toUpperCase()
-                return (
-                  <span className="d-flex align-items-center gap-2">
-                    <CoinImg symbol={sym} networkSymbol={net} size={22} />
-                    <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
-                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>{net}</span>
-                  </span>
-                )
-              })() : <span className="text-muted">{t('common.all', { defaultValue: 'All' })}</span>}
-            </button>
-            <ul className="dropdown-menu w-100" style={{ maxHeight: '280px', overflowY: 'auto' }}>
-              <li>
-                <button className="dropdown-item" onClick={() => setCoinNetworkIdFilter('')}>
-                  <span className="text-muted">{t('common.all', { defaultValue: 'All' })}</span>
-                </button>
-              </li>
-              <li><hr className="dropdown-divider" /></li>
-              {coinNetworks.map((cn) => {
-                const sym = (cn.coin?.symbol || '').toUpperCase()
-                const net = (cn.network?.symbol || '').toUpperCase()
-                return (
-                  <li key={cn.id}>
-                    <button className="dropdown-item d-flex align-items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
-                      <CoinImg symbol={sym} networkSymbol={net} size={28} />
-                      <div>
-                        <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
-                        <div className="text-muted" style={{ fontSize: '0.7rem' }}>{net}</div>
-                      </div>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
+          <CoinNetworkDropdown
+            coinNetworks={coinNetworks}
+            coinNetworkIdFilter={coinNetworkIdFilter}
+            setCoinNetworkIdFilter={setCoinNetworkIdFilter}
+          />
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div>
           <label className="form-label">{t('filter.txHash', { defaultValue: 'Tx Hash' })}</label>
-          <input type="text" className="form-control" placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })} value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+          <input type="text" className="form-input" placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })} value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
         </div>
-        <div className="col-md-3 col-sm-6">
+        <div>
           <label className="form-label">{t('filter.dateRange', { defaultValue: 'Date Range' })}</label>
-          <select className="form-select" value={datePresetFilter} onChange={(e) => setDatePresetFilter(e.target.value)}>
+          <select className="form-input" value={datePresetFilter} onChange={(e) => setDatePresetFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
             <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
             <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
@@ -107,16 +67,76 @@ export default function MyLedgerFilterPanel({
           </select>
         </div>
       </div>
-      <div className="d-flex gap-2 mt-3">
+      <div className="flex gap-2 mt-3">
         <button className="btn btn-primary" onClick={onApply} disabled={loading}>
-          <i className="bx bx-filter-alt me-1"></i>
+          <i className="bx bx-filter-alt mr-1"></i>
           {t('filter.apply', { defaultValue: 'Apply Filters' })}
         </button>
         <button className="btn btn-outline-secondary" onClick={onReset} disabled={loading}>
-          <i className="bx bx-reset me-1"></i>
+          <i className="bx bx-reset mr-1"></i>
           {t('filter.reset', { defaultValue: 'Reset' })}
         </button>
       </div>
+    </div>
+  )
+}
+
+function CoinNetworkDropdown({ coinNetworks, coinNetworkIdFilter, setCoinNetworkIdFilter }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        className="form-input w-full flex items-center justify-between text-left"
+        type="button"
+        onClick={() => setOpen(!open)}
+      >
+        {coinNetworkIdFilter ? (() => {
+          const cn = coinNetworks.find(c => String(c.id) === String(coinNetworkIdFilter))
+          if (!cn) return t('common.all', { defaultValue: 'All' })
+          const sym = (cn.coin?.symbol || '').toUpperCase()
+          const net = (cn.network?.symbol || '').toUpperCase()
+          return (
+            <span className="flex items-center gap-2">
+              <CoinImg symbol={sym} networkSymbol={net} size={22} />
+              <span className="font-semibold" style={{ fontSize: '0.85rem' }}>{sym}</span>
+              <span className="text-surface-500" style={{ fontSize: '0.75rem' }}>{net}</span>
+            </span>
+          )
+        })() : <span className="text-surface-500">{t('common.all', { defaultValue: 'All' })}</span>}
+        <i className={`bx bx-chevron-${open ? 'up' : 'down'} text-surface-400`}></i>
+      </button>
+      {open && (
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-white shadow-lg max-h-[280px] overflow-y-auto">
+          <button type="button" className="w-full text-left px-3 py-2 hover:bg-surface-50 text-sm text-surface-500" onClick={() => { setCoinNetworkIdFilter(''); setOpen(false) }}>
+            {t('common.all', { defaultValue: 'All' })}
+          </button>
+          <hr className="border-surface-200" />
+          {coinNetworks.map((cn) => {
+            const sym = (cn.coin?.symbol || '').toUpperCase()
+            const net = (cn.network?.symbol || '').toUpperCase()
+            return (
+              <button type="button" key={cn.id} className="w-full text-left px-3 py-2 hover:bg-surface-50 flex items-center gap-2" onClick={() => { setCoinNetworkIdFilter(String(cn.id)); setOpen(false) }}>
+                <CoinImg symbol={sym} networkSymbol={net} size={28} />
+                <div>
+                  <div className="font-semibold" style={{ fontSize: '0.85rem' }}>{sym}</div>
+                  <div className="text-surface-500" style={{ fontSize: '0.7rem' }}>{net}</div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

@@ -86,37 +86,37 @@ export default function WalletEdit() {
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+      <div className="flex justify-center py-12">
+        <div className="spinner w-8 h-8 border-3 text-primary-600" role="status">
+          <span className="sr-only">Loading...</span>
         </div>
       </div>
     )
   }
 
   if (!wallet) {
-    return <div className="alert alert-danger">{t('wallets.notFound', { defaultValue: 'Wallet not found' })}</div>
+    return <div className="rounded-lg bg-red-50 text-red-700 p-4">{t('wallets.notFound', { defaultValue: 'Wallet not found' })}</div>
   }
 
   return (
     <div>
-      <div className="d-flex align-items-center mb-4">
-        <button className="btn btn-text-secondary me-2" onClick={() => router.back()}>
-          <i className="bx bx-arrow-back"></i>
+      <div className="flex items-center mb-4">
+        <button className="text-surface-500 hover:text-surface-700 mr-2" onClick={() => router.back()}>
+          <i className="bx bx-arrow-back text-xl"></i>
         </button>
-        <h4 className="fw-bold mb-0">{t('wallets.editTitle', { defaultValue: 'Edit Withdrawal Address' })}</h4>
+        <h4 className="font-bold mb-0">{t('wallets.editTitle', { defaultValue: 'Edit Withdrawal Address' })}</h4>
       </div>
 
-      <div className="row justify-content-center">
-        <div className="col-lg-8 col-xl-6">
+      <div className="flex justify-center">
+        <div className="w-full max-w-xl">
           <div className="card">
-            <div className="card-body">
+            <div className="p-6">
               <form onSubmit={handleSave}>
                 <div className="mb-3">
-                  <label className="form-label">{t('wallets.label', { defaultValue: 'Label' })} <span className="text-danger">*</span></label>
+                  <label className="form-label">{t('wallets.label', { defaultValue: 'Label' })} <span className="text-red-500">*</span></label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     value={form.label}
                     onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
                     maxLength={100}
@@ -128,29 +128,29 @@ export default function WalletEdit() {
                   <label className="form-label">{t('wallets.address', { defaultValue: 'Address' })}</label>
                   <input
                     type="text"
-                    className="form-control font-monospace"
+                    className="form-input font-mono"
                     value={form.address}
                     disabled
                   />
-                  <small className="text-muted">{t('wallets.addressNoEdit', { defaultValue: 'Address cannot be changed' })}</small>
+                  <small className="text-surface-500">{t('wallets.addressNoEdit', { defaultValue: 'Address cannot be changed' })}</small>
                 </div>
 
                 <div className="mb-4">
                   <label className="form-label">{t('wallets.memo', { defaultValue: 'Memo' })}</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-input"
                     value={form.memo}
                     onChange={(e) => setForm((f) => ({ ...f, memo: e.target.value }))}
                   />
                 </div>
 
-                <div className="d-flex gap-2">
-                  <button type="submit" className="btn btn-primary flex-grow-1" disabled={saving}>
+                <div className="flex gap-2">
+                  <button type="submit" className="btn btn-primary flex-grow" disabled={saving}>
                     {saving ? (
-                      <><span className="spinner-border spinner-border-sm me-1"></span>{t('wallets.saving', { defaultValue: 'Saving...' })}</>
+                      <><span className="spinner w-4 h-4 border-2 mr-1"></span>{t('wallets.saving', { defaultValue: 'Saving...' })}</>
                     ) : (
-                      <><i className="bx bx-check me-1"></i>{t('wallets.save', { defaultValue: 'Save Changes' })}</>
+                      <><i className="bx bx-check mr-1"></i>{t('wallets.save', { defaultValue: 'Save Changes' })}</>
                     )}
                   </button>
                   <button type="button" className="btn btn-outline-danger" onClick={() => setShowDeleteConfirm(true)}>

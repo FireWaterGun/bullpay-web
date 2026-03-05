@@ -40,6 +40,11 @@ export function proxy(request: NextRequest) {
   const token = request.cookies.get(AUTH_COOKIE)?.value
   const userCookie = request.cookies.get(USER_COOKIE)?.value
 
+  // ── Skip API paths — let Next.js rewrite proxy handle them ──
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
   // ── Root redirect ──
   if (pathname === '/') {
     if (token) {

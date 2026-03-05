@@ -3,20 +3,20 @@
 import { useEffect, useState, useMemo } from 'react';
 
 const TYPE_STYLES = {
-  success: { bgLight: 'rgba(var(--bs-success-rgb), 0.15)', icon: 'bx-check-circle', iconColor: 'var(--bs-success)' },
-  error:   { bgLight: 'rgba(var(--bs-danger-rgb), 0.15)',  icon: 'bx-error-circle', iconColor: 'var(--bs-danger)' },
-  warning: { bgLight: 'rgba(var(--bs-warning-rgb), 0.15)', icon: 'bx-error',        iconColor: 'var(--bs-warning)' },
-  info:    { bgLight: 'rgba(var(--bs-info-rgb), 0.15)',    icon: 'bx-info-circle',   iconColor: 'var(--bs-info)' },
+  success: { bgLight: 'rgba(34, 197, 94, 0.15)', icon: 'bx-check-circle', iconColor: '#22c55e' },
+  error:   { bgLight: 'rgba(239, 68, 68, 0.15)',  icon: 'bx-error-circle', iconColor: '#ef4444' },
+  warning: { bgLight: 'rgba(245, 158, 11, 0.15)', icon: 'bx-error',        iconColor: '#f59e0b' },
+  info:    { bgLight: 'rgba(6, 182, 212, 0.15)',    icon: 'bx-info-circle',   iconColor: '#06b6d4' },
 };
 
-const DEFAULT_TYPE_STYLE = { bgLight: 'rgba(var(--bs-primary-rgb), 0.15)', icon: 'bx-bell', iconColor: 'var(--bs-primary)' };
+const DEFAULT_TYPE_STYLE = { bgLight: 'rgba(99, 102, 241, 0.15)', icon: 'bx-bell', iconColor: '#6366f1' };
 
 const toastStyle = {
-  backgroundColor: 'var(--bs-body-bg)',
+  backgroundColor: '#fff',
   borderRadius: '12px',
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-  minWidth: '320px',
-  maxWidth: '420px',
+  minWidth: 'min(320px, calc(100vw - 2rem))',
+  maxWidth: 'min(420px, calc(100vw - 2rem))',
   pointerEvents: 'auto',
   overflow: 'hidden',
 };
@@ -30,9 +30,9 @@ const iconBoxBase = {
   flexShrink: 0,
 };
 
-const titleStyle = { fontSize: '0.95rem', fontWeight: 600, color: 'var(--bs-heading-color)' };
+const titleStyle = { fontSize: '0.95rem', fontWeight: 600, color: '#1e293b' };
 const closeStyle = { fontSize: '0.7rem', flexShrink: 0 };
-const bodyTextStyle = { color: 'var(--bs-secondary-color)', fontSize: '0.875rem', lineHeight: '1.4' };
+const bodyTextStyle = { color: '#64748b', fontSize: '0.875rem', lineHeight: '1.4' };
 
 const containerStyle = {
   position: 'fixed',
@@ -92,32 +92,34 @@ export function Toast({ message, type = 'success', duration = 5000, onClose }) {
 
   return (
     <div
-      className={`toast show ${isExiting ? 'toast-exit' : 'toast-enter'}`}
+      className={`${isExiting ? 'toast-exit' : 'toast-enter'}`}
       role="alert"
       style={toastStyle}
     >
-      <div className="d-flex align-items-start" style={bodyPadding}>
+      <div className="flex items-start" style={bodyPadding}>
         <div
-          className="flex-shrink-0 me-3 d-flex align-items-center justify-content-center"
+          className="shrink-0 mr-3 flex items-center justify-center"
           style={iconBoxStyle}
         >
           <i className={`bx ${styles.icon}`} style={iconStyle}></i>
         </div>
-        <div className="flex-grow-1" style={{ minWidth: 0 }}>
-          <div className="d-flex justify-content-between align-items-start mb-1">
+        <div className="grow" style={{ minWidth: 0 }}>
+          <div className="flex justify-between items-start mb-1">
             <strong className="toast-title" style={titleStyle}>
               {title}
             </strong>
             <button
               type="button"
-              className="btn-close ms-2"
+              className="ml-2 text-surface-400 hover:text-surface-700 text-lg leading-none"
               onClick={handleClose}
               aria-label="Close"
               style={closeStyle}
-            ></button>
+            >
+              &times;
+            </button>
           </div>
           {body && (
-            <div className="small" style={bodyTextStyle}>
+            <div className="text-sm" style={bodyTextStyle}>
               {body}
             </div>
           )}

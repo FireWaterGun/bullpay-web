@@ -20,18 +20,18 @@ export default function WalletAddressTable({ walletItems, cnById }) {
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table">
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
         <thead>
-          <tr>
-            <th style={{ width: '12%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
-            <th style={{ width: '22%' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
-            <th style={{ width: '15%' }}>{t('wallet.label', { defaultValue: 'Label' })}</th>
-            <th className="text-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
-            <th style={{ width: '12%' }} className="text-nowrap">{t('common.status', { defaultValue: 'Status' })}</th>
+          <tr className="border-b text-left text-xs uppercase text-surface-500">
+            <th className="px-3 py-2" style={{ width: '12%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
+            <th className="px-3 py-2" style={{ width: '22%' }}>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+            <th className="px-3 py-2" style={{ width: '15%' }}>{t('wallet.label', { defaultValue: 'Label' })}</th>
+            <th className="px-3 py-2 whitespace-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
+            <th className="px-3 py-2 whitespace-nowrap" style={{ width: '12%' }}>{t('common.status', { defaultValue: 'Status' })}</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y">
           {walletItems.map((w, idx) => {
             const coin = w.coin || cnById.get(Number(w.coinNetworkId))?.coin
             const network = w.network || cnById.get(Number(w.coinNetworkId))?.network
@@ -41,40 +41,40 @@ export default function WalletAddressTable({ walletItems, cnById }) {
             const addr = w.address || '-'
             const label = w.label || '-'
             return (
-              <tr key={w.id || idx}>
-                <td>
-                  <span className="text-muted">
+              <tr key={w.id || idx} className="hover:bg-surface-50">
+                <td className="px-3 py-2">
+                  <span className="text-surface-500">
                     {networkSym || coinSym}
                   </span>
                 </td>
-                <td>
-                  <div className="d-flex align-items-center">
-                    <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} className="me-3" showFallback />
+                <td className="px-3 py-2">
+                  <div className="flex items-center">
+                    <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} className="mr-3" showFallback />
                     <div>
                       <div>{coinSym}</div>
-                      <small className="text-muted">{networkName}</small>
+                      <small className="text-surface-500">{networkName}</small>
                     </div>
                   </div>
                 </td>
-                <td>
-                  <span className="text-truncate d-inline-block" style={{ maxWidth: 200 }} title={label}>{label}</span>
+                <td className="px-3 py-2">
+                  <span className="truncate inline-block" style={{ maxWidth: 200 }} title={label}>{label}</span>
                 </td>
-                <td>
-                  <div className="d-flex align-items-start">
-                    <span className="font-monospace" style={{ wordBreak: 'break-all' }}>{addr}</span>
+                <td className="px-3 py-2">
+                  <div className="flex items-start">
+                    <span className="font-mono" style={{ wordBreak: 'break-all' }}>{addr}</span>
                     <button
                       type="button"
-                      className="btn btn-icon btn-sm btn-outline-secondary ms-2 flex-shrink-0"
+                      className="ml-2 shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-surface-300 text-surface-500 hover:bg-surface-50"
                       onClick={() => copyAddress(addr, w.id || idx)}
                       disabled={!w.address}
                       aria-label={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
                       title={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
                     >
-                      <i className={`bx ${copiedMap[w.id || idx] ? 'bx-check text-success' : 'bx-copy'}`}></i>
+                      <i className={`bx ${copiedMap[w.id || idx] ? 'bx-check text-green-600' : 'bx-copy'}`}></i>
                     </button>
                   </div>
                 </td>
-                <td>
+                <td className="px-3 py-2">
                   <span className={addressStatusBadgeClass(w.status)}>{formatAddressStatus(w.status, t)}</span>
                 </td>
               </tr>

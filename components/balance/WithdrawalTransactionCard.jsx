@@ -15,20 +15,20 @@ export default function WithdrawalTransactionCard({ withdrawal, onClick, t }) {
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : undefined }}
     >
-      <div className="card-body py-2 px-3">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center gap-2">
+      <div className="py-2 px-3">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
             <CoinImg
               symbol={withdrawal.coinSymbol || withdrawal.coin?.symbol}
               networkSymbol={withdrawal.networkSymbol || withdrawal.network?.symbol}
               size={28}
             />
             <div>
-              <div className="fw-semibold small">
+              <div className="font-semibold text-sm">
                 {formatCoinAmount(withdrawal.amountDecimal || withdrawal.amount || 0)}{' '}
                 {withdrawal.coinSymbol || withdrawal.coin?.symbol || ''}
               </div>
-              <div className="text-muted small">
+              <div className="text-surface-500 text-sm">
                 {withdrawal.networkSymbol || withdrawal.network?.symbol || ''} &middot; {fmtDate(withdrawal.createdAt)}
               </div>
             </div>

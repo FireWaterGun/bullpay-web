@@ -75,10 +75,10 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
   }
 
   return (
-    <div className="col-sm-6 col-md-4">
+    <div className="sm:col-span-6 md:col-span-4">
       <label className="form-label">{t('invoices.amount')} *</label>
       <input
-        className={`form-control ${amountError ? 'is-invalid' : ''}`}
+        className={`form-input ${amountError ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
         type="number"
         step="0.00000001"
         min={minDeposit || 0}
@@ -90,9 +90,9 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
         onBlur={onBlur}
         required
       />
-      {amountError && <div className="invalid-feedback d-block">{amountError}</div>}
+      {amountError && <div className="text-red-500 text-xs mt-1">{amountError}</div>}
       {!amountError && (
-        <small className="text-muted">
+        <small className="text-surface-500">
           {minDeposit > 0
             ? t('invoices.amountRange', { min: minDeposit, max: MAX_DEPOSIT.toLocaleString() })
             : t('invoices.maxAmountInfo', { max: MAX_DEPOSIT.toLocaleString() })

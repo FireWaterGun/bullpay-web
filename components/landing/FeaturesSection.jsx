@@ -1,192 +1,79 @@
 'use client'
 
-import Image from 'next/image'
+const FEATURES = [
+  {
+    icon: 'bx-bolt-circle',
+    title: 'Instant settlement',
+    desc: 'Funds swept and credited the moment confirmations complete.',
+    color: '#2563eb',
+    bg: 'rgba(37, 99, 235, 0.1)',
+  },
+  {
+    icon: 'bx-shield-quarter',
+    title: 'Zero chargebacks',
+    desc: 'Crypto is irreversible. Eliminate fraud and disputes entirely.',
+    color: '#1e40af',
+    bg: 'rgba(30, 64, 175, 0.1)',
+  },
+  {
+    icon: 'bx-code-alt',
+    title: 'Developer-friendly API',
+    desc: 'RESTful API with webhooks and sandbox. Integrate in minutes.',
+    color: '#3b82f6',
+    bg: 'rgba(59, 130, 246, 0.1)',
+  },
+  {
+    icon: 'bx-line-chart',
+    title: 'Real-time dashboard',
+    desc: 'Monitor payments, balances, and analytics with live status.',
+    color: '#0ea5e9',
+    bg: 'rgba(14, 165, 233, 0.1)',
+  },
+]
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="position-relative overflow-hidden" style={{ background: 'var(--bs-tertiary-bg)', paddingTop: '6rem', paddingBottom: '6rem' }}>
-      {/* Background decoration */}
-      <div className="position-absolute w-100 h-100" style={{ opacity: 0.4 }}>
-        <div className="position-absolute" style={{ top: '10%', right: '5%', width: '200px', height: '200px', background: 'radial-gradient(circle, var(--bs-primary) 0%, transparent 70%)', filter: 'blur(60px)' }}></div>
-        <div className="position-absolute" style={{ bottom: '10%', left: '5%', width: '250px', height: '250px', background: 'radial-gradient(circle, var(--bs-primary) 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
-      </div>
-
-      <div className="container-xxl py-5 position-relative">
-        <div className="row justify-content-center mb-5">
-          <div className="col-lg-8 text-center">
-            <h2 className="display-5 fw-bold mb-3">What you get with us</h2>
-            <p className="text-muted fs-6 mb-0">
-              Partnering with BULL PAY means unlocking a robust crypto payment for e-commerce solution designed for seamless integration, security, and efficiency
+    <section id="features" className="landing-section">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="landing-tile landing-tile-slate">
+          <div className="text-center mb-5">
+            <h2 className="landing-section-title mb-3">Why businesses choose us</h2>
+            <p className="landing-section-subtitle mb-0" style={{ color: '#475569' }}>
+              Everything you need to accept crypto at scale
             </p>
           </div>
-        </div>
 
-        <div className="row g-4">
-          {/* Feature 1 - Fast & Secure */}
-          <div className="col-lg-6">
-            <div className="card border-0 shadow-sm h-100 hover-lift" style={{ borderRadius: '1rem', background: 'var(--bs-body-bg)' }}>
-              <div className="card-body p-4 p-lg-5">
-                <h3 className="fw-bold mb-3">Fast & secure transactions</h3>
-                <p className="text-muted mb-4">
-                  Accept crypto payments with near-instant confirmations. Our advanced blockchain technology ensures maximum security, eliminating chargebacks and fraud risks
-                </p>
-
-                {/* Visual - Crypto Icons Grid */}
-                <div className="row g-3 mt-4">
-                  <div className="col-4">
-                    <div className="text-center p-3 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/btc.svg" alt="BTC" width={40} height={40} />
-                      <div className="small fw-semibold mt-2">Bitcoin</div>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {FEATURES.map((f) => (
+              <div key={f.title}>
+                <div className="landing-feature-card">
+                  <div className="landing-feature-icon" style={{ background: f.bg, color: f.color }}>
+                    <i className={`bx ${f.icon}`}></i>
                   </div>
-                  <div className="col-4">
-                    <div className="text-center p-3 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/eth.svg" alt="ETH" width={40} height={40} />
-                      <div className="small fw-semibold mt-2">Ethereum</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="text-center p-3 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/usdterc20.svg" alt="USDT" width={40} height={40} />
-                      <div className="small fw-semibold mt-2">Tether</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="text-center p-3 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/sol.svg" alt="SOL" width={40} height={40} />
-                      <div className="small fw-semibold mt-2">Solana</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="text-center p-3 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/bnb.svg" alt="BNB" width={40} height={40} />
-                      <div className="small fw-semibold mt-2">BNB</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="text-center p-3 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/ada.svg" alt="ADA" width={40} height={40} />
-                      <div className="small fw-semibold mt-2">Cardano</div>
-                    </div>
-                  </div>
+                  <h5 className="font-bold mb-2" style={{ color: '#1a1a2e', fontSize: '1.05rem' }}>{f.title}</h5>
+                  <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0, lineHeight: 1.6 }}>{f.desc}</p>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
 
-          {/* Feature 2 - Global Reach */}
-          <div className="col-lg-6">
-            <div className="card border-0 shadow-sm h-100 hover-lift" style={{ borderRadius: '1rem', background: 'var(--bs-body-bg)' }}>
-              <div className="card-body p-4 p-lg-5">
-                <h3 className="fw-bold mb-3">Global reach & multi-currency support</h3>
-                <p className="text-muted mb-4">
-                  Accept Bitcoin, Ethereum, stablecoins, and other cryptocurrencies to reach customers worldwide and make transactions easier
+          {/* Fee comparison */}
+          <div className="landing-fee-strip">
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <div className="md:flex-1 mb-3 md:mb-0">
+                <h5 className="font-bold mb-1" style={{ color: '#1a1a2e' }}>Save up to 83% on processing fees</h5>
+                <p style={{ color: '#6b7280', fontSize: '0.92rem', margin: 0 }}>
+                  Traditional processors charge 2.9% + $0.30. We charge just 0.5%.
                 </p>
-
-                {/* Visual - More Crypto Icons */}
-                <div className="row g-3 mt-4">
-                  <div className="col-4">
-                    <div className="d-flex align-items-center gap-2 p-2 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/xrp.svg" alt="XRP" width={32} height={32} />
-                      <div className="small fw-semibold">XRP</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="d-flex align-items-center gap-2 p-2 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/doge.svg" alt="DOGE" width={32} height={32} />
-                      <div className="small fw-semibold">DOGE</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="d-flex align-items-center gap-2 p-2 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/ltc.svg" alt="LTC" width={32} height={32} />
-                      <div className="small fw-semibold">LTC</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="d-flex align-items-center gap-2 p-2 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/dot.svg" alt="DOT" width={32} height={32} />
-                      <div className="small fw-semibold">DOT</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="d-flex align-items-center gap-2 p-2 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/matic.svg" alt="MATIC" width={32} height={32} />
-                      <div className="small fw-semibold">MATIC</div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="d-flex align-items-center gap-2 p-2 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                      <Image src="/assets/img/coins/avax.svg" alt="AVAX" width={32} height={32} />
-                      <div className="small fw-semibold">AVAX</div>
-                    </div>
-                  </div>
-                </div>
               </div>
-            </div>
-          </div>
-
-          {/* Feature 3 - Low Costs */}
-          <div className="col-lg-6">
-            <div className="card border-0 shadow-sm h-100 hover-lift" style={{ borderRadius: '1rem', background: 'var(--bs-body-bg)' }}>
-              <div className="card-body p-4 p-lg-5">
-                <h3 className="fw-bold mb-3">Low transaction costs</h3>
-                <p className="text-muted mb-4">
-                  Lower fees than traditional payment systems, so businesses keep more of their revenue
-                </p>
-
-                {/* Visual - Fee Comparison */}
-                <div className="mt-4 p-4 rounded" style={{ background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 100%)' }}>
-                  <div className="row text-white">
-                    <div className="col-6 text-center">
-                      <div className="display-4 fw-bold">0.5%</div>
-                      <div className="small">BULL PAY Fee</div>
-                    </div>
-                    <div className="col-6 text-center">
-                      <div className="display-4 fw-bold text-white-50">2.9%</div>
-                      <div className="small">Traditional Fee</div>
-                    </div>
-                  </div>
+              <div className="flex md:justify-end gap-5">
+                <div className="text-center">
+                  <div style={{ fontSize: '2.25rem', fontWeight: 800, color: '#2563eb' }}>0.5%</div>
+                  <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: 600 }}>BULL PAY</div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Feature 4 - Analytics */}
-          <div className="col-lg-6">
-            <div className="card border-0 shadow-sm h-100 hover-lift" style={{ borderRadius: '1rem', background: 'var(--bs-body-bg)' }}>
-              <div className="card-body p-4 p-lg-5">
-                <h3 className="fw-bold mb-3">Transparent & real-time analytics</h3>
-                <p className="text-muted mb-4">
-                  Monitor transactions, generate reports, and track revenue from an intuitive dashboard
-                </p>
-
-                {/* Visual - Dashboard Preview */}
-                <div className="mt-4 p-4 rounded" style={{ background: 'var(--bs-tertiary-bg)' }}>
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <div className="small text-muted">Total Balance</div>
-                      <div className="h4 fw-bold mb-0">$45,234.00</div>
-                    </div>
-                    <div className="badge bg-success">+12.5%</div>
-                  </div>
-                  <div className="progress mb-3" style={{ height: '8px' }}>
-                    <div className="progress-bar bg-primary" style={{ width: '75%' }}></div>
-                  </div>
-                  <div className="row g-2 small">
-                    <div className="col-6">
-                      <div className="d-flex align-items-center gap-2">
-                        <div className="rounded-circle bg-primary" style={{ width: '8px', height: '8px' }}></div>
-                        <span className="text-muted">Completed</span>
-                      </div>
-                    </div>
-                    <div className="col-6">
-                      <div className="d-flex align-items-center gap-2">
-                        <div className="rounded-circle bg-secondary" style={{ width: '8px', height: '8px' }}></div>
-                        <span className="text-muted">Pending</span>
-                      </div>
-                    </div>
-                  </div>
+                <div className="text-center">
+                  <div style={{ fontSize: '2.25rem', fontWeight: 800, color: '#d1d5db', textDecoration: 'line-through' }}>2.9%</div>
+                  <div style={{ fontSize: '0.78rem', color: '#d1d5db', fontWeight: 600 }}>Traditional</div>
                 </div>
               </div>
             </div>

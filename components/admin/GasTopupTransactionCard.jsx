@@ -14,6 +14,7 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
           </h5>
         </div>
         <div className="card-body">
+          <div className="table-responsive">
           <table className="table table-borderless">
             <tbody>
               <tr>
@@ -126,6 +127,7 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
@@ -137,6 +139,7 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
           </h5>
         </div>
         <div className="card-body">
+          <div className="table-responsive">
           <table className="table table-borderless">
             <tbody>
               <tr>
@@ -163,6 +166,7 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </>

@@ -102,17 +102,16 @@ export default function Verify2FAModal({
   if (!show) return null;
 
   return (
-    <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-      <div className="modal-dialog modal-dialog-centered modal-sm">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <div className="bg-white rounded-xl shadow-xl mx-4 w-full" style={{ maxWidth: '380px' }}>
+          <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
+            <h5 className="font-semibold">
               {title || t("2fa.verifyTitle", { defaultValue: "Two-Factor Authentication" })}
             </h5>
-            <button type="button" className="btn-close" onClick={handleClose} disabled={loading}></button>
+            <button type="button" className="text-surface-400 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}>&times;</button>
           </div>
-          <div className="modal-body">
-            <p className="text-muted text-center mb-4">
+          <div className="p-6">
+            <p className="text-surface-500 text-center mb-4">
               {description || t("2fa.verifyDescription", {
                 defaultValue: "Enter the 6-digit code from your authenticator app"
               })}
@@ -121,7 +120,7 @@ export default function Verify2FAModal({
               <div className="mb-3">
                 <input
                   type="text"
-                  className="form-control text-center font-monospace"
+                  className="form-input text-center font-mono"
                   placeholder="ABCD-EFGH"
                   value={code}
                   onChange={(e) => handleCodeChange(0, e.target.value)}
@@ -130,14 +129,14 @@ export default function Verify2FAModal({
                 />
               </div>
             ) : (
-              <div className="d-flex justify-content-center gap-2 mb-3" onPaste={handlePaste}>
+              <div className="flex justify-center gap-2 mb-3" onPaste={handlePaste}>
                 {[0, 1, 2, 3, 4, 5].map((i) => (
                   <input
                     key={"digit-" + i}
                     ref={(el) => (inputRefs.current[i] = el)}
                     type="text"
                     inputMode="numeric"
-                    className="form-control text-center fw-bold"
+                    className="form-input text-center font-bold"
                     style={{ width: 40, height: 45, fontSize: 18 }}
                     maxLength={1}
                     value={code[i] || ""}
@@ -149,19 +148,19 @@ export default function Verify2FAModal({
               </div>
             )}
             {error && (
-              <div className="alert alert-danger py-2 mb-3">
+              <div className="rounded-lg bg-red-50 text-red-700 py-2 px-3 mb-3">
                 <small>{error}</small>
               </div>
             )}
             <div className="text-center">
-              <button type="button" className="btn btn-link btn-sm text-muted" onClick={toggleBackupCode}>
+              <button type="button" className="text-primary-600 hover:text-primary-700 text-sm" onClick={toggleBackupCode}>
                 {isBackupCode
                   ? t("2fa.useAuthenticator", { defaultValue: "Use authenticator app instead" })
                   : t("2fa.useBackupCode", { defaultValue: "Use backup code instead" })}
               </button>
             </div>
           </div>
-          <div className="modal-footer">
+          <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
             <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
@@ -173,18 +172,17 @@ export default function Verify2FAModal({
             >
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-1"></span>
+                  <span className="spinner w-4 h-4 border-2 mr-1 inline-block align-middle"></span>
                   {t("common.verifying", { defaultValue: "Verifying..." })}
                 </>
               ) : (
                 <>
-                  <i className="bx bx-check me-1"></i>
+                  <i className="bx bx-check mr-1"></i>
                   {t("common.verify", { defaultValue: "Verify" })}
                 </>
               )}
             </button>
           </div>
-        </div>
       </div>
     </div>
   );

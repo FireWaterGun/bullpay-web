@@ -10,11 +10,11 @@ export default function PublicError({
   reset: () => void
 }) {
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-      <i className="bx bx-error-circle text-danger" style={{ fontSize: '48px' }}></i>
+    <div className="flex flex-col justify-center items-center" style={{ minHeight: '80vh' }}>
+      <i className="bx bx-error-circle text-red-500" style={{ fontSize: '48px' }}></i>
       <h4 className="mt-3 mb-2">Something went wrong</h4>
-      <p className="text-muted mb-4">{error.message || 'An unexpected error occurred.'}</p>
-      <div className="d-flex gap-2">
+      <p className="text-surface-500 mb-4">{error.message || 'An unexpected error occurred.'}</p>
+      <div className="flex gap-2">
         <button className="btn btn-primary" onClick={reset}>
           Try Again
         </button>

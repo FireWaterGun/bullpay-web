@@ -1,86 +1,80 @@
 'use client'
 
-import Image from 'next/image'
-
 export default function FooterSection() {
+  const year = new Date().getFullYear()
+
   return (
-    <footer className="py-5 bg-white border-top">
-      <div className="container-xxl">
-        <div className="row g-4 py-4">
-          <div className="col-lg-4">
-            <div className="d-flex align-items-center mb-3">
-              <i className="bx bxs-wallet-alt fs-2 text-primary me-2"></i>
-              <span className="fw-bold fs-4">
-                <span className="text-dark">BULL</span>
-                <span className="text-primary">PAY</span>
+    <footer className="landing-footer py-5 mt-3">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 py-4">
+          {/* Brand */}
+          <div className="lg:col-span-4">
+            <div className="flex items-center mb-3">
+              <i className="bx bxs-wallet-alt text-3xl mr-2" style={{ color: '#2563eb' }}></i>
+              <span className="font-bold text-xl">
+                <span style={{ color: '#0f172a' }}>BULL</span>
+                <span style={{ color: '#2563eb' }}>PAY</span>
               </span>
             </div>
-            <p className="text-muted mb-4">
-              Professional cryptocurrency payment gateway for businesses worldwide. Accept 50+ cryptocurrencies with low fees.
+            <p style={{ color: '#6b7280', fontSize: '0.9rem', maxWidth: 300, lineHeight: 1.65 }}>
+              Professional cryptocurrency payment gateway for businesses worldwide.
             </p>
-            <div className="d-flex gap-3">
-              <a href="#" className="btn btn-outline-dark btn-sm rounded-circle" style={{ width: '40px', height: '40px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="bx bxl-twitter"></i>
-              </a>
-              <a href="#" className="btn btn-outline-dark btn-sm rounded-circle" style={{ width: '40px', height: '40px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="bx bxl-github"></i>
-              </a>
-              <a href="#" className="btn btn-outline-dark btn-sm rounded-circle" style={{ width: '40px', height: '40px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="bx bxl-telegram"></i>
-              </a>
-              <a href="#" className="btn btn-outline-dark btn-sm rounded-circle" style={{ width: '40px', height: '40px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="bx bxl-discord-alt"></i>
-              </a>
+            <div className="flex gap-2 mt-3">
+              {['bxl-twitter', 'bxl-github', 'bxl-telegram', 'bxl-discord-alt'].map((icon) => (
+                <a key={icon} href="#" className="landing-footer-social">
+                  <i className={`bx ${icon}`}></i>
+                </a>
+              ))}
             </div>
           </div>
-          <div className="col-lg-2 col-md-4">
-            <h6 className="fw-bold mb-3 text-dark">Product</h6>
-            <ul className="list-unstyled">
-              <li className="mb-2"><a href="#features" className="text-secondary text-decoration-none">Features</a></li>
-              <li className="mb-2"><a href="#currencies" className="text-secondary text-decoration-none">Currencies</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Pricing</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">API Docs</a></li>
+
+          {/* Product */}
+          <div className="lg:col-span-2">
+            <h6 className="font-bold mb-3" style={{ color: '#1a1a2e', fontSize: '0.85rem' }}>Product</h6>
+            <ul className="list-none p-0" style={{ fontSize: '0.9rem' }}>
+              <li className="mb-2"><a href="#features">Features</a></li>
+              <li className="mb-2"><a href="#currencies">Currencies</a></li>
+              <li className="mb-2"><a href="#">Pricing</a></li>
             </ul>
           </div>
-          <div className="col-lg-2 col-md-4">
-            <h6 className="fw-bold mb-3 text-dark">Company</h6>
-            <ul className="list-unstyled">
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">About Us</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Blog</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Careers</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Contact</a></li>
+
+          {/* Developers */}
+          <div className="lg:col-span-2">
+            <h6 className="font-bold mb-3" style={{ color: '#1a1a2e', fontSize: '0.85rem' }}>Developers</h6>
+            <ul className="list-none p-0" style={{ fontSize: '0.9rem' }}>
+              <li className="mb-2"><a href="#">API Docs</a></li>
+              <li className="mb-2"><a href="#">SDKs</a></li>
+              <li className="mb-2"><a href="#">Status</a></li>
             </ul>
           </div>
-          <div className="col-lg-2 col-md-4">
-            <h6 className="fw-bold mb-3 text-dark">Resources</h6>
-            <ul className="list-unstyled">
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Documentation</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Support</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Status</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Community</a></li>
+
+          {/* Company */}
+          <div className="lg:col-span-2">
+            <h6 className="font-bold mb-3" style={{ color: '#1a1a2e', fontSize: '0.85rem' }}>Company</h6>
+            <ul className="list-none p-0" style={{ fontSize: '0.9rem' }}>
+              <li className="mb-2"><a href="#">About</a></li>
+              <li className="mb-2"><a href="#">Blog</a></li>
+              <li className="mb-2"><a href="#">Contact</a></li>
             </ul>
           </div>
-          <div className="col-lg-2 col-md-4">
-            <h6 className="fw-bold mb-3 text-dark">Legal</h6>
-            <ul className="list-unstyled">
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Terms</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Privacy</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Cookies</a></li>
-              <li className="mb-2"><a href="#" className="text-secondary text-decoration-none">Licenses</a></li>
+
+          {/* Legal */}
+          <div className="lg:col-span-2">
+            <h6 className="font-bold mb-3" style={{ color: '#1a1a2e', fontSize: '0.85rem' }}>Legal</h6>
+            <ul className="list-none p-0" style={{ fontSize: '0.9rem' }}>
+              <li className="mb-2"><a href="#">Terms</a></li>
+              <li className="mb-2"><a href="#">Privacy</a></li>
+              <li className="mb-2"><a href="#">Cookies</a></li>
             </ul>
           </div>
         </div>
-        <hr className="my-4" />
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
-          <div className="text-muted small mb-3 mb-md-0">
-            &copy; 2025 BULL PAY. All rights reserved.
-          </div>
-          <div className="d-flex gap-3">
-            <Image src="/assets/img/coins/btc.svg" alt="BTC" width={24} height={24} style={{ opacity: 0.5 }} />
-            <Image src="/assets/img/coins/eth.svg" alt="ETH" width={24} height={24} style={{ opacity: 0.5 }} />
-            <Image src="/assets/img/coins/usdterc20.svg" alt="USDT" width={24} height={24} style={{ opacity: 0.5 }} />
-            <Image src="/assets/img/coins/sol.svg" alt="SOL" width={24} height={24} style={{ opacity: 0.5 }} />
-          </div>
+
+        <hr style={{ borderColor: '#e5e7eb', opacity: 0.5 }} />
+
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <span style={{ color: '#9ca3af', fontSize: '0.82rem' }}>
+            &copy; {year} BULL PAY. All rights reserved.
+          </span>
         </div>
       </div>
     </footer>

@@ -84,9 +84,9 @@ function WithdrawalAddressesContent() {
   const totalPages = pagination?.totalPages || 1
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="d-flex align-items-center gap-2 mb-4">
-        <h4 className="fw-bold mb-0">{t('withdrawalAddresses.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
+    <>
+      <div className="flex items-center gap-2 mb-6">
+        <h4 className="text-xl font-semibold text-surface-900">{t('withdrawalAddresses.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
         <RefreshButton onClick={loadAddresses} loading={loading} />
       </div>
 
@@ -97,13 +97,11 @@ function WithdrawalAddressesContent() {
         t={t}
       />
 
-      <div className="card">
-        <div className="card-body">
+      <div className="bg-white rounded-xl shadow-sm border border-surface-100">
+        <div className="p-5">
           {loading && addresses.length === 0 ? (
-            <div className="text-center py-4">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
+            <div className="flex justify-center py-10">
+              <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
             </div>
           ) : (
             <AddressTable
@@ -114,13 +112,21 @@ function WithdrawalAddressesContent() {
           )}
 
           {pagination && pagination.total > 20 && (
-            <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">{t('common.page', { defaultValue: 'Page' })} {page} / {totalPages}</small>
-              <div className="btn-group">
-                <button className="btn btn-outline-secondary btn-sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+            <div className="flex justify-between items-center mt-4">
+              <span className="text-sm text-surface-400">{t('common.page', { defaultValue: 'Page' })} {page} / {totalPages}</span>
+              <div className="flex">
+                <button
+                  className="inline-flex items-center justify-center w-8 h-8 border border-surface-200 rounded-l-lg text-surface-500 hover:bg-surface-50 disabled:opacity-40 transition-colors cursor-pointer"
+                  disabled={page <= 1}
+                  onClick={() => setPage(page - 1)}
+                >
                   <i className="bx bx-chevron-left"></i>
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
+                <button
+                  className="inline-flex items-center justify-center w-8 h-8 border border-l-0 border-surface-200 rounded-r-lg text-surface-500 hover:bg-surface-50 disabled:opacity-40 transition-colors cursor-pointer"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage(page + 1)}
+                >
                   <i className="bx bx-chevron-right"></i>
                 </button>
               </div>
@@ -138,6 +144,6 @@ function WithdrawalAddressesContent() {
         onClose={() => { setActionAddress(null); setActionType('') }}
         t={t}
       />
-    </div>
+    </>
   )
 }

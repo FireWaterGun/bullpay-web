@@ -178,6 +178,7 @@ export default function MerchantWebhookLogDetail() {
                   <h5 className="mb-0">Webhook Details</h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
@@ -212,6 +213,7 @@ export default function MerchantWebhookLogDetail() {
                       </tr>
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,6 +225,7 @@ export default function MerchantWebhookLogDetail() {
                   <h5 className="mb-0">Response Info</h5>
                 </div>
                 <div className="card-body">
+                  <div className="table-responsive">
                   <table className="table table-borderless mb-0">
                     <tbody>
                       <tr>
@@ -259,6 +262,7 @@ export default function MerchantWebhookLogDetail() {
                       )}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             </div>

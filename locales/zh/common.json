@@ -46,6 +46,7 @@
     "rolesPermissions": "角色与权限",
     "auditLogs": "审计日志",
     "webhookLogs": "Webhook日志",
+    "apiDocs": "API 文档",
     "maintenance": "维护模式",
     "withdrawalSettings": "提款设置",
     "gasSettings": "Gas 设置",

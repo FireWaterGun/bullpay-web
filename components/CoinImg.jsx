@@ -87,7 +87,7 @@ export function NetworkIcon({ networkSymbol, size = 24 }) {
       alt={networkSymbol}
       width={size}
       height={size}
-      className="rounded-circle"
+      className="rounded-full"
       style={objectFitCover}
       onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
     />
@@ -218,7 +218,7 @@ export default function CoinImg({
   // ------ Image with network badge overlay ------
   return (
     <div
-      className={`position-relative${className ? ` ${className}` : ''}`}
+      className={`relative${className ? ` ${className}` : ''}`}
       style={{ width: size, height: size, flexShrink: 0 }}
     >
       <img
@@ -231,7 +231,7 @@ export default function CoinImg({
         onError={handleCoinError}
       />
       <div
-        className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
+        className="absolute rounded-full flex items-center justify-center"
         style={{
           bottom: -2,
           right: -2,
@@ -247,7 +247,7 @@ export default function CoinImg({
           alt={resolvedNetworkSymbol}
           width={badgeSize - badgePadding * 2}
           height={badgeSize - badgePadding * 2}
-          className="rounded-circle"
+          className="rounded-full"
           style={objectFitCover}
           onError={() => {
             if (netIdx + 1 < networkCandidates.length) {

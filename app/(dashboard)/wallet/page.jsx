@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
@@ -42,6 +42,45 @@ function getNetworkLabel(n, coin) {
   if (sym === 'BTC') return id === 2 ? 'Lightning' : 'Bitcoin'
   if (sym === 'ETH' && n?.contractAddress) return 'ERC-20'
   return `Network #${n?.networkId ?? id ?? '-'}`
+}
+
+/* ── Inline action menu (no Bootstrap JS) ── */
+function ActionMenu({ coinNetworkId, t }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    function close(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    if (open) document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [open])
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-200 text-surface-500 hover:bg-surface-50 hover:text-surface-700 transition-colors cursor-pointer"
+        onClick={() => setOpen((v) => !v)}
+        title={t('actions.more', { defaultValue: 'More' })}
+      >
+        <i className="bx bx-dots-vertical-rounded text-base"></i>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-xl border border-surface-200 shadow-lg z-50 py-1">
+          <Link
+            href={`/wallet/withdraw/${encodeURIComponent(String(coinNetworkId))}`}
+            className="flex items-center gap-2 px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors no-underline"
+            onClick={() => setOpen(false)}
+          >
+            <i className="bx bx-export text-base"></i>
+            {t('balance.withdraw', { defaultValue: 'Withdraw' })}
+          </Link>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function WalletBalancePage() {
@@ -118,64 +157,45 @@ export default function WalletBalancePage() {
   }, [coins])
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      {/* Top Balances section with actions only */}
-      <div className="card mb-4">
-        <div className="card-header">
-          <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-            <div>
-              <h4 className="card-title mb-1 fs-3">
-                {t('balance.accountsTitle', {
-                  defaultValue: 'Balance accounts',
-                })}
-              </h4>
-            </div>
-            <RefreshButton onClick={() => loadData()} loading={loading} />
-          </div>
+    <>
+      {/* Hero Balance Card */}
+      <div className="card mb-6">
+        <div className="px-6 py-4 border-b border-surface-100 flex items-center justify-between">
+          <h4 className="font-semibold text-surface-900 mb-0">
+            {t('balance.accountsTitle', { defaultValue: 'Balance accounts' })}
+          </h4>
+          <RefreshButton onClick={() => loadData()} loading={loading} />
         </div>
-        <div className="card-body">
-          <div className="text-muted mb-2">
-            {t('balance.accountsSubtitle', {
-              defaultValue: 'Your balance from all accounts.',
-            })}
-          </div>
-          <div className="display-3 fw-bold text-dark">
+        <div className="p-6">
+          <p className="text-surface-500 text-sm mb-2">
+            {t('balance.accountsSubtitle', { defaultValue: 'Your balance from all accounts.' })}
+          </p>
+          <div className="text-4xl font-bold text-surface-900 tracking-tight">
             {formatCoinAmount(fiat.amount)} {fiat.currency}
           </div>
-          <div className="d-flex gap-2 flex-wrap mt-3">
-            <Link
-              href="/invoices/create"
-              className="btn btn-outline-primary"
-            >
-              <i className="bx bx-receipt me-1"></i>
-              {t('actions.createInvoice', {
-                defaultValue: 'Create Invoice',
-              })}
+          <div className="flex gap-2 flex-wrap mt-4">
+            <Link href="/invoices/create" className="btn btn-outline-primary">
+              <i className="bx bx-receipt mr-1"></i>
+              {t('actions.createInvoice', { defaultValue: 'Create Invoice' })}
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Accounts list section */}
+      {/* Accounts List */}
       <div className="card">
-        <div className="card-header d-flex align-items-center justify-content-between">
-          <h6 className="mb-0">
+        <div className="px-6 py-4 border-b border-surface-100">
+          <h6 className="font-semibold text-surface-900 mb-0">
             {t('balance.account', { defaultValue: 'Accounts' })}
           </h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           {loading ? (
-            <div className="text-center py-5">
-              <div
-                className="spinner-border"
-                role="status"
-                aria-hidden="true"
-              ></div>
+            <div className="flex justify-center py-10">
+              <span className="spinner w-8 h-8 border-3"></span>
             </div>
           ) : error ? (
-            <div className="alert alert-danger" role="alert">
-              {error}
-            </div>
+            <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">{error}</div>
           ) : balances.length === 0 ? (
             <CardEmptyState
               icon="bx-wallet"
@@ -183,117 +203,62 @@ export default function WalletBalancePage() {
               sub={t('balance.noBalancesSub', { defaultValue: 'Your balances will appear here once you receive payments' })}
             />
           ) : (
-            <div className="d-flex flex-column gap-2">
+            <div className="flex flex-col gap-2">
               {balances.map((b, idx) => {
-                // Support new structure: coin and network objects from API, fallback to old coinNetById lookup
                 const cn = coinNetById.get(Number(b.coinNetworkId))
                 const coin = b.coin || cn?.coin
                 const network = b.network || cn?.network
 
                 const coinSym = (
-                  b.coin?.symbol ||
-                  b.coinSymbol ||
-                  coin?.symbol ||
-                  ''
+                  b.coin?.symbol || b.coinSymbol || coin?.symbol || ''
                 ).toUpperCase()
                 const networkSym = (
-                  b.network?.symbol ||
-                  b.networkSymbol ||
-                  network?.symbol ||
-                  ''
+                  b.network?.symbol || b.networkSymbol || network?.symbol || ''
                 ).toUpperCase()
-                // Use networkName from API if available, otherwise fallback to network symbol or label
                 const networkName =
-                  b.network?.name ||
-                  b.networkName ||
-                  b.networkSymbol ||
-                  network?.name ||
-                  getNetworkLabel(cn, coin)
+                  b.network?.name || b.networkName || b.networkSymbol || network?.name || getNetworkLabel(cn, coin)
 
-                // Support new structure: availableBalance first, then totalBalance or confirmedBalance, fallback to balance
                 const amount = formatCoinAmount(
-                  b.availableBalance ||
-                    b.totalBalance ||
-                    b.confirmedBalance ||
-                    b.balance ||
-                    0
+                  b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0
                 )
                 const amtNum =
-                  Number(
-                    b.availableBalance ||
-                      b.totalBalance ||
-                      b.confirmedBalance ||
-                      b.balance ||
-                      0
-                  ) || 0
+                  Number(b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0) || 0
 
-                // Use valueUsd from API if available, otherwise calculate from rate
-                const rate =
-                  Number((rates && rates[coinSym]) || b.priceUsd || 0) || 0
+                const rate = Number((rates && rates[coinSym]) || b.priceUsd || 0) || 0
                 const usdVal = Number(b.valueUsd) || amtNum * rate
+
                 return (
                   <div
                     key={`${b.coinNetworkId}-${idx}`}
-                    className="d-flex align-items-center justify-content-between border rounded-3 py-3 px-4"
+                    className="flex items-center justify-between border border-surface-200 rounded-xl py-3 px-4 hover:bg-surface-50 transition-colors"
                   >
-                    <div className="d-flex align-items-center">
-                      <div
-                        className="text-muted fw-medium me-3"
-                        style={{ minWidth: '80px' }}
-                      >
+                    <div className="flex items-center gap-3">
+                      <span className="text-surface-400 font-medium text-xs min-w-[60px]">
                         {networkSym || coinSym}
-                      </div>
+                      </span>
                       <CoinImg
                         coin={coin}
                         symbol={coinSym}
                         networkSymbol={networkSym}
-                        className="me-3"
                       />
-                      <div className="ms-2">
-                        <div className="fw-medium">{coinSym}</div>
-                        <div className="text-muted small">{networkName}</div>
+                      <div>
+                        <div className="font-medium text-surface-900">{coinSym}</div>
+                        <div className="text-surface-500 text-xs">{networkName}</div>
                       </div>
                     </div>
 
-                    <div className="d-flex align-items-center gap-5">
-                      {Number.isFinite(usdVal) ? (
-                        <div className="text-muted small me-2 me-md-3">
+                    <div className="flex items-center gap-5">
+                      {Number.isFinite(usdVal) && (
+                        <span className="text-surface-400 text-sm hidden sm:block">
                           {formatCoinAmount(usdVal, 2)} USD
-                        </div>
-                      ) : null}
-                      <div className="text-end me-2 me-md-3">
-                        <div className="fw-medium">
+                        </span>
+                      )}
+                      <div className="text-right">
+                        <span className="font-medium text-surface-900">
                           {amount} {coinSym}
-                        </div>
+                        </span>
                       </div>
-                      <div className="dropdown ms-3">
-                        <button
-                          className="btn btn-icon btn-outline-secondary"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                          title={t('actions.more', {
-                            defaultValue: 'More',
-                          })}
-                        >
-                          <i className="bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <Link
-                              className="dropdown-item"
-                              href={`/wallet/withdraw/${encodeURIComponent(
-                                String(b.coinNetworkId)
-                              )}`}
-                            >
-                              <i className="bx bx-export me-2"></i>
-                              {t('balance.withdraw', {
-                                defaultValue: 'Withdraw',
-                              })}
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
+                      <ActionMenu coinNetworkId={b.coinNetworkId} t={t} />
                     </div>
                   </div>
                 )
@@ -302,6 +267,6 @@ export default function WalletBalancePage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   )
 }

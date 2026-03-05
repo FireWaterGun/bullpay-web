@@ -169,115 +169,113 @@ export default function InvoiceCreatePage() {
   }
 
   return (
-    <div className="content-wrapper">
-      <div className="container-xxl flex-grow-1 container-p-y">
-        {error && <div className="alert alert-danger">{error}</div>}
-        {walletError && <div className="alert alert-warning">{walletError}</div>}
+    <>
+      {error && <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">{error}</div>}
+      {walletError && <div className="rounded-lg bg-yellow-50 text-yellow-700 px-4 py-3 text-sm mb-4">{walletError}</div>}
 
-        {hasWallet === null && (
-          <div className="card mb-4">
-            <div className="card-body">
-              <div className="text-muted">{t('wallet.loading', { defaultValue: 'Loading wallet...' })}</div>
-            </div>
+      {hasWallet === null && (
+        <div className="card mb-4">
+          <div className="p-6">
+            <div className="text-surface-500">{t('wallet.loading', { defaultValue: 'Loading wallet...' })}</div>
           </div>
-        )}
+        </div>
+      )}
 
-        <CoinNetworkSelector
-          grouped={grouped}
-          coins={coins}
-          loadingCoins={loadingCoins}
-          selectedCoin={selectedCoin}
-          setSelectedCoin={setSelectedCoin}
-          coinNetworkId={coinNetworkId}
-          setCoinNetworkId={setCoinNetworkId}
-          networks={networks}
-        />
+      <CoinNetworkSelector
+        grouped={grouped}
+        coins={coins}
+        loadingCoins={loadingCoins}
+        selectedCoin={selectedCoin}
+        setSelectedCoin={setSelectedCoin}
+        coinNetworkId={coinNetworkId}
+        setCoinNetworkId={setCoinNetworkId}
+        networks={networks}
+      />
 
-        <form onSubmit={onSubmit} className="card">
-          <div className="card-body">
-            <input type="hidden" name="coinNetworkId" value={coinNetworkId} />
-            <div className="row g-3">
-              <AmountInput
-                amount={amount}
-                setAmount={setAmount}
-                amountError={amountError}
-                setAmountError={setAmountError}
-                minDeposit={minDeposit}
-              />
-              <div className="col-sm-6 col-md-4">
-                <label className="form-label">{t('form.expiryHours') || 'Expiry (hours)'}</label>
-                <input
-                  className={`form-control ${expiryHoursError ? 'is-invalid' : ''}`}
-                  type="number"
-                  min={1}
-                  max={24}
-                  placeholder="24"
-                  value={expiryHours}
-                  onInput={(e) => {
-                    const value = e.target.value
-                    if (value && value.replace('-', '').length > 2) {
-                      e.target.value = value.substring(0, 2)
+      <form onSubmit={onSubmit} className="card">
+        <div className="p-6">
+          <input type="hidden" name="coinNetworkId" value={coinNetworkId} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <AmountInput
+              amount={amount}
+              setAmount={setAmount}
+              amountError={amountError}
+              setAmountError={setAmountError}
+              minDeposit={minDeposit}
+            />
+            <div>
+              <label className="form-label">{t('form.expiryHours') || 'Expiry (hours)'}</label>
+              <input
+                className={`form-input ${expiryHoursError ? 'border-red-400' : ''}`}
+                type="number"
+                min={1}
+                max={24}
+                placeholder="24"
+                value={expiryHours}
+                onInput={(e) => {
+                  const value = e.target.value
+                  if (value && value.replace('-', '').length > 2) {
+                    e.target.value = value.substring(0, 2)
+                  }
+                }}
+                onChange={(e) => {
+                  const value = e.target.value
+
+                  if (value !== '') {
+                    const num = parseInt(value)
+                    if (!isNaN(num) && num > 24) {
+                      return
                     }
-                  }}
-                  onChange={(e) => {
-                    const value = e.target.value
-
-                    if (value !== '') {
-                      const num = parseInt(value)
-                      if (!isNaN(num) && num > 24) {
-                        return
-                      }
-                      if (!isNaN(num) && num < 1) {
-                        setExpiryHoursError(t('validation.expiryHoursTooSmall') || 'Hours must be at least 1')
-                      } else if (!isNaN(num) && num > 24) {
-                        setExpiryHoursError(t('validation.expiryHoursTooLarge') || 'Hours must not exceed 24')
-                      } else {
-                        setExpiryHoursError('')
-                      }
+                    if (!isNaN(num) && num < 1) {
+                      setExpiryHoursError(t('validation.expiryHoursTooSmall') || 'Hours must be at least 1')
+                    } else if (!isNaN(num) && num > 24) {
+                      setExpiryHoursError(t('validation.expiryHoursTooLarge') || 'Hours must not exceed 24')
                     } else {
                       setExpiryHoursError('')
                     }
+                  } else {
+                    setExpiryHoursError('')
+                  }
 
-                    setExpiryHours(value)
-                  }}
-                />
-                {expiryHoursError && <div className="invalid-feedback d-block">{expiryHoursError}</div>}
-                {!expiryHoursError && (
-                  <small className="text-muted">
-                    {t('invoices.expiryHoursRange')}
-                  </small>
-                )}
-              </div>
-              <div className="col-sm-6 col-md-6">
-                <label className="form-label">{t('invoices.description')}</label>
-                <input
-                  className="form-control"
-                  placeholder={t('invoices.descriptionPlaceholder', { defaultValue: 'Description' })}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-              <div className="col-sm-6 col-md-6">
-                <label className="form-label">{t('invoices.note')}</label>
-                <input
-                  className="form-control"
-                  placeholder={t('invoices.memoPlaceholder', { defaultValue: 'Memo' })}
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                />
-              </div>
+                  setExpiryHours(value)
+                }}
+              />
+              {expiryHoursError && <div className="text-red-500 text-xs mt-1">{expiryHoursError}</div>}
+              {!expiryHoursError && (
+                <small className="text-surface-500 text-xs">
+                  {t('invoices.expiryHoursRange')}
+                </small>
+              )}
+            </div>
+            <div className="sm:col-span-2 md:col-span-1">
+              <label className="form-label">{t('invoices.description')}</label>
+              <input
+                className="form-input"
+                placeholder={t('invoices.descriptionPlaceholder', { defaultValue: 'Description' })}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2 md:col-span-3">
+              <label className="form-label">{t('invoices.note')}</label>
+              <input
+                className="form-input"
+                placeholder={t('invoices.memoPlaceholder', { defaultValue: 'Memo' })}
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+              />
             </div>
           </div>
-          <div className="card-footer d-flex justify-content-end gap-2">
-            <button type="button" className="btn btn-outline-secondary" onClick={() => router.back()} disabled={loading}>
-              {t('actions.back') || 'Back'}
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={loading || !selectedCoin || !coinNetworkId || !amount || !!amountError}>
-              {loading ? t('common.saving') || 'Saving...' : t('invoice.createTitle')}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+        <div className="px-6 py-4 border-t border-surface-100 flex justify-end gap-2">
+          <button type="button" className="btn btn-outline-secondary" onClick={() => router.back()} disabled={loading}>
+            {t('actions.back') || 'Back'}
+          </button>
+          <button type="submit" className="btn btn-primary" disabled={loading || !selectedCoin || !coinNetworkId || !amount || !!amountError}>
+            {loading ? t('common.saving') || 'Saving...' : t('invoice.createTitle')}
+          </button>
+        </div>
+      </form>
+    </>
   )
 }

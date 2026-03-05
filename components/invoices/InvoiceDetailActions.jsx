@@ -51,26 +51,26 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
   }
 
   return (
-    <div className="col-12 col-lg-3">
+    <div className="lg:col-span-3">
       {invoice.status === 'pending' && invoice.expiryAt && (
         <div className="card mb-4">
-          <div className="card-body">
+          <div className="p-6">
             <CountdownTimer expiryAt={invoice.expiryAt} />
           </div>
         </div>
       )}
       <div className="card mb-4">
-        <div className="card-body">
-          <h6 className="mb-3">{t('invoices.actions') || 'Actions'}</h6>
-          <div className="d-grid gap-2">
+        <div className="p-6">
+          <h6 className="mb-3 font-semibold">{t('invoices.actions') || 'Actions'}</h6>
+          <div className="grid gap-2">
             {invoice.publicCode && (
               <>
                 <button type="button" className="btn btn-outline-primary" onClick={handleOpenPublic}>
-                  <i className="bx bx-link-alt me-1"></i>
+                  <i className="bx bx-link-alt mr-1"></i>
                   {t('actions.openPaymentLink') || 'Open payment page'}
                 </button>
                 <button type="button" className="btn btn-outline-info" onClick={handleSharePublic}>
-                  <i className="bx bx-share-alt me-1"></i>
+                  <i className="bx bx-share-alt mr-1"></i>
                   {t('actions.share') || 'Share'}
                 </button>
               </>
@@ -85,23 +85,23 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
               target={explorer ? '_blank' : undefined}
               rel={explorer ? 'noreferrer' : undefined}
             >
-              <i className="bx bx-link-external me-1"></i>
+              <i className="bx bx-link-external mr-1"></i>
               {t('invoices.viewOnExplorer') || 'View on Explorer'}
             </a>
             <Link href="/invoices" className="btn btn-outline-secondary">
-              <i className="bx bx-list-ul me-1"></i>
+              <i className="bx bx-list-ul mr-1"></i>
               {t('nav.history') || 'All invoices'}
             </Link>
           </div>
-          {shareError && <div className="alert alert-warning mt-3 py-2 mb-0 small">{shareError}</div>}
+          {shareError && <div className="rounded-lg bg-amber-50 text-amber-700 mt-3 py-2 px-3 text-sm">{shareError}</div>}
         </div>
       </div>
       <div className="card">
-        <div className="card-body">
+        <div className="p-6">
           {invoice.publicCode && (
             <>
-              <small className="text-muted d-block mb-1">{t('invoices.publicCode') || 'Public Code'}</small>
-              <div className="d-flex align-items-center mb-3 gap-2">
+              <small className="text-surface-500 block mb-1">{t('invoices.publicCode') || 'Public Code'}</small>
+              <div className="flex items-center mb-3 gap-2">
                 <code>{invoice.publicCode}</code>
                 <button type="button" className="btn btn-sm btn-outline-secondary" onClick={handleOpenPublic} title={t('actions.openPaymentLink') || 'Open payment page'}>
                   <i className="bx bx-link-alt"></i>
@@ -109,11 +109,11 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
               </div>
             </>
           )}
-          <small className="text-muted d-block mb-1">{t('invoices.createdAt') || 'Created'}</small>
+          <small className="text-surface-500 block mb-1">{t('invoices.createdAt') || 'Created'}</small>
           <div>{fmtDateTime(invoice.createdAt || invoice.created_at)}</div>
           {invoice.expiryAt && (
             <>
-              <small className="text-muted d-block mt-3 mb-1">{t('invoices.expiryAt') || 'Expires'}</small>
+              <small className="text-surface-500 block mt-3 mb-1">{t('invoices.expiryAt') || 'Expires'}</small>
               <div>{fmtDateTime(invoice.expiryAt)}</div>
             </>
           )}

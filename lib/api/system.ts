@@ -1,21 +1,26 @@
 import { API_BASE_URL } from '../constants'
 
+/** Client-side uses relative URL (through Next.js rewrite proxy), server uses absolute */
+function resolveUrl(path: string): string {
+  return typeof window !== 'undefined' ? path : `${API_BASE_URL}${path}`
+}
+
 /**
  * Fetch system maintenance status (public endpoint, no auth required).
  * Uses raw fetch instead of apiFetch to avoid maintenance redirect loops.
  */
 export async function getSystemStatus() {
-  const res = await fetch(`${API_BASE_URL}/api/v1/system/status`, {
+  const res = await fetch(resolveUrl('/api/v1/system/status'), {
     headers: { Accept: 'application/json' },
     cache: 'no-store',
   })
 
   if (!res.ok) {
-    return { maintenance: false, level: 'none', message: null, messageTh: null, estimatedEnd: null }
+    return { maintenance: false, level: 'none', message: null, estimatedEnd: null }
   }
 
   const json = await res.json()
-  return json?.data || { maintenance: false, level: 'none', message: null, messageTh: null, estimatedEnd: null }
+  return json?.data || { maintenance: false, level: 'none', message: null, estimatedEnd: null }
 }
 
 /**
@@ -32,7 +37,7 @@ export async function checkMaintenanceBlocked(token?: string): Promise<boolean> 
     const headers: Record<string, string> = { Accept: 'application/json' }
     if (token) headers['Authorization'] = `Bearer ${token}`
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/system/maintenance-check`, {
+    const res = await fetch(resolveUrl('/api/v1/system/maintenance-check'), {
       headers,
       cache: 'no-store',
     })

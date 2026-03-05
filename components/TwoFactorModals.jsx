@@ -56,16 +56,15 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
   if (!show) return null;
 
   return (
-    <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">{t("settings.2fa.disableTitle", { defaultValue: "Disable 2FA" })}</h5>
-            <button type="button" className="btn-close" onClick={handleClose} disabled={loading}></button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <div className="bg-white rounded-xl shadow-xl mx-4 w-full" style={{ maxWidth: '460px' }}>
+          <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
+            <h5 className="font-semibold">{t("settings.2fa.disableTitle", { defaultValue: "Disable 2FA" })}</h5>
+            <button type="button" className="text-surface-400 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}>&times;</button>
           </div>
-          <div className="modal-body">
-            <div className="alert alert-warning d-flex align-items-start mb-4">
-              <i className="bx bx-error-circle fs-5 me-2"></i>
+          <div className="p-6">
+            <div className="rounded-lg bg-amber-50 text-amber-700 p-3 flex items-start mb-4">
+              <i className="bx bx-error-circle text-lg mr-2"></i>
               <span>
                 {t("settings.2fa.disableWarning", {
                   defaultValue: "Disabling 2FA will make your account less secure.",
@@ -73,13 +72,13 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
               </span>
             </div>
             <div className="mb-3">
-              <label className="form-label fw-medium">
+              <label className="block mb-1 font-medium">
                 {t("settings.2fa.enterPassword", { defaultValue: "Enter your password to confirm" })}
               </label>
-              <div className="input-group input-group-merge">
+              <div className="bp-input-group">
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="form-control form-control-lg"
+                  className="form-input text-lg"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={t("common.password", { defaultValue: "Password" })}
@@ -87,39 +86,38 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
                   autoFocus
                 />
                 <span
-                  className="input-group-text cursor-pointer"
+                  className="bp-input-suffix cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ cursor: "pointer" }}
                 >
                   <i className={`bx ${showPassword ? "bx-hide" : "bx-show"}`}></i>
                 </span>
               </div>
             </div>
             <div className="mb-3">
-              <label className="form-label fw-medium">
+              <label className="block mb-1 font-medium">
                 {t("settings.2fa.enterDisableCode", { defaultValue: "Enter your 2FA code or backup code" })}
               </label>
               <input
                 type="text"
                 inputMode="numeric"
-                className="form-control form-control-lg"
+                className="form-input text-lg"
                 value={totpCode}
                 onChange={(e) => setTotpCode(e.target.value)}
                 placeholder={t("settings.2fa.codePlaceholder", { defaultValue: "6-digit code or backup code" })}
                 maxLength={20}
                 autoComplete="one-time-code"
               />
-              {error && <div className="text-danger mt-2">{error}</div>}
+              {error && <div className="text-red-500 mt-2">{error}</div>}
             </div>
           </div>
-          <div className="modal-footer">
+          <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
             <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             <button type="button" className="btn btn-danger" onClick={handleDisable} disabled={loading || !password || !totpCode}>
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-1"></span>
+                  <span className="spinner w-4 h-4 border-2 mr-1 inline-block align-middle"></span>
                   {t("common.processing", { defaultValue: "Processing..." })}
                 </>
               ) : (
@@ -127,7 +125,6 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
               )}
             </button>
           </div>
-        </div>
       </div>
     </div>
   );

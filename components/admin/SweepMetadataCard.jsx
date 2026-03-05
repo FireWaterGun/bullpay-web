@@ -12,6 +12,7 @@ export default function SweepMetadataCard({ metadata }) {
         </h5>
       </div>
       <div className="card-body">
+        <div className="table-responsive">
         <table className="table table-borderless">
           <tbody>
             {metadata.strategy && (
@@ -69,6 +70,7 @@ export default function SweepMetadataCard({ metadata }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

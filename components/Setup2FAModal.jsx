@@ -179,24 +179,23 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
   if (!show) return null;
 
   return (
-    <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <div className="bg-white rounded-xl shadow-xl mx-4 w-full" style={{ maxWidth: '500px' }}>
+          <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
+            <h5 className="font-semibold">
               {t("settings.2fa.setupTitle", { defaultValue: "Setup Two-Factor Authentication" })}
             </h5>
-            <button type="button" className="btn-close" onClick={handleClose} disabled={loading}></button>
+            <button type="button" className="text-surface-400 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}>&times;</button>
           </div>
 
-          <div className="modal-body">
+          <div className="p-6">
             {/* Progress Steps */}
-            <div className="d-flex justify-content-center mb-4">
+            <div className="flex justify-center mb-4">
               {[1, 2, 3].map((s) => (
-                <div key={s} className="d-flex align-items-center">
+                <div key={s} className="flex items-center">
                   <div
-                    className={`rounded-circle d-flex align-items-center justify-content-center ${
-                      step >= s ? "bg-primary text-white" : "bg-light text-muted"
+                    className={`rounded-full flex items-center justify-center ${
+                      step >= s ? "bg-primary-600 text-white" : "bg-surface-100 text-surface-500"
                     }`}
                     style={{ width: 32, height: 32, fontSize: 14 }}
                   >
@@ -204,7 +203,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                   </div>
                   {s < 3 && (
                     <div
-                      className={`mx-2 ${step > s ? "bg-primary" : "bg-light"}`}
+                      className={`mx-2 ${step > s ? "bg-primary-600" : "bg-surface-100"}`}
                       style={{ width: 40, height: 2 }}
                     ></div>
                   )}
@@ -213,38 +212,38 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
             </div>
 
             {loading && !setupData ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status"></div>
-                <p className="mt-2 text-muted">{t("common.loading", { defaultValue: "Loading..." })}</p>
+              <div className="text-center py-10">
+                <div className="spinner w-8 h-8 border-3 text-primary-600" role="status"></div>
+                <p className="mt-2 text-surface-500">{t("common.loading", { defaultValue: "Loading..." })}</p>
               </div>
             ) : error && !setupData ? (
-              <div className="alert alert-danger">{error}</div>
+              <div className="rounded-lg bg-red-50 text-red-700 p-4">{error}</div>
             ) : (
               <>
                 {/* Step 1: QR Code */}
                 {step === 1 && setupData && (
                   <div className="text-center">
-                    <p className="text-muted mb-3">
+                    <p className="text-surface-500 mb-3">
                       {t("settings.2fa.scanQRDescription", {
                         defaultValue: "Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)",
                       })}
                     </p>
-                    <div className="d-flex justify-content-center mb-3">
+                    <div className="flex justify-center mb-3">
                       <img
                         src={setupData.qrCodeDataUrl}
                         alt="2FA QR Code"
-                        className="border rounded"
+                        className="border rounded-lg"
                         style={{ width: 200, height: 200 }}
                       />
                     </div>
                     <div className="mb-3">
-                      <small className="text-muted d-block mb-1">
+                      <small className="text-surface-500 block mb-1">
                         {t("settings.2fa.cantScan", { defaultValue: "Can't scan? Enter this code manually:" })}
                       </small>
-                      <div className="input-group input-group-sm" style={{ maxWidth: 300, margin: "0 auto" }}>
+                      <div className="bp-input-group" style={{ maxWidth: 300, margin: "0 auto" }}>
                         <input
                           type="text"
-                          className="form-control text-center font-monospace"
+                          className="form-input text-center font-mono text-sm"
                           value={setupData.secret}
                           readOnly
                         />
@@ -264,11 +263,11 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 {/* Step 2: Backup Codes */}
                 {step === 2 && setupData && (
                   <div>
-                    <div className="alert alert-warning d-flex align-items-start mb-3">
-                      <i className="bx bx-error-circle me-2 mt-1"></i>
+                    <div className="rounded-lg bg-amber-50 text-amber-700 p-3 flex items-start mb-3">
+                      <i className="bx bx-error-circle mr-2 mt-1"></i>
                       <div>
                         <strong>{t("settings.2fa.saveBackupCodes", { defaultValue: "Save your backup codes!" })}</strong>
-                        <p className="mb-0 small">
+                        <p className="mb-0 text-sm">
                           {t("settings.2fa.backupCodesDescription", {
                             defaultValue:
                               "If you lose access to your authenticator app, you can use these codes to sign in. Each code can only be used once.",
@@ -276,26 +275,26 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                         </p>
                       </div>
                     </div>
-                    <div className="bg-light rounded p-3 mb-3">
-                      <div className="row g-2">
+                    <div className="bg-surface-50 rounded-lg p-3 mb-3">
+                      <div className="grid grid-cols-2 gap-2">
                         {setupData.backupCodes.map((code, i) => (
-                          <div key={code} className="col-6">
-                            <code className="d-block text-center py-1">
+                          <div key={code}>
+                            <code className="block text-center py-1">
                               {i + 1}. {code}
                             </code>
                           </div>
                         ))}
                       </div>
                     </div>
-                    <div className="d-flex justify-content-center gap-2">
+                    <div className="flex justify-center gap-2">
                       <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleCopyBackupCodes}>
-                        <i className={`bx ${copiedCodes ? "bx-check" : "bx-copy"} me-1`}></i>
+                        <i className={`bx ${copiedCodes ? "bx-check" : "bx-copy"} mr-1`}></i>
                         {copiedCodes
                           ? t("common.copied", { defaultValue: "Copied!" })
                           : t("common.copy", { defaultValue: "Copy" })}
                       </button>
                       <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleDownloadBackupCodes}>
-                        <i className="bx bx-download me-1"></i>
+                        <i className="bx bx-download mr-1"></i>
                         {t("common.download", { defaultValue: "Download" })}
                       </button>
                     </div>
@@ -305,19 +304,19 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 {/* Step 3: Verify */}
                 {step === 3 && (
                   <div className="text-center">
-                    <p className="text-muted mb-3">
+                    <p className="text-surface-500 mb-3">
                       {t("settings.2fa.enterCode", {
                         defaultValue: "Enter the 6-digit code from your authenticator app to verify setup",
                       })}
                     </p>
-                    <div className="d-flex justify-content-center gap-2 mb-3" onPaste={handlePaste}>
+                    <div className="flex justify-center gap-2 mb-3" onPaste={handlePaste}>
                       {[0, 1, 2, 3, 4, 5].map((i) => (
                         <input
                           key={`digit-${i}`}
                           ref={(el) => (inputRefs.current[i] = el)}
                           type="text"
                           inputMode="numeric"
-                          className="form-control text-center fw-bold"
+                          className="form-input text-center font-bold"
                           style={{ width: 45, height: 50, fontSize: 20 }}
                           maxLength={1}
                           value={totpCode[i] || ""}
@@ -329,7 +328,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                       ))}
                     </div>
                     {error && (
-                      <div className="alert alert-danger py-2">
+                      <div className="rounded-lg bg-red-50 text-red-700 py-2 px-3">
                         {countdown > 0
                           ? t("settings.2fa.tooManyAttempts", {
                               defaultValue: "Too many attempts. Please try again in {{seconds}} seconds",
@@ -345,15 +344,15 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
             )}
           </div>
 
-          <div className="modal-footer">
+          <div className="px-6 py-4 border-t border-surface-200 flex items-center">
             {step > 1 && (
               <button type="button" className="btn btn-outline-secondary" onClick={() => setStep(s => s - 1)} disabled={loading}>
-                <i className="bx bx-chevron-left me-1"></i>
+                <i className="bx bx-chevron-left mr-1"></i>
                 {t("common.back", { defaultValue: "Back" })}
               </button>
             )}
-            <div className="flex-grow-1"></div>
-            <button type="button" className="btn btn-outline-secondary" onClick={handleClose} disabled={loading}>
+            <div className="grow"></div>
+            <button type="button" className="btn btn-outline-secondary mr-2" onClick={handleClose} disabled={loading}>
               {t("common.cancel", { defaultValue: "Cancel" })}
             </button>
             {step < 3 ? (
@@ -364,7 +363,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 disabled={loading || !setupData}
               >
                 {t("common.continue", { defaultValue: "Continue" })}
-                <i className="bx bx-chevron-right ms-1"></i>
+                <i className="bx bx-chevron-right ml-1"></i>
               </button>
             ) : (
               <button
@@ -375,24 +374,23 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
               >
                 {loading ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-1"></span>
+                    <span className="spinner w-4 h-4 border-2 mr-1 inline-block align-middle"></span>
                     {t("common.verifying", { defaultValue: "Verifying..." })}
                   </>
                 ) : countdown > 0 ? (
                   <>
-                    <i className="bx bx-time me-1"></i>
+                    <i className="bx bx-time mr-1"></i>
                     {t("settings.2fa.retryIn", { defaultValue: "Retry in {{seconds}}s", seconds: countdown })}
                   </>
                 ) : (
                   <>
-                    <i className="bx bx-check me-1"></i>
+                    <i className="bx bx-check mr-1"></i>
                     {t("settings.2fa.enableButton", { defaultValue: "Enable 2FA" })}
                   </>
                 )}
               </button>
             )}
           </div>
-        </div>
       </div>
     </div>
   );

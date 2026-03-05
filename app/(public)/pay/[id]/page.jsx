@@ -33,19 +33,19 @@ export default function InvoicePaymentV2() {
   } = useInvoicePayment()
 
   return (
-    <div className="min-vh-100 position-relative" style={{ overflowX: 'hidden',
-      background: 'linear-gradient(180deg, var(--bs-body-bg) 0%, var(--bs-tertiary-bg) 100%)'
+    <div className="min-h-screen relative" style={{ overflowX: 'hidden',
+      background: 'linear-gradient(180deg, var(--color-surface-0, #fff) 0%, var(--color-surface-100) 100%)'
     }}>
       {/* Subtle Background */}
-      <div className="position-absolute w-100 h-100" style={{ zIndex: 0 }}>
-        <div className="position-absolute rounded-circle" style={{
+      <div className="absolute w-full h-full" style={{ zIndex: 0 }}>
+        <div className="absolute rounded-full" style={{
           width: 300, height: 300,
-          background: 'radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, color-mix(in srgb, var(--color-primary-600) 6%, transparent) 0%, transparent 70%)',
           top: '5%', right: '10%', filter: 'blur(60px)'
         }}></div>
-        <div className="position-absolute rounded-circle" style={{
+        <div className="absolute rounded-full" style={{
           width: 350, height: 350,
-          background: 'radial-gradient(circle, rgba(var(--bs-primary-rgb), 0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, color-mix(in srgb, var(--color-primary-600) 4%, transparent) 0%, transparent 70%)',
           bottom: '10%', left: '5%', filter: 'blur(80px)'
         }}></div>
       </div>
@@ -57,56 +57,56 @@ export default function InvoicePaymentV2() {
       `}</style>
 
       {/* Main Content */}
-      <div className="flex-grow-1 d-flex align-items-center py-4 pt-5">
+      <div className="grow flex items-center py-4 pt-5">
         <div className="container">
           {loading ? (
             <div className="text-center">
-              <div className="spinner-border text-white" role="status"><span className="visually-hidden">Loading...</span></div>
+              <div className="spinner w-8 h-8 border-3 text-white" role="status"><span className="sr-only">Loading...</span></div>
             </div>
           ) : errorCode === 'BIZ_1200' && !invoice ? (
-            <div className="card border-0 shadow-lg mx-auto" style={{ maxWidth: 500, borderRadius: 12 }}>
-              <div className="card-body text-center p-5">
-                <div className="mb-4"><i className="bx bx-block" style={{ fontSize: 64, color: 'var(--bs-secondary-color)' }}></i></div>
+            <div className="bg-white rounded-xl shadow-lg mx-auto p-0" style={{ maxWidth: 500 }}>
+              <div className="text-center p-5">
+                <div className="mb-4"><i className="bx bx-block" style={{ fontSize: 64, color: 'var(--color-surface-500)' }}></i></div>
                 <h4 className="mb-3">{t('invoices.cancelled') || 'Cancelled'}</h4>
-                <p className="text-muted">{t('payment.cancelledMessage') || 'This invoice has been cancelled.'}</p>
+                <p className="text-surface-500">{t('payment.cancelledMessage') || 'This invoice has been cancelled.'}</p>
               </div>
             </div>
           ) : !invoice ? (
             <div className="text-center text-white">{t('invoices.notFound') || 'Not found'}</div>
           ) : (
-            <div className="row justify-content-center position-relative" style={{ zIndex: 1 }}>
-              <div className="col-11 col-sm-8 col-md-7 col-lg-4">
-                <div className="position-relative">
+            <div className="flex justify-center relative" style={{ zIndex: 1 }}>
+              <div className="w-11/12 sm:w-8/12 md:w-7/12 lg:w-4/12">
+                <div className="relative">
                   {/* Card Glow */}
-                  <div className="position-absolute w-100 h-100" style={{
-                    background: 'rgba(var(--bs-primary-rgb), 0.15)',
+                  <div className="absolute w-full h-full" style={{
+                    background: 'color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
                     borderRadius: 12, filter: 'blur(30px)', opacity: 0.6
                   }}></div>
 
-                  <div className="card border-0 position-relative" style={{
+                  <div className="relative" style={{
                     borderRadius: 12, overflow: 'hidden',
-                    background: 'rgba(var(--bs-white-rgb), 0.95)', backdropFilter: 'blur(20px)',
-                    boxShadow: '0 25px 50px rgba(var(--bs-black-rgb), 0.1), inset 0 1px 0 rgba(var(--bs-white-rgb), 0.8)',
-                    border: '1px solid rgba(var(--bs-primary-rgb), 0.15)'
+                    background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(20px)',
+                    boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                    border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)'
                   }}>
                     {/* Status Banner (Step 2 / paid / expired) */}
                     {!(isPaymentMode && needsNetworkSelection && !isPaid && !isExpiredUnpaid) && (
-                      <div className="position-relative overflow-hidden" style={{
+                      <div className="relative overflow-hidden" style={{
                         background: uiStatus === 'paid'
-                          ? 'linear-gradient(135deg, var(--bs-success), color-mix(in srgb, var(--bs-success), #000 20%))'
+                          ? 'linear-gradient(135deg, #22c55e, color-mix(in srgb, #22c55e, #000 20%))'
                           : uiStatus === 'expired'
-                            ? 'linear-gradient(135deg, var(--bs-danger), color-mix(in srgb, var(--bs-danger), #000 20%))'
-                            : 'linear-gradient(135deg, var(--bs-warning), color-mix(in srgb, var(--bs-warning), #000 20%))',
+                            ? 'linear-gradient(135deg, #ef4444, color-mix(in srgb, #ef4444, #000 20%))'
+                            : 'linear-gradient(135deg, #f59e0b, color-mix(in srgb, #f59e0b, #000 20%))',
                         padding: '14px 20px'
                       }}>
-                        <div className="position-absolute w-100 h-100" style={{
-                          background: 'linear-gradient(90deg, transparent, rgba(var(--bs-white-rgb),0.15), transparent)',
+                        <div className="absolute w-full h-full" style={{
+                          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
                           animation: 'shimmer 3s infinite', zIndex: 0, top: 0, left: 0
                         }}></div>
-                        <div className="text-center position-relative" style={{ zIndex: 1 }}>
-                          <div className="d-inline-flex align-items-center gap-2">
+                        <div className="text-center relative" style={{ zIndex: 1 }}>
+                          <div className="inline-flex items-center gap-2">
                             <i className={`bx ${uiStatus === 'paid' ? 'bx-check-circle' : uiStatus === 'pending' ? 'bx-time-five' : uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'} text-white`} style={{ fontSize: 20 }}></i>
-                            <span className="fw-bold text-uppercase text-white" style={{ letterSpacing: '2px', fontSize: '0.875rem' }}>
+                            <span className="font-bold uppercase text-white" style={{ letterSpacing: '2px', fontSize: '0.875rem' }}>
                               {statusLabel(uiStatus, t)}
                             </span>
                           </div>
@@ -115,23 +115,23 @@ export default function InvoicePaymentV2() {
                     )}
 
                     {/* Card Body */}
-                    <div className="card-body p-3 p-md-4">
+                    <div className="p-3 md:p-4">
 
                       {needsNetworkSelection ? (
                         <div>
                           {/* Amount card */}
-                          <div className="text-center rounded-3 mb-4 position-relative overflow-hidden" style={{
-                            background: 'linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary), #000 10%) 50%, color-mix(in srgb, var(--bs-primary), #000 20%) 100%)',
+                          <div className="text-center rounded-lg mb-4 relative overflow-hidden" style={{
+                            background: 'linear-gradient(135deg, var(--color-primary-600) 0%, color-mix(in srgb, var(--color-primary-600), #000 10%) 50%, color-mix(in srgb, var(--color-primary-600), #000 20%) 100%)',
                             padding: '28px 16px',
                           }}>
                             {/* Decorative circles */}
-                            <div className="position-absolute rounded-circle" style={{ width: 120, height: 120, background: 'rgba(255,255,255,0.06)', top: -30, right: -20 }}></div>
-                            <div className="position-absolute rounded-circle" style={{ width: 80, height: 80, background: 'rgba(255,255,255,0.04)', bottom: -20, left: -10 }}></div>
-                            <div className="position-relative" style={{ zIndex: 1 }}>
+                            <div className="absolute rounded-full" style={{ width: 120, height: 120, background: 'rgba(255,255,255,0.06)', top: -30, right: -20 }}></div>
+                            <div className="absolute rounded-full" style={{ width: 80, height: 80, background: 'rgba(255,255,255,0.04)', bottom: -20, left: -10 }}></div>
+                            <div className="relative" style={{ zIndex: 1 }}>
                               <div style={{ fontSize: '0.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(255,255,255,0.55)', marginBottom: 12 }}>
                                 {t('invoices.amount', { defaultValue: 'Amount' })}
                               </div>
-                              <div className="d-flex align-items-baseline justify-content-center" style={{ gap: 6 }}>
+                              <div className="flex items-baseline justify-center" style={{ gap: 6 }}>
                                 <span style={{ fontSize: '2.25rem', fontWeight: 700, letterSpacing: '-1px', color: '#fff', lineHeight: 1 }}>
                                   {formatAmount(invoice.amount)}
                                 </span>
@@ -148,34 +148,34 @@ export default function InvoicePaymentV2() {
                           </div>
 
                           {/* Step indicator */}
-                          <div className="d-flex align-items-center justify-content-between mb-4">
-                            <div className="d-flex align-items-center" style={{ gap: 8 }}>
-                              <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
-                                width: 26, height: 26, background: 'var(--bs-primary)', color: '#fff',
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center" style={{ gap: 8 }}>
+                              <div className="flex items-center justify-center rounded-full" style={{
+                                width: 26, height: 26, background: 'var(--color-primary-600)', color: '#fff',
                                 fontSize: '0.7rem', fontWeight: 700,
                               }}>1</div>
-                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--bs-heading-color)' }}>
+                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-surface-900)' }}>
                                 {t('payment.stepNetwork', { defaultValue: 'Network' })}
                               </span>
                             </div>
-                            <div style={{ flex: 1, height: 1, background: 'var(--bs-border-color)', margin: '0 16px' }}></div>
-                            <div className="d-flex align-items-center" style={{ gap: 8 }}>
-                              <div className="d-flex align-items-center justify-content-center rounded-circle" style={{
-                                width: 26, height: 26, background: 'var(--bs-border-color)', color: 'var(--bs-secondary-color)',
+                            <div style={{ flex: 1, height: 1, background: 'var(--color-surface-200)', margin: '0 16px' }}></div>
+                            <div className="flex items-center" style={{ gap: 8 }}>
+                              <div className="flex items-center justify-center rounded-full" style={{
+                                width: 26, height: 26, background: 'var(--color-surface-200)', color: 'var(--color-surface-500)',
                                 fontSize: '0.7rem', fontWeight: 700,
                               }}>2</div>
-                              <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--bs-secondary-color)' }}>
+                              <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--color-surface-500)' }}>
                                 {t('payment.stepPayment', { defaultValue: 'Payment' })}
                               </span>
                             </div>
                           </div>
 
                           {/* Section header */}
-                          <div className="d-flex align-items-center justify-content-between mb-3">
-                            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--bs-heading-color)' }}>
+                          <div className="flex items-center justify-between mb-3">
+                            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-surface-900)' }}>
                               {t('payment.selectNetwork', { defaultValue: 'Select Network' })}
                             </span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--bs-secondary-color)' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)' }}>
                               Step 1/2
                             </span>
                           </div>
@@ -194,21 +194,21 @@ export default function InvoicePaymentV2() {
                       ) : (
                       <div>
                       {/* Payment ID & Network Badge */}
-                      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                      <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
                         <div>
-                          <div className="small mb-1" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: '600' }}>
+                          <div className="text-sm mb-1" style={{ color: 'var(--color-surface-500)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: '600' }}>
                             {isPaymentMode ? (t("payment.payment", { defaultValue: "Payment" })) : t("invoices.invoice")}
                           </div>
-                          <div className="text-break" style={{ fontSize: '0.85rem', color: 'var(--bs-secondary-color)' }}>
+                          <div className="break-all" style={{ fontSize: '0.85rem', color: 'var(--color-surface-500)' }}>
                             {isPaymentMode ? (invoice.publicCode || invoice.id) : `#${invoice.invoiceNumber || invoice.publicCode || invoice.id}`}
                           </div>
                         </div>
-                        <div className="d-flex align-items-center gap-2 px-3 py-2 rounded-pill" style={{
-                          background: 'rgba(var(--bs-primary-rgb), 0.08)',
-                          border: '1px solid rgba(var(--bs-primary-rgb), 0.2)'
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-full" style={{
+                          background: 'color-mix(in srgb, var(--color-primary-600) 8%, transparent)',
+                          border: '1px solid color-mix(in srgb, var(--color-primary-600) 20%, transparent)'
                         }}>
                           <NetworkIcon networkSymbol={networkSym} size={20} />
-                          <span className="fw-bold" style={{ fontSize: '0.75rem', color: 'var(--bs-heading-color)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          <span className="font-bold" style={{ fontSize: '0.75rem', color: 'var(--color-surface-900)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                             {networkSym || 'N/A'}
                           </span>
                         </div>
@@ -216,15 +216,15 @@ export default function InvoicePaymentV2() {
 
                       {/* Timer - horizontal row */}
                       {!isPaid && remainingMs !== undefined && (
-                        <div className="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3" style={{
-                          border: '1px solid var(--bs-border-color)',
+                        <div className="flex items-center justify-between mb-3 p-3 rounded-lg" style={{
+                          border: '1px solid var(--color-surface-200)',
                         }}>
-                          <div className="d-flex align-items-center gap-2">
+                          <div className="flex items-center gap-2">
                             <i className="bx bx-time" style={{
                               fontSize: 20,
-                              color: remainingMs <= 60_000 ? 'var(--bs-danger)' : 'var(--bs-secondary-color)',
+                              color: remainingMs <= 60_000 ? '#ef4444' : 'var(--color-surface-500)',
                             }}></i>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--bs-secondary-color)' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-surface-500)' }}>
                               {t("payment.timeRemaining")}
                             </span>
                           </div>
@@ -232,7 +232,7 @@ export default function InvoicePaymentV2() {
                             fontWeight: 800,
                             fontSize: '1.25rem',
                             letterSpacing: '2px',
-                            color: remainingMs <= 60_000 ? 'var(--bs-danger)' : remainingMs <= 5 * 60_000 ? 'var(--bs-warning)' : 'var(--bs-primary)',
+                            color: remainingMs <= 60_000 ? '#ef4444' : remainingMs <= 5 * 60_000 ? '#f59e0b' : 'var(--color-primary-600)',
                           }}>
                             {formatDuration(remainingMs)}
                           </div>
@@ -254,8 +254,8 @@ export default function InvoicePaymentV2() {
 
                       {/* Expired Alert */}
                       {isExpiredUnpaid && (
-                        <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
-                          <i className="bx bx-error-circle me-2 fs-4"></i>
+                        <div className="rounded-lg bg-red-50 text-red-700 flex items-center mb-4 p-4" role="alert">
+                          <i className="bx bx-error-circle mr-2 text-xl"></i>
                           <div>{t("payment.expiredMessage") || "This invoice has expired. Please request a new payment link."}</div>
                         </div>
                       )}
@@ -263,22 +263,22 @@ export default function InvoicePaymentV2() {
                       {/* Payment Address */}
                       {!isExpiredUnpaid && !isPaid && (
                         <div className="mb-4">
-                          <div className="small mb-2" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.65rem', fontWeight: '700' }}>
+                          <div className="text-sm mb-2" style={{ color: 'var(--color-surface-500)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.65rem', fontWeight: '700' }}>
                             {t("invoices.paymentAddress")}
                           </div>
-                          <div className="d-flex align-items-center gap-2 p-3 rounded-3" style={{
-                            border: '1px solid var(--bs-border-color)',
+                          <div className="flex items-center gap-2 p-3 rounded-lg" style={{
+                            border: '1px solid var(--color-surface-200)',
                           }}>
-                            <code className="flex-grow-1 text-break mb-0" style={{ fontSize: '0.78rem', color: 'var(--bs-body-color)', background: 'none', fontWeight: 500 }}>
+                            <code className="grow break-all mb-0" style={{ fontSize: '0.78rem', color: 'var(--color-surface-900)', background: 'none', fontWeight: 500 }}>
                               {invoice.paymentAddress || '-'}
                             </code>
                             {invoice.paymentAddress && (
-                              <button type="button" className="btn btn-sm btn-icon flex-shrink-0" style={{
+                              <button type="button" className="shrink-0 cursor-pointer" style={{
                                 width: 36, height: 36,
-                                border: '1px solid var(--bs-border-color)',
+                                border: '1px solid var(--color-surface-200)',
                                 borderRadius: 8,
-                                background: copied ? 'var(--bs-success)' : 'var(--bs-body-bg)',
-                                color: copied ? '#fff' : 'var(--bs-secondary-color)',
+                                background: copied ? '#22c55e' : 'var(--color-surface-0, #fff)',
+                                color: copied ? '#fff' : 'var(--color-surface-500)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 padding: 0,
                                 transition: 'all 0.2s ease',
@@ -292,37 +292,37 @@ export default function InvoicePaymentV2() {
 
                       {/* Description */}
                       {invoice.description && (
-                        <div className="mb-3 p-3 rounded-3" style={{
-                          border: '1px solid var(--bs-border-color)',
+                        <div className="mb-3 p-3 rounded-lg" style={{
+                          border: '1px solid var(--color-surface-200)',
                         }}>
-                          <div className="small mb-2" style={{ color: 'var(--bs-secondary-color)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: '700' }}>
+                          <div className="text-sm mb-2" style={{ color: 'var(--color-surface-500)', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: '700' }}>
                             {t("invoices.description")}
                           </div>
-                          <div style={{ color: 'var(--bs-body-color)', lineHeight: 1.4, fontSize: '0.875rem' }}>{invoice.description}</div>
+                          <div style={{ color: 'var(--color-surface-900)', lineHeight: 1.4, fontSize: '0.875rem' }}>{invoice.description}</div>
                         </div>
                       )}
 
                       {/* Paid At Info */}
                       {isPaid && invoice.paidAt && (
-                        <div className="mb-3 p-3 rounded-3" style={{
-                          background: 'rgba(var(--bs-success-rgb), 0.06)',
-                          border: '1px solid rgba(var(--bs-success-rgb), 0.2)'
+                        <div className="mb-3 p-3 rounded-lg" style={{
+                          background: 'color-mix(in srgb, #22c55e 6%, transparent)',
+                          border: '1px solid color-mix(in srgb, #22c55e 20%, transparent)'
                         }}>
-                          <div className="d-flex align-items-center gap-2 mb-2">
-                            <div className="rounded-circle d-flex align-items-center justify-content-center" style={{
-                              width: 28, height: 28, background: 'var(--bs-success)',
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="rounded-full flex items-center justify-center" style={{
+                              width: 28, height: 28, background: '#22c55e',
                             }}>
                               <i className="bx bx-check text-white" style={{ fontSize: 16 }}></i>
                             </div>
-                            <span className="small" style={{ color: 'var(--bs-success)', textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: '0.65rem', fontWeight: '700' }}>
+                            <span className="text-sm" style={{ color: '#22c55e', textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: '0.65rem', fontWeight: '700' }}>
                               {t("payment.paidAt", { defaultValue: "Paid At" })}
                             </span>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <div className="fw-bold" style={{ color: 'var(--bs-success)', fontSize: '1.1rem' }}>
+                            <div className="font-bold" style={{ color: '#22c55e', fontSize: '1.1rem' }}>
                               {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(invoice.paidAt))}
                             </div>
-                            <div className="fw-semibold" style={{ color: 'var(--bs-success)', fontSize: '0.9rem', letterSpacing: '1px' }}>
+                            <div className="font-semibold" style={{ color: '#22c55e', fontSize: '0.9rem', letterSpacing: '1px' }}>
                               {new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(invoice.paidAt))}
                             </div>
                           </div>
@@ -334,12 +334,12 @@ export default function InvoicePaymentV2() {
 
                       {/* Network Warning */}
                       {!isPaid && !isExpiredUnpaid && coinSym && networkName && (
-                        <div className="d-flex align-items-start gap-2 p-3 rounded-3 mt-3" style={{
-                          background: 'rgba(var(--bs-warning-rgb), 0.08)',
-                          border: '1px solid rgba(var(--bs-warning-rgb), 0.25)',
+                        <div className="flex items-start gap-2 p-3 rounded-lg mt-3" style={{
+                          background: 'color-mix(in srgb, #f59e0b 8%, transparent)',
+                          border: '1px solid color-mix(in srgb, #f59e0b 25%, transparent)',
                         }}>
-                          <i className="bx bx-error flex-shrink-0" style={{ fontSize: 20, color: 'var(--bs-warning)', marginTop: 1 }}></i>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--bs-body-color)', lineHeight: 1.5 }}>
+                          <i className="bx bx-error shrink-0" style={{ fontSize: 20, color: '#f59e0b', marginTop: 1 }}></i>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--color-surface-900)', lineHeight: 1.5 }}>
                             <span>
                               {t("payment.networkWarningSendOnly", { defaultValue: "Send only" })}{' '}
                               <b>{coinSym}</b>{' '}
@@ -354,10 +354,10 @@ export default function InvoicePaymentV2() {
                       {/* Success Redirect */}
                       {isPaid && invoice?.successUrl && isSafeRedirectUrl(invoice.successUrl) && (
                         <div className="mt-3">
-                          <a href={invoice.successUrl} className="btn w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2" style={{
-                            background: 'linear-gradient(135deg, var(--bs-success) 0%, color-mix(in srgb, var(--bs-success), #000 20%) 100%)',
+                          <a href={invoice.successUrl} className="w-full py-3 font-bold flex items-center justify-center gap-2" style={{
+                            background: 'linear-gradient(135deg, #22c55e 0%, color-mix(in srgb, #22c55e, #000 20%) 100%)',
                             color: 'white', border: 'none', borderRadius: 12, fontSize: '1rem', letterSpacing: '0.5px',
-                            boxShadow: '0 8px 24px rgba(var(--bs-success-rgb), 0.4)', textDecoration: 'none', transition: 'all 0.3s ease',
+                            boxShadow: '0 8px 24px color-mix(in srgb, #22c55e 40%, transparent)', textDecoration: 'none', transition: 'all 0.3s ease',
                           }}>
                             <i className="bx bx-check-circle" style={{ fontSize: 20 }}></i>
                             {redirectCountdown != null
@@ -378,16 +378,16 @@ export default function InvoicePaymentV2() {
       </div>
 
       {/* Footer */}
-      <footer className="py-2 position-relative" style={{ zIndex: 1 }}>
+      <footer className="py-2 relative" style={{ zIndex: 1 }}>
         <div className="container text-center">
-          <div className="mb-2" style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem', letterSpacing: '1px', fontWeight: '600' }}>
+          <div className="mb-2" style={{ color: 'var(--color-surface-500)', fontSize: '0.75rem', letterSpacing: '1px', fontWeight: '600' }}>
             {t("common.poweredBy", { defaultValue: "Powered by" })}
           </div>
           <div className="mb-2" style={{
             fontSize: '1.1rem', fontWeight: '700',
-            color: 'var(--bs-primary)', letterSpacing: '1px'
+            color: 'var(--color-primary-600)', letterSpacing: '1px'
           }}>BULL PAY</div>
-          <div style={{ color: 'var(--bs-secondary-color)', fontSize: '0.75rem' }}>
+          <div style={{ color: 'var(--color-surface-500)', fontSize: '0.75rem' }}>
             {t("common.copyright", { year }) || `© ${year} · All rights reserved`}
           </div>
         </div>

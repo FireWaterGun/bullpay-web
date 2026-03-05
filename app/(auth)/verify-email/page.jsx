@@ -8,7 +8,11 @@ import { useAuth } from '@/app/providers'
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="text-center py-5"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div></div>}>
+    <Suspense fallback={
+      <div className="flex justify-center py-12">
+        <div className="spinner text-primary-600"></div>
+      </div>
+    }>
       <VerifyEmailContent />
     </Suspense>
   )
@@ -59,7 +63,6 @@ function VerifyEmailContent() {
     router.replace(isAuthenticated ? '/dashboard' : '/login')
   }, [router, isAuthenticated])
 
-  const iconClass = status === 'success' ? 'bx bx-check' : status === 'error' ? 'ti ti-alert-triangle' : 'ti ti-loader-2'
   const isInvalidToken = useMemo(() => {
     if (status !== 'error') return false
     const m = (message || '').toLowerCase()
@@ -67,7 +70,6 @@ function VerifyEmailContent() {
     return (m.includes('invalid') && (m.includes('token') || m.includes('verification'))) || m.includes('invalid verification token')
   }, [status, message, errorCode])
 
-  const badgeClass = status === 'success' ? 'bg-success text-white shadow-sm' : status === 'error' ? 'bg-label-danger' : 'bg-label-info'
   const title = status === 'success'
     ? 'Email verified!'
     : status === 'error'
@@ -76,30 +78,42 @@ function VerifyEmailContent() {
 
   return (
     <div className="py-4">
-      <div className="card">
-        <div className="card-body text-center">
-          <div
-            className={`mx-auto mb-3 d-inline-flex align-items-center justify-content-center rounded-circle ${status === 'success' ? 'bg-success-subtle' : ''}`}
-            style={{ width: status === 'success' ? 80 : 64, height: status === 'success' ? 80 : 64 }}
-          >
-            <span
-              className={`badge badge-center rounded-pill ${badgeClass}`}
-              style={{ width: status === 'success' ? 56 : 48, height: status === 'success' ? 56 : 48 }}
-            >
-              <i className={iconClass} style={{ fontSize: status === 'success' ? 28 : 24 }} />
-            </span>
+      <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+        <div className="p-8 sm:p-10 text-center">
+          {/* Status icon */}
+          <div className="flex justify-center mb-4">
+            {status === 'success' && (
+              <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-full bg-success-500 text-white flex items-center justify-center shadow-sm">
+                  <i className="bx bx-check text-3xl"></i>
+                </div>
+              </div>
+            )}
+            {status === 'error' && (
+              <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-danger-500/15 text-danger-500 flex items-center justify-center">
+                  <i className="bx bx-error-circle text-2xl"></i>
+                </div>
+              </div>
+            )}
+            {status === 'pending' && (
+              <div className="w-16 h-16 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className="spinner text-primary-600"></div>
+              </div>
+            )}
           </div>
-          <h4 className="mb-1">{title}</h4>
-          <p className="mb-2 text-body-secondary">
+
+          <h4 className="text-xl font-semibold mb-1">{title}</h4>
+          <p className="text-sm text-surface-500 mb-2">
             {status === 'pending'
               ? 'Please wait a moment while we confirm your email.'
               : isInvalidToken
                 ? 'Your verification link is invalid or expired. Please request a new verification email and try again.'
                 : (message || 'Verification failed. Please try again later.')}
           </p>
-          {!!email && <p className="mb-4 text-body-secondary small">{email}</p>}
+          {!!email && <p className="text-xs text-surface-400 mb-4">{email}</p>}
 
-          <div className="d-flex flex-wrap gap-2 justify-content-center mt-1">
+          <div className="flex flex-wrap gap-2 justify-center mt-4">
             {status === 'success' && (
               <Link href="/login" className="btn btn-primary">
                 Proceed to Login

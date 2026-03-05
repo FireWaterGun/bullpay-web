@@ -120,40 +120,40 @@ export default function WalletCreate() {
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      {error && <div className="alert alert-danger">{error}</div>}
+    <div>
+      {error && <div className="rounded-lg bg-red-50 text-red-700 p-4 mb-4">{error}</div>}
 
       {/* Step 1: Select Coin */}
       <div className="card mb-4">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">1</span>
-          <h6 className="mb-0">{t('form.selectCoin')}</h6>
+        <div className="px-6 py-4 border-b flex items-center">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium mr-2">1</span>
+          <h6 className="mb-0 font-semibold">{t('form.selectCoin')}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           {loadingCoins ? (
-            <div className="text-muted">{t('invoices.loading')}</div>
+            <div className="text-surface-500">{t('invoices.loading')}</div>
           ) : (
-            <div className="row g-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {Object.entries(grouped).map(([sym, group]) => {
                 const isActive = selectedCoin === sym
                 const networksCount = group.items.length
                 return (
-                  <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={sym}>
+                  <div key={sym}>
                     <div
                       role="button"
-                      className={`card h-100 border-2 rounded-3 overflow-hidden ${isActive ? 'border-primary bg-label-primary shadow-sm' : 'border-2'}`}
+                      className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ? 'border-primary-600 bg-primary-50 shadow-sm' : 'border-surface-200 hover:border-surface-300'}`}
                       onClick={() => {
                         setSelectedCoin(sym)
                         if (!group.items.some(i => String(i.id) === String(coinNetworkId))) setCoinNetworkId('')
                       }}
                     >
-                      <div className="card-body d-flex align-items-center gap-3">
+                      <div className="p-4 flex items-center gap-3">
                         <CoinImg coin={group.coin} symbol={sym} size={36} showFallback imgClassName="rounded" />
                         <div>
-                          <div className="fw-bold">{sym}</div>
-                          <div className="text-muted small">{group.coin?.name || ''}</div>
+                          <div className="font-bold">{sym}</div>
+                          <div className="text-surface-500 text-sm">{group.coin?.name || ''}</div>
                           {networksCount > 1 && (
-                            <div className="text-muted small">{networksCount} networks</div>
+                            <div className="text-surface-500 text-sm">{networksCount} networks</div>
                           )}
                         </div>
                       </div>
@@ -161,7 +161,7 @@ export default function WalletCreate() {
                   </div>
                 )
               })}
-              {coins.length === 0 && <div className="col-12 text-muted">{t('common.noData') || 'No coins'}</div>}
+              {coins.length === 0 && <div className="col-span-full text-surface-500">{t('common.noData') || 'No coins'}</div>}
             </div>
           )}
         </div>
@@ -169,13 +169,13 @@ export default function WalletCreate() {
 
       {/* Step 2: Select Network */}
       <div className="card mb-4">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">2</span>
-          <h6 className="mb-0">{t('form.selectNetwork')}</h6>
+        <div className="px-6 py-4 border-b flex items-center">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium mr-2">2</span>
+          <h6 className="mb-0 font-semibold">{t('form.selectNetwork')}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           {selectedCoin ? (
-            <div className="d-flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {networks.map(n => {
                 const selected = String(coinNetworkId) === String(n.id)
                 const networkLabel = getNetworkLabel(n, { symbol: selectedCoin })
@@ -183,34 +183,34 @@ export default function WalletCreate() {
                   <button
                     type="button"
                     key={n.id}
-                    className={`btn ${selected ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-surface-700 border-surface-300 hover:border-primary-400'}`}
                     onClick={() => setCoinNetworkId(String(n.id))}
                   >
                     {networkLabel}
                   </button>
                 )
               })}
-              {networks.length === 0 && <div className="text-muted small">{t('common.noData')}</div>}
+              {networks.length === 0 && <div className="text-surface-500 text-sm">{t('common.noData')}</div>}
             </div>
           ) : (
-            <div className="text-muted">{t('form.selectCoin')}</div>
+            <div className="text-surface-500">{t('form.selectCoin')}</div>
           )}
         </div>
       </div>
 
       {/* Step 3: Address + Save */}
       <form onSubmit={onSubmit} className="card">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">3</span>
-          <h6 className="mb-0">{t('wallet.enterAddress', { defaultValue: 'Enter address' })}</h6>
+        <div className="px-6 py-4 border-b flex items-center">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium mr-2">3</span>
+          <h6 className="mb-0 font-semibold">{t('wallet.enterAddress', { defaultValue: 'Enter address' })}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           <input type="hidden" name="coinNetworkId" value={coinNetworkId} />
-          <div className="row g-3">
-            <div className="col-12 col-md-8 col-lg-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
               <label className="form-label">{t('wallet.address', { defaultValue: 'Address' })}</label>
               <input
-                className="form-control"
+                className="form-input"
                 placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })}
                 maxLength={128}
                 value={address}
@@ -218,10 +218,10 @@ export default function WalletCreate() {
                 required
               />
             </div>
-            <div className="col-12 col-md-8 col-lg-6">
+            <div>
               <label className="form-label">{t('wallet.label', { defaultValue: 'Label' })}</label>
               <input
-                className="form-control"
+                className="form-input"
                 placeholder={t('wallet.labelPlaceholder', { defaultValue: 'e.g., My Binance Wallet' })}
                 maxLength={100}
                 value={label}
@@ -229,10 +229,10 @@ export default function WalletCreate() {
                 required
               />
             </div>
-            <div className="col-12 col-md-8 col-lg-6">
+            <div className="md:col-span-2">
               <label className="form-label">{t('wallet.memo', { defaultValue: 'Memo (Optional)' })}</label>
               <textarea
-                className="form-control"
+                className="form-input"
                 placeholder={t('wallet.memoPlaceholder', { defaultValue: 'Optional memo text' })}
                 rows={3}
                 maxLength={500}
@@ -242,7 +242,7 @@ export default function WalletCreate() {
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end gap-2">
+        <div className="px-6 py-4 border-t flex justify-end gap-2">
           <button type="button" className="btn btn-outline-secondary" onClick={() => router.back()} disabled={saving}>
             {t('actions.back') || 'Back'}
           </button>

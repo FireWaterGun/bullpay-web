@@ -1,16 +1,25 @@
 /**
  * Auth layout — centered, no sidebar.
- * Used for: /login, /register, /forgot, /verify
+ * Uses Tailwind CSS only (no Bootstrap/Sneat).
  */
+
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <div className="container-xxl">
-      <div className="authentication-wrapper authentication-basic container-p-y">
-        <div className="authentication-inner">{children}</div>
+    <div className="auth-page">
+      {/* Background decorations */}
+      <div className="auth-bg" aria-hidden="true">
+        <div className="auth-glow auth-glow-1"></div>
+        <div className="auth-glow auth-glow-2"></div>
+        <div className="auth-glow auth-glow-3"></div>
+        <div className="auth-grid"></div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-[460px]">
+        {children}
       </div>
     </div>
   )

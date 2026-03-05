@@ -21,36 +21,39 @@ import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
-function statusBadgeClass(status) {
-  const s = String(status || '').toLowerCase()
-  if (s === 'active') return 'badge bg-label-success'
-  if (s === 'suspended') return 'badge bg-label-danger'
-  if (s === 'pending') return 'badge bg-label-warning'
-  return 'badge bg-label-secondary'
+const statusColors = {
+  active:    { bg: 'bg-success-50', text: 'text-success-700', icon: 'bx-check-shield' },
+  suspended: { bg: 'bg-danger-50',  text: 'text-danger-700',  icon: 'bx-block' },
+  pending:   { bg: 'bg-warning-50', text: 'text-warning-700', icon: 'bx-time-five' },
 }
 
 function statusMeta(status, t) {
   const s = String(status || '').toLowerCase()
-  if (s === 'active') return { icon: 'bx-check-shield', color: 'success', label: t('merchant.status.active', { defaultValue: 'Active' }) }
-  if (s === 'suspended') return { icon: 'bx-block', color: 'danger', label: t('merchant.status.suspended', { defaultValue: 'Suspended' }) }
-  if (s === 'pending') return { icon: 'bx-time-five', color: 'warning', label: t('merchant.status.pending', { defaultValue: 'Pending' }) }
-  return { icon: 'bx-help-circle', color: 'secondary', label: t('merchant.status.unknown', { defaultValue: status || 'Unknown' }) }
+  if (s === 'active')    return { ...statusColors.active,    label: t('merchant.status.active',    { defaultValue: 'Active' }) }
+  if (s === 'suspended') return { ...statusColors.suspended, label: t('merchant.status.suspended', { defaultValue: 'Suspended' }) }
+  if (s === 'pending')   return { ...statusColors.pending,   label: t('merchant.status.pending',   { defaultValue: 'Pending' }) }
+  return { bg: 'bg-surface-100', text: 'text-surface-600', icon: 'bx-help-circle', label: t('merchant.status.unknown', { defaultValue: status || 'Unknown' }) }
+}
+
+const tileColors = {
+  primary: { bg: 'bg-primary-50', icon: 'text-primary-600' },
+  success: { bg: 'bg-success-50', icon: 'text-success-600' },
+  info:    { bg: 'bg-info-50',    icon: 'text-info-600' },
+  secondary: { bg: 'bg-surface-100', icon: 'text-surface-500' },
+  danger:  { bg: 'bg-danger-50',  icon: 'text-danger-600' },
+  warning: { bg: 'bg-warning-50', icon: 'text-warning-600' },
 }
 
 function StatTile({ icon, label, value, color = 'primary' }) {
+  const c = tileColors[color] || tileColors.primary
   return (
-    <div className="col-6 col-sm-3">
-      <div className="d-flex align-items-center gap-3">
-        <span
-          className={`d-inline-flex align-items-center justify-content-center rounded-2 bg-label-${color} flex-shrink-0`}
-          style={{ width: 40, height: 40 }}
-        >
-          <i className={`bx ${icon}`} style={{ fontSize: '1.25rem' }}></i>
-        </span>
-        <div className="min-w-0">
-          <div className="fw-semibold text-truncate" style={{ fontSize: '0.9rem' }}>{value}</div>
-          <small className="text-muted">{label}</small>
-        </div>
+    <div className="flex items-center gap-3">
+      <span className={`flex items-center justify-center w-10 h-10 rounded-lg ${c.bg} shrink-0`}>
+        <i className={`bx ${icon} text-xl ${c.icon}`}></i>
+      </span>
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-surface-800 truncate mb-0">{value}</p>
+        <p className="text-xs text-surface-400 mb-0">{label}</p>
       </div>
     </div>
   )
@@ -276,18 +279,14 @@ export default function MerchantPage() {
   }
 
   if (!hasMerchant) {
-    return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <RegisterForm onRegistered={handleRegistered} token={token} t={t} />
-      </div>
-    )
+    return <RegisterForm onRegistered={handleRegistered} token={token} t={t} />
   }
 
   const status = String(merchant?.status || '').toLowerCase()
   const sMeta = statusMeta(merchant?.status, t)
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <>
       {/* New Credential Alert */}
       {newCredentials && (
         <CredentialAlert
@@ -298,111 +297,74 @@ export default function MerchantPage() {
         />
       )}
 
-      {/* ══════════════════════════════════════════════════════════
-          §1  PROFILE HERO CARD
-          ══════════════════════════════════════════════════════════ */}
-      <div className="card mb-4 overflow-hidden">
-        {/* Gradient accent bar */}
-        <div style={{ height: 4, background: 'linear-gradient(90deg, var(--bs-primary) 0%, #a855f7 50%, #06b6d4 100%)' }} />
-
-        <div className="card-body p-4 pb-3">
-          <div className="d-flex flex-column flex-sm-row align-items-start gap-4">
+      {/* §1 PROFILE HERO */}
+      <div className="bg-white rounded-xl shadow-sm border border-surface-100 mb-5 overflow-hidden">
+        <div className="p-5 pb-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             {/* Avatar */}
-            <div
-              className="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
-              style={{ width: 80, height: 80, background: 'linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.16) 0%, rgba(var(--bs-primary-rgb), 0.04) 100%)' }}
-            >
-              <i className="bx bx-store" style={{ fontSize: '2.5rem', color: 'var(--bs-primary)' }}></i>
+            <div className="flex items-center justify-center w-20 h-20 rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 shrink-0">
+              <i className="bx bx-store text-[2.5rem] text-primary-600"></i>
             </div>
-
             {/* Info */}
-            <div className="flex-grow-1 min-w-0">
-              <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                <h4 className="mb-0 text-truncate">{merchant?.name || '-'}</h4>
-                <span className={statusBadgeClass(merchant?.status)} style={{ fontSize: '0.7rem', padding: '0.3em 0.7em' }}>
-                  <i className={`bx ${sMeta.icon} me-1`}></i>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <h4 className="text-lg font-semibold text-surface-900 truncate mb-0">{merchant?.name || '-'}</h4>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-md ${sMeta.bg} ${sMeta.text}`}>
+                  <i className={`bx ${sMeta.icon}`}></i>
                   {sMeta.label.toUpperCase()}
                 </span>
-                <div className="ms-auto">
+                <div className="ml-auto">
                   <RefreshButton onClick={loadProfile} loading={loading} title={t('actions.refresh', { defaultValue: 'Refresh' })} />
                 </div>
               </div>
-
               {merchant?.description && (
-                <p className="text-muted small mb-2 pe-4">{merchant.description}</p>
+                <p className="text-sm text-surface-500 mb-2 pr-4">{merchant.description}</p>
               )}
-
-              <div className="d-flex flex-wrap gap-3 text-muted small">
+              <div className="flex flex-wrap gap-3 text-sm text-surface-400">
                 {merchant?.email && (
-                  <span><i className="bx bx-envelope me-1"></i>{merchant.email}</span>
+                  <span className="flex items-center gap-1"><i className="bx bx-envelope"></i>{merchant.email}</span>
                 )}
                 {merchant?.websiteUrl && (
-                  <a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-muted text-decoration-none">
-                    <i className="bx bx-globe me-1"></i>{merchant.websiteUrl}
+                  <a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-surface-400 hover:text-primary-600 no-underline transition-colors">
+                    <i className="bx bx-globe"></i>{merchant.websiteUrl}
                   </a>
                 )}
-                <span>
-                  <i className="bx bx-calendar me-1"></i>
+                <span className="flex items-center gap-1">
+                  <i className="bx bx-calendar"></i>
                   {t('merchant.createdAt', { defaultValue: 'Registered' })}: {fmtDate(merchant?.createdAt)}
                 </span>
               </div>
 
-              {/* Status alerts */}
               {status === 'pending' && (
-                <div className="alert alert-warning py-2 mt-3 mb-0 small" role="alert">
-                  <i className="bx bx-time-five me-1"></i>
+                <div className="flex items-center gap-2 mt-3 p-2.5 bg-warning-50 border border-warning-200 rounded-lg text-sm text-warning-700">
+                  <i className="bx bx-time-five"></i>
                   {t('merchant.pendingNotice', { defaultValue: 'Your merchant account is pending approval.' })}
                 </div>
               )}
               {status === 'suspended' && (
-                <div className="alert alert-danger py-2 mt-3 mb-0 small" role="alert">
-                  <i className="bx bx-block me-1"></i>
+                <div className="flex items-center gap-2 mt-3 p-2.5 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+                  <i className="bx bx-block"></i>
                   {t('merchant.suspendedNotice', { defaultValue: 'Your merchant account is suspended.' })}
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        {/* ── Stats strip ── */}
-        <div className="card-footer bg-transparent border-top py-3 px-4">
-          <div className="row g-3">
-            <StatTile
-              icon={sMeta.icon}
-              label={t('common.status', { defaultValue: 'Status' })}
-              value={sMeta.label}
-              color={sMeta.color}
-            />
-            <StatTile
-              icon="bx-trending-up"
-              label={t('merchant.commissionRate', { defaultValue: 'Commission' })}
-              value={merchant?.commissionRate ? formatCommission(merchant.commissionRate) : '-'}
-              color="primary"
-            />
-            <StatTile
-              icon="bx-calendar-check"
-              label={t('merchant.since', { defaultValue: 'Since' })}
-              value={fmtDate(merchant?.createdAt)}
-              color="info"
-            />
-            <StatTile
-              icon="bx-broadcast"
-              label={t('merchant.webhookTitle', { defaultValue: 'Webhook' })}
-              value={merchant?.hasWebhook
-                ? t('merchant.configured', { defaultValue: 'Configured' })
-                : t('merchant.notConfigured', { defaultValue: 'Not Configured' })}
-              color={merchant?.hasWebhook ? 'success' : 'secondary'}
-            />
+        {/* Stats strip */}
+        <div className="border-t border-surface-100 px-5 py-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <StatTile icon={sMeta.icon} label={t('common.status', { defaultValue: 'Status' })} value={sMeta.label} color={status === 'active' ? 'success' : status === 'suspended' ? 'danger' : 'warning'} />
+            <StatTile icon="bx-trending-up" label={t('merchant.commissionRate', { defaultValue: 'Commission' })} value={merchant?.commissionRate ? formatCommission(merchant.commissionRate) : '-'} color="primary" />
+            <StatTile icon="bx-calendar-check" label={t('merchant.since', { defaultValue: 'Since' })} value={fmtDate(merchant?.createdAt)} color="info" />
+            <StatTile icon="bx-broadcast" label={t('merchant.webhookTitle', { defaultValue: 'Webhook' })} value={merchant?.hasWebhook ? t('merchant.configured', { defaultValue: 'Configured' }) : t('merchant.notConfigured', { defaultValue: 'Not Configured' })} color={merchant?.hasWebhook ? 'success' : 'secondary'} />
           </div>
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          §2  MAIN CONTENT
-          ══════════════════════════════════════════════════════════ */}
-      <div className="row">
-        {/* ── Left Column ── */}
-        <div className="col-xl-8 col-lg-7">
+      {/* §2 MAIN CONTENT */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+        {/* Left Column (2/3) */}
+        <div className="xl:col-span-2 space-y-5">
           {/* API Credentials */}
           <ApiCredentialsCard
             apiKey={apiKey}
@@ -414,49 +376,55 @@ export default function MerchantPage() {
           />
 
           {/* Webhook Configuration */}
-          <div className="card mb-4">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h6 className="mb-0">
-                <i className="bx bx-broadcast me-2 text-primary" style={{ fontSize: '1.1rem' }}></i>
+          <div className="bg-white rounded-xl shadow-sm border border-surface-100">
+            <div className="flex justify-between items-center px-5 py-4 border-b border-surface-100">
+              <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
+                <i className="bx bx-broadcast text-primary-600"></i>
                 {t('merchant.webhookTitle', { defaultValue: 'Webhook Configuration' })}
               </h6>
               {merchant?.hasWebhook ? (
-                <span className="badge bg-label-success"><i className="bx bx-check-circle me-1"></i>{t('merchant.configured', { defaultValue: 'Configured' })}</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-success-50 text-success-700 rounded-md">
+                  <i className="bx bx-check-circle"></i>{t('merchant.configured', { defaultValue: 'Configured' })}
+                </span>
               ) : (
-                <span className="badge bg-label-secondary"><i className="bx bx-minus-circle me-1"></i>{t('merchant.notConfigured', { defaultValue: 'Not Configured' })}</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-surface-100 text-surface-500 rounded-md">
+                  <i className="bx bx-minus-circle"></i>{t('merchant.notConfigured', { defaultValue: 'Not Configured' })}
+                </span>
               )}
             </div>
-            <div className="card-body">
-              <p className="text-muted small mb-3">
-                <i className="bx bx-info-circle me-1"></i>
+            <div className="p-5">
+              <p className="text-sm text-surface-500 mb-3 flex items-center gap-1">
+                <i className="bx bx-info-circle"></i>
                 {t('merchant.webhookDesc', { defaultValue: 'Set a callback URL to receive real-time payment notifications via webhook.' })}
               </p>
 
               {editingWebhook ? (
                 <>
-                  <label className="form-label fw-semibold small">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</label>
-                  <div className="input-group mb-3">
-                    <span className="input-group-text"><i className="bx bx-link"></i></span>
+                  <label className="block text-xs font-semibold text-surface-700 mb-1">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</label>
+                  <div className="flex mb-3">
+                    <span className="inline-flex items-center px-3 bg-surface-50 border border-r-0 border-surface-200 rounded-l-lg text-surface-400">
+                      <i className="bx bx-link"></i>
+                    </span>
                     <input
                       type="url"
-                      className="form-control"
+                      className="flex-1 px-3 py-2 text-sm border border-surface-200 rounded-r-lg outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                       value={webhookUrl}
                       onChange={(e) => setWebhookUrl(e.target.value)}
                       placeholder="https://example.com/webhooks/payment"
                       autoFocus
                     />
                   </div>
-                  {/* 2FA code for webhook update (Level 2 — password + TOTP) */}
+                  {/* Password */}
                   <div className="mb-3">
-                    <label className="form-label fw-semibold small" htmlFor="webhook-password">
-                      <i className="bx bx-lock-alt me-1"></i>
+                    <label className="block text-xs font-semibold text-surface-700 mb-1" htmlFor="webhook-password">
+                      <i className="bx bx-lock-alt mr-1"></i>
                       {t('merchant.enterPassword', { defaultValue: 'Password' })}
                     </label>
-                    <div className="input-group">
+                    <div className="flex">
                       <input
                         id="webhook-password"
                         type={webhookShowPassword ? 'text' : 'password'}
-                        className="form-control"
+                        className="flex-1 px-3 py-2 text-sm border border-r-0 border-surface-200 rounded-l-lg outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                         value={webhookPassword}
                         onChange={(e) => setWebhookPassword(e.target.value)}
                         placeholder={t('merchant.passwordPlaceholder', { defaultValue: 'Enter your current password' })}
@@ -465,7 +433,7 @@ export default function MerchantPage() {
                       />
                       <button
                         type="button"
-                        className="btn btn-outline-secondary"
+                        className="inline-flex items-center px-3 bg-surface-50 border border-l-0 border-surface-200 rounded-r-lg text-surface-500 hover:text-surface-700 cursor-pointer"
                         onClick={() => setWebhookShowPassword(!webhookShowPassword)}
                         tabIndex={-1}
                       >
@@ -475,14 +443,14 @@ export default function MerchantPage() {
                   </div>
                   {is2FAEnabled && (
                     <div className="mb-3">
-                      <label className="form-label fw-semibold small" htmlFor="webhook-totp">
-                        <i className="bx bx-shield me-1"></i>
+                      <label className="block text-xs font-semibold text-surface-700 mb-1" htmlFor="webhook-totp">
+                        <i className="bx bx-shield mr-1"></i>
                         {t('merchant.enter2FACode', { defaultValue: '2FA Code' })}
                       </label>
                       <input
                         id="webhook-totp"
                         type="text"
-                        className="form-control"
+                        className="w-full px-3 py-2 text-sm border border-surface-200 rounded-lg outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                         value={webhookTotpCode}
                         onChange={(e) => setWebhookTotpCode(e.target.value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 9))}
                         placeholder={t('merchant.totpPlaceholder', { defaultValue: '6-digit code or backup code' })}
@@ -490,27 +458,31 @@ export default function MerchantPage() {
                         maxLength={9}
                         autoComplete="one-time-code"
                       />
-                      <div className="form-text">
-                        {t('merchant.totpHint', { defaultValue: 'Enter the code from your authenticator app or a backup code.' })}
-                      </div>
+                      <p className="text-xs text-surface-400 mt-1">{t('merchant.totpHint', { defaultValue: 'Enter the code from your authenticator app or a backup code.' })}</p>
                     </div>
                   )}
-                  {/* Webhook error */}
                   {webhookError && (
-                    <div className="alert alert-danger py-2 mb-3 small" role="alert">
-                      <i className="bx bx-error-circle me-1"></i>
-                      {webhookError}
+                    <div className="flex items-center gap-2 p-2.5 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700 mb-3">
+                      <i className="bx bx-error-circle"></i>{webhookError}
                     </div>
                   )}
-                  <div className="d-flex gap-2">
-                    <button className="btn btn-primary btn-sm" onClick={handleWebhookSave} disabled={webhookLoading}>
+                  <div className="flex gap-2">
+                    <button
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 cursor-pointer"
+                      onClick={handleWebhookSave}
+                      disabled={webhookLoading}
+                    >
                       {webhookLoading ? (
-                        <><span className="spinner-border spinner-border-sm me-1"></span>{t('merchant.saving', { defaultValue: 'Saving...' })}</>
+                        <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>{t('merchant.saving', { defaultValue: 'Saving...' })}</>
                       ) : (
-                        <><i className="bx bx-check me-1"></i>{t('merchant.save', { defaultValue: 'Save' })}</>
+                        <><i className="bx bx-check"></i>{t('merchant.save', { defaultValue: 'Save' })}</>
                       )}
                     </button>
-                    <button className="btn btn-outline-secondary btn-sm" onClick={() => { setEditingWebhook(false); setWebhookTotpCode(''); setWebhookPassword(''); setWebhookError('') }} disabled={webhookLoading}>
+                    <button
+                      className="inline-flex items-center px-3 py-1.5 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors disabled:opacity-50 cursor-pointer"
+                      onClick={() => { setEditingWebhook(false); setWebhookTotpCode(''); setWebhookPassword(''); setWebhookError('') }}
+                      disabled={webhookLoading}
+                    >
                       {t('actions.cancel', { defaultValue: 'Cancel' })}
                     </button>
                   </div>
@@ -519,24 +491,27 @@ export default function MerchantPage() {
                 <>
                   {merchant?.webhookUrl && (
                     <div className="mb-3">
-                      <label className="form-label fw-semibold small mb-1">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</label>
-                      <div className="d-flex align-items-center gap-2 p-2 rounded" style={{ background: 'var(--bs-gray-100)' }}>
-                        <span className="font-monospace text-break flex-grow-1" style={{ fontSize: '0.85rem' }}>{merchant.webhookUrl}</span>
+                      <label className="block text-xs font-semibold text-surface-700 mb-1">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</label>
+                      <div className="flex items-center gap-2 p-2.5 bg-surface-50 rounded-lg">
+                        <span className="font-mono text-sm text-surface-700 break-all flex-1">{merchant.webhookUrl}</span>
                         <button
-                          className="btn btn-sm btn-icon btn-text-secondary flex-shrink-0"
+                          className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 hover:bg-surface-200 hover:text-surface-600 transition-colors shrink-0 cursor-pointer"
                           onClick={async () => {
                             const ok = await copyToClipboard(merchant.webhookUrl)
                             if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
                           }}
                           title={t('actions.copy', { defaultValue: 'Copy' })}
                         >
-                          <i className="bx bx-copy"></i>
+                          <i className="bx bx-copy text-sm"></i>
                         </button>
                       </div>
                     </div>
                   )}
-                  <button className="btn btn-outline-primary btn-sm" onClick={() => { setWebhookUrl(merchant?.webhookUrl || ''); setEditingWebhook(true); load2FAStatus() }}>
-                    <i className="bx bx-edit me-1"></i>
+                  <button
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium border border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors cursor-pointer"
+                    onClick={() => { setWebhookUrl(merchant?.webhookUrl || ''); setEditingWebhook(true); load2FAStatus() }}
+                  >
+                    <i className="bx bx-edit"></i>
                     {merchant?.hasWebhook
                       ? t('merchant.updateWebhook', { defaultValue: 'Update Webhook' })
                       : t('merchant.setWebhook', { defaultValue: 'Set Webhook URL' })
@@ -548,33 +523,30 @@ export default function MerchantPage() {
           </div>
         </div>
 
-        {/* ── Right Column ── */}
-        <div className="col-xl-4 col-lg-5">
+        {/* Right Column (1/3) */}
+        <div className="space-y-5">
           {/* Quick Start Guide */}
-          <div className="card mb-4">
-            <div className="card-header pb-2">
-              <h6 className="mb-0">
-                <i className="bx bx-rocket me-2 text-primary" style={{ fontSize: '1.1rem' }}></i>
+          <div className="bg-white rounded-xl shadow-sm border border-surface-100">
+            <div className="px-5 py-4 border-b border-surface-100">
+              <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
+                <i className="bx bx-rocket text-primary-600"></i>
                 {t('merchant.quickStart', { defaultValue: 'Quick Start' })}
               </h6>
             </div>
-            <div className="card-body pt-1">
+            <div className="p-5 pt-3">
               {[
                 { step: 1, icon: 'bx-key', text: t('merchant.step1', { defaultValue: 'Get your API Key & Secret' }), done: !!apiKey },
                 { step: 2, icon: 'bx-broadcast', text: t('merchant.step2', { defaultValue: 'Configure webhook URL' }), done: !!merchant?.hasWebhook },
                 { step: 3, icon: 'bx-receipt', text: t('merchant.step3', { defaultValue: 'Create your first invoice' }), done: false },
                 { step: 4, icon: 'bx-wallet', text: t('merchant.step4', { defaultValue: 'Accept crypto payments' }), done: false },
               ].map(({ step, icon, text, done }) => (
-                <div key={step} className={`d-flex align-items-center gap-3 py-2 ${step < 4 ? 'border-bottom' : ''}`}>
-                  <span
-                    className={`d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 ${done ? 'bg-label-success' : 'bg-label-secondary'}`}
-                    style={{ width: 32, height: 32, fontSize: '0.8rem', fontWeight: 600 }}
-                  >
-                    {done ? <i className="bx bx-check" style={{ fontSize: '1rem' }}></i> : step}
+                <div key={step} className={`flex items-center gap-3 py-2.5 ${step < 4 ? 'border-b border-surface-50' : ''}`}>
+                  <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 ${done ? 'bg-success-50 text-success-600' : 'bg-surface-100 text-surface-500'}`}>
+                    {done ? <i className="bx bx-check text-base"></i> : step}
                   </span>
-                  <div className="d-flex align-items-center gap-2 min-w-0">
-                    <i className={`bx ${icon} ${done ? 'text-success' : 'text-muted'}`} style={{ fontSize: '1.1rem' }}></i>
-                    <span className={`small ${done ? '' : 'text-muted'}`}>{text}</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <i className={`bx ${icon} ${done ? 'text-success-600' : 'text-surface-400'}`}></i>
+                    <span className={`text-sm ${done ? 'text-surface-800' : 'text-surface-500'}`}>{text}</span>
                   </div>
                 </div>
               ))}
@@ -582,30 +554,30 @@ export default function MerchantPage() {
           </div>
 
           {/* Security Tips */}
-          <div className="card mb-4">
-            <div className="card-header pb-2">
-              <h6 className="mb-0">
-                <i className="bx bx-shield me-2 text-primary" style={{ fontSize: '1.1rem' }}></i>
+          <div className="bg-white rounded-xl shadow-sm border border-surface-100">
+            <div className="px-5 py-4 border-b border-surface-100">
+              <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
+                <i className="bx bx-shield text-primary-600"></i>
                 {t('merchant.securityTips', { defaultValue: 'Security Best Practices' })}
               </h6>
             </div>
-            <div className="card-body pt-1">
+            <div className="p-5 pt-3">
               {[
                 { icon: 'bx-lock-alt', color: 'danger', text: t('merchant.tip1', { defaultValue: 'Never share your API Secret publicly' }) },
                 { icon: 'bx-refresh', color: 'warning', text: t('merchant.tip2', { defaultValue: 'Rotate your secret periodically' }) },
                 { icon: 'bx-link', color: 'success', text: t('merchant.tip3', { defaultValue: 'Use HTTPS for all webhook URLs' }) },
                 { icon: 'bx-error', color: 'info', text: t('merchant.tip4', { defaultValue: 'Regenerating key invalidates all credentials' }) },
-              ].map(({ icon, color, text }, i) => (
-                <div key={i} className={`d-flex align-items-start gap-3 py-2 ${i < 3 ? 'border-bottom' : ''}`}>
-                  <span
-                    className={`d-inline-flex align-items-center justify-content-center rounded-2 bg-label-${color} flex-shrink-0`}
-                    style={{ width: 30, height: 30 }}
-                  >
-                    <i className={`bx ${icon}`} style={{ fontSize: '0.95rem' }}></i>
-                  </span>
-                  <span className="small text-muted pt-1">{text}</span>
-                </div>
-              ))}
+              ].map(({ icon, color, text }, i) => {
+                const c = tileColors[color] || tileColors.primary
+                return (
+                  <div key={i} className={`flex items-start gap-3 py-2.5 ${i < 3 ? 'border-b border-surface-50' : ''}`}>
+                    <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${c.bg} shrink-0`}>
+                      <i className={`bx ${icon} text-sm ${c.icon}`}></i>
+                    </span>
+                    <span className="text-sm text-surface-500 pt-0.5">{text}</span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -623,6 +595,6 @@ export default function MerchantPage() {
           t={t}
         />
       )}
-    </div>
+    </>
   )
 }

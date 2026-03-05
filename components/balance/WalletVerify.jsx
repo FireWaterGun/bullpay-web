@@ -45,26 +45,26 @@ function WalletVerifyContent() {
 
   return (
     <div>
-      <div className="row justify-content-center">
-        <div className="col-lg-6 col-xl-4">
+      <div className="flex justify-center">
+        <div className="w-full max-w-md">
           <div className="card">
-            <div className="card-body text-center py-5">
+            <div className="text-center py-12 px-6">
               {loading ? (
                 <>
-                  <div className="spinner-border text-primary mb-3" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                  <div className="spinner w-8 h-8 border-3 text-primary-600 mb-3 mx-auto" role="status">
+                    <span className="sr-only">Loading...</span>
                   </div>
-                  <p className="text-muted">
+                  <p className="text-surface-500">
                     {t('wallets.verifying', { defaultValue: 'Verifying your address...' })}
                   </p>
                 </>
               ) : verified ? (
                 <>
-                  <i className="bx bx-check-circle text-success mb-3" style={{ fontSize: '3rem' }}></i>
-                  <h5 className="mb-2">
+                  <i className="bx bx-check-circle text-green-500 mb-3" style={{ fontSize: '3rem' }}></i>
+                  <h5 className="mb-2 font-semibold">
                     {t('wallets.verified', { defaultValue: 'Address Verified!' })}
                   </h5>
-                  <p className="text-muted mb-3">
+                  <p className="text-surface-500 mb-3">
                     {t('wallets.verifiedDesc', { defaultValue: 'Your withdrawal address has been verified successfully.' })}
                   </p>
                   <Link href="/withdrawals" className="btn btn-primary">
@@ -73,19 +73,19 @@ function WalletVerifyContent() {
                 </>
               ) : error ? (
                 <>
-                  <i className="bx bx-error-circle text-danger mb-3" style={{ fontSize: '3rem' }}></i>
-                  <h5 className="mb-2">
+                  <i className="bx bx-error-circle text-red-500 mb-3" style={{ fontSize: '3rem' }}></i>
+                  <h5 className="mb-2 font-semibold">
                     {t('wallets.verifyFailed', { defaultValue: 'Verification Failed' })}
                   </h5>
-                  <p className="text-muted mb-3">{error}</p>
+                  <p className="text-surface-500 mb-3">{error}</p>
                   <Link href="/withdrawals" className="btn btn-primary">
                     {t('wallets.goToWallets', { defaultValue: 'Go to Wallets' })}
                   </Link>
                 </>
               ) : (
                 <>
-                  <i className="bx bx-link text-muted mb-3" style={{ fontSize: '3rem' }}></i>
-                  <p className="text-muted">
+                  <i className="bx bx-link text-surface-400 mb-3" style={{ fontSize: '3rem' }}></i>
+                  <p className="text-surface-500">
                     {t('wallets.noToken', { defaultValue: 'No verification token found.' })}
                   </p>
                 </>

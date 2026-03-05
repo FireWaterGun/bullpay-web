@@ -75,20 +75,18 @@ export default function WithdrawalAddressDetailPage() {
 
   if (!address) {
     return (
-      <div className="container-xxl flex-grow-1 container-p-y">
-        <div className="alert alert-danger">{t('withdrawalAddresses.notFound', { defaultValue: 'Address not found' })}</div>
-      </div>
+      <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">{t('withdrawalAddresses.notFound', { defaultValue: 'Address not found' })}</div>
     )
   }
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
-      <div className="d-flex align-items-center mb-4">
-        <button className="btn btn-text-secondary me-2" onClick={() => router.back()}>
+    <>
+      <div className="flex items-center mb-6">
+        <button className="mr-2 p-2 rounded-lg hover:bg-surface-100 text-surface-600" onClick={() => router.back()}>
           <i className="bx bx-arrow-back"></i>
         </button>
         <div>
-          <h4 className="fw-bold mb-0">{t('withdrawalAddresses.detail', { defaultValue: 'Address Detail' })} #{address.id}</h4>
+          <h4 className="font-bold text-surface-900 mb-0">{t('withdrawalAddresses.detail', { defaultValue: 'Address Detail' })} #{address.id}</h4>
           <span className={addressStatusBadgeClass(address.status)}>
             {formatAddressStatus(address.status)}
           </span>
@@ -96,39 +94,40 @@ export default function WithdrawalAddressDetailPage() {
         <RefreshButton onClick={loadAddress} loading={loading} />
       </div>
 
-      <div className="row">
-        <div className="col-lg-8">
-          <div className="card mb-3">
-            <div className="card-header">
-              <h6 className="mb-0">{t('withdrawalAddresses.details', { defaultValue: 'Address Details' })}</h6>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 space-y-4">
+          <div className="card">
+            <div className="px-6 py-4 border-b border-surface-100">
+              <h6 className="font-semibold text-surface-900 mb-0">{t('withdrawalAddresses.details', { defaultValue: 'Address Details' })}</h6>
             </div>
-            <div className="card-body">
-              <table className="table table-borderless mb-0">
+            <div className="p-6">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm">
                 <tbody>
                   <tr>
-                    <td className="text-muted" style={{ width: 160 }}>{t('withdrawalAddresses.user', { defaultValue: 'User' })}</td>
-                    <td>{address.user?.email || address.userId || '-'}</td>
+                    <td className="text-surface-500 py-2 pr-4" style={{ width: 160 }}>{t('withdrawalAddresses.user', { defaultValue: 'User' })}</td>
+                    <td className="py-2">{address.user?.email || address.userId || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="text-muted">{t('withdrawalAddresses.coin', { defaultValue: 'Coin' })}</td>
-                    <td>
-                      <div className="d-flex align-items-center gap-2">
+                    <td className="text-surface-500 py-2 pr-4">{t('withdrawalAddresses.coin', { defaultValue: 'Coin' })}</td>
+                    <td className="py-2">
+                      <div className="flex items-center gap-2">
                         <CoinImg symbol={address.coin?.symbol} networkSymbol={address.network?.symbol} size={20} />
                         <span>{address.coin?.symbol || '-'} ({address.network?.name || address.network?.symbol || ''})</span>
                       </div>
                     </td>
                   </tr>
                   <tr>
-                    <td className="text-muted">{t('withdrawalAddresses.label', { defaultValue: 'Label' })}</td>
-                    <td>{address.label || '-'}</td>
+                    <td className="text-surface-500 py-2 pr-4">{t('withdrawalAddresses.label', { defaultValue: 'Label' })}</td>
+                    <td className="py-2">{address.label || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="text-muted">{t('withdrawalAddresses.address', { defaultValue: 'Address' })}</td>
-                    <td>
-                      <div className="d-flex align-items-center gap-1">
-                        <span className="font-monospace small text-break">{address.address || '-'}</span>
+                    <td className="text-surface-500 py-2 pr-4">{t('withdrawalAddresses.address', { defaultValue: 'Address' })}</td>
+                    <td className="py-2">
+                      <div className="flex items-center gap-1">
+                        <span className="font-mono text-sm break-all">{address.address || '-'}</span>
                         {address.address && (
-                          <button className="btn btn-sm btn-icon btn-text-secondary flex-shrink-0" onClick={() => handleCopy(address.address)}>
+                          <button className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 shrink-0" onClick={() => handleCopy(address.address)}>
                             <i className="bx bx-copy"></i>
                           </button>
                         )}
@@ -137,31 +136,32 @@ export default function WithdrawalAddressDetailPage() {
                   </tr>
                   {address.memo && (
                     <tr>
-                      <td className="text-muted">{t('withdrawalAddresses.memo', { defaultValue: 'Memo' })}</td>
-                      <td>{address.memo}</td>
+                      <td className="text-surface-500 py-2 pr-4">{t('withdrawalAddresses.memo', { defaultValue: 'Memo' })}</td>
+                      <td className="py-2">{address.memo}</td>
                     </tr>
                   )}
                   <tr>
-                    <td className="text-muted">{t('withdrawalAddresses.created', { defaultValue: 'Created' })}</td>
-                    <td>{fmtDate(address.createdAt)}</td>
+                    <td className="text-surface-500 py-2 pr-4">{t('withdrawalAddresses.created', { defaultValue: 'Created' })}</td>
+                    <td className="py-2">{fmtDate(address.createdAt)}</td>
                   </tr>
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="card mb-3">
-            <div className="card-body">
-              <div className="d-flex gap-2">
+          <div className="card">
+            <div className="p-6">
+              <div className="flex gap-2">
                 {address.status !== 'active' && (
-                  <button className="btn btn-success btn-sm" onClick={() => setActionType('approve')}>
-                    <i className="bx bx-check me-1"></i>{t('common.approve', { defaultValue: 'Approve' })}
+                  <button className="btn btn-primary text-sm" onClick={() => setActionType('approve')}>
+                    <i className="bx bx-check mr-1"></i>{t('common.approve', { defaultValue: 'Approve' })}
                   </button>
                 )}
                 {address.status !== 'suspended' && (
-                  <button className="btn btn-danger btn-sm" onClick={() => setActionType('suspend')}>
-                    <i className="bx bx-block me-1"></i>{t('common.suspend', { defaultValue: 'Suspend' })}
+                  <button className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700" onClick={() => setActionType('suspend')}>
+                    <i className="bx bx-block mr-1"></i>{t('common.suspend', { defaultValue: 'Suspend' })}
                   </button>
                 )}
               </div>
@@ -169,12 +169,12 @@ export default function WithdrawalAddressDetailPage() {
           </div>
         </div>
 
-        <div className="col-lg-4">
+        <div className="lg:col-span-4">
           <div className="card">
-            <div className="card-header">
-              <h6 className="mb-0">{t('withdrawalAddresses.auditLog', { defaultValue: 'Audit Log' })}</h6>
+            <div className="px-6 py-4 border-b border-surface-100">
+              <h6 className="font-semibold text-surface-900 mb-0">{t('withdrawalAddresses.auditLog', { defaultValue: 'Audit Log' })}</h6>
             </div>
-            <div className="card-body">
+            <div className="p-6">
               <AddressAuditLog logs={address.auditLogs || []} t={t} />
             </div>
           </div>
@@ -192,6 +192,6 @@ export default function WithdrawalAddressDetailPage() {
           t={t}
         />
       )}
-    </div>
+    </>
   )
 }

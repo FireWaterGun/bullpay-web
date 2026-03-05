@@ -46,6 +46,7 @@
     "rolesPermissions": "Roles & Permissions",
     "auditLogs": "Audit Logs",
     "webhookLogs": "Webhook Logs",
+    "apiDocs": "API Docs",
     "maintenance": "Maintenance",
     "withdrawalSettings": "Withdrawal Settings",
     "gasSettings": "Gas Settings",

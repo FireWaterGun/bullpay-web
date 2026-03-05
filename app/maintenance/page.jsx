@@ -220,14 +220,12 @@ function CountdownRing({ seconds, total }) {
 }
 
 export default function MaintenancePage() {
-  const { t, i18n } = useTranslation('common')
-  const locale = i18n.language || 'en'
+  const { t } = useTranslation('common')
   const { fmtDateTime } = useDateFormat()
   const { subscribe, unsubscribe, isConnected } = usePusher() || {}
   const channelRef = useRef(null)
   const [info, setInfo] = useState({
     message: null,
-    messageTh: null,
     estimatedEnd: null,
   })
   const [checking, setChecking] = useState(false)
@@ -267,7 +265,6 @@ export default function MaintenancePage() {
         }
         setInfo({
           message: status.message,
-          messageTh: status.messageTh,
           estimatedEnd: status.estimatedEnd,
         })
       })
@@ -290,7 +287,6 @@ export default function MaintenancePage() {
       // Update info from fresh data
       setInfo({
         message: status.message,
-        messageTh: status.messageTh,
         estimatedEnd: status.estimatedEnd,
       })
     } catch {
@@ -328,7 +324,6 @@ export default function MaintenancePage() {
         // Pusher payload matches HTTP /system/status shape
         setInfo({
           message: data.message,
-          messageTh: data.messageTh,
           estimatedEnd: data.estimatedEnd,
         })
       })
@@ -352,7 +347,7 @@ export default function MaintenancePage() {
     return () => clearInterval(timer)
   }, [])
 
-  const displayMessage = locale === 'th' && info.messageTh ? info.messageTh : info.message
+  const displayMessage = info.message
 
   const formattedEstimatedEnd = info.estimatedEnd
     ? fmtDateTime(info.estimatedEnd)
@@ -437,10 +432,9 @@ export default function MaintenancePage() {
             {checking ? (
               <>
                 <span
-                  className="spinner-border spinner-border-sm"
+                  className="spinner w-4 h-4 border-2"
                   role="status"
                   aria-hidden="true"
-                  style={{ width: 16, height: 16 }}
                 />
                 {t('maintenance.checking', { defaultValue: 'Checking...' })}
               </>

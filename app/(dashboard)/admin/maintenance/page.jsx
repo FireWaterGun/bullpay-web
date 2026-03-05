@@ -11,7 +11,6 @@ import ConfirmModal from '@/components/ConfirmModal'
 
 const MAINTENANCE_KEYS = [
   'maintenance.level',
-  'maintenance.message',
   'maintenance.message_en',
   'maintenance.estimated_end',
   'maintenance.allowed_ips',
@@ -37,7 +36,6 @@ export default function AdminMaintenancePage() {
 
   // Form state
   const [level, setLevel] = useState('none')
-  const [message, setMessage] = useState('')
   const [messageEn, setMessageEn] = useState('')
   const [estimatedEnd, setEstimatedEnd] = useState('')
   const [allowedIps, setAllowedIps] = useState('')
@@ -76,14 +74,9 @@ export default function AdminMaintenancePage() {
   function validateForm() {
     const newErrors = {}
 
-    // Message (Thai) required when maintenance is active
-    if (level !== 'none' && !message.trim()) {
-      newErrors.message = t('admin.maintenance.messageRequired', { defaultValue: 'Message (Thai) is required when maintenance is active' })
-    }
-
     // Message (English) required when maintenance is active
     if (level !== 'none' && !messageEn.trim()) {
-      newErrors.messageEn = t('admin.maintenance.messageEnRequired', { defaultValue: 'Message (English) is required when maintenance is active' })
+      newErrors.messageEn = t('admin.maintenance.messageEnRequired', { defaultValue: 'Message is required when maintenance is active' })
     }
 
     // Estimated End: validate date format if provided
@@ -141,7 +134,6 @@ export default function AdminMaintenancePage() {
       }
 
       setLevel(values['maintenance.level'] || 'none')
-      setMessage(values['maintenance.message'] || '')
       setMessageEn(values['maintenance.message_en'] || '')
       setEstimatedEnd(values['maintenance.estimated_end'] || '')
       setAllowedIps(values['maintenance.allowed_ips'] || '[]')
@@ -190,7 +182,6 @@ export default function AdminMaintenancePage() {
     try {
       const updates = [
         { keyName: 'maintenance.level', value: level },
-        { keyName: 'maintenance.message', value: message },
         { keyName: 'maintenance.message_en', value: messageEn },
         { keyName: 'maintenance.estimated_end', value: estimatedEnd },
         { keyName: 'maintenance.allowed_ips', value: allowedIps.trim() || '[]' },
@@ -340,26 +331,10 @@ export default function AdminMaintenancePage() {
               </span>
             </div>
             <div className="card-body">
-              {/* Message TH */}
+              {/* Message */}
               <div className="mb-3">
                 <label className="form-label">
-                  {t('admin.maintenance.messageTh', { defaultValue: 'Message (Thai)' })}
-                  {level !== 'none' && <span className="text-danger"> *</span>}
-                </label>
-                <textarea
-                  className={`form-control${errors.message ? ' is-invalid' : ''}`}
-                  rows={2}
-                  value={message}
-                  onChange={(e) => { setMessage(e.target.value); setErrors(prev => ({ ...prev, message: undefined })) }}
-                  placeholder="ระบบกำลังปรับปรุง กรุณารอสักครู่"
-                />
-                {errors.message && <div className="invalid-feedback d-block">{errors.message}</div>}
-              </div>
-
-              {/* Message EN */}
-              <div className="mb-3">
-                <label className="form-label">
-                  {t('admin.maintenance.messageEn', { defaultValue: 'Message (English)' })}
+                  {t('admin.maintenance.messageEn', { defaultValue: 'Message' })}
                   {level !== 'none' && <span className="text-danger"> *</span>}
                 </label>
                 <textarea
@@ -461,6 +436,7 @@ export default function AdminMaintenancePage() {
               </h6>
             </div>
             <div className="card-body p-0">
+              <div className="table-responsive">
               <table className="table table-sm mb-0">
                 <thead>
                   <tr>
@@ -509,6 +485,7 @@ export default function AdminMaintenancePage() {
                   </tr>
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
 

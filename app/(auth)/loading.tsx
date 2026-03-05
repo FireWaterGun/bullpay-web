@@ -1,9 +1,7 @@
 export default function AuthLoading() {
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="spinner text-primary-600"></div>
     </div>
   )
 }

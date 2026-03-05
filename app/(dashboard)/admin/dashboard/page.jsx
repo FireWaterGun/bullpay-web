@@ -175,7 +175,7 @@ export default function AdminDashboardPage() {
           {t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })}
         </h4>
         <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
-          <span className="badge bg-label-secondary fs-6 fw-normal px-3 py-2">
+          <span className="badge bg-label-secondary fs-6 fw-normal px-3">
             {dateRangeLabel}
           </span>
           {!showCustom ? (

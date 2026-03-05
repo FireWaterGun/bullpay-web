@@ -51,23 +51,23 @@ export default function CoinNetworkSelector({
   return (
     <>
       <div className="card mb-4">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">1</span>
-          <h6 className="mb-0">{t('form.selectCoin')}</h6>
+        <div className="px-6 py-4 border-b flex items-center">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium mr-2">1</span>
+          <h6 className="mb-0 font-semibold">{t('form.selectCoin')}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           {loadingCoins ? (
-            <div className="text-muted">{t('invoices.loading')}</div>
+            <div className="text-surface-500">{t('invoices.loading')}</div>
           ) : (
-            <div className="row g-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {Object.entries(grouped).map(([sym, group]) => {
                 const isActive = selectedCoin === sym
                 const networksCount = group.items.length
                 return (
-                  <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={sym}>
+                  <div key={sym}>
                     <div
                       role="button"
-                      className={`card h-100 border-2 rounded-3 overflow-hidden ${isActive ? 'border-primary bg-label-primary shadow-sm' : 'border-2'}`}
+                      className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ? 'border-primary-600 bg-primary-50 shadow-sm' : 'border-surface-200 hover:border-surface-300'}`}
                       onClick={() => {
                         setSelectedCoin(sym)
                         if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
@@ -75,12 +75,12 @@ export default function CoinNetworkSelector({
                         }
                       }}
                     >
-                      <div className="card-body d-flex align-items-center gap-3">
+                      <div className="p-4 flex items-center gap-3">
                         <CoinImg coin={group.coin} symbol={sym} size={36} showFallback imgClassName="rounded" />
                         <div>
-                          <div className="fw-bold">{sym}</div>
-                          <div className="text-muted small">{group.coin?.name || ''}</div>
-                          <div className="text-muted small">{t('form.networksCount', { count: networksCount })}</div>
+                          <div className="font-bold">{sym}</div>
+                          <div className="text-surface-500 text-sm">{group.coin?.name || ''}</div>
+                          <div className="text-surface-500 text-sm">{t('form.networksCount', { count: networksCount })}</div>
                         </div>
                       </div>
                     </div>
@@ -88,7 +88,7 @@ export default function CoinNetworkSelector({
                 )
               })}
               {coins.length === 0 && (
-                <div className="col-12 text-muted">{t('common.noData') || 'No coins'}</div>
+                <div className="col-span-full text-surface-500">{t('common.noData') || 'No coins'}</div>
               )}
             </div>
           )}
@@ -96,13 +96,13 @@ export default function CoinNetworkSelector({
       </div>
 
       <div className="card mb-4">
-        <div className="card-header d-flex align-items-center">
-          <span className="badge bg-primary rounded-pill me-2">2</span>
-          <h6 className="mb-0">{t('form.selectNetwork')}</h6>
+        <div className="px-6 py-4 border-b flex items-center">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium mr-2">2</span>
+          <h6 className="mb-0 font-semibold">{t('form.selectNetwork')}</h6>
         </div>
-        <div className="card-body">
+        <div className="p-6">
           {selectedCoin ? (
-            <div className="d-flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {networks.map((n) => {
                 const selected = String(coinNetworkId) === String(n.id)
                 const label = getNetworkLabel(n, { symbol: selectedCoin })
@@ -110,7 +110,7 @@ export default function CoinNetworkSelector({
                   <button
                     type="button"
                     key={n.id}
-                    className={`btn d-inline-flex align-items-center gap-2 ${selected ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-surface-700 border-surface-300 hover:border-primary-400'}`}
                     onClick={() => setCoinNetworkId(String(n.id))}
                   >
                     <NetworkIcon networkSymbol={n.network?.symbol || ''} size={18} />
@@ -119,11 +119,11 @@ export default function CoinNetworkSelector({
                 )
               })}
               {networks.length === 0 && (
-                <div className="text-muted small">{t('common.noData')}</div>
+                <div className="text-surface-500 text-sm">{t('common.noData')}</div>
               )}
             </div>
           ) : (
-            <div className="text-muted">{t('form.selectCoin')}</div>
+            <div className="text-surface-500">{t('form.selectCoin')}</div>
           )}
         </div>
       </div>

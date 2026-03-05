@@ -11,9 +11,6 @@ import TransactionByCoinTable from '@/components/dashboard/TransactionByCoinTabl
 import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 
-const summaryValueStyle = { fontSize: '1.75rem' }
-const changeTextStyle = { fontSize: '0.8rem' }
-
 const formatCurrencyPlain = formatUsd
 
 function getDateRange(preset) {
@@ -47,34 +44,34 @@ function getDateRange(preset) {
   return { from, to }
 }
 
+const kpiColors = {
+  primary:   { bg: 'bg-primary-50',  icon: 'text-primary-600' },
+  danger:    { bg: 'bg-danger-50',   icon: 'text-danger-600' },
+  warning:   { bg: 'bg-warning-50',  icon: 'text-warning-600' },
+  info:      { bg: 'bg-info-50',     icon: 'text-info-600' },
+}
+
 function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
   const numChange = typeof change === 'number' ? change : parseFloat(change)
   const isPositive = numChange >= 0
-  const changeColor = isPositive ? 'text-success' : 'text-danger'
-  const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'
+  const c = kpiColors[color] || kpiColors.primary
 
   return (
-    <div className="col-6 col-xl-3">
-      <div className="card h-100">
-        <div className="card-body">
-          <div className="d-flex align-items-start justify-content-between">
-            <div className="content-left">
-              <span className="text-muted form-label">{title}</span>
-              <h3 className={`mb-0${valueColor ? ` text-${valueColor}` : ''}`} style={summaryValueStyle}>{value}</h3>
-              {change !== undefined && change !== null && !isNaN(numChange) && (
-                <small className={changeColor} style={changeTextStyle}>
-                  <i className={`bx ${changeIcon}`}></i>
-                  {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
-                </small>
-              )}
-            </div>
-            <div className="avatar">
-              <span className={`avatar-initial rounded bg-label-${color}`}>
-                <i className={`bx ${icon} bx-sm`}></i>
-              </span>
-            </div>
-          </div>
+    <div className="bg-white rounded-xl shadow-sm border border-surface-100 p-5">
+      <div className="flex items-start justify-between">
+        <div className="min-w-0">
+          <p className="text-sm text-surface-500 mb-1">{title}</p>
+          <p className={`text-2xl font-bold mb-0 ${valueColor ? `text-${valueColor}-600` : 'text-surface-900'}`}>{value}</p>
+          {change !== undefined && change !== null && !isNaN(numChange) && (
+            <span className={`text-xs ${isPositive ? 'text-success-600' : 'text-danger-600'}`}>
+              <i className={`bx ${isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'}`}></i>
+              {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
+            </span>
+          )}
         </div>
+        <span className={`flex items-center justify-center w-10 h-10 rounded-lg ${c.bg} shrink-0`}>
+          <i className={`bx ${icon} text-xl ${c.icon}`}></i>
+        </span>
       </div>
     </div>
   )
@@ -103,7 +100,6 @@ export default function TransactionsPage() {
   const [byCoinData, setByCoinData] = useState([])
   const [loadingByCoin, setLoadingByCoin] = useState(false)
   const [error, setError] = useState('')
-
 
   const dateRange = useMemo(() => {
     if (showCustom && customFrom && customTo) {
@@ -134,7 +130,6 @@ export default function TransactionsPage() {
       getUserTransactionByCoin(token, dateRange.from, dateRange.to),
     ])
 
-    // Summary
     if (summaryResult.status === 'fulfilled') {
       setSummary(summaryResult.value)
     } else {
@@ -143,7 +138,6 @@ export default function TransactionsPage() {
     }
     setLoadingSummary(false)
 
-    // Daily
     if (dailyResult.status === 'fulfilled') {
       const res = dailyResult.value
       const items = res?.items || res || []
@@ -159,7 +153,6 @@ export default function TransactionsPage() {
     }
     setLoadingDaily(false)
 
-    // By coin
     if (byCoinResult.status === 'fulfilled') {
       const res = byCoinResult.value
       setByCoinData(res?.items || res || [])
@@ -173,32 +166,29 @@ export default function TransactionsPage() {
     loadData()
   }, [token, dateRange])
 
-
   const current = summary?.current || {}
-  const previous = summary?.previous || {}
   const changes = summary?.changes || {}
-  const counts = current?.counts || {}
 
   return (
-    <div className="container-xxl flex-grow-1 container-p-y">
+    <>
       {/* Header */}
-      <div className="d-flex flex-wrap align-items-center mb-4 gap-3">
-        <h4 className="mb-0">
-          <i className="bx bx-bar-chart-alt-2 text-primary me-2"></i>
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <h4 className="text-xl font-semibold text-surface-900 flex items-center gap-2">
+          <i className="bx bx-bar-chart-alt-2 text-primary-600"></i>
           {t('nav.dashboard', { defaultValue: 'Dashboard' })}
         </h4>
         <RefreshButton onClick={loadData} loading={loadingSummary || loadingDaily || loadingByCoin} />
-        <div className="d-flex gap-2 flex-wrap align-items-center ms-auto">
-          <span className="badge bg-label-secondary fs-6 fw-normal px-3 py-2">
+
+        <div className="flex gap-2 flex-wrap items-center ml-auto">
+          <span className="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-surface-100 text-surface-600 rounded-lg">
             {dateRangeLabel}
           </span>
           {!showCustom ? (
             <>
               <select
-                className="form-select"
+                className="px-3 py-1.5 text-sm border border-surface-200 rounded-lg bg-white text-surface-700 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none"
                 value={datePreset}
                 onChange={(e) => setDatePreset(e.target.value)}
-                style={{ width: 'auto' }}
               >
                 <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
                 <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
@@ -208,10 +198,10 @@ export default function TransactionsPage() {
                 <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
               </select>
               <button
-                className="btn btn-outline-secondary"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-surface-200 rounded-lg text-surface-600 hover:bg-surface-50 transition-colors cursor-pointer"
                 onClick={() => setShowCustom(true)}
               >
-                <i className="bx bx-calendar me-1"></i>
+                <i className="bx bx-calendar"></i>
                 {t('filter.custom', { defaultValue: 'Custom' })}
               </button>
             </>
@@ -226,7 +216,7 @@ export default function TransactionsPage() {
                 maxDate={customTo ? customTo : undefined}
                 minDate={customTo ? (() => { const d = new Date(customTo + 'T00:00:00'); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
               />
-              <span className="align-self-center">&ndash;</span>
+              <span className="self-center text-surface-400">&ndash;</span>
               <LocaleDatePicker
                 value={customTo}
                 onChange={setCustomTo}
@@ -237,14 +227,10 @@ export default function TransactionsPage() {
                 maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <button
-                className="btn btn-outline-secondary"
-                onClick={() => {
-                  setShowCustom(false)
-                  setCustomFrom('')
-                  setCustomTo('')
-                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-surface-200 rounded-lg text-surface-600 hover:bg-surface-50 transition-colors cursor-pointer"
+                onClick={() => { setShowCustom(false); setCustomFrom(''); setCustomTo('') }}
               >
-                <i className="bx bx-reset me-1"></i>
+                <i className="bx bx-reset"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </button>
             </>
@@ -253,18 +239,16 @@ export default function TransactionsPage() {
       </div>
 
       {error && (
-        <div className="alert alert-danger mb-4">{error}</div>
+        <div className="bg-danger-50 border border-danger-200 text-danger-700 rounded-lg p-3 text-sm mb-5">{error}</div>
       )}
 
-      {/* Section 1: KPI Summary Cards */}
+      {/* KPI Summary Cards */}
       {loadingSummary ? (
-        <div className="d-flex justify-content-center py-5 mb-4">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
+        <div className="flex justify-center py-12 mb-5">
+          <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
         </div>
       ) : (
-        <div className="row g-4 mb-4">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
           <SummaryCard
             title={t('userDashboard.deposits', { defaultValue: 'Deposits' })}
             value={formatCurrencyPlain(current.totalDepositUsd)}
@@ -301,37 +285,27 @@ export default function TransactionsPage() {
         </div>
       )}
 
-      {/* Section 2: Daily Trend Chart */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-header">
-              <h5 className="card-title mb-0">
-                <i className="bx bx-bar-chart-alt-2 text-primary me-2"></i>
-                {t('userDashboard.dailyTrend', { defaultValue: 'Daily Trend Chart' })}
-              </h5>
+      {/* Daily Trend Chart */}
+      <div className="bg-white rounded-xl shadow-sm border border-surface-100 mb-5">
+        <div className="px-5 py-4 border-b border-surface-100">
+          <h5 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
+            <i className="bx bx-bar-chart-alt-2 text-primary-600"></i>
+            {t('userDashboard.dailyTrend', { defaultValue: 'Daily Trend Chart' })}
+          </h5>
+        </div>
+        <div className="p-5">
+          {loadingDaily ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
             </div>
-            <div className="card-body">
-              {loadingDaily ? (
-                <div className="d-flex justify-content-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : (
-                <DailyTrendChart data={dailyData} meta={dailyMeta} height={300} locale={locale} t={t} />
-              )}
-            </div>
-          </div>
+          ) : (
+            <DailyTrendChart data={dailyData} meta={dailyMeta} height={300} locale={locale} t={t} />
+          )}
         </div>
       </div>
 
-      {/* Section 3: Transaction by Coin */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <TransactionByCoinTable byCoinData={byCoinData} loading={loadingByCoin} t={t} />
-        </div>
-      </div>
-    </div>
+      {/* Transaction by Coin */}
+      <TransactionByCoinTable byCoinData={byCoinData} loading={loadingByCoin} t={t} />
+    </>
   )
 }

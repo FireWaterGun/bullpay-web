@@ -40,7 +40,6 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
-  const theme = 'light'
 
   const { register, handleSubmit, formState: { errors, isValid }, setError: setFormError } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -48,14 +47,15 @@ export default function RegisterPage() {
     defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' }
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: FormValues) => {
     setError('')
     setLoading(true)
     try {
       await registerApi({ ...values, cfToken })
-      // Store email in sessionStorage for the complete page
       try { sessionStorage.setItem('register_email', values.email) } catch {}
       router.replace('/register-complete')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {}
       if (details?.password?.[0]) setFormError('password', { message: details.password[0] })
@@ -75,62 +75,109 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="card px-sm-6 px-0">
-      <div className="card-body">
-        <div className="app-brand justify-content-center mb-4">
-          <Link href="/" className="app-brand-link gap-2 d-flex align-items-center">
-            <div className="brand-icon">
-              <i className="bx bxs-wallet-alt text-primary" style={{ fontSize: '40px' }}></i>
-            </div>
-            <span className="fw-bold" style={{ fontSize: '24px' }}>
-              <span className="text-dark">BULL</span>
-              <span className="text-primary">PAY</span>
+    <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+      <div className="p-8 sm:p-10">
+        {/* Brand */}
+        <div className="flex justify-center mb-6">
+          <Link href="/" className="flex items-center gap-2 no-underline">
+            <i className="bx bxs-wallet-alt text-2xl text-primary-600"></i>
+            <span className="font-bold text-2xl tracking-tight">
+              <span className="text-surface-900">BULL</span>
+              <span className="text-primary-600">PAY</span>
             </span>
           </Link>
         </div>
-        <h4 className="mb-1">Adventure starts here 🚀</h4>
-        <p className="mb-6">Make your app management easy and fun!</p>
-        {error && <div className="alert alert-danger" role="alert">{error}</div>}
-        <form id="formAuthentication" className="mb-6" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="mb-6 form-control-validation">
+
+        <h4 className="text-xl font-semibold mb-1">Create your account</h4>
+        <p className="text-sm text-surface-500 mb-6">Start accepting crypto payments in minutes</p>
+
+        {error && <div className="alert alert-danger mb-4">{error}</div>}
+
+        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+          {/* Full name */}
+          <div>
             <label htmlFor="fullName" className="form-label">Full name</label>
-            <input type="text" className={`form-control ${errors.fullName ? 'is-invalid' : ''}`} id="fullName" placeholder="John Doe" maxLength={50} {...register('fullName')} />
-            {errors.fullName && <div className="invalid-feedback d-block">{errors.fullName.message}</div>}
-          </div>
-          <div className="mb-6 form-control-validation">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input type="email" className={`form-control ${errors.email ? 'is-invalid' : ''}`} id="email" placeholder="Enter your email" maxLength={50} {...register('email')} />
-            {errors.email && <div className="invalid-feedback d-block">{errors.email.message}</div>}
-          </div>
-          <div className="mb-6 form-password-toggle form-control-validation">
-            <label className="form-label" htmlFor="password">Password</label>
-            <div className="input-group input-group-merge">
-              <input type={showPassword ? 'text' : 'password'} id="password" className={`form-control ${errors.password ? 'is-invalid' : ''}`} placeholder="••••••••••••" aria-describedby="password" maxLength={50} {...register('password')} />
-              <button type="button" className="input-group-text bg-transparent" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>
-                <i className={`icon-base bx ${showPassword ? 'bx-show' : 'bx-hide'}`}></i>
-              </button>
-            </div>
-            {errors.password && <div className="invalid-feedback d-block">{errors.password.message}</div>}
-          </div>
-          <div className="mb-6 form-password-toggle form-control-validation">
-            <label className="form-label" htmlFor="confirmPassword">Confirm Password</label>
-            <div className="input-group input-group-merge">
-              <input type={showConfirmPassword ? 'text' : 'password'} id="confirmPassword" className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`} placeholder="••••••••••••" aria-describedby="confirmPassword" maxLength={50} {...register('confirmPassword')} />
-              <button type="button" className="input-group-text bg-transparent" onClick={() => setShowConfirmPassword((v) => !v)} aria-label={showConfirmPassword ? 'Hide password' : 'Show password'} aria-pressed={showConfirmPassword}>
-                <i className={`icon-base bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
-              </button>
-            </div>
-            {errors.confirmPassword && <div className="invalid-feedback d-block">{errors.confirmPassword.message}</div>}
+            <input
+              type="text"
+              className={`form-input ${errors.fullName ? '!border-danger-500' : ''}`}
+              id="fullName"
+              placeholder="John Doe"
+              maxLength={50}
+              {...register('fullName')}
+            />
+            {errors.fullName && <p className="mt-1 text-sm text-danger-500">{errors.fullName.message}</p>}
           </div>
 
-          {/* Cloudflare Turnstile */}
-          <div className="my-6">
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="form-label">Email</label>
+            <input
+              type="email"
+              className={`form-input ${errors.email ? '!border-danger-500' : ''}`}
+              id="email"
+              placeholder="Enter your email"
+              maxLength={50}
+              {...register('email')}
+            />
+            {errors.email && <p className="mt-1 text-sm text-danger-500">{errors.email.message}</p>}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className="form-label">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                className={`form-input pr-10 ${errors.password ? '!border-danger-500' : ''}`}
+                placeholder="••••••••••••"
+                maxLength={50}
+                {...register('password')}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-surface-400 hover:text-surface-600 transition-colors cursor-pointer"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
+              </button>
+            </div>
+            {errors.password && <p className="mt-1 text-sm text-danger-500">{errors.password.message}</p>}
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                className={`form-input pr-10 ${errors.confirmPassword ? '!border-danger-500' : ''}`}
+                placeholder="••••••••••••"
+                maxLength={50}
+                {...register('confirmPassword')}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-surface-400 hover:text-surface-600 transition-colors cursor-pointer"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
+              </button>
+            </div>
+            {errors.confirmPassword && <p className="mt-1 text-sm text-danger-500">{errors.confirmPassword.message}</p>}
+          </div>
+
+          {/* Captcha */}
+          <div>
             {siteKey && (
-              <div className="captcha-box p-0">
+              <div className="rounded-[10px] overflow-hidden">
                 <Turnstile
                   key={captchaRenderKey}
                   sitekey={siteKey}
-                  theme={theme}
+                  theme="light"
                   appearance="always"
                   size="flexible"
                   onVerify={(token) => setCfToken(token)}
@@ -141,9 +188,20 @@ export default function RegisterPage() {
             )}
           </div>
 
-          <button className="btn btn-primary d-grid w-100" type="submit" disabled={loading || !cfToken || !isValid}>{loading ? 'Submitting...' : 'Sign up'}</button>
+          {/* Submit */}
+          <button
+            className="btn btn-primary w-full"
+            type="submit"
+            disabled={loading || !cfToken || !isValid}
+          >
+            {loading ? 'Submitting...' : 'Sign up'}
+          </button>
         </form>
-        <p className="text-center"><span>Already have an account? </span><Link href="/login"><span>Sign in instead</span></Link></p>
+
+        <p className="text-center mt-6 text-sm text-surface-500">
+          Already have an account?{' '}
+          <Link href="/login" className="font-medium">Sign in instead</Link>
+        </p>
       </div>
     </div>
   )

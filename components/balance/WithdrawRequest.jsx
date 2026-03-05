@@ -67,21 +67,7 @@ export default function WithdrawRequest() {
     return () => { mounted = false }
   }, [token, coinNetworkId])
 
-  useEffect(() => {
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltips = Array.from(tooltipTriggerList).map(tooltipTriggerEl => {
-      if (window.bootstrap && window.bootstrap.Tooltip) {
-        return new window.bootstrap.Tooltip(tooltipTriggerEl, {
-          delay: { show: 100, hide: 0 }
-        })
-      }
-      return null
-    }).filter(Boolean)
-
-    return () => {
-      tooltips.forEach(tooltip => tooltip.dispose())
-    }
-  }, [feeEstimate])
+  // Tooltips now use native title attribute (no Bootstrap JS dependency)
 
   const coin = balance?.coin
   const network = balance?.network
@@ -216,45 +202,44 @@ export default function WithdrawRequest() {
   }
 
   return (
-    <div className="content-wrapper">
-      <div className="container-xxl flex-grow-1 container-p-y">
+    <>
         {loading ? (
-          <div className="card"><div className="card-body"><div className="placeholder-glow"><span className="placeholder col-4"></span><span className="placeholder col-8"></span></div></div></div>
+          <div className="card"><div className="p-6"><div className="animate-pulse space-y-3"><div className="h-4 bg-surface-200 rounded w-1/3"></div><div className="h-4 bg-surface-200 rounded w-2/3"></div></div></div></div>
         ) : error ? (
-          <div className="alert alert-danger" role="alert">{error}</div>
+          <div className="rounded-lg bg-red-50 text-red-700 p-4" role="alert">{error}</div>
         ) : !balance ? (
-          <div className="alert alert-warning" role="alert">{t('common.noData') || 'Not found'}</div>
+          <div className="rounded-lg bg-amber-50 text-amber-700 p-4" role="alert">{t('common.noData') || 'Not found'}</div>
         ) : !is2FALoading && !is2FAEnabled ? (
           <div className="card mx-auto" style={{ maxWidth: 520 }}>
-            <div className="card-body text-center py-5">
+            <div className="p-6 text-center py-10">
               <div className="mb-4">
-                <div className="rounded-circle d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10" style={{ width: 80, height: 80 }}>
-                  <i className="bx bx-shield-x text-warning" style={{ fontSize: '2.5rem' }}></i>
+                <div className="rounded-full inline-flex items-center justify-center bg-amber-100" style={{ width: 80, height: 80 }}>
+                  <i className="bx bx-shield-x text-amber-500" style={{ fontSize: '2.5rem' }}></i>
                 </div>
               </div>
-              <h5 className="mb-2">{t('balance.require2FATitle', { defaultValue: 'Two-Factor Authentication Required' })}</h5>
-              <p className="text-muted mb-4">
+              <h5 className="mb-2 font-semibold text-lg">{t('balance.require2FATitle', { defaultValue: 'Two-Factor Authentication Required' })}</h5>
+              <p className="text-surface-500 mb-4">
                 {t('balance.require2FADesc', { defaultValue: 'For your security, please enable Two-Factor Authentication (2FA) before making withdrawals.' })}
               </p>
               <Link
                 href="/settings"
                 className="btn btn-primary"
               >
-                <i className="bx bx-lock me-2"></i>
+                <i className="bx bx-lock mr-2"></i>
                 {t('balance.setup2FA', { defaultValue: 'Setup 2FA' })}
               </Link>
             </div>
           </div>
         ) : (
           <div className="card mx-auto" style={{ maxWidth: 520 }}>
-            <div className="card-header">
-              <h5 className="mb-0">{t('balance.requestWithdraw', { defaultValue: 'Request withdraw' })}</h5>
+            <div className="px-6 py-4 border-b border-surface-200">
+              <h5 className="mb-0 font-semibold">{t('balance.requestWithdraw', { defaultValue: 'Request withdraw' })}</h5>
             </div>
-            <div className="card-body">
+            <div className="p-6">
               {wallets.length === 0 || matchingWallets.length === 0 ? (
                 <div className="text-center py-3">
-                  <h6 className="mb-2">{t('wallet.requiredWithdrawTitle', { defaultValue: 'Withdrawal address required' })}</h6>
-                  <p className="text-muted mb-3">{t('wallet.requiredWithdrawDesc', { defaultValue: 'To withdraw, please add a withdrawal wallet address first.' })}</p>
+                  <h6 className="mb-2 font-semibold">{t('wallet.requiredWithdrawTitle', { defaultValue: 'Withdrawal address required' })}</h6>
+                  <p className="text-surface-500 mb-3">{t('wallet.requiredWithdrawDesc', { defaultValue: 'To withdraw, please add a withdrawal wallet address first.' })}</p>
                   <Link
                     href="/wallet/new-address"
                     className="btn btn-primary"
@@ -265,35 +250,35 @@ export default function WithdrawRequest() {
               ) : (
                 <>
                   <div className="mb-3">
-                    <div className="text-muted small mb-1">{t('balance.from', { defaultValue: 'From' })}</div>
-                    <div className="d-flex align-items-center justify-content-between border rounded-3 p-3">
-                      <div className="d-flex align-items-center">
+                    <div className="text-surface-500 text-sm mb-1">{t('balance.from', { defaultValue: 'From' })}</div>
+                    <div className="flex items-center justify-between border rounded-lg p-3">
+                      <div className="flex items-center">
                         <CoinImg coin={coin} symbol={sym} networkSymbol={networkSym} size={40} imgClassName="rounded" />
-                        <div className="ms-3">
-                          <div className="fw-semibold">{sym}</div>
-                          <div className="text-muted small">{networkLabel}</div>
+                        <div className="ml-3">
+                          <div className="font-semibold">{sym}</div>
+                          <div className="text-surface-500 text-sm">{networkLabel}</div>
                         </div>
                       </div>
                       {networkLabel && (
-                        <span className="badge bg-danger-subtle text-danger">{t('wallet.colNetwork', { defaultValue: 'Network' })}</span>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">{t('wallet.colNetwork', { defaultValue: 'Network' })}</span>
                       )}
                     </div>
                   </div>
 
                   <div className="mb-3">
                     <label className="form-label">{t('balance.payoutAddress', { defaultValue: 'Payout address' })}</label>
-                    <input className="form-control" value={effectiveAddress} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
+                    <input className="form-input" value={effectiveAddress} disabled readOnly placeholder={t('wallet.addressPlaceholder', { defaultValue: 'Wallet address' })} />
                   </div>
 
                   <div className="mb-3">
                     <label className="form-label">{t('balance.amount', { defaultValue: 'Amount' })}</label>
-                    <div className="position-relative">
+                    <div className="relative">
                       <input
                         type="number"
                         min="0"
                         max={available}
                         step={1 / Math.pow(10, Math.min(decimals, 8))}
-                        className="form-control form-control-lg"
+                        className="form-input text-lg"
                         value={effectiveAmount}
                         onChange={(e) => {
                           const value = e.target.value
@@ -310,19 +295,18 @@ export default function WithdrawRequest() {
                       />
                       <button
                         type="button"
-                        className="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y me-2 text-primary text-decoration-none"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 text-primary-600 hover:text-primary-700 text-sm font-medium"
                         onClick={() => setAmount(String(available))}
-                        style={{ fontSize: '0.875rem' }}
                       >
                         {t('balance.max', { defaultValue: 'Max' })}
                       </button>
                     </div>
-                    <div className="text-muted small mt-2">
+                    <div className="text-surface-500 text-sm mt-2">
                       {t('balance.balance', { defaultValue: 'Balance' })}: {formatCoinAmount(available)} {sym}
                     </div>
                     {amountError && (
-                      <div className="text-danger small mt-1">
-                        <i className="bx bx-error-circle me-1"></i>
+                      <div className="text-red-500 text-sm mt-1">
+                        <i className="bx bx-error-circle mr-1"></i>
                         {amountError}
                       </div>
                     )}
@@ -332,16 +316,16 @@ export default function WithdrawRequest() {
 
                   {estimatingFee && !feeEstimate && (
                     <div className="mb-3 text-center">
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      <span className="small text-muted">{t('balance.calculatingFee', { defaultValue: 'Calculating fee...' })}</span>
+                      <span className="spinner w-4 h-4 border-2 mr-2 inline-block align-middle" role="status" aria-hidden="true"></span>
+                      <span className="text-sm text-surface-500">{t('balance.calculatingFee', { defaultValue: 'Calculating fee...' })}</span>
                     </div>
                   )}
 
                   {feeError && !estimatingFee && (
                     <div className="mb-3">
-                      <div className="alert alert-danger py-2 px-3 mb-0" role="alert">
-                        <i className="bx bx-error-circle me-1"></i>
-                        <span className="small">{feeError}</span>
+                      <div className="rounded-lg bg-red-50 text-red-700 py-2 px-3" role="alert">
+                        <i className="bx bx-error-circle mr-1"></i>
+                        <span className="text-sm">{feeError}</span>
                       </div>
                     </div>
                   )}
@@ -349,16 +333,15 @@ export default function WithdrawRequest() {
               )}
             </div>
             {wallets.length > 0 && matchingWallets.length > 0 && !successOpen && (
-              <div className="card-footer">
-                <button className="btn btn-primary w-100" onClick={onConfirm} disabled={!canSubmit || submitting}>
-                  {submitting ? (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>) : null}
+              <div className="px-6 py-4 border-t border-surface-200">
+                <button className="btn btn-primary w-full" onClick={onConfirm} disabled={!canSubmit || submitting}>
+                  {submitting ? (<span className="spinner w-4 h-4 border-2 mr-2 inline-block align-middle" role="status" aria-hidden="true"></span>) : null}
                   {t('actions.confirm', { defaultValue: 'Confirm' })}
                 </button>
               </div>
             )}
           </div>
         )}
-      </div>
       <SuccessModalWrapper open={successOpen} onClose={closeSuccess} receiveAmount={feeEstimate?.display?.netAmount || effectiveAmount} sym={sym} address={effectiveAddress} networkName={networkLabel} t={t} />
       <ErrorModalWrapper open={errorOpen} onClose={closeError} message={errorMessage} t={t} />
 
@@ -370,6 +353,6 @@ export default function WithdrawRequest() {
         description={t('balance.confirm2FADescription', { defaultValue: 'Enter your 2FA code to confirm this withdrawal' })}
         skipVerify={true}
       />
-    </div>
+    </>
   )
 }

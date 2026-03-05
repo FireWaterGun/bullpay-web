@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Public_Sans } from 'next/font/google'
 import Script from 'next/script'
 import { AppProviders } from './providers'
+import './globals.css'
 
 const publicSans = Public_Sans({
   subsets: ['latin'],
@@ -48,7 +49,6 @@ export default function RootLayout({
       <head>
         {/* Core CSS */}
         <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
-        <link rel="stylesheet" href="/assets/vendor/css/core.css" />
         <link rel="stylesheet" href="/assets/css/demo.css" />
         <link rel="stylesheet" href="/assets/css/custom-overrides.css" />
 
