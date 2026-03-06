@@ -15,7 +15,6 @@ export default function Table({ responsive = true, className = '', children, ...
     '[&>:not(caption)>*>*]:px-5 [&>:not(caption)>*>*]:py-[0.782rem]',
     '[&>:not(caption)>*>*]:text-surface-700',
     '[&>:not(caption)>*>*]:border-b [&>:not(caption)>*>*]:border-surface-200/40',
-    '[&_tbody_tr:last-child>*]:border-b-0',
     // hover
     '[&_tbody_tr:hover>*]:bg-[rgba(34,48,62,0.04)]',
     // dark
