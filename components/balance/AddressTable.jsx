@@ -5,7 +5,7 @@ import CoinImg from '@/components/CoinImg';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { addressStatusBadgeClass } from './withdrawalHelpers';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card, Pagination, Table } from '@/components/ui'
+import { Badge, Card, Pagination, Table } from '@/components/ui'
 import ActionMenu from '@/components/ui/ActionMenu'
 
 function statusLabel(s) {
@@ -89,14 +89,13 @@ export default function AddressTable({
                             {addr.address || 'N/A'}
                           </span>
                           {addr.address &&
-                        <Button
-
+                        <button
+                          type="button"
                           onClick={(e) => {e.stopPropagation();onCopy(addr.address);}}
-                          title="Copy address" size="sm" className="p-0 border-0 text-surface-500 shrink-0">
-
-                          
+                          title="Copy address"
+                          className="inline-flex items-center justify-center w-6 h-6 rounded text-surface-500 hover:text-primary transition-colors shrink-0">
                               <i className="bx bx-copy text-[0.85rem]"></i>
-                            </Button>
+                            </button>
                         }
                         </div>
                       </td>
@@ -156,15 +155,9 @@ export default function AddressTable({
         {pagination && pagination.total > 0 &&
         <div className="px-5 py-1.5">
           <Pagination
-            currentPage={currentPage}
-            totalPages={pagination.totalPages}
-            total={pagination.total}
-            limit={pagination.limit}
-            hasPrev={pagination.hasPrev}
-            hasNext={pagination.hasNext}
+            pagination={pagination}
             loading={loading}
             onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }}
-            t={t}
           />
         </div>
         }
