@@ -108,8 +108,8 @@ export default function CoinList() {
           </div>
           
           {/* Filters */}
-          <div className="grid grid-cols-12 gap-x-6 gap-3 items-end">
-            <div className="md:col-span-3 sm:col-span-6">
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="w-full sm:w-auto sm:min-w-[280px] sm:flex-1 sm:max-w-sm">
               <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
               <Input
                 type="text"
@@ -120,7 +120,7 @@ export default function CoinList() {
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()} />
               
             </div>
-            <div className="col-auto flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <Button onClick={handleApplyFilter} disabled={loading}>
                 <i className="bx bx-filter-alt mr-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
