@@ -18,10 +18,10 @@ export default function UserLedgerRow({ entry, t }) {
         <span className="font-semibold text-primary">{entry.id}</span>
       </td>
       <td>
-        <Badge className="bg-primary-50 text-primary-600">#{entry.userId}</Badge>
+        <Badge color="primary" label>#{entry.userId}</Badge>
       </td>
       <td>
-        <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600 dark:bg-dark-elevated' : isCredit ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+        <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
           <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
           {isCredit ? 'Credit' : 'Debit'}
         </Badge>

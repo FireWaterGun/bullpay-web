@@ -10,16 +10,6 @@ const CHANNEL = 'system-maintenance'
 const EVENT = 'maintenance-status-changed'
 const FALLBACK_POLL_MS = 120_000 // 2 min fallback if Pusher is down
 
-// rendering-hoist-jsx: Static keyframe definition hoisted outside component
-const PULSE_KEYFRAMES = (
-  <style>{`
-    @keyframes maintenance-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.35; }
-    }
-  `}</style>
-)
-
 /**
  * Global system status indicator for Admin navbar.
  *
@@ -96,13 +86,13 @@ export default function MaintenanceBanner() {
   const config = isMaintenance
     ? {
         cls: status.level === 'full'
-          ? 'bg-red-500/12 text-red-500'
-          : 'bg-amber-500/12 text-amber-500',
+          ? 'bg-danger-500/12 text-danger-500'
+          : 'bg-warning-500/12 text-warning-500',
         label: `${t('maintenance.title', { defaultValue: 'Maintenance' })} (${levelLabel})`,
         pulse: true,
       }
     : {
-        cls: 'bg-green-500/12 text-green-500',
+        cls: 'bg-success-500/12 text-success-500',
         label: t('maintenance.systemUp', { defaultValue: 'System Normal' }),
         pulse: false,
       }
@@ -110,20 +100,12 @@ export default function MaintenanceBanner() {
   return (
     <Link
       href="/admin/maintenance"
-      className={`flex items-center gap-2 no-underline mr-auto text-sm whitespace-nowrap py-[0.3rem] px-[0.75rem] rounded-md transition-colors ${config.cls}`}
+      className={`flex items-center gap-2 no-underline mr-auto text-sm whitespace-nowrap py-[0.3rem] px-3 rounded-md transition-colors ${config.cls}`}
     >
       <span
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: '50%',
-          backgroundColor: 'currentColor',
-          flexShrink: 0,
-          ...(config.pulse ? { animation: 'maintenance-pulse 2s ease-in-out infinite' } : {}),
-        }}
+        className={`w-2 h-2 rounded-full bg-current shrink-0 ${config.pulse ? 'animate-pulse' : ''}`}
       />
       <span className="font-semibold">{config.label}</span>
-      {config.pulse && PULSE_KEYFRAMES}
     </Link>
   )
 }

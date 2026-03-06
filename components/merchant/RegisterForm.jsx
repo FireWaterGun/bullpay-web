@@ -59,7 +59,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
   { value: '24/7', label: t('merchant.statUptime', { defaultValue: 'Availability' }) }];
 
 
-  const featureColors = { primary: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400', success: 'bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400', info: 'bg-cyan-50 dark:bg-cyan-950/30 text-cyan-700 dark:text-cyan-400', warning: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400' };
+  const featureColors = { primary: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400', success: 'bg-success-50 dark:bg-success-950/30 text-success-700 dark:text-success-400', info: 'bg-info-50 dark:bg-info-950/30 text-info-700 dark:text-info-400', warning: 'bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-400' };
 
   /* ── Step 1: Welcome / Landing ────────────────────────────── */
   if (step === 1) {
@@ -73,14 +73,14 @@ export default function RegisterForm({ onRegistered, token, t }) {
           <div className="p-6 text-center py-10 px-4">
             {/* Icon */}
             <div
-              className="mx-auto mb-4 inline-flex items-center justify-center rounded-full w-[88px] h-[88px]"
+              className="mx-auto mb-4 inline-flex items-center justify-center rounded-full w-20 h-20"
               style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.16) 0%, rgba(99,102,241,0.04) 100%)' }}>
               
-              <i className="bx bx-store text-primary-600 text-[2.75rem]"></i>
+              <i className="bx bx-store text-primary-600 dark:text-primary-400 text-[2.75rem]"></i>
             </div>
 
-            <h2 className="mb-2 font-bold text-2xl">{t('merchant.registerTitle', { defaultValue: 'Become a Merchant' })}</h2>
-            <p className="text-surface-500 mb-4 mx-auto max-w-[480px]">
+            <h2 className="mb-2 font-bold text-2xl text-surface-900">{t('merchant.registerTitle', { defaultValue: 'Become a Merchant' })}</h2>
+            <p className="text-surface-500 dark:text-surface-400 mb-4 mx-auto max-w-xl">
               {t('merchant.registerDesc', { defaultValue: 'Register your business to accept crypto payments via BullPay API. Start accepting payments in minutes.' })}
             </p>
 
@@ -96,8 +96,8 @@ export default function RegisterForm({ onRegistered, token, t }) {
           {stats.map((s, i) =>
           <Card key={i} className="h-full">
               <div className="p-4 text-center py-3">
-                <h4 className="mb-1 text-primary-600 font-bold">{s.value}</h4>
-                <small className="text-surface-500">{s.label}</small>
+                <h4 className="mb-1 text-primary-600 dark:text-primary-400 font-bold">{s.value}</h4>
+                <small className="text-surface-500 dark:text-surface-400">{s.label}</small>
               </div>
             </Card>
           )}
@@ -116,7 +116,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                 </span>
                 <div>
                   <div className="font-semibold mb-1 text-surface-900">{f.title}</div>
-                  <small className="text-surface-500">{f.desc}</small>
+                  <small className="text-surface-500 dark:text-surface-400">{f.desc}</small>
                 </div>
               </div>
             </Card>
@@ -125,7 +125,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
 
         {/* Footer note */}
         <div className="text-center mt-4">
-          <small className="text-surface-500">
+          <small className="text-surface-500 dark:text-surface-400">
             <i className="bx bx-info-circle mr-1"></i>
             {t('merchant.freeToStart', { defaultValue: 'Free to register. You only pay per transaction.' })}
           </small>
@@ -144,17 +144,17 @@ export default function RegisterForm({ onRegistered, token, t }) {
         <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-3">
           <button
             type="button"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-white/6 dark:hover:text-surface-200 transition-colors"
             onClick={() => setStep(1)}
             title={t('actions.back', { defaultValue: 'Back' })}>
             
             <i className="bx bx-arrow-back text-xl"></i>
           </button>
           <div>
-            <h5 className="font-semibold mb-0">
+            <h5 className="font-semibold mb-0 text-surface-900">
               {t('merchant.formTitle', { defaultValue: 'Business Information' })}
             </h5>
-            <small className="text-surface-500">{t('merchant.formSubtitle', { defaultValue: 'Fill in your details to create a merchant account' })}</small>
+            <small className="text-surface-500 dark:text-surface-400">{t('merchant.formSubtitle', { defaultValue: 'Fill in your details to create a merchant account' })}</small>
           </div>
         </div>
 
@@ -168,14 +168,14 @@ export default function RegisterForm({ onRegistered, token, t }) {
             map((s, i) =>
             <div key={i} className="flex items-center gap-2">
                 <span
-                className={`inline-flex items-center justify-center rounded-full shrink-0 ${s.active ? 'bg-primary-600 text-white' : s.done ? 'bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400' : 'bg-surface-100 dark:bg-dark-elevated text-surface-500'} w-7 h-7 text-xs font-semibold`
+                className={`inline-flex items-center justify-center rounded-full shrink-0 ${s.active ? 'bg-primary-600 text-white' : s.done ? 'bg-success-100 dark:bg-success-950/30 text-success-700 dark:text-success-400' : 'bg-surface-100 dark:bg-dark-elevated text-surface-500'} w-7 h-7 text-xs font-semibold`
                 }>
 
                 
                   {s.done ? <i className="bx bx-check"></i> : s.num}
                 </span>
-                <span className={`text-sm ${s.active ? 'font-semibold text-surface-900' : 'text-surface-500'} hidden sm:inline`}>{s.label}</span>
-                {i < 2 && <i className="bx bx-chevron-right text-surface-400 ml-1"></i>}
+                <span className={`text-sm ${s.active ? 'font-semibold text-surface-900' : 'text-surface-500 dark:text-surface-400'} hidden sm:inline`}>{s.label}</span>
+                {i < 2 && <i className="bx bx-chevron-right text-surface-400 dark:text-surface-500 ml-1"></i>}
               </div>
             )}
           </div>
@@ -185,7 +185,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
               {/* Merchant Name */}
               <div>
                 <Label className="font-semibold text-sm">
-                  {t('merchant.name', { defaultValue: 'Merchant Name' })} <span className="text-red-500">*</span>
+                  {t('merchant.name', { defaultValue: 'Merchant Name' })} <span className="text-danger-500">*</span>
                 </Label>
                 <InputGroup>
                   <InputIcon><i className="bx bx-store"></i></InputIcon>
@@ -235,7 +235,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                   <InputIcon><i className="bx bx-link"></i></InputIcon>
                   <Input type="url" name="callbackUrl" value={form.callbackUrl} onChange={handleChange} placeholder="https://example.com/webhooks/payment" maxLength={500} />
                 </InputGroup>
-                <small className="text-surface-500">{t('merchant.callbackHint', { defaultValue: 'URL to receive payment notifications (can be set later)' })}</small>
+                <small className="text-surface-500 dark:text-surface-400">{t('merchant.callbackHint', { defaultValue: 'URL to receive payment notifications (can be set later)' })}</small>
               </div>
             </div>
 

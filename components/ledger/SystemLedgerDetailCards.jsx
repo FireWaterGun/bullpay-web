@@ -61,7 +61,7 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
             {metadata?.invoiceNumber &&
             <tr>
                 <td className="text-surface-500">Invoice</td>
-                <td><Badge className="bg-primary-50 text-primary-600">{metadata.invoiceNumber}</Badge></td>
+                <td><Badge color="primary" label>{metadata.invoiceNumber}</Badge></td>
               </tr>
             }
             {metadata?.sweepId &&

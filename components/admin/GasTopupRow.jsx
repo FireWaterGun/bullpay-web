@@ -55,9 +55,9 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
             <Button
 
             onClick={() => onCopy(topup.txHash)}
-            title={t('admin.gasTopup.copyTxHash', { defaultValue: 'Copy tx hash' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+            title={t('admin.gasTopup.copyTxHash', { defaultValue: 'Copy tx hash' })} size="icon-sm" variant="text-secondary">
             
-              <i className="bx bx-copy text-xl"></i>
+              <i className="bx bx-copy"></i>
             </Button>
           </div> :
 
@@ -71,9 +71,9 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
             <Button
 
             onClick={() => onCopy(topup.fromAddress)}
-            title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+            title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
             
-              <i className="bx bx-copy text-xl"></i>
+              <i className="bx bx-copy"></i>
             </Button>
           </div> :
 
@@ -87,9 +87,9 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
             <Button
 
             onClick={() => onCopy(topup.toAddress)}
-            title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+            title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
             
-              <i className="bx bx-copy text-xl"></i>
+              <i className="bx bx-copy"></i>
             </Button>
           </div> :
 

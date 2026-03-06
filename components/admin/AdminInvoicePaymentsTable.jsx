@@ -23,11 +23,12 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
           Payments ({payments.length})
         </h5>
       </div>
-      <div className="p-5">
         {payments.length === 0 ?
-        <CardEmptyState
-          icon="bx-credit-card"
-          message="No payments recorded for this invoice" /> :
+        <div className="p-5">
+          <CardEmptyState
+            icon="bx-credit-card"
+            message="No payments recorded for this invoice" />
+        </div> :
 
 
         <Table className="min-w-[900px]">
@@ -104,9 +105,9 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                           <Button
 
                       onClick={() => onCopy(payment.fromAddress)}
-                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                       
-                            <i className="bx bx-copy text-xl"></i>
+                            <i className="bx bx-copy"></i>
                           </Button>
                         </div> :
 
@@ -122,9 +123,9 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                           <Button
 
                       onClick={() => onCopy(payment.toAddress)}
-                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                       
-                            <i className="bx bx-copy text-xl"></i>
+                            <i className="bx bx-copy"></i>
                           </Button>
                         </div> :
 
@@ -151,7 +152,6 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
               </tbody>
             </Table>
         }
-      </div>
     </Card>);
 
 }

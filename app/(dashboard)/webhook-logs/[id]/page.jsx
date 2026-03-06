@@ -57,7 +57,7 @@ export default function WebhookLogDetailPage() {
 
   if (!log) {
     return (
-      <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950/30 text-yellow-700 dark:text-[#fcd34d] px-4 py-3 text-sm">{t('webhookLog.notFound', { defaultValue: 'Webhook log not found' })}</div>);
+      <div className="rounded-lg bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-300 px-4 py-3 text-sm">{t('webhookLog.notFound', { defaultValue: 'Webhook log not found' })}</div>);
 
   }
 
@@ -77,7 +77,7 @@ export default function WebhookLogDetailPage() {
           <div className="flex justify-between items-center flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <div
-                className={`rounded-full flex items-center justify-center ${log.success ? 'bg-[#dcfce7] text-[#166534] dark:bg-success-500/15 dark:text-[#86efac]' : 'bg-[#fee2e2] text-[#991b1b] dark:bg-danger-500/15 dark:text-[#fca5a5]'} w-12 h-12`}>
+                className={`rounded-full flex items-center justify-center ${log.success ? 'bg-success-100 text-success-800 dark:bg-success-500/15 dark:text-success-300' : 'bg-danger-100 text-danger-800 dark:bg-danger-500/15 dark:text-danger-300'} w-12 h-12`}>
 
                 
                 <i className={`bx ${log.success ? 'bx-check' : 'bx-x'} text-2xl`}></i>
@@ -156,7 +156,7 @@ export default function WebhookLogDetailPage() {
                   <td className="text-surface-500 py-2 pr-4">{t('webhookLog.duration', { defaultValue: 'Duration' })}</td>
                   <td className="py-2">
                     {log.durationMs != null ?
-                    <span className={log.durationMs > 5000 ? 'text-red-600 dark:text-red-400 font-medium' : ''}>
+                    <span className={log.durationMs > 5000 ? 'text-danger-600 dark:text-danger-400 font-medium' : ''}>
                         {log.durationMs.toLocaleString()}ms
                       </span> :
 
@@ -172,7 +172,7 @@ export default function WebhookLogDetailPage() {
                 <tr>
                     <td className="text-surface-500 py-2 pr-4">{t('webhookLog.error', { defaultValue: 'Error' })}</td>
                     <td className="py-2">
-                      <span className="text-red-600 dark:text-red-400">{log.errorMessage}</span>
+                      <span className="text-danger-600 dark:text-danger-400">{log.errorMessage}</span>
                     </td>
                   </tr>
                 }

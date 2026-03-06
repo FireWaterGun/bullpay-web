@@ -91,7 +91,7 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
         onBlur={onBlur}
         required error={amountError} />
       
-      {amountError && <div className="text-red-500 text-xs mt-1">{amountError}</div>}
+      {amountError && <div className="text-danger-500 text-xs mt-1">{amountError}</div>}
       {!amountError &&
       <small className="text-surface-500">
           {minDeposit > 0 ?

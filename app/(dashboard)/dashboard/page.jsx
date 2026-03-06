@@ -15,20 +15,20 @@ import { getDateRange } from '@/lib/utils/dateRange'
 
 const colorMap = {
   primary: 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400',
-  danger: 'bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-400',
-  warning: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400',
-  info: 'bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400',
-  success: 'bg-green-100 text-green-600 dark:bg-green-500/15 dark:text-green-400'
+  danger: 'bg-danger-100 text-danger-600 dark:bg-danger-500/15 dark:text-danger-400',
+  warning: 'bg-warning-100 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400',
+  info: 'bg-info-100 text-info-600 dark:bg-info-500/15 dark:text-info-400',
+  success: 'bg-success-100 text-success-600 dark:bg-success-500/15 dark:text-success-400'
 };
 
 function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
   const numChange = typeof change === 'number' ? change : parseFloat(change);
   const isPositive = numChange >= 0;
-  const changeColor = isPositive ? 'text-green-500' : 'text-red-500';
+  const changeColor = isPositive ? 'text-success-500' : 'text-danger-500';
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt';
 
-  const valueColorClass = valueColor === 'success' ? 'text-green-500' :
-  valueColor === 'danger' ? 'text-red-500' :
+  const valueColorClass = valueColor === 'success' ? 'text-success-500' :
+  valueColor === 'danger' ? 'text-danger-500' :
   'text-surface-900';
 
   return (
@@ -167,7 +167,7 @@ export default function UserTransactionsDashboard() {
       </div>
 
       {error &&
-      <div className="rounded-lg bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 px-4 py-3 text-sm mb-4">{error}</div>
+      <div className="rounded-lg bg-danger-50 text-danger-700 dark:bg-danger-500/10 dark:text-danger-400 px-4 py-3 text-sm mb-4">{error}</div>
       }
 
       {/* KPI Summary Cards */}

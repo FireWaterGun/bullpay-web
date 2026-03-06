@@ -147,7 +147,6 @@ export default function AdminMerchantsPage() {
           </Card>
 
           <Card>
-            <div className="p-5">
               <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
@@ -192,7 +191,7 @@ export default function AdminMerchantsPage() {
                             <td className="text-center whitespace-nowrap"><span className={statusBadgeClass(merchant.status)}>{String(merchant.status || '').toUpperCase()}</span></td>
                             <td className="text-right whitespace-nowrap">{merchant.commissionRate ? formatCommission(merchant.commissionRate) : '-'}</td>
                             <td className="text-center">
-                              {merchant.hasWebhook ? <Badge className="bg-green-50 text-green-700"><i className="bx bx-check"></i></Badge> : <Badge className="bg-surface-100 text-surface-600"><i className="bx bx-x"></i></Badge>}
+                              {merchant.hasWebhook ? <Badge color="success" label><i className="bx bx-check"></i></Badge> : <Badge color="secondary"><i className="bx bx-x"></i></Badge>}
                             </td>
                             <td className="whitespace-nowrap text-[0.85rem]">{fmtDate(merchant.createdAt)}</td>
                             <td className="text-center">
@@ -209,8 +208,9 @@ export default function AdminMerchantsPage() {
                   </tbody>
                 </Table>
 
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
-            </div>
+              <div className="px-5 py-1.5">
+                <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              </div>
           </Card>
         </div>
       </div>

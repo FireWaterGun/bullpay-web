@@ -17,14 +17,14 @@ export default function FeeLimitsTab({
 }) {
   return (
     <Card>
-      <div className="px-5 py-4 border-b border-surface-200">
+      <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
         <div className="flex justify-between items-center flex-wrap gap-3">
           <div>
             <h5 className="text-lg font-semibold text-surface-800 mb-1">
               <i className="bx bx-table mr-2"></i>
               {t('admin.withdrawalSettings.perCoinNetworkTitle', { defaultValue: 'Per Coin-Network Fee & Limits' })}
             </h5>
-            <p className="text-surface-500 mb-0 text-[0.85rem]">
+            <p className="text-surface-500 mb-0 text-sm">
               {t('admin.withdrawalSettings.perCoinNetworkDesc', { defaultValue: 'Each row is a coin-network pair with its own withdrawal configuration. Click Edit to modify.' })}
             </p>
           </div>
@@ -35,12 +35,13 @@ export default function FeeLimitsTab({
                 placeholder={t('admin.withdrawalSettings.searchPlaceholder', { defaultValue: 'Search coin/network...' })}
                 value={cnSearch}
                 onChange={(e) => setCnSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && loadCoinNetworks(1, cnSearch)} />
+                onKeyDown={(e) => e.key === 'Enter' && loadCoinNetworks(1, cnSearch)}
+                className="rounded-r-none border-r-0" />
               <Button
                 type="button"
                 onClick={() => loadCoinNetworks(1, cnSearch)}
                 variant="outline-primary"
-                className="bg-transparent hover:bg-primary-600 hover:text-white">
+                className="rounded-l-none">
                 <i className="bx bx-search"></i>
               </Button>
             </div>
@@ -48,7 +49,7 @@ export default function FeeLimitsTab({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div>
         {cnLoading ? (
           <div className="text-center py-5">
             <Spinner role="status" className="text-primary" />
@@ -61,14 +62,14 @@ export default function FeeLimitsTab({
           <Table responsive={false} className="mb-0">
             <thead>
               <tr>
-                <th className="text-[0.8rem]">{t('admin.withdrawalSettings.colCoinNetwork', { defaultValue: 'Coin / Network' })}</th>
-                <th className="text-center text-[0.8rem]">{t('admin.withdrawalSettings.colEnabled', { defaultValue: 'Enabled' })}</th>
-                <th className="text-right text-[0.8rem]">{t('admin.withdrawalSettings.colMin', { defaultValue: 'Min' })}</th>
-                <th className="text-right text-[0.8rem]">{t('admin.withdrawalSettings.colMax', { defaultValue: 'Max' })}</th>
-                <th className="text-right text-[0.8rem]">{t('admin.withdrawalSettings.colFeeBase', { defaultValue: 'Fee Base' })}</th>
-                <th className="text-right text-[0.8rem]">{t('admin.withdrawalSettings.colFeePercent', { defaultValue: 'Fee %' })}</th>
-                <th className="text-right text-[0.8rem]">{t('admin.withdrawalSettings.colDailyLimit', { defaultValue: 'Daily Limit (USD)' })}</th>
-                <th className="text-center text-[0.8rem]">{t('admin.withdrawalSettings.colActions', { defaultValue: 'Actions' })}</th>
+                <th>{t('admin.withdrawalSettings.colCoinNetwork', { defaultValue: 'Coin / Network' })}</th>
+                <th className="text-center">{t('admin.withdrawalSettings.colEnabled', { defaultValue: 'Enabled' })}</th>
+                <th className="text-right">{t('admin.withdrawalSettings.colMin', { defaultValue: 'Min' })}</th>
+                <th className="text-right">{t('admin.withdrawalSettings.colMax', { defaultValue: 'Max' })}</th>
+                <th className="text-right">{t('admin.withdrawalSettings.colFeeBase', { defaultValue: 'Fee Base' })}</th>
+                <th className="text-right">{t('admin.withdrawalSettings.colFeePercent', { defaultValue: 'Fee %' })}</th>
+                <th className="text-right">{t('admin.withdrawalSettings.colDailyLimit', { defaultValue: 'Daily Limit (USD)' })}</th>
+                <th className="text-center">{t('admin.withdrawalSettings.colActions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
             <tbody>
@@ -100,7 +101,7 @@ export default function FeeLimitsTab({
                     <td className="text-right">
                       <code className="text-surface-800">{formatAmount(cn.withdrawFeeBase)}</code>
                       {cn.withdrawFeeBase && cn.withdrawFeeBase !== '0' &&
-                        <small className="text-surface-500 block text-[0.7rem]">auto</small>
+                        <small className="text-surface-500 block text-xs">auto</small>
                       }
                     </td>
                     <td className="text-right">
@@ -114,10 +115,9 @@ export default function FeeLimitsTab({
                         type="button"
                         title={t('actions.edit', { defaultValue: 'Edit' })}
                         onClick={() => openCnEditModal(cn)}
-                        variant="outline-primary"
-                        size="icon"
-                        className="bg-transparent hover:bg-primary-600 hover:text-white">
-                        <i className="bx bx-edit-alt"></i>
+                        variant="text-secondary"
+                        size="icon-sm">
+                        <i className="bx bx-edit text-[1rem]"></i>
                       </Button>
                     </td>
                   </tr>
@@ -129,7 +129,9 @@ export default function FeeLimitsTab({
       </div>
 
       {/* Pagination */}
-      <Pagination pagination={cnPagination} onPageChange={(p) => loadCoinNetworks(p, cnSearch)} loading={cnLoading} className="px-5 py-3 border-t border-surface-200 mt-0" />
+      <div className="px-5 py-1.5">
+        <Pagination pagination={cnPagination} onPageChange={(p) => loadCoinNetworks(p, cnSearch)} loading={cnLoading} />
+      </div>
     </Card>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 import dynamic from 'next/dynamic';
@@ -34,14 +34,7 @@ export default function CoinForm() {
     status: 'active'
   });
 
-  useEffect(() => {
-    if (isEdit && id) {
-      loadCoin();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  async function loadCoin() {
+  const loadCoin = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -64,7 +57,13 @@ export default function CoinForm() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id]);
+
+  useEffect(() => {
+    if (isEdit && id) {
+      loadCoin();
+    }
+  }, [isEdit, id, loadCoin]);
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;

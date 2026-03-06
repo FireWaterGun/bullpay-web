@@ -153,7 +153,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                   <small className="text-surface-500">
                     {selectedWallet.coinSymbol} on {selectedWallet.networkName}
                     {' · '}
-                    <Badge className="bg-surface-100 text-surface-600">{selectedWallet.purpose}</Badge>
+                    <Badge color="secondary">{selectedWallet.purpose}</Badge>
                   </small>
                 </div>
               }

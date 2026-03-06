@@ -12,11 +12,11 @@ const badgeBase = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs f
 
 /* Color maps — aligned with Badge component dark tokens */
 const BADGE_COLORS = {
-  success: 'bg-[#dcfce7] text-[#166534] dark:bg-success-500/15 dark:text-[#86efac]',
-  warning: 'bg-[#fef3c7] text-[#92400e] dark:bg-warning-500/15 dark:text-[#fcd34d]',
-  danger: 'bg-[#fee2e2] text-[#991b1b] dark:bg-danger-500/15 dark:text-[#fca5a5]',
-  secondary: 'bg-surface-100 text-surface-600 dark:bg-white/8',
-  info: 'bg-[#cffafe] text-[#0e7490] dark:bg-info-500/15 dark:text-[#67e8f9]',
+  success: 'bg-success-100 text-success-800 dark:bg-success-500/15 dark:text-success-300',
+  warning: 'bg-warning-100 text-warning-800 dark:bg-warning-500/15 dark:text-warning-300',
+  danger: 'bg-danger-100 text-danger-800 dark:bg-danger-500/15 dark:text-danger-300',
+  secondary: 'bg-surface-100 text-surface-600 dark:bg-white/8 dark:text-surface-400',
+  info: 'bg-info-100 text-info-800 dark:bg-info-500/15 dark:text-info-300',
 }
 
 /** Success / Failed badge */

@@ -181,7 +181,6 @@ export default function UserLedgerList() {
 
           {/* Table */}
           <Card>
-            <div className="p-5">
               <Table className="min-w-max">
                   <thead>
                     <tr className="whitespace-nowrap">
@@ -214,8 +213,9 @@ export default function UserLedgerList() {
                   </tbody>
                 </Table>
 
-              <Pagination pagination={pagination} onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }} loading={loading} />
-            </div>
+              <div className="px-5 py-1.5">
+                <Pagination pagination={pagination} onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }} loading={loading} />
+              </div>
           </Card>
         </div>
       </div>

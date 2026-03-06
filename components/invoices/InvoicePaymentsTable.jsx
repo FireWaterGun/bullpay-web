@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusClass, formatTxHash } from './invoiceDetailHelpers'
+import Table from '@/components/ui/Table'
 
 export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
   const { t } = useTranslation()
@@ -11,7 +12,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
 
   if (!payments) {
     return (
-      <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 p-4 flex items-center gap-2">
+      <div className="rounded-lg bg-info-50 dark:bg-info-950/30 text-info-700 dark:text-info-400 p-4 flex items-center gap-2">
         <i className="bx bx-info-circle text-lg"></i>
         {t('invoices.noPaymentsData', { defaultValue: 'No payments data available' })}
       </div>
@@ -20,7 +21,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
 
   if (!Array.isArray(payments)) {
     return (
-      <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 p-4 flex items-center gap-2">
+      <div className="rounded-lg bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-400 p-4 flex items-center gap-2">
         <i className="bx bx-error text-lg"></i>
         {t('invoices.paymentsNotArray', { defaultValue: 'Payments data format error' })}
       </div>
@@ -29,7 +30,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
 
   if (payments.length === 0) {
     return (
-      <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 p-4 flex items-center gap-2">
+      <div className="rounded-lg bg-info-50 dark:bg-info-950/30 text-info-700 dark:text-info-400 p-4 flex items-center gap-2">
         <i className="bx bx-info-circle text-lg"></i>
         {t('invoices.noPaymentTransactions', { defaultValue: 'No payment transactions yet' })}
       </div>
@@ -37,22 +38,21 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <Table>
         <thead>
-          <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500">
-            <th className="px-3 py-2">#</th>
-            <th className="px-3 py-2">{t('invoices.txHash') || 'Tx Hash'}</th>
-            <th className="px-3 py-2">{t('invoices.amount') || 'Amount'}</th>
-            <th className="px-3 py-2">{t('invoices.status') || 'Status'}</th>
-            <th className="px-3 py-2">{t('invoices.date') || 'Date'}</th>
+          <tr>
+            <th>#</th>
+            <th>{t('invoices.txHash') || 'Tx Hash'}</th>
+            <th>{t('invoices.amount') || 'Amount'}</th>
+            <th>{t('invoices.status') || 'Status'}</th>
+            <th>{t('invoices.date') || 'Date'}</th>
           </tr>
         </thead>
-        <tbody className="divide-y">
+        <tbody>
           {payments.map((p, idx) => (
-            <tr key={p.id || idx} className="hover:bg-surface-50 dark:hover:bg-white/6">
-              <td className="px-3 py-2">{idx + 1}</td>
-              <td className="px-3 py-2 whitespace-nowrap">
+            <tr key={p.id || idx}>
+              <td>{idx + 1}</td>
+              <td className="whitespace-nowrap">
                 {p.txHash ? (
                   explorer ? (
                     <a
@@ -71,19 +71,18 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
                   '-'
                 )}
               </td>
-              <td className="px-3 py-2 whitespace-nowrap">
+              <td className="whitespace-nowrap">
                 {formatAmount(p.actualAmount || p.amount || 0)} {coinSym}
               </td>
-              <td className="px-3 py-2">
+              <td>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusClass(p.status)}`}>
                   {p.status ? t(`invoices.${p.status.toLowerCase()}`, { defaultValue: p.status }) : '-'}
                 </span>
               </td>
-              <td className="px-3 py-2 whitespace-nowrap">{fmtDateTime(p.createdAt || p.created_at)}</td>
+              <td className="whitespace-nowrap">{fmtDateTime(p.createdAt || p.created_at)}</td>
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </Table>
   )
 }

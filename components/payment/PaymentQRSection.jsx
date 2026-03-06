@@ -62,7 +62,7 @@ export default function PaymentQRSection({
               <Button
                 type="button"
 
-                style={{ width: 30, height: 30, border: '1px solid var(--color-surface-200)', background: copiedAmt ? '#22c55e' : 'var(--color-surface-0, #fff)', color: copiedAmt ? '#fff' : 'var(--color-surface-500)', padding: 0, transition: 'all 0.2s ease' }}
+                style={{ width: 30, height: 30, border: '1px solid var(--color-surface-200)', background: copiedAmt ? 'var(--color-success-500)' : 'var(--color-surface-0, #fff)', color: copiedAmt ? '#fff' : 'var(--color-surface-500)', padding: 0, transition: 'all 0.2s ease' }}
                 onClick={handleCopyAmount}
                 title={copiedAmt ? t("actions.copied") : t("actions.copyAmount", { defaultValue: "Copy Amount" })} size="icon" className="shrink-0 rounded-lg flex items-center justify-center">
                 

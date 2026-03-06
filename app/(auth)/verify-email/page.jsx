@@ -86,14 +86,14 @@ function VerifyEmailContent() {
           {/* Status icon */}
           <div className="flex justify-center mb-4">
             {status === 'success' &&
-            <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full bg-success-50 dark:bg-success-500/10 flex items-center justify-center">
                 <div className="w-14 h-14 rounded-full bg-success-500 text-white flex items-center justify-center shadow-sm">
                   <i className="bx bx-check text-3xl"></i>
                 </div>
               </div>
             }
             {status === 'error' &&
-            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-danger-50 dark:bg-danger-500/10 flex items-center justify-center">
                 <div className="w-12 h-12 rounded-full bg-danger-500/15 text-danger-500 flex items-center justify-center">
                   <i className="bx bx-error-circle text-2xl"></i>
                 </div>

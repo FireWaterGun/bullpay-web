@@ -28,7 +28,7 @@ export default function SweepMetadataCard({ metadata }) {
                 <td>
                   <code>{metadata.invoiceNumber}</code>
                   {metadata.invoiceStatus &&
-                  <Badge className="bg-surface-100 text-surface-600 ml-2">{metadata.invoiceStatus}</Badge>
+                  <Badge color="secondary" className="ml-2">{metadata.invoiceStatus}</Badge>
                   }
                 </td>
               </tr>

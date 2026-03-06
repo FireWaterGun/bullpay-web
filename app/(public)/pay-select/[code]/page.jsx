@@ -180,7 +180,7 @@ export default function PaySelect() {
           <div className="bg-white rounded-xl shadow-lg mx-auto p-0 max-w-[500px]">
               <div className="text-center p-5">
                 <div className="mb-4">
-                  <i className="bx bx-error-circle text-[64px] text-red-500"></i>
+                  <i className="bx bx-error-circle text-[64px] text-danger-500"></i>
                 </div>
                 <h4 className="mb-3">{t('common.error', { defaultValue: 'Error' })}</h4>
                 <p className="text-surface-500">{error}</p>

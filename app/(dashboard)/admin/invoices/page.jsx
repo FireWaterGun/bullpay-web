@@ -188,7 +188,6 @@ export default function AdminInvoiceList() {
 
           {/* Table */}
           <Card>
-            <div className="p-5">
               <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
@@ -271,9 +270,9 @@ export default function AdminInvoiceList() {
                                   <Button
 
                                 onClick={() => handleCopy(invoice.paymentAddress)}
-                                title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 dark:hover:bg-white/6 shadow-none rounded-full">
+                                title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                                 
-                                    <i className="bx bx-copy text-xl"></i>
+                                    <i className="bx bx-copy"></i>
                                   </Button>
                                 </div> :
 
@@ -304,13 +303,14 @@ export default function AdminInvoiceList() {
 
               {/* Pagination */}
               {pagination && pagination.total > 0 &&
-              <Pagination
-                pagination={pagination}
-                onPageChange={setCurrentPage}
-                loading={loading}
-              />
+              <div className="px-5 py-1.5">
+                <Pagination
+                  pagination={pagination}
+                  onPageChange={setCurrentPage}
+                  loading={loading}
+                />
+              </div>
               }
-            </div>
           </Card>
         </div>
       </div>

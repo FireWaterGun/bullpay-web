@@ -8,23 +8,23 @@ const colorMap = {
   ].join(' '),
   secondary: [
     'text-surface-700 bg-surface-100 border-surface-200',
-    'dark:bg-white/6 dark:border-surface-200',
+    'dark:text-surface-300 dark:bg-white/6 dark:border-surface-200',
   ].join(' '),
   success: [
-    'text-[#166534] bg-[#dcfce7] border-success-500/20',
-    'dark:text-[#86efac] dark:bg-success-500/10 dark:border-success-500/20',
+    'text-success-800 bg-success-50 border-success-500/20',
+    'dark:text-success-300 dark:bg-success-500/10 dark:border-success-500/20',
   ].join(' '),
   danger: [
-    'text-[#991b1b] bg-[#fee2e2] border-danger-500/20',
-    'dark:text-[#fca5a5] dark:bg-danger-500/10 dark:border-danger-500/20',
+    'text-danger-800 bg-danger-50 border-danger-500/20',
+    'dark:text-danger-300 dark:bg-danger-500/10 dark:border-danger-500/20',
   ].join(' '),
   warning: [
-    'text-[#92400e] bg-[#fef3c7] border-warning-500/20',
-    'dark:text-[#fcd34d] dark:bg-warning-500/10 dark:border-warning-500/20',
+    'text-warning-800 bg-warning-50 border-warning-500/20',
+    'dark:text-warning-300 dark:bg-warning-500/10 dark:border-warning-500/20',
   ].join(' '),
   info: [
-    'text-[#0e7490] bg-[#ecfeff] border-info-500/20',
-    'dark:text-[#67e8f9] dark:bg-info-500/10 dark:border-info-500/20',
+    'text-info-800 bg-info-50 border-info-500/20',
+    'dark:text-info-300 dark:bg-info-500/10 dark:border-info-500/20',
   ].join(' '),
 }
 

@@ -97,7 +97,7 @@ export default function WalletEdit() {
   }
 
   if (!wallet) {
-    return <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 p-4">{t('wallets.notFound', { defaultValue: 'Wallet not found' })}</div>;
+    return <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 p-4">{t('wallets.notFound', { defaultValue: 'Wallet not found' })}</div>;
   }
 
   return (
@@ -115,7 +115,7 @@ export default function WalletEdit() {
             <div className="p-6">
               <form onSubmit={handleSave}>
                 <div className="mb-3">
-                  <Label>{t('wallets.label', { defaultValue: 'Label' })} <span className="text-red-500">*</span></Label>
+                  <Label>{t('wallets.label', { defaultValue: 'Label' })} <span className="text-danger-500">*</span></Label>
                   <Input
                     type="text"
 

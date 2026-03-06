@@ -104,7 +104,7 @@ export default function IncomeStatement() {
                   {t('admin.incomeStatement.title', { defaultValue: 'Income Statement' })}
                 </h4>
                 <div className="flex gap-2 flex-wrap items-center ml-auto">
-                  <Badge className="bg-surface-100 text-surface-600 text-base font-normal px-3 py-2">
+                  <Badge color="secondary" className="text-base font-normal px-3 py-2">
                     {dateRangeLabel}
                   </Badge>
                   {!showCustom ?

@@ -62,7 +62,7 @@ export default function NetworkSelectionPanel({
 
       {/* Error */}
       {error &&
-      <div className="rounded-lg bg-red-50 text-red-700 mt-3 mb-0 py-2 px-3 text-sm">{error}</div>
+      <div className="rounded-lg bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-300 mt-3 mb-0 py-2 px-3 text-sm">{error}</div>
       }
 
       {/* Continue Button */}

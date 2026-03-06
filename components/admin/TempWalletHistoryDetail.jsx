@@ -84,10 +84,10 @@ export default function TempWalletHistoryDetail() {
                       {String(history.status || '').toUpperCase()}
                     </span>
                     {history.tempWalletId &&
-                    <Badge className="bg-surface-100 text-surface-600">Wallet #{history.tempWalletId}</Badge>
+                    <Badge color="secondary">Wallet #{history.tempWalletId}</Badge>
                     }
                     {history.invoiceId &&
-                    <Badge className="bg-surface-100 text-surface-600">Invoice #{history.invoiceId}</Badge>
+                    <Badge color="secondary">Invoice #{history.invoiceId}</Badge>
                     }
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export default function TempWalletHistoryDetail() {
                               <Button
 
                               onClick={() => handleCopy(history.address)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
                               
                                 <i className="bx bx-copy"></i>
                               </Button>
@@ -186,7 +186,7 @@ export default function TempWalletHistoryDetail() {
                               <Button
 
                               onClick={() => handleCopy(history.sweepTxHash)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
                               
                                 <i className="bx bx-copy"></i>
                               </Button>

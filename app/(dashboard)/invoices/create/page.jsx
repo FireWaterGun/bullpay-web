@@ -156,8 +156,8 @@ export default function InvoiceCreatePage() {
 
   return (
     <>
-      {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 px-4 py-3 text-sm mb-4">{error}</div>}
-      {walletError && <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950/30 text-yellow-700 dark:text-yellow-400 px-4 py-3 text-sm mb-4">{walletError}</div>}
+      {error && <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm mb-4">{error}</div>}
+      {walletError && <div className="rounded-lg bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-400 px-4 py-3 text-sm mb-4">{walletError}</div>}
 
       {hasWallet === null &&
       <Card className="mb-4">
@@ -227,7 +227,7 @@ export default function InvoiceCreatePage() {
                   setExpiryHours(value);
                 }} error={expiryHoursError} />
               
-              {expiryHoursError && <div className="text-red-500 text-xs mt-1">{expiryHoursError}</div>}
+              {expiryHoursError && <div className="text-danger-500 text-xs mt-1">{expiryHoursError}</div>}
               {!expiryHoursError &&
               <small className="text-surface-500 text-xs">
                   {t('invoices.expiryHoursRange')}

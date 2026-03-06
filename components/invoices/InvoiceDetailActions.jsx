@@ -94,7 +94,7 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
               {t('nav.history') || 'All invoices'}
             </Button>
           </div>
-          {shareError && <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 mt-3 py-2 px-3 text-sm">{shareError}</div>}
+          {shareError && <div className="rounded-lg bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-400 mt-3 py-2 px-3 text-sm">{shareError}</div>}
         </div>
       </Card>
       <Card>

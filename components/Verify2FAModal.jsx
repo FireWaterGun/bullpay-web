@@ -149,7 +149,7 @@ export default function Verify2FAModal({
               </div>
           }
             {error &&
-          <div className="rounded-lg bg-red-50 text-red-700 py-2 px-3 mb-3">
+          <div className="rounded-lg bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-300 py-2 px-3 mb-3">
                 <small>{error}</small>
               </div>
           }

@@ -26,7 +26,6 @@ export default function SweepTransactionTable({
 
   return (
     <Card>
-      <div className="p-5">
         <Table className="min-w-max">
             <thead>
               <tr className="whitespace-nowrap">
@@ -142,9 +141,9 @@ export default function SweepTransactionTable({
                     <Button
 
                       onClick={() => handleCopy(sweep.fromAddress)}
-                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                       
-                            <i className="bx bx-copy text-xl"></i>
+                            <i className="bx bx-copy"></i>
                           </Button>
                     }
                       </div>
@@ -158,9 +157,9 @@ export default function SweepTransactionTable({
                     <Button
 
                       onClick={() => handleCopy(sweep.toAddress)}
-                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                       
-                            <i className="bx bx-copy text-xl"></i>
+                            <i className="bx bx-copy"></i>
                           </Button>
                     }
                       </div>
@@ -197,8 +196,9 @@ export default function SweepTransactionTable({
             </tbody>
           </Table>
 
-        <Pagination pagination={pagination} onPageChange={onPageChange} loading={loading} />
-      </div>
+        <div className="px-5 py-1.5">
+          <Pagination pagination={pagination} onPageChange={onPageChange} loading={loading} />
+        </div>
     </Card>);
 
 }

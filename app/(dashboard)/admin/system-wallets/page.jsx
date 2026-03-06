@@ -146,7 +146,7 @@ export default function SystemBalance() {
                 {formatUsd(stats?.fiat?.totalValueUsd || 0)}
               </div>
               <div className="mt-3">
-                <Badge className="bg-primary-50 text-primary-600">
+                <Badge color="primary" label>
                   <i className="bx bx-wallet mr-1"></i>
                   {stats?.walletsWithFunds || 0} {t('admin.walletsWithFunds', { defaultValue: 'wallets with funds' })}
                 </Badge>
@@ -158,15 +158,16 @@ export default function SystemBalance() {
           <Card>
             <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
               <h5 className="mb-0">{t('admin.walletDetails', { defaultValue: 'Wallet Details' })}</h5>
-              <Badge className="bg-primary-50 text-primary-600">
+              <Badge color="primary" label>
                 {stats?.balanceDetails?.length || 0} {t('admin.wallets', { defaultValue: 'wallets' })}
               </Badge>
             </div>
-            <div className="p-5">
               {!stats?.balanceDetails || stats.balanceDetails.length === 0 ?
-              <CardEmptyState
-                icon="bx-wallet"
-                message={t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })} /> :
+              <div className="p-5">
+                <CardEmptyState
+                  icon="bx-wallet"
+                  message={t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })} />
+              </div> :
 
 
               <Table className="min-w-max">
@@ -228,15 +229,15 @@ export default function SystemBalance() {
                                 {address &&
                               <Button
                                 onClick={() => copyAddress(address)}
-
-                                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none">
-                                
-                                    {copiedAddress === address ?
-                                <i className="bx bx-check text-success text-xl"></i> :
-
-                                <i className="bx bx-copy text-xl"></i>
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
+                                size="icon-sm"
+                                variant="text-secondary"
+                              >
+                                {copiedAddress === address ?
+                                  <i className="bx bx-check text-success"></i> :
+                                  <i className="bx bx-copy"></i>
                                 }
-                                  </Button>
+                              </Button>
                               }
                               </div>
                             </td>
@@ -247,12 +248,12 @@ export default function SystemBalance() {
                             </td>
                             <td>
                               {wallet.systemWallet?.walletType === 'hot' ?
-                            <Badge className="bg-amber-50 text-amber-700">
+                            <Badge color="warning" label>
                                   <i className="bx bxs-hot mr-1"></i>
                                   {t('admin.hot', { defaultValue: 'Hot' })}
                                 </Badge> :
 
-                            <Badge className="bg-cyan-50 text-cyan-700">
+                            <Badge color="info" label>
                                   <i className="bx bx-shield mr-1"></i>
                                   {t('admin.cold', { defaultValue: 'Cold' })}
                                 </Badge>
@@ -260,9 +261,9 @@ export default function SystemBalance() {
                             </td>
                             <td>
                               {wallet.systemWallet?.status === 'active' ?
-                            <Badge className="bg-green-50 text-green-700">{t('admin.active', { defaultValue: 'Active' })}</Badge> :
+                            <Badge color="success" label>{t('admin.active', { defaultValue: 'Active' })}</Badge> :
 
-                            <Badge className="bg-surface-100 text-surface-600">
+                            <Badge color="secondary">
                                   {wallet.systemWallet?.status}
                                 </Badge>
                             }
@@ -330,7 +331,6 @@ export default function SystemBalance() {
                     </tbody>
                   </Table>
               }
-            </div>
           </Card>
         </div>
       </div>

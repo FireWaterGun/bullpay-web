@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import {
@@ -35,14 +35,67 @@ function statusMeta(status, t) {
   if (s === 'active')    return { ...statusColors.active,    label: t('merchant.status.active',    { defaultValue: 'Active' }) }
   if (s === 'suspended') return { ...statusColors.suspended, label: t('merchant.status.suspended', { defaultValue: 'Suspended' }) }
   if (s === 'pending')   return { ...statusColors.pending,   label: t('merchant.status.pending',   { defaultValue: 'Pending' }) }
-  return { bg: 'bg-surface-100 dark:bg-dark-elevated', text: 'text-surface-600', icon: 'bx-help-circle', label: t('merchant.status.unknown', { defaultValue: status || 'Unknown' }) }
+  return { bg: 'bg-surface-100 dark:bg-dark-elevated', text: 'text-surface-600 dark:text-surface-400', icon: 'bx-help-circle', label: t('merchant.status.unknown', { defaultValue: status || 'Unknown' }) }
+}
+
+function resolveSensitiveActionError(t, error, fallbackTranslation) {
+  const code = error?.code || error?.data?.error?.code || error?.data?.code
+  const apiMsg = error?.data?.error?.message || error?.message
+  const details = error?.data?.error?.details || error?.details || {}
+
+  if (code === 'TWO_FACTOR_REQUIRED') {
+    return {
+      requires2FA: true,
+      message: t('merchant.twoFactorRequired', { defaultValue: 'Please enter your password and 2FA code' }),
+    }
+  }
+
+  if (code === 'PASSWORD_REQUIRED') {
+    return {
+      requires2FA: false,
+      message: t('merchant.passwordRequired', { defaultValue: 'Please enter your password' }),
+    }
+  }
+
+  if (code === 'INVALID_PASSWORD') {
+    return {
+      requires2FA: false,
+      message: t('merchant.invalidPassword', { defaultValue: 'Invalid password' }),
+    }
+  }
+
+  if (code === 'INVALID_2FA_CODE') {
+    const retryAfter = details?.retryAfterSeconds
+    const remaining = details?.remainingAttempts
+    if (retryAfter) {
+      return {
+        requires2FA: false,
+        message: t('merchant.tooManyAttempts', { defaultValue: 'Too many attempts. Try again in {{seconds}} seconds', seconds: retryAfter }),
+      }
+    }
+    if (remaining !== undefined) {
+      return {
+        requires2FA: false,
+        message: t('merchant.invalidCodeRemaining', { defaultValue: 'Invalid code. {{count}} attempts remaining', count: remaining }),
+      }
+    }
+    return {
+      requires2FA: false,
+      message: t('merchant.invalid2FACode', { defaultValue: 'Invalid 2FA code' }),
+    }
+  }
+
+  return {
+    requires2FA: false,
+    message: apiMsg || t(fallbackTranslation.key, { defaultValue: fallbackTranslation.defaultValue }),
+  }
 }
 
 const tileColors = {
   primary:   { bg: 'bg-primary-50 dark:bg-primary-950/30', icon: 'text-primary-600 dark:text-primary-400' },
   success:   { bg: 'bg-success-50 dark:bg-success-950/30', icon: 'text-success-600 dark:text-success-400' },
   info:      { bg: 'bg-info-50 dark:bg-info-950/30',       icon: 'text-info-600 dark:text-info-400' },
-  secondary: { bg: 'bg-surface-100 dark:bg-dark-elevated',  icon: 'text-surface-500' },
+  secondary: { bg: 'bg-surface-100 dark:bg-dark-elevated',  icon: 'text-surface-500 dark:text-surface-400' },
   danger:    { bg: 'bg-danger-50 dark:bg-danger-950/30',   icon: 'text-danger-600 dark:text-danger-400' },
   warning:   { bg: 'bg-warning-50 dark:bg-warning-950/30', icon: 'text-warning-600 dark:text-warning-400' },
 }
@@ -56,7 +109,7 @@ function StatTile({ icon, label, value, color = 'primary' }) {
       </span>
       <div className="min-w-0">
         <p className="text-sm font-medium text-surface-800 truncate mb-0">{value}</p>
-        <p className="text-xs text-surface-400 mb-0">{label}</p>
+        <p className="text-xs text-surface-400 dark:text-surface-500 mb-0">{label}</p>
       </div>
     </div>
   )
@@ -167,40 +220,14 @@ export default function MerchantPage() {
       }
       closeModal()
     } catch (error) {
-      const code = error?.code || error?.data?.error?.code || error?.data?.code
-      const apiMsg = error?.data?.error?.message || error?.message
-      const details = error?.data?.error?.details || error?.details || {}
-
-      if (code === 'TWO_FACTOR_REQUIRED') {
+      const resolved = resolveSensitiveActionError(t, error, {
+        key: 'merchant.actionError',
+        defaultValue: 'Action failed. Please try again.',
+      })
+      if (resolved.requires2FA) {
         setIs2FAEnabled(true)
-        setModalError(t('merchant.twoFactorRequired', { defaultValue: 'Please enter your password and 2FA code' }))
-        return
       }
-
-      if (code === 'PASSWORD_REQUIRED') {
-        setModalError(t('merchant.passwordRequired', { defaultValue: 'Please enter your password' }))
-        return
-      }
-
-      if (code === 'INVALID_PASSWORD') {
-        setModalError(t('merchant.invalidPassword', { defaultValue: 'Invalid password' }))
-        return
-      }
-
-      if (code === 'INVALID_2FA_CODE') {
-        const retryAfter = details?.retryAfterSeconds
-        const remaining = details?.remainingAttempts
-        if (retryAfter) {
-          setModalError(t('merchant.tooManyAttempts', { defaultValue: 'Too many attempts. Try again in {{seconds}} seconds', seconds: retryAfter }))
-        } else if (remaining !== undefined) {
-          setModalError(t('merchant.invalidCodeRemaining', { defaultValue: 'Invalid code. {{count}} attempts remaining', count: remaining }))
-        } else {
-          setModalError(t('merchant.invalid2FACode', { defaultValue: 'Invalid 2FA code' }))
-        }
-        return
-      }
-
-      setModalError(apiMsg || t('merchant.actionError', { defaultValue: 'Action failed. Please try again.' }))
+      setModalError(resolved.message)
     } finally {
       setModalLoading(false)
     }
@@ -210,6 +237,32 @@ export default function MerchantPage() {
   const [webhookPassword, setWebhookPassword] = useState('')
   const [webhookShowPassword, setWebhookShowPassword] = useState(false)
   const [webhookError, setWebhookError] = useState('')
+
+  const resetWebhookSecurityInputs = useCallback(() => {
+    setWebhookTotpCode('')
+    setWebhookPassword('')
+    setWebhookError('')
+  }, [])
+
+  const quickStartSteps = useMemo(
+    () => [
+      { step: 1, icon: 'bx-key', text: t('merchant.step1', { defaultValue: 'Get your API Key & Secret' }), done: !!apiKey },
+      { step: 2, icon: 'bx-broadcast', text: t('merchant.step2', { defaultValue: 'Configure webhook URL' }), done: !!merchant?.hasWebhook },
+      { step: 3, icon: 'bx-receipt', text: t('merchant.step3', { defaultValue: 'Create your first invoice' }), done: false },
+      { step: 4, icon: 'bx-wallet', text: t('merchant.step4', { defaultValue: 'Accept crypto payments' }), done: false },
+    ],
+    [t, apiKey, merchant?.hasWebhook]
+  )
+
+  const securityTips = useMemo(
+    () => [
+      { icon: 'bx-lock-alt', color: 'danger', text: t('merchant.tip1', { defaultValue: 'Never share your API Secret publicly' }) },
+      { icon: 'bx-refresh', color: 'warning', text: t('merchant.tip2', { defaultValue: 'Rotate your secret periodically' }) },
+      { icon: 'bx-link', color: 'success', text: t('merchant.tip3', { defaultValue: 'Use HTTPS for all webhook URLs' }) },
+      { icon: 'bx-error', color: 'info', text: t('merchant.tip4', { defaultValue: 'Regenerating key invalidates all credentials' }) },
+    ],
+    [t]
+  )
 
   async function handleWebhookSave() {
     if (!webhookUrl) {
@@ -233,45 +286,17 @@ export default function MerchantPage() {
       })
       toast.success(t('merchant.webhookSuccess', { defaultValue: 'Webhook URL updated successfully' }))
       setEditingWebhook(false)
-      setWebhookTotpCode('')
-      setWebhookPassword('')
-      setWebhookError('')
+      resetWebhookSecurityInputs()
       loadProfile()
     } catch (error) {
-      const code = error?.code || error?.data?.error?.code || error?.data?.code
-      const apiMsg = error?.data?.error?.message || error?.message
-      const details = error?.data?.error?.details || error?.details || {}
-
-      if (code === 'TWO_FACTOR_REQUIRED') {
+      const resolved = resolveSensitiveActionError(t, error, {
+        key: 'merchant.webhookError',
+        defaultValue: 'Failed to update webhook URL',
+      })
+      if (resolved.requires2FA) {
         setIs2FAEnabled(true)
-        setWebhookError(t('merchant.twoFactorRequired', { defaultValue: 'Please enter your password and 2FA code' }))
-        return
       }
-
-      if (code === 'PASSWORD_REQUIRED') {
-        setWebhookError(t('merchant.passwordRequired', { defaultValue: 'Please enter your password' }))
-        return
-      }
-
-      if (code === 'INVALID_PASSWORD') {
-        setWebhookError(t('merchant.invalidPassword', { defaultValue: 'Invalid password' }))
-        return
-      }
-
-      if (code === 'INVALID_2FA_CODE') {
-        const retryAfter = details?.retryAfterSeconds
-        const remaining = details?.remainingAttempts
-        if (retryAfter) {
-          setWebhookError(t('merchant.tooManyAttempts', { defaultValue: 'Too many attempts. Try again in {{seconds}} seconds', seconds: retryAfter }))
-        } else if (remaining !== undefined) {
-          setWebhookError(t('merchant.invalidCodeRemaining', { defaultValue: 'Invalid code. {{count}} attempts remaining', count: remaining }))
-        } else {
-          setWebhookError(t('merchant.invalid2FACode', { defaultValue: 'Invalid 2FA code' }))
-        }
-        return
-      }
-
-      setWebhookError(apiMsg || t('merchant.webhookError', { defaultValue: 'Failed to update webhook URL' }))
+      setWebhookError(resolved.message)
     } finally {
       setWebhookLoading(false)
     }
@@ -321,9 +346,9 @@ export default function MerchantPage() {
                 </div>
               </div>
               {merchant?.description && (
-                <p className="text-sm text-surface-500 mb-2 pr-4">{merchant.description}</p>
+                <p className="text-sm text-surface-500 dark:text-surface-400 mb-2 pr-4">{merchant.description}</p>
               )}
-              <div className="flex flex-wrap gap-3 text-sm text-surface-400">
+              <div className="flex flex-wrap gap-3 text-sm text-surface-400 dark:text-surface-500">
                 {merchant?.email && (
                   <span className="flex items-center gap-1"><i className="bx bx-envelope"></i>{merchant.email}</span>
                 )}
@@ -390,13 +415,13 @@ export default function MerchantPage() {
                   <i className="bx bx-check-circle"></i>{t('merchant.configured', { defaultValue: 'Configured' })}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-500 rounded-md">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-500 dark:text-surface-400 rounded-md">
                   <i className="bx bx-minus-circle"></i>{t('merchant.notConfigured', { defaultValue: 'Not Configured' })}
                 </span>
               )}
             </div>
             <div className="p-5">
-              <p className="text-sm text-surface-500 mb-3 flex items-center gap-1">
+              <p className="text-sm text-surface-500 dark:text-surface-400 mb-3 flex items-center gap-1">
                 <i className="bx bx-info-circle"></i>
                 {t('merchant.webhookDesc', { defaultValue: 'Set a callback URL to receive real-time payment notifications via webhook.' })}
               </p>
@@ -404,7 +429,7 @@ export default function MerchantPage() {
               {editingWebhook ? (
                 <>
                   <div className="mb-3">
-                    <Label className="font-semibold text-xs">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</Label>
+                    <Label className="font-semibold text-sm">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</Label>
                     <InputGroup>
                       <InputIcon>
                         <i className="bx bx-link"></i>
@@ -420,7 +445,7 @@ export default function MerchantPage() {
                   </div>
                   {/* Password */}
                   <div className="mb-3">
-                    <Label htmlFor="webhook-password" className="font-semibold text-xs">
+                    <Label htmlFor="webhook-password" className="font-semibold text-sm">
                       <i className="bx bx-lock-alt mr-1"></i>
                       {t('merchant.enterPassword', { defaultValue: 'Password' })}
                     </Label>
@@ -446,7 +471,7 @@ export default function MerchantPage() {
                   </div>
                   {is2FAEnabled && (
                     <div className="mb-3">
-                      <Label htmlFor="webhook-totp" className="font-semibold text-xs">
+                      <Label htmlFor="webhook-totp" className="font-semibold text-sm">
                         <i className="bx bx-shield mr-1"></i>
                         {t('merchant.enter2FACode', { defaultValue: '2FA Code' })}
                       </Label>
@@ -460,7 +485,7 @@ export default function MerchantPage() {
                         maxLength={9}
                         autoComplete="one-time-code"
                       />
-                      <p className="text-xs text-surface-400 mt-1">{t('merchant.totpHint', { defaultValue: 'Enter the code from your authenticator app or a backup code.' })}</p>
+                      <p className="text-xs text-surface-400 dark:text-surface-500 mt-1">{t('merchant.totpHint', { defaultValue: 'Enter the code from your authenticator app or a backup code.' })}</p>
                     </div>
                   )}
                   {webhookError && (
@@ -483,7 +508,7 @@ export default function MerchantPage() {
                     <Button
                       variant="outline-secondary"
                       size="sm"
-                      onClick={() => { setEditingWebhook(false); setWebhookTotpCode(''); setWebhookPassword(''); setWebhookError('') }}
+                      onClick={() => { setEditingWebhook(false); resetWebhookSecurityInputs() }}
                       disabled={webhookLoading}
                     >
                       {t('actions.cancel', { defaultValue: 'Cancel' })}
@@ -494,12 +519,12 @@ export default function MerchantPage() {
                 <>
                   {merchant?.webhookUrl && (
                     <div className="mb-3">
-                      <Label className="font-semibold text-xs">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</Label>
+                      <Label className="font-semibold text-sm">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</Label>
                       <div className="flex items-center gap-2 p-2.5 bg-surface-50 rounded-lg dark:bg-dark-elevated">
-                        <span className="font-mono text-sm text-surface-700 break-all flex-1">{merchant.webhookUrl}</span>
+                        <span className="font-mono text-sm text-surface-700 dark:text-surface-300 break-all flex-1">{merchant.webhookUrl}</span>
                         <button
                           type="button"
-                          className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 hover:bg-surface-200 dark:hover:bg-white/6 hover:text-surface-600 transition-colors shrink-0 cursor-pointer"
+                          className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 dark:text-surface-500 hover:bg-surface-200 dark:hover:bg-white/6 hover:text-surface-600 dark:hover:text-surface-200 transition-colors shrink-0 cursor-pointer"
                           onClick={async () => {
                             const ok = await copyToClipboard(merchant.webhookUrl)
                             if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
@@ -539,19 +564,14 @@ export default function MerchantPage() {
               </h6>
             </div>
             <div className="p-5 pt-3">
-              {[
-                { step: 1, icon: 'bx-key', text: t('merchant.step1', { defaultValue: 'Get your API Key & Secret' }), done: !!apiKey },
-                { step: 2, icon: 'bx-broadcast', text: t('merchant.step2', { defaultValue: 'Configure webhook URL' }), done: !!merchant?.hasWebhook },
-                { step: 3, icon: 'bx-receipt', text: t('merchant.step3', { defaultValue: 'Create your first invoice' }), done: false },
-                { step: 4, icon: 'bx-wallet', text: t('merchant.step4', { defaultValue: 'Accept crypto payments' }), done: false },
-              ].map(({ step, icon, text, done }) => (
+              {quickStartSteps.map(({ step, icon, text, done }) => (
                 <div key={step} className={`flex items-center gap-3 py-2.5 ${step < 4 ?'border-b border-surface-200' : ''}`}>
                   <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 ${done ?'bg-success-50 dark:bg-success-950/30 text-success-600 dark:text-success-400' : 'bg-surface-100 dark:bg-dark-elevated text-surface-500'}`}>
                     {done ? <i className="bx bx-check text-base"></i> : step}
                   </span>
                   <div className="flex items-center gap-2 min-w-0">
-                    <i className={`bx ${icon} ${done ?'text-success-600 dark:text-success-400' : 'text-surface-400'}`}></i>
-                    <span className={`text-sm ${done ?'text-surface-800' : 'text-surface-500'}`}>{text}</span>
+                    <i className={`bx ${icon} ${done ?'text-success-600 dark:text-success-400' : 'text-surface-400 dark:text-surface-500'}`}></i>
+                    <span className={`text-sm ${done ?'text-surface-800' : 'text-surface-500 dark:text-surface-400'}`}>{text}</span>
                   </div>
                 </div>
               ))}
@@ -567,19 +587,14 @@ export default function MerchantPage() {
               </h6>
             </div>
             <div className="p-5 pt-3">
-              {[
-                { icon: 'bx-lock-alt', color: 'danger', text: t('merchant.tip1', { defaultValue: 'Never share your API Secret publicly' }) },
-                { icon: 'bx-refresh', color: 'warning', text: t('merchant.tip2', { defaultValue: 'Rotate your secret periodically' }) },
-                { icon: 'bx-link', color: 'success', text: t('merchant.tip3', { defaultValue: 'Use HTTPS for all webhook URLs' }) },
-                { icon: 'bx-error', color: 'info', text: t('merchant.tip4', { defaultValue: 'Regenerating key invalidates all credentials' }) },
-              ].map(({ icon, color, text }, i) => {
+              {securityTips.map(({ icon, color, text }, i) => {
                 const c = tileColors[color] || tileColors.primary
                 return (
                   <div key={i} className={`flex items-start gap-3 py-2.5 ${i < 3 ?'border-b border-surface-200' : ''}`}>
                     <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${c.bg} shrink-0`}>
                       <i className={`bx ${icon} text-sm ${c.icon}`}></i>
                     </span>
-                    <span className="text-sm text-surface-500 pt-0.5">{text}</span>
+                    <span className="text-sm text-surface-500 dark:text-surface-400 pt-0.5">{text}</span>
                   </div>
                 )
               })}

@@ -24,7 +24,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
   return (
     <Card className="mb-4">
       <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
-        <h6 className="mb-0 font-semibold">
+        <h6 className="mb-0 font-semibold text-surface-900">
           <i className="bx bx-key mr-2 text-primary-600 dark:text-primary-400 text-[1.1rem]"></i>
           {t('merchant.apiCredentials', { defaultValue: 'API Credentials' })}
         </h6>
@@ -37,7 +37,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
         {/* API Key */}
         <div className="mb-3">
           <Label className="font-semibold text-sm mb-1">
-            <i className="bx bx-fingerprint mr-1 text-surface-500"></i>
+            <i className="bx bx-fingerprint mr-1 text-surface-500 dark:text-surface-400"></i>
             {t('merchant.apiKey', { defaultValue: 'API Key' })}
           </Label>
           <InputGroup>
@@ -56,7 +56,10 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
                 <Button
 
                 onClick={() => setShowApiKey((v) => !v)}
-                title={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })} variant="outline-secondary">
+                title={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })}
+                aria-label={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })}
+                variant="outline-secondary"
+                size="icon">
                 
                   <i className={`bx ${showApiKey ? 'bx-hide' : 'bx-show'}`}></i>
                 </Button>
@@ -66,7 +69,10 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
                   const ok = await copyText(apiKey);
                   if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }));
                 }}
-                title={t('actions.copy', { defaultValue: 'Copy' })} variant="outline-secondary">
+                title={t('actions.copy', { defaultValue: 'Copy' })}
+                aria-label={t('actions.copy', { defaultValue: 'Copy' })}
+                variant="outline-secondary"
+                size="icon">
                 
                   <i className="bx bx-copy"></i>
                 </Button>
@@ -74,7 +80,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             }
           </InputGroup>
           {showApiKey &&
-          <small className="text-amber-500 block mt-1">
+          <small className="text-warning-600 dark:text-warning-400 block mt-1">
               <i className="bx bx-info-circle mr-1"></i>
               {t('merchant.autoHide', { defaultValue: 'Auto-hides after 30 seconds' })}
             </small>
@@ -84,7 +90,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
         {/* API Secret */}
         <div className="mb-4">
           <Label className="font-semibold text-sm mb-1">
-            <i className="bx bx-lock-alt mr-1 text-surface-500"></i>
+            <i className="bx bx-lock-alt mr-1 text-surface-500 dark:text-surface-400"></i>
             {t('merchant.apiSecret', { defaultValue: 'API Secret' })}
           </Label>
           <InputGroup>
@@ -107,11 +113,11 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
 
         {/* Actions */}
         <div className="flex flex-wrap gap-2 pt-2 border-t border-surface-200">
-          <Button onClick={onRotate} variant="outline-primary" size="sm" className="bg-transparent hover:bg-primary-600 hover:text-white">
+          <Button onClick={onRotate} variant="outline-primary" size="sm">
             <i className="bx bx-refresh mr-1"></i>
             {t('merchant.rotateSecret', { defaultValue: 'Rotate Secret' })}
           </Button>
-          <Button onClick={onRegenerate} size="sm" className="border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white dark:text-danger-400 dark:border-danger-400 dark:hover:bg-danger-500 dark:hover:text-white">
+          <Button onClick={onRegenerate} variant="outline-danger" size="sm">
             <i className="bx bx-reset mr-1"></i>
             {t('merchant.regenerateKey', { defaultValue: 'Regenerate Key & Secret' })}
           </Button>

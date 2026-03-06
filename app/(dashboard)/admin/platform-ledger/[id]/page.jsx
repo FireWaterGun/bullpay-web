@@ -53,9 +53,9 @@ export default function PlatformLedgerDetail() {
 
 
   function stateBadge(state) {
-    if (state === 'settled') return <Badge className="bg-green-50 text-green-700">Settled</Badge>;
-    if (state === 'committed') return <Badge className="bg-cyan-50 text-cyan-700">Committed</Badge>;
-    if (state === 'reversed') return <Badge className="bg-surface-100 text-surface-600">Reversed</Badge>;
+    if (state === 'settled') return <Badge color="success" label>Settled</Badge>;
+    if (state === 'committed') return <Badge color="info" label>Committed</Badge>;
+    if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>;
     return <span className="text-surface-500">{state || 'N/A'}</span>;
   }
 
@@ -134,15 +134,15 @@ export default function PlatformLedgerDetail() {
                       Platform Ledger Entry #{entry.id}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className={`${entry.accountType === 'revenue' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
+                      <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
                         {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
                       </Badge>
-                      <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                      <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                         <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </Badge>
                       {entry.entryCode &&
-                      <Badge className="bg-surface-100 text-surface-600">
+                      <Badge color="secondary">
                           {entryCodeLabels[entry.entryCode] || entry.entryCode}
                         </Badge>
                       }
@@ -185,7 +185,7 @@ export default function PlatformLedgerDetail() {
                       <tr>
                         <td className="text-surface-500">Account Type</td>
                         <td>
-                          <Badge className={`${entry.accountType === 'revenue' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
+                          <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
                             {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
                           </Badge>
                         </td>
@@ -212,7 +212,7 @@ export default function PlatformLedgerDetail() {
                       <tr>
                         <td className="text-surface-500">Entry Type</td>
                         <td>
-                          <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                          <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                             {isCredit ? 'Credit' : 'Debit'}
                           </Badge>
                         </td>
@@ -268,10 +268,11 @@ export default function PlatformLedgerDetail() {
                             <div className="flex items-center">
                               <code className="mr-2 break-all">{entry.txHash}</code>
                               <Button
-
-                              onClick={() => handleCopy(entry.txHash)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none">
-                              
+                                onClick={() => handleCopy(entry.txHash)}
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
+                                size="icon-sm"
+                                variant="text-secondary"
+                              >
                                 <i className="bx bx-copy"></i>
                               </Button>
                               {explorerUrl &&

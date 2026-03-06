@@ -131,13 +131,13 @@ export default function BalancePage() {
                     {parseFloat(locked) > 0 &&
                   <div className="flex justify-between">
                         <span className="text-surface-500 text-sm">{t('balance.locked', { defaultValue: 'Locked' })}</span>
-                        <span className="text-amber-500">{formatCoinAmount(locked)}</span>
+                        <span className="text-warning-500">{formatCoinAmount(locked)}</span>
                       </div>
                   }
                     {parseFloat(pending) > 0 &&
                   <div className="flex justify-between">
                         <span className="text-surface-500 text-sm">{t('balance.pending', { defaultValue: 'Pending' })}</span>
-                        <span className="text-blue-500">{formatCoinAmount(pending)}</span>
+                        <span className="text-info-500">{formatCoinAmount(pending)}</span>
                       </div>
                   }
                   </div>

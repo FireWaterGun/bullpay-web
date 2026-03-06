@@ -102,12 +102,12 @@ export default function SystemLedgerDetail() {
                       {t('admin.ledger.systemLedgerEntry', { defaultValue: 'System Ledger Entry' })} #{entry.id}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                      <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'} label>
                         <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </Badge>
                       {entry.entryCode &&
-                      <Badge className="bg-surface-100 text-surface-600">
+                      <Badge color="secondary">
                           {entryCodeLabels[entry.entryCode] || entry.entryCode}
                         </Badge>
                       }
@@ -168,7 +168,7 @@ export default function SystemLedgerDetail() {
                       <tr>
                         <td className="text-surface-500">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
                         <td>
-                          <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                          <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'} label>
                             {isCredit ? 'Credit' : 'Debit'}
                           </Badge>
                         </td>

@@ -95,11 +95,12 @@ export default function UserBalanceDetailPage() {
             <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0"><i className="bx bx-coin-stack mr-2"></i>{t('admin.userBalance.assets', { defaultValue: 'Assets' })}</h5>
             </div>
-            <div className="p-5">
               {assets.length === 0 ?
-              <CardEmptyState
-                icon="bx-coin-stack"
-                message="No assets found for this user" /> :
+              <div className="p-5">
+                <CardEmptyState
+                  icon="bx-coin-stack"
+                  message="No assets found for this user" />
+              </div> :
 
 
               <Table>
@@ -168,7 +169,6 @@ export default function UserBalanceDetailPage() {
                     </tbody>
                   </Table>
               }
-            </div>
           </Card>
         </div>
       </div>

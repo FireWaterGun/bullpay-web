@@ -27,7 +27,7 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
               {revenueItems.map((item) =>
               <tr key={item.code}>
                   <td>
-                    <Badge className="bg-primary-50 text-primary-600 mr-2">{item.code}</Badge>
+                    <Badge color="primary" label className="mr-2">{item.code}</Badge>
                     <span>{item.name || item.code}</span>
                   </td>
                   <td className="text-right font-medium whitespace-nowrap">{formatUsd(item.amountUsd)}</td>
@@ -41,7 +41,7 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
                   {deductionItems.map((item, i) =>
                 <tr key={`d-${i}`}>
                       <td>
-                        <Badge className="bg-amber-50 text-amber-700 mr-2">{item.code}</Badge>
+                        <Badge color="warning" label className="mr-2">{item.code}</Badge>
                         <span>{item.name || item.code}</span>
                       </td>
                       <td className="text-right font-medium text-danger whitespace-nowrap">({formatUsd(item.amountUsd)})</td>
@@ -76,7 +76,7 @@ function ExpensesCard({ expenseItems, totalExpenses }) {
               {expenseItems.map((item) =>
               <tr key={item.code}>
                   <td>
-                    <Badge className="bg-red-50 text-red-700 mr-2">{item.code}</Badge>
+                    <Badge color="danger" label className="mr-2">{item.code}</Badge>
                     <span>{item.name || item.code}</span>
                   </td>
                   <td className="text-right font-medium whitespace-nowrap">{formatUsd(item.amountUsd)}</td>
@@ -143,7 +143,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
                 {adjustIncrease.map((item, i) =>
               <tr key={`ai-${i}`}>
                     <td>
-                      <Badge className="bg-green-50 text-green-700 mr-2">{item.code}</Badge>
+                      <Badge color="success" label className="mr-2">{item.code}</Badge>
                       <span>{item.name || item.code}</span>
                       <small className="text-surface-500 ml-2">({item.entries || 0} entries)</small>
                     </td>
@@ -158,7 +158,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
                 {adjustDecrease.map((item, i) =>
               <tr key={`ad-${i}`}>
                     <td>
-                      <Badge className="bg-red-50 text-red-700 mr-2">{item.code}</Badge>
+                      <Badge color="danger" label className="mr-2">{item.code}</Badge>
                       <span>{item.name || item.code}</span>
                       <small className="text-surface-500 ml-2">({item.entries || 0} entries)</small>
                     </td>
@@ -208,7 +208,7 @@ function CountsCard({ allItems }) {
         <div className="flex flex-wrap gap-4">
           {allItems.map((item) =>
           <div key={item.code} className="flex items-center gap-2">
-              <Badge className="bg-surface-100 text-surface-600">{item.code}</Badge>
+              <Badge color="secondary">{item.code}</Badge>
               <span className="text-surface-500">{item.name || item.code}:</span>
               <span className="font-semibold">{item.entries || 0}</span>
             </div>

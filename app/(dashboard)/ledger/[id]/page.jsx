@@ -97,7 +97,7 @@ export default function MyLedgerDetail() {
               </div>
             </div>
             <div className="text-right">
-              <div className={`text-2xl font-bold ${isReversed ? '' : isCredit ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={`text-2xl font-bold ${isReversed ? '' : isCredit ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
                 {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span className="text-sm font-normal">{entry.coinSymbol}</span>
               </div>
               <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
@@ -151,7 +151,7 @@ export default function MyLedgerDetail() {
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('userLedger.amount', { defaultValue: 'Amount' })}</td>
                   <td className="py-2">
-                    <span className={`font-bold ${isReversed ? '' : isCredit ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`font-bold ${isReversed ? '' : isCredit ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
                       {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)}
                     </span>
                   </td>

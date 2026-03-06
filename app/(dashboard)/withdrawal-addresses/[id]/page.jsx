@@ -77,7 +77,7 @@ export default function WithdrawalAddressDetailPage() {
 
   if (!address) {
     return (
-      <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">{t('withdrawalAddresses.notFound', { defaultValue: 'Address not found' })}</div>);
+      <div className="rounded-lg bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-300 px-4 py-3 text-sm">{t('withdrawalAddresses.notFound', { defaultValue: 'Address not found' })}</div>);
 
   }
 
@@ -162,7 +162,7 @@ export default function WithdrawalAddressDetailPage() {
                   </Button>
                 }
                 {address.status !== 'suspended' &&
-                <button type="button" className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700" onClick={() => setActionType('suspend')}>
+                <button type="button" className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-danger-600 text-white hover:bg-danger-700" onClick={() => setActionType('suspend')}>
                     <i className="bx bx-block mr-1"></i>{t('common.suspend', { defaultValue: 'Suspend' })}
                   </button>
                 }

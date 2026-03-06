@@ -17,14 +17,14 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
     topup: t('admin.gasSettings.opTopup', { defaultValue: 'Topup' }),
   };
   const opIcons = { withdrawal: 'bx-upload', sweep: 'bx-transfer', topup: 'bx-coin-stack' };
-  const opColors = { withdrawal: 'var(--color-primary-600)', sweep: 'var(--color-green-500)', topup: 'var(--color-amber-500)' };
+  const opBorderColors = { withdrawal: 'border-l-primary-600', sweep: 'border-l-green-500', topup: 'border-l-amber-500' };
   const opTextColors = { withdrawal: 'text-primary', sweep: 'text-success', topup: 'text-warning' };
 
   return (
     <>
       {/* Network type badge */}
       <div className="mb-4">
-        <Badge className={`rounded-full ${isEip1559 ? 'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'} mr-2`}>
+        <Badge color={isEip1559 ? 'info' : 'warning'} label className="rounded-full mr-2">
           {isEip1559 ? 'EIP-1559' : 'Legacy'}
         </Badge>
         <span className="text-surface-500">{network.symbol}</span>
@@ -59,14 +59,14 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
       </div>
 
       {OPERATIONS.map((op) => (
-        <Card key={op} style={{ borderLeft: `3px solid ${opColors[op]}` }} className="mb-3">
-          <div className="p-5 py-3">
+        <Card key={op} className={`mb-3 border-l-[3px] ${opBorderColors[op]}`}>
+          <div className="px-5 py-3">
             <h6 className={`mb-3 flex items-center ${opTextColors[op]}`}>
               <i className={`bx ${opIcons[op]} mr-2`}></i>
               {opLabels[op]}
             </h6>
-            <div className="grid grid-cols-12 gap-x-6 gap-3">
-              <div className={isEip1559 ? 'md:col-span-6' : 'col-span-12'}>
+            <div className={`grid gap-3 ${isEip1559 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+              <div>
                 <Label className="text-sm text-surface-500 mb-1">
                   {t('admin.gasSettings.baseMultiplier', { defaultValue: 'Base Multiplier' })}
                 </Label>
@@ -82,7 +82,7 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
                 {formErrors[`${op}Base`] && <div className="text-xs text-danger-500 mt-1 block">{formErrors[`${op}Base`]}</div>}
               </div>
               {isEip1559 && (
-                <div className="md:col-span-6">
+                <div>
                   <Label className="text-sm text-surface-500 mb-1">
                     {t('admin.gasSettings.priorityMultiplier', { defaultValue: 'Priority Multiplier' })}
                   </Label>
@@ -147,7 +147,7 @@ function GasTopupForm({ t, network, editForm, updateField, formErrors }) {
     <div>
       <div className="mb-3">
         <span className="text-surface-500">{network.symbol}</span>
-        <Badge className="bg-primary-50 text-primary-600 ml-2">{network.nativeCoin}</Badge>
+        <Badge color="primary" label className="ml-2">{network.nativeCoin}</Badge>
       </div>
       <div className="mb-3">
         <Label className="font-semibold">
@@ -195,7 +195,7 @@ export default function GasEditModal({ t, editModal, editForm, setEditForm, form
     >
       <div className={`w-full mx-4 ${tab === 'gasPrice' ? 'max-w-[800px]' : 'max-w-lg'}`}>
         <div className="bg-card rounded-xl shadow-xl">
-          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200 dark:border-surface-300">
             <h5 className="text-lg font-semibold text-surface-800">
               <i className={`bx ${tabIcon} mr-2`}></i>
               {modalTitle}
@@ -213,7 +213,7 @@ export default function GasEditModal({ t, editModal, editForm, setEditForm, form
               <GasTopupForm t={t} network={network} editForm={editForm} updateField={updateField} formErrors={formErrors} />
             )}
           </div>
-          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200 dark:border-surface-300">
             <Button onClick={onClose} disabled={saving} variant="outline-secondary">
               {t('admin.gasSettings.cancel', { defaultValue: 'Cancel' })}
             </Button>

@@ -36,8 +36,8 @@ export function getEntryCodeLabel(code, t) {
 /** Inline badge for user ledger entry state */
 export function userStateBadge(state, t) {
   const colorMap = {
-    settled: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    committed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    settled: 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400',
+    committed: 'bg-info-100 text-info-700 dark:bg-info-900/30 dark:text-info-400',
     reversed: 'bg-surface-100 text-surface-600 dark:bg-dark-elevated'
   };
   const cls = colorMap[state];
@@ -66,10 +66,10 @@ export function formatAmount(val) {
 }
 
 export function stateBadge(state) {
-  if (state === 'settled') return <Badge className="bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">Settled</Badge>;
-  if (state === 'committed') return <Badge className="bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400">Committed</Badge>;
-  if (state === 'pending') return <Badge className="bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Pending</Badge>;
-  if (state === 'reversed') return <Badge className="bg-surface-100 text-surface-600 dark:bg-dark-elevated">Reversed</Badge>;
+  if (state === 'settled') return <Badge color="success" label>Settled</Badge>;
+  if (state === 'committed') return <Badge color="info" label>Committed</Badge>;
+  if (state === 'pending') return <Badge color="warning" label>Pending</Badge>;
+  if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>;
   return <span className="text-surface-500">{state || 'N/A'}</span>;
 }
 
@@ -91,19 +91,19 @@ export function parseMetadata(entry) {
 // Additional helpers
 export function entryTypeBadgeClass(type) {
   const v = String(type || '').toLowerCase();
-  if (v === 'credit' || v === 'deposit' || v === 'payment_received') return `${badgeBase} bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400`;
-  if (v === 'debit' || v === 'withdrawal' || v === 'fee') return `${badgeBase} bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400`;
-  if (v === 'adjustment') return `${badgeBase} bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`;
-  if (v === 'conversion_in') return `${badgeBase} bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400`;
+  if (v === 'credit' || v === 'deposit' || v === 'payment_received') return `${badgeBase} bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-400`;
+  if (v === 'debit' || v === 'withdrawal' || v === 'fee') return `${badgeBase} bg-danger-50 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400`;
+  if (v === 'adjustment') return `${badgeBase} bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400`;
+  if (v === 'conversion_in') return `${badgeBase} bg-info-50 text-info-700 dark:bg-info-900/30 dark:text-info-400`;
   if (v === 'conversion_out') return `${badgeBase} bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400`;
   return `${badgeBase} bg-surface-100 text-surface-600 dark:bg-dark-elevated`;
 }
 
 export function stateBadgeClass(state) {
   const v = String(state || '').toLowerCase();
-  if (v === 'confirmed' || v === 'completed') return `${badgeBase} bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400`;
-  if (v === 'pending') return `${badgeBase} bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`;
-  if (v === 'failed' || v === 'reversed') return `${badgeBase} bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400`;
+  if (v === 'confirmed' || v === 'completed') return `${badgeBase} bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-400`;
+  if (v === 'pending') return `${badgeBase} bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400`;
+  if (v === 'failed' || v === 'reversed') return `${badgeBase} bg-danger-50 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400`;
   return `${badgeBase} bg-surface-100 text-surface-600 dark:bg-dark-elevated`;
 }
 

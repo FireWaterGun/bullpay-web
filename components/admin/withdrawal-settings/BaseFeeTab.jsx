@@ -16,33 +16,30 @@ export default function BaseFeeTab({
       <div className="lg:col-span-8">
         {/* Auto-Update Toggle */}
         <Card className="mb-4">
-          <div className="px-5 py-4 border-b border-surface-200">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h5 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-refresh mr-2 text-info"></i>
               {t('admin.withdrawalSettings.baseFeeAutoUpdate', { defaultValue: 'Base Fee Auto-Update' })}
             </h5>
           </div>
           <div className="p-5">
-            <p className="text-surface-500 mb-3 text-[0.875rem]">
+            <p className="text-surface-500 mb-3 text-sm">
               {t('admin.withdrawalSettings.baseFeeAutoUpdateDesc', { defaultValue: 'When enabled, base fees are automatically recalculated every minute based on current network gas prices.' })}
             </p>
-            <div className="flex items-center justify-between p-3 rounded bg-surface-100">
+            <div className="flex items-center justify-between p-3 rounded bg-surface-100 dark:bg-white/[0.03]">
               <div className="flex items-center gap-2">
-                <Badge color={autoUpdateOn ? 'success' : 'secondary'} label>
-                  {autoUpdateOn ? 'ON' : 'OFF'}
-                </Badge>
-                <span className="text-[0.875rem]">
+                <span className="text-sm">
                   {t('admin.withdrawalSettings.autoUpdateToggleLabel', { defaultValue: 'Auto-update base fees from gas prices' })}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                <ToggleSwitch
                   checked={autoUpdateOn}
-                  onChange={handleToggleAutoUpdate}
                   disabled={savingAutoUpdate}
-                  style={{ cursor: savingAutoUpdate ? 'not-allowed' : 'pointer' }} />
+                  onChange={handleToggleAutoUpdate} />
+                <span className={`text-xs font-semibold ${autoUpdateOn ? 'text-success' : 'text-surface-400'}`}>
+                  {autoUpdateOn ? 'ON' : 'OFF'}
+                </span>
               </div>
             </div>
           </div>
@@ -50,79 +47,91 @@ export default function BaseFeeTab({
 
         {/* Buffer & Alert */}
         <Card className="mb-4">
-          <div className="px-5 py-4 border-b border-surface-200">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h5 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-slider-alt mr-2 text-primary"></i>
               {t('admin.withdrawalSettings.baseFeeParams', { defaultValue: 'Base Fee Parameters' })}
             </h5>
           </div>
-          <div className="p-5">
-            <div className="overflow-x-auto">
-              <Table responsive={false} className="mb-0">
-                <tbody>
-                  <tr className="bg-surface-100">
-                    <td className="py-3 pl-3 w-2/5">
-                      <div>
-                        <span className="font-semibold text-[0.875rem]">{t('admin.withdrawalSettings.bufferMultiplier', { defaultValue: 'Buffer Multiplier' })}</span>
-                        <br />
-                        <small className="text-surface-500">{t('admin.withdrawalSettings.bufferMultiplierDesc', { defaultValue: 'Multiplied on gas cost (1.2 = 20% safety margin)' })}</small>
-                      </div>
-                    </td>
-                    <td className="py-3">
-                      <code className="text-xl">{bufferMultiplier}x</code>
-                    </td>
-                    <td className="py-3 text-right pr-3">
-                      <Button
-                        type="button"
-                        onClick={onEditBuffer}
-                        variant="outline-primary"
-                        size="sm"
-                        className="bg-transparent hover:bg-primary-600 hover:text-white">
-                        <i className="bx bx-edit"></i>
-                      </Button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 pl-3">
-                      <div>
-                        <span className="font-semibold text-[0.875rem]">{t('admin.withdrawalSettings.alertThreshold', { defaultValue: 'Alert Threshold' })}</span>
-                        <br />
-                        <small className="text-surface-500">{t('admin.withdrawalSettings.alertThresholdDesc', { defaultValue: 'Notify admin when base fee changes by more than this %' })}</small>
-                      </div>
-                    </td>
-                    <td className="py-3">
-                      <code className="text-xl">{(parseFloat(alertThreshold) * 100).toFixed(0)}%</code>
-                    </td>
-                    <td className="py-3 text-right pr-3">
-                      <Button
-                        type="button"
-                        onClick={onEditAlert}
-                        variant="outline-primary"
-                        size="sm"
-                        className="bg-transparent hover:bg-primary-600 hover:text-white">
-                        <i className="bx bx-edit"></i>
-                      </Button>
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </div>
-          </div>
+          <Table responsive={false}>
+            <tbody>
+              <tr>
+                <td className="w-2/5">
+                  <div>
+                    <span className="font-semibold text-sm">{t('admin.withdrawalSettings.bufferMultiplier', { defaultValue: 'Buffer Multiplier' })}</span>
+                    <br />
+                    <small className="text-surface-500">{t('admin.withdrawalSettings.bufferMultiplierDesc', { defaultValue: 'Multiplied on gas cost (1.2 = 20% safety margin)' })}</small>
+                  </div>
+                </td>
+                <td>
+                  <code className="text-xl">{bufferMultiplier}x</code>
+                </td>
+                <td className="text-right">
+                  <Button
+                    type="button"
+                    onClick={onEditBuffer}
+                    variant="text-secondary"
+                    size="icon-sm">
+                    <i className="bx bx-edit text-[1rem]"></i>
+                  </Button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div>
+                    <span className="font-semibold text-sm">{t('admin.withdrawalSettings.alertThreshold', { defaultValue: 'Alert Threshold' })}</span>
+                    <br />
+                    <small className="text-surface-500">{t('admin.withdrawalSettings.alertThresholdDesc', { defaultValue: 'Notify admin when base fee changes by more than this %' })}</small>
+                  </div>
+                </td>
+                <td>
+                  <code className="text-xl">{(parseFloat(alertThreshold) * 100).toFixed(0)}%</code>
+                </td>
+                <td className="text-right">
+                  <Button
+                    type="button"
+                    onClick={onEditAlert}
+                    variant="text-secondary"
+                    size="icon-sm">
+                    <i className="bx bx-edit text-[1rem]"></i>
+                  </Button>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
         </Card>
 
         {/* Formula */}
         <Card className="mb-4">
-          <div className="px-5 py-4 border-b border-surface-200">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h5 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-math mr-2"></i>
               {t('admin.withdrawalSettings.feeFormula', { defaultValue: 'Fee Calculation Formula' })}
             </h5>
           </div>
           <div className="p-5">
-            <div className="p-3 rounded mb-3 bg-surface-100 font-mono text-[0.9rem]">
-              <div className="mb-2"><strong>Base Fee</strong> = {t('admin.withdrawalSettings.baseFeeFormula', { defaultValue: 'Gas Limit × Gas Price × Buffer Multiplier' })}</div>
-              <div className="mb-2"><strong>Platform Fee</strong> = {t('admin.withdrawalSettings.platformFeeFormula', { defaultValue: 'Amount × Fee Percent (%)' })}</div>
-              <div><strong>Total Fee</strong> = {t('admin.withdrawalSettings.totalFeeFormula', { defaultValue: 'Base Fee + Platform Fee' })}</div>
+            <div className="grid grid-cols-1 gap-2 mb-3">
+              <div className="flex items-center gap-3 p-3 rounded bg-surface-100 dark:bg-white/[0.03]">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-600 text-xs font-bold shrink-0 dark:bg-primary-600/20">1</span>
+                <div>
+                  <div className="font-semibold text-sm">{t('admin.withdrawalSettings.baseFeeLabel', { defaultValue: 'Base Fee' })}</div>
+                  <div className="text-surface-500 text-xs font-mono">{t('admin.withdrawalSettings.baseFeeFormula', { defaultValue: 'Gas Limit × Gas Price × Buffer Multiplier' })}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded bg-surface-100 dark:bg-white/[0.03]">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-info-100 text-info-600 text-xs font-bold shrink-0 dark:bg-info-600/20">2</span>
+                <div>
+                  <div className="font-semibold text-sm">{t('admin.withdrawalSettings.platformFeeLabel', { defaultValue: 'Platform Fee' })}</div>
+                  <div className="text-surface-500 text-xs font-mono">{t('admin.withdrawalSettings.platformFeeFormula', { defaultValue: 'Amount × Fee Percent (%)' })}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded bg-surface-100 dark:bg-white/[0.03]">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-success-100 text-success-600 text-xs font-bold shrink-0 dark:bg-success-600/20">Σ</span>
+                <div>
+                  <div className="font-semibold text-sm">{t('admin.withdrawalSettings.totalFeeLabel', { defaultValue: 'Total Fee' })}</div>
+                  <div className="text-surface-500 text-xs font-mono">{t('admin.withdrawalSettings.totalFeeFormula', { defaultValue: 'Base Fee + Platform Fee' })}</div>
+                </div>
+              </div>
             </div>
             <small className="text-surface-500">
               {t('admin.withdrawalSettings.feeFormulaNote', { defaultValue: 'Base fee covers on-chain gas costs. Platform fee (%) is your revenue margin. Both are configured per coin-network in the Fee & Limits tab.' })}
@@ -134,7 +143,7 @@ export default function BaseFeeTab({
       {/* Sidebar */}
       <div className="lg:col-span-4">
         <Card className="mb-3">
-          <div className="px-5 py-4 border-b border-surface-200">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h6 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-dollar-circle mr-1"></i>
               {t('admin.withdrawalSettings.feeModel', { defaultValue: 'Fee Model' })}
@@ -143,21 +152,21 @@ export default function BaseFeeTab({
           <div className="p-5">
             <div className="flex flex-col gap-3">
               <div className="flex items-start gap-2">
-                <Badge className="bg-primary-50 text-primary-600 rounded-full mt-1">1</Badge>
+                <Badge color="primary" label className="rounded-full mt-1">1</Badge>
                 <div>
                   <small className="font-semibold block">{t('admin.withdrawalSettings.feeModelStep1', { defaultValue: 'Base Fee (gas cost)' })}</small>
                   <small className="text-surface-500">{t('admin.withdrawalSettings.feeModelStep1Desc', { defaultValue: 'Auto-calculated from on-chain gas price × buffer multiplier' })}</small>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <Badge className="bg-primary-50 text-primary-600 rounded-full mt-1">2</Badge>
+                <Badge color="primary" label className="rounded-full mt-1">2</Badge>
                 <div>
                   <small className="font-semibold block">{t('admin.withdrawalSettings.feeModelStep2', { defaultValue: 'Platform Fee (%)' })}</small>
                   <small className="text-surface-500">{t('admin.withdrawalSettings.feeModelStep2Desc', { defaultValue: 'Percentage fee on withdrawal amount — your revenue margin' })}</small>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <Badge className="bg-green-50 text-green-700 rounded-full mt-1">3</Badge>
+                <Badge color="success" label className="rounded-full mt-1">3</Badge>
                 <div>
                   <small className="font-semibold block">{t('admin.withdrawalSettings.feeModelStep3', { defaultValue: 'Total = Base + Platform' })}</small>
                   <small className="text-surface-500">{t('admin.withdrawalSettings.feeModelStep3Desc', { defaultValue: 'Charged to user on each withdrawal. Edit per coin-network in Fee & Limits.' })}</small>
@@ -168,7 +177,7 @@ export default function BaseFeeTab({
         </Card>
 
         <Card>
-          <div className="px-5 py-4 border-b border-surface-200">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h6 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-bulb mr-1"></i>
               {t('admin.withdrawalSettings.tips', { defaultValue: 'Tips' })}
@@ -193,5 +202,29 @@ export default function BaseFeeTab({
         </Card>
       </div>
     </div>
+  );
+}
+
+/* ── Toggle Switch ── */
+function ToggleSwitch({ checked, disabled, onChange }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange()}
+      className={[
+        'relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
+        checked ? 'bg-primary-600' : 'bg-surface-300',
+        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+      ].join(' ')}>
+      <span
+        className={[
+          'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm ring-0 transition-transform duration-200 ease-in-out',
+          checked ? 'translate-x-5' : 'translate-x-0',
+        ].join(' ')} />
+    </button>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
 import { getUserWebhookLogs } from '@/lib/api/userWebhookLogs';
@@ -194,21 +193,19 @@ export default function WebhookLogsPage() {
 
       {/* Table */}
       <Card>
-        <div className="p-6">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <Table>
               <thead>
-                <tr className="border-b border-surface-200 text-surface-500 text-xs uppercase tracking-wider whitespace-nowrap">
-                  <th className="py-3 px-3 text-left font-medium">{t('webhookLog.paymentId', { defaultValue: 'Payment' })}</th>
-                  <th className="py-3 px-3 text-left font-medium">{t('webhookLog.event', { defaultValue: 'Event' })}</th>
-                  <th className="py-3 px-3 text-center font-medium">{t('webhookLog.httpStatus', { defaultValue: 'HTTP' })}</th>
-                  <th className="py-3 px-3 text-center font-medium">{t('webhookLog.success', { defaultValue: 'Status' })}</th>
-                  <th className="py-3 px-3 text-right font-medium">{t('webhookLog.duration', { defaultValue: 'Duration' })}</th>
-                  <th className="py-3 px-3 text-center font-medium">{t('webhookLog.attempt', { defaultValue: 'Attempt' })}</th>
-                  <th className="py-3 px-3 text-left font-medium">{t('webhookLog.callbackUrl', { defaultValue: 'Callback URL' })}</th>
-                  <th className="py-3 px-3 text-left font-medium">{t('webhookLog.error', { defaultValue: 'Error' })}</th>
-                  <th className="py-3 px-3 text-left font-medium">{t('webhookLog.created', { defaultValue: 'Created' })}</th>
-                  <th className="py-3 px-3"></th>
+                <tr className="whitespace-nowrap">
+                  <th>{t('webhookLog.paymentId', { defaultValue: 'Payment' })}</th>
+                  <th>{t('webhookLog.event', { defaultValue: 'Event' })}</th>
+                  <th className="text-center">{t('webhookLog.httpStatus', { defaultValue: 'HTTP' })}</th>
+                  <th className="text-center">{t('webhookLog.success', { defaultValue: 'Status' })}</th>
+                  <th className="text-right">{t('webhookLog.duration', { defaultValue: 'Duration' })}</th>
+                  <th className="text-center">{t('webhookLog.attempt', { defaultValue: 'Attempt' })}</th>
+                  <th>{t('webhookLog.callbackUrl', { defaultValue: 'Callback URL' })}</th>
+                  <th>{t('webhookLog.error', { defaultValue: 'Error' })}</th>
+                  <th>{t('webhookLog.created', { defaultValue: 'Created' })}</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -221,54 +218,52 @@ export default function WebhookLogsPage() {
 
 
                 logs.map((log) =>
-                <tr key={log.id} className="border-b border-surface-200 hover:bg-surface-50/50 dark:hover:bg-white/4 transition-colors whitespace-nowrap">
-                      <td className="py-3 px-3 font-medium text-surface-900">{log.merchantPaymentId || '-'}</td>
-                      <td className="py-3 px-3">{eventBadge(log.event)}</td>
-                      <td className="py-3 px-3 text-center">{httpStatusBadge(log.httpStatus)}</td>
-                      <td className="py-3 px-3 text-center">{successBadge(log.success, t)}</td>
-                      <td className="py-3 px-3 text-right">
+                <tr key={log.id} className="whitespace-nowrap">
+                      <td className="font-medium">{log.merchantPaymentId || '-'}</td>
+                      <td>{eventBadge(log.event)}</td>
+                      <td className="text-center">{httpStatusBadge(log.httpStatus)}</td>
+                      <td className="text-center">{successBadge(log.success, t)}</td>
+                      <td className="text-right">
                         {log.durationMs != null ?
-                    <span className={log.durationMs > 5000 ? 'text-red-500 dark:text-red-400 font-medium' : 'text-surface-600'}>
+                    <span className={log.durationMs > 5000 ? 'text-danger font-medium' : ''}>
                             {log.durationMs.toLocaleString()}ms
                           </span> :
                     '-'}
                       </td>
-                      <td className="py-3 px-3 text-center">{log.attempt ?? '-'}</td>
-                      <td className="py-3 px-3">
-                        <span className="truncate inline-block max-w-[200px] text-surface-600" title={log.callbackUrl}>
+                      <td className="text-center">{log.attempt ?? '-'}</td>
+                      <td>
+                        <span className="truncate inline-block max-w-[200px]" title={log.callbackUrl}>
                           {log.callbackUrl || '-'}
                         </span>
                       </td>
-                      <td className="py-3 px-3">
+                      <td>
                         {log.errorMessage ?
-                    <span className="text-red-500 dark:text-red-400 truncate inline-block max-w-[180px]" title={log.errorMessage}>
+                    <span className="text-danger truncate inline-block max-w-[180px]" title={log.errorMessage}>
                             {log.errorMessage}
                           </span> :
                     '-'}
                       </td>
-                      <td className="py-3 px-3 text-surface-500 text-xs">{fmtDate(log.createdAt)}</td>
-                      <td className="py-3 px-3">
-                        <Link
+                      <td>{fmtDate(log.createdAt)}</td>
+                      <td>
+                        <Button variant="text-secondary" size="icon" className="rounded-full"
                       href={`/webhook-logs/${log.id}`}
-                      className="inline-flex items-center justify-center w-7 h-7 rounded-full text-surface-500 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors"
                       title={t('webhookLog.viewDetails', { defaultValue: 'View details' })}>
-                      
                           <i className="bx bx-chevron-right"></i>
-                        </Link>
+                        </Button>
                       </td>
                     </tr>
                 )
                 }
               </tbody>
-            </table>
-          </div>
+            </Table>
 
-          <Pagination
-            pagination={pagination}
-            onPageChange={setCurrentPage}
-            loading={loading}
-          />
-        </div>
+          <div className="px-5 py-1.5">
+            <Pagination
+              pagination={pagination}
+              onPageChange={setCurrentPage}
+              loading={loading}
+            />
+          </div>
       </Card>
     </>);
 

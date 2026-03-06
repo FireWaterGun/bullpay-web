@@ -44,12 +44,12 @@ export default function CountdownTimer({ expiryAt, expiresAt, onExpired }) {
 
   if (timeLeft.expired) {
     return (
-      <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4">
+      <div className="rounded-lg border border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-950/30 p-4">
         <div className="flex items-center mb-2">
-          <i className="bx bx-time-five text-xl mr-2 text-red-600 dark:text-red-400"></i>
-          <div className="font-medium text-red-700 dark:text-red-400">{t('payment.expired') || 'Expired'}</div>
+          <i className="bx bx-time-five text-xl mr-2 text-danger-600 dark:text-danger-400"></i>
+          <div className="font-medium text-danger-700 dark:text-danger-400">{t('payment.expired') || 'Expired'}</div>
         </div>
-        <small className="text-red-600 dark:text-red-400">{t('payment.expiredMessage') || 'This invoice has expired'}</small>
+        <small className="text-danger-600 dark:text-danger-400">{t('payment.expiredMessage') || 'This invoice has expired'}</small>
       </div>
     )
   }
@@ -57,28 +57,28 @@ export default function CountdownTimer({ expiryAt, expiresAt, onExpired }) {
   const pad = (n) => String(n).padStart(2, '0')
 
   return (
-    <div className="rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/30 p-4">
+    <div className="rounded-lg border border-warning-200 dark:border-warning-800 bg-warning-50 dark:bg-warning-950/30 p-4">
       <div className="flex items-center mb-2">
-        <i className="bx bx-time-five text-xl mr-2 text-yellow-600 dark:text-yellow-400"></i>
-        <div className="font-medium text-yellow-700 dark:text-yellow-400">{t('payment.timeRemaining') || 'Time Remaining'}</div>
+        <i className="bx bx-time-five text-xl mr-2 text-warning-600 dark:text-warning-400"></i>
+        <div className="font-medium text-warning-700 dark:text-warning-400">{t('payment.timeRemaining') || 'Time Remaining'}</div>
       </div>
       <div className="flex gap-3 justify-center">
         {timeLeft.days > 0 && (
           <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">{pad(timeLeft.days)}</div>
+            <div className="text-2xl font-bold text-warning-800 dark:text-warning-300">{pad(timeLeft.days)}</div>
             <small className="text-surface-500">{t('time.days') || 'Days'}</small>
           </div>
         )}
         <div className="text-center">
-          <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">{pad(timeLeft.hours)}</div>
+          <div className="text-2xl font-bold text-warning-800 dark:text-warning-300">{pad(timeLeft.hours)}</div>
           <small className="text-surface-500">{t('time.hours') || 'Hours'}</small>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">{pad(timeLeft.minutes)}</div>
+          <div className="text-2xl font-bold text-warning-800 dark:text-warning-300">{pad(timeLeft.minutes)}</div>
           <small className="text-surface-500">{t('time.minutes') || 'Minutes'}</small>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">{pad(timeLeft.seconds)}</div>
+          <div className="text-2xl font-bold text-warning-800 dark:text-warning-300">{pad(timeLeft.seconds)}</div>
           <small className="text-surface-500">{t('time.seconds') || 'Seconds'}</small>
         </div>
       </div>

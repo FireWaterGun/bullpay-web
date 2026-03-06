@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
-import { useAuth } from '@/app/providers';
+import { useAuth, useToast } from '@/app/providers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale';
-import { useToast } from '@/app/providers';
 import { getPlatformLedgerEntries } from '@/lib/api/admin';
 import { useCoins } from '@/hooks/useCoins';
 import PlatformLedgerFilterPanel from '@/components/ledger/PlatformLedgerFilterPanel';
@@ -14,12 +13,14 @@ import AdjustmentModal from '@/components/ledger/AdjustmentModal';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card } from '@/components/ui'
+import { Button, Card, CardHeader } from '@/components/ui'
 
 export default function PlatformLedgerList() {
   const { t } = useAdminTranslation();
   const { token, navigation } = useAuth();
   const toast = useToast();
+  const toastRef = useRef(toast);
+  toastRef.current = toast;
   const searchParams = useNextSearchParams();
 
   const isSuperAdmin = navigation?.role === 'super_admin';
@@ -77,11 +78,11 @@ export default function PlatformLedgerList() {
       setPagination(data.pagination || null);
     } catch (error) {
       logger.error('Failed to load platform ledger entries:', error);
-      toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entries' }));
+      toastRef.current.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entries' }));
     } finally {
       setLoading(false);
     }
-  }, [token, currentPage, appliedFilters, toast, t]);
+  }, [token, currentPage, appliedFilters, t]);
 
   useEffect(() => {
     loadEntries();
@@ -130,15 +131,15 @@ export default function PlatformLedgerList() {
 
   function handleAdjustmentResult(result) {
     if (result === 'in') {
-      toast.success(t('admin.adjustment.successIncrease', { defaultValue: 'Balance increased (XI) successfully' }));
+      toastRef.current.success(t('admin.adjustment.successIncrease', { defaultValue: 'Balance increased (XI) successfully' }));
       loadEntries();
     } else if (result === 'out') {
-      toast.success(t('admin.adjustment.successDecrease', { defaultValue: 'Balance decreased (XO) successfully' }));
+      toastRef.current.success(t('admin.adjustment.successDecrease', { defaultValue: 'Balance decreased (XO) successfully' }));
       loadEntries();
     } else if (result === 'error:insufficient') {
-      toast.error(t('admin.adjustment.insufficientBalance', { defaultValue: 'Insufficient confirmed balance for this adjustment' }));
+      toastRef.current.error(t('admin.adjustment.insufficientBalance', { defaultValue: 'Insufficient confirmed balance for this adjustment' }));
     } else if (result === 'error') {
-      toast.error(t('admin.adjustment.error', { defaultValue: 'Failed to apply adjustment' }));
+      toastRef.current.error(t('admin.adjustment.error', { defaultValue: 'Failed to apply adjustment' }));
     }
   }
 
@@ -147,31 +148,26 @@ export default function PlatformLedgerList() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Card className="mb-4">
-            <div className="px-5 py-4 border-b border-surface-200">
-              <div className="flex justify-between items-center flex-wrap gap-3">
-                <div>
-                  <h4 className="mb-1">
-                    <i className="bx bx-book-open mr-2"></i>
-                    {t('admin.platformLedger.title', { defaultValue: 'Revenue & Expenses' })}
-                  </h4>
-                  <p className="text-surface-500 mb-0">
-                    {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {isSuperAdmin &&
-                  <Button
-
-                    onClick={() => setShowAdjustModal(true)}>
-                    
-                      <i className="bx bx-transfer-alt mr-1"></i>
-                      {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
-                    </Button>
-                  }
-                  <RefreshButton onClick={loadEntries} loading={loading} />
-                </div>
+            <CardHeader className="flex justify-between items-center flex-wrap gap-3">
+              <div>
+                <h4 className="mb-1 text-surface-900">
+                  <i className="bx bx-book-open mr-2"></i>
+                  {t('admin.platformLedger.title', { defaultValue: 'Revenue & Expenses' })}
+                </h4>
+                <p className="text-surface-500 text-sm mb-0">
+                  {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
+                </p>
               </div>
-            </div>
+              <div className="flex items-center gap-2">
+                {isSuperAdmin &&
+                  <Button onClick={() => setShowAdjustModal(true)}>
+                    <i className="bx bx-transfer-alt mr-1"></i>
+                    {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
+                  </Button>
+                }
+                <RefreshButton onClick={loadEntries} loading={loading} />
+              </div>
+            </CardHeader>
             <PlatformLedgerFilterPanel
               accountTypeFilter={accountTypeFilter} setAccountTypeFilter={setAccountTypeFilter}
               entryTypeFilter={entryTypeFilter} setEntryTypeFilter={setEntryTypeFilter}

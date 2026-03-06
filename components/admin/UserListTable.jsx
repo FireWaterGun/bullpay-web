@@ -25,7 +25,6 @@ export default function UserListTable({
   const { fmtDate } = useDateFormat();
   return (
     <Card>
-      <div className="p-5">
         <Table>
             <thead>
               <tr className="whitespace-nowrap">
@@ -59,9 +58,9 @@ export default function UserListTable({
                         <Button
 
                       onClick={() => onCopy(user.email)}
-                      title={t('admin.detail.copyEmail', { defaultValue: 'Copy email' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      title={t('admin.detail.copyEmail', { defaultValue: 'Copy email' })} size="icon-sm" variant="text-secondary">
                       
-                          <i className="bx bx-copy text-xl"></i>
+                          <i className="bx bx-copy"></i>
                         </Button>
                       </div>
                     </td>
@@ -83,9 +82,9 @@ export default function UserListTable({
                     </td>
                     <td className="text-center">
                       {user.twoFactorEnabled || user.is2FAEnabled ?
-                  <Badge className="bg-green-50 text-green-700"><i className="bx bx-check"></i></Badge> :
+                  <Badge color="success" label><i className="bx bx-check"></i></Badge> :
 
-                  <Badge className="bg-surface-100 text-surface-600"><i className="bx bx-x"></i></Badge>
+                  <Badge color="secondary"><i className="bx bx-x"></i></Badge>
                   }
                     </td>
                     <td className="whitespace-nowrap text-[0.85rem]">
@@ -119,8 +118,9 @@ export default function UserListTable({
             </tbody>
           </Table>
 
-        <Pagination pagination={pagination} onPageChange={onPageChange} loading={loading} />
-      </div>
+        <div className="px-5 py-1.5">
+          <Pagination pagination={pagination} onPageChange={onPageChange} loading={loading} />
+        </div>
     </Card>);
 
 }

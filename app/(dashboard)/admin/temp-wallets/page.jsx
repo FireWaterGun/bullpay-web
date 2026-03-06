@@ -216,7 +216,6 @@ export default function TempWalletList() {
 
           {/* Table */}
           <Card>
-            <div className="p-5">
               <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
@@ -284,9 +283,9 @@ export default function TempWalletList() {
                                 <Button
 
                             onClick={() => handleCopy(w.address)}
-                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                             
-                                  <i className="bx bx-copy text-xl"></i>
+                                  <i className="bx bx-copy"></i>
                                 </Button>
                               </div> :
 
@@ -298,7 +297,7 @@ export default function TempWalletList() {
                               {String(w.status || '').toUpperCase()}
                             </span>
                             {w.isExpired &&
-                        <Badge className="bg-red-50 text-red-700 ml-1 text-[0.6rem]">EXPIRED</Badge>
+                        <Badge color="danger" label className="ml-1 text-[0.6rem]">EXPIRED</Badge>
                         }
                           </td>
                           <td className="text-center">
@@ -343,8 +342,9 @@ export default function TempWalletList() {
                   </tbody>
                 </Table>
 
-              <Pagination pagination={pagination} onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }} loading={loading} />
-            </div>
+              <div className="px-5 py-1.5">
+                <Pagination pagination={pagination} onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }} loading={loading} />
+              </div>
           </Card>
         </div>
       </div>

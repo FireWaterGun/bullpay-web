@@ -51,23 +51,20 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
     <>
       <div className="mb-4">
         <div className="mb-3">
-          <h6 className="font-semibold mb-1 text-[1rem]">{t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}</h6>
-          <p className="text-surface-500 mb-0 text-[0.875rem]">{t('admin.withdrawal.autoApproveDesc', { defaultValue: 'Automatically approve small withdrawals' })}</p>
+          <h6 className="font-semibold mb-1 text-base">{t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}</h6>
+          <p className="text-surface-500 mb-0 text-sm">{t('admin.withdrawal.autoApproveDesc', { defaultValue: 'Automatically approve small withdrawals' })}</p>
         </div>
         <div className="overflow-x-auto">
           <Table responsive={false} className="mb-0">
             <tbody>
-              <tr className="bg-surface-100">
-                <td width="35%" className="py-3 pl-3 text-[0.875rem]">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</td>
+              <tr className="bg-surface-100 dark:bg-white/[0.03]">
+                <td width="35%" className="py-3 pl-3 text-sm">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</td>
                 <td className="py-3">
                   <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
+                    <ToggleSwitch
                       checked={autoApprove.enabled || false}
                       disabled={toggling}
-                      onChange={async (e) => {
-                        const newEnabled = e.target.checked;
+                      onChange={async (newEnabled) => {
                         const prev = { ...autoApprove };
                         setToggling(true);
                         setAutoApprove({ ...autoApprove, enabled: newEnabled });
@@ -80,19 +77,20 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
                         } finally {
                           setToggling(false);
                         }
-                      }}
-                      style={{ cursor: toggling ? 'not-allowed' : 'pointer' }} />
-                    
+                      }} />
+                    <span className={`text-xs font-semibold ${autoApprove.enabled ? 'text-success' : 'text-surface-400'}`}>
+                      {autoApprove.enabled ? 'ON' : 'OFF'}
+                    </span>
                   </div>
                 </td>
               </tr>
               <tr>
-                <td className="py-3 pl-3 text-[0.875rem]">{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</td>
+                <td className="py-3 pl-3 text-sm">{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</td>
                 <td className="py-3">
                   <div className="flex items-center gap-2">
                     <code>{autoApprove.thresholdUsd || 0}</code>
-                    <Button type="button" onClick={handleEdit} disabled={toggling} size="icon" className="ml-auto">
-                      <i className="bx bx-edit text-primary text-[1rem]"></i>
+                    <Button type="button" onClick={handleEdit} disabled={toggling} variant="text-secondary" size="icon-sm" className="ml-auto">
+                      <i className="bx bx-edit text-[1rem]"></i>
                     </Button>
                   </div>
                 </td>
@@ -141,14 +139,14 @@ function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }
           <div className="p-5">
             <div className="grid grid-cols-12 gap-x-6 gap-3">
               <div className="col-span-12">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
+                <div className="flex items-center gap-3">
+                  <ToggleSwitch
                     checked={formData.enabled || false}
-                    onChange={(e) => setFormData({ ...formData, enabled: e.target.checked })}
-                    style={{ cursor: 'pointer' }} />
+                    onChange={(val) => setFormData({ ...formData, enabled: val })} />
                   <label className="text-sm text-surface-700">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</label>
+                  <span className={`text-xs font-semibold ${formData.enabled ? 'text-success' : 'text-surface-400'}`}>
+                    {formData.enabled ? 'ON' : 'OFF'}
+                  </span>
                 </div>
               </div>
               <div className="col-span-12">
@@ -171,7 +169,7 @@ function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="bg-surface-200 text-surface-700 hover:bg-surface-300">
+              variant="outline-secondary">
               {t('actions.cancel', { defaultValue: 'Cancel' })}
             </Button>
             <Button
@@ -194,5 +192,29 @@ function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }
         </div>
       </div>
     </div>
+  );
+}
+
+/* ── Toggle Switch ── */
+function ToggleSwitch({ checked, disabled, onChange }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={[
+        'relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
+        checked ? 'bg-primary-600' : 'bg-surface-300',
+        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+      ].join(' ')}>
+      <span
+        className={[
+          'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm ring-0 transition-transform duration-200 ease-in-out',
+          checked ? 'translate-x-5' : 'translate-x-0',
+        ].join(' ')} />
+    </button>
   );
 }

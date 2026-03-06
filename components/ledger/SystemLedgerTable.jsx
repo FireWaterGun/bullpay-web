@@ -7,8 +7,7 @@ import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card } from '../ui';
-import Table from '@/components/ui/Table';
+import { Badge, Button, Card, Pagination, Table } from '../ui';
 
 function parseMetadata(entry) {
   try {
@@ -58,11 +57,14 @@ export default function SystemLedgerTable({
   const router = useRouter();
   const { fmtDate } = useDateFormat();
 
+  function handlePageChange(page) {
+    setCurrentPage(page);
+    syncSearchParams(appliedFilters, page);
+  }
+
   return (
     <Card>
-      <div className="p-5">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max">
+      <Table>
             <thead>
               <tr className="whitespace-nowrap">
                 <th>ID</th>
@@ -97,7 +99,7 @@ export default function SystemLedgerTable({
                         <span className="font-semibold text-primary">{entry.id}</span>
                       </td>
                       <td>
-                        <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                        <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'} label>
                           <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
                           {isCredit ? 'Credit' : 'Debit'}
                         </Badge>
@@ -157,7 +159,7 @@ export default function SystemLedgerTable({
                       <div className="flex items-center">
                             <span className="mr-2">{entry.txHash}</span>
                             {entry.explorerUrl &&
-                        <Button variant="text-secondary" size="icon" className="rounded-full"
+                        <Button variant="text-secondary" size="icon-sm"
                         href={`${entry.explorerUrl}/tx/${entry.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -165,7 +167,7 @@ export default function SystemLedgerTable({
                         onClick={(e) => e.stopPropagation()}
                         title="View on explorer">
                           
-                                <i className="bx bx-link-external text-xl"></i>
+                                <i className="bx bx-link-external"></i>
                               </Button>
                         }
                           </div> :
@@ -177,7 +179,7 @@ export default function SystemLedgerTable({
                         <span className="whitespace-nowrap">{fmtDate(entry.createdAt)}</span>
                       </td>
                       <td>
-                        <Button variant="outline-primary" size="icon"
+                        <Button variant="outline-primary" size="icon-sm"
                       href={`/admin/system-ledger/${entry.id}`}
 
                       onClick={(e) => e.stopPropagation()}
@@ -191,43 +193,17 @@ export default function SystemLedgerTable({
               })
               }
             </tbody>
-          </table>
-        </div>
+          </Table>
 
-        {pagination && pagination.total > 0 &&
-        <div className="flex justify-between items-center mt-4">
-            <div className="text-surface-500 text-sm">
-              {t('invoices.showingEntries', {
-              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-              end: Math.min(pagination.page * pagination.limit, pagination.total),
-              total: pagination.total,
-              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-            })}
+          {pagination && pagination.total > 0 && (
+            <div className="px-5 py-1.5">
+              <Pagination
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                loading={loading}
+              />
             </div>
-            <div className="inline-flex rounded-lg shadow-sm">
-              <Button
-
-              disabled={!pagination.hasPrev || loading}
-              onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-              
-                <i className="bx bx-chevron-left"></i>
-                {t('actions.prev', { defaultValue: 'Previous' })}
-              </Button>
-              <Button disabled variant="outline-secondary" size="sm">
-                {pagination.page} / {pagination.totalPages}
-              </Button>
-              <Button
-
-              disabled={!pagination.hasNext || loading}
-              onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-              
-                {t('actions.next', { defaultValue: 'Next' })}
-                <i className="bx bx-chevron-right"></i>
-              </Button>
-            </div>
-          </div>
-        }
-      </div>
+          )}
     </Card>);
 
 }

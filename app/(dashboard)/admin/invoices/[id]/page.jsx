@@ -149,7 +149,7 @@ export default function AdminInvoiceDetail() {
                         <td className="font-medium">
                           {formatAmount(invoice.remainingAmount)} {coinSymbol}
                           {invoice.isFullyPaid &&
-                          <Badge className="bg-green-50 text-green-700 ml-2">Fully Paid</Badge>
+                          <Badge color="success" label className="ml-2">Fully Paid</Badge>
                           }
                         </td>
                       </tr>
@@ -236,10 +236,12 @@ export default function AdminInvoiceDetail() {
                                 {invoice.paymentAddress}
                               </code>
                               <Button
-
-                              onClick={() => handleCopy(invoice.paymentAddress)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 dark:hover:bg-white/6 shadow-none rounded-full shrink-0">
-                              
+                                onClick={() => handleCopy(invoice.paymentAddress)}
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
+                                size="icon-sm"
+                                variant="text-secondary"
+                                className="shrink-0"
+                              >
                                 <i className="bx bx-copy"></i>
                               </Button>
                             </div> :

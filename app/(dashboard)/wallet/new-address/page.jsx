@@ -90,7 +90,7 @@ export default function WalletNewAddressPage() {
 
   return (
     <>
-      {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 px-4 py-3 text-sm">{error}</div>}
+      {error && <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm">{error}</div>}
 
       {/* Step 1: Select Coin */}
       <Card className="mb-6">

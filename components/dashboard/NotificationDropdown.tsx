@@ -21,10 +21,10 @@ interface NotificationDropdownProps {
 
 const colorMap: Record<string, string> = {
   primary: 'bg-primary-100 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400',
-  success: 'bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400',
-  danger: 'bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400',
-  warning: 'bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400',
-  info: 'bg-blue-100 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400',
+  success: 'bg-success-100 dark:bg-success-950/30 text-success-600 dark:text-success-400',
+  danger: 'bg-danger-100 dark:bg-danger-950/30 text-danger-600 dark:text-danger-400',
+  warning: 'bg-warning-100 dark:bg-warning-950/30 text-warning-600 dark:text-warning-400',
+  info: 'bg-info-100 dark:bg-info-950/30 text-info-600 dark:text-info-400',
   secondary: 'bg-surface-100 dark:bg-dark-elevated text-surface-600'
 };
 

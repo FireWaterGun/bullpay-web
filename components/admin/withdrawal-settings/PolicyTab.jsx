@@ -14,7 +14,7 @@ export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, 
 
         {/* Max Pending Per User */}
         <Card className="mb-4">
-          <div className="px-5 py-4 border-b border-surface-200 flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300 flex items-center justify-between">
             <h5 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-lock-alt mr-2 text-warning"></i>
               {t('admin.withdrawalSettings.maxPendingTitle', { defaultValue: 'Max Pending Withdrawals' })}
@@ -22,18 +22,16 @@ export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, 
             <Button
               type="button"
               onClick={onEditMaxPending}
-              variant="outline-primary"
-              size="sm"
-              className="bg-transparent hover:bg-primary-600 hover:text-white">
-              <i className="bx bx-edit mr-1"></i>
-              {t('actions.edit', { defaultValue: 'Edit' })}
+              variant="text-secondary"
+              size="icon-sm">
+              <i className="bx bx-edit text-[1rem]"></i>
             </Button>
           </div>
           <div className="p-5">
-            <p className="text-surface-500 mb-3 text-[0.875rem]">
+            <p className="text-surface-500 mb-3 text-sm">
               {t('admin.withdrawalSettings.maxPendingDesc', { defaultValue: 'Maximum number of pending (unprocessed) withdrawal requests allowed per user at any time.' })}
             </p>
-            <div className="flex items-center gap-3 p-3 rounded bg-surface-100">
+            <div className="flex items-center gap-3 p-3 rounded bg-surface-100 dark:bg-white/[0.03]">
               <div>
                 <small className="text-surface-500 block">{t('admin.withdrawalSettings.currentValue', { defaultValue: 'Current Value' })}</small>
                 <h4 className="mb-0 font-bold">{maxPending}</h4>
@@ -51,7 +49,7 @@ export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, 
       {/* Sidebar */}
       <div className="lg:col-span-4">
         <Card className="mb-3">
-          <div className="px-5 py-4 border-b border-surface-200">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h6 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-info-circle mr-1"></i>
               {t('admin.withdrawalSettings.howItWorks', { defaultValue: 'How It Works' })}
@@ -60,21 +58,21 @@ export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, 
           <div className="p-5">
             <div className="flex flex-col gap-3">
               <div className="flex items-start gap-2">
-                <Badge className="bg-green-50 text-green-700 rounded-full mt-1">1</Badge>
+                <Badge color="success" label className="rounded-full mt-1">1</Badge>
                 <div>
                   <small className="font-semibold block">{t('admin.withdrawalSettings.howItWorksStep1', { defaultValue: 'User requests withdrawal' })}</small>
                   <small className="text-surface-500">{t('admin.withdrawalSettings.howItWorksStep1Desc', { defaultValue: 'System checks max pending limit per user' })}</small>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <Badge className="bg-green-50 text-green-700 rounded-full mt-1">2</Badge>
+                <Badge color="success" label className="rounded-full mt-1">2</Badge>
                 <div>
                   <small className="font-semibold block">{t('admin.withdrawalSettings.howItWorksStep2', { defaultValue: 'Auto-approve check' })}</small>
                   <small className="text-surface-500">{t('admin.withdrawalSettings.howItWorksStep2Desc', { defaultValue: 'If enabled and amount ≤ threshold → auto-approved' })}</small>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <Badge className="bg-amber-50 text-amber-700 rounded-full mt-1">3</Badge>
+                <Badge color="warning" label className="rounded-full mt-1">3</Badge>
                 <div>
                   <small className="font-semibold block">{t('admin.withdrawalSettings.howItWorksStep3', { defaultValue: 'Manual review' })}</small>
                   <small className="text-surface-500">{t('admin.withdrawalSettings.howItWorksStep3Desc', { defaultValue: 'Large or flagged requests require admin approval' })}</small>
@@ -85,7 +83,7 @@ export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, 
         </Card>
 
         <Card>
-          <div className="px-5 py-4 border-b border-surface-200">
+          <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h6 className="text-lg font-semibold text-surface-800 mb-0">
               <i className="bx bx-bulb mr-1"></i>
               {t('admin.withdrawalSettings.tips', { defaultValue: 'Tips' })}

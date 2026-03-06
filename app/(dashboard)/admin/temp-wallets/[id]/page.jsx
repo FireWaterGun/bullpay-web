@@ -85,16 +85,16 @@ export default function TempWalletDetail() {
                       {String(wallet.status || '').toUpperCase()}
                     </span>
                     {wallet.isExpired &&
-                    <Badge className="bg-red-50 text-red-700">EXPIRED</Badge>
+                    <Badge color="danger" label>EXPIRED</Badge>
                     }
                     {wallet.coinSymbol &&
-                    <Badge className="bg-primary-50 text-primary-600 inline-flex items-center gap-1">
+                    <Badge color="primary" label className="inline-flex items-center gap-1">
                         <CoinImg symbol={wallet.coinSymbol} networkSymbol={wallet.networkSymbol} size={16} />
                         {wallet.coinSymbol} · {wallet.networkSymbol}
                       </Badge>
                     }
                     {wallet.invoiceId &&
-                    <Badge className="bg-surface-100 text-surface-600">Invoice #{wallet.invoiceId}</Badge>
+                    <Badge color="secondary">Invoice #{wallet.invoiceId}</Badge>
                     }
                   </div>
                 </div>
@@ -133,7 +133,7 @@ export default function TempWalletDetail() {
                             {String(wallet.status || '').toUpperCase()}
                           </span>
                           {wallet.isExpired &&
-                          <Badge className="bg-red-50 text-red-700 ml-1">EXPIRED</Badge>
+                          <Badge color="danger" label className="ml-1">EXPIRED</Badge>
                           }
                         </td>
                       </tr>
@@ -181,7 +181,7 @@ export default function TempWalletDetail() {
                               <Button
 
                               onClick={() => handleCopy(wallet.address)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
                               
                                 <i className="bx bx-copy"></i>
                               </Button>
@@ -235,16 +235,16 @@ export default function TempWalletDetail() {
                   <div className="flex flex-wrap gap-2">
                     {wallet.isReusable != null && (
                     wallet.isReusable ?
-                    <Badge className="bg-green-50 text-green-700">Reusable</Badge> :
-                    <Badge className="bg-surface-100 text-surface-600">Not Reusable</Badge>)
+                    <Badge color="success" label>Reusable</Badge> :
+                    <Badge color="secondary">Not Reusable</Badge>)
                     }
-                    {wallet.isAssigned && <Badge className="bg-cyan-50 text-cyan-700">Assigned</Badge>}
-                    {wallet.isAvailable && <Badge className="bg-green-50 text-green-700">Available</Badge>}
-                    {wallet.isExpired && <Badge className="bg-red-50 text-red-700">{t('status.expired', { defaultValue: 'Expired' })}</Badge>}
-                    {wallet.hasBeenUsed && <Badge className="bg-amber-50 text-amber-700">Has Been Used</Badge>}
-                    {wallet.needsSweeping && <Badge className="bg-primary-50 text-primary-600">Needs Sweeping</Badge>}
+                    {wallet.isAssigned && <Badge color="info" label>Assigned</Badge>}
+                    {wallet.isAvailable && <Badge color="success" label>Available</Badge>}
+                    {wallet.isExpired && <Badge color="danger" label>{t('status.expired', { defaultValue: 'Expired' })}</Badge>}
+                    {wallet.hasBeenUsed && <Badge color="warning" label>Has Been Used</Badge>}
+                    {wallet.needsSweeping && <Badge color="primary" label>Needs Sweeping</Badge>}
                     {wallet.timeToExpiry != null &&
-                    <Badge className="bg-amber-50 text-amber-700">
+                    <Badge color="warning" label>
                         Expires in {Math.floor(wallet.timeToExpiry / 60000)}m
                       </Badge>
                     }
@@ -317,7 +317,7 @@ export default function TempWalletDetail() {
                                 <Button
 
                               onClick={() => handleCopy(wallet.lastSweepTxHash)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
                               
                                   <i className="bx bx-copy"></i>
                                 </Button>
@@ -345,7 +345,7 @@ export default function TempWalletDetail() {
                                 <Button
 
                               onClick={() => handleCopy(wallet.lastTxHash)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
                               
                                   <i className="bx bx-copy"></i>
                                 </Button>

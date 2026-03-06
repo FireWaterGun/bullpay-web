@@ -39,7 +39,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
       <div className="fixed inset-0 z-50 flex items-center justify-center" tabIndex="-1" onClick={() => !saving && onClose()}>
         <div className="w-full max-w-2xl mx-4" onClick={(e) => e.stopPropagation()}>
           <div className="bg-card rounded-xl shadow-xl">
-            <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <div className="flex items-center justify-between p-5 border-b border-surface-200 dark:border-surface-300">
               <h5 className="text-lg font-semibold text-surface-800 flex items-center gap-2">
                 <CoinImg symbol={coinSymbol} size={24} />
                 {t('admin.withdrawalSettings.editCnTitle', { defaultValue: 'Edit Withdrawal — {{coin}} / {{network}}', coin: coinSymbol, network: networkSymbol })}
@@ -48,7 +48,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
             </div>
             <div className="p-5">
               {/* Withdraw Enabled Toggle */}
-              <div className="flex items-center justify-between mb-4 p-3 rounded bg-surface-100">
+              <div className="flex items-center justify-between mb-4 p-3 rounded bg-surface-100 dark:bg-white/[0.03]">
                 <div>
                   <span className="font-semibold">{t('admin.withdrawalSettings.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</span>
                   <br />
@@ -88,7 +88,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
                 <div className="md:col-span-6">
                   <Label>
                     {t('admin.withdrawalSettings.feeBase', { defaultValue: 'Fee Base' })}
-                    <Badge className="bg-cyan-50 text-cyan-700 ml-2 text-[0.65rem]">{t('admin.withdrawalSettings.autoCalculated', { defaultValue: 'Auto-calculated' })}</Badge>
+                    <Badge color="info" label className="ml-2 text-[0.65rem]">{t('admin.withdrawalSettings.autoCalculated', { defaultValue: 'Auto-calculated' })}</Badge>
                   </Label>
                   <Input
                     type="text"
@@ -121,8 +121,8 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-              <Button type="button" onClick={onClose} disabled={saving} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200 dark:border-surface-300">
+              <Button type="button" onClick={onClose} disabled={saving} variant="outline-secondary">
                 {t('actions.cancel', { defaultValue: 'Cancel' })}
               </Button>
               <Button type="button" onClick={onSave} disabled={saving}>

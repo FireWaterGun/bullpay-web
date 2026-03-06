@@ -88,7 +88,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                   <span className="font-semibold text-primary">{entry.id}</span>
                 </td>
                 <td>
-                  <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                  <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'} label>
                     <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
                     {isCredit ? 'Credit' : 'Debit'}
                   </Badge>
@@ -117,10 +117,10 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                   }
                 </td>
                 <td>
-                  {entry.state === 'settled' ? <Badge className="bg-green-50 text-green-700">Settled</Badge> :
-                  entry.state === 'committed' ? <Badge className="bg-cyan-50 text-cyan-700">Committed</Badge> :
-                  entry.state === 'pending' ? <Badge className="bg-amber-50 text-amber-700">{t('status.pending', { defaultValue: 'Pending' })}</Badge> :
-                  entry.state === 'reversed' ? <Badge className="bg-surface-100 text-surface-600">Reversed</Badge> :
+                  {entry.state === 'settled' ? <Badge color="success" label>Settled</Badge> :
+                  entry.state === 'committed' ? <Badge color="info" label>Committed</Badge> :
+                  entry.state === 'pending' ? <Badge color="warning" label>{t('status.pending', { defaultValue: 'Pending' })}</Badge> :
+                  entry.state === 'reversed' ? <Badge color="secondary">Reversed</Badge> :
                   <span className="text-surface-500">{entry.state || 'N/A'}</span>}
                 </td>
                 <td className="text-right whitespace-nowrap">

@@ -30,7 +30,7 @@ export default function NetworkInfoPanel({ networkMeta }) {
             }
             <li className="flex justify-between mb-3">
               <span className="text-surface-500">{t('crypto.coinsCount', { defaultValue: 'Supported Coins' })}</span>
-              <Badge className="bg-primary-50 text-primary-600">{networkMeta.coinsCount}</Badge>
+              <Badge color="primary" label>{networkMeta.coinsCount}</Badge>
             </li>
             {networkMeta.createdAt &&
             <li className="flex justify-between mb-3">
@@ -60,8 +60,8 @@ export default function NetworkInfoPanel({ networkMeta }) {
                     </div>
                     <div className="text-right">
                       <Badge color={coin.status === 'active' ? 'success' : 'secondary'} label className="mr-1">{coin.status}</Badge>
-                      {coin.depositEnabled && <Badge className="bg-cyan-50 text-cyan-700 mr-1">Deposit</Badge>}
-                      {coin.withdrawEnabled && <Badge className="bg-amber-50 text-amber-700">Withdraw</Badge>}
+                      {coin.depositEnabled && <Badge color="info" label className="mr-1">Deposit</Badge>}
+                      {coin.withdrawEnabled && <Badge color="warning" label>Withdraw</Badge>}
                     </div>
                   </div>
               )}

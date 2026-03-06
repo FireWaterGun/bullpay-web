@@ -307,7 +307,7 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
           <button
             type="button"
             onClick={toggleMenu}
-            className="bp-collapse-btn absolute z-[3] hidden xl:flex items-center justify-center rounded-full bg-primary-600 border-[7px] border-[#f5f5f9] cursor-pointer transition-colors left-[15.2rem]">
+            className="bp-collapse-btn absolute z-[3] hidden xl:flex items-center justify-center rounded-full bg-primary-600 border-[7px] border-surface-50 dark:border-surface-800 cursor-pointer transition-colors left-[15.2rem]">
 
             
             <i className={`bx ${collapsed ? 'bx-chevron-right' : 'bx-chevron-left'} text-white text-[1.375rem] leading-none w-[1.375rem] h-[1.375rem] flex items-center justify-center`}></i>

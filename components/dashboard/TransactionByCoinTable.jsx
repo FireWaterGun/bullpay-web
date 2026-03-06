@@ -4,8 +4,7 @@ import { useMemo } from 'react';
 import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Card, Spinner } from '@/components/ui'
-import Table from '@/components/ui/Table';
+import { Card, Spinner, Table } from '@/components/ui'
 
 function TransactionByCoinTable({ byCoinData, loading, t }) {
   const byCoinTotals = useMemo(() => {
@@ -36,15 +35,14 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
           
           </div> :
 
-        <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+        <Table>
               <thead>
-                <tr className="bg-surface-50 border-b border-surface-200 dark:bg-dark-elevated">
-                  <th className="text-left uppercase font-semibold text-surface-500 px-4 py-3 text-xs">{t('admin.coin', { defaultValue: 'Coin' })}</th>
-                  <th className="text-right uppercase font-semibold text-surface-500 px-4 py-3 text-xs">{t('userDashboard.deposits', { defaultValue: 'Deposits' })}</th>
-                  <th className="text-right uppercase font-semibold text-surface-500 px-4 py-3 text-xs">{t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}</th>
-                  <th className="text-right uppercase font-semibold text-surface-500 px-4 py-3 text-xs">{t('userDashboard.feesCollected', { defaultValue: 'Fees' })}</th>
-                  <th className="text-right uppercase font-semibold text-surface-500 whitespace-nowrap px-4 py-3 text-xs">{t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}</th>
+                <tr>
+                  <th>{t('admin.coin', { defaultValue: 'Coin' })}</th>
+                  <th className="text-right">{t('userDashboard.deposits', { defaultValue: 'Deposits' })}</th>
+                  <th className="text-right">{t('userDashboard.withdrawals', { defaultValue: 'Withdrawals' })}</th>
+                  <th className="text-right">{t('userDashboard.feesCollected', { defaultValue: 'Fees' })}</th>
+                  <th className="text-right whitespace-nowrap">{t('userDashboard.netFlow', { defaultValue: 'Net Flow' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -64,8 +62,8 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
                   const netFlow = parseFloat(item.netFlowUsd || 0);
 
                   return (
-                    <tr key={`${item.coinSymbol}-${item.networkName || 'all'}`} className="border-b border-surface-200 hover:bg-surface-50 dark:hover:bg-white/4">
-                          <td className="px-4 py-3">
+                    <tr key={`${item.coinSymbol}-${item.networkName || 'all'}`}>
+                          <td>
                             <div className="flex items-center">
                               <CoinImg symbol={item.coinSymbol} size={24} className="mr-2" />
                               <span className="font-medium">{item.coinSymbol}</span>
@@ -74,10 +72,10 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
                           }
                             </div>
                           </td>
-                          <td className="text-right px-4 py-3">{formatUsd(deposit)}</td>
-                          <td className="text-right px-4 py-3">{formatUsd(withdrawal)}</td>
-                          <td className="text-right px-4 py-3">{formatUsd(fee)}</td>
-                          <td className={`text-right px-4 py-3 ${netFlow > 0 ? 'text-green-500' : netFlow < 0 ? 'text-red-500' : ''}`}>
+                          <td className="text-right">{formatUsd(deposit)}</td>
+                          <td className="text-right">{formatUsd(withdrawal)}</td>
+                          <td className="text-right">{formatUsd(fee)}</td>
+                          <td className={`text-right ${netFlow > 0 ? 'text-success-500' : netFlow < 0 ? 'text-danger-500' : ''}`}>
                             {formatUsd(netFlow)}
                           </td>
                         </tr>);
@@ -85,19 +83,18 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
                 })}
                     {/* Total row */}
                     <tr className="bg-surface-50 font-semibold dark:bg-dark-elevated">
-                      <td className="px-4 py-3">{t('common.total', { defaultValue: 'TOTAL' })}</td>
-                      <td className="text-right px-4 py-3">{formatUsd(byCoinTotals.deposit)}</td>
-                      <td className="text-right px-4 py-3">{formatUsd(byCoinTotals.withdrawal)}</td>
-                      <td className="text-right px-4 py-3">{formatUsd(byCoinTotals.fee)}</td>
-                      <td className={`text-right px-4 py-3 ${byCoinTotals.netFlow > 0 ? 'text-green-500' : byCoinTotals.netFlow < 0 ? 'text-red-500' : ''}`}>
+                      <td>{t('common.total', { defaultValue: 'TOTAL' })}</td>
+                      <td className="text-right">{formatUsd(byCoinTotals.deposit)}</td>
+                      <td className="text-right">{formatUsd(byCoinTotals.withdrawal)}</td>
+                      <td className="text-right">{formatUsd(byCoinTotals.fee)}</td>
+                      <td className={`text-right ${byCoinTotals.netFlow > 0 ? 'text-success-500' : byCoinTotals.netFlow < 0 ? 'text-danger-500' : ''}`}>
                         {formatUsd(byCoinTotals.netFlow)}
                       </td>
                     </tr>
                   </>
               }
               </tbody>
-            </table>
-          </div>
+            </Table>
         }
       </div>
     </Card>);

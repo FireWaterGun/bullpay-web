@@ -46,14 +46,14 @@ export default function AddressActionModal({
           </div>
 
           {actionType === 'delete' &&
-          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 p-3 flex items-center mb-3" role="alert">
+          <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 p-3 flex items-center mb-3" role="alert">
               <i className="bx bx-error-circle mr-2 text-xl"></i>
               <div>This action is <strong>irreversible</strong>. The address will be permanently deleted.</div>
             </div>
           }
 
           <div className="mb-3">
-            <Label>Reason <span className="text-red-500">*</span></Label>
+            <Label>Reason <span className="text-danger-500">*</span></Label>
             <Input
 
               rows="3"

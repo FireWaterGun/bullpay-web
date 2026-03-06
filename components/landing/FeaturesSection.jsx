@@ -35,10 +35,10 @@ export default function FeaturesSection() {
   return (
     <section id="features" className="py-6">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
-        <div className="py-10 px-6 rounded-2xl sm:py-12 sm:px-8 sm:rounded-[20px] lg:py-20 lg:px-16 lg:rounded-3xl bg-slate-200">
+        <div className="py-10 px-6 rounded-2xl sm:py-12 sm:px-8 sm:rounded-[20px] lg:py-20 lg:px-16 lg:rounded-3xl bg-surface-200">
           <div className="text-center mb-5">
             <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-surface-900 tracking-[-0.025em] leading-[1.15] mb-3">Why businesses choose us</h2>
-            <p className="text-slate-500 text-[1.1rem] leading-[1.6] mb-0 text-surface-600">
+            <p className="text-surface-500 text-[1.1rem] leading-[1.6] mb-0 text-surface-600">
               Everything you need to accept crypto at scale
             </p>
           </div>

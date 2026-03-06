@@ -90,11 +90,12 @@ export default function Dashboard() {
                     {t('admin.dashboard.byCurrency', { defaultValue: 'Volume by Currency' })}
                   </h5>
                 </div>
-                <div className="p-5">
-                  {Object.keys(byCurrency).length === 0 ?
-                  <CardEmptyState
-                    icon="bx-data"
-                    message={t('admin.dashboard.noData', { defaultValue: 'No data available' })} /> :
+                {Object.keys(byCurrency).length === 0 ?
+                  <div className="p-5">
+                    <CardEmptyState
+                      icon="bx-data"
+                      message={t('admin.dashboard.noData', { defaultValue: 'No data available' })} />
+                  </div> :
 
 
                   <Table>
@@ -113,7 +114,7 @@ export default function Dashboard() {
                                 <span className="font-medium">{currency}</span>
                               </td>
                               <td className="text-right">
-                                <Badge className="bg-surface-100 text-surface-600">{data.count}</Badge>
+                                <Badge color="secondary">{data.count}</Badge>
                               </td>
                               <td className="text-right">
                                 <span className="font-medium">
@@ -128,7 +129,6 @@ export default function Dashboard() {
                         </tbody>
                       </Table>
                   }
-                </div>
               </Card>
             </div>
 
@@ -152,7 +152,7 @@ export default function Dashboard() {
                           <div className="flex justify-between items-center">
                             <div>
                               <h6 className="mb-0">
-                                <Badge className="bg-primary-50 text-primary-600 mr-2">{index + 1}</Badge>
+                                <Badge color="primary" label className="mr-2">{index + 1}</Badge>
                                 {user.email}
                               </h6>
                               <small className="text-surface-500">
@@ -179,7 +179,7 @@ export default function Dashboard() {
               <Card style={{ borderRadius: '0.75rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }} className="border-none">
                 <div className="px-5 py-4 border-b border-surface-200 flex items-center border-none">
                   <div className="w-9 h-9 flex items-center justify-center" style={{ borderRadius: '0.5rem', backgroundColor: 'rgba(6, 182, 212, 0.08)', marginRight: '0.75rem' }}>
-                    <i className="bx bx-trending-up text-xl text-cyan-500"></i>
+                    <i className="bx bx-trending-up text-xl text-info-500"></i>
                   </div>
                   <h5 className="mb-0 font-semibold">
                     {t('admin.dashboard.dailyTrends', { defaultValue: 'Daily Trends' })}

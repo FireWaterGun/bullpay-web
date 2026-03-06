@@ -18,11 +18,11 @@ import Table from '@/components/ui/Table';
 
 function roleBadgeClass(role) {
   const v = String(role || '').toLowerCase();
-  if (v === 'super_admin') return `${badgeBase} bg-red-50 text-red-700`;
-  if (v === 'admin') return `${badgeBase} bg-amber-50 text-amber-700`;
-  if (v === 'business_user') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-  if (v === 'support_agent') return `${badgeBase} bg-surface-100 text-surface-600`;
-  return `${badgeBase} bg-primary-50 text-primary-600`;
+  if (v === 'super_admin') return `${badgeBase} bg-danger-50 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300`;
+  if (v === 'admin') return `${badgeBase} bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300`;
+  if (v === 'business_user') return `${badgeBase} bg-info-50 text-info-700 dark:bg-info-500/15 dark:text-info-300`;
+  if (v === 'support_agent') return `${badgeBase} bg-surface-100 text-surface-600 dark:bg-white/8 dark:text-surface-400`;
+  return `${badgeBase} bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400`;
 }
 
 export default function UserBalanceListPage() {
@@ -193,7 +193,6 @@ export default function UserBalanceListPage() {
           </Card>
 
           <Card>
-            <div className="p-5">
               <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
@@ -244,8 +243,9 @@ export default function UserBalanceListPage() {
                   </tbody>
                 </Table>
 
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
-            </div>
+              <div className="px-5 py-1.5">
+                <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              </div>
           </Card>
         </div>
       </div>

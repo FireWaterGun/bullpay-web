@@ -61,7 +61,7 @@ function WalletVerifyContent() {
                 </> :
               verified ?
               <>
-                  <i className="bx bx-check-circle text-green-500 mb-3 text-[3rem]"></i>
+                  <i className="bx bx-check-circle text-success-500 mb-3 text-[3rem]"></i>
                   <h5 className="mb-2 font-semibold">
                     {t('wallets.verified', { defaultValue: 'Address Verified!' })}
                   </h5>
@@ -74,7 +74,7 @@ function WalletVerifyContent() {
                 </> :
               error ?
               <>
-                  <i className="bx bx-error-circle text-red-500 mb-3 text-[3rem]"></i>
+                  <i className="bx bx-error-circle text-danger-500 mb-3 text-[3rem]"></i>
                   <h5 className="mb-2 font-semibold">
                     {t('wallets.verifyFailed', { defaultValue: 'Verification Failed' })}
                   </h5>

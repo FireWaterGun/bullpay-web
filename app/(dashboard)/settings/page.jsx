@@ -19,10 +19,10 @@ import { Button, Card, Input, InputGroup, InputIcon, Label, Select, Spinner } fr
 
 const iconBoxColors = {
   primary: 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400',
-  success: 'bg-green-100 text-green-600 dark:bg-success-500/15 dark:text-[#86efac]',
-  warning: 'bg-amber-100 text-amber-600 dark:bg-warning-500/15 dark:text-[#fcd34d]',
-  info: 'bg-blue-100 text-blue-600 dark:bg-info-500/15 dark:text-[#67e8f9]',
-  danger: 'bg-red-100 text-red-600 dark:bg-danger-500/15 dark:text-[#fca5a5]'
+  success: 'bg-success-100 text-success-600 dark:bg-success-500/15 dark:text-success-300',
+  warning: 'bg-warning-100 text-warning-600 dark:bg-warning-500/15 dark:text-warning-300',
+  info: 'bg-info-100 text-info-600 dark:bg-info-500/15 dark:text-info-300',
+  danger: 'bg-danger-100 text-danger-600 dark:bg-danger-500/15 dark:text-danger-300'
 };
 
 function IconBox({ icon, color = 'primary', size = 40 }) {
@@ -263,7 +263,7 @@ export default function SettingsPage() {
                       </InputIcon>
                     </InputGroup>
                     {errors.currentPassword &&
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.currentPassword.message}</p>
+                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.currentPassword.message}</p>
                     }
                   </div>
 
@@ -291,7 +291,7 @@ export default function SettingsPage() {
                       </InputIcon>
                     </InputGroup>
                     {errors.newPassword &&
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.newPassword.message}</p>
+                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.newPassword.message}</p>
                     }
                     <p className="text-surface-400 text-xs mt-1">
                       {t('settings.password.requirements', {
@@ -324,7 +324,7 @@ export default function SettingsPage() {
                       </InputIcon>
                     </InputGroup>
                     {errors.newPasswordConfirmation &&
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.newPasswordConfirmation.message}</p>
+                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.newPasswordConfirmation.message}</p>
                     }
                   </div>
 
@@ -332,7 +332,7 @@ export default function SettingsPage() {
                   {is2FAEnabled &&
                   <div className="mb-4">
                       <Label htmlFor="totpCode">
-                        <i className="bx bx-shield-quarter mr-1 text-amber-500 dark:text-[#fcd34d]"></i>
+                        <i className="bx bx-shield-quarter mr-1 text-warning-500 dark:text-warning-300"></i>
                         {t('settings.password.totpLabel', { defaultValue: '2FA Verification Code' })}
                       </Label>
                       <Input
@@ -346,7 +346,7 @@ export default function SettingsPage() {
                       {...register('totpCode')} error={errors.totpCode} />
                     
                       {errors.totpCode &&
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.totpCode.message}</p>
+                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.totpCode.message}</p>
                     }
                       <p className="text-surface-400 text-xs mt-1">
                         {t('settings.password.totpHint', {
@@ -467,9 +467,9 @@ export default function SettingsPage() {
             </div>
             <div className="p-6">
               {/* 2FA Status */}
-              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${is2FAEnabled ? 'bg-green-50 dark:bg-success-500/10' : 'bg-amber-50 dark:bg-warning-500/10'}`
+              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${is2FAEnabled ? 'bg-success-50 dark:bg-success-500/10' : 'bg-warning-50 dark:bg-warning-500/10'}`
               }>
-                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${is2FAEnabled ? 'bg-green-100 text-green-600 dark:bg-success-500/15 dark:text-[#86efac]' : 'bg-amber-100 text-amber-600 dark:bg-warning-500/15 dark:text-[#fcd34d]'}`
+                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${is2FAEnabled ? 'bg-success-100 text-success-600 dark:bg-success-500/15 dark:text-success-300' : 'bg-warning-100 text-warning-600 dark:bg-warning-500/15 dark:text-warning-300'}`
                 }>
                   <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} text-xl`}></i>
                 </div>
@@ -481,7 +481,7 @@ export default function SettingsPage() {
                   <div className="h-3 w-24 bg-surface-100 dark:bg-dark-elevated rounded animate-pulse mt-1"></div> :
                   is2FAEnabled ?
                   <div className="flex items-center gap-2 mt-1">
-                      <span className="inline-flex items-center px-1.5 py-0.5 text-[0.7rem] font-semibold text-white bg-green-500 rounded">
+                      <span className="inline-flex items-center px-1.5 py-0.5 text-[0.7rem] font-semibold text-white bg-success-500 rounded">
                         <i className="bx bx-check-circle mr-1"></i>
                         {t('settings.2fa.enabled', { defaultValue: 'Enabled' })}
                       </span>
@@ -514,7 +514,7 @@ export default function SettingsPage() {
               is2FAEnabled ?
               <Button
 
-                onClick={() => setShowDisableModal(true)} className="w-full border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer rounded-[10px] py-2">
+                onClick={() => setShowDisableModal(true)} className="w-full border border-danger-200 dark:border-danger-500/30 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-500/10 transition-colors cursor-pointer rounded-[10px] py-2">
                 
                   <i className="bx bx-power-off mr-1"></i>
                   {t('settings.2fa.disable', { defaultValue: 'Disable 2FA' })}

@@ -45,10 +45,10 @@ function getDateRange(preset) {
 }
 
 const kpiColors = {
-  primary:   { bg: 'bg-primary-50',  icon: 'text-primary-600' },
-  danger:    { bg: 'bg-danger-50',   icon: 'text-danger-600' },
-  warning:   { bg: 'bg-warning-50',  icon: 'text-warning-600' },
-  info:      { bg: 'bg-info-50',     icon: 'text-info-600' },
+  primary:   { bg: 'bg-primary-50 dark:bg-primary-500/10',  icon: 'text-primary-600 dark:text-primary-400' },
+  danger:    { bg: 'bg-danger-50 dark:bg-danger-500/10',   icon: 'text-danger-600 dark:text-danger-400' },
+  warning:   { bg: 'bg-warning-50 dark:bg-warning-500/10',  icon: 'text-warning-600 dark:text-warning-400' },
+  info:      { bg: 'bg-info-50 dark:bg-info-500/10',     icon: 'text-info-600 dark:text-info-400' },
 }
 
 function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
@@ -63,7 +63,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
           <p className="text-sm text-surface-500 mb-1">{title}</p>
           <p className={`text-2xl font-bold mb-0 ${valueColor ?`text-${valueColor}-600` : 'text-surface-900'}`}>{value}</p>
           {change !== undefined && change !== null && !isNaN(numChange) && (
-            <span className={`text-xs ${isPositive ?'text-success-600' : 'text-danger-600'}`}>
+            <span className={`text-xs ${isPositive ?'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
               <i className={`bx ${isPositive ?'bx-up-arrow-alt' : 'bx-down-arrow-alt'}`}></i>
               {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
             </span>
@@ -243,7 +243,7 @@ export default function TransactionsPage() {
       </div>
 
       {error && (
-        <div className="bg-danger-50 border border-danger-200 text-danger-700 rounded-lg p-3 text-sm mb-5">{error}</div>
+        <div className="bg-danger-50 dark:bg-danger-500/10 border border-danger-200 dark:border-danger-800 text-danger-700 dark:text-danger-300 rounded-lg p-3 text-sm mb-5">{error}</div>
       )}
 
       {/* KPI Summary Cards */}

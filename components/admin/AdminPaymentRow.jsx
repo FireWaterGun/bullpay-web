@@ -105,9 +105,9 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             <Button
 
             onClick={() => onCopy(payment.fromAddress)}
-            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
             
-              <i className="bx bx-copy text-xl"></i>
+              <i className="bx bx-copy"></i>
             </Button>
           </div> :
 
@@ -123,9 +123,9 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             <Button
 
             onClick={() => onCopy(payment.toAddress)}
-            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+            title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
             
-              <i className="bx bx-copy text-xl"></i>
+              <i className="bx bx-copy"></i>
             </Button>
           </div> :
 

@@ -20,22 +20,21 @@ export default function Pagination({
   const end = Math.min(page * limit, total)
 
   /* ── Shared button classes ── */
-  const btnBase = [
-    'inline-flex items-center justify-center text-sm font-medium transition-all cursor-pointer',
-    'rounded-btn border leading-[1.375]',
-    'px-[0.8rem] py-[0.4rem]',
-    // light
-    'border-surface-300 text-surface-600 bg-transparent',
-    'hover:enabled:bg-surface-100',
-    // dark
-    
-    'dark:hover:enabled:bg-white/6 dark:hover:enabled:text-[#e2e4e9] dark:hover:enabled:border-surface-300',
-    // disabled
-    'disabled:opacity-60 disabled:cursor-not-allowed',
+  const btn = [
+    'inline-flex items-center justify-center gap-1 text-sm font-medium transition-colors',
+    'border border-surface-200 leading-[1.375]',
+    'px-3 py-[0.4rem]',
+    'text-surface-600 bg-card',
+    'hover:enabled:bg-surface-50 hover:enabled:text-surface-800',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
   ].join(' ')
 
+  const btnFirst = `${btn} rounded-l-btn -mr-px`
+  const btnMid   = `${btn} -mr-px`
+  const btnLast  = `${btn} rounded-r-btn`
+
   return (
-    <div className={`flex justify-between items-center mt-4 ${className}`}>
+    <div className={`flex flex-wrap justify-between items-center gap-3 ${className}`}>
       {showInfo && (
         <div className="text-sm text-surface-500">
           {t('invoices.showingEntries', {
@@ -47,27 +46,29 @@ export default function Pagination({
         </div>
       )}
 
-      <div className="inline-flex rounded-lg shadow-sm">
+      <div className="inline-flex">
         <button
           type="button"
-          className={btnBase}
+          className={btnFirst}
           disabled={!hasPrev || loading}
           onClick={() => onPageChange(page - 1)}
         >
-          <i className="bx bx-chevron-left" /> {t('actions.prev', { defaultValue: 'Previous' })}
+          <i className="bx bx-chevron-left text-base" />
+          {t('actions.prev', { defaultValue: 'Previous' })}
         </button>
 
-        <button type="button" className={btnBase} disabled>
+        <button type="button" className={btnMid} disabled>
           {page} / {totalPages}
         </button>
 
         <button
           type="button"
-          className={btnBase}
+          className={btnLast}
           disabled={!hasNext || loading}
           onClick={() => onPageChange(page + 1)}
         >
-          {t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right" />
+          {t('actions.next', { defaultValue: 'Next' })}
+          <i className="bx bx-chevron-right text-base" />
         </button>
       </div>
     </div>

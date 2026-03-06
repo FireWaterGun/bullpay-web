@@ -38,15 +38,54 @@
   /* Dark elevated surface (used via dark:bg-dark-elevated for dropdowns, code blocks etc.) */
   --color-dark-elevated: #232630;
 
-  /* Status Colors */
+  /* Status Colors — Full palette (Tailwind green / red / amber / cyan scales) */
+  --color-success-50:  #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
   --color-success-500: #22c55e;
   --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+  --color-success-950: #052e16;
+
+  --color-warning-50:  #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
   --color-warning-500: #f59e0b;
   --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
+
+  --color-danger-50:  #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
   --color-danger-500: #ef4444;
   --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-800: #991b1b;
+  --color-danger-900: #7f1d1d;
+  --color-danger-950: #450a0a;
+
+  --color-info-50:  #ecfeff;
+  --color-info-100: #cffafe;
+  --color-info-200: #a5f3fc;
+  --color-info-300: #67e8f9;
+  --color-info-400: #22d3ee;
   --color-info-500: #06b6d4;
   --color-info-600: #0891b2;
+  --color-info-700: #0e7490;
+  --color-info-800: #155e75;
+  --color-info-900: #164e63;
+  --color-info-950: #083344;
 
   /* Bare aliases — allows bg-primary, text-success, etc. without shade suffix */
   --color-primary: #2563eb;
@@ -61,7 +100,7 @@
 
   /* Border Radius */
   --radius-btn: 8px;
-  --radius-card: 15px;
+  --radius-card: 10px;
   --radius-input: 8px;
   --radius-badge: 6px;
 
@@ -169,6 +208,232 @@
 
 /* ── Component Layer (reusable patterns) ── */
 @layer components {
+
+  /* ── Form primitives ── */
+
+  /* Base for <input> and <select> */
+  .input-base {
+    @apply block w-full transition-all;
+    @apply px-[0.9375rem] py-[0.543rem];
+    @apply text-base font-normal leading-[1.375];
+    @apply text-surface-800 bg-transparent;
+    @apply border border-surface-300 rounded-input;
+    @apply placeholder:text-surface-400 placeholder:opacity-100;
+    @apply hover:not-focus:not-disabled:not-read-only:border-surface-500;
+    @apply focus:border-primary-600 focus:outline-none focus:shadow-input-focus;
+    @apply disabled:text-surface-500 disabled:bg-surface-500/6 disabled:border-surface-500/24 disabled:opacity-100;
+    @apply read-only:text-surface-500 read-only:bg-surface-500/6 read-only:border-surface-500/24 read-only:opacity-100;
+    @apply dark:border-surface-200;
+    @apply dark:placeholder:text-surface-400;
+    @apply dark:hover:not-focus:not-disabled:not-read-only:border-surface-300;
+    @apply dark:focus:border-primary-500 dark:focus:shadow-input-focus-dark;
+    @apply dark:disabled:bg-white/6 dark:disabled:border-white/12 dark:disabled:text-surface-400;
+    @apply dark:read-only:bg-white/6 dark:read-only:border-white/12 dark:read-only:text-surface-400;
+  }
+
+  .input-base.input-error {
+    @apply !border-danger-500 focus:!shadow-[0_0.125rem_0.25rem_0_rgba(239,68,68,0.4)];
+  }
+
+  /* Native <select> additions */
+  .select-base {
+    @apply appearance-none cursor-pointer pr-[2.625rem];
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22' fill='none'%3e%3cpath d='M10.9999 12.0743L15.5374 7.53676L16.8336 8.83292L10.9999 14.6666L5.16626 8.83292L6.46243 7.53676L10.9999 12.0743Z' fill='%2322303e' fill-opacity='0.9'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.9375rem center;
+    background-size: 22px 24px;
+  }
+  [data-theme="dark"] .select-base {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22' fill='none'%3e%3cpath d='M10.9999 12.0743L15.5374 7.53676L16.8336 8.83292L10.9999 14.6666L5.16626 8.83292L6.46243 7.53676L10.9999 12.0743Z' fill='%23fff' fill-opacity='0.9'/%3e%3c/svg%3e");
+  }
+
+  /* Form label */
+  .form-label {
+    @apply block font-medium mb-1.5 text-sm text-surface-700;
+  }
+
+  /* InputGroup wrapper */
+  .input-group {
+    @apply relative flex items-stretch w-full;
+    @apply border rounded-input bg-transparent;
+    @apply transition-[border-color,box-shadow];
+    @apply border-surface-300 hover:border-surface-500;
+    @apply focus-within:border-primary-600 focus-within:shadow-input-focus focus-within:hover:border-primary-600;
+    @apply dark:border-surface-200 dark:hover:border-surface-300;
+    @apply dark:focus-within:border-primary-500 dark:focus-within:shadow-input-focus-dark;
+  }
+  .input-group.input-error {
+    @apply !border-danger-500 focus-within:!border-danger-500 focus-within:!shadow-[0_0.125rem_0.25rem_0_rgba(239,68,68,0.4)];
+  }
+
+  /* Stripped-down child for Input/Select inside InputGroup — no border, no shadow, no outline.
+     Focus ring is entirely handled by the .input-group wrapper via focus-within. */
+  .input-group-child {
+    @apply flex-1 min-w-0 bg-transparent;
+    @apply border-none rounded-none shadow-none outline-none;
+    @apply px-[0.9375rem] py-[0.543rem];
+    @apply text-base font-normal leading-[1.375];
+    @apply text-surface-800;
+    @apply placeholder:text-surface-400 placeholder:opacity-100;
+  }
+  .input-group-child:focus {
+    @apply border-none shadow-none outline-none ring-0;
+  }
+
+  .input-group > button {
+    @apply !rounded-none !border-none !shadow-none shrink-0;
+  }
+
+  /* Icon slot inside InputGroup */
+  .input-icon {
+    @apply flex items-center justify-center px-[0.9375rem] text-base;
+    @apply text-surface-500 dark:text-surface-400 bg-transparent border-none cursor-pointer;
+    @apply shrink-0;
+    @apply hover:text-surface-700 dark:hover:text-surface-200;
+    transition: color var(--transition-fast);
+  }
+
+  /* Text addon inside InputGroup */
+  .input-addon {
+    @apply flex items-center px-[0.9375rem] py-[0.543rem] text-sm font-normal leading-[1.375];
+    @apply text-surface-600 whitespace-nowrap bg-surface-100 shrink-0;
+    @apply border-surface-300 dark:border-surface-200;
+    @apply dark:bg-dark-elevated;
+  }
+  /* Separator border facing the input + radius matching */
+  .input-addon:first-child {
+    @apply border-r rounded-l-input;
+  }
+  .input-addon:last-child {
+    @apply border-l rounded-r-input;
+  }
+  /* Match group hover color on addon separator */
+  .input-group:hover .input-addon:first-child {
+    border-right-color: var(--color-surface-500);
+  }
+  .input-group:hover .input-addon:last-child {
+    border-left-color: var(--color-surface-500);
+  }
+  [data-theme="dark"] .input-group:hover .input-addon:first-child {
+    border-right-color: var(--color-surface-300);
+  }
+  [data-theme="dark"] .input-group:hover .input-addon:last-child {
+    border-left-color: var(--color-surface-300);
+  }
+  /* Match group focus color on addon separator (overrides hover) */
+  .input-group:focus-within .input-addon:first-child {
+    border-right-color: var(--color-primary-600);
+  }
+  .input-group:focus-within .input-addon:last-child {
+    border-left-color: var(--color-primary-600);
+  }
+  [data-theme="dark"] .input-group:focus-within .input-addon:first-child {
+    border-right-color: var(--color-primary-500);
+  }
+  [data-theme="dark"] .input-group:focus-within .input-addon:last-child {
+    border-left-color: var(--color-primary-500);
+  }
+  /* Error state — addon separator turns danger */
+  .input-group.input-error .input-addon:first-child {
+    border-right-color: var(--color-danger-500);
+  }
+  .input-group.input-error .input-addon:last-child {
+    border-left-color: var(--color-danger-500);
+  }
+
+  /* ── Button base ── */
+  .btn-base {
+    @apply inline-flex items-center justify-center font-medium transition-all cursor-pointer;
+    @apply rounded-btn border leading-[1.375];
+    @apply disabled:opacity-60 disabled:cursor-not-allowed disabled:pointer-events-none;
+  }
+
+  /* Solid variants */
+  .btn-base.btn-primary {
+    @apply bg-primary-600 text-white border-primary-600;
+    @apply hover:bg-primary-700 hover:border-primary-700 hover:shadow-btn-hover hover:-translate-y-px;
+    @apply active:translate-y-0;
+    @apply disabled:bg-[#93b4f5] disabled:border-[#93b4f5] disabled:opacity-100;
+  }
+  .btn-base.btn-danger {
+    @apply bg-danger-500 text-white border-danger-500 hover:bg-danger-600 hover:border-danger-600;
+  }
+  .btn-base.btn-success {
+    @apply bg-success-500 text-white border-success-500 hover:bg-success-600 hover:border-success-600;
+  }
+  .btn-base.btn-warning {
+    @apply bg-warning-500 text-white border-warning-500 hover:bg-warning-600 hover:border-warning-600;
+  }
+  .btn-base.btn-secondary {
+    @apply bg-surface-200 text-surface-700 border-surface-200 hover:bg-surface-300;
+    @apply dark:bg-white/8 dark:border-transparent dark:hover:bg-white/12;
+  }
+  .btn-base.btn-info {
+    @apply bg-info-500 text-white border-info-500 hover:bg-info-600 hover:border-info-600;
+  }
+
+  /* Outline variants */
+  .btn-base.btn-outline-primary {
+    @apply bg-transparent text-primary-600 border-primary-600;
+    @apply hover:bg-primary-600 hover:text-white;
+    @apply dark:text-primary-400 dark:border-primary-500/40;
+    @apply dark:hover:bg-primary-600 dark:hover:text-white dark:hover:border-primary-600;
+  }
+  .btn-base.btn-outline-secondary {
+    @apply bg-transparent text-surface-500 border-surface-200;
+    @apply hover:text-surface-700 hover:bg-surface-100 hover:border-surface-300;
+    @apply dark:hover:bg-white/6;
+  }
+  .btn-base.btn-outline-danger {
+    @apply bg-transparent text-danger-500 border-danger-500;
+    @apply hover:bg-danger-500 hover:text-white;
+    @apply dark:text-danger-300 dark:border-danger-500/40;
+    @apply dark:hover:bg-danger-600 dark:hover:text-white dark:hover:border-danger-600;
+  }
+  .btn-base.btn-outline-warning {
+    @apply bg-transparent text-warning-500 border-warning-500;
+    @apply hover:bg-warning-500 hover:text-white;
+    @apply dark:text-warning-300 dark:border-warning-500/40;
+    @apply dark:hover:bg-warning-600 dark:hover:text-white dark:hover:border-warning-600;
+  }
+  .btn-base.btn-outline-success {
+    @apply bg-transparent text-success-500 border-success-500;
+    @apply hover:bg-success-500 hover:text-white;
+    @apply dark:text-success-300 dark:border-success-500/40;
+    @apply dark:hover:bg-success-600 dark:hover:text-white dark:hover:border-success-600;
+  }
+  .btn-base.btn-outline-info {
+    @apply bg-transparent text-info-500 border-info-500;
+    @apply hover:bg-info-500 hover:text-white;
+    @apply dark:text-info-300 dark:border-info-500/40;
+    @apply dark:hover:bg-info-600 dark:hover:text-white dark:hover:border-info-600;
+  }
+
+  /* Text variants */
+  .btn-base.btn-text-primary {
+    @apply bg-transparent text-primary-600 border-transparent shadow-none;
+    @apply hover:bg-primary-50;
+    @apply dark:text-primary-400 dark:hover:bg-primary-500/10;
+  }
+  .btn-base.btn-text-secondary {
+    @apply bg-transparent text-surface-600 border-transparent shadow-none;
+    @apply hover:bg-surface-100;
+    @apply dark:hover:bg-white/6;
+  }
+
+  /* Label variants */
+  .btn-base.btn-label-secondary {
+    @apply bg-surface-100 text-surface-700 border-transparent shadow-none;
+    @apply hover:bg-surface-200;
+    @apply dark:bg-white/8 dark:hover:bg-white/12;
+  }
+
+  /* Sizes */
+  .btn-sm { @apply px-[0.8rem] py-[0.4rem] text-sm; }
+  .btn-md { @apply px-5 py-[0.4812rem] text-base; }
+  .btn-lg { @apply px-6 py-[0.8rem] text-lg; }
+  .btn-icon { @apply p-2 w-[38px] h-[38px]; }
+  .btn-icon-sm { @apply p-1 w-7 h-7 text-base rounded-full; }
 
   /* ── Misc Bootstrap compat ── */
   .rounded-top { border-radius: var(--radius-card) var(--radius-card) 0 0; }
@@ -325,7 +590,7 @@
   font-size: 0.9375rem;
   min-height: 2.625rem;
   border-radius: 0.375rem;
-  color: #384551;
+  color: var(--color-surface-800);
   transition: color 0.3s, background-color 0.3s;
 }
 
@@ -368,7 +633,7 @@ li.bp-active-item::after {
 /* Sub-level active toggle (Sneat: .menu-sub .menu-item.active > .menu-toggle) */
 .bp-submenu .bp-menu-link.bp-active-toggle {
   background: #edeef0;
-  color: #384551;
+  color: var(--color-surface-800);
 }
 
 /* ── Sub-item dot (::before on sub-link, Sneat style) ── */
@@ -419,7 +684,7 @@ li.bp-active-item::after {
 /* ── Sub-items: transparent active bg, heading-color text ── */
 .bp-submenu .bp-menu-link.bp-active {
   background: transparent;
-  color: #384551;
+  color: var(--color-surface-800);
   font-weight: 600;
   box-shadow: none;
 }
@@ -615,7 +880,7 @@ li.bp-active-item::after {
 
 /* Menu link color in dark */
 [data-theme="dark"] .bp-menu-link {
-  color: #b2b2c4;
+  color: var(--color-surface-600);
 }
 
 /* Sidebar hover backgrounds in dark (can't scope — would affect solid bg-surface-* too) */
@@ -672,7 +937,7 @@ li.bp-active-item::after {
 /* Active open toggle in dark */
 [data-theme="dark"] .bp-menu-link.bp-active-toggle {
   background: rgba(230, 230, 241, 0.08) !important;
-  color: #b2b2c4 !important;
+  color: var(--color-surface-600) !important;
 }
 
 /* Sub dots in dark */
@@ -690,7 +955,7 @@ li.bp-active-item::after {
 /* Submenu active in dark */
 [data-theme="dark"] .bp-submenu .bp-menu-link.bp-active {
   background: transparent !important;
-  color: #e1def5 !important;
+  color: var(--color-surface-800) !important;
   box-shadow: none;
 }
 

@@ -281,29 +281,27 @@ export default function GasSettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div>
-        <ul className="flex border-b border-surface-200 gap-1" role="tablist">
+      <div className="mb-4">
+        <ul className="flex border-b border-surface-200 gap-2" role="tablist">
           {TABS.map((tab) => (
             <li key={tab.key} role="presentation">
               <button
-                className={`px-4 py-2 text-sm font-medium border-b-2 ${activeTab === tab.key ? 'text-primary-600 border-primary-600' : 'text-surface-500 hover:text-surface-700 border-transparent hover:border-surface-300'}`}
+                className={`px-4 py-2 text-base font-medium border-b-[3px] transition-colors ${activeTab === tab.key ? 'text-primary-600 border-primary-600 font-semibold' : 'text-surface-500 hover:text-surface-700 border-transparent hover:border-surface-300'}`}
                 onClick={() => setActiveTab(tab.key)}
                 type="button"
                 role="tab"
               >
-                <i className={`bx ${tab.icon} mr-1`}></i>
+                <i className={`bx ${tab.icon} mr-1.5 text-base align-middle`}></i>
                 {t(tab.labelKey, { defaultValue: tab.defaultLabel })}
               </button>
             </li>
           ))}
         </ul>
-
-        <div className="border border-t-0 rounded-b p-4">
-          {activeTab === 'gasPrice' && <GasPriceTab t={t} getVal={getVal} onEdit={openGasPriceEdit} />}
-          {activeTab === 'gasLimit' && <GasLimitTab t={t} getVal={getVal} onEdit={openGasLimitEdit} />}
-          {activeTab === 'gasTopup' && <GasTopupTab t={t} getVal={getVal} onEdit={openGasTopupEdit} />}
-        </div>
       </div>
+
+      {activeTab === 'gasPrice' && <GasPriceTab t={t} getVal={getVal} onEdit={openGasPriceEdit} />}
+      {activeTab === 'gasLimit' && <GasLimitTab t={t} getVal={getVal} onEdit={openGasLimitEdit} />}
+      {activeTab === 'gasTopup' && <GasTopupTab t={t} getVal={getVal} onEdit={openGasTopupEdit} />}
 
       {/* Edit Modal */}
       {editModal && (

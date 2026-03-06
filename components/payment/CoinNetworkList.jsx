@@ -44,7 +44,7 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
         <div className="flex items-center gap-2">
           <span className="font-bold text-[0.95rem] text-surface-900">{group.symbol}</span>
           {group.isStableCoin ? (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-white text-[0.6rem] bg-green-500 font-semibold">Stable</span>
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-white text-[0.6rem] bg-success-500 font-semibold">Stable</span>
           ) : null}
         </div>
         <div className="flex items-center gap-1">

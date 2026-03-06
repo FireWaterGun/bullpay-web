@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useState, useCallback } from 'react';
+import NextImage from 'next/image';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { useAuth } from '@/app/providers';
@@ -10,6 +10,8 @@ import TableEmptyState from '@/components/TableEmptyState';
 import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
+
+const DEFAULT_PAGINATION = { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false };
 
 // Network color mapping for gradient badges
 function getNetworkColor(symbol, darker = false) {
@@ -58,7 +60,6 @@ const NETWORK_ICON_MAP = {
 };
 
 async function findNetworkImage(network) {
-  // Try logoUrl from API first
   if (network.logoUrl) {
     if (await tryLoadImage(network.logoUrl)) return { id: network.id, url: network.logoUrl, type: 'remote' };
   }
@@ -76,6 +77,65 @@ async function findNetworkImage(network) {
   return { id: network.id, url: null, type: 'gradient' };
 }
 
+function NetworkIcon({ network, imageInfo }) {
+  if (imageInfo?.url) {
+    return (
+      <NextImage
+        src={imageInfo.url}
+        alt={network.symbol || network.name}
+        width={40} height={40}
+        unoptimized
+        className="mr-3 object-contain"
+      />
+    );
+  }
+  return (
+    <div
+      className="mr-3 rounded-full flex items-center justify-center font-bold w-10 h-10 text-white text-xs"
+      style={{ background: `linear-gradient(135deg, ${getNetworkColor(network.symbol)} 0%, ${getNetworkColor(network.symbol, true)} 100%)`, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+      title={network.name}
+    >
+      {(network.symbol || network.name || '?').substring(0, 3)}
+    </div>
+  );
+}
+
+function getStatusBadge(status, t) {
+  if (status === 'active') return <Badge color="success" label>{t('admin.active', { defaultValue: 'Active' })}</Badge>;
+  if (status === 'maintenance') return <Badge color="warning" label>{t('crypto.maintenance', { defaultValue: 'Maintenance' })}</Badge>;
+  return <Badge color="secondary" label>{t('crypto.inactive', { defaultValue: 'Inactive' })}</Badge>;
+}
+
+function NetworkRow({ network, imageInfo, t }) {
+  return (
+    <tr>
+      <td className="align-middle">
+        <div className="flex items-center">
+          <NetworkIcon network={network} imageInfo={imageInfo} />
+          <span className="font-medium">{network.name || 'N/A'}</span>
+        </div>
+      </td>
+      <td className="text-center align-middle">{network.chainId || 'N/A'}</td>
+      <td className="align-middle">
+        {network.explorerUrl ? (
+          <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer" className="no-underline">
+            <i className="bx bx-link-external mr-1"></i>
+            {new URL(network.explorerUrl).hostname}
+          </a>
+        ) : (
+          <span className="text-surface-500">N/A</span>
+        )}
+      </td>
+      <td className="text-center align-middle">{getStatusBadge(network.status, t)}</td>
+      <td className="text-center align-middle">
+        <Button size="icon" href={`/admin/networks/${network.id}`} title={t('actions.edit', { defaultValue: 'Edit' })}>
+          <i className="bx bx-edit text-primary text-xl"></i>
+        </Button>
+      </td>
+    </tr>
+  );
+}
+
 export default function NetworkList() {
   const { t } = useAdminTranslation();
   const { token } = useAuth();
@@ -85,75 +145,58 @@ export default function NetworkList() {
   const [networkImages, setNetworkImages] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [draftSearch, setDraftSearch] = useState('');
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-    hasNext: false,
-    hasPrev: false
-  });
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
 
-  useEffect(() => {
-    loadNetworks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function handleApplyFilter() {
-    setSearchQuery(draftSearch);
-    loadNetworks(1, draftSearch);
-  }
-
-  function handleResetFilter() {
-    setDraftSearch('');
-    setSearchQuery('');
-    loadNetworks(1, '');
-  }
-
-  async function loadNetworks(page = pagination.page, search = searchQuery) {
+  const loadNetworks = useCallback(async ({ page = 1, search = '' } = {}) => {
     setLoading(true);
     setError('');
     try {
-      // Use server-side pagination
       const response = await getNetworks(token, page, 10);
       const networkList = response?.items || [];
-      const paginationData = response?.pagination || {};
+      const pd = response?.pagination || {};
 
       // Client-side search filtering if search query exists
-      let filtered = networkList;
-      if (search) {
-        filtered = networkList.filter((network) =>
-        network.name?.toLowerCase().includes(search.toLowerCase()) ||
-        network.chainId?.toString().includes(search)
-        );
-      }
+      const filtered = search
+        ? networkList.filter((n) =>
+            n.name?.toLowerCase().includes(search.toLowerCase()) ||
+            n.chainId?.toString().includes(search))
+        : networkList;
 
       setNetworks(filtered);
       setPagination({
-        page: paginationData.page || page,
-        limit: paginationData.limit || 10,
-        total: paginationData.total || filtered.length,
-        totalPages: paginationData.totalPages || 1,
-        hasNext: paginationData.hasNext || false,
-        hasPrev: paginationData.hasPrev || false
+        page: pd.page || page, limit: pd.limit || 10,
+        total: pd.total || filtered.length, totalPages: pd.totalPages || 1,
+        hasNext: pd.hasNext || false, hasPrev: pd.hasPrev || false,
       });
 
       // Find icons for all networks
       const results = await Promise.all(filtered.map((n) => findNetworkImage(n)));
       const imgMap = {};
-      results.forEach((r) => {imgMap[r.id] = { url: r.url, type: r.type };});
+      results.forEach((r) => { imgMap[r.id] = { url: r.url, type: r.type }; });
       setNetworkImages(imgMap);
     } catch (e) {
       setError(e?.message || 'Failed to load networks');
     } finally {
       setLoading(false);
     }
+  }, [token]);
+
+  useEffect(() => { loadNetworks(); }, [loadNetworks]);
+
+  function handleApplyFilter() {
+    setSearchQuery(draftSearch);
+    loadNetworks({ page: 1, search: draftSearch });
+  }
+
+  function handleResetFilter() {
+    setDraftSearch('');
+    setSearchQuery('');
+    loadNetworks({ page: 1, search: '' });
   }
 
   function handlePageChange(newPage) {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      loadNetworks(newPage);
-      // Scroll to top of table
+      loadNetworks({ page: newPage, search: searchQuery });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
@@ -230,74 +273,8 @@ export default function NetworkList() {
                 t('crypto.noNetworks', { defaultValue: 'No networks yet' })
                 } /> :
 
-
               networks.map((network) =>
-              <tr key={network.id}>
-                    <td className="align-middle">
-                      <div className="flex items-center">
-                        {networkImages[network.id]?.url ?
-                    <Image
-                      src={networkImages[network.id].url}
-                      alt={network.symbol || network.name}
-                      width={40}
-                      height={40}
-                      unoptimized
-                      className="mr-3 object-contain" /> :
-
-
-
-                    <div
-                      className="mr-3 rounded-full flex items-center justify-center font-bold w-10 h-10 text-white text-xs"
-                      style={{ background: `linear-gradient(135deg, ${getNetworkColor(network.symbol)} 0%, ${getNetworkColor(network.symbol, true)} 100%)`, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-                      title={network.name}>
-                      
-                            {(network.symbol || network.name || '?').substring(0, 3)}
-                          </div>
-                    }
-                        <span className="font-medium">{network.name || 'N/A'}</span>
-                      </div>
-                    </td>
-                    <td className="text-center align-middle">
-                      {network.chainId || 'N/A'}
-                    </td>
-                    <td className="align-middle">
-                      {network.explorerUrl ?
-                  <a
-                    href={network.explorerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="no-underline">
-                    
-                          <i className="bx bx-link-external mr-1"></i>
-                          {new URL(network.explorerUrl).hostname}
-                        </a> :
-
-                  <span className="text-surface-500">N/A</span>
-                  }
-                    </td>
-                    <td className="text-center align-middle">
-                      <Badge color={network.status === 'active' ? 'success' :
-                  network.status === 'maintenance' ? 'warning' :
-                  'secondary'} label>
-                    
-                        {network.status === 'active' ?
-                    t('admin.active', { defaultValue: 'Active' }) :
-                    network.status === 'maintenance' ?
-                    t('crypto.maintenance', { defaultValue: 'Maintenance' }) :
-                    t('crypto.inactive', { defaultValue: 'Inactive' })
-                    }
-                      </Badge>
-                    </td>
-                    <td className="text-center align-middle">
-                      <Button size="icon"
-                  href={`/admin/networks/${network.id}`}
-
-                  title={t('actions.edit', { defaultValue: 'Edit' })}>
-                    
-                        <i className="bx bx-edit text-primary text-xl"></i>
-                      </Button>
-                    </td>
-                  </tr>
+                <NetworkRow key={network.id} network={network} imageInfo={networkImages[network.id]} t={t} />
               )
               }
             </tbody>

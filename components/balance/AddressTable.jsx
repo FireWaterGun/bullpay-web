@@ -5,9 +5,7 @@ import CoinImg from '@/components/CoinImg';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { addressStatusBadgeClass } from './withdrawalHelpers';
 import TableEmptyState from '@/components/TableEmptyState';
-import Pagination from '@/components/ui/Pagination';
-import Table from '@/components/ui/Table';
-import { Badge, Button, Card } from '@/components/ui'
+import { Badge, Button, Card, Pagination, Table } from '@/components/ui'
 import ActionMenu from '@/components/ui/ActionMenu'
 
 function statusLabel(s) {
@@ -36,26 +34,24 @@ export default function AddressTable({
 
   return (
     <Card>
-      <div className="p-5">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max text-sm">
-            <thead>
-              <tr className="whitespace-nowrap border-b border-surface-200">
-                <th className="px-3 py-2 text-left">ID</th>
-                <th className="px-3 py-2 text-center">User ID</th>
-                <th className="px-3 py-2 text-left">Coin</th>
-                <th className="px-3 py-2 text-left">Label</th>
-                <th className="px-3 py-2 text-left">Address</th>
-                <th className="px-3 py-2 text-center">Status</th>
-                <th className="px-3 py-2 text-center">Verified</th>
-                <th className="px-3 py-2 text-center">Flagged</th>
-                <th className="px-3 py-2 text-right">Usage</th>
-                <th className="px-3 py-2 text-right">Withdrawn</th>
-                <th className="px-3 py-2 text-center">Actions</th>
-                <th className="px-3 py-2 text-left">Created</th>
-              </tr>
-            </thead>
-            <tbody>
+      <Table>
+          <thead>
+            <tr className="whitespace-nowrap">
+              <th>ID</th>
+              <th className="text-center">User ID</th>
+              <th>Coin</th>
+              <th>Label</th>
+              <th>Address</th>
+              <th className="text-center">Status</th>
+              <th className="text-center">Verified</th>
+              <th className="text-center">Flagged</th>
+              <th className="text-right">Usage</th>
+              <th className="text-right">Withdrawn</th>
+              <th className="text-center">Actions</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
               {addresses.length === 0 ?
               <TableEmptyState
                 colSpan={12}
@@ -70,12 +66,12 @@ export default function AddressTable({
                 const isVerified = !!addr.isVerified;
 
                 return (
-                  <tr className="cursor-pointer border-b border-surface-200 hover:bg-surface-50 dark:hover:bg-white/4 transition-colors" key={addr.id} onClick={() => router.push(`/admin/withdrawal-addresses/${addr.id}`)}>
-                      <td className="px-3 py-2">
+                  <tr className="cursor-pointer" key={addr.id} onClick={() => router.push(`/admin/withdrawal-addresses/${addr.id}`)}>
+                      <td>
                         <span className="font-semibold text-primary">{addr.id}</span>
                       </td>
-                      <td className="px-3 py-2 text-center">{addr.userId}</td>
-                      <td className="px-3 py-2">
+                      <td className="text-center">{addr.userId}</td>
+                      <td>
                         <div className="flex items-center">
                           <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={28} className="mr-2" />
                           <div>
@@ -84,10 +80,10 @@ export default function AddressTable({
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         <span className="text-surface-500 text-[0.85rem]">{addr.label || '-'}</span>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         <div className="flex items-center gap-1 whitespace-nowrap">
                           <span className="text-[0.8rem]">
                             {addr.address || 'N/A'}
@@ -104,29 +100,29 @@ export default function AddressTable({
                         }
                         </div>
                       </td>
-                      <td className="px-3 py-2 text-center whitespace-nowrap">
+                      <td className="text-center whitespace-nowrap">
                         <span className={addressStatusBadgeClass(addr.status)}>
                           {statusLabel(addr.status)}
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-center">
+                      <td className="text-center">
                         {isVerified ?
                       <i className="bx bx-check-circle text-success text-[1.1rem]"></i> :
 
                       <i className="bx bx-x-circle text-surface-500 text-[1.1rem]"></i>
                       }
                       </td>
-                      <td className="px-3 py-2 text-center">
+                      <td className="text-center">
                         {isFlagged ?
-                      <Badge className="bg-amber-50 text-amber-700"><i className="bx bx-flag mr-1"></i>Flagged</Badge> :
+                      <Badge color="warning" label><i className="bx bx-flag mr-1"></i>Flagged</Badge> :
 
                       <span className="text-surface-500">&mdash;</span>
                       }
                       </td>
-                      <td className="px-3 py-2 text-right">
+                      <td className="text-right">
                         <span className="font-medium">{addr.usageCount ?? 0}</span>
                       </td>
-                      <td className="px-3 py-2 text-right">
+                      <td className="text-right">
                         <span className="font-medium">{addr.totalWithdrawn || '0'}</span>
                       </td>
                       <td className="text-center">
@@ -146,7 +142,7 @@ export default function AddressTable({
                           }
                         </ActionMenu>
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-[0.85rem]">
+                      <td className="whitespace-nowrap text-[0.85rem]">
                         {fmtDate(addr.createdAt)}
                       </td>
                     </tr>);
@@ -154,12 +150,12 @@ export default function AddressTable({
               })
               }
             </tbody>
-          </table>
-        </div>
+          </Table>
 
         {/* Pagination */}
         {pagination && pagination.total > 0 &&
-        <Pagination
+        <div className="px-5 py-1.5">
+          <Pagination
             currentPage={currentPage}
             totalPages={pagination.totalPages}
             total={pagination.total}
@@ -170,8 +166,8 @@ export default function AddressTable({
             onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }}
             t={t}
           />
+        </div>
         }
-      </div>
     </Card>);
 
 }

@@ -207,15 +207,15 @@ export default function WithdrawRequest() {
         {loading ?
       <Card><div className="p-6"><div className="animate-pulse space-y-3"><div className="h-4 bg-surface-200 dark:bg-dark-elevated rounded w-1/3"></div><div className="h-4 bg-surface-200 dark:bg-dark-elevated rounded w-2/3"></div></div></div></Card> :
       error ?
-      <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 p-4" role="alert">{error}</div> :
+      <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 p-4" role="alert">{error}</div> :
       !balance ?
-      <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 p-4" role="alert">{t('common.noData') || 'Not found'}</div> :
+      <div className="rounded-lg bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-400 p-4" role="alert">{t('common.noData') || 'Not found'}</div> :
       !is2FALoading && !is2FAEnabled ?
       <Card className="mx-auto max-w-[520px]">
             <div className="p-6 text-center py-10">
               <div className="mb-4">
-                <div className="rounded-full inline-flex items-center justify-center bg-amber-100 dark:bg-amber-900/30 w-20 h-20">
-                  <i className="bx bx-shield-x text-amber-500 dark:text-amber-400 text-[2.5rem]"></i>
+                <div className="rounded-full inline-flex items-center justify-center bg-warning-100 dark:bg-warning-900/30 w-20 h-20">
+                  <i className="bx bx-shield-x text-warning-500 dark:text-warning-400 text-[2.5rem]"></i>
                 </div>
               </div>
               <h5 className="mb-2 font-semibold text-lg">{t('balance.require2FATitle', { defaultValue: 'Two-Factor Authentication Required' })}</h5>
@@ -261,7 +261,7 @@ export default function WithdrawRequest() {
                         </div>
                       </div>
                       {networkLabel &&
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">{t('wallet.colNetwork', { defaultValue: 'Network' })}</span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-100 dark:bg-danger-900/30 text-danger-700 dark:text-danger-400">{t('wallet.colNetwork', { defaultValue: 'Network' })}</span>
                 }
                     </div>
                   </div>
@@ -306,7 +306,7 @@ export default function WithdrawRequest() {
                       {t('balance.balance', { defaultValue: 'Balance' })}: {formatCoinAmount(available)} {sym}
                     </div>
                     {amountError &&
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-danger-500 text-sm mt-1">
                         <i className="bx bx-error-circle mr-1"></i>
                         {amountError}
                       </div>
@@ -324,7 +324,7 @@ export default function WithdrawRequest() {
 
                   {feeError && !estimatingFee &&
             <div className="mb-3">
-                      <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 py-2 px-3" role="alert">
+                      <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 py-2 px-3" role="alert">
                         <i className="bx bx-error-circle mr-1"></i>
                         <span className="text-sm">{feeError}</span>
                       </div>

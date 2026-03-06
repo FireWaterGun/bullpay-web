@@ -123,12 +123,12 @@ export default function GasTopupDetail() {
                         {String(topup.status || '').toUpperCase()}
                       </span>
                       {coinSymbol &&
-                      <Badge className="bg-surface-100 text-surface-600">
+                      <Badge color="secondary">
                           {coinSymbol}
                         </Badge>
                       }
                       {networkName &&
-                      <Badge className="bg-surface-100 text-surface-600">
+                      <Badge color="secondary">
                           {networkName}
                         </Badge>
                       }

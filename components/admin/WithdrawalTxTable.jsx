@@ -29,9 +29,7 @@ export default function WithdrawalTxTable({
 
   return (
     <Card>
-      <div className="p-5">
-        <div className="overflow-x-auto">
-          <Table responsive={false} className="text-sm min-w-max">
+        <Table className="text-sm min-w-max">
             <thead>
               <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500 whitespace-nowrap">
                 <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -167,9 +165,9 @@ export default function WithdrawalTxTable({
                     <Button
 
                       onClick={() => onCopy(withdrawal.fromAddress)}
-                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                       
-                          <i className="bx bx-copy text-xl"></i>
+                          <i className="bx bx-copy"></i>
                         </Button>
                     }
                     </div>
@@ -183,9 +181,9 @@ export default function WithdrawalTxTable({
                     <Button
 
                       onClick={() => onCopy(withdrawal.toAddress)}
-                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                      title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon-sm" variant="text-secondary">
                       
-                          <i className="bx bx-copy text-xl"></i>
+                          <i className="bx bx-copy"></i>
                         </Button>
                     }
                     </div>
@@ -198,23 +196,23 @@ export default function WithdrawalTxTable({
               }
           </tbody>
         </Table>
-        </div>
 
         {pagination && pagination.total > 0 &&
-        <Pagination
-          pagination={{
-            page: pagination.page,
-            totalPages: pagination.totalPages,
-            total: pagination.total,
-            limit: pagination.limit,
-            hasPrev: pagination.hasPrev,
-            hasNext: pagination.hasNext,
-          }}
-          loading={loading}
-          onPageChange={(newPage) => { onPageChange(newPage); syncSearchParams(appliedFilters, newPage); }}
-        />
+        <div className="px-5 py-1.5">
+          <Pagination
+            pagination={{
+              page: pagination.page,
+              totalPages: pagination.totalPages,
+              total: pagination.total,
+              limit: pagination.limit,
+              hasPrev: pagination.hasPrev,
+              hasNext: pagination.hasNext,
+            }}
+            loading={loading}
+            onPageChange={(newPage) => { onPageChange(newPage); syncSearchParams(appliedFilters, newPage); }}
+          />
+        </div>
         }
-      </div>
     </Card>);
 
 }

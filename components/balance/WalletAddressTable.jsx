@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import { getNetworkLabel, formatAddressStatus, addressStatusBadgeClass } from './withdrawalHelpers'
+import Table from '@/components/ui/Table'
 
 export default function WalletAddressTable({ walletItems, cnById }) {
   const { t } = useTranslation()
@@ -20,18 +21,17 @@ export default function WalletAddressTable({ walletItems, cnById }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <Table>
         <thead>
-          <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500 whitespace-nowrap">
-            <th className="px-3 py-2" style={{ width: '12%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
-            <th className="px-3 py-2 w-[22%]">{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
-            <th className="px-3 py-2 w-[15%]">{t('wallet.label', { defaultValue: 'Label' })}</th>
-            <th className="px-3 py-2 whitespace-nowrap">{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
-            <th className="px-3 py-2 whitespace-nowrap" style={{ width: '12%' }}>{t('common.status', { defaultValue: 'Status' })}</th>
+          <tr className="whitespace-nowrap">
+            <th style={{ width: '12%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
+            <th className="w-[22%]">{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+            <th className="w-[15%]">{t('wallet.label', { defaultValue: 'Label' })}</th>
+            <th>{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
+            <th style={{ width: '12%' }}>{t('common.status', { defaultValue: 'Status' })}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-surface-100">
+        <tbody>
           {walletItems.map((w, idx) => {
             const coin = w.coin || cnById.get(Number(w.coinNetworkId))?.coin
             const network = w.network || cnById.get(Number(w.coinNetworkId))?.network
@@ -41,12 +41,12 @@ export default function WalletAddressTable({ walletItems, cnById }) {
             const addr = w.address || '-'
             const label = w.label || '-'
             return (
-              <tr key={w.id || idx} className="hover:bg-surface-50 dark:hover:bg-white/4 transition-colors">
-                <td className="px-3 py-2">
+              <tr key={w.id || idx}>
+                <td>
                   <span className="text-surface-500">
                   </span>
                 </td>
-                <td className="px-3 py-2">
+                <td>
                   <div className="flex items-center">
                     <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} className="mr-3" showFallback />
                     <div>
@@ -55,10 +55,10 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                     </div>
                   </div>
                 </td>
-                <td className="px-3 py-2">
+                <td>
                   <span className="truncate inline-block max-w-[200px]" title={label}>{label}</span>
                 </td>
-                <td className="px-3 py-2">
+                <td>
                   <div className="flex items-start">
                     <span className="font-mono break-all">{addr}</span>
                     <button
@@ -69,18 +69,17 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                       aria-label={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
                       title={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}
                     >
-                      <i className={`bx ${copiedMap[w.id || idx] ?'bx-check text-green-600' : 'bx-copy'}`}></i>
+                      <i className={`bx ${copiedMap[w.id || idx] ?'bx-check text-success-600 dark:text-success-400' : 'bx-copy'}`}></i>
                     </button>
                   </div>
                 </td>
-                <td className="px-3 py-2">
+                <td>
                   <span className={addressStatusBadgeClass(w.status)}>{formatAddressStatus(w.status, t)}</span>
                 </td>
               </tr>
             )
           })}
         </tbody>
-      </table>
-    </div>
+    </Table>
   )
 }

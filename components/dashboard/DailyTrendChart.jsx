@@ -128,13 +128,13 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                 )
               })}
               {/* Net flow line (smooth curve) */}
-              <path d={netFlowPath} fill="none" stroke="#03c3ec" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d={netFlowPath} fill="none" stroke="var(--color-info-500)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               {/* Net flow dots */}
               {data.map((item, i) => {
                 const cx = i * barGroupW + barGroupW / 2
                 const cy = yPos(item.netFlow || 0)
                 return (
-                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" className="stroke-card" strokeWidth="1.5">
+                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="var(--color-info-500)" className="stroke-card" strokeWidth="1.5">
                     <title>{t ? t('userDashboard.chartNetFlow', { value: formatUsd(item.netFlow || 0), defaultValue: `Net Flow: ${formatUsd(item.netFlow || 0)}` }) : `Net Flow: ${formatUsd(item.netFlow || 0)}`}</title>
                   </circle>
                 )
@@ -148,11 +148,11 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
               <small>{t ? t('userDashboard.deposits', { defaultValue: 'Deposit' }) : 'Deposit'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0" style={{ background: 'repeating-conic-gradient(#9ca3af 0% 25%, #6b7280 0% 50%) 50%/6px 6px' }}></span>
+              <span className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0" style={{ background: 'repeating-conic-gradient(var(--color-surface-400) 0% 25%, var(--color-surface-500) 0% 50%) 50%/6px 6px' }}></span>
               <small>{t ? t('userDashboard.withdrawals', { defaultValue: 'Withdrawal' }) : 'Withdrawal'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-4 inline-block shrink-0" style={{ borderBottom: '2px solid #03c3ec' }}></span>
+              <span className="w-4 inline-block shrink-0" style={{ borderBottom: '2px solid var(--color-info-500)' }}></span>
               <small>{t ? t('userDashboard.netFlow', { defaultValue: 'Net Flow' }) : 'Net Flow'}</small>
             </div>
           </div>
@@ -179,12 +179,12 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
               <small>{meta.daysWithData || 0} {t ? t('userDashboard.daysWithData', { defaultValue: 'days with data' }) : 'days with data'}</small>
             </div>
             <div>
-              <small className="text-green-500">
+              <small className="text-success-500">
                 <i className="bx bx-up-arrow-alt"></i>
                 {meta.daysPositiveFlow || 0} {t ? t('userDashboard.daysPositiveFlow', { defaultValue: 'days positive flow' }) : 'days positive flow'}
               </small>
               <small className="text-surface-500 mx-1">&bull;</small>
-              <small className="text-red-500">
+              <small className="text-danger-500">
                 <i className="bx bx-down-arrow-alt"></i>
                 {meta.daysNegativeFlow || 0} {t ? t('userDashboard.daysNegative', { defaultValue: 'days negative' }) : 'days negative'}
               </small>

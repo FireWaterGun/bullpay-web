@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Input, InputGroup, InputAddon, Label, Select, Spinner } from '@/components/ui';
+import { Badge, Button, Card, Input, InputGroup, InputAddon, Label, Select, Spinner } from '@/components/ui';
 import { formatMs, formatRatio } from '@/lib/utils/settingsFormatters';
 
 export default function RbfEditModal({
@@ -44,7 +44,7 @@ export default function RbfEditModal({
       onClick={(e) => { if (e.target === e.currentTarget && !saving) onClose(); }}>
       <div className={`w-full max-w-lg mx-4 ${modalSize}`}>
         <div className="bg-card rounded-xl shadow-xl">
-          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200 dark:border-surface-300">
             <h5 className="text-lg font-semibold text-surface-800">
               <i className={`bx ${modalIcon} mr-2`}></i>
               {modalTitle}
@@ -55,7 +55,7 @@ export default function RbfEditModal({
             {tab === 'global' && <GlobalForm t={t} editModal={editModal} editForm={editForm} updateField={updateField} formErrors={formErrors} />}
             {tab === 'network' && <NetworkForm t={t} editModal={editModal} editForm={editForm} setEditForm={setEditForm} updateField={updateField} formErrors={formErrors} />}
           </div>
-          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200 dark:border-surface-300">
             <Button onClick={onClose} disabled={saving} variant="outline-secondary">
               {t('admin.rbfSettings.cancel', { defaultValue: 'Cancel' })}
             </Button>
@@ -113,10 +113,10 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
             })}
           </div>
           {editForm.minNotFoundDuration && !isNaN(Number(editForm.minNotFoundDuration)) && (
-            <Alert variant="info" className="mt-2 mb-0 py-2">
-              <i className="bx bx-time mr-1"></i>
+            <span className="text-xs text-surface-500 mt-1 inline-block">
+              <i className="bx bx-time mr-1 align-middle"></i>
               ≈ {formatMs(editForm.minNotFoundDuration)}
-            </Alert>
+            </span>
           )}
         </div>
       </>
@@ -196,7 +196,10 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
     <>
       {/* Network badge */}
       <div className="mb-4">
-        <span className="text-surface-500">{network.symbol}</span>
+        <Badge variant="secondary" className="text-sm">
+          <i className="bx bx-network-chart mr-1"></i>
+          {network.name} ({network.symbol})
+        </Badge>
       </div>
 
       {/* Enabled toggle */}
@@ -217,8 +220,8 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
       </div>
 
       {/* Gas Bump */}
-      <Card style={{ borderLeft: '3px solid var(--color-amber-500)' }} className="mb-3">
-        <div className="p-5 py-3">
+      <Card className="mb-3 border-l-[3px] border-l-amber-500">
+        <div className="px-5 py-3">
           <h6 className="mb-3 flex items-center text-warning">
             <i className="bx bx-trending-up mr-2"></i>
             {t('admin.rbfSettings.gasBumpSection', { defaultValue: 'Gas Price Bump' })}
@@ -243,14 +246,14 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
       </Card>
 
       {/* Timing */}
-      <Card style={{ borderLeft: '3px solid var(--color-cyan-500)' }} className="mb-3">
-        <div className="p-5 py-3">
+      <Card className="mb-3 border-l-[3px] border-l-cyan-500">
+        <div className="px-5 py-3">
           <h6 className="mb-3 flex items-center text-info">
             <i className="bx bx-time mr-2"></i>
             {t('admin.rbfSettings.timingSection', { defaultValue: 'Timing Thresholds' })}
           </h6>
-          <div className="grid grid-cols-12 gap-x-6 gap-3">
-            <div className="md:col-span-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.minPendingDuration', { defaultValue: 'Min Pending Duration' })}
               </Label>
@@ -259,9 +262,9 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
                 <InputAddon>ms</InputAddon>
               </InputGroup>
               {formErrors.minPendingDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minPendingDuration}</div>}
-              {editForm.minPendingDuration && !isNaN(Number(editForm.minPendingDuration)) && <small className="text-surface-500">≈ {formatMs(editForm.minPendingDuration)}</small>}
+              {editForm.minPendingDuration && !isNaN(Number(editForm.minPendingDuration)) && <span className="text-xs text-surface-500">≈ {formatMs(editForm.minPendingDuration)}</span>}
             </div>
-            <div className="md:col-span-4">
+            <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.maxPendingDuration', { defaultValue: 'Max Pending Duration' })}
               </Label>
@@ -270,9 +273,9 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
                 <InputAddon>ms</InputAddon>
               </InputGroup>
               {formErrors.maxPendingDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxPendingDuration}</div>}
-              {editForm.maxPendingDuration && !isNaN(Number(editForm.maxPendingDuration)) && <small className="text-surface-500">≈ {formatMs(editForm.maxPendingDuration)}</small>}
+              {editForm.maxPendingDuration && !isNaN(Number(editForm.maxPendingDuration)) && <span className="text-xs text-surface-500">≈ {formatMs(editForm.maxPendingDuration)}</span>}
             </div>
-            <div className="md:col-span-4">
+            <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.minTimeBetweenReplaces', { defaultValue: 'Min Replace Interval' })}
               </Label>
@@ -281,21 +284,21 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
                 <InputAddon>ms</InputAddon>
               </InputGroup>
               {formErrors.minTimeBetweenReplaces && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minTimeBetweenReplaces}</div>}
-              {editForm.minTimeBetweenReplaces && !isNaN(Number(editForm.minTimeBetweenReplaces)) && <small className="text-surface-500">≈ {formatMs(editForm.minTimeBetweenReplaces)}</small>}
+              {editForm.minTimeBetweenReplaces && !isNaN(Number(editForm.minTimeBetweenReplaces)) && <span className="text-xs text-surface-500">≈ {formatMs(editForm.minTimeBetweenReplaces)}</span>}
             </div>
           </div>
         </div>
       </Card>
 
       {/* Cost Limits */}
-      <Card style={{ borderLeft: '3px solid var(--color-green-500)' }} className="mb-0">
-        <div className="p-5 py-3">
+      <Card className="border-l-[3px] border-l-green-500">
+        <div className="px-5 py-3">
           <h6 className="mb-3 flex items-center text-success">
             <i className="bx bx-dollar mr-2"></i>
             {t('admin.rbfSettings.costSection', { defaultValue: 'Cost Limits' })}
           </h6>
-          <div className="grid grid-cols-12 gap-x-6 gap-3">
-            <div className="md:col-span-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.minAmountUsd', { defaultValue: 'Min Amount (USD)' })}
               </Label>
@@ -308,7 +311,7 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
                 {t('admin.rbfSettings.minAmountUsdDesc', { defaultValue: 'Minimum transaction USD value to allow RBF.' })}
               </div>
             </div>
-            <div className="md:col-span-4">
+            <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.maxCostRatio', { defaultValue: 'Max Cost Ratio' })}
               </Label>
@@ -317,9 +320,9 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
               <div className="text-xs text-surface-500 mt-1">
                 {t('admin.rbfSettings.maxCostRatioDesc', { defaultValue: 'Max gas cost as fraction of tx value (0.05 = 5%).' })}
               </div>
-              {editForm.maxCostRatio && !isNaN(Number(editForm.maxCostRatio)) && <small className="text-info">= {formatRatio(editForm.maxCostRatio)}</small>}
+              {editForm.maxCostRatio && !isNaN(Number(editForm.maxCostRatio)) && <span className="text-xs text-info">= {formatRatio(editForm.maxCostRatio)}</span>}
             </div>
-            <div className="md:col-span-4">
+            <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.maxCostUsd', { defaultValue: 'Max Cost (USD)' })}
               </Label>

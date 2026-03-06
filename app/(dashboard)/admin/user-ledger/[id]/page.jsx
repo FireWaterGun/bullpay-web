@@ -53,10 +53,10 @@ export default function UserLedgerDetail() {
 
 
   function stateBadge(state) {
-    if (state === 'settled') return <Badge className="bg-green-50 text-green-700">Settled</Badge>;
-    if (state === 'committed') return <Badge className="bg-cyan-50 text-cyan-700">Committed</Badge>;
-    if (state === 'pending') return <Badge className="bg-amber-50 text-amber-700">{t('status.pending', { defaultValue: 'Pending' })}</Badge>;
-    if (state === 'reversed') return <Badge className="bg-surface-100 text-surface-600">Reversed</Badge>;
+    if (state === 'settled') return <Badge color="success" label>Settled</Badge>;
+    if (state === 'committed') return <Badge color="info" label>Committed</Badge>;
+    if (state === 'pending') return <Badge color="warning" label>{t('status.pending', { defaultValue: 'Pending' })}</Badge>;
+    if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>;
     return <span className="text-surface-500">{state || 'N/A'}</span>;
   }
 
@@ -133,18 +133,18 @@ export default function UserLedgerDetail() {
                       {t('admin.ledger.userLedgerEntry', { defaultValue: 'User Ledger Entry' })} #{entry.id}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                      <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                         <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </Badge>
                       {entry.entryCode &&
-                      <Badge className="bg-surface-100 text-surface-600">
+                      <Badge color="secondary">
                           {entryCodeLabels[entry.entryCode] || entry.entryCode}
                         </Badge>
                       }
                       {stateBadge(entry.state)}
                       {entry.userId &&
-                      <Badge className="bg-primary-50 text-primary-600">
+                      <Badge color="primary" label>
                           <i className="bx bx-user mr-1"></i>
                           User #{entry.userId}
                         </Badge>
@@ -186,7 +186,7 @@ export default function UserLedgerDetail() {
                       </tr>
                       <tr>
                         <td className="text-surface-500">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
-                        <td><Badge className="bg-primary-50 text-primary-600">#{entry.userId}</Badge></td>
+                        <td><Badge color="primary" label>#{entry.userId}</Badge></td>
                       </tr>
                       <tr>
                         <td className="text-surface-500">{t('admin.ledger.coin', { defaultValue: 'Coin' })}</td>
@@ -205,7 +205,7 @@ export default function UserLedgerDetail() {
                       <tr>
                         <td className="text-surface-500">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
                         <td>
-                          <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                          <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                             {isCredit ? 'Credit' : 'Debit'}
                           </Badge>
                         </td>

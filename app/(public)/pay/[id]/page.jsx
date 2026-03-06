@@ -222,7 +222,7 @@ export default function InvoicePaymentV2() {
 
                       {/* Expired Alert */}
                       {isExpiredUnpaid &&
-                      <div className="rounded-lg bg-red-50 text-red-700 flex items-center mb-4 p-4" role="alert">
+                      <div className="rounded-lg bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-300 flex items-center mb-4 p-4" role="alert">
                           <i className="bx bx-error-circle mr-2 text-xl"></i>
                           <div>{t("payment.expiredMessage") || "This invoice has expired. Please request a new payment link."}</div>
                         </div>
@@ -268,18 +268,18 @@ export default function InvoicePaymentV2() {
                         border: '1px solid color-mix(in srgb, #22c55e 20%, transparent)'
                       }}>
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="rounded-full flex items-center justify-center w-7 h-7 bg-green-500">
+                            <div className="rounded-full flex items-center justify-center w-7 h-7 bg-success-500">
                               <i className="bx bx-check text-white text-[16px]"></i>
                             </div>
-                            <span className="text-sm text-green-500 uppercase tracking-[1.5px] text-[0.65rem] font-bold">
+                            <span className="text-sm text-success-500 uppercase tracking-[1.5px] text-[0.65rem] font-bold">
                               {t("payment.paidAt", { defaultValue: "Paid At" })}
                             </span>
                           </div>
                           <div className="flex flex-col gap-1">
-                            <div className="font-bold text-green-500 text-[1.1rem]">
+                            <div className="font-bold text-success-500 text-[1.1rem]">
                               {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(invoice.paidAt))}
                             </div>
-                            <div className="font-semibold text-green-500 text-[0.9rem] tracking-[1px]">
+                            <div className="font-semibold text-success-500 text-[0.9rem] tracking-[1px]">
                               {new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(invoice.paidAt))}
                             </div>
                           </div>
@@ -295,7 +295,7 @@ export default function InvoicePaymentV2() {
                         background: 'color-mix(in srgb, #f59e0b 8%, transparent)',
                         border: '1px solid color-mix(in srgb, #f59e0b 25%, transparent)'
                       }}>
-                          <i className="bx bx-error shrink-0 text-[20px] text-amber-500 mt-[1px]"></i>
+                          <i className="bx bx-error shrink-0 text-[20px] text-warning-500 mt-[1px]"></i>
                           <div className="text-[0.8rem] text-surface-900 leading-[1.5]">
                             <span>
                               {t("payment.networkWarningSendOnly", { defaultValue: "Send only" })}{' '}

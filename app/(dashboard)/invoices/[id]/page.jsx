@@ -67,7 +67,7 @@ export default function InvoiceDetailPage() {
 
   return (
     <>
-      {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 px-4 py-3 text-sm mb-4">{error}</div>}
+      {error && <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm mb-4">{error}</div>}
       {loading ?
       <Card>
           <div className="p-6">

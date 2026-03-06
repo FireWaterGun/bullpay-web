@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { useAuth } from '@/app/providers';
@@ -11,6 +11,40 @@ import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 
+const DEFAULT_PAGINATION = { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false };
+
+function CoinRow({ coin, t }) {
+  return (
+    <tr>
+      <td className="align-middle">
+        <div className="flex items-center">
+          <CoinImg symbol={coin.symbol} logoUrl={coin.logoUrl} size={40} className="mr-3" showFallback />
+          <div>
+            <div className="font-medium">{coin.name || 'N/A'}</div>
+          </div>
+        </div>
+      </td>
+      <td className="align-middle">
+        <span className="font-medium">{coin.symbol}</span>
+      </td>
+      <td className="text-center align-middle">
+        {coin.type === 'native' ? t('crypto.native', { defaultValue: 'Native' }) : t('crypto.token', { defaultValue: 'Token' })}
+      </td>
+      <td className="text-center align-middle">{coin.decimals || 0}</td>
+      <td className="text-center align-middle">
+        {coin.status === 'active'
+          ? <Badge color="success" label>{t('admin.active')}</Badge>
+          : <Badge color="secondary">{coin.status}</Badge>}
+      </td>
+      <td className="text-center align-middle">
+        <Button size="icon" href={`/admin/coins/${coin.id}`} title={t('actions.edit', { defaultValue: 'Edit' })}>
+          <i className="bx bx-edit text-primary text-xl"></i>
+        </Button>
+      </td>
+    </tr>
+  );
+}
+
 export default function CoinList() {
   const { t } = useAdminTranslation();
   const { token } = useAuth();
@@ -19,58 +53,43 @@ export default function CoinList() {
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [draftSearch, setDraftSearch] = useState('');
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-    hasNext: false,
-    hasPrev: false
-  });
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
 
-  useEffect(() => {
-    loadCoins();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function handleApplyFilter() {
-    setSearchQuery(draftSearch);
-    loadCoins(1, pagination.limit, draftSearch);
-  }
-
-  function handleResetFilter() {
-    setDraftSearch('');
-    setSearchQuery('');
-    loadCoins(1, pagination.limit, '');
-  }
-
-  async function loadCoins(page = pagination.page, limit = pagination.limit, search = searchQuery) {
+  const loadCoins = useCallback(async ({ page = 1, limit = 10, search = '' } = {}) => {
     setLoading(true);
     setError('');
     try {
       const response = await getCoins(token, page, limit, search);
       const coinList = response?.items || [];
-      const paginationData = response?.pagination || {};
-
+      const pd = response?.pagination || {};
       setCoins(coinList);
       setPagination({
-        page: paginationData.page || page,
-        limit: paginationData.limit || limit,
-        total: paginationData.total || 0,
-        totalPages: paginationData.totalPages || 0,
-        hasNext: paginationData.hasNext || false,
-        hasPrev: paginationData.hasPrev || false
+        page: pd.page || page, limit: pd.limit || limit,
+        total: pd.total || 0, totalPages: pd.totalPages || 0,
+        hasNext: pd.hasNext || false, hasPrev: pd.hasPrev || false,
       });
-
     } catch (e) {
       setError(e?.message || 'Failed to load coins');
     } finally {
       setLoading(false);
     }
+  }, [token]);
+
+  useEffect(() => { loadCoins(); }, [loadCoins]);
+
+  function handleApplyFilter() {
+    setSearchQuery(draftSearch);
+    loadCoins({ page: 1, limit: pagination.limit, search: draftSearch });
+  }
+
+  function handleResetFilter() {
+    setDraftSearch('');
+    setSearchQuery('');
+    loadCoins({ page: 1, limit: pagination.limit, search: '' });
   }
 
   function handlePageChange(newPage) {
-    loadCoins(newPage, pagination.limit);
+    loadCoins({ page: newPage, limit: pagination.limit, search: searchQuery });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -146,51 +165,7 @@ export default function CoinList() {
                 t('crypto.noCoins', { defaultValue: 'No coins found' })
                 } /> :
 
-
-              coins.map((coin) =>
-              <tr key={coin.id}>
-                    <td className="align-middle">
-                      <div className="flex items-center">
-                        <CoinImg
-                      symbol={coin.symbol}
-                      logoUrl={coin.logoUrl}
-                      size={40}
-                      className="mr-3"
-                      showFallback />
-                    
-                        <div>
-                          <div className="font-medium">{coin.name || 'N/A'}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="align-middle">
-                      <span className="font-medium">{coin.symbol}</span>
-                    </td>
-                    <td className="text-center align-middle">
-                      {coin.type === 'native' ?
-                  t('crypto.native', { defaultValue: 'Native' }) :
-                  t('crypto.token', { defaultValue: 'Token' })
-                  }
-                    </td>
-                    <td className="text-center align-middle">{coin.decimals || 0}</td>
-                    <td className="text-center align-middle">
-                      {coin.status === 'active' ?
-                  <Badge className="bg-green-50 text-green-700">{t('admin.active')}</Badge> :
-
-                  <Badge className="bg-surface-100 text-surface-600">{coin.status}</Badge>
-                  }
-                    </td>
-                    <td className="text-center align-middle">
-                      <Button size="icon"
-                  href={`/admin/coins/${coin.id}`}
-
-                  title={t('actions.edit', { defaultValue: 'Edit' })}>
-                    
-                        <i className="bx bx-edit text-primary text-xl"></i>
-                      </Button>
-                    </td>
-                  </tr>
-              )
+              coins.map((coin) => <CoinRow key={coin.id} coin={coin} t={t} />)
               }
             </tbody>
           </Table>

@@ -128,7 +128,7 @@ export default function HeroSection() {
               the simple way
             </h1>
 
-            <p className="text-slate-500 text-[1.15rem] leading-[1.75] max-w-[460px] mb-6">
+            <p className="text-surface-500 text-[1.15rem] leading-[1.75] max-w-[460px] mb-6">
               9 coins across 30+ blockchain networks. Low fees, instant
               settlement — everything your business needs to go crypto.
             </p>
@@ -138,21 +138,21 @@ export default function HeroSection() {
                 Start accepting payments
                 <i className="bx bx-right-arrow-alt ml-2 text-lg"></i>
               </Link>
-              <Link href="/login" className="inline-flex items-center bg-transparent text-slate-600 font-semibold text-[0.95rem] rounded-[14px] py-3.5 px-6 no-underline border-[1.5px] border-slate-200 transition-[border-color,color] duration-200 hover:border-slate-400 hover:text-surface-900 w-full sm:w-auto justify-center sm:justify-start">
+              <Link href="/login" className="inline-flex items-center bg-transparent text-surface-600 font-semibold text-[0.95rem] rounded-[14px] py-3.5 px-6 no-underline border-[1.5px] border-surface-200 transition-[border-color,color] duration-200 hover:border-surface-400 hover:text-surface-900 w-full sm:w-auto justify-center sm:justify-start">
                 Sign in
               </Link>
             </div>
 
             {/* Trust row */}
             <div className="flex items-center gap-5 flex-wrap">
-              <div className="inline-flex items-center gap-[5px] text-[0.82rem] text-slate-500 font-medium">
-                <i className="bx bx-check-circle text-green-500 text-base"></i> No monthly fees
+              <div className="inline-flex items-center gap-[5px] text-[0.82rem] text-surface-500 font-medium">
+                <i className="bx bx-check-circle text-success-500 text-base"></i> No monthly fees
               </div>
-              <div className="inline-flex items-center gap-[5px] text-[0.82rem] text-slate-500 font-medium">
-                <i className="bx bx-check-circle text-green-500 text-base"></i> Non-custodial
+              <div className="inline-flex items-center gap-[5px] text-[0.82rem] text-surface-500 font-medium">
+                <i className="bx bx-check-circle text-success-500 text-base"></i> Non-custodial
               </div>
-              <div className="inline-flex items-center gap-[5px] text-[0.82rem] text-slate-500 font-medium">
-                <i className="bx bx-check-circle text-green-500 text-base"></i> Instant settlement
+              <div className="inline-flex items-center gap-[5px] text-[0.82rem] text-surface-500 font-medium">
+                <i className="bx bx-check-circle text-success-500 text-base"></i> Instant settlement
               </div>
             </div>
           </div>
@@ -176,13 +176,13 @@ export default function HeroSection() {
             {/* Main card */}
             <div className="relative z-[1] rounded-[20px] bg-white/[0.92] backdrop-blur-[20px] backdrop-saturate-[1.2] border border-white/60 shadow-[0_32px_80px_rgba(15,23,42,0.12),0_8px_24px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] overflow-hidden">
               {/* Header bar */}
-              <div className="flex items-center justify-between py-3 px-[18px] bg-slate-100/70 border-b border-slate-200/50">
+              <div className="flex items-center justify-between py-3 px-[18px] bg-surface-100/70 border-b border-surface-200/50">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5f57' }}></div>
                   <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#febc2e' }}></div>
                   <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#28c840' }}></div>
                 </div>
-                <div className="flex items-center gap-[5px] bg-white/70 border border-slate-200 rounded-lg py-1 px-4 text-[0.7rem] text-slate-500 font-medium">
+                <div className="flex items-center gap-[5px] bg-white/70 border border-surface-200 rounded-lg py-1 px-4 text-[0.7rem] text-surface-500 font-medium">
                   <i className="bx bx-lock-alt text-[0.65rem]"></i>
                   app.bullpay.com
                 </div>
@@ -199,31 +199,31 @@ export default function HeroSection() {
                   }}
                 >
                   {/* Coin header card */}
-                  <div className="flex items-center gap-2.5 py-3 px-3.5 sm:gap-3.5 sm:py-4 sm:px-[18px] rounded-[14px] bg-gradient-to-br from-slate-50/80 to-slate-100/50 border border-slate-200/60 mb-[22px]" style={{ '--coin-accent': sc.accent }}>
+                  <div className="flex items-center gap-2.5 py-3 px-3.5 sm:gap-3.5 sm:py-4 sm:px-[18px] rounded-[14px] bg-gradient-to-br from-slate-50/80 to-slate-100/50 border border-surface-200/60 mb-[22px]" style={{ '--coin-accent': sc.accent }}>
                     <div className="w-[42px] h-[42px] sm:w-[52px] sm:h-[52px] rounded-[14px] bg-card flex items-center justify-center shadow-[0_2px_8px_rgba(15,23,42,0.06)] shrink-0">
                       <Image src={sc.img} alt={sc.coin} width={44} height={44} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-base text-surface-900">{sc.name}</div>
-                      <div className="flex items-center gap-1 text-xs text-slate-400 mt-0.5">
+                      <div className="flex items-center gap-1 text-xs text-surface-400 mt-0.5">
                         <i className="bx bx-link-alt text-[0.7rem]"></i>
                         {sc.network}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="font-extrabold text-[1.15rem] text-surface-900">{sc.usd}</div>
-                      <div className="text-[0.72rem] text-slate-400 mt-0.5">{sc.amount}</div>
+                      <div className="text-[0.72rem] text-surface-400 mt-0.5">{sc.amount}</div>
                     </div>
                   </div>
 
                   {/* Address */}
                   <div className="mb-6">
-                    <div className="flex items-center gap-[5px] text-[0.68rem] text-slate-400 font-semibold uppercase tracking-[0.08em] mb-2">
+                    <div className="flex items-center gap-[5px] text-[0.68rem] text-surface-400 font-semibold uppercase tracking-[0.08em] mb-2">
                       <i className="bx bx-copy-alt"></i> Payment Address
                     </div>
-                    <div className="flex items-center bg-slate-50/80 border border-slate-200 rounded-[10px] py-2.5 px-3.5 font-mono text-[0.82rem] text-slate-600 tracking-[0.02em]">
+                    <div className="flex items-center bg-surface-50/80 border border-surface-200 rounded-[10px] py-2.5 px-3.5 font-mono text-[0.82rem] text-surface-600 tracking-[0.02em]">
                       <span>{sc.address}</span>
-                      <i className="bx bx-copy text-slate-400 ml-auto text-sm"></i>
+                      <i className="bx bx-copy text-surface-400 ml-auto text-sm"></i>
                     </div>
                   </div>
 
@@ -248,8 +248,8 @@ export default function HeroSection() {
                               done
                                 ? 'bg-primary-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.25)]'
                                 : active
-                                  ? 'bg-blue-100 text-primary-600 border-2 border-primary-600 shadow-[0_0_0_5px_rgba(37,99,235,0.08)]'
-                                  : 'bg-slate-100 text-slate-300'
+                                  ? 'bg-primary-100 text-primary-600 border-2 border-primary-600 shadow-[0_0_0_5px_rgba(37,99,235,0.08)]'
+                                  : 'bg-surface-100 text-surface-300'
                             }`}
                           >
                             <i className={`bx ${done ? 'bx-check' : step.icon}`}></i>

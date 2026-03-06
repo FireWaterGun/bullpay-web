@@ -262,7 +262,7 @@ export default function WithdrawalAddressDetail() {
                         <Button
 
                           onClick={() => handleCopy(address.address)}
-                          title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                          title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary">
                           
                             <i className="bx bx-copy text-[1rem]"></i>
                           </Button>
@@ -289,7 +289,7 @@ export default function WithdrawalAddressDetail() {
                     <div className="sm:col-span-6">
                         <small className="text-surface-500 block mb-1">Lock Until</small>
                         <span>{fmtDate(address.lockUntil)}</span>
-                        {address.isLocked && <Badge className="bg-amber-50 text-amber-700 ml-2">Locked</Badge>}
+                        {address.isLocked && <Badge color="warning" label className="ml-2">Locked</Badge>}
                       </div>
                     }
                   </div>

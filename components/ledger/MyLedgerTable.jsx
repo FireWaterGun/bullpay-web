@@ -8,8 +8,7 @@ import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { formatAmount, getEntryCodeLabel, userStateBadge } from '@/components/ledger/ledgerUtils';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Card, Pagination } from '@/components/ui'
-import Table from '@/components/ui/Table';
+import { Card, Pagination, Table } from '@/components/ui'
 
 export default function MyLedgerTable({
   entries,
@@ -26,23 +25,21 @@ export default function MyLedgerTable({
 
   return (
     <Card>
-      <div className="p-6">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[900px]">
+      <Table>
             <thead>
-              <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500 whitespace-nowrap">
-                <th className="px-3 py-2">{t('userLedger.id', { defaultValue: 'ID' })}</th>
-                <th className="px-3 py-2">{t('userLedger.coin', { defaultValue: 'Coin' })}</th>
-                <th className="px-3 py-2">{t('userLedger.code', { defaultValue: 'Code' })}</th>
-                <th className="px-3 py-2">{t('userLedger.state', { defaultValue: 'State' })}</th>
-                <th className="px-3 py-2 text-right">{t('userLedger.amount', { defaultValue: 'Amount' })}</th>
-                <th className="px-3 py-2 text-right">{t('userLedger.usd', { defaultValue: 'USD' })}</th>
-                <th className="px-3 py-2">{t('userLedger.txHash', { defaultValue: 'Tx Hash' })}</th>
-                <th className="px-3 py-2">{t('userLedger.createdAt', { defaultValue: 'Created' })}</th>
-                <th className="px-3 py-2"></th>
+              <tr className="whitespace-nowrap">
+                <th>{t('userLedger.id', { defaultValue: 'ID' })}</th>
+                <th>{t('userLedger.coin', { defaultValue: 'Coin' })}</th>
+                <th>{t('userLedger.code', { defaultValue: 'Code' })}</th>
+                <th>{t('userLedger.state', { defaultValue: 'State' })}</th>
+                <th className="text-right">{t('userLedger.amount', { defaultValue: 'Amount' })}</th>
+                <th className="text-right">{t('userLedger.usd', { defaultValue: 'USD' })}</th>
+                <th>{t('userLedger.txHash', { defaultValue: 'Tx Hash' })}</th>
+                <th>{t('userLedger.createdAt', { defaultValue: 'Created' })}</th>
+                <th></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-100">
+            <tbody>
               {entries.length === 0 ?
               <TableEmptyState
                 colSpan={9}
@@ -55,11 +52,11 @@ export default function MyLedgerTable({
                 const isCredit = entry.entryType === 'credit';
 
                 return (
-                  <tr key={entry.id} className="hover:bg-surface-50 dark:hover:bg-white/4 cursor-pointer" onClick={() => router.push(`/ledger/${entry.id}`)}>
-                      <td className="px-3 py-2">
+                  <tr key={entry.id} className="cursor-pointer" onClick={() => router.push(`/ledger/${entry.id}`)}>
+                      <td>
                         <span className="font-semibold text-primary-600">{entry.id}</span>
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="whitespace-nowrap">
                         <div className="flex items-center">
                           <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="mr-2" />
                           <div>
@@ -70,23 +67,23 @@ export default function MyLedgerTable({
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         {entry.entryCode ?
                       <span className="mr-2" title={getEntryCodeLabel(entry.entryCode, t)}>{entry.entryCode}</span> :
 
                       <span className="text-surface-500">-</span>
                       }
                       </td>
-                      <td className="px-3 py-2">{userStateBadge(entry.state, t)}</td>
-                      <td className="px-3 py-2 text-right whitespace-nowrap">
+                      <td>{userStateBadge(entry.state, t)}</td>
+                      <td className="text-right whitespace-nowrap">
                         <span className="font-medium">
                           {isCredit ? '+' : '-'}{formatAmount(entry.amount)}
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-right whitespace-nowrap">
+                      <td className="text-right whitespace-nowrap">
                         <span className="text-surface-500">{formatUsd(entry.amountUsd)}</span>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         {entry.txHash ?
                       <div className="flex items-center">
                             <span className="mr-2">{entry.txHash}</span>
@@ -102,10 +99,10 @@ export default function MyLedgerTable({
                       <span className="text-surface-500">-</span>
                       }
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         <span className="whitespace-nowrap">{fmtDate(entry.createdAt)}</span>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         <Link href={`/ledger/${entry.id}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-primary-300 text-primary-600 hover:bg-primary-50 dark:border-primary-700 dark:text-primary-400 dark:hover:bg-primary-900/30"
                       onClick={(e) => e.stopPropagation()}
                       title={t('actions.view', { defaultValue: 'View' })}>
@@ -117,10 +114,10 @@ export default function MyLedgerTable({
               })
               }
             </tbody>
-          </table>
-        </div>
+      </Table>
 
-        {/* Pagination */}
+      {/* Pagination */}
+      <div className="px-5 py-1.5">
         <Pagination
           pagination={pagination}
           loading={loading}

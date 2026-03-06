@@ -7,13 +7,13 @@ import Table from '@/components/ui/Table'
 
 function FeeTypeBadge({ config }) {
   if (config.fee?.fixed) {
-    return <Badge className="bg-cyan-50 text-cyan-700">fixed</Badge>;
+    return <Badge color="info" label>fixed</Badge>;
   }
   if (config.fee?.percentage || config.fee?.min) {
-    return <Badge className="bg-cyan-50 text-cyan-700">percentage</Badge>;
+    return <Badge color="info" label>percentage</Badge>;
   }
   if (config.fee?.type) {
-    return <Badge className="bg-cyan-50 text-cyan-700">{config.fee.type}</Badge>;
+    return <Badge color="info" label>{config.fee.type}</Badge>;
   }
   return <span className="text-surface-500">-</span>;
 }

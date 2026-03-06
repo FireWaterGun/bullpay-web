@@ -46,18 +46,18 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-category mr-1"></i>Purpose
               </small>
-              <Badge className="bg-cyan-50 text-cyan-700 capitalize">{wallet.purpose || 'N/A'}</Badge>
+              <Badge color="info" label className="capitalize">{wallet.purpose || 'N/A'}</Badge>
             </div>
             <div className="md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-chip mr-1"></i>Type
               </small>
               {wallet.walletType === 'hot' ?
-            <Badge className="bg-amber-50 text-amber-700">
+            <Badge color="warning" label>
                   <i className="bx bxs-hot mr-1"></i>Hot
                 </Badge> :
 
-            <Badge className="bg-cyan-50 text-cyan-700">
+            <Badge color="info" label>
                   <i className="bx bx-shield mr-1"></i>Cold
                 </Badge>
             }
@@ -74,7 +74,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               <Button
                 onClick={(e) => onCopy(wallet.address, e)}
 
-                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary">
                 
                     <i className="bx bx-copy text-[1rem]"></i>
                   </Button>
@@ -86,9 +86,9 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                 <i className="bx bx-check-circle mr-1"></i>Status
               </small>
               {wallet.status === 'active' ?
-            <Badge className="bg-green-50 text-green-700">{t('admin.detail.active', { defaultValue: 'Active' })}</Badge> :
+            <Badge color="success" label>{t('admin.detail.active', { defaultValue: 'Active' })}</Badge> :
 
-            <Badge className="bg-surface-100 text-surface-600">{wallet.status || 'N/A'}</Badge>
+            <Badge color="secondary">{wallet.status || 'N/A'}</Badge>
             }
             </div>
           </div>

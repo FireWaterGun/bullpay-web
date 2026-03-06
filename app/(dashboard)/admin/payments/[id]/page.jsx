@@ -269,7 +269,7 @@ export default function AdminPaymentDetail() {
                               <Button
 
                                 onClick={() => handleCopy(payment.fromAddress)}
-                                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
                                 
                                 <i className="bx bx-copy"></i>
                               </Button>
@@ -290,7 +290,7 @@ export default function AdminPaymentDetail() {
                               <Button
 
                                 onClick={() => handleCopy(payment.toAddress)}
-                                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
                                 
                                 <i className="bx bx-copy"></i>
                               </Button>

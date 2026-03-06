@@ -1,6 +1,6 @@
 'use client'
 
-const footerLink = 'text-slate-500 no-underline transition-colors duration-200 hover:text-surface-900'
+const footerLink = 'text-surface-500 no-underline transition-colors duration-200 hover:text-surface-900'
 
 export default function FooterSection() {
   const year = new Date().getFullYear()
@@ -23,7 +23,7 @@ export default function FooterSection() {
             </p>
             <div className="flex gap-2 mt-3">
               {['bxl-twitter', 'bxl-github', 'bxl-telegram', 'bxl-discord-alt'].map((icon) => (
-                <a key={icon} href="#" className="w-9 h-9 rounded-full inline-flex items-center justify-center text-slate-500 transition-[color,background] duration-200 no-underline text-[1.15rem] hover:text-primary-600 hover:bg-[rgba(37,99,235,0.08)]">
+                <a key={icon} href="#" className="w-9 h-9 rounded-full inline-flex items-center justify-center text-surface-500 transition-[color,background] duration-200 no-underline text-[1.15rem] hover:text-primary-600 hover:bg-[rgba(37,99,235,0.08)]">
                   <i className={`bx ${icon}`}></i>
                 </a>
               ))}

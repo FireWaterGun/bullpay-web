@@ -12,12 +12,12 @@ import FooterSection from '@/components/landing/FooterSection'
 const navLink =
   'text-[#090b0c] font-medium text-[0.9rem] py-2 px-3.5 rounded-lg transition-colors no-underline whitespace-nowrap hover:text-surface-900 hover:bg-[rgba(15,23,42,0.05)]'
 const navLinkMobile =
-  'block text-slate-700 font-medium text-[0.95rem] py-2.5 px-3 rounded-[10px] transition-[color,background] duration-150 no-underline hover:text-surface-900 hover:bg-[rgba(15,23,42,0.05)]'
+  'block text-surface-700 font-medium text-[0.95rem] py-2.5 px-3 rounded-[10px] transition-[color,background] duration-150 no-underline hover:text-surface-900 hover:bg-[rgba(15,23,42,0.05)]'
 const btnPrimary =
   'bg-primary-600 border-none text-white font-semibold rounded-full py-2.5 px-7 text-[0.95rem] no-underline transition-[transform,box-shadow] duration-150 hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(37,99,235,0.35)] hover:text-white'
 const sectionTitle =
   'text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-surface-900 tracking-[-0.025em] leading-[1.15]'
-const sectionSubtitle = 'text-slate-500 text-[1.1rem] leading-[1.6]'
+const sectionSubtitle = 'text-surface-500 text-[1.1rem] leading-[1.6]'
 const tile =
   'py-10 px-6 rounded-2xl sm:py-12 sm:px-8 sm:rounded-[20px] lg:py-20 lg:px-16 lg:rounded-3xl'
 const cryptoPill =
@@ -63,7 +63,7 @@ export default function LandingPage() {
           <div className="hidden lg:flex items-center gap-1">
             <a className={navLink} href="#features">Features</a>
             <a className={navLink} href="#currencies">Currencies</a>
-            <div className="w-px h-5 bg-slate-200 mx-3"></div>
+            <div className="w-px h-5 bg-surface-200 mx-3"></div>
             <Link href="/login" className={navLink}>Login</Link>
             <Link href="/register" className={`${btnPrimary} ml-2 text-sm !py-2.5 !px-5`}>
               Get Started
@@ -85,10 +85,10 @@ export default function LandingPage() {
         <div
           className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${navOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}
         >
-          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 pb-5 pt-2 flex flex-col gap-1 border-t border-slate-200/60">
+          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 pb-5 pt-2 flex flex-col gap-1 border-t border-surface-200/60">
             <a className={navLinkMobile} href="#features" onClick={() => setNavOpen(false)}>Features</a>
             <a className={navLinkMobile} href="#currencies" onClick={() => setNavOpen(false)}>Currencies</a>
-            <div className="h-px bg-slate-200/60 my-2"></div>
+            <div className="h-px bg-surface-200/60 my-2"></div>
             <Link href="/login" className={navLinkMobile} onClick={() => setNavOpen(false)}>Login</Link>
             <Link href="/register" className={`${btnPrimary} text-center text-sm !py-2.5 mt-1`} onClick={() => setNavOpen(false)}>
               Get Started
@@ -130,13 +130,13 @@ export default function LandingPage() {
       {/* ── CTA ── */}
       <section className="py-6">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
-          <div className={`${tile} bg-slate-900 text-white text-center`}>
+          <div className={`${tile} bg-surface-900 text-white text-center`}>
             <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-white tracking-[-0.02em] mb-3">Ready to accept crypto?</h2>
             <p className="mb-5 text-white/60 max-w-[420px] mx-auto text-[1.05rem] leading-[1.6]">
               Set up your account in minutes. No monthly fees, no hidden charges.
             </p>
             <div className="flex gap-3 justify-center flex-wrap">
-              <Link href="/register" className="inline-flex items-center justify-center bg-white border-none text-slate-900 font-semibold rounded-full px-5 py-3 text-[1.05rem] no-underline transition-[transform,box-shadow] duration-150 hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:text-slate-900">
+              <Link href="/register" className="inline-flex items-center justify-center bg-white border-none text-surface-900 font-semibold rounded-full px-5 py-3 text-[1.05rem] no-underline transition-[transform,box-shadow] duration-150 hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:text-surface-900">
                 Get started free
                 <i className="bx bx-right-arrow-alt ml-2"></i>
               </Link>

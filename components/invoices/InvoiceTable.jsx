@@ -8,16 +8,15 @@ import { formatAmount } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Card, Pagination } from '@/components/ui';
-import Table from '@/components/ui/Table';
+import { Card, Pagination, Table } from '@/components/ui';
 import { useState } from 'react';
 
 const statusBadge = {
-  paid: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  completed: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  paid: 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400',
+  completed: 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400',
+  pending: 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400',
   expired: 'bg-surface-100 text-surface-600 dark:bg-dark-elevated',
-  cancelled: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+  cancelled: 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400',
 };
 
 export default function InvoiceTable({
@@ -45,21 +44,19 @@ export default function InvoiceTable({
 
   return (
     <Card>
-      <div className="p-6">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[900px]">
+      <Table>
             <thead>
-              <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500 whitespace-nowrap">
-                <th className="px-3 py-2">{t('invoices.invoice', { defaultValue: 'Invoice' })}</th>
-                <th className="px-3 py-2">{t('invoices.coin', { defaultValue: 'Coin' })}</th>
-                <th className="px-3 py-2 min-w-[320px]">{t('invoices.paymentAddress', { defaultValue: 'Payment Address' })}</th>
-                <th className="px-3 py-2 text-right">{t('invoices.amount', { defaultValue: 'Amount' })}</th>
-                <th className="px-3 py-2">{t('invoices.statusCol', { defaultValue: 'Status' })}</th>
-                <th className="px-3 py-2">{t('invoices.date', { defaultValue: 'Date' })}</th>
-                <th className="px-3 py-2"></th>
+              <tr className="whitespace-nowrap">
+                <th>{t('invoices.invoice', { defaultValue: 'Invoice' })}</th>
+                <th>{t('invoices.coin', { defaultValue: 'Coin' })}</th>
+                <th className="min-w-[320px]">{t('invoices.paymentAddress', { defaultValue: 'Payment Address' })}</th>
+                <th className="text-right">{t('invoices.amount', { defaultValue: 'Amount' })}</th>
+                <th>{t('invoices.statusCol', { defaultValue: 'Status' })}</th>
+                <th>{t('invoices.date', { defaultValue: 'Date' })}</th>
+                <th></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-100">
+            <tbody>
               {items.length === 0 ? (
                 <TableEmptyState
                   colSpan={7}
@@ -75,15 +72,15 @@ export default function InvoiceTable({
                   return (
                     <tr
                       key={it.id}
-                      className="hover:bg-surface-50 dark:hover:bg-white/4 cursor-pointer"
+                      className="cursor-pointer"
                       onClick={() => router.push(`/invoices/${it.id}`)}
                     >
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="whitespace-nowrap">
                         <span className="font-semibold text-primary-600">
                           {it.publicCode || it.code || it.id}
                         </span>
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="whitespace-nowrap">
                         <div className="flex items-center">
                           <CoinImg
                             coin={it.coin}
@@ -102,7 +99,7 @@ export default function InvoiceTable({
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         {it.paymentAddress ? (
                           <div className="flex items-center gap-2">
                             <code className="text-surface-800 font-mono text-xs break-all">
@@ -114,19 +111,19 @@ export default function InvoiceTable({
                               title={t('actions.copy', { defaultValue: 'Copy' })}
                               onClick={(e) => handleCopy(it.paymentAddress, it.id, e)}
                             >
-                              <i className={`bx ${copiedId === it.id ? 'bx-check text-green-500' : 'bx-copy'} text-base`} />
+                              <i className={`bx ${copiedId === it.id ? 'bx-check text-success-500' : 'bx-copy'} text-base`} />
                             </button>
                           </div>
                         ) : (
                           <span className="text-surface-500">-</span>
                         )}
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-right">
+                      <td className="whitespace-nowrap text-right">
                         <span className="font-medium">
                           {formatAmount(it.amount)} {coinSym}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
                             statusBadge[it.status?.toLowerCase()] ||
@@ -138,10 +135,10 @@ export default function InvoiceTable({
                             : '-'}
                         </span>
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="whitespace-nowrap">
                         <span>{fmtDateTime(it.createdAt || it.created_at)}</span>
                       </td>
-                      <td className="px-3 py-2">
+                      <td>
                         <div className="flex gap-1 justify-end">
                           <Link
                             href={`/invoices/${it.id}`}
@@ -168,10 +165,10 @@ export default function InvoiceTable({
                 })
               )}
             </tbody>
-          </table>
-        </div>
+      </Table>
 
-        {/* Pagination */}
+      {/* Pagination */}
+      <div className="px-5 py-1.5">
         <Pagination
           pagination={pagination}
           loading={loading}

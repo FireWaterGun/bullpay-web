@@ -244,7 +244,6 @@ export default function AuditLogList() {
 
           {/* Table */}
           <Card>
-            <div className="p-5">
               <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
@@ -295,8 +294,9 @@ export default function AuditLogList() {
                   </tbody>
                 </Table>
 
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
-            </div>
+              <div className="px-5 py-1.5">
+                <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              </div>
           </Card>
         </div>
       </div>

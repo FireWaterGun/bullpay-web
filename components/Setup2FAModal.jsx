@@ -218,7 +218,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 <p className="mt-2 text-surface-500">{t("common.loading", { defaultValue: "Loading..." })}</p>
               </div> :
           error && !setupData ?
-          <div className="rounded-lg bg-red-50 dark:bg-danger-500/10 text-red-700 dark:text-[#fca5a5] p-4">{error}</div> :
+          <div className="rounded-lg bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-300 p-4">{error}</div> :
 
           <>
                 {/* Step 1: QR Code */}
@@ -267,7 +267,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 {/* Step 2: Backup Codes */}
                 {step === 2 && setupData &&
             <div>
-                    <div className="rounded-lg bg-amber-50 dark:bg-warning-500/10 text-amber-700 dark:text-[#fcd34d] p-3 flex items-start mb-3">
+                    <div className="rounded-lg bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-300 p-3 flex items-start mb-3">
                       <i className="bx bx-error-circle mr-2 mt-1"></i>
                       <div>
                         <strong>{t("settings.2fa.saveBackupCodes", { defaultValue: "Save your backup codes!" })}</strong>
@@ -332,7 +332,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 )}
                     </div>
                     {error &&
-              <div className="rounded-lg bg-red-50 dark:bg-danger-500/10 text-red-700 dark:text-[#fca5a5] py-2 px-3">
+              <div className="rounded-lg bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-300 py-2 px-3">
                         {countdown > 0 ?
                 t("settings.2fa.tooManyAttempts", {
                   defaultValue: "Too many attempts. Please try again in {{seconds}} seconds",

@@ -34,27 +34,27 @@ export default function ConfirmActionModal({ action, loading, is2FAEnabled, onCo
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !loading && onClose()}>
-      <div className="bg-card rounded-xl shadow-xl mx-4 w-full max-w-[500px]" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => !loading && onClose()}>
+      <div role="dialog" aria-modal="true" aria-labelledby="merchant-action-title" className="bg-card rounded-xl shadow-xl w-full max-w-xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit}>
           <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
-            <h5 className="font-semibold">
+            <h5 id="merchant-action-title" className="font-semibold text-surface-900">
               {action === 'rotate-secret' ?
               t('merchant.rotateSecretTitle', { defaultValue: 'Rotate API Secret' }) :
               t('merchant.regenerateKeyTitle', { defaultValue: 'Regenerate API Key & Secret' })
               }
             </h5>
-            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={loading}><i className="bx bx-x"></i></button>
+            <button type="button" aria-label={t('actions.close', { defaultValue: 'Close' })} className="cursor-pointer text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200 text-xl leading-none" onClick={onClose} disabled={loading}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-6">
             {/* Action warning */}
             {action === 'rotate-secret' ?
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 py-2 px-3 mb-3" role="alert">
+            <div className="rounded-lg bg-info-50 dark:bg-info-950/30 text-info-700 dark:text-info-400 py-2 px-3 mb-3" role="alert">
                 <i className="bx bx-info-circle mr-1"></i>
                 {t('merchant.rotateConfirm', { defaultValue: 'This will generate a new API secret. Your API key will remain the same. The old secret will stop working immediately.' })}
               </div> :
 
-            <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 py-2 px-3 mb-3" role="alert">
+            <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 py-2 px-3 mb-3" role="alert">
                 <i className="bx bx-error mr-1"></i>
                 {t('merchant.regenerateConfirm', { defaultValue: 'This will generate a new API key AND secret. All existing credentials will be invalidated immediately.' })}
               </div>
@@ -108,7 +108,7 @@ export default function ConfirmActionModal({ action, loading, is2FAEnabled, onCo
                 maxLength={9}
                 autoComplete="one-time-code" />
               
-                <div className="text-surface-500 text-xs mt-1">
+                <div className="text-surface-500 dark:text-surface-400 text-xs mt-1">
                   {t('merchant.totpHint', { defaultValue: 'Enter the code from your authenticator app or a backup code.' })}
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function ConfirmActionModal({ action, loading, is2FAEnabled, onCo
 
             {/* Error message */}
             {error &&
-            <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 py-2 px-3 text-sm mt-3" role="alert">
+            <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 py-2 px-3 text-sm mt-3" role="alert">
                 <i className="bx bx-error-circle mr-1"></i>
                 {error}
               </div>

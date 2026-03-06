@@ -64,7 +64,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
             <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-6">
-            <div className="rounded-lg bg-amber-50 dark:bg-warning-500/10 text-amber-700 dark:text-[#fcd34d] p-3 flex items-start mb-4">
+            <div className="rounded-lg bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-300 p-3 flex items-start mb-4">
               <i className="bx bx-error-circle text-lg mr-2"></i>
               <span>
                 {t("settings.2fa.disableWarning", {
@@ -108,7 +108,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
               maxLength={20}
               autoComplete="one-time-code" className="text-lg" />
             
-              {error && <div className="text-red-500 dark:text-red-400 mt-2">{error}</div>}
+              {error && <div className="text-danger-500 dark:text-danger-400 mt-2">{error}</div>}
             </div>
           </div>
           <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">

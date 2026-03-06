@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 import dynamic from 'next/dynamic';
@@ -41,14 +41,7 @@ export default function NetworkForm() {
   });
   const [networkMeta, setNetworkMeta] = useState(null);
 
-  useEffect(() => {
-    if (isEdit && id) {
-      loadNetwork();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  async function loadNetwork() {
+  const loadNetwork = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -83,7 +76,13 @@ export default function NetworkForm() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id]);
+
+  useEffect(() => {
+    if (isEdit && id) {
+      loadNetwork();
+    }
+  }, [isEdit, id, loadNetwork]);
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;

@@ -13,7 +13,7 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
 import RefreshButton from '@/components/RefreshButton'
 import CardEmptyState from '@/components/CardEmptyState'
-import { Card, Button, Spinner } from '@/components/ui'
+import { Card, Button, Spinner, Table } from '@/components/ui'
 
 function ActionMenu({ wallet, onEdit, onDelete }) {
   const [open, setOpen] = useState(false)
@@ -42,7 +42,7 @@ function ActionMenu({ wallet, onEdit, onDelete }) {
           <button type="button" onClick={() => { onEdit(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer">
             <i className="bx bx-edit text-base"></i>Edit
           </button>
-          <button type="button" onClick={() => { onDelete(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 dark:text-red-400 hover:bg-danger-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer">
+          <button type="button" onClick={() => { onDelete(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/30 transition-colors cursor-pointer">
             <i className="bx bx-trash text-base"></i>Delete
           </button>
         </div>
@@ -112,60 +112,60 @@ export default function WalletsPage() {
       </div>
 
       <Card>
-        <div className="p-5">
           {loading ? (
             <div className="flex justify-center py-10">
               <Spinner size="lg" />
             </div>
           ) : wallets.length === 0 ? (
-            <CardEmptyState
-              icon="bx-wallet"
-              message={t('wallets.empty', { defaultValue: 'No withdrawal addresses found' })}
-            >
-              <Link
-                href="/wallets/create"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-3 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
+            <div className="p-5">
+              <CardEmptyState
+                icon="bx-wallet"
+                message={t('wallets.empty', { defaultValue: 'No withdrawal addresses found' })}
               >
-                <i className="bx bx-plus"></i>
-                {t('wallets.addFirst', { defaultValue: 'Add your first address' })}
-              </Link>
-            </CardEmptyState>
+                <Link
+                  href="/wallets/create"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-3 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  <i className="bx bx-plus"></i>
+                  {t('wallets.addFirst', { defaultValue: 'Add your first address' })}
+                </Link>
+              </CardEmptyState>
+            </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <Table>
                 <thead>
-                  <tr className="border-b border-surface-200">
-                    <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.label', { defaultValue: 'Label' })}</th>
-                    <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.coin', { defaultValue: 'Coin' })}</th>
-                    <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.address', { defaultValue: 'Address' })}</th>
-                    <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.status', { defaultValue: 'Status' })}</th>
-                    <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.added', { defaultValue: 'Added' })}</th>
-                    <th className="pb-3 w-10"></th>
+                  <tr>
+                    <th>{t('wallets.label', { defaultValue: 'Label' })}</th>
+                    <th>{t('wallets.coin', { defaultValue: 'Coin' })}</th>
+                    <th>{t('wallets.address', { defaultValue: 'Address' })}</th>
+                    <th>{t('wallets.status', { defaultValue: 'Status' })}</th>
+                    <th>{t('wallets.added', { defaultValue: 'Added' })}</th>
+                    <th className="w-10"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-surface-50">
+                <tbody>
                   {wallets.map((w) => (
-                    <tr key={w.id} className="hover:bg-surface-50/50 dark:hover:bg-white/4 transition-colors">
-                      <td className="py-3 pr-4 font-medium text-sm text-surface-800">{w.label || '-'}</td>
-                      <td className="py-3 pr-4">
+                    <tr key={w.id}>
+                      <td className="font-medium">{w.label || '-'}</td>
+                      <td>
                         <div className="flex items-center gap-1.5">
                           <CoinImg symbol={w.coin?.symbol} networkSymbol={w.network?.symbol} size={20} />
-                          <span className="text-sm">{w.coin?.symbol || '-'}</span>
+                          <span>{w.coin?.symbol || '-'}</span>
                           <span className="text-xs text-surface-400">({w.network?.symbol || ''})</span>
                         </div>
                       </td>
-                      <td className="py-3 pr-4">
+                      <td>
                         <span className="font-mono text-xs text-surface-600 truncate inline-block max-w-[180px]">
                           {w.address || '-'}
                         </span>
                       </td>
-                      <td className="py-3 pr-4">
+                      <td>
                         <span className={addressStatusBadgeClass(w.status)}>
                           {formatAddressStatus(w.status)}
                         </span>
                       </td>
-                      <td className="py-3 pr-4 text-xs text-surface-500">{fmtDate(w.createdAt)}</td>
-                      <td className="py-3">
+                      <td className="text-xs text-surface-500">{fmtDate(w.createdAt)}</td>
+                      <td>
                         <ActionMenu
                           wallet={w}
                           onEdit={() => router.push(`/wallets/${w.id}/edit`)}
@@ -175,10 +175,8 @@ export default function WalletsPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+              </Table>
           )}
-        </div>
       </Card>
 
       {deleteTarget && (

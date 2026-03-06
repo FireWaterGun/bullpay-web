@@ -139,7 +139,7 @@ export default function AdminAccountPage() {
             <div className="grow min-w-0">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h4 className="mb-0 truncate">{user?.fullName || user?.email || '-'}</h4>
-                <Badge className="bg-primary-50 text-primary-600">{t('admin.account.adminBadge', { defaultValue: 'Admin' })}</Badge>
+                <Badge color="primary" label>{t('admin.account.adminBadge', { defaultValue: 'Admin' })}</Badge>
               </div>
 
               <div className="flex flex-wrap gap-3 text-surface-500 text-sm mt-1">
@@ -161,7 +161,7 @@ export default function AdminAccountPage() {
             <div className="col-span-6 sm:col-span-3">
               <div className="flex items-center gap-3">
                 <span
-                  className="inline-flex items-center justify-center rounded bg-green-50 text-green-700 shrink-0 w-10 h-10">
+                  className="inline-flex items-center justify-center rounded bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-300 shrink-0 w-10 h-10">
 
                   
                   <i className="bx bx-check-shield text-xl"></i>
@@ -177,7 +177,7 @@ export default function AdminAccountPage() {
             <div className="col-span-6 sm:col-span-3">
               <div className="flex items-center gap-3">
                 <span
-                  className={`inline-flex items-center justify-center rounded shrink-0 ${is2FAEnabled ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'} w-10 h-10`}>
+                  className={`inline-flex items-center justify-center rounded shrink-0 ${is2FAEnabled ? 'bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-300' : 'bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-300'} w-10 h-10`}>
 
                   
                   <i className={`bx ${is2FAEnabled ? 'bx-lock-alt' : 'bx-lock-open-alt'} text-xl`}></i>
@@ -195,7 +195,7 @@ export default function AdminAccountPage() {
             <div className="col-span-6 sm:col-span-3">
               <div className="flex items-center gap-3">
                 <span
-                  className="inline-flex items-center justify-center rounded bg-cyan-50 text-cyan-700 shrink-0 w-10 h-10">
+                  className="inline-flex items-center justify-center rounded bg-info-50 dark:bg-info-500/10 text-info-700 dark:text-info-300 shrink-0 w-10 h-10">
 
                   
                   <i className="bx bx-time-five text-xl"></i>
@@ -401,7 +401,7 @@ export default function AdminAccountPage() {
           <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200 flex items-center">
               <span
-                className="inline-flex items-center justify-center rounded bg-cyan-50 text-cyan-700 mr-3 shrink-0 w-9 h-9">
+                className="inline-flex items-center justify-center rounded bg-info-50 dark:bg-info-500/10 text-info-700 dark:text-info-300 mr-3 shrink-0 w-9 h-9">
 
                 
                 <i className="bx bx-time-five text-[1.1rem]"></i>
@@ -476,7 +476,7 @@ export default function AdminAccountPage() {
           <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200 flex items-center">
               <span
-                className="inline-flex items-center justify-center rounded bg-amber-50 text-amber-700 mr-3 shrink-0 w-9 h-9">
+                className="inline-flex items-center justify-center rounded bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-300 mr-3 shrink-0 w-9 h-9">
 
                 
                 <i className="bx bx-shield-quarter text-[1.1rem]"></i>
@@ -496,7 +496,7 @@ export default function AdminAccountPage() {
                 'rgba(245, 158, 11, 0.08)'
               }}>
                 <div
-                  className={`rounded-full flex items-center justify-center mr-3 shrink-0 ${is2FAEnabled ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'} w-11 h-11`}>
+                  className={`rounded-full flex items-center justify-center mr-3 shrink-0 ${is2FAEnabled ? 'bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-300' : 'bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-300'} w-11 h-11`}>
 
                   
                   <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} text-xl`}></i>
@@ -509,7 +509,7 @@ export default function AdminAccountPage() {
                   <div className="h-4 w-2/3 rounded bg-surface-200 animate-pulse"></div> :
                   is2FAEnabled ?
                   <div className="flex items-center gap-2 mt-1">
-                      <Badge className="bg-success text-[0.7rem]">
+                      <Badge color="success" className="text-[0.7rem]">
                         <i className="bx bx-check-circle mr-1"></i>
                         {t('admin.account.twoFactorEnabled', { defaultValue: 'Enabled' })}
                       </Badge>

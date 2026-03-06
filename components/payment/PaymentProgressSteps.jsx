@@ -27,7 +27,7 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
         {/* Connector lines */}
         <div className="absolute top-[22px] left-[0px] right-[0px] z-0 py-[0] px-[60px]">
           <div className="h-0.5 bg-surface-200 rounded-sm">
-            <div className="rounded-sm" style={{ height: '100%', background: isPaid ? '#22c55e' : currentStep >= 2 ? 'var(--color-primary-600)' : 'transparent', width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%', transition: 'width 0.4s ease' }}></div>
+            <div className="rounded-sm" style={{ height: '100%', background: isPaid ? 'var(--color-success-500)' : currentStep >= 2 ? 'var(--color-primary-600)' : 'transparent', width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%', transition: 'width 0.4s ease' }}></div>
           </div>
         </div>
 
@@ -51,19 +51,19 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
                     <i className={`bx ${step.icon} text-[20px] text-primary-600`}></i>
                   </div>
                 ) : isDone ? (
-                  <div className="flex items-center justify-center rounded-full w-11 h-11 bg-green-500" style={{ transition: 'all 0.3s ease', animation: step.key === 3 ? 'progressBounce 0.6s ease' : 'none' }}>
+                  <div className="flex items-center justify-center rounded-full w-11 h-11 bg-success-500" style={{ transition: 'all 0.3s ease', animation: step.key === 3 ? 'progressBounce 0.6s ease' : 'none' }}>
                     <i className="bx bx-check text-white text-[22px]"></i>
                   </div>
                 ) : isError ? (
-                  <div className="flex items-center justify-center rounded-full w-11 h-11 bg-red-500" style={{ transition: 'all 0.3s ease' }}>
+                  <div className="flex items-center justify-center rounded-full w-11 h-11 bg-danger-500" style={{ transition: 'all 0.3s ease' }}>
                     <i className="bx bx-x text-white text-[22px]"></i>
                   </div>
                 ) : (
                   <div className="rounded-full bg-surface-200" style={{ width: circleSize, height: circleSize, transition: 'all 0.3s ease' }}></div>
                 )}
               </div>
-              <div className="mt-1 text-[0.7rem] font-semibold" style={{ color: isDone ? '#22c55e'
-                  : isError ? '#ef4444'
+              <div className="mt-1 text-[0.7rem] font-semibold" style={{ color: isDone ? 'var(--color-success-500)'
+                  : isError ? 'var(--color-danger-500)'
                   : isActive ? 'var(--color-primary-600)'
                   : 'var(--color-surface-500)' }}>
                 {step.label}
