@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 /**
  * A React-state-managed action menu dropdown (three-dot / kebab menu).
- * Replaces the old Bootstrap-dependent dropdown pattern.
+ * Uses a React Portal so the menu is never clipped by overflow containers.
  *
  * Usage:
  *   <ActionMenu>
@@ -35,38 +35,69 @@ export default function ActionMenu({
   align = 'right',
 }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const triggerRef = useRef(null);
+  const menuRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPos({
+      top: rect.bottom + 4,
+      left: align === 'right' ? rect.right : rect.left,
+    });
+  }, [align]);
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (
+        triggerRef.current && !triggerRef.current.contains(e.target) &&
+        menuRef.current && !menuRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [open, updatePosition]);
+
   return (
-    <div className={`relative inline-block ${className}`} ref={ref} onClick={(e) => e.stopPropagation()}>
-      <Button
+    <div className={`relative inline-block ${className}`} ref={triggerRef} onClick={(e) => e.stopPropagation()}>
+      <button
         type="button"
-        size={size}
-        variant={variant}
-        className={`bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full cursor-pointer ${triggerClassName}`}
+        className={`inline-flex items-center justify-center w-8 h-8 rounded-full bg-transparent text-surface-600 hover:bg-surface-100 dark:hover:bg-white/6 hover:text-surface-700 transition-colors cursor-pointer ${triggerClassName}`}
         onClick={() => setOpen(!open)}
         aria-haspopup="true"
         aria-expanded={open}
       >
-        <i className={`bx ${icon}`} />
-      </Button>
+        <i className={`bx ${icon} text-lg`} />
+      </button>
 
-      {open && (
+      {open && createPortal(
         <div
+          ref={menuRef}
           role="menu"
-          className={`absolute z-50 mt-1 min-w-[160px] bg-card border border-surface-200 rounded-lg shadow-lg py-1 ${align === 'right' ? 'right-0' : 'left-0'} ${menuClassName}`}
+          className={`fixed z-[9999] min-w-[160px] bg-card border border-surface-200 rounded-lg shadow-lg py-1 ${menuClassName}`}
+          style={{
+            top: pos.top,
+            ...(align === 'right' ? { right: window.innerWidth - pos.left } : { left: pos.left }),
+          }}
           onClick={() => setOpen(false)}
         >
           {children}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

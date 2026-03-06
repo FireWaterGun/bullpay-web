@@ -88,14 +88,14 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract }) {
         {coinNetwork.contractAddress ? (
           <div className="inline-flex items-center gap-2">
             <code className="text-surface-900 text-sm text-xs">{coinNetwork.contractAddress}</code>
-            <Button
+            <button
+              type="button"
               onClick={() => onCopyContract(coinNetwork.contractAddress)}
               title={t('actions.copy', { defaultValue: 'Copy' })}
-              variant="outline-secondary"
-              size="icon"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 text-surface-500 hover:text-surface-700 transition-colors cursor-pointer"
             >
               <i className="bx bx-copy"></i>
-            </Button>
+            </button>
           </div>
         ) : (
           <span className="text-surface-500">{t('admin.detail.native', { defaultValue: 'Native' })}</span>
@@ -109,13 +109,13 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract }) {
       </td>
 
       <td className="text-center align-middle">
-        <Button
-          size="icon"
+        <a
           href={`/admin/coin-networks/${coinNetwork.id}`}
           title={t('actions.edit', { defaultValue: 'Edit' })}
+          className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
         >
           <i className="bx bx-edit text-primary text-xl"></i>
-        </Button>
+        </a>
       </td>
     </tr>
   );
