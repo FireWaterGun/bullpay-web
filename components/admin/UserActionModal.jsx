@@ -39,33 +39,33 @@ export default function UserActionModal({
   const config = getModalConfig();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !modalLoading && onClose()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !modalLoading && onClose()}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="bg-white rounded-xl shadow-xl">
+        <div className="bg-card rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
             <h5 className="text-lg font-semibold text-surface-800">
               <i className={`bx ${config.icon} mr-2`}></i>
               {config.title}
             </h5>
-            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={modalLoading}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={modalLoading}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-5">
-            <div className="rounded p-3 mb-3 bg-surface-100" style={{ border: '1px solid var(--color-surface-200)' }}>
+            <div className="rounded p-3 mb-3 bg-surface-100 border border-surface-200">
               <div className="grid grid-cols-12 gap-x-6 gap-2">
                 <div className="col-span-6">
-                  <small className="text-muted block">{t('admin.detail.userId', { defaultValue: 'User ID' })}</small>
+                  <small className="text-surface-500 block">{t('admin.detail.userId', { defaultValue: 'User ID' })}</small>
                   <strong>{selectedUser.id}</strong>
                 </div>
                 <div className="col-span-6">
-                  <small className="text-muted block">{t('admin.detail.email', { defaultValue: 'Email' })}</small>
+                  <small className="text-surface-500 block">{t('admin.detail.email', { defaultValue: 'Email' })}</small>
                   <strong>{selectedUser.email}</strong>
                 </div>
                 <div className="col-span-6">
-                  <small className="text-muted block">{t('admin.users.role', { defaultValue: 'Role' })}</small>
+                  <small className="text-surface-500 block">{t('admin.users.role', { defaultValue: 'Role' })}</small>
                   <span className={roleBadgeClass(selectedUser.role)}>{formatRoleLabel(selectedUser.role)}</span>
                 </div>
                 <div className="col-span-6">
-                  <small className="text-muted block">{t('table.status', { defaultValue: 'Status' })}</small>
+                  <small className="text-surface-500 block">{t('table.status', { defaultValue: 'Status' })}</small>
                   <span className={statusBadgeClass(selectedUser.status)}>{String(selectedUser.status || '').toUpperCase()}</span>
                 </div>
               </div>

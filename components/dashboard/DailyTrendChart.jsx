@@ -6,7 +6,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
   if (!data || data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center" style={{ height }}>
-        <div className="rounded-full bg-surface-100 flex items-center justify-center mb-3 w-16 h-16">
+        <div className="rounded-full bg-surface-100 dark:bg-dark-elevated flex items-center justify-center mb-3 w-16 h-16">
           <i className="bx bx-line-chart text-3xl"></i>
         </div>
         <span className="font-medium text-surface-900">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
@@ -25,10 +25,10 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
     const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
     const nice = roughStep / mag
     let step
-    if (nice <= 1.5) step = 1 * mag
-    else if (nice <= 3) step = 2 * mag
-    else if (nice <= 7) step = 5 * mag
-    else step = 10 * mag
+    if (nice <= 1.5) { step = Number(mag); }
+    else if (nice <= 3) { step = 2 * mag; }
+    else if (nice <= 7) { step = 5 * mag; }
+    else { step = 10 * mag; }
     const niceMin = Math.floor(min / step) * step
     const niceMax = Math.ceil(max / step) * step
     const labels = []
@@ -134,7 +134,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
                 const cx = i * barGroupW + barGroupW / 2
                 const cy = yPos(item.netFlow || 0)
                 return (
-                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" stroke="#fff" strokeWidth="1.5">
+                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" className="stroke-card" strokeWidth="1.5">
                     <title>{t ? t('userDashboard.chartNetFlow', { value: formatUsd(item.netFlow || 0), defaultValue: `Net Flow: ${formatUsd(item.netFlow || 0)}` }) : `Net Flow: ${formatUsd(item.netFlow || 0)}`}</title>
                   </circle>
                 )
@@ -162,7 +162,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
           {data.map((item) => (
             <div className="text-center shrink-0" key={`x-${item.date}`} style={{ width: barGroupW }}>
               <small className="text-surface-500 text-[0.72rem]">
-                {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
+                {item.date ? new Date(`${item.date  }T00:00:00`).toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
             </div>
           ))}
@@ -170,7 +170,7 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
       </div>
       {/* Footer stats */}
       {meta && (
-        <div className="mt-3 p-3 rounded-lg bg-primary-50 border border-primary-100">
+        <div className="mt-3 p-3 rounded-lg bg-primary-50 border border-primary-100 dark:bg-primary-500/10 dark:border-primary-500/20">
           <div className="flex flex-wrap gap-3 items-center">
             <div>
               <i className="bx bx-calendar text-primary-600 mr-1"></i>

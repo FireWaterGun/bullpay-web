@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useToast } from '@/app/providers';
 import { getAdminPayments } from '@/lib/api/admin';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
@@ -12,17 +13,16 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card } from '../../../../components/ui'
+import { Card } from '@/components/ui'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 export default function AdminPaymentList() {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token } = useAuth();
   const toast = useToast();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [payments, setPayments] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -41,9 +41,27 @@ export default function AdminPaymentList() {
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({});
 
+  const loadPayments = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getAdminPayments(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setPayments(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load payments:', error);
+      toast.error(t('admin.payments.loadError', { defaultValue: 'Failed to load payments' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
   useEffect(() => {
     loadPayments();
-  }, [currentPage, appliedFilters]);
+  }, [loadPayments]);
 
   function applyFilters() {
     setAppliedFilters({
@@ -72,24 +90,6 @@ export default function AdminPaymentList() {
     setCurrentPage(1);
   }
 
-  async function loadPayments() {
-    try {
-      setLoading(true);
-      const data = await getAdminPayments(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setPayments(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load payments:', error);
-      toast.error(t('admin.payments.loadError', { defaultValue: 'Failed to load payments' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleCopy(text) {
     const ok = await copyText(text);
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
@@ -112,7 +112,7 @@ export default function AdminPaymentList() {
                     <i className="bx bx-transfer mr-2"></i>
                     {t('admin.payments.title', { defaultValue: 'Payments' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.payments.description', { defaultValue: 'View all blockchain payment transactions' })}
                   </p>
                 </div>
@@ -146,8 +146,7 @@ export default function AdminPaymentList() {
           {/* Table */}
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -184,46 +183,9 @@ export default function AdminPaymentList() {
                     )
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {/* Pagination */}
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', {
-                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                    end: Math.min(pagination.page * pagination.limit, pagination.total),
-                    total: pagination.total,
-                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                  })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => setCurrentPage((p) => p - 1)} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      {t('actions.prev', { defaultValue: 'Previous' })}
-                    </Button>
-                    <Button
-
-                    disabled variant="outline-secondary" size="sm">
-                    
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => setCurrentPage((p) => p + 1)} variant="outline-secondary" size="sm">
-                    
-                      {t('actions.next', { defaultValue: 'Next' })}
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
             </div>
           </Card>
         </div>

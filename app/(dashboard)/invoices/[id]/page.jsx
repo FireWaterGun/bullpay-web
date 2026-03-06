@@ -13,7 +13,7 @@ import { statusClass } from '@/components/invoices/invoiceDetailHelpers';
 import InvoicePaymentsTable from '@/components/invoices/InvoicePaymentsTable';
 import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions';
 import RefreshButton from '@/components/RefreshButton';
-import { Card, Label } from '../../../../components/ui'
+import { Card, Label } from '@/components/ui'
 
 export default function InvoiceDetailPage() {
   const { fmtDateTime } = useDateFormat();
@@ -52,7 +52,7 @@ export default function InvoiceDetailPage() {
 
   useEffect(() => {
     if (id && token) loadInvoice();
-  }, [loadInvoice]);
+  }, [id, token, loadInvoice]);
 
   // Extract coin and network info from invoice response
   const coinSym = (invoice?.coin?.symbol || invoice?.coinSymbol || '').toUpperCase();
@@ -67,7 +67,7 @@ export default function InvoiceDetailPage() {
 
   return (
     <>
-      {error && <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">{error}</div>}
+      {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 px-4 py-3 text-sm mb-4">{error}</div>}
       {loading ?
       <Card>
           <div className="p-6">
@@ -104,7 +104,7 @@ export default function InvoiceDetailPage() {
                 }
                 </div>
 
-                <hr className="my-5 border-surface-100" />
+                <hr className="my-5 border-surface-200" />
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
@@ -142,7 +142,7 @@ export default function InvoiceDetailPage() {
                       <code className="mr-2 break-all flex-grow text-sm">{invoice.paymentAddress || '-'}</code>
                       {explorer && invoice.paymentAddress &&
                     <a
-                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-200 text-surface-600 hover:bg-surface-50 shrink-0"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-200 text-surface-600 hover:bg-surface-50 dark:hover:bg-white/6 shrink-0"
                       href={`${explorer.replace(/\/$/, '')}/address/${invoice.paymentAddress}`}
                       target="_blank"
                       rel="noopener noreferrer">

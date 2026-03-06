@@ -34,15 +34,15 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
   const isValid = isValidEmail && password.length >= 8 && password.length <= 128;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !loading && onClose()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !loading && onClose()}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="bg-white rounded-xl shadow-xl">
+        <div className="bg-card rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
             <h5 className="text-lg font-semibold text-surface-800">
               <i className="bx bx-user-plus mr-2"></i>
               {t('admin.users.createUser', { defaultValue: 'Create User' })}
             </h5>
-            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={loading}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={loading}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-5">
             <div className="mb-3">

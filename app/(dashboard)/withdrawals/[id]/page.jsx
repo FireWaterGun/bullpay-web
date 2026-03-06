@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
@@ -16,8 +16,9 @@ import PageSpinner from '@/components/PageSpinner'
 function CopyBtn({ text, onCopy }) {
   return (
     <button
+      type="button"
       onClick={() => onCopy(text)}
-      className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 hover:bg-surface-100 hover:text-surface-600 transition-colors shrink-0 cursor-pointer"
+      className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 hover:bg-surface-100 hover:text-surface-600 dark:hover:bg-white/6 transition-colors shrink-0 cursor-pointer"
     >
       <i className="bx bx-copy text-sm"></i>
     </button>
@@ -26,7 +27,7 @@ function CopyBtn({ text, onCopy }) {
 
 function DetailRow({ label, children }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-0 py-2.5 border-b border-surface-50 last:border-0">
+    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-0 py-2.5 border-b border-surface-200 last:border-0">
       <span className="text-sm text-surface-500 sm:w-[160px] shrink-0">{label}</span>
       <div className="text-sm text-surface-800 min-w-0 flex-1">{children}</div>
     </div>
@@ -45,11 +46,8 @@ export default function WithdrawalDetailPage() {
   const [withdrawal, setWithdrawal] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (token && withdrawalId) loadWithdrawal()
-  }, [token, withdrawalId])
-
-  async function loadWithdrawal() {
+  const loadWithdrawal = useCallback(async () => {
+    if (!token || !withdrawalId) return
     try {
       setLoading(true)
       const data = await getWithdrawalById(withdrawalId, token)
@@ -59,7 +57,11 @@ export default function WithdrawalDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, withdrawalId, toast, t])
+
+  useEffect(() => {
+    loadWithdrawal()
+  }, [loadWithdrawal])
 
   async function handleCopy(text) {
     const ok = await copyToClipboard(text)
@@ -70,7 +72,7 @@ export default function WithdrawalDetailPage() {
 
   if (!withdrawal) {
     return (
-      <div className="bg-danger-50 border border-danger-200 text-danger-700 rounded-lg p-4 text-sm">
+      <div className="bg-danger-50 dark:bg-red-950/30 border border-danger-200 dark:border-red-800 text-danger-700 dark:text-red-400 rounded-lg p-4 text-sm">
         {t('withdrawals.notFound', { defaultValue: 'Withdrawal not found' })}
       </div>
     )
@@ -88,15 +90,16 @@ export default function WithdrawalDetailPage() {
     <>
       {/* Back button */}
       <button
+        type="button"
         onClick={() => router.back()}
-        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-surface-600 border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors mb-4 cursor-pointer"
+        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-surface-600 border border-surface-200 rounded-lg hover:bg-surface-50 dark:hover:bg-white/6 transition-colors mb-4 cursor-pointer"
       >
         <i className="bx bx-arrow-back"></i>
         {t('actions.back', { defaultValue: 'Back' })}
       </button>
 
       {/* Hero card */}
-      <div className="bg-white rounded-xl shadow-sm border border-surface-100 p-5 mb-5">
+      <div className="bg-card rounded-xl shadow-sm border border-surface-200 p-5 mb-5">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} />
@@ -110,10 +113,10 @@ export default function WithdrawalDetailPage() {
                   {formatStatusLabel(withdrawal.status)}
                 </span>
                 {coinSymbol && (
-                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-surface-100 text-surface-600 rounded-md">{coinSymbol}</span>
+                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-600 rounded-md">{coinSymbol}</span>
                 )}
                 {networkSymbol && networkSymbol !== coinSymbol && (
-                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-info-50 text-info-600 rounded-md">{networkSymbol}</span>
+                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-info-50 dark:bg-info-900/30 text-info-600 dark:text-info-400 rounded-md">{networkSymbol}</span>
                 )}
               </div>
             </div>
@@ -130,8 +133,8 @@ export default function WithdrawalDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Details */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-surface-100">
-            <div className="px-5 py-4 border-b border-surface-100">
+          <div className="bg-card rounded-xl shadow-sm border border-surface-200">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
                 <i className="bx bx-detail text-primary-600"></i>
                 {t('withdrawals.details', { defaultValue: 'Details' })}
@@ -180,7 +183,7 @@ export default function WithdrawalDetailPage() {
                         href={`${explorerUrl}/tx/${withdrawal.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center w-7 h-7 rounded text-primary-500 hover:bg-primary-50 transition-colors shrink-0"
+                        className="inline-flex items-center justify-center w-7 h-7 rounded text-primary-500 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/30 transition-colors shrink-0"
                       >
                         <i className="bx bx-link-external text-sm"></i>
                       </a>
@@ -209,7 +212,7 @@ export default function WithdrawalDetailPage() {
 
         {/* Timeline */}
         <div>
-          <div className="bg-white rounded-xl shadow-sm border border-surface-100 p-5">
+          <div className="bg-card rounded-xl shadow-sm border border-surface-200 p-5">
             <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-4">
               <i className="bx bx-time-five text-primary-600"></i>
               {t('withdrawals.timeline', { defaultValue: 'Timeline' })}

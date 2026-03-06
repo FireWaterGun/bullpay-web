@@ -18,27 +18,7 @@ export default function useDashboardData() {
 
   const userIdentifier = user?.id || user?.userId || user?.email
 
-  // Listen for withdrawal status changes (approve/reject) to refresh badge
-  useEffect(() => {
-    const handler = () => { if (isAdmin && token && hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount() }
-    window.addEventListener('withdrawal-status-changed', handler)
-    return () => window.removeEventListener('withdrawal-status-changed', handler)
-  }, [isAdmin, token])
-
-  // Load payment stats for admin users
-  useEffect(() => {
-    if (!token) return
-    if (isAdmin) {
-      if (navigation) {
-        if (hasPermission('admin.system_stats.view')) loadPaymentStats()
-        if (hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount()
-      }
-    } else {
-      loadUserBalance()
-    }
-  }, [isAdmin, token, navigation])
-
-  async function loadPendingWithdrawalCount() {
+  const loadPendingWithdrawalCount = useCallback(async () => {
     try {
       if (!token) return
       const data = await getWithdrawals(token, { status: 'pending', page: 1, limit: 1 })
@@ -46,9 +26,9 @@ export default function useDashboardData() {
     } catch (error) {
       logger.error('Failed to load pending withdrawal count:', error)
     }
-  }
+  }, [token])
 
-  async function loadPaymentStats() {
+  const loadPaymentStats = useCallback(async () => {
     try {
       const stats = await getSystemWalletStats(token, 'USD')
       setFiatBalance({
@@ -58,9 +38,9 @@ export default function useDashboardData() {
     } catch (error) {
       logger.error('Failed to load system wallet stats:', error)
     }
-  }
+  }, [token])
 
-  async function loadUserBalance() {
+  const loadUserBalance = useCallback(async () => {
     try {
       const data = await getBalancesWithFiat(token, 'USD')
       if (data?.fiat) {
@@ -72,7 +52,37 @@ export default function useDashboardData() {
     } catch (error) {
       logger.error('Failed to load user balance:', error)
     }
-  }
+  }, [token])
+
+  // Listen for withdrawal status changes (approve/reject) to refresh badge
+  useEffect(() => {
+    const handler = () => { if (isAdmin && token && hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount() }
+    window.addEventListener('withdrawal-status-changed', handler)
+    return () => window.removeEventListener('withdrawal-status-changed', handler)
+  }, [isAdmin, token, hasPermission, loadPendingWithdrawalCount])
+
+  // Load payment stats for admin users
+  useEffect(() => {
+    if (!token) return
+    if (isAdmin) {
+      if (navigation) {
+        if (hasPermission('admin.system_stats.view')) {
+          queueMicrotask(() => {
+            void loadPaymentStats()
+          })
+        }
+        if (hasPermission('admin.withdrawals.view')) {
+          queueMicrotask(() => {
+            void loadPendingWithdrawalCount()
+          })
+        }
+      }
+    } else {
+      queueMicrotask(() => {
+        void loadUserBalance()
+      })
+    }
+  }, [isAdmin, token, navigation, hasPermission, loadPaymentStats, loadPendingWithdrawalCount, loadUserBalance])
 
   const refreshNotifications = useCallback(() => {
     notificationRefreshRef.current?.()
@@ -197,7 +207,7 @@ export default function useDashboardData() {
       });
       refreshNotifications();
     }
-  }), []); // Empty array - create once and never change
+  }), [refreshNotifications, toast, loadPendingWithdrawalCount]);
 
   // Subscribe to Pusher events for real-time updates (global for all dashboard pages)
   useUserInvoiceEvents(userIdentifier, pusherCallbacks);

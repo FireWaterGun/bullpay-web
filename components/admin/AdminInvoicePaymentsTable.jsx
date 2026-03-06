@@ -5,7 +5,8 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Button, Card } from '../ui';
+import { Button, Card } from '../ui'
+import Table from '../ui/Table';
 
 /**
  * Payments table for AdminInvoiceDetail.
@@ -29,8 +30,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
           message="No payments recorded for this invoice" /> :
 
 
-        <div className="overflow-x-auto overflow-x-auto">
-            <table className="w-full min-w-[900px]">
+        <Table className="min-w-[900px]">
               <thead>
                 <tr>
                   <th className="min-w-[60px]">{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -70,7 +70,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     <td className="text-center whitespace-nowrap">
                       {payment.confirmations != null ? payment.confirmations : '-'}
                       {payment.requiredConfirmations != null &&
-                  <small className="text-muted"> / {payment.requiredConfirmations}</small>
+                  <small className="text-surface-500"> / {payment.requiredConfirmations}</small>
                   }
                     </td>
                     <td>
@@ -92,7 +92,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     }
                         </div> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                     </td>
                     <td>
@@ -110,7 +110,7 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                           </Button>
                         </div> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                     </td>
                     <td>
@@ -128,29 +128,28 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                           </Button>
                         </div> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                     </td>
                     <td>
                       <span className="whitespace-nowrap">
-                        {payment.detectedAt ? fmtDate(payment.detectedAt) : <span className="text-muted">-</span>}
+                        {payment.detectedAt ? fmtDate(payment.detectedAt) : <span className="text-surface-500">-</span>}
                       </span>
                     </td>
                     <td>
                       <span className="whitespace-nowrap">
-                        {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-muted">-</span>}
+                        {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-surface-500">-</span>}
                       </span>
                     </td>
                     <td>
                       <span className="whitespace-nowrap">
-                        {payment.completedAt ? fmtDate(payment.completedAt) : <span className="text-muted">-</span>}
+                        {payment.completedAt ? fmtDate(payment.completedAt) : <span className="text-surface-500">-</span>}
                       </span>
                     </td>
                   </tr>
               )}
               </tbody>
-            </table>
-          </div>
+            </Table>
         }
       </div>
     </Card>);

@@ -99,19 +99,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedToken = getCookie(AUTH_COOKIE_NAME)
     const savedUser = getCookie('bullpay_user')
-    if (savedToken) setToken(savedToken)
+    if (savedToken) queueMicrotask(() => setToken(savedToken))
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser))
+        const parsedUser = JSON.parse(savedUser)
+        queueMicrotask(() => setUser(parsedUser))
       } catch { /* ignore */ }
     }
     const savedNav = getCookie('bullpay_nav')
     if (savedNav) {
       try {
-        setNavigation(JSON.parse(savedNav))
+        const parsedNav = JSON.parse(savedNav)
+        queueMicrotask(() => setNavigation(parsedNav))
       } catch { /* ignore */ }
     }
-    setIsReady(true)
+    queueMicrotask(() => setIsReady(true))
   }, [])
 
   // Fetch navigation when token is available

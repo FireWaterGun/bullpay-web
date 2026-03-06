@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
 
 import { useAuth, useToast } from '@/app/providers';
@@ -12,7 +12,9 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, Input, Label, Select, badgeBase } from '../../../../components/ui';
+import { Button, Card, Input, Label, Select, badgeBase } from '@/components/ui';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 function roleBadgeClass(role) {
   const v = String(role || '').toLowerCase();
@@ -59,9 +61,37 @@ export default function UserBalanceListPage() {
     return f;
   });
 
-  useEffect(() => {loadUsers();}, [currentPage, appliedFilters]);
+  const loadSummary = useCallback(async () => {
+    if (!token) return;
+    try {
+      setSummaryLoading(true);
+      const data = await getUserBalancesSummary(token);
+      setSummary(data);
+    } catch (error) {
+      logger.error('Failed to load balance summary:', error);
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, [token]);
+
+  const loadUsers = useCallback(async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const data = await getUserBalances(token, { page: currentPage, limit: 20, ...appliedFilters });
+      setUsers(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load user balances:', error);
+      toast.error(t('admin.userBalance.loadError', { defaultValue: 'Failed to load user balances' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
+  useEffect(() => {loadUsers();}, [loadUsers]);
   // Load summary once on mount (parallel with first loadUsers via React batching)
-  useEffect(() => {loadSummary();}, []);
+  useEffect(() => {loadSummary();}, [loadSummary]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -90,34 +120,6 @@ export default function UserBalanceListPage() {
     syncSearchParams({}, 1);
   }
 
-  async function loadSummary() {
-    if (!token) return;
-    try {
-      setSummaryLoading(true);
-      const data = await getUserBalancesSummary(token);
-      setSummary(data);
-    } catch (error) {
-      logger.error('Failed to load balance summary:', error);
-    } finally {
-      setSummaryLoading(false);
-    }
-  }
-
-  async function loadUsers() {
-    if (!token) return;
-    try {
-      setLoading(true);
-      const data = await getUserBalances(token, { page: currentPage, limit: 20, ...appliedFilters });
-      setUsers(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load user balances:', error);
-      toast.error(t('admin.userBalance.loadError', { defaultValue: 'Failed to load user balances' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   if (loading && users.length === 0 && !summary) {
     return <PageSpinner />;
   }
@@ -134,7 +136,7 @@ export default function UserBalanceListPage() {
                     <i className="bx bx-wallet mr-2"></i>
                     {t('admin.userBalances.title', { defaultValue: 'User Balances' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.userBalances.description', { defaultValue: 'Overview of all user balances across the platform' })}
                   </p>
                 </div>
@@ -192,8 +194,7 @@ export default function UserBalanceListPage() {
 
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('table.userId', { defaultValue: 'User ID' })}</th>
@@ -241,30 +242,9 @@ export default function UserBalanceListPage() {
                     )
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', {
-                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                    end: Math.min(pagination.page * pagination.limit, pagination.total),
-                    total: pagination.total,
-                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                  })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button disabled={!pagination.hasPrev || loading} onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-                      <i className="bx bx-chevron-left"></i> {t('actions.prev', { defaultValue: 'Previous' })}
-                    </Button>
-                    <Button disabled variant="outline-secondary" size="sm">{pagination.page} / {pagination.totalPages}</Button>
-                    <Button disabled={!pagination.hasNext || loading} onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-                      {t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
             </div>
           </Card>
         </div>

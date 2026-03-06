@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import {
@@ -20,11 +20,14 @@ import ApiCredentialsCard from '@/components/merchant/ApiCredentialsCard'
 import RefreshButton from '@/components/RefreshButton'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
+import { Input, InputGroup, InputIcon, Label } from '@/components/ui/Input'
+import Button from '@/components/ui/Button'
+import Spinner from '@/components/ui/Spinner'
 
 const statusColors = {
-  active:    { bg: 'bg-success-50', text: 'text-success-700', icon: 'bx-check-shield' },
-  suspended: { bg: 'bg-danger-50',  text: 'text-danger-700',  icon: 'bx-block' },
-  pending:   { bg: 'bg-warning-50', text: 'text-warning-700', icon: 'bx-time-five' },
+  active:    { bg: 'bg-success-50 dark:bg-success-950/30', text: 'text-success-700 dark:text-success-400', icon: 'bx-check-shield' },
+  suspended: { bg: 'bg-danger-50 dark:bg-danger-950/30',  text: 'text-danger-700 dark:text-danger-400',  icon: 'bx-block' },
+  pending:   { bg: 'bg-warning-50 dark:bg-warning-950/30', text: 'text-warning-700 dark:text-warning-400', icon: 'bx-time-five' },
 }
 
 function statusMeta(status, t) {
@@ -32,16 +35,16 @@ function statusMeta(status, t) {
   if (s === 'active')    return { ...statusColors.active,    label: t('merchant.status.active',    { defaultValue: 'Active' }) }
   if (s === 'suspended') return { ...statusColors.suspended, label: t('merchant.status.suspended', { defaultValue: 'Suspended' }) }
   if (s === 'pending')   return { ...statusColors.pending,   label: t('merchant.status.pending',   { defaultValue: 'Pending' }) }
-  return { bg: 'bg-surface-100', text: 'text-surface-600', icon: 'bx-help-circle', label: t('merchant.status.unknown', { defaultValue: status || 'Unknown' }) }
+  return { bg: 'bg-surface-100 dark:bg-dark-elevated', text: 'text-surface-600', icon: 'bx-help-circle', label: t('merchant.status.unknown', { defaultValue: status || 'Unknown' }) }
 }
 
 const tileColors = {
-  primary: { bg: 'bg-primary-50', icon: 'text-primary-600' },
-  success: { bg: 'bg-success-50', icon: 'text-success-600' },
-  info:    { bg: 'bg-info-50',    icon: 'text-info-600' },
-  secondary: { bg: 'bg-surface-100', icon: 'text-surface-500' },
-  danger:  { bg: 'bg-danger-50',  icon: 'text-danger-600' },
-  warning: { bg: 'bg-warning-50', icon: 'text-warning-600' },
+  primary:   { bg: 'bg-primary-50 dark:bg-primary-950/30', icon: 'text-primary-600 dark:text-primary-400' },
+  success:   { bg: 'bg-success-50 dark:bg-success-950/30', icon: 'text-success-600 dark:text-success-400' },
+  info:      { bg: 'bg-info-50 dark:bg-info-950/30',       icon: 'text-info-600 dark:text-info-400' },
+  secondary: { bg: 'bg-surface-100 dark:bg-dark-elevated',  icon: 'text-surface-500' },
+  danger:    { bg: 'bg-danger-50 dark:bg-danger-950/30',   icon: 'text-danger-600 dark:text-danger-400' },
+  warning:   { bg: 'bg-warning-50 dark:bg-warning-950/30', icon: 'text-warning-600 dark:text-warning-400' },
 }
 
 function StatTile({ icon, label, value, color = 'primary' }) {
@@ -85,12 +88,7 @@ export default function MerchantPage() {
 
   const [is2FAEnabled, setIs2FAEnabled] = useState(false)
 
-  useEffect(() => {
-    loadProfile()
-    load2FAStatus()
-  }, [token])
-
-  async function load2FAStatus() {
+  const load2FAStatus = useCallback(async () => {
     if (!token) return
     try {
       const res = await get2FAStatus(token)
@@ -99,9 +97,9 @@ export default function MerchantPage() {
       // Non-critical — if we can't fetch status, 2FA fields won't show
       setIs2FAEnabled(false)
     }
-  }
+  }, [token])
 
-  async function loadProfile() {
+  const loadProfile = useCallback(async () => {
     if (!token) return
     try {
       setLoading(true)
@@ -119,7 +117,12 @@ export default function MerchantPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token])
+
+  useEffect(() => {
+    loadProfile()
+    load2FAStatus()
+  }, [loadProfile, load2FAStatus])
 
   function handleRegistered(result) {
     setMerchant(result.merchant || result)
@@ -298,12 +301,12 @@ export default function MerchantPage() {
       )}
 
       {/* §1 PROFILE HERO */}
-      <div className="bg-white rounded-xl shadow-sm border border-surface-100 mb-5 overflow-hidden">
+      <div className="bg-card rounded-xl shadow-sm dark:shadow-card-dark border border-surface-200 mb-5 overflow-hidden">
         <div className="p-5 pb-4">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             {/* Avatar */}
-            <div className="flex items-center justify-center w-20 h-20 rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 shrink-0">
-              <i className="bx bx-store text-[2.5rem] text-primary-600"></i>
+            <div className="flex items-center justify-center w-20 h-20 rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-950/40 dark:to-primary-950/20 shrink-0">
+              <i className="bx bx-store text-[2.5rem] text-primary-600 dark:text-primary-400"></i>
             </div>
             {/* Info */}
             <div className="flex-1 min-w-0">
@@ -325,7 +328,7 @@ export default function MerchantPage() {
                   <span className="flex items-center gap-1"><i className="bx bx-envelope"></i>{merchant.email}</span>
                 )}
                 {merchant?.websiteUrl && (
-                  <a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-surface-400 hover:text-primary-600 no-underline transition-colors">
+                  <a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline transition-colors">
                     <i className="bx bx-globe"></i>{merchant.websiteUrl}
                   </a>
                 )}
@@ -336,13 +339,13 @@ export default function MerchantPage() {
               </div>
 
               {status === 'pending' && (
-                <div className="flex items-center gap-2 mt-3 p-2.5 bg-warning-50 border border-warning-200 rounded-lg text-sm text-warning-700">
+                <div className="flex items-center gap-2 mt-3 p-2.5 bg-warning-50 dark:bg-warning-950/30 border border-warning-200 dark:border-warning-800 rounded-lg text-sm text-warning-700 dark:text-warning-400">
                   <i className="bx bx-time-five"></i>
                   {t('merchant.pendingNotice', { defaultValue: 'Your merchant account is pending approval.' })}
                 </div>
               )}
               {status === 'suspended' && (
-                <div className="flex items-center gap-2 mt-3 p-2.5 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700">
+                <div className="flex items-center gap-2 mt-3 p-2.5 bg-danger-50 dark:bg-danger-950/30 border border-danger-200 dark:border-danger-800 rounded-lg text-sm text-danger-700 dark:text-danger-400">
                   <i className="bx bx-block"></i>
                   {t('merchant.suspendedNotice', { defaultValue: 'Your merchant account is suspended.' })}
                 </div>
@@ -351,7 +354,7 @@ export default function MerchantPage() {
           </div>
         </div>
         {/* Stats strip */}
-        <div className="border-t border-surface-100 px-5 py-3">
+        <div className="border-t border-surface-200 px-5 py-3">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <StatTile icon={sMeta.icon} label={t('common.status', { defaultValue: 'Status' })} value={sMeta.label} color={status === 'active' ? 'success' : status === 'suspended' ? 'danger' : 'warning'} />
             <StatTile icon="bx-trending-up" label={t('merchant.commissionRate', { defaultValue: 'Commission' })} value={merchant?.commissionRate ? formatCommission(merchant.commissionRate) : '-'} color="primary" />
@@ -376,18 +379,18 @@ export default function MerchantPage() {
           />
 
           {/* Webhook Configuration */}
-          <div className="bg-white rounded-xl shadow-sm border border-surface-100">
-            <div className="flex justify-between items-center px-5 py-4 border-b border-surface-100">
+          <div className="bg-card rounded-xl shadow-sm dark:shadow-card-dark border border-surface-200">
+            <div className="flex justify-between items-center px-5 py-4 border-b border-surface-200">
               <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
-                <i className="bx bx-broadcast text-primary-600"></i>
+                <i className="bx bx-broadcast text-primary-600 dark:text-primary-400"></i>
                 {t('merchant.webhookTitle', { defaultValue: 'Webhook Configuration' })}
               </h6>
               {merchant?.hasWebhook ? (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-success-50 text-success-700 rounded-md">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-success-50 dark:bg-success-950/30 text-success-700 dark:text-success-400 rounded-md">
                   <i className="bx bx-check-circle"></i>{t('merchant.configured', { defaultValue: 'Configured' })}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-surface-100 text-surface-500 rounded-md">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-500 rounded-md">
                   <i className="bx bx-minus-circle"></i>{t('merchant.notConfigured', { defaultValue: 'Not Configured' })}
                 </span>
               )}
@@ -400,57 +403,56 @@ export default function MerchantPage() {
 
               {editingWebhook ? (
                 <>
-                  <label className="block text-xs font-semibold text-surface-700 mb-1">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</label>
-                  <div className="flex mb-3">
-                    <span className="inline-flex items-center px-3 bg-surface-50 border border-r-0 border-surface-200 rounded-l-lg text-surface-400">
-                      <i className="bx bx-link"></i>
-                    </span>
-                    <input
-                      type="url"
-                      className="flex-1 px-3 py-2 text-sm border border-surface-200 rounded-r-lg outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
-                      value={webhookUrl}
-                      onChange={(e) => setWebhookUrl(e.target.value)}
-                      placeholder="https://example.com/webhooks/payment"
-                      autoFocus
-                    />
+                  <div className="mb-3">
+                    <Label className="font-semibold text-xs">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</Label>
+                    <InputGroup>
+                      <InputIcon>
+                        <i className="bx bx-link"></i>
+                      </InputIcon>
+                      <Input
+                        type="url"
+                        value={webhookUrl}
+                        onChange={(e) => setWebhookUrl(e.target.value)}
+                        placeholder="https://example.com/webhooks/payment"
+                        autoFocus
+                      />
+                    </InputGroup>
                   </div>
                   {/* Password */}
                   <div className="mb-3">
-                    <label className="block text-xs font-semibold text-surface-700 mb-1" htmlFor="webhook-password">
+                    <Label htmlFor="webhook-password" className="font-semibold text-xs">
                       <i className="bx bx-lock-alt mr-1"></i>
                       {t('merchant.enterPassword', { defaultValue: 'Password' })}
-                    </label>
-                    <div className="flex">
-                      <input
+                    </Label>
+                    <InputGroup>
+                      <Input
                         id="webhook-password"
                         type={webhookShowPassword ? 'text' : 'password'}
-                        className="flex-1 px-3 py-2 text-sm border border-r-0 border-surface-200 rounded-l-lg outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                         value={webhookPassword}
                         onChange={(e) => setWebhookPassword(e.target.value)}
                         placeholder={t('merchant.passwordPlaceholder', { defaultValue: 'Enter your current password' })}
                         disabled={webhookLoading}
                         autoComplete="current-password"
                       />
-                      <button
+                      <Button
                         type="button"
-                        className="inline-flex items-center px-3 bg-surface-50 border border-l-0 border-surface-200 rounded-r-lg text-surface-500 hover:text-surface-700 cursor-pointer"
+                        variant="text-secondary"
                         onClick={() => setWebhookShowPassword(!webhookShowPassword)}
                         tabIndex={-1}
                       >
-                        <i className={`bx ${webhookShowPassword ?'bx-hide' : 'bx-show'}`}></i>
-                      </button>
-                    </div>
+                        <i className={`bx ${webhookShowPassword ? 'bx-hide' : 'bx-show'}`}></i>
+                      </Button>
+                    </InputGroup>
                   </div>
                   {is2FAEnabled && (
                     <div className="mb-3">
-                      <label className="block text-xs font-semibold text-surface-700 mb-1" htmlFor="webhook-totp">
+                      <Label htmlFor="webhook-totp" className="font-semibold text-xs">
                         <i className="bx bx-shield mr-1"></i>
                         {t('merchant.enter2FACode', { defaultValue: '2FA Code' })}
-                      </label>
-                      <input
+                      </Label>
+                      <Input
                         id="webhook-totp"
                         type="text"
-                        className="w-full px-3 py-2 text-sm border border-surface-200 rounded-lg outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                         value={webhookTotpCode}
                         onChange={(e) => setWebhookTotpCode(e.target.value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 9))}
                         placeholder={t('merchant.totpPlaceholder', { defaultValue: '6-digit code or backup code' })}
@@ -462,40 +464,42 @@ export default function MerchantPage() {
                     </div>
                   )}
                   {webhookError && (
-                    <div className="flex items-center gap-2 p-2.5 bg-danger-50 border border-danger-200 rounded-lg text-sm text-danger-700 mb-3">
+                    <div className="flex items-center gap-2 p-2.5 bg-danger-50 dark:bg-danger-950/30 border border-danger-200 dark:border-danger-800 rounded-lg text-sm text-danger-700 dark:text-danger-400 mb-3">
                       <i className="bx bx-error-circle"></i>{webhookError}
                     </div>
                   )}
                   <div className="flex gap-2">
-                    <button
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 cursor-pointer"
+                    <Button
+                      size="sm"
                       onClick={handleWebhookSave}
                       disabled={webhookLoading}
                     >
                       {webhookLoading ? (
-                        <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>{t('merchant.saving', { defaultValue: 'Saving...' })}</>
+                        <><Spinner className="w-3.5 h-3.5 mr-1.5 inline-block" />{t('merchant.saving', { defaultValue: 'Saving...' })}</>
                       ) : (
-                        <><i className="bx bx-check"></i>{t('merchant.save', { defaultValue: 'Save' })}</>
+                        <><i className="bx bx-check mr-1"></i>{t('merchant.save', { defaultValue: 'Save' })}</>
                       )}
-                    </button>
-                    <button
-                      className="inline-flex items-center px-3 py-1.5 text-sm border border-surface-200 text-surface-600 rounded-lg hover:bg-surface-50 transition-colors disabled:opacity-50 cursor-pointer"
+                    </Button>
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
                       onClick={() => { setEditingWebhook(false); setWebhookTotpCode(''); setWebhookPassword(''); setWebhookError('') }}
                       disabled={webhookLoading}
                     >
                       {t('actions.cancel', { defaultValue: 'Cancel' })}
-                    </button>
+                    </Button>
                   </div>
                 </>
               ) : (
                 <>
                   {merchant?.webhookUrl && (
                     <div className="mb-3">
-                      <label className="block text-xs font-semibold text-surface-700 mb-1">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</label>
-                      <div className="flex items-center gap-2 p-2.5 bg-surface-50 rounded-lg">
+                      <Label className="font-semibold text-xs">{t('merchant.callbackUrl', { defaultValue: 'Callback URL' })}</Label>
+                      <div className="flex items-center gap-2 p-2.5 bg-surface-50 rounded-lg dark:bg-dark-elevated">
                         <span className="font-mono text-sm text-surface-700 break-all flex-1">{merchant.webhookUrl}</span>
                         <button
-                          className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 hover:bg-surface-200 hover:text-surface-600 transition-colors shrink-0 cursor-pointer"
+                          type="button"
+                          className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 hover:bg-surface-200 dark:hover:bg-white/6 hover:text-surface-600 transition-colors shrink-0 cursor-pointer"
                           onClick={async () => {
                             const ok = await copyToClipboard(merchant.webhookUrl)
                             if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
@@ -507,16 +511,17 @@ export default function MerchantPage() {
                       </div>
                     </div>
                   )}
-                  <button
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium border border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors cursor-pointer"
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => { setWebhookUrl(merchant?.webhookUrl || ''); setEditingWebhook(true); load2FAStatus() }}
                   >
-                    <i className="bx bx-edit"></i>
+                    <i className="bx bx-edit mr-1"></i>
                     {merchant?.hasWebhook
                       ? t('merchant.updateWebhook', { defaultValue: 'Update Webhook' })
                       : t('merchant.setWebhook', { defaultValue: 'Set Webhook URL' })
                     }
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -526,10 +531,10 @@ export default function MerchantPage() {
         {/* Right Column (1/3) */}
         <div className="space-y-5">
           {/* Quick Start Guide */}
-          <div className="bg-white rounded-xl shadow-sm border border-surface-100">
-            <div className="px-5 py-4 border-b border-surface-100">
+          <div className="bg-card rounded-xl shadow-sm dark:shadow-card-dark border border-surface-200">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
-                <i className="bx bx-rocket text-primary-600"></i>
+                <i className="bx bx-rocket text-primary-600 dark:text-primary-400"></i>
                 {t('merchant.quickStart', { defaultValue: 'Quick Start' })}
               </h6>
             </div>
@@ -540,12 +545,12 @@ export default function MerchantPage() {
                 { step: 3, icon: 'bx-receipt', text: t('merchant.step3', { defaultValue: 'Create your first invoice' }), done: false },
                 { step: 4, icon: 'bx-wallet', text: t('merchant.step4', { defaultValue: 'Accept crypto payments' }), done: false },
               ].map(({ step, icon, text, done }) => (
-                <div key={step} className={`flex items-center gap-3 py-2.5 ${step < 4 ?'border-b border-surface-50' : ''}`}>
-                  <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 ${done ?'bg-success-50 text-success-600' : 'bg-surface-100 text-surface-500'}`}>
+                <div key={step} className={`flex items-center gap-3 py-2.5 ${step < 4 ?'border-b border-surface-200' : ''}`}>
+                  <span className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 ${done ?'bg-success-50 dark:bg-success-950/30 text-success-600 dark:text-success-400' : 'bg-surface-100 dark:bg-dark-elevated text-surface-500'}`}>
                     {done ? <i className="bx bx-check text-base"></i> : step}
                   </span>
                   <div className="flex items-center gap-2 min-w-0">
-                    <i className={`bx ${icon} ${done ?'text-success-600' : 'text-surface-400'}`}></i>
+                    <i className={`bx ${icon} ${done ?'text-success-600 dark:text-success-400' : 'text-surface-400'}`}></i>
                     <span className={`text-sm ${done ?'text-surface-800' : 'text-surface-500'}`}>{text}</span>
                   </div>
                 </div>
@@ -554,10 +559,10 @@ export default function MerchantPage() {
           </div>
 
           {/* Security Tips */}
-          <div className="bg-white rounded-xl shadow-sm border border-surface-100">
-            <div className="px-5 py-4 border-b border-surface-100">
+          <div className="bg-card rounded-xl shadow-sm dark:shadow-card-dark border border-surface-200">
+            <div className="px-5 py-4 border-b border-surface-200">
               <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
-                <i className="bx bx-shield text-primary-600"></i>
+                <i className="bx bx-shield text-primary-600 dark:text-primary-400"></i>
                 {t('merchant.securityTips', { defaultValue: 'Security Best Practices' })}
               </h6>
             </div>
@@ -570,7 +575,7 @@ export default function MerchantPage() {
               ].map(({ icon, color, text }, i) => {
                 const c = tileColors[color] || tileColors.primary
                 return (
-                  <div key={i} className={`flex items-start gap-3 py-2.5 ${i < 3 ?'border-b border-surface-50' : ''}`}>
+                  <div key={i} className={`flex items-start gap-3 py-2.5 ${i < 3 ?'border-b border-surface-200' : ''}`}>
                     <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${c.bg} shrink-0`}>
                       <i className={`bx ${icon} text-sm ${c.icon}`}></i>
                     </span>

@@ -2,16 +2,18 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { listWallets, deleteWallet } from '@/lib/api/wallets'
-import { listCoins } from '@/lib/api/coins'
+import { useCoins } from '@/hooks/useCoins'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import ConfirmModal from '@/components/ConfirmModal'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
 import RefreshButton from '@/components/RefreshButton'
 import CardEmptyState from '@/components/CardEmptyState'
+import { Card, Button, Spinner } from '@/components/ui'
 
 function ActionMenu({ wallet, onEdit, onDelete }) {
   const [open, setOpen] = useState(false)
@@ -29,17 +31,18 @@ function ActionMenu({ wallet, onEdit, onDelete }) {
   return (
     <div className="relative" ref={ref}>
       <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center justify-center w-8 h-8 rounded-md text-surface-400 hover:bg-surface-100 hover:text-surface-600 transition-colors cursor-pointer"
+        className="inline-flex items-center justify-center w-8 h-8 rounded-md text-surface-400 hover:bg-surface-100 dark:hover:bg-white/6 hover:text-surface-600 transition-colors cursor-pointer"
       >
         <i className="bx bx-dots-vertical-rounded text-lg"></i>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 min-w-[140px] py-1 bg-white rounded-lg shadow-lg border border-surface-100">
-          <button onClick={() => { onEdit(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors cursor-pointer">
+        <div className="absolute right-0 top-full mt-1 z-50 min-w-[140px] py-1 bg-raised rounded-lg shadow-lg border border-surface-200">
+          <button type="button" onClick={() => { onEdit(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer">
             <i className="bx bx-edit text-base"></i>Edit
           </button>
-          <button onClick={() => { onDelete(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 hover:bg-danger-50 transition-colors cursor-pointer">
+          <button type="button" onClick={() => { onDelete(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 dark:text-red-400 hover:bg-danger-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer">
             <i className="bx bx-trash text-base"></i>Delete
           </button>
         </div>
@@ -52,33 +55,30 @@ export default function WalletsPage() {
   const { t } = useTranslation()
   const { token } = useAuth()
   const toast = useToast()
+  const router = useRouter()
   const { fmtDate } = useDateFormat()
 
   const [wallets, setWallets] = useState([])
-  const [coins, setCoins] = useState([])
+  const { coins } = useCoins()
   const [loading, setLoading] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true)
-      const [walletList, coinList] = await Promise.all([
-        listWallets(token),
-        listCoins(token),
-      ])
+      const walletList = await listWallets(token)
       setWallets(walletList || [])
-      setCoins(coinList || [])
     } catch (err) {
       toast.error(t('wallets.loadError', { defaultValue: 'Failed to load wallets' }))
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, toast, t])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   async function handleDelete() {
     if (!deleteTarget) return
@@ -111,11 +111,11 @@ export default function WalletsPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-surface-100">
+      <Card>
         <div className="p-5">
           {loading ? (
             <div className="flex justify-center py-10">
-              <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+              <Spinner size="lg" />
             </div>
           ) : wallets.length === 0 ? (
             <CardEmptyState
@@ -134,7 +134,7 @@ export default function WalletsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-surface-100">
+                  <tr className="border-b border-surface-200">
                     <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.label', { defaultValue: 'Label' })}</th>
                     <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.coin', { defaultValue: 'Coin' })}</th>
                     <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider pb-3 pr-4">{t('wallets.address', { defaultValue: 'Address' })}</th>
@@ -145,7 +145,7 @@ export default function WalletsPage() {
                 </thead>
                 <tbody className="divide-y divide-surface-50">
                   {wallets.map((w) => (
-                    <tr key={w.id} className="hover:bg-surface-50/50 transition-colors">
+                    <tr key={w.id} className="hover:bg-surface-50/50 dark:hover:bg-white/4 transition-colors">
                       <td className="py-3 pr-4 font-medium text-sm text-surface-800">{w.label || '-'}</td>
                       <td className="py-3 pr-4">
                         <div className="flex items-center gap-1.5">
@@ -168,7 +168,7 @@ export default function WalletsPage() {
                       <td className="py-3">
                         <ActionMenu
                           wallet={w}
-                          onEdit={() => window.location.href = `/wallets/${w.id}/edit`}
+                          onEdit={() => router.push(`/wallets/${w.id}/edit`)}
                           onDelete={() => setDeleteTarget(w)}
                         />
                       </td>
@@ -179,7 +179,7 @@ export default function WalletsPage() {
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {deleteTarget && (
         <ConfirmModal

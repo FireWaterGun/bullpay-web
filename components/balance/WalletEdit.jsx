@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
 import { getWallet, updateWallet, deleteWallet } from '@/lib/api/wallets';
 import ConfirmModal from '@/components/ConfirmModal';
-import { Button, Card, Input, Label, Spinner } from '../ui'
+import { Button, Card, Input, Label, Spinner } from '@/components/ui'
 
 export default function WalletEdit() {
   const params = useParams();
@@ -28,11 +28,8 @@ export default function WalletEdit() {
     memo: ''
   });
 
-  useEffect(() => {
-    if (token && walletId) loadWallet();
-  }, [token, walletId]);
-
-  async function loadWallet() {
+  const loadWallet = useCallback(async () => {
+    if (!token || !walletId) return;
     try {
       setLoading(true);
       const data = await getWallet(walletId, token);
@@ -49,7 +46,11 @@ export default function WalletEdit() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, walletId, toast, t]);
+
+  useEffect(() => {
+    loadWallet();
+  }, [loadWallet]);
 
   async function handleSave(e) {
     e.preventDefault();
@@ -96,13 +97,13 @@ export default function WalletEdit() {
   }
 
   if (!wallet) {
-    return <div className="rounded-lg bg-red-50 text-red-700 p-4">{t('wallets.notFound', { defaultValue: 'Wallet not found' })}</div>;
+    return <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 p-4">{t('wallets.notFound', { defaultValue: 'Wallet not found' })}</div>;
   }
 
   return (
     <div>
       <div className="flex items-center mb-4">
-        <button className="text-surface-500 hover:text-surface-700 mr-2" onClick={() => router.back()}>
+        <button type="button" className="text-surface-500 hover:text-surface-700 mr-2" onClick={() => router.back()}>
           <i className="bx bx-arrow-back text-xl"></i>
         </button>
         <h4 className="font-bold mb-0">{t('wallets.editTitle', { defaultValue: 'Edit Withdrawal Address' })}</h4>

@@ -1,23 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getSweepById } from '@/lib/api/admin';
-import { AmountNormalizer } from '@/lib/utils/amount_normalizer';
-import { formatUsd } from '@/lib/utils/format';
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getSweepById } from '@/lib/api/admin'
+import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
+import { formatUsd } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import SweepMetadataCard from '@/components/admin/SweepMetadataCard';
 import SweepTransactionCard, { SweepTimestampsCard } from '@/components/admin/SweepTransactionCard';
-import { logger } from '@/lib/utils/logger';
+import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card, badgeBase } from '../../../../../components/ui'
+import { Badge, Button, Card } from '@/components/ui'
+import Table from '@/components/ui/Table'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function SweepDetail() {
-  const { t } = useAdminTranslation();
+  const { t } = useAdminTranslation()
   const { token } = useAuth();
   const toast = useToast();
   const router = useRouter();
@@ -25,11 +27,7 @@ export default function SweepDetail() {
   const [loading, setLoading] = useState(true);
   const [sweep, setSweep] = useState(null);
 
-  useEffect(() => {
-    loadSweep();
-  }, [id]);
-
-  async function loadSweep() {
+  const loadSweep = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getSweepById(token, parseInt(id));
@@ -40,7 +38,11 @@ export default function SweepDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t])
+
+  useEffect(() => {
+    loadSweep();
+  }, [loadSweep]);
 
   function formatAmount(amountRaw, decimals, coinSymbol, networkSymbol) {
     if (!amountRaw || !decimals) return '0';
@@ -51,16 +53,6 @@ export default function SweepDetail() {
       const amount = Number(amountRaw) / Math.pow(10, decimals);
       return amount.toString();
     }
-  }
-
-  function statusBadgeClass(s) {
-    const v = String(s || '').toUpperCase();
-    if (v === 'PENDING') return `${badgeBase} bg-amber-50 text-amber-700`;
-    if (v === 'PROCESSING' || v === 'APPROVED') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-    if (v === 'COMPLETED' || v === 'SUCCESS') return `${badgeBase} bg-green-50 text-green-700`;
-    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return `${badgeBase} bg-red-50 text-red-700`;
-    if (v === 'CANCELLED' || v === 'CANCELED') return `${badgeBase} bg-surface-100 text-surface-600`;
-    return `${badgeBase} bg-surface-100 text-surface-600`;
   }
 
   async function handleCopy(text) {
@@ -77,7 +69,7 @@ export default function SweepDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-muted mt-2">Sweep transaction not found</p>
+          <p className="text-surface-500 mt-2">Sweep transaction not found</p>
           <Button onClick={() => router.back()}>
             {t('actions.back', { defaultValue: 'Back' })}
           </Button>
@@ -126,7 +118,7 @@ export default function SweepDetail() {
                       Sweep Transaction #{sweep.id}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={statusBadgeClass(sweep.status)}>
+                      <span className={getStatusBadgeClass(sweep.status, 'sweep')}>
                         {String(sweep.status || '').toUpperCase()}
                       </span>
                       {metadata.type &&
@@ -153,7 +145,7 @@ export default function SweepDetail() {
                     <span className="text-[0.75em] font-normal">{coinSymbol}</span>
                   </div>
                   {sweep.amountUsd &&
-                  <div className="text-muted">
+                  <div className="text-surface-500">
                       {formatUsd(sweep.amountUsd)}
                     </div>
                   }
@@ -172,31 +164,30 @@ export default function SweepDetail() {
                   </h5>
                 </div>
                 <div className="p-5">
-                  <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <Table>
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="font-medium">{sweep.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td>{sweep.userId || 'N/A'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}</td>
                         <td>{sweep.coinNetworkId || 'N/A'}</td>
                       </tr>
                       {coinSymbol &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                           <td>
                             <div className="flex items-center">
                               <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-3" />
                               <div>
                                 <span className="font-medium">{coinSymbol}</span>
                                 {networkName &&
-                                <small className="text-muted ml-1">/ {networkName}</small>
+                                <small className="text-surface-500 ml-1">/ {networkName}</small>
                                 }
                               </div>
                             </div>
@@ -204,11 +195,11 @@ export default function SweepDetail() {
                         </tr>
                         }
                       <tr>
-                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
-                        <td><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
+                        <td className="text-surface-500">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
+                        <td><span className={getStatusBadgeClass(sweep.status, 'sweep')}>{String(sweep.status || '').toUpperCase()}</span></td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td>
                           <span className="font-bold">
                             {sweep.amount || formatAmount(sweep.amountRaw, sweep.decimals, coinSymbol, networkSymbol)}
@@ -217,48 +208,47 @@ export default function SweepDetail() {
                       </tr>
                       {sweep.actualAmount &&
                         <tr>
-                          <td className="text-muted">Actual Amount</td>
+                          <td className="text-surface-500">Actual Amount</td>
                           <td><span className="font-medium">{sweep.actualAmount}</span></td>
                         </tr>
                         }
                       <tr>
-                        <td className="text-muted">Amount (Raw)</td>
+                        <td className="text-surface-500">Amount (Raw)</td>
                         <td><code className="text-[0.8rem]">{sweep.amountRaw || 'N/A'}</code></td>
                       </tr>
                       {sweep.amountUsd &&
                         <tr>
-                          <td className="text-muted">USD Value</td>
+                          <td className="text-surface-500">USD Value</td>
                           <td>{formatUsd(sweep.amountUsd)}</td>
                         </tr>
                         }
                       {sweep.usdRate &&
                         <tr>
-                          <td className="text-muted">USD Rate</td>
+                          <td className="text-surface-500">USD Rate</td>
                           <td>
                             {formatUsd(sweep.usdRate)}
-                            {sweep.rateSource && <small className="text-muted ml-1">({sweep.rateSource})</small>}
+                            {sweep.rateSource && <small className="text-surface-500 ml-1">({sweep.rateSource})</small>}
                           </td>
                         </tr>
                         }
                       <tr>
-                        <td className="text-muted">Decimals</td>
+                        <td className="text-surface-500">Decimals</td>
                         <td>{sweep.decimals ?? 'N/A'}</td>
                       </tr>
                       {sweep.reservationId &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
                           <td><code className="text-[0.8rem]">{sweep.reservationId}</code></td>
                         </tr>
                         }
                       {sweep.systemWalletId &&
                         <tr>
-                          <td className="text-muted">System Wallet ID</td>
+                          <td className="text-surface-500">System Wallet ID</td>
                           <td>{sweep.systemWalletId}</td>
                         </tr>
                         }
                     </tbody>
-                  </table>
-                  </div>
+                  </Table>
                 </div>
               </Card>
 

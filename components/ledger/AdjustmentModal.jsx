@@ -5,7 +5,7 @@ import { useAuth } from '@/app/providers';
 import { getSystemWalletStats, adjustSystemBalance } from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
 import { logger } from '@/lib/utils/logger';
-import { Alert, Badge, Button, Input, Label, Select, Spinner } from '../ui';
+import { Alert, Badge, Button, Input, InputGroup, InputAddon, Label, Select, Spinner } from '../ui';
 
 /**
  * AdjustmentModal — Manual system balance adjustment (XI/XO)
@@ -97,15 +97,15 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
   const disabled = submitting || loadingWallets;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => !disabled && onClose()}>
-      <div className="w-full max-w-lg mx-4 max-w-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="bg-white rounded-xl shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !disabled && onClose()}>
+      <div className="w-full max-w-2xl mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-card rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
             <h5 className="text-lg font-semibold text-surface-800">
               <i className="bx bx-transfer-alt mr-2"></i>
               {t('admin.adjustment.title', { defaultValue: 'Balance Adjustment (XI / XO)' })}
             </h5>
-            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={disabled}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={disabled}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-5">
             {/* Warning alert */}
@@ -127,10 +127,10 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
               {loadingWallets ?
               <div className="flex items-center gap-2 py-2">
                   <Spinner role="status" className="w-4 h-4 text-primary" />
-                  <span className="text-muted text-sm">{t('admin.adjustment.loadingWallets', { defaultValue: 'Loading wallets...' })}</span>
+                  <span className="text-surface-500 text-sm">{t('admin.adjustment.loadingWallets', { defaultValue: 'Loading wallets...' })}</span>
                 </div> :
               wallets.length === 0 ?
-              <div className="text-muted text-sm py-2">
+              <div className="text-surface-500 text-sm py-2">
                   {t('admin.adjustment.noWallets', { defaultValue: 'No wallets found with balance' })}
                 </div> :
 
@@ -150,7 +150,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
               {selectedWallet &&
               <div className="flex items-center gap-2 mt-2">
                   <CoinImg symbol={selectedWallet.coinSymbol} networkSymbol={selectedWallet.networkSymbol} size={20} />
-                  <small className="text-muted">
+                  <small className="text-surface-500">
                     {selectedWallet.coinSymbol} on {selectedWallet.networkName}
                     {' · '}
                     <Badge className="bg-surface-100 text-surface-600">{selectedWallet.purpose}</Badge>
@@ -205,7 +205,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
               <Label>
                 {t('admin.adjustment.amount', { defaultValue: 'Amount' })} <span className="text-danger">*</span>
               </Label>
-              <div className="flex items-stretch">
+              <InputGroup>
                 <Input
                   type="text"
 
@@ -217,9 +217,9 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                   autoFocus />
                 
                 {selectedWallet &&
-                <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg">{selectedWallet.coinSymbol}</span>
+                <InputAddon>{selectedWallet.coinSymbol}</InputAddon>
                 }
-              </div>
+              </InputGroup>
               {amountTrimmed && !isValidAmount &&
               <small className="text-danger">
                   {t('admin.adjustment.invalidAmount', { defaultValue: 'Enter a valid positive number (e.g. 1.5, 100)' })}
@@ -241,7 +241,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                 maxLength={500}
                 disabled={disabled} />
               
-              <small className={`${reasonTrimmed.length > 0 && reasonTrimmed.length < 10 ? 'text-danger' : 'text-muted'}`}>
+              <small className={`${reasonTrimmed.length > 0 && reasonTrimmed.length < 10 ? 'text-danger' : 'text-surface-500'}`}>
                 {reasonTrimmed.length}/500
                 {reasonTrimmed.length > 0 && reasonTrimmed.length < 10 &&
                 <> — {t('admin.adjustment.reasonTooShort', { defaultValue: 'Minimum 10 characters' })}</>
@@ -252,7 +252,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
             {/* Tx Hash (optional) */}
             <div className="mb-3">
               <Label>
-                {t('admin.adjustment.txHash', { defaultValue: 'Tx Hash' })} <span className="text-muted text-sm">({t('admin.adjustment.optional', { defaultValue: 'optional' })})</span>
+                {t('admin.adjustment.txHash', { defaultValue: 'Tx Hash' })} <span className="text-surface-500 text-sm">({t('admin.adjustment.optional', { defaultValue: 'optional' })})</span>
               </Label>
               <Input
                 type="text"

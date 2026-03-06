@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import ConfirmModal from '@/components/ConfirmModal';
 import { copyToClipboard } from '@/lib/utils/clipboard';
-import { Button } from '../ui'
+import { Button } from '@/components/ui'
 
 export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address, networkName, t }) {
   const [copied, setCopied] = useState(false);
@@ -20,8 +20,8 @@ export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-2xl shadow-xl mx-4 max-w-[min(600px, calc(100vw - 2rem))]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div className="bg-card rounded-xl shadow-xl mx-4 max-w-[min(600px,calc(100vw-2rem))]" onClick={(e) => e.stopPropagation()}>
         <div className="text-center px-6 py-8">
           <div className="my-4">
             <div className="rounded-full inline-flex items-center justify-center w-[80px] bg-green-500"
@@ -36,7 +36,7 @@ export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address
             <div className="text-surface-500 text-[0.9rem]">
               {t('balance.recipientAmount', { defaultValue: 'Recipient Amount' })}
             </div>
-            <div className="font-bold text-3xl">
+            <div className="font-bold text-3xl text-surface-900">
               {receiveAmount}
             </div>
           </div>

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
 import { verifyWalletAddress } from '@/lib/api/wallets';
-import { Card, Spinner, Button } from '../ui';
+import { Card, Spinner, Button } from '@/components/ui';
 
 export default function WalletVerify() {
   return <Suspense><WalletVerifyContent /></Suspense>;
@@ -24,14 +24,7 @@ function WalletVerifyContent() {
   const [error, setError] = useState(null);
   const calledRef = useRef(false);
 
-  useEffect(() => {
-    if (verifyToken && !calledRef.current) {
-      calledRef.current = true;
-      handleVerify();
-    }
-  }, [verifyToken]);
-
-  async function handleVerify() {
+  const handleVerify = useCallback(async () => {
     try {
       setLoading(true);
       await verifyWalletAddress({ token: verifyToken }, token);
@@ -42,7 +35,14 @@ function WalletVerifyContent() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [verifyToken, token, toast, t]);
+
+  useEffect(() => {
+    if (verifyToken && !calledRef.current) {
+      calledRef.current = true;
+      handleVerify();
+    }
+  }, [verifyToken, handleVerify]);
 
   return (
     <div>

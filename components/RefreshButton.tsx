@@ -6,9 +6,10 @@ import { buttonClass } from './ui'
 
 // Inject styles once globally
 const STYLE_ID = 'refresh-btn-styles'
+let refreshStylesInjected = false
 function ensureStyles() {
   if (typeof document === 'undefined') return
-  if (document.getElementById(STYLE_ID)) return
+  if (refreshStylesInjected) return
   const style = document.createElement('style')
   style.id = STYLE_ID
   style.textContent = [
@@ -16,6 +17,7 @@ function ensureStyles() {
     '@keyframes topbar-glow { 0%,100% { box-shadow: 0 0 8px var(--color-primary-600, #2563eb), 0 0 4px var(--color-primary-600, #2563eb); } 50% { box-shadow: 0 0 16px var(--color-primary-600, #2563eb), 0 0 8px var(--color-primary-600, #2563eb); } }',
   ].join('\n')
   document.head.appendChild(style)
+  refreshStylesInjected = true
 }
 
 /* ── Global progress bar singleton ──────────────────────────── */

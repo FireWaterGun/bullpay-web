@@ -8,7 +8,10 @@
     "start": "next start -p 3335",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "check:security": "node scripts/check-nextjs.mjs"
+    "check:security": "node scripts/check-nextjs.mjs",
+    "ui:lint": "node scripts/ui-lint.mjs",
+    "ui:lint:verbose": "node scripts/ui-lint.mjs --verbose --fix-hint",
+    "verify": "npm run typecheck && npm run lint && npm run ui:lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -24,6 +27,7 @@
     "react-hook-form": "^7.62.0",
     "react-i18next": "^15.6.1",
     "react-turnstile": "^1.1.5",
+    "swr": "^2.4.1",
     "zod": "^4.0.15"
   },
   "devDependencies": {

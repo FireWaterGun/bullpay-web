@@ -5,6 +5,7 @@ import { formatUsd } from '@/lib/utils/format';
 import RefreshButton from '@/components/RefreshButton';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { Badge, Button, Card } from '../ui'
+import Table from '../ui/Table'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0';
@@ -25,7 +26,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               <i className="bx bx-wallet mr-2"></i>
               {wallet?.walletName || t('admin.ledger.title', { defaultValue: 'Wallet Transactions' })}
             </h4>
-            <p className="text-muted mb-0">
+            <p className="text-surface-500 mb-0">
               {wallet?.networkName || ''} &middot; {wallet?.purpose || ''} &middot; {wallet?.walletType || ''}
             </p>
           </div>
@@ -36,19 +37,19 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
         {wallet &&
         <div className="grid grid-cols-12 gap-x-6 gap-3 mb-3">
             <div className="md:col-span-4">
-              <small className="text-muted block mb-1">
+              <small className="text-surface-500 block mb-1">
                 <i className="bx bx-id-card mr-1"></i>Wallet ID
               </small>
               <span className="font-semibold">{wallet.id}</span>
             </div>
             <div className="md:col-span-4">
-              <small className="text-muted block mb-1">
+              <small className="text-surface-500 block mb-1">
                 <i className="bx bx-category mr-1"></i>Purpose
               </small>
               <Badge className="bg-cyan-50 text-cyan-700 capitalize">{wallet.purpose || 'N/A'}</Badge>
             </div>
             <div className="md:col-span-4">
-              <small className="text-muted block mb-1">
+              <small className="text-surface-500 block mb-1">
                 <i className="bx bx-chip mr-1"></i>Type
               </small>
               {wallet.walletType === 'hot' ?
@@ -62,7 +63,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
             }
             </div>
             <div className="col-span-12">
-              <small className="text-muted block mb-1">
+              <small className="text-surface-500 block mb-1">
                 <i className="bx bx-wallet mr-1"></i>Address
               </small>
               <div className="flex items-center gap-2">
@@ -81,7 +82,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               </div>
             </div>
             <div className="md:col-span-4">
-              <small className="text-muted block mb-1">
+              <small className="text-surface-500 block mb-1">
                 <i className="bx bx-check-circle mr-1"></i>Status
               </small>
               {wallet.status === 'active' ?
@@ -101,7 +102,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               Assets ({assets.length})
             </h6>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <Table responsive={false} className="text-sm">
                 <thead>
                   <tr className="whitespace-nowrap">
                     <th>{t('admin.detail.coin', { defaultValue: 'Coin' })}</th>
@@ -120,10 +121,10 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                         </div>
                       </td>
                       <td>
-                        <span className="text-muted">{asset.networkName || asset.networkSymbol || '-'}</span>
+                        <span className="text-surface-500">{asset.networkName || asset.networkSymbol || '-'}</span>
                       </td>
                       <td className="text-right whitespace-nowrap">
-                        {formatAmount(asset.balance)} <span className="text-muted">{asset.coinSymbol}</span>
+                        {formatAmount(asset.balance)} <span className="text-surface-500">{asset.coinSymbol}</span>
                       </td>
                       <td className="text-right whitespace-nowrap">
                         {asset.fiatValue ? formatUsd(asset.fiatValue.amount) : '-'}
@@ -131,7 +132,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                     </tr>
                 )}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </>
         }

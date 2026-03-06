@@ -21,7 +21,7 @@ const STEPS = [
 export default function HowItWorksSection() {
   return (
     <section className="py-6">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
         <div className="py-10 px-6 rounded-2xl sm:py-12 sm:px-8 sm:rounded-[20px] lg:py-20 lg:px-16 lg:rounded-3xl bg-blue-100">
           <div className="text-center mb-5">
             <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-surface-900 tracking-[-0.025em] leading-[1.15] mb-3">Three steps to get paid</h2>

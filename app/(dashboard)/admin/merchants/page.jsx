@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
 import { useAuth, useToast } from '@/app/providers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
@@ -12,7 +12,10 @@ import MerchantConfirmModal from '@/components/admin/MerchantConfirmModal';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card, Label, Select, Spinner } from '../../../../components/ui'
+import { Badge, Button, Card, Label, Select, Spinner } from '@/components/ui'
+import ActionMenu from '@/components/ui/ActionMenu'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 export default function AdminMerchantsPage() {
   const { fmtDate } = useDateFormat();
@@ -37,7 +40,22 @@ export default function AdminMerchantsPage() {
   const [selectedMerchant, setSelectedMerchant] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
 
-  useEffect(() => {loadMerchants();}, [currentPage, appliedStatus]);
+  const loadMerchants = useCallback(async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const data = await getMerchants(token, { page: currentPage, limit: 20, status: appliedStatus || undefined });
+      setMerchants(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load merchants:', error);
+      toast.error(t('admin.merchants.loadError', { defaultValue: 'Failed to load merchants' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedStatus, toast, t]);
+
+  useEffect(() => {loadMerchants();}, [loadMerchants]);
 
   function syncSearchParams(status, page) {
     const params = new URLSearchParams();
@@ -57,21 +75,6 @@ export default function AdminMerchantsPage() {
     setAppliedStatus('');
     setCurrentPage(1);
     syncSearchParams('', 1);
-  }
-
-  async function loadMerchants() {
-    if (!token) return;
-    try {
-      setLoading(true);
-      const data = await getMerchants(token, { page: currentPage, limit: 20, status: appliedStatus || undefined });
-      setMerchants(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load merchants:', error);
-      toast.error(t('admin.merchants.loadError', { defaultValue: 'Failed to load merchants' }));
-    } finally {
-      setLoading(false);
-    }
   }
 
   function openModal(action, merchant) {setModalAction(action);setSelectedMerchant(merchant);setShowModal(true);}
@@ -103,7 +106,7 @@ export default function AdminMerchantsPage() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <Spinner role="status" className="text-primary" />
-          <p className="mt-3 text-muted">{t('invoices.loading', { defaultValue: 'Loading...' })}</p>
+          <p className="mt-3 text-surface-500">{t('invoices.loading', { defaultValue: 'Loading...' })}</p>
         </div>
       </div>);
 
@@ -118,7 +121,7 @@ export default function AdminMerchantsPage() {
               <div className="flex justify-between items-center flex-wrap gap-2">
                 <div>
                   <h4 className="mb-1"><i className="bx bx-store mr-2"></i>{t('admin.merchants.title', { defaultValue: 'Merchants' })}</h4>
-                  <p className="text-muted mb-0">{t('admin.merchants.description', { defaultValue: 'Manage merchant accounts and status' })}</p>
+                  <p className="text-surface-500 mb-0">{t('admin.merchants.description', { defaultValue: 'Manage merchant accounts and status' })}</p>
                 </div>
                 <RefreshButton onClick={loadMerchants} loading={loading} />
               </div>
@@ -145,8 +148,7 @@ export default function AdminMerchantsPage() {
 
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -178,13 +180,13 @@ export default function AdminMerchantsPage() {
                             <td>
                               <div>
                                 <span className="font-medium">{merchant.name || '-'}</span>
-                                {merchant.description && <small className="block text-muted truncate max-w-[250px]" title={merchant.description}>{merchant.description}</small>}
+                                {merchant.description && <small className="block text-surface-500 truncate max-w-[250px]" title={merchant.description}>{merchant.description}</small>}
                               </div>
                             </td>
                             <td>
                               <div>
                                 <span>{merchant.email || '-'}</span>
-                                {merchant.websiteUrl && <small className="block"><a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-muted">{merchant.websiteUrl}</a></small>}
+                                {merchant.websiteUrl && <small className="block"><a href={merchant.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-surface-500">{merchant.websiteUrl}</a></small>}
                               </div>
                             </td>
                             <td className="text-center whitespace-nowrap"><span className={statusBadgeClass(merchant.status)}>{String(merchant.status || '').toUpperCase()}</span></td>
@@ -194,35 +196,20 @@ export default function AdminMerchantsPage() {
                             </td>
                             <td className="whitespace-nowrap text-[0.85rem]">{fmtDate(merchant.createdAt)}</td>
                             <td className="text-center">
-                              <div className="dropdown">
-                                <Button size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full cursor-pointer hide-arrow"><i className="bx bx-dots-vertical-rounded"></i></Button>
-                                <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 right-0">
-                                  {canActivate && <li><button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => openModal('activate', merchant)}><i className="bx bx-check-circle mr-2 text-primary"></i>{t('admin.merchants.activate', { defaultValue: 'Activate' })}</button></li>}
-                                  {canSuspend && <li><button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => openModal('suspend', merchant)}><i className="bx bx-block mr-2 text-danger"></i>{t('admin.merchants.suspend', { defaultValue: 'Suspend' })}</button></li>}
-                                  {!canActivate && !canSuspend && <li><span className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer text-muted">{t('admin.merchants.noActions', { defaultValue: 'No actions available' })}</span></li>}
-                                </ul>
-                              </div>
+                              <ActionMenu>
+                                {canActivate && <ActionMenu.Item icon="bx-check-circle" onClick={() => openModal('activate', merchant)}>{t('admin.merchants.activate', { defaultValue: 'Activate' })}</ActionMenu.Item>}
+                                {canSuspend && <ActionMenu.Item icon="bx-block" danger onClick={() => openModal('suspend', merchant)}>{t('admin.merchants.suspend', { defaultValue: 'Suspend' })}</ActionMenu.Item>}
+                                {!canActivate && !canSuspend && <ActionMenu.Item disabled>{t('admin.merchants.noActions', { defaultValue: 'No actions available' })}</ActionMenu.Item>}
+                              </ActionMenu>
                             </td>
                           </tr>);
 
                     })
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', { start: (pagination.page - 1) * pagination.limit + 1, end: Math.min(pagination.page * pagination.limit, pagination.total), total: pagination.total, defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries' })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button disabled={!pagination.hasPrev || loading} onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedStatus, currentPage - 1);}} variant="outline-secondary" size="sm"><i className="bx bx-chevron-left"></i> {t('actions.prev', { defaultValue: 'Previous' })}</Button>
-                    <Button disabled variant="outline-secondary" size="sm">{pagination.page} / {pagination.totalPages}</Button>
-                    <Button disabled={!pagination.hasNext || loading} onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedStatus, currentPage + 1);}} variant="outline-secondary" size="sm">{t('actions.next', { defaultValue: 'Next' })} <i className="bx bx-chevron-right"></i></Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
             </div>
           </Card>
         </div>

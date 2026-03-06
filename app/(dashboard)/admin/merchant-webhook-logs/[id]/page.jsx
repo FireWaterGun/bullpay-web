@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useAuth } from '@/app/providers';
@@ -11,7 +11,8 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Alert, Badge, bgLabelClass, Button, Card, Spinner } from '../../../../../components/ui';
+import { Alert, Badge, bgLabelClass, Button, Card, Spinner } from '@/components/ui'
+import Table from '@/components/ui/Table';
 
 const EVENT_OPTIONS = [
 { value: 'payment.completed', label: 'Completed' },
@@ -31,11 +32,7 @@ export default function MerchantWebhookLogDetail() {
   const [log, setLog] = useState(null);
   const [retrying, setRetrying] = useState(false);
 
-  useEffect(() => {
-    loadLog();
-  }, [id]);
-
-  async function loadLog() {
+  const loadLog = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getWebhookLog(token, id);
@@ -46,7 +43,11 @@ export default function MerchantWebhookLogDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t]);
+
+  useEffect(() => {
+    loadLog();
+  }, [loadLog]);
 
   async function handleRetry() {
     if (!log?.merchantPaymentId) return;
@@ -138,9 +139,9 @@ export default function MerchantWebhookLogDetail() {
                     <h4 className="mb-0">Webhook Log #{log.id}</h4>
                     <div className="flex items-center gap-2 mt-1">
                       {eventBadge(log.event)}
-                      <span className="text-muted">•</span>
+                      <span className="text-surface-500">•</span>
                       <span>{successText(log.success)}</span>
-                      <span className="text-muted">•</span>
+                      <span className="text-surface-500">•</span>
                       <span>HTTP {httpStatusText(log.httpStatus)}</span>
                     </div>
                   </div>
@@ -180,40 +181,40 @@ export default function MerchantWebhookLogDetail() {
                 </div>
                 <div className="p-5">
                   <div className="overflow-x-auto">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="font-medium">{log.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Merchant ID</td>
+                        <td className="text-surface-500">Merchant ID</td>
                         <td className="font-medium">{log.merchantId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Payment ID</td>
+                        <td className="text-surface-500">Payment ID</td>
                         <td className="font-medium">{log.merchantPaymentId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.event', { defaultValue: 'Event' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.event', { defaultValue: 'Event' })}</td>
                         <td>{eventBadge(log.event)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.callbackUrl', { defaultValue: 'Callback URL' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.callbackUrl', { defaultValue: 'Callback URL' })}</td>
                         <td>
                           {log.callbackUrl ?
-                            <code className="text-body text-[0.8rem] break-all">
+                            <code className="text-surface-800 text-[0.8rem] break-all">
                               {log.callbackUrl}
                             </code> :
                             '-'}
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{fmtDate(log.createdAt)}</td>
                       </tr>
                     </tbody>
-                  </table>
+                  </Table>
                   </div>
                 </div>
               </Card>
@@ -227,18 +228,18 @@ export default function MerchantWebhookLogDetail() {
                 </div>
                 <div className="p-5">
                   <div className="overflow-x-auto">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">HTTP Status</td>
+                        <td className="text-surface-500 w-2/5">HTTP Status</td>
                         <td>{httpStatusText(log.httpStatus)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.success', { defaultValue: 'Success' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.success', { defaultValue: 'Success' })}</td>
                         <td>{successText(log.success)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Duration</td>
+                        <td className="text-surface-500">Duration</td>
                         <td>
                           {log.durationMs != null ?
                             <span className={log.durationMs > 5000 ? 'text-danger font-medium' : ''}>
@@ -248,12 +249,12 @@ export default function MerchantWebhookLogDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Attempt</td>
+                        <td className="text-surface-500">Attempt</td>
                         <td>{log.attempt ?? '-'}</td>
                       </tr>
                       {log.errorMessage &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.error', { defaultValue: 'Error' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.error', { defaultValue: 'Error' })}</td>
                           <td>
                             <span className="text-danger break-words">
                               {log.errorMessage}
@@ -262,7 +263,7 @@ export default function MerchantWebhookLogDetail() {
                         </tr>
                         }
                     </tbody>
-                  </table>
+                  </Table>
                   </div>
                 </div>
               </Card>
@@ -280,7 +281,7 @@ export default function MerchantWebhookLogDetail() {
               </div>
               <div className="p-5">
                 <pre
-                className="bg-dark text-light p-3 rounded mb-0 text-[0.8rem] max-h-[400px] overflow-auto whitespace-pre-wrap break-words">
+                className="bg-surface-900 text-surface-100 p-3 rounded mb-0 text-[0.8rem] max-h-[400px] overflow-auto whitespace-pre-wrap break-words">
 
                 
                   {formatJson(log.requestPayload)}
@@ -300,7 +301,7 @@ export default function MerchantWebhookLogDetail() {
               </div>
               <div className="p-5">
                 <pre
-                className="bg-dark text-light p-3 rounded mb-0 text-[0.8rem] max-h-[400px] overflow-auto whitespace-pre-wrap break-words">
+                className="bg-surface-900 text-surface-100 p-3 rounded mb-0 text-[0.8rem] max-h-[400px] overflow-auto whitespace-pre-wrap break-words">
 
                 
                   {formatJson(log.responseBody)}

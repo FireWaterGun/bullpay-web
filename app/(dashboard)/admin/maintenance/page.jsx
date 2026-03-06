@@ -8,7 +8,8 @@ import { getSettingByKey, upsertSetting } from '@/lib/api/admin';
 import { getSystemStatus } from '@/lib/api/system';
 import { logger } from '@/lib/utils/logger';
 import ConfirmModal from '@/components/ConfirmModal';
-import { Alert, Badge, Button, Card, Input, Label, Spinner } from '../../../../components/ui';
+import { Alert, Badge, Button, Card, Input, Label, Spinner } from '@/components/ui'
+import Table from '@/components/ui/Table';
 
 const MAINTENANCE_KEYS = [
 'maintenance.level',
@@ -145,7 +146,7 @@ export default function AdminMaintenancePage() {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, t, toast]);
 
   // Load live status (public endpoint)
   const loadLiveStatus = useCallback(async () => {
@@ -266,7 +267,7 @@ export default function AdminMaintenancePage() {
             <i className="bx bx-wrench mr-2 text-warning"></i>
             {t('admin.maintenance.title', { defaultValue: 'Maintenance Mode' })}
           </h4>
-          <p className="text-muted mb-0">
+          <p className="text-surface-500 mb-0">
             {t('admin.maintenance.subtitle', { defaultValue: 'Control system availability for users and merchants' })}
           </p>
         </div>
@@ -291,7 +292,7 @@ export default function AdminMaintenancePage() {
         <div className="col-span-12 mb-4">
           <Card>
             <div className="px-5 py-4 border-b border-surface-200">
-              <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+              <h5 className="text-lg font-semibold text-surface-800 mb-0">
                 {t('admin.maintenance.quickToggle', { defaultValue: 'Quick Toggle' })}
               </h5>
             </div>
@@ -300,7 +301,7 @@ export default function AdminMaintenancePage() {
                 {levelOptions.map((opt) =>
                 <div key={opt.value} className="md:col-span-4">
                     <div
-                    className={`bg-white rounded-card shadow-card dark:bg-dark-paper dark:shadow-card-dark border ${level === opt.value ? `border-${opt.color} shadow-sm` : 'border-surface-200'}`}
+                    className={`bg-card rounded-card shadow-card dark:shadow-card-dark border ${level === opt.value ? `border-${opt.color} shadow-sm` : 'border-surface-200'}`}
                     style={{ cursor: level === opt.value ? 'default' : 'pointer', transition: 'all 0.2s', opacity: level === opt.value ? 0.7 : 1 }}
                     onClick={() => requestQuickToggle(opt.value)}>
                     
@@ -310,7 +311,7 @@ export default function AdminMaintenancePage() {
                           {opt.label}
                           {level === opt.value && <i className="bx bx-check ml-1"></i>}
                         </h6>
-                        <small className="text-muted">{opt.description}</small>
+                        <small className="text-surface-500">{opt.description}</small>
                       </div>
                     </div>
                   </div>
@@ -324,7 +325,7 @@ export default function AdminMaintenancePage() {
         <div className="lg:col-span-8">
           <Card>
             <div className="px-5 py-4 border-b border-surface-200 flex items-center justify-between">
-              <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+              <h5 className="text-lg font-semibold text-surface-800 mb-0">
                 {t('admin.maintenance.configuration', { defaultValue: 'Configuration' })}
               </h5>
               <Badge color={currentLevelInfo.color} label>
@@ -431,14 +432,14 @@ export default function AdminMaintenancePage() {
           {/* Level Explanation */}
           <Card className="mb-3">
             <div className="px-5 py-4 border-b border-surface-200">
-              <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+              <h6 className="text-lg font-semibold text-surface-800 mb-0">
                 <i className="bx bx-info-circle mr-1"></i>
                 {t('admin.maintenance.levelInfo', { defaultValue: 'Maintenance Levels' })}
               </h6>
             </div>
-            <div className="p-5 p-0">
+            <div className="p-0">
               <div className="overflow-x-auto">
-              <table className="w-full text-sm mb-0">
+              <Table responsive={false} className="text-sm mb-0">
                 <thead>
                   <tr>
                     <th>{t('admin.maintenance.component', { defaultValue: 'Component' })}</th>
@@ -485,7 +486,7 @@ export default function AdminMaintenancePage() {
                     <td className="text-center"><i className="bx bx-check text-success"></i></td>
                   </tr>
                 </tbody>
-              </table>
+              </Table>
               </div>
             </div>
           </Card>
@@ -493,13 +494,13 @@ export default function AdminMaintenancePage() {
           {/* Tips */}
           <Card>
             <div className="px-5 py-4 border-b border-surface-200">
-              <h6 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+              <h6 className="text-lg font-semibold text-surface-800 mb-0">
                 <i className="bx bx-bulb mr-1"></i>
                 {t('admin.maintenance.tips', { defaultValue: 'Tips' })}
               </h6>
             </div>
             <div className="p-5">
-              <ul className="list-none mb-0 text-sm text-muted">
+              <ul className="list-none mb-0 text-sm text-surface-500">
                 <li className="mb-2">
                   <i className="bx bx-right-arrow-alt mr-1"></i>
                   {t('admin.maintenance.tip1', { defaultValue: 'Use Partial for UI/frontend updates — merchants can still check payment status.' })}

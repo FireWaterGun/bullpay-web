@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { disable2FA } from "@/lib/api/twoFactor";
-import { Button, Input, InputGroup, InputIcon, Spinner } from './ui'
+import { Button, Input, InputGroup, InputIcon, Spinner } from '@/components/ui'
 
 export { Setup2FAModal } from "./Setup2FAModal";
 
@@ -58,13 +58,13 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl mx-4 w-full max-w-[460px]">
+      <div className="bg-card rounded-xl shadow-xl mx-4 w-full max-w-[460px]">
           <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
             <h5 className="font-semibold">{t("settings.2fa.disableTitle", { defaultValue: "Disable 2FA" })}</h5>
-            <button type="button" className="text-surface-400 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}>&times;</button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-6">
-            <div className="rounded-lg bg-amber-50 text-amber-700 p-3 flex items-start mb-4">
+            <div className="rounded-lg bg-amber-50 dark:bg-warning-500/10 text-amber-700 dark:text-[#fcd34d] p-3 flex items-start mb-4">
               <i className="bx bx-error-circle text-lg mr-2"></i>
               <span>
                 {t("settings.2fa.disableWarning", {
@@ -108,7 +108,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
               maxLength={20}
               autoComplete="one-time-code" className="text-lg" />
             
-              {error && <div className="text-red-500 mt-2">{error}</div>}
+              {error && <div className="text-red-500 dark:text-red-400 mt-2">{error}</div>}
             </div>
           </div>
           <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">

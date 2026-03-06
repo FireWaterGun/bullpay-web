@@ -30,7 +30,7 @@ export function MenuItem({
   badge?: number
 }) {
   const pathname = usePathname()
-  const isActive = end ? pathname === to : pathname === to || pathname.startsWith(to + '/')
+  const isActive = end ? pathname === to : pathname === to || pathname.startsWith(`${to  }/`)
 
   return (
     <li className={isActive ? 'bp-active-item' : ''}>
@@ -68,7 +68,7 @@ export function SubItem({
 }) {
   const pathname = usePathname()
   const isActive =
-    !external && (end ? pathname === to : pathname === to || pathname.startsWith(to + '/'))
+    !external && (end ? pathname === to : pathname === to || pathname.startsWith(`${to  }/`))
 
   if (external) {
     return (
@@ -131,10 +131,10 @@ export function SubMenuGroup({
 
   useEffect(() => {
     if (match) {
-      setOpen(true)
+      queueMicrotask(() => setOpen(true))
       userToggled.current = false
     } else if (!userToggled.current) {
-      setOpen(false)
+      queueMicrotask(() => setOpen(false))
     }
   }, [match])
 
@@ -183,8 +183,7 @@ export function MenuGroup({
   const liRef = useRef<HTMLLIElement>(null)
 
   const getIsCollapsed = useCallback(() => {
-    if (typeof document === 'undefined') return false
-    const sidebar = document.querySelector('.bp-sidebar')
+    const sidebar = liRef.current?.closest('.bp-sidebar')
     return sidebar?.classList.contains('bp-collapsed') ?? false
   }, [])
 
@@ -197,10 +196,10 @@ export function MenuGroup({
 
   useEffect(() => {
     if (isMatched) {
-      setOpen(true)
+      queueMicrotask(() => setOpen(true))
       userToggled.current = false
     } else if (!userToggled.current && !getIsCollapsed()) {
-      setOpen(false)
+      queueMicrotask(() => setOpen(false))
     }
   }, [isMatched, getIsCollapsed])
 

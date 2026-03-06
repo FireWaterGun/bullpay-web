@@ -10,6 +10,7 @@ import { Spinner } from '../../components/ui'
 const CHANNEL = 'system-maintenance';
 const EVENT = 'maintenance-status-changed';
 const POLL_INTERVAL = 30; // seconds
+let maintenanceKeyframesInjected = false;
 
 /**
  * Maintenance Mode Page
@@ -236,12 +237,12 @@ export default function MaintenancePage() {
   // Inject keyframes once
   useEffect(() => {
     if (typeof document === 'undefined') return;
-    const id = 'maintenance-keyframes';
-    if (!document.getElementById(id)) {
+    if (!maintenanceKeyframesInjected) {
       const style = document.createElement('style');
-      style.id = id;
+      style.id = 'maintenance-keyframes';
       style.textContent = KEYFRAMES;
       document.head.appendChild(style);
+      maintenanceKeyframesInjected = true;
     }
   }, []);
 
@@ -420,6 +421,7 @@ export default function MaintenancePage() {
           </p>
 
           <button
+            type="button"
             style={{
               ...styles.checkButton,
               ...(btnHover ? styles.checkButtonHover : {}),

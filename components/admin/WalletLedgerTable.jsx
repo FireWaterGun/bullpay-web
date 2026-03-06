@@ -6,7 +6,8 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import CoinImg from '@/components/CoinImg';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Badge, Spinner, Button } from '../ui';
+import { Badge, Spinner, Button } from '../ui'
+import Table from '../ui/Table';
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0';
@@ -58,8 +59,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
   }
 
   return (
-    <div className="overflow-x-auto overflow-x-auto">
-      <table className="w-full min-w-[1200px]">
+    <Table className="min-w-max">
         <thead>
           <tr className="whitespace-nowrap">
             <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -104,7 +104,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                     <div>
                       <div className="font-medium leading-[1.2]">{entry.coinSymbol || metadata?.coin || '-'}</div>
                       {(entry.networkName || metadata?.networkName) &&
-                      <small className="text-muted text-xs">{entry.networkName || metadata?.networkName}</small>
+                      <small className="text-surface-500 text-xs">{entry.networkName || metadata?.networkName}</small>
                       }
                     </div>
                   </div>
@@ -113,7 +113,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                   {entry.entryCode ?
                   <span className="font-medium">{entry.entryCode}</span> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                 </td>
                 <td>
@@ -121,7 +121,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                   entry.state === 'committed' ? <Badge className="bg-cyan-50 text-cyan-700">Committed</Badge> :
                   entry.state === 'pending' ? <Badge className="bg-amber-50 text-amber-700">{t('status.pending', { defaultValue: 'Pending' })}</Badge> :
                   entry.state === 'reversed' ? <Badge className="bg-surface-100 text-surface-600">Reversed</Badge> :
-                  <span className="text-muted">{entry.state || 'N/A'}</span>}
+                  <span className="text-surface-500">{entry.state || 'N/A'}</span>}
                 </td>
                 <td className="text-right whitespace-nowrap">
                   <span className={`font-medium ${isCredit ? 'text-danger' : 'text-success'}`}>
@@ -129,7 +129,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                   </span>
                 </td>
                 <td className="text-right whitespace-nowrap">
-                  <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
+                  <span className="text-surface-500">{formatUsd(entry.amountUsd)}</span>
                 </td>
                 <td>
                   <div>
@@ -140,10 +140,10 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                     <Badge>{metadata.invoiceNumber}</Badge>
                     }
                     {metadata?.sweepId && !metadata?.invoiceNumber &&
-                    <small className="text-muted">Sweep #{metadata.sweepId}</small>
+                    <small className="text-surface-500">Sweep #{metadata.sweepId}</small>
                     }
                     {!purposeLabel && !metadata?.invoiceNumber && !metadata?.sweepId &&
-                    <span className="text-muted">-</span>
+                    <span className="text-surface-500">-</span>
                     }
                   </div>
                 </td>
@@ -165,7 +165,7 @@ export default function WalletLedgerTable({ entries, loading, t }) {
                     }
                     </div> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                 </td>
                 <td>
@@ -175,7 +175,6 @@ export default function WalletLedgerTable({ entries, loading, t }) {
 
           })}
         </tbody>
-      </table>
-    </div>);
+      </Table>);
 
 }

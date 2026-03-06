@@ -49,7 +49,7 @@ export default function LandingPage() {
     <div className="overflow-x-hidden bg-[#f0f4f8] min-h-screen text-surface-900 antialiased">
       {/* ── Navbar ── */}
       <nav className="sticky top-0 z-50 bg-white/[0.82] backdrop-blur-[20px] backdrop-saturate-150 border-b border-[rgba(15,23,42,0.06)] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 w-full flex items-center justify-between h-16">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between h-16">
           {/* Logo */}
           <Link className="flex items-center no-underline shrink-0" href="/">
             <i className="bx bxs-wallet-alt text-3xl mr-2 text-primary-600"></i>
@@ -85,7 +85,7 @@ export default function LandingPage() {
         <div
           className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${navOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}
         >
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pb-5 pt-2 flex flex-col gap-1 border-t border-slate-200/60">
+          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 pb-5 pt-2 flex flex-col gap-1 border-t border-slate-200/60">
             <a className={navLinkMobile} href="#features" onClick={() => setNavOpen(false)}>Features</a>
             <a className={navLinkMobile} href="#currencies" onClick={() => setNavOpen(false)}>Currencies</a>
             <div className="h-px bg-slate-200/60 my-2"></div>
@@ -105,7 +105,7 @@ export default function LandingPage() {
 
       {/* ── Supported Cryptocurrencies ── */}
       <section id="currencies" className="py-6 pt-16 pb-16">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-5">
             <h2 className={`${sectionTitle} mb-3`}>9 coins, 30+ networks</h2>
             <p className={`${sectionSubtitle} mb-0`}>
@@ -129,14 +129,14 @@ export default function LandingPage() {
 
       {/* ── CTA ── */}
       <section className="py-6">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className={`${tile} bg-surface-900 text-white text-center`}>
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
+          <div className={`${tile} bg-slate-900 text-white text-center`}>
             <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-white tracking-[-0.02em] mb-3">Ready to accept crypto?</h2>
             <p className="mb-5 text-white/60 max-w-[420px] mx-auto text-[1.05rem] leading-[1.6]">
               Set up your account in minutes. No monthly fees, no hidden charges.
             </p>
             <div className="flex gap-3 justify-center flex-wrap">
-              <Link href="/register" className="inline-flex items-center justify-center bg-white border-none text-surface-900 font-semibold rounded-full px-5 py-3 text-[1.05rem] no-underline transition-[transform,box-shadow] duration-150 hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:text-surface-900">
+              <Link href="/register" className="inline-flex items-center justify-center bg-white border-none text-slate-900 font-semibold rounded-full px-5 py-3 text-[1.05rem] no-underline transition-[transform,box-shadow] duration-150 hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:text-slate-900">
                 Get started free
                 <i className="bx bx-right-arrow-alt ml-2"></i>
               </Link>

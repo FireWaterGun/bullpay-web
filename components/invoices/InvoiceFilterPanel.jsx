@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import CoinImg from '@/components/CoinImg';
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
-import { Button, Label, Select, inputClass } from '../ui';
+import { Button, Label, Select, inputClass } from '@/components/ui';
 
 export default function InvoiceFilterPanel({
   statusFilter, setStatusFilter,
@@ -136,8 +136,8 @@ function CoinNetworkDropdown({ coinNetworks, coinNetworkIdFilter, setCoinNetwork
         <i className={`bx bx-chevron-${open ? 'up' : 'down'} text-surface-400`}></i>
       </button>
       {open &&
-      <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-white shadow-lg max-h-[280px] overflow-y-auto">
-          <button type="button" className="w-full text-left px-3 py-2 hover:bg-surface-50 text-sm text-surface-500" onClick={() => {setCoinNetworkIdFilter('');setOpen(false);}}>
+      <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-card shadow-lg max-h-[280px] overflow-y-auto">
+          <button type="button" className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 text-sm text-surface-500" onClick={() => {setCoinNetworkIdFilter('');setOpen(false);}}>
             {t('filter.all', { defaultValue: 'All' })}
           </button>
           <hr className="border-surface-200" />
@@ -145,7 +145,7 @@ function CoinNetworkDropdown({ coinNetworks, coinNetworkIdFilter, setCoinNetwork
           const sym = (cn.coin?.symbol || '').toUpperCase();
           const net = (cn.network?.symbol || '').toUpperCase();
           return (
-            <button type="button" key={cn.id} className="w-full text-left px-3 py-2 hover:bg-surface-50 flex items-center gap-2" onClick={() => {setCoinNetworkIdFilter(String(cn.id));setOpen(false);}}>
+            <button type="button" key={cn.id} className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 flex items-center gap-2" onClick={() => {setCoinNetworkIdFilter(String(cn.id));setOpen(false);}}>
                 <CoinImg symbol={sym} networkSymbol={net} size={28} />
                 <div>
                   <div className="font-semibold text-[0.85rem]">{sym}</div>

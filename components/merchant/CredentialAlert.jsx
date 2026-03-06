@@ -15,15 +15,15 @@ export default function CredentialAlert({ credentials, warning, onDismiss, t }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl mx-4 w-full max-w-[500px]">
+      <div className="bg-card rounded-xl shadow-xl mx-4 w-full max-w-[500px]">
         <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
           <h5 className="font-semibold">
             {t('merchant.apiCredentials', { defaultValue: 'API Credentials' })}
           </h5>
-          {onDismiss && <button type="button" className="text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onDismiss}>&times;</button>}
+          {onDismiss && <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onDismiss}><i className="bx bx-x"></i></button>}
         </div>
         <div className="p-6">
-          <div className="rounded-lg bg-amber-50 text-amber-700 py-2 px-3 mb-4" role="alert">
+          <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 py-2 px-3 mb-4" role="alert">
             <i className="bx bx-info-circle mr-1"></i>
             {warning || t('merchant.credentialWarning')}
           </div>

@@ -110,12 +110,12 @@ export function Toast({ message, type = 'success', duration = 5000, onClose }) {
             </strong>
             <button
               type="button"
-              className="ml-2 text-surface-400 hover:text-surface-700 text-lg leading-none"
+              className="ml-2 cursor-pointer text-surface-500 hover:text-surface-700 text-lg leading-none"
               onClick={handleClose}
               aria-label="Close"
               style={closeStyle}
             >
-              &times;
+              <i className="bx bx-x"></i>
             </button>
           </div>
           {body && (

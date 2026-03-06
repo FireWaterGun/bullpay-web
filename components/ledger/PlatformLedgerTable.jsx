@@ -8,6 +8,7 @@ import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import TableEmptyState from '@/components/TableEmptyState';
 import { Badge, Button, Card } from '../ui';
+import Table from '@/components/ui/Table';
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0';
@@ -21,14 +22,14 @@ function formatAmount(val) {
 function accountTypeBadge(type) {
   if (type === 'revenue') return <span>Revenue</span>;
   if (type === 'expense') return <span>Expense</span>;
-  return <span className="text-muted">{type || 'N/A'}</span>;
+  return <span className="text-surface-500">{type || 'N/A'}</span>;
 }
 
 function stateBadge(state) {
   if (state === 'settled') return <span>Settled</span>;
   if (state === 'committed') return <span>Committed</span>;
   if (state === 'reversed') return <span>Reversed</span>;
-  return <span className="text-muted">{state || 'N/A'}</span>;
+  return <span className="text-surface-500">{state || 'N/A'}</span>;
 }
 
 export default function PlatformLedgerTable({
@@ -47,7 +48,7 @@ export default function PlatformLedgerTable({
   return (
     <Card>
       <div className="p-5">
-        <div className="overflow-x-auto overflow-x-auto">
+        <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="whitespace-nowrap">
@@ -100,7 +101,7 @@ export default function PlatformLedgerTable({
                           <div>
                             <div className="font-medium leading-[1.2]">{entry.coinSymbol || '-'}</div>
                             {entry.networkName &&
-                          <small className="text-muted text-xs">{entry.networkName}</small>
+                          <small className="text-surface-500 text-xs">{entry.networkName}</small>
                           }
                           </div>
                         </div>
@@ -109,7 +110,7 @@ export default function PlatformLedgerTable({
                         {entry.entryCode ?
                       <span className="font-medium">{entry.entryCode}</span> :
 
-                      <span className="text-muted">-</span>
+                      <span className="text-surface-500">-</span>
                       }
                       </td>
                       <td>
@@ -121,7 +122,7 @@ export default function PlatformLedgerTable({
                         </span>
                       </td>
                       <td className="text-right whitespace-nowrap">
-                        <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
+                        <span className="text-surface-500">{formatUsd(entry.amountUsd)}</span>
                       </td>
                       <td>
                         {entry.txHash ?
@@ -141,7 +142,7 @@ export default function PlatformLedgerTable({
                         }
                           </div> :
 
-                      <span className="text-muted">-</span>
+                      <span className="text-surface-500">-</span>
                       }
                       </td>
                       <td>
@@ -167,7 +168,7 @@ export default function PlatformLedgerTable({
 
         {pagination && pagination.total > 0 &&
         <div className="flex justify-between items-center mt-4">
-            <div className="text-muted text-sm">
+            <div className="text-surface-500 text-sm">
               {t('invoices.showingEntries', {
               start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
               end: Math.min(pagination.page * pagination.limit, pagination.total),

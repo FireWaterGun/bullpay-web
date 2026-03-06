@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
+import Image from 'next/image';
 import { useTranslation } from "react-i18next";
 import { setup2FA, enable2FA } from "@/lib/api/twoFactor";
 import { copyToClipboard } from "@/lib/utils/clipboard";
-import { Button, Input, InputGroup, Spinner } from './ui'
+import { Button, Input, InputGroup, Spinner } from '@/components/ui'
 
 const RATE_LIMIT_KEY = '2fa_rate_limit_until';
 
@@ -84,7 +85,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
       };
       fetchSetup();
     }
-  }, [show, token, setupData]);
+  }, [show, token, setupData, t]);
 
   // Reset state when modal closes
   const handleClose = () => {
@@ -181,12 +182,12 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl mx-4 w-full max-w-[500px]">
+      <div className="bg-card rounded-xl shadow-xl mx-4 w-full max-w-[500px]">
           <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
             <h5 className="font-semibold">
               {t("settings.2fa.setupTitle", { defaultValue: "Setup Two-Factor Authentication" })}
             </h5>
-            <button type="button" className="text-surface-400 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}>&times;</button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}><i className="bx bx-x"></i></button>
           </div>
 
           <div className="p-6">
@@ -195,7 +196,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
               {[1, 2, 3].map((s) =>
             <div key={s} className="flex items-center">
                   <div
-                className={`rounded-full flex items-center justify-center ${step >= s ? "bg-primary-600 text-white" : "bg-surface-100 text-surface-500"} w-8 h-8 text-[14px]`
+                className={`rounded-full flex items-center justify-center ${step >= s ? "bg-primary-600 text-white" : "bg-surface-100 dark:bg-dark-elevated text-surface-500"} w-8 h-8 text-[14px]`
                 }>
 
                 
@@ -203,7 +204,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                   </div>
                   {s < 3 &&
               <div
-                className={`mx-2 ${step > s ? "bg-primary-600" : "bg-surface-100"} w-10 h-0.5`}>
+                className={`mx-2 ${step > s ? "bg-primary-600" : "bg-surface-100 dark:bg-dark-elevated"} w-10 h-0.5`}>
 
               </div>
               }
@@ -217,7 +218,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 <p className="mt-2 text-surface-500">{t("common.loading", { defaultValue: "Loading..." })}</p>
               </div> :
           error && !setupData ?
-          <div className="rounded-lg bg-red-50 text-red-700 p-4">{error}</div> :
+          <div className="rounded-lg bg-red-50 dark:bg-danger-500/10 text-red-700 dark:text-[#fca5a5] p-4">{error}</div> :
 
           <>
                 {/* Step 1: QR Code */}
@@ -229,10 +230,13 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 })}
                     </p>
                     <div className="flex justify-center mb-3">
-                      <img
-                  src={setupData.qrCodeDataUrl}
-                  alt="2FA QR Code"
-                  className="border rounded-lg w-[200px] h-[200px]" />
+                        <Image
+                      src={setupData.qrCodeDataUrl}
+                      alt="2FA QR Code"
+                      width={200}
+                      height={200}
+                      unoptimized
+                      className="border border-surface-200 rounded-lg w-[200px] h-[200px]" />
 
                 
                     </div>
@@ -263,7 +267,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 {/* Step 2: Backup Codes */}
                 {step === 2 && setupData &&
             <div>
-                    <div className="rounded-lg bg-amber-50 text-amber-700 p-3 flex items-start mb-3">
+                    <div className="rounded-lg bg-amber-50 dark:bg-warning-500/10 text-amber-700 dark:text-[#fcd34d] p-3 flex items-start mb-3">
                       <i className="bx bx-error-circle mr-2 mt-1"></i>
                       <div>
                         <strong>{t("settings.2fa.saveBackupCodes", { defaultValue: "Save your backup codes!" })}</strong>
@@ -275,7 +279,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                         </p>
                       </div>
                     </div>
-                    <div className="bg-surface-50 rounded-lg p-3 mb-3">
+                    <div className="bg-surface-50 dark:bg-dark-elevated rounded-lg p-3 mb-3">
                       <div className="grid grid-cols-2 gap-2">
                         {setupData.backupCodes.map((code, i) =>
                   <div key={code}>
@@ -313,7 +317,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                       {[0, 1, 2, 3, 4, 5].map((i) =>
                 <Input
                   key={`digit-${i}`}
-                  ref={(el) => inputRefs.current[i] = el}
+                  ref={(el) => { inputRefs.current[i] = el; }}
                   type="text"
                   inputMode="numeric"
 
@@ -328,7 +332,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                 )}
                     </div>
                     {error &&
-              <div className="rounded-lg bg-red-50 text-red-700 py-2 px-3">
+              <div className="rounded-lg bg-red-50 dark:bg-danger-500/10 text-red-700 dark:text-[#fca5a5] py-2 px-3">
                         {countdown > 0 ?
                 t("settings.2fa.tooManyAttempts", {
                   defaultValue: "Too many attempts. Please try again in {{seconds}} seconds",

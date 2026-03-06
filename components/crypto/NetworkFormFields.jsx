@@ -27,7 +27,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           maxLength={100}
           required />
         
-        <small className="text-muted">{t('crypto.networkNameHelp', { defaultValue: 'Full network name' })}</small>
+        <small className="text-surface-500">{t('crypto.networkNameHelp', { defaultValue: 'Full network name' })}</small>
       </div>
 
       {/* Symbol */}
@@ -49,7 +49,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           disabled={isEdit} className="uppercase" />
 
         
-        <small className="text-muted">{t('crypto.symbolHelp', { defaultValue: 'Network symbol (e.g., ETH, BSC)' })}</small>
+        <small className="text-surface-500">{t('crypto.symbolHelp', { defaultValue: 'Network symbol (e.g., ETH, BSC)' })}</small>
       </div>
 
       {/* Type */}
@@ -72,7 +72,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           <option value="layer2">Layer 2</option>
           <option value="sidechain">Sidechain</option>
         </Select>
-        <small className="text-muted">{t('crypto.networkTypeHelp', { defaultValue: 'Type of blockchain network' })}</small>
+        <small className="text-surface-500">{t('crypto.networkTypeHelp', { defaultValue: 'Type of blockchain network' })}</small>
       </div>
 
       {/* Chain ID */}
@@ -90,7 +90,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           placeholder="1"
           min="1" />
         
-        <small className="text-muted">{t('crypto.chainIdHelp', { defaultValue: 'EVM chain ID (leave empty for non-EVM)' })}</small>
+        <small className="text-surface-500">{t('crypto.chainIdHelp', { defaultValue: 'EVM chain ID (leave empty for non-EVM)' })}</small>
       </div>
 
       {/* Confirmation Blocks */}
@@ -109,7 +109,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           max="1000"
           required />
         
-        <small className="text-muted">{t('crypto.confirmationBlocksHelp', { defaultValue: 'Number of blocks for confirmation' })}</small>
+        <small className="text-surface-500">{t('crypto.confirmationBlocksHelp', { defaultValue: 'Number of blocks for confirmation' })}</small>
       </div>
 
       {/* RPC URL */}
@@ -126,7 +126,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           onChange={handleChange}
           placeholder="https://eth.llamarpc.com" />
         
-        <small className="text-muted">{t('crypto.rpcUrlHelp', { defaultValue: 'Blockchain RPC endpoint' })}</small>
+        <small className="text-surface-500">{t('crypto.rpcUrlHelp', { defaultValue: 'Blockchain RPC endpoint' })}</small>
       </div>
 
       {/* Explorer URL */}
@@ -143,7 +143,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           onChange={handleChange}
           placeholder="https://etherscan.io" />
         
-        <small className="text-muted">{t('crypto.explorerUrlHelp', { defaultValue: 'Block explorer URL' })}</small>
+        <small className="text-surface-500">{t('crypto.explorerUrlHelp', { defaultValue: 'Block explorer URL' })}</small>
       </div>
 
       {/* API URL */}
@@ -160,7 +160,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
           onChange={handleChange}
           placeholder="https://api.etherscan.io/api" />
         
-        <small className="text-muted">{t('crypto.apiUrlHelp', { defaultValue: 'External API endpoint (e.g., Etherscan API)' })}</small>
+        <small className="text-surface-500">{t('crypto.apiUrlHelp', { defaultValue: 'External API endpoint (e.g., Etherscan API)' })}</small>
       </div>
 
       {/* Status */}
@@ -197,7 +197,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
             {t('crypto.isTestnet', { defaultValue: 'Testnet' })}
           </label>
         </div>
-        <small className="text-muted ml-4">{t('crypto.isTestnetHelp', { defaultValue: 'Check if this is a test network' })}</small>
+        <small className="text-surface-500 ml-4">{t('crypto.isTestnetHelp', { defaultValue: 'Check if this is a test network' })}</small>
       </div>
 
       {/* Actions */}

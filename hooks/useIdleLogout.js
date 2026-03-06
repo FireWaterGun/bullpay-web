@@ -11,7 +11,7 @@ const THROTTLE_MS = 30_000 // throttle activity events to every 30s
  */
 export default function useIdleLogout(logout, isAuthenticated) {
   const timerRef = useRef(null)
-  const lastActivityRef = useRef(Date.now())
+  const lastActivityRef = useRef(0)
 
   useEffect(() => {
     if (!isAuthenticated) return

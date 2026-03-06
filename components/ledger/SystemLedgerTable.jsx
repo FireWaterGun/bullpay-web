@@ -8,6 +8,7 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
 import { Badge, Button, Card } from '../ui';
+import Table from '@/components/ui/Table';
 
 function parseMetadata(entry) {
   try {
@@ -32,7 +33,7 @@ function stateBadge(state) {
   if (state === 'committed') return <span>Committed</span>;
   if (state === 'pending') return <span>Pending</span>;
   if (state === 'reversed') return <span>Reversed</span>;
-  return <span className="text-muted">{state || 'N/A'}</span>;
+  return <span className="text-surface-500">{state || 'N/A'}</span>;
 }
 
 function formatAmount(val) {
@@ -60,8 +61,8 @@ export default function SystemLedgerTable({
   return (
     <Card>
       <div className="p-5">
-        <div className="overflow-x-auto overflow-x-auto">
-          <table className="w-full min-w-[1200px]">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-max">
             <thead>
               <tr className="whitespace-nowrap">
                 <th>ID</th>
@@ -112,7 +113,7 @@ export default function SystemLedgerTable({
                           <div>
                             <div className="font-medium leading-[1.2]">{entry.coinSymbol || '-'}</div>
                             {entry.networkName &&
-                          <small className="text-muted text-xs">{entry.networkName}</small>
+                          <small className="text-surface-500 text-xs">{entry.networkName}</small>
                           }
                           </div>
                         </div>
@@ -121,7 +122,7 @@ export default function SystemLedgerTable({
                         {entry.entryCode ?
                       <span className="font-medium">{entry.entryCode}</span> :
 
-                      <span className="text-muted">-</span>
+                      <span className="text-surface-500">-</span>
                       }
                       </td>
                       <td>
@@ -133,7 +134,7 @@ export default function SystemLedgerTable({
                         </span>
                       </td>
                       <td className="text-right whitespace-nowrap">
-                        <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
+                        <span className="text-surface-500">{formatUsd(entry.amountUsd)}</span>
                       </td>
                       <td>
                         <div>
@@ -144,10 +145,10 @@ export default function SystemLedgerTable({
                         <Badge>{metadata.invoiceNumber}</Badge>
                         }
                           {metadata?.sweepId && !metadata?.invoiceNumber &&
-                        <small className="text-muted">Sweep #{metadata.sweepId}</small>
+                        <small className="text-surface-500">Sweep #{metadata.sweepId}</small>
                         }
                           {!purposeLabel && !metadata?.invoiceNumber && !metadata?.sweepId &&
-                        <span className="text-muted">-</span>
+                        <span className="text-surface-500">-</span>
                         }
                         </div>
                       </td>
@@ -169,7 +170,7 @@ export default function SystemLedgerTable({
                         }
                           </div> :
 
-                      <span className="text-muted">-</span>
+                      <span className="text-surface-500">-</span>
                       }
                       </td>
                       <td>
@@ -195,7 +196,7 @@ export default function SystemLedgerTable({
 
         {pagination && pagination.total > 0 &&
         <div className="flex justify-between items-center mt-4">
-            <div className="text-muted text-sm">
+            <div className="text-surface-500 text-sm">
               {t('invoices.showingEntries', {
               start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
               end: Math.min(pagination.page * pagination.limit, pagination.total),

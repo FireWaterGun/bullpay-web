@@ -19,28 +19,28 @@ export default function NetworkInfoPanel({ networkMeta }) {
         <div className="p-5">
           <ul className="list-none mb-0">
             <li className="flex justify-between mb-3">
-              <span className="text-muted">ID</span>
+              <span className="text-surface-500">ID</span>
               <span className="font-medium">#{networkMeta.id}</span>
             </li>
             {networkMeta.wsUrl &&
             <li className="mb-3">
-                <span className="text-muted block mb-1">WebSocket URL</span>
+                <span className="text-surface-500 block mb-1">WebSocket URL</span>
                 <code className="text-sm break-all">{networkMeta.wsUrl}</code>
               </li>
             }
             <li className="flex justify-between mb-3">
-              <span className="text-muted">{t('crypto.coinsCount', { defaultValue: 'Supported Coins' })}</span>
+              <span className="text-surface-500">{t('crypto.coinsCount', { defaultValue: 'Supported Coins' })}</span>
               <Badge className="bg-primary-50 text-primary-600">{networkMeta.coinsCount}</Badge>
             </li>
             {networkMeta.createdAt &&
             <li className="flex justify-between mb-3">
-                <span className="text-muted">{t('common.createdAt', { defaultValue: 'Created' })}</span>
+                <span className="text-surface-500">{t('common.createdAt', { defaultValue: 'Created' })}</span>
                 <span className="text-sm">{fmtDate(networkMeta.createdAt)}</span>
               </li>
             }
             {networkMeta.updatedAt &&
             <li className="flex justify-between mb-3">
-                <span className="text-muted">{t('common.updatedAt', { defaultValue: 'Updated' })}</span>
+                <span className="text-surface-500">{t('common.updatedAt', { defaultValue: 'Updated' })}</span>
                 <span className="text-sm">{fmtDate(networkMeta.updatedAt)}</span>
               </li>
             }
@@ -49,14 +49,14 @@ export default function NetworkInfoPanel({ networkMeta }) {
           {/* Supported Coins List */}
           {networkMeta.supportedCoins.length > 0 &&
           <>
-              <hr />
+              <hr className="border-surface-200 my-4" />
               <h6 className="mb-3">{t('crypto.supportedCoins', { defaultValue: 'Supported Coins' })}</h6>
-              <div className="list-group list-group-flush">
+              <div className="divide-y divide-surface-200">
                 {networkMeta.supportedCoins.map((coin) =>
-              <div key={coin.id} className="list-group-item px-0 flex justify-between items-center">
+              <div key={coin.id} className="py-3 first:pt-0 last:pb-0 flex justify-between items-center">
                     <div>
                       <span className="font-medium">{coin.coinSymbol}</span>
-                      <small className="text-muted block">{coin.coinName}</small>
+                      <small className="text-surface-500 block">{coin.coinName}</small>
                     </div>
                     <div className="text-right">
                       <Badge color={coin.status === 'active' ? 'success' : 'secondary'} label className="mr-1">{coin.status}</Badge>

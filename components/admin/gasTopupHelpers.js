@@ -1,5 +1,6 @@
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { formatCoinAmount } from '@/lib/utils/format'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export function formatGasAmount(amountRaw, decimals = 18) {
   if (!amountRaw) return '0'
@@ -12,13 +13,7 @@ export function formatGasAmount(amountRaw, decimals = 18) {
 }
 
 export function statusBadgeClass(s) {
-  const v = String(s || '').toLowerCase()
-  if (v === 'pending') return 'badge bg-label-warning'
-  if (v === 'processing') return 'badge bg-label-info'
-  if (v === 'completed') return 'badge bg-label-success'
-  if (v === 'failed') return 'badge bg-label-danger'
-  if (v === 'skipped') return 'badge bg-label-secondary'
-  return 'badge bg-label-secondary'
+  return getStatusBadgeClass(s, 'gasTopup')
 }
 
 export function truncateAddress(addr) {

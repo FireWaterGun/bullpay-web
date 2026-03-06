@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useAuth } from '@/app/providers';
@@ -16,7 +16,8 @@ import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTa
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Alert, Badge, Button, Card } from '../../../../../components/ui';
+import { Alert, Badge, Button, Card } from '@/components/ui'
+import Table from '@/components/ui/Table';
 
 export default function AdminInvoiceDetail() {
   const { fmtDate } = useDateFormat();
@@ -27,11 +28,7 @@ export default function AdminInvoiceDetail() {
   const [loading, setLoading] = useState(false);
   const [invoice, setInvoice] = useState(null);
 
-  useEffect(() => {
-    loadInvoice();
-  }, [id]);
-
-  async function loadInvoice() {
+  const loadInvoice = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAdminInvoice(token, id);
@@ -42,7 +39,11 @@ export default function AdminInvoiceDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t]);
+
+  useEffect(() => {
+    loadInvoice();
+  }, [loadInvoice]);
 
   async function handleCopy(text) {
     const ok = await copyText(text);
@@ -88,15 +89,15 @@ export default function AdminInvoiceDetail() {
                     <h4 className="mb-0">
                       Invoice #{invoice.id}
                       {invoice.invoiceNumber &&
-                      <small className="text-muted ml-2">({invoice.invoiceNumber})</small>
+                      <small className="text-surface-500 ml-2">({invoice.invoiceNumber})</small>
                       }
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={statusBadgeClass(invoice.status)}>
                         {String(invoice.status || '').toUpperCase()}
                       </span>
-                      <span className="text-muted">•</span>
-                      <span className="text-muted">{coinSymbol} on {networkName || networkSymbol}</span>
+                      <span className="text-surface-500">•</span>
+                      <span className="text-surface-500">{coinSymbol} on {networkName || networkSymbol}</span>
                     </div>
                   </div>
                 </div>
@@ -113,22 +114,22 @@ export default function AdminInvoiceDetail() {
                   <h5 className="mb-0">Invoice Details</h5>
                 </div>
                 <div className="p-5">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="font-medium">{invoice.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Invoice Number</td>
+                        <td className="text-surface-500">Invoice Number</td>
                         <td className="font-medium">{invoice.invoiceNumber || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Public Code</td>
+                        <td className="text-surface-500">Public Code</td>
                         <td className="font-medium">{invoice.publicCode || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
                           <span className={statusBadgeClass(invoice.status)}>
                             {String(invoice.status || '').toUpperCase()}
@@ -136,15 +137,15 @@ export default function AdminInvoiceDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td className="font-medium">{formatAmount(invoice.amount)} {coinSymbol}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Paid Amount</td>
+                        <td className="text-surface-500">Paid Amount</td>
                         <td className="font-medium">{formatAmount(invoice.paidAmount)} {coinSymbol}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Remaining</td>
+                        <td className="text-surface-500">Remaining</td>
                         <td className="font-medium">
                           {formatAmount(invoice.remainingAmount)} {coinSymbol}
                           {invoice.isFullyPaid &&
@@ -154,23 +155,23 @@ export default function AdminInvoiceDetail() {
                       </tr>
                       {invoice.amountUsd &&
                       <tr>
-                          <td className="text-muted">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
                           <td className="font-medium">${formatAmount(invoice.amountUsd)}</td>
                         </tr>
                       }
                       {invoice.usdRate &&
                       <tr>
-                          <td className="text-muted">USD Rate</td>
+                          <td className="text-surface-500">USD Rate</td>
                           <td>
                             ${formatAmount(invoice.usdRate)}
                             {invoice.rateSource &&
-                          <small className="text-muted ml-1">({invoice.rateSource})</small>
+                          <small className="text-surface-500 ml-1">({invoice.rateSource})</small>
                           }
                           </td>
                         </tr>
                       }
                       <tr>
-                        <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="flex items-center">
                             <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-2" />
@@ -179,25 +180,25 @@ export default function AdminInvoiceDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.network', { defaultValue: 'Network' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.network', { defaultValue: 'Network' })}</td>
                         <td>{networkName || networkSymbol || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{fmtDate(invoice.createdAt || invoice.created_at)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Expires</td>
+                        <td className="text-surface-500">Expires</td>
                         <td>{fmtDate(invoice.expiryAt || invoice.expiry_at)}</td>
                       </tr>
                       {invoice.paidAt &&
                       <tr>
-                          <td className="text-muted">Paid At</td>
+                          <td className="text-surface-500">Paid At</td>
                           <td>{fmtDate(invoice.paidAt || invoice.paid_at)}</td>
                         </tr>
                       }
                     </tbody>
-                  </table>
+                  </Table>
                 </div>
               </Card>
             </div>
@@ -208,59 +209,59 @@ export default function AdminInvoiceDetail() {
                   <h5 className="mb-0">User & Address</h5>
                 </div>
                 <div className="p-5">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="font-medium">{invoice.userId || invoice.user?.id || '-'}</td>
                       </tr>
                       {invoice.user?.email &&
                       <tr>
-                          <td className="text-muted">{t('admin.detail.email', { defaultValue: 'Email' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.email', { defaultValue: 'Email' })}</td>
                           <td className="font-medium">{invoice.user.email}</td>
                         </tr>
                       }
                       {invoice.merchantId &&
                       <tr>
-                          <td className="text-muted">Merchant ID</td>
+                          <td className="text-surface-500">Merchant ID</td>
                           <td className="font-medium">{invoice.merchantId}</td>
                         </tr>
                       }
                       <tr>
-                        <td className="text-muted">Payment Address</td>
+                        <td className="text-surface-500">Payment Address</td>
                         <td>
                           {invoice.paymentAddress ?
                           <div className="flex items-center">
-                              <code className="text-body mr-2 text-[0.8rem] break-all">
+                              <code className="mr-2 text-[0.8rem] break-all">
                                 {invoice.paymentAddress}
                               </code>
                               <Button
 
                               onClick={() => handleCopy(invoice.paymentAddress)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full shrink-0">
+                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 dark:hover:bg-white/6 shadow-none rounded-full shrink-0">
                               
                                 <i className="bx bx-copy"></i>
                               </Button>
                             </div> :
 
-                          <span className="text-muted">-</span>
+                          <span className="text-surface-500">-</span>
                           }
                         </td>
                       </tr>
                       {invoice.memo &&
                       <tr>
-                          <td className="text-muted">Memo</td>
+                          <td className="text-surface-500">Memo</td>
                           <td>{invoice.memo}</td>
                         </tr>
                       }
                       {invoice.description &&
                       <tr>
-                          <td className="text-muted">Description</td>
+                          <td className="text-surface-500">Description</td>
                           <td>{invoice.description}</td>
                         </tr>
                       }
                     </tbody>
-                  </table>
+                  </Table>
                 </div>
               </Card>
             </div>

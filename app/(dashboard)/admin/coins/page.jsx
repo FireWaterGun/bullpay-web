@@ -7,7 +7,9 @@ import { useAuth } from '@/app/providers';
 import { getCoins } from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Alert, Badge, Button, Card, Input, Label } from '../../../../components/ui';
+import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 export default function CoinList() {
   const { t } = useAdminTranslation();
@@ -82,7 +84,7 @@ export default function CoinList() {
                 <i className="bx bx-coin mr-2"></i>
                 {t('nav.coins', { defaultValue: 'Coins' })}
               </h4>
-              <p className="text-muted mb-0">{t('crypto.manageCoinsList', { defaultValue: 'Manage cryptocurrency coins' })}</p>
+              <p className="text-surface-500 mb-0">{t('crypto.manageCoinsList', { defaultValue: 'Manage cryptocurrency coins' })}</p>
             </div>
           </div>
           
@@ -123,8 +125,7 @@ export default function CoinList() {
         }
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <Table>
             <thead>
               <tr>
                 <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
@@ -135,7 +136,7 @@ export default function CoinList() {
                 <th className="text-center">{t('invoices.actions')}</th>
               </tr>
             </thead>
-            <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+            <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
               {coins.length === 0 ?
               <TableEmptyState
                 colSpan={6}
@@ -192,45 +193,11 @@ export default function CoinList() {
               )
               }
             </tbody>
-          </table>
-        </div>
+          </Table>
 
         {/* Pagination */}
         {!error && coins.length > 0 &&
-        <div className="px-5 py-3 border-t border-surface-200 flex justify-between items-center">
-            <div className="text-muted text-sm">
-              {t('invoices.showingEntries', {
-              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-              end: Math.min(pagination.page * pagination.limit, pagination.total),
-              total: pagination.total,
-              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-            })}
-            </div>
-            <div className="inline-flex rounded-lg shadow-sm">
-              <Button
-
-              disabled={!pagination.hasPrev || loading}
-              onClick={() => handlePageChange(pagination.page - 1)} variant="outline-secondary" size="sm">
-              
-                <i className="bx bx-chevron-left"></i>
-                {t('actions.prev', { defaultValue: 'Previous' })}
-              </Button>
-              <Button
-
-              disabled variant="outline-secondary" size="sm">
-              
-                {pagination.page} / {pagination.totalPages}
-              </Button>
-              <Button
-
-              disabled={!pagination.hasNext || loading}
-              onClick={() => handlePageChange(pagination.page + 1)} variant="outline-secondary" size="sm">
-              
-                {t('actions.next', { defaultValue: 'Next' })}
-                <i className="bx bx-chevron-right"></i>
-              </Button>
-            </div>
-          </div>
+          <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="px-5 py-3 border-t border-surface-200 mt-0" />
         }
       </Card>
     </div>);

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useToast } from '@/app/providers';
 import { getUserLedgerEntries } from '@/lib/api/admin';
 import { listCoins } from '@/lib/api/coins';
@@ -13,18 +14,17 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card } from '../../../../components/ui'
+import { Card } from '@/components/ui'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 export default function UserLedgerList() {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token } = useAuth();
   const toast = useToast();
   const searchParams = useNextSearchParams();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const initType = searchParams.get('type') || '';
   const initUserId = searchParams.get('userId') || '';
@@ -66,13 +66,31 @@ export default function UserLedgerList() {
     return f;
   });
 
+  const loadEntries = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getUserLedgerEntries(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setEntries(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load user ledger entries:', error);
+      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
   useEffect(() => {
     loadEntries();
-  }, [currentPage, appliedFilters]);
+  }, [loadEntries]);
 
   useEffect(() => {
     listCoins(token).then(setCoinNetworks).catch(() => {});
-  }, []);
+  }, [token]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -111,24 +129,6 @@ export default function UserLedgerList() {
     window.history.replaceState(null, '', window.location.pathname);
   }
 
-  async function loadEntries() {
-    try {
-      setLoading(true);
-      const data = await getUserLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setEntries(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load user ledger entries:', error);
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   if (loading && entries.length === 0) {
     return <PageSpinner />;
   }
@@ -146,7 +146,7 @@ export default function UserLedgerList() {
                     <i className="bx bx-user mr-2"></i>
                     {t('admin.ledger.userLedger', { defaultValue: 'User Ledger' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.ledger.userLedgerDesc', { defaultValue: 'View all user ledger entries' })}
                   </p>
                 </div>
@@ -182,8 +182,7 @@ export default function UserLedgerList() {
           {/* Table */}
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full min-w-[1200px]">
+              <Table className="min-w-max">
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -213,43 +212,9 @@ export default function UserLedgerList() {
                     )
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {/* Pagination */}
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', {
-                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                    end: Math.min(pagination.page * pagination.limit, pagination.total),
-                    total: pagination.total,
-                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                  })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      {t('actions.prev', { defaultValue: 'Previous' })}
-                    </Button>
-                    <Button disabled variant="outline-secondary" size="sm">
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-                    
-                      {t('actions.next', { defaultValue: 'Next' })}
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }} loading={loading} />
             </div>
           </Card>
         </div>

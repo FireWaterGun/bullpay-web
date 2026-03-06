@@ -13,7 +13,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
   const decimals = topup.coinNetwork?.decimals || topup.decimals || 18;
 
   return (
-    <tr className="cursor-pointer" onClick={() => onNavigate(topup.id)}>
+    <tr className="cursor-pointer" onClick={() => onNavigate(topup.id)} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onNavigate(topup.id)} tabIndex={0} role="link">
       <td>
         <span className="font-semibold text-primary">{topup.id}</span>
       </td>
@@ -22,7 +22,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={28} className="mr-2" />
           <div>
             <div className="font-semibold text-[0.85rem]">{coinSymbol}</div>
-            <div className="text-muted text-xs">{networkName || networkSymbol}</div>
+            <div className="text-surface-500 text-xs">{networkName || networkSymbol}</div>
           </div>
         </div>
       </td>
@@ -30,7 +30,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
         {topup.sweepId ?
         <span className="font-semibold">{topup.sweepId}</span> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td className="text-right whitespace-nowrap">
@@ -39,7 +39,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
         </span>
       </td>
       <td className="text-right whitespace-nowrap">
-        <span className="text-muted">
+        <span className="text-surface-500">
           {formatGasAmount(topup.requiredGasRaw, decimals)}
         </span>
       </td>
@@ -61,7 +61,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
             </Button>
           </div> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td>
@@ -77,7 +77,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
             </Button>
           </div> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td>
@@ -93,11 +93,11 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
             </Button>
           </div> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td className="text-center">
-        <span className={topup.retryCount > 0 ? 'text-warning font-semibold' : 'text-muted'}>
+        <span className={topup.retryCount > 0 ? 'text-warning font-semibold' : 'text-surface-500'}>
           {topup.retryCount || 0}
         </span>
       </td>
@@ -105,7 +105,7 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
         {fmtDate(topup.createdAt)}
       </td>
       <td className="whitespace-nowrap text-[0.85rem]">
-        {topup.completedAt ? fmtDate(topup.completedAt) : <span className="text-muted">-</span>}
+        {topup.completedAt ? fmtDate(topup.completedAt) : <span className="text-surface-500">-</span>}
       </td>
     </tr>);
 

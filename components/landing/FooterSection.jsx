@@ -7,7 +7,7 @@ export default function FooterSection() {
 
   return (
     <footer className="py-5 mt-3 bg-transparent">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 py-4">
           {/* Brand */}
           <div className="lg:col-span-4">

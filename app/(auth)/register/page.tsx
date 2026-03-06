@@ -48,7 +48,7 @@ export default function RegisterPage() {
     defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' }
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const onSubmit = async (values: FormValues) => {
     setError('');
     setLoading(true);
@@ -56,7 +56,7 @@ export default function RegisterPage() {
       await registerApi({ ...values, cfToken });
       try {sessionStorage.setItem('register_email', values.email);} catch {}
       router.replace('/register-complete');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {};
       if (details?.password?.[0]) setFormError('password', { message: details.password[0] });
@@ -76,7 +76,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+    <div className="bg-card rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
       <div className="p-8 sm:p-10">
         {/* Brand */}
         <div className="flex justify-center mb-6">

@@ -1,47 +1,18 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
 import { getMyLedgerEntries } from '@/lib/api/userLedger';
-import { listCoins } from '@/lib/api/coins';
+import { useCoins } from '@/hooks/useCoins';
+import { getDateRange } from '@/lib/utils/dateRange';
 import MyLedgerFilterPanel from '@/components/ledger/MyLedgerFilterPanel';
 import MyLedgerTable from '@/components/ledger/MyLedgerTable';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Card } from '../../../components/ui'
-
-function getDateRange(preset) {
-  const now = new Date();
-  const fmt = (d) => d.toISOString().slice(0, 10);
-  switch (preset) {
-    case 'today':return { startDate: fmt(now), endDate: fmt(now) };
-    case 'yesterday':{
-        const y = new Date(now);y.setDate(y.getDate() - 1);
-        return { startDate: fmt(y), endDate: fmt(y) };
-      }
-    case 'last7':{
-        const d = new Date(now);d.setDate(d.getDate() - 6);
-        return { startDate: fmt(d), endDate: fmt(now) };
-      }
-    case 'last30':{
-        const d = new Date(now);d.setDate(d.getDate() - 29);
-        return { startDate: fmt(d), endDate: fmt(now) };
-      }
-    case 'thisMonth':{
-        const s = new Date(now.getFullYear(), now.getMonth(), 1);
-        return { startDate: fmt(s), endDate: fmt(now) };
-      }
-    case 'lastMonth':{
-        const s = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const e = new Date(now.getFullYear(), now.getMonth(), 0);
-        return { startDate: fmt(s), endDate: fmt(e) };
-      }
-    default:return {};
-  }
-}
+import { Card } from '@/components/ui'
 
 export default function MyLedgerList() {
   return <Suspense><MyLedgerListContent /></Suspense>;
@@ -65,7 +36,7 @@ function MyLedgerListContent() {
   const [entries, setEntries] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [currentPage, setCurrentPage] = useState(initPage);
-  const [coinNetworks, setCoinNetworks] = useState([]);
+  const { coins: coinNetworks } = useCoins();
 
   // Filter states (draft — applied on "Apply")
   const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId);
@@ -88,13 +59,27 @@ function MyLedgerListContent() {
     return f;
   });
 
-  useEffect(() => {
-    loadEntries();
-  }, [currentPage, appliedFilters]);
+  const loadEntries = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getMyLedgerEntries(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setEntries(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load ledger entries:', error);
+      toast.error(t('userLedger.loadError', { defaultValue: 'Failed to load ledger entries' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {});
-  }, []);
+    loadEntries();
+  }, [loadEntries]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -130,24 +115,6 @@ function MyLedgerListContent() {
     router.replace('?', { scroll: false });
   }
 
-  async function loadEntries() {
-    try {
-      setLoading(true);
-      const data = await getMyLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setEntries(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load ledger entries:', error);
-      toast.error(t('userLedger.loadError', { defaultValue: 'Failed to load ledger entries' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   if (loading && entries.length === 0) {
     return <PageSpinner />;
   }
@@ -156,7 +123,7 @@ function MyLedgerListContent() {
     <>
       {/* Header + Filters */}
       <Card className="mb-6">
-        <div className="px-6 py-4 border-b border-surface-100 flex justify-between items-center flex-wrap gap-3">
+        <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center flex-wrap gap-3">
           <div>
             <h4 className="font-semibold text-surface-900 mb-1">
               <i className="bx bx-book-content mr-2 text-primary-500"></i>

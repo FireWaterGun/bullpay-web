@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useToast } from '@/app/providers';
 import { getIncomeStatement } from '@/lib/api/admin';
 import LocaleDatePicker from '@/components/LocaleDatePicker';
@@ -10,7 +11,7 @@ import { getDateRange } from '@/components/ledger/incomeStatementUtils';
 import IncomeStatementReport from '@/components/ledger/IncomeStatementReport';
 import { logger } from '@/lib/utils/logger';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Badge, Button, Card, Select } from '../../../../components/ui'
+import { Badge, Button, Card, Select } from '@/components/ui'
 
 function hasReportData(report) {
   if (!report) return false;
@@ -27,14 +28,11 @@ function hasReportData(report) {
 }
 
 export default function IncomeStatement() {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token } = useAuth();
   const toast = useToast();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState(null);
@@ -59,13 +57,13 @@ export default function IncomeStatement() {
   const dateRangeLabel = useMemo(() => {
     const { from, to } = dateRange;
     if (from === to) return from;
-    const fromD = new Date(from + 'T00:00:00');
-    const toD = new Date(to + 'T00:00:00');
+    const fromD = new Date(`${from  }T00:00:00`);
+    const toD = new Date(`${to  }T00:00:00`);
     const fmt = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
     return `${fmt(fromD)} - ${fmt(toD)}`;
   }, [dateRange, locale]);
 
-  async function loadReport() {
+  const loadReport = useCallback(async () => {
     if (!fromDate || !toDate) {
       toast.error(t('admin.incomeStatement.datesRequired', { defaultValue: 'From and To dates are required' }));
       return;
@@ -82,7 +80,7 @@ export default function IncomeStatement() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, fromDate, toDate, coinNetworkId, t, toast]);
 
   const hasData = hasReportData(report);
 
@@ -91,7 +89,7 @@ export default function IncomeStatement() {
     if (token && fromDate && toDate) {
       loadReport();
     }
-  }, [token, fromDate, toDate, coinNetworkId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, fromDate, toDate, coinNetworkId, loadReport]);
 
   return (
     <div className="grow py-6">
@@ -141,7 +139,7 @@ export default function IncomeStatement() {
                       placeholder={t('filter.from', { defaultValue: 'From' })}
                       t={t}
                       maxDate={customTo ? customTo : undefined}
-                      minDate={customTo ? (() => {const d = new Date(customTo + 'T00:00:00');d.setMonth(d.getMonth() - 2);return d.toISOString().split('T')[0];})() : undefined} />
+                      minDate={customTo ? (() => {const d = new Date(`${customTo  }T00:00:00`);d.setMonth(d.getMonth() - 2);return d.toISOString().split('T')[0];})() : undefined} />
                     
                       <span className="self-center">–</span>
                       <LocaleDatePicker
@@ -151,7 +149,7 @@ export default function IncomeStatement() {
                       placeholder={t('filter.to', { defaultValue: 'To' })}
                       t={t}
                       minDate={customFrom ? customFrom : undefined}
-                      maxDate={customFrom ? (() => {const d = new Date(customFrom + 'T00:00:00');d.setMonth(d.getMonth() + 2);return d.toISOString().split('T')[0];})() : undefined} />
+                      maxDate={customFrom ? (() => {const d = new Date(`${customFrom  }T00:00:00`);d.setMonth(d.getMonth() + 2);return d.toISOString().split('T')[0];})() : undefined} />
                     
                       <Button
 

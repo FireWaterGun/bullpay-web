@@ -7,6 +7,7 @@ import { upsertSetting } from '@/lib/api/admin';
 import { useToast } from '@/app/providers';
 import { logger } from '@/lib/utils/logger';
 import { Button, Input, Label, Spinner } from '../../ui'
+import Table from '@/components/ui/Table'
 
 export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
   const { t } = useAdminTranslation();
@@ -51,15 +52,15 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
       <div className="mb-4">
         <div className="mb-3">
           <h6 className="font-semibold mb-1 text-[1rem]">{t('admin.withdrawal.autoApprove', { defaultValue: 'Auto Approve' })}</h6>
-          <p className="text-muted mb-0 text-[0.875rem]">{t('admin.withdrawal.autoApproveDesc', { defaultValue: 'Automatically approve small withdrawals' })}</p>
+          <p className="text-surface-500 mb-0 text-[0.875rem]">{t('admin.withdrawal.autoApproveDesc', { defaultValue: 'Automatically approve small withdrawals' })}</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full mb-0">
+          <Table responsive={false} className="mb-0">
             <tbody>
               <tr className="bg-surface-100">
                 <td width="35%" className="py-3 pl-3 text-[0.875rem]">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</td>
                 <td className="py-3">
-                  <div className="flex items-center gap-2 relative inline-flex items-center mb-0">
+                  <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
@@ -97,7 +98,7 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
                 </td>
               </tr>
             </tbody>
-          </table>
+          </Table>
         </div>
       </div>
 
@@ -118,7 +119,7 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
 function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }) {
   // Stable ref for onClose to avoid listener churn
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  useEffect(() => { onCloseRef.current = onClose; });
 
   // Escape key handler
   useEffect(() => {
@@ -128,78 +129,70 @@ function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }
   }, [loading]);
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/50 z-40"></div>
-      <div className="fixed inset-0 z-50 flex items-center justify-center block" tabIndex="-1">
-        <div className="w-full max-w-lg mx-4">
-          <div className="bg-white rounded-xl shadow-xl">
-            <div className="flex items-center justify-between p-5 border-b border-surface-200">
-                  <h5 className="text-lg font-semibold text-surface-800">
-                    {t('admin.withdrawal.editAutoApprove', { defaultValue: 'Edit Auto Approve' })}
-                  </h5>
-                  <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose} disabled={loading}></button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" tabIndex="-1" onClick={() => !loading && onClose()}>
+      <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-card rounded-xl shadow-xl">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800">
+              {t('admin.withdrawal.editAutoApprove', { defaultValue: 'Edit Auto Approve' })}
+            </h5>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={loading}><i className="bx bx-x"></i></button>
+          </div>
+          <div className="p-5">
+            <div className="grid grid-cols-12 gap-x-6 gap-3">
+              <div className="col-span-12">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
+                    checked={formData.enabled || false}
+                    onChange={(e) => setFormData({ ...formData, enabled: e.target.checked })}
+                    style={{ cursor: 'pointer' }} />
+                  <label className="text-sm text-surface-700">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</label>
                 </div>
-                <div className="p-5">
-                  <div className="grid grid-cols-12 gap-x-6 gap-3">
-                    <div className="col-span-12">
-                      <div className="flex items-center gap-2 relative inline-flex items-center">
-                        <input
-                      type="checkbox"
-                      className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
-                      checked={formData.enabled || false}
-                      onChange={(e) => setFormData({ ...formData, enabled: e.target.checked })} />
-                    
-                        <label className="text-sm text-surface-700">{t('admin.withdrawal.enabled', { defaultValue: 'Enabled' })}</label>
-                      </div>
-                    </div>
-                    <div className="col-span-12">
-                      <Label>{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</Label>
-                      <Input
-                    type="text"
-
-                    value={formData.thresholdUsd || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20) {
-                        setFormData({ ...formData, thresholdUsd: value });
-                      }
-                    }}
-                    maxLength={20} />
-                  
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-                  <Button
-                type="button"
-
-                onClick={onClose}
-                disabled={loading} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
-                
-                    {t('actions.cancel', { defaultValue: 'Cancel' })}
-                  </Button>
-                  <Button
-                type="button"
-
-                onClick={onSave}
-                disabled={loading}>
-                
-                    {loading ?
-                <>
-                        <Spinner className="w-4 h-4 mr-2" />
-                        {t('actions.saving', { defaultValue: 'Saving...' })}
-                      </> :
-
-                <>
-                        <i className="bx bx-save mr-1"></i>
-                        {t('actions.save', { defaultValue: 'Save' })}
-                      </>
-                }
-                  </Button>
-                </div>
+              </div>
+              <div className="col-span-12">
+                <Label>{t('admin.withdrawal.thresholdUsd', { defaultValue: 'Threshold (USD)' })}</Label>
+                <Input
+                  type="text"
+                  value={formData.thresholdUsd || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || (/^[0-9]*\.?[0-9]*$/.test(value) && value.length <= 20)) {
+                      setFormData({ ...formData, thresholdUsd: value });
+                    }
+                  }}
+                  maxLength={20} />
               </div>
             </div>
           </div>
-        </>);
-
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+            <Button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="bg-surface-200 text-surface-700 hover:bg-surface-300">
+              {t('actions.cancel', { defaultValue: 'Cancel' })}
+            </Button>
+            <Button
+              type="button"
+              onClick={onSave}
+              disabled={loading}>
+              {loading ? (
+                <>
+                  <Spinner className="w-4 h-4 mr-2" />
+                  {t('actions.saving', { defaultValue: 'Saving...' })}
+                </>
+              ) : (
+                <>
+                  <i className="bx bx-save mr-1"></i>
+                  {t('actions.save', { defaultValue: 'Save' })}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

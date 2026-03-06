@@ -5,10 +5,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { createInvoice } from '@/lib/api/invoices';
 import { useAuth, useToast } from '@/app/providers';
 import { useRouter } from 'next/navigation';
-import { listCoins } from '@/lib/api/coins';
+import { useCoins } from '@/hooks/useCoins';
 import CoinNetworkSelector from '@/components/invoices/CoinNetworkSelector';
 import AmountInput, { MAX_DEPOSIT } from '@/components/invoices/AmountInput';
-import { Button, Card, Input, Label } from '../../../../components/ui';
+import { Button, Card, Input, Label } from '@/components/ui';
 
 export default function InvoiceCreatePage() {
   const { t } = useTranslation();
@@ -27,23 +27,8 @@ export default function InvoiceCreatePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [coins, setCoins] = useState([]);
-  const [loadingCoins, setLoadingCoins] = useState(false);
+  const { coins, isLoading: loadingCoins } = useCoins();
   const [selectedCoin, setSelectedCoin] = useState('');
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        setLoadingCoins(true);
-        const data = await listCoins(token);
-        if (mounted) setCoins(data || []);
-      } catch (e) {
-
-
-        // non-blocking
-      } finally {setLoadingCoins(false);}})();return () => {mounted = false;};
-  }, [token]);
 
   const grouped = useMemo(() => {
     const bySymbol = {};
@@ -171,8 +156,8 @@ export default function InvoiceCreatePage() {
 
   return (
     <>
-      {error && <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">{error}</div>}
-      {walletError && <div className="rounded-lg bg-yellow-50 text-yellow-700 px-4 py-3 text-sm mb-4">{walletError}</div>}
+      {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 px-4 py-3 text-sm mb-4">{error}</div>}
+      {walletError && <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950/30 text-yellow-700 dark:text-yellow-400 px-4 py-3 text-sm mb-4">{walletError}</div>}
 
       {hasWallet === null &&
       <Card className="mb-4">
@@ -193,7 +178,8 @@ export default function InvoiceCreatePage() {
         networks={networks} />
       
 
-      <form onSubmit={onSubmit} className="bg-white border border-surface-200 rounded-card shadow-card dark:bg-dark-paper dark:border-dark-border dark:shadow-card-dark">
+      <form onSubmit={onSubmit}>
+        <Card>
         <div className="p-6">
           <input type="hidden" name="coinNetworkId" value={coinNetworkId} />
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -268,7 +254,7 @@ export default function InvoiceCreatePage() {
             </div>
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-surface-100 flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
           <Button type="button" onClick={() => router.back()} disabled={loading} variant="outline-secondary">
             {t('actions.back') || 'Back'}
           </Button>
@@ -276,6 +262,7 @@ export default function InvoiceCreatePage() {
             {loading ? t('common.saving') || 'Saving...' : t('invoice.createTitle')}
           </Button>
         </div>
+        </Card>
       </form>
     </>);
 

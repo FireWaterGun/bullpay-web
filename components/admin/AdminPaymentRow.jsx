@@ -1,24 +1,14 @@
 'use client';
 
-
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { formatAmount } from '@/lib/utils/format';
-import { useDateFormat } from '@/hooks/useDateFormat';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg';
-import { Button, badgeBase } from '../ui';
-
-export function statusBadgeClass(s) {
-  const v = String(s || '').toLowerCase();
-  if (v === 'confirmed' || v === 'completed') return `${badgeBase} bg-green-50 text-green-700`;
-  if (v === 'detecting' || v === 'pending') return `${badgeBase} bg-amber-50 text-amber-700`;
-  if (v === 'confirming' || v === 'processing') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-  if (v === 'failed' || v === 'unconfirmed') return `${badgeBase} bg-red-50 text-red-700`;
-  if (v === 'expired' || v === 'cancelled' || v === 'canceled') return `${badgeBase} bg-surface-100 text-surface-600`;
-  return `${badgeBase} bg-surface-100 text-surface-600`;
-}
+import { Button } from '../ui'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function AdminPaymentRow({ payment, onCopy }) {
-  const { fmtDate } = useDateFormat();
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation();
 
   const coinSymbol = (payment.coin?.symbol || payment.coinSymbol || payment.invoice?.coin?.symbol || '').toUpperCase();
@@ -43,7 +33,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             #{payment.invoiceId}
           </Button> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td className="whitespace-nowrap">
@@ -57,7 +47,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           <div>
             <div className="font-medium leading-[1.2]">{coinSymbol || '-'}</div>
             {networkName &&
-            <small className="text-muted text-xs">{networkName}</small>
+            <small className="text-surface-500 text-xs">{networkName}</small>
             }
           </div>
         </div>
@@ -71,11 +61,11 @@ export default function AdminPaymentRow({ payment, onCopy }) {
         {payment.amountUsd ?
         <span className="font-medium">${formatAmount(payment.amountUsd)}</span> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td className="whitespace-nowrap text-center">
-        <span className={statusBadgeClass(payment.status)}>
+        <span className={getStatusBadgeClass(payment.status, 'payment')}>
           {String(payment.status || '').toUpperCase()}
         </span>
       </td>
@@ -103,7 +93,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           }
           </div> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td>
@@ -121,7 +111,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             </Button>
           </div> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td>
@@ -139,7 +129,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             </Button>
           </div> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td>
@@ -147,7 +137,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       </td>
       <td>
         <span className="whitespace-nowrap">
-          {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-muted">-</span>}
+          {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-surface-500">-</span>}
         </span>
       </td>
       <td>

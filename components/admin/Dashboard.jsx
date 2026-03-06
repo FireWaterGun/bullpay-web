@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { useAuth, useToast } from '@/app/providers';
 import { getPaymentStats } from '@/lib/api/admin';
@@ -10,6 +10,7 @@ import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
 import CardEmptyState from '@/components/CardEmptyState';
 import { Badge, Button, Card } from '../ui'
+import Table from '../ui/Table'
 
 export default function Dashboard() {
   const { t } = useAdminTranslation();
@@ -20,11 +21,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [showAllTrends, setShowAllTrends] = useState(false);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  async function loadStats() {
+  const loadStats = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getPaymentStats(token);
@@ -35,7 +32,11 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, toast, t]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   if (loading) {
     return <PageSpinner />;
@@ -96,8 +97,7 @@ export default function Dashboard() {
                     message={t('admin.dashboard.noData', { defaultValue: 'No data available' })} /> :
 
 
-                  <div className="overflow-x-auto">
-                      <table className="w-full">
+                  <Table>
                         <thead>
                           <tr>
                             <th>{t('admin.dashboard.currency', { defaultValue: 'Currency' })}</th>
@@ -120,14 +120,13 @@ export default function Dashboard() {
                                   {formatCoinAmount(data.totalVolume)}
                                 </span>
                               </td>
-                              <td className="text-right text-muted">
+                              <td className="text-right text-surface-500">
                                 {formatCoinAmount(data.averageAmount)}
                               </td>
                             </tr>
                         )}
                         </tbody>
-                      </table>
-                    </div>
+                      </Table>
                   }
                 </div>
               </Card>
@@ -147,16 +146,16 @@ export default function Dashboard() {
                     message={t('admin.dashboard.noUsers', { defaultValue: 'No users yet' })} /> :
 
 
-                  <div className="list-group list-group-flush">
+                  <div className="divide-y divide-surface-200">
                       {topUsers.map((user, index) =>
-                    <div key={user.userId} className="list-group-item px-0">
+                    <div key={user.userId} className="py-3 first:pt-0 last:pb-0">
                           <div className="flex justify-between items-center">
                             <div>
                               <h6 className="mb-0">
                                 <Badge className="bg-primary-50 text-primary-600 mr-2">{index + 1}</Badge>
                                 {user.email}
                               </h6>
-                              <small className="text-muted">
+                              <small className="text-surface-500">
                                 {user.paymentCount} {t('admin.dashboard.payments', { defaultValue: 'payments' })}
                               </small>
                             </div>
@@ -211,7 +210,7 @@ export default function Dashboard() {
                     <div className="text-right mt-2">
                           <Button
 
-                        onClick={() => setShowAllTrends(!showAllTrends)} size="sm" className="bg-transparent text-primary-600 hover:underline shadow-none p-0 text-muted p-0">
+                        onClick={() => setShowAllTrends(!showAllTrends)} size="sm" className="bg-transparent text-primary-600 hover:underline shadow-none p-0 text-surface-500">
                         
                             {showAllTrends ? t('common.showLess', { defaultValue: 'Show Less' }) : `+${sortedTrendDates.length - 7} more`}
                           </Button>

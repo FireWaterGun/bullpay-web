@@ -34,7 +34,7 @@ const FEATURES = [
 export default function FeaturesSection() {
   return (
     <section id="features" className="py-6">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
         <div className="py-10 px-6 rounded-2xl sm:py-12 sm:px-8 sm:rounded-[20px] lg:py-20 lg:px-16 lg:rounded-3xl bg-slate-200">
           <div className="text-center mb-5">
             <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-surface-900 tracking-[-0.025em] leading-[1.15] mb-3">Why businesses choose us</h2>
@@ -46,7 +46,7 @@ export default function FeaturesSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {FEATURES.map((f) => (
               <div key={f.title}>
-                <div className="bg-white rounded-[20px] p-7 sm:rounded-2xl sm:p-9 h-full transition-transform duration-200 hover:-translate-y-0.5">
+                <div className="bg-card rounded-[20px] p-7 sm:rounded-2xl sm:p-9 h-full transition-transform duration-200 hover:-translate-y-0.5">
                   <div className="w-12 h-12 rounded-[14px] flex items-center justify-center text-[1.3rem] mb-5" style={{ background: f.bg, color: f.color }}>
                     <i className={`bx ${f.icon}`}></i>
                   </div>
@@ -58,7 +58,7 @@ export default function FeaturesSection() {
           </div>
 
           {/* Fee comparison */}
-          <div className="bg-white rounded-[20px] py-5 px-5 sm:py-6 sm:px-6 lg:py-8 lg:px-10">
+          <div className="bg-card rounded-[20px] py-5 px-5 sm:py-6 sm:px-6 lg:py-8 lg:px-10">
             <div className="flex flex-col md:flex-row items-center gap-4">
               <div className="md:flex-1 mb-3 md:mb-0">
                 <h5 className="font-bold mb-1 text-surface-900">Save up to 83% on processing fees</h5>

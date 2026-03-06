@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
 
@@ -15,6 +15,7 @@ import WalletLedgerTable from '@/components/admin/WalletLedgerTable';
 import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
 import { Button, Card, Input, Label, Select } from '../ui';
+import Pagination from '@/components/ui/Pagination'
 
 export default function WalletTransaction() {
   const { t, i18n } = useAdminTranslation();
@@ -60,13 +61,44 @@ export default function WalletTransaction() {
     return f;
   });
 
+  const loadWallet = useCallback(async () => {
+    try {
+      setWalletLoading(true);
+      const data = await getSystemWallet(token, parseInt(walletId));
+      setWallet(data);
+    } catch (error) {
+      logger.error('Failed to load wallet:', error);
+      toast.error(t('admin.wallet.loadError', { defaultValue: 'Failed to load wallet details' }));
+    } finally {
+      setWalletLoading(false);
+    }
+  }, [token, walletId, toast, t]);
+
+  const loadLedger = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getSystemWalletLedger(token, parseInt(walletId), {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setEntries(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load ledger:', error);
+      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load transactions' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, walletId, currentPage, appliedFilters, toast, t]);
+
   useEffect(() => {
     loadWallet();
-  }, [walletId]);
+  }, [loadWallet]);
 
   useEffect(() => {
     if (wallet) loadLedger();
-  }, [currentPage, appliedFilters, wallet]);
+  }, [wallet, loadLedger]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -99,37 +131,6 @@ export default function WalletTransaction() {
     setAppliedFilters({});
     setCurrentPage(1);
     window.history.replaceState(null, '', window.location.pathname);
-  }
-
-  async function loadWallet() {
-    try {
-      setWalletLoading(true);
-      const data = await getSystemWallet(token, parseInt(walletId));
-      setWallet(data);
-    } catch (error) {
-      logger.error('Failed to load wallet:', error);
-      toast.error(t('admin.wallet.loadError', { defaultValue: 'Failed to load wallet details' }));
-    } finally {
-      setWalletLoading(false);
-    }
-  }
-
-  async function loadLedger() {
-    try {
-      setLoading(true);
-      const data = await getSystemWalletLedger(token, parseInt(walletId), {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setEntries(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load ledger:', error);
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load transactions' }));
-    } finally {
-      setLoading(false);
-    }
   }
 
   async function handleCopy(text, e) {
@@ -242,39 +243,7 @@ export default function WalletTransaction() {
             <div className="p-5">
               <WalletLedgerTable entries={entries} loading={loading} t={t} />
 
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', {
-                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                    end: Math.min(pagination.page * pagination.limit, pagination.total),
-                    total: pagination.total,
-                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                  })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      {t('actions.prev', { defaultValue: 'Previous' })}
-                    </Button>
-                    <Button disabled variant="outline-secondary" size="sm">
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-                    
-                      {t('actions.next', { defaultValue: 'Next' })}
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} />
             </div>
           </Card>
         </div>

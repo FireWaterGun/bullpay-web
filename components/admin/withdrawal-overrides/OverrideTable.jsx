@@ -3,6 +3,7 @@
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import CardEmptyState from '@/components/CardEmptyState';
 import { Badge, Button } from '../../ui'
+import Table from '@/components/ui/Table'
 
 function FeeTypeBadge({ config }) {
   if (config.fee?.fixed) {
@@ -14,7 +15,7 @@ function FeeTypeBadge({ config }) {
   if (config.fee?.type) {
     return <Badge className="bg-cyan-50 text-cyan-700">{config.fee.type}</Badge>;
   }
-  return <span className="text-muted">-</span>;
+  return <span className="text-surface-500">-</span>;
 }
 
 function FeeConfigDisplay({ config }) {
@@ -24,7 +25,7 @@ function FeeConfigDisplay({ config }) {
   if (config.fee?.percentage || config.fee?.min) {
     return <code>{config.fee.percentage || '0'}% (min: {config.fee.min}{config.fee.max ? `, max: ${config.fee.max}` : ''})</code>;
   }
-  return <span className="text-muted">-</span>;
+  return <span className="text-surface-500">-</span>;
 }
 
 const TABLE_CONFIG = {
@@ -79,8 +80,7 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
       </div>
 
       {entries.length > 0 ?
-      <div className="overflow-x-auto">
-          <table className="w-full">
+      <Table>
             <thead>
               <tr>
                 <th>{t(cfg.firstColKey, { defaultValue: cfg.firstColDefault })}</th>
@@ -101,7 +101,7 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
                     {config.minimum ?
                 <code>{config.minimum}</code> :
 
-                <span className="text-muted">-</span>
+                <span className="text-surface-500">-</span>
                 }
                   </td>
                   {cfg.showMaximum &&
@@ -109,7 +109,7 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
                       {config.maximum ?
                 <code>{config.maximum}</code> :
 
-                <span className="text-muted">-</span>
+                <span className="text-surface-500">-</span>
                 }
                     </td>
               }
@@ -128,8 +128,7 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
                 </tr>
             )}
             </tbody>
-          </table>
-        </div> :
+          </Table> :
 
       <CardEmptyState
         icon="bx-data"

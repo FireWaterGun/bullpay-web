@@ -23,7 +23,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b text-left text-xs uppercase text-surface-500">
+          <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500 whitespace-nowrap">
             <th className="px-3 py-2" style={{ width: '12%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
             <th className="px-3 py-2 w-[22%]">{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
             <th className="px-3 py-2 w-[15%]">{t('wallet.label', { defaultValue: 'Label' })}</th>
@@ -31,7 +31,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
             <th className="px-3 py-2 whitespace-nowrap" style={{ width: '12%' }}>{t('common.status', { defaultValue: 'Status' })}</th>
           </tr>
         </thead>
-        <tbody className="divide-y">
+        <tbody className="divide-y divide-surface-100">
           {walletItems.map((w, idx) => {
             const coin = w.coin || cnById.get(Number(w.coinNetworkId))?.coin
             const network = w.network || cnById.get(Number(w.coinNetworkId))?.network
@@ -41,10 +41,9 @@ export default function WalletAddressTable({ walletItems, cnById }) {
             const addr = w.address || '-'
             const label = w.label || '-'
             return (
-              <tr key={w.id || idx} className="hover:bg-surface-50">
+              <tr key={w.id || idx} className="hover:bg-surface-50 dark:hover:bg-white/4 transition-colors">
                 <td className="px-3 py-2">
                   <span className="text-surface-500">
-                    {networkSym || coinSym}
                   </span>
                 </td>
                 <td className="px-3 py-2">
@@ -64,7 +63,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                     <span className="font-mono break-all">{addr}</span>
                     <button
                       type="button"
-                      className="ml-2 shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-surface-300 text-surface-500 hover:bg-surface-50"
+                      className="ml-2 shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-surface-200 text-surface-500 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer"
                       onClick={() => copyAddress(addr, w.id || idx)}
                       disabled={!w.address}
                       aria-label={copiedMap[w.id || idx] ? t('common.copied', { defaultValue: 'Copied' }) : t('wallet.copy', { defaultValue: 'Copy' })}

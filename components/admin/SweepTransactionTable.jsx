@@ -6,6 +6,8 @@ import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import TableEmptyState from '@/components/TableEmptyState';
 import { Button, Card, Spinner } from '../ui';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 export default function SweepTransactionTable({
   sweeps,
@@ -25,8 +27,7 @@ export default function SweepTransactionTable({
   return (
     <Card>
       <div className="p-5">
-        <div className="overflow-x-auto overflow-x-auto">
-          <table className="w-full min-w-[1200px]">
+        <Table className="min-w-max">
             <thead>
               <tr className="whitespace-nowrap">
                 <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -54,7 +55,7 @@ export default function SweepTransactionTable({
 
 
               sweeps.map((sweep) =>
-              <tr className="cursor-pointer" key={sweep.id} onClick={() => onNavigate(sweep.id)}>
+              <tr className="cursor-pointer" key={sweep.id} onClick={() => onNavigate(sweep.id)} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onNavigate(sweep.id)} tabIndex={0} role="link">
                     <td>
                       <span className="font-semibold text-primary">{sweep.id}</span>
                     </td>
@@ -62,7 +63,7 @@ export default function SweepTransactionTable({
                       <span className="font-medium">{sweep.userId || sweep.user?.id || '-'}</span>
                     </td>
                     <td>
-                      <span className="text-muted">
+                      <span className="text-surface-500">
                         {(sweep.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
                       </span>
                     </td>
@@ -77,7 +78,7 @@ export default function SweepTransactionTable({
                         <div>
                           <div className="font-medium leading-[1.2]">{(sweep.coinNetwork?.coin?.symbol || '-').toUpperCase()}</div>
                           {sweep.coinNetwork?.network?.name &&
-                      <small className="text-muted text-xs">{sweep.coinNetwork.network.name}</small>
+                      <small className="text-surface-500 text-xs">{sweep.coinNetwork.network.name}</small>
                       }
                         </div>
                       </div>
@@ -90,7 +91,7 @@ export default function SweepTransactionTable({
                       sweep.coinNetwork?.coin?.symbol,
                       sweep.coinNetwork?.network?.symbol
                     )}{' '}
-                        <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>
+                        <span className="text-surface-500">{sweep.coinNetwork?.coin?.symbol || ''}</span>
                       </span>
                     </td>
                     <td className="text-right whitespace-nowrap">
@@ -101,14 +102,14 @@ export default function SweepTransactionTable({
                       sweep.coinNetwork?.coin?.symbol,
                       sweep.coinNetwork?.network?.symbol
                     ) : '-'}{' '}
-                        {sweep.actualAmountRaw && <span className="text-muted">{sweep.coinNetwork?.coin?.symbol || ''}</span>}
+                        {sweep.actualAmountRaw && <span className="text-surface-500">{sweep.coinNetwork?.coin?.symbol || ''}</span>}
                       </span>
                     </td>
                     <td className="text-right whitespace-nowrap">
                       {sweep.amountUsd ?
                   <span className="font-medium">{formatUsd(sweep.amountUsd)}</span> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                     </td>
                     <td className="whitespace-nowrap text-center"><span className={statusBadgeClass(sweep.status)}>{String(sweep.status || '').toUpperCase()}</span></td>
@@ -129,7 +130,7 @@ export default function SweepTransactionTable({
                           </Button>
                         </div> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                     </td>
                     <td>
@@ -169,7 +170,7 @@ export default function SweepTransactionTable({
                     </td>
                     <td>
                       <span className="whitespace-nowrap">
-                        {sweep.completedAt ? fmtDate(sweep.completedAt) : <span className="text-muted">-</span>}
+                        {sweep.completedAt ? fmtDate(sweep.completedAt) : <span className="text-surface-500">-</span>}
                       </span>
                     </td>
                     <td className="text-center">
@@ -187,52 +188,16 @@ export default function SweepTransactionTable({
                     }
                         </Button> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                     </td>
                   </tr>
               )
               }
             </tbody>
-          </table>
-        </div>
+          </Table>
 
-        {pagination && pagination.total > 0 &&
-        <div className="flex justify-between items-center mt-4">
-            <div className="text-muted text-sm">
-              {t('invoices.showingEntries', {
-              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-              end: Math.min(pagination.page * pagination.limit, pagination.total),
-              total: pagination.total,
-              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-            })}
-            </div>
-            <div className="inline-flex rounded-lg shadow-sm">
-              <Button
-
-              disabled={!pagination.hasPrev || loading}
-              onClick={() => onPageChange(pagination.page - 1)} variant="outline-secondary" size="sm">
-              
-                <i className="bx bx-chevron-left"></i>
-                {t('actions.prev', { defaultValue: 'Previous' })}
-              </Button>
-              <Button
-
-              disabled variant="outline-secondary" size="sm">
-              
-                {pagination.page} / {pagination.totalPages}
-              </Button>
-              <Button
-
-              disabled={!pagination.hasNext || loading}
-              onClick={() => onPageChange(pagination.page + 1)} variant="outline-secondary" size="sm">
-              
-                {t('actions.next', { defaultValue: 'Next' })}
-                <i className="bx bx-chevron-right"></i>
-              </Button>
-            </div>
-          </div>
-        }
+        <Pagination pagination={pagination} onPageChange={onPageChange} loading={loading} />
       </div>
     </Card>);
 

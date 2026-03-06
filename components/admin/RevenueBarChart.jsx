@@ -8,11 +8,11 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
   if (!data || data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center" style={{ height }}>
-        <div className="rounded-full bg-surface-100 text-surface-600 flex items-center justify-center mb-3 w-16 h-16">
+        <div className="rounded-full bg-surface-100 text-surface-600 dark:bg-dark-elevated flex items-center justify-center mb-3 w-16 h-16">
           <i className="bx bx-bar-chart-alt-2 text-[2rem]"></i>
         </div>
         <span className="font-medium text-surface-900">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
-        <span className="text-muted text-sm mt-1">{t ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' }) : 'Select a date range with data'}</span>
+        <span className="text-surface-500 text-sm mt-1">{t ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' }) : 'Select a date range with data'}</span>
       </div>
     )
   }
@@ -27,10 +27,10 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
     const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
     const nice = roughStep / mag
     let step
-    if (nice <= 1.5) step = 1 * mag
-    else if (nice <= 3) step = 2 * mag
-    else if (nice <= 7) step = 5 * mag
-    else step = 10 * mag
+    if (nice <= 1.5) { step = Number(mag); }
+    else if (nice <= 3) { step = 2 * mag; }
+    else if (nice <= 7) { step = 5 * mag; }
+    else { step = 10 * mag; }
     const niceMin = Math.floor(min / step) * step
     const niceMax = Math.ceil(max / step) * step
     const labels = []
@@ -154,7 +154,7 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                 const cx = i * barGroupW + barGroupW / 2
                 const cy = yPos(item.profit || 0)
                 return (
-                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" stroke="#fff" strokeWidth="1.5">
+                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" className="stroke-card" strokeWidth="1.5">
                     <title>{t ? t('admin.operatingProfit', { defaultValue: 'Profit' }) : 'Profit'}: {formatCurrency(item.profit)}</title>
                   </circle>
                 )
@@ -181,8 +181,8 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
         <div className="flex" style={{ marginLeft: yAxisW, width: barAreaW }}>
           {data.map((item) => (
             <div className="shrink-0 text-center" key={`x-${item.date}`} style={{ width: barGroupW }}>
-              <small className="text-muted text-xs">
-                {item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
+              <small className="text-surface-500 text-xs">
+                {item.date ? new Date(`${item.date  }T00:00:00`).toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
               </small>
             </div>
           ))}

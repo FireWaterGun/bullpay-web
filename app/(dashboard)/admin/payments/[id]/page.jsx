@@ -1,23 +1,25 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useParams } from 'next/navigation'
 
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getAdminPayment } from '@/lib/api/admin';
-import { formatAmount } from '@/lib/utils/format';
-import { useDateFormat } from '@/hooks/useDateFormat';
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getAdminPayment } from '@/lib/api/admin'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import { logger } from '@/lib/utils/logger';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Alert, Button, Card, badgeBase } from '../../../../../components/ui';
+import { Alert, Button, Card } from '@/components/ui'
+import Table from '@/components/ui/Table'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function AdminPaymentDetail() {
-  const { fmtDate } = useDateFormat();
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation();
   const { id } = useParams();
   const { token } = useAuth();
@@ -25,11 +27,7 @@ export default function AdminPaymentDetail() {
   const [loading, setLoading] = useState(false);
   const [payment, setPayment] = useState(null);
 
-  useEffect(() => {
-    loadPayment();
-  }, [id]);
-
-  async function loadPayment() {
+  const loadPayment = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAdminPayment(token, id);
@@ -40,17 +38,11 @@ export default function AdminPaymentDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t])
 
-  function statusBadgeClass(s) {
-    const v = String(s || '').toLowerCase();
-    if (v === 'confirmed' || v === 'completed') return `${badgeBase} bg-green-50 text-green-700`;
-    if (v === 'detecting' || v === 'pending') return `${badgeBase} bg-amber-50 text-amber-700`;
-    if (v === 'confirming' || v === 'processing') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-    if (v === 'failed' || v === 'unconfirmed') return `${badgeBase} bg-red-50 text-red-700`;
-    if (v === 'expired' || v === 'cancelled' || v === 'canceled') return `${badgeBase} bg-surface-100 text-surface-600`;
-    return `${badgeBase} bg-surface-100 text-surface-600`;
-  }
+  useEffect(() => {
+    loadPayment();
+  }, [loadPayment]);
 
   async function handleCopy(text) {
     const ok = await copyText(text);
@@ -95,11 +87,11 @@ export default function AdminPaymentDetail() {
                   <div>
                     <h4 className="mb-0">Payment #{payment.id}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={statusBadgeClass(payment.status)}>
+                      <span className={getStatusBadgeClass(payment.status, 'payment')}>
                         {String(payment.status || '').toUpperCase()}
                       </span>
-                      <span className="text-muted">•</span>
-                      <span className="text-muted">{coinSymbol} on {networkName || networkSymbol}</span>
+                      <span className="text-surface-500">•</span>
+                      <span className="text-surface-500">{coinSymbol} on {networkName || networkSymbol}</span>
                     </div>
                   </div>
                 </div>
@@ -117,14 +109,14 @@ export default function AdminPaymentDetail() {
                 </div>
                 <div className="p-5">
                   <div className="overflow-x-auto">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="font-medium">{payment.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Invoice ID</td>
+                        <td className="text-surface-500">Invoice ID</td>
                         <td>
                           {payment.invoiceId ?
                             <Button variant="text-primary" size="sm" className="p-0 font-medium"
@@ -134,45 +126,45 @@ export default function AdminPaymentDetail() {
                               #{payment.invoiceId}
                             </Button> :
 
-                            <span className="text-muted">-</span>
+                            <span className="text-surface-500">-</span>
                             }
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
-                          <span className={statusBadgeClass(payment.status)}>
+                          <span className={getStatusBadgeClass(payment.status, 'payment')}>
                             {String(payment.status || '').toUpperCase()}
                           </span>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td className="font-medium">{formatAmount(payment.amount)} {coinSymbol}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Actual Amount</td>
+                        <td className="text-surface-500">Actual Amount</td>
                         <td className="font-medium">{formatAmount(payment.actualAmount)} {coinSymbol}</td>
                       </tr>
                       {payment.amountUsd &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
                           <td className="font-medium">${formatAmount(payment.amountUsd)}</td>
                         </tr>
                         }
                       {payment.usdRate &&
                         <tr>
-                          <td className="text-muted">USD Rate</td>
+                          <td className="text-surface-500">USD Rate</td>
                           <td>
                             ${formatAmount(payment.usdRate)}
                             {payment.rateSource &&
-                            <small className="text-muted ml-1">({payment.rateSource})</small>
+                            <small className="text-surface-500 ml-1">({payment.rateSource})</small>
                             }
                           </td>
                         </tr>
                         }
                       <tr>
-                        <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="flex items-center">
                             <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-2" />
@@ -181,48 +173,48 @@ export default function AdminPaymentDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.network', { defaultValue: 'Network' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.network', { defaultValue: 'Network' })}</td>
                         <td>{networkName || networkSymbol || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.confirmations', { defaultValue: 'Confirmations' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.confirmations', { defaultValue: 'Confirmations' })}</td>
                         <td>
                           {payment.confirmations != null ? payment.confirmations : '-'}
                           {payment.requiredConfirmations != null &&
-                            <small className="text-muted"> / {payment.requiredConfirmations} required</small>
+                            <small className="text-surface-500"> / {payment.requiredConfirmations} required</small>
                             }
                         </td>
                       </tr>
                       {payment.currencyType &&
                         <tr>
-                          <td className="text-muted">Currency Type</td>
+                          <td className="text-surface-500">Currency Type</td>
                           <td>{payment.currencyType}</td>
                         </tr>
                         }
                       <tr>
-                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{fmtDate(payment.createdAt || payment.created_at)}</td>
                       </tr>
                       {payment.detectedAt &&
                         <tr>
-                          <td className="text-muted">Detected At</td>
+                          <td className="text-surface-500">Detected At</td>
                           <td>{fmtDate(payment.detectedAt)}</td>
                         </tr>
                         }
                       {payment.confirmedAt &&
                         <tr>
-                          <td className="text-muted">Confirmed At</td>
+                          <td className="text-surface-500">Confirmed At</td>
                           <td>{fmtDate(payment.confirmedAt)}</td>
                         </tr>
                         }
                       {payment.completedAt &&
                         <tr>
-                          <td className="text-muted">Completed At</td>
+                          <td className="text-surface-500">Completed At</td>
                           <td>{fmtDate(payment.completedAt)}</td>
                         </tr>
                         }
                     </tbody>
-                  </table>
+                  </Table>
                   </div>
                 </div>
               </Card>
@@ -235,18 +227,18 @@ export default function AdminPaymentDetail() {
                 </div>
                 <div className="p-5">
                   <div className="overflow-x-auto">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="font-medium">{payment.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                         <td>
                           {payment.txHash ?
                             <div className="flex items-center">
-                              <code className="text-body mr-2 text-[0.8rem] break-all">
+                              <code className="text-surface-800 mr-2 text-[0.8rem] break-all">
                                 {payment.txHash}
                               </code>
                               {explorerUrl &&
@@ -262,16 +254,16 @@ export default function AdminPaymentDetail() {
                               }
                             </div> :
 
-                            <span className="text-muted">-</span>
+                            <span className="text-surface-500">-</span>
                             }
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.fromAddress', { defaultValue: 'From Address' })}</td>
                         <td>
                           {payment.fromAddress ?
                             <div className="flex items-center">
-                              <code className="text-body mr-2 text-[0.8rem] break-all">
+                              <code className="text-surface-800 mr-2 text-[0.8rem] break-all">
                                 {payment.fromAddress}
                               </code>
                               <Button
@@ -283,16 +275,16 @@ export default function AdminPaymentDetail() {
                               </Button>
                             </div> :
 
-                            <span className="text-muted">-</span>
+                            <span className="text-surface-500">-</span>
                             }
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.toAddress', { defaultValue: 'To Address' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.toAddress', { defaultValue: 'To Address' })}</td>
                         <td>
                           {payment.toAddress ?
                             <div className="flex items-center">
-                              <code className="text-body mr-2 text-[0.8rem] break-all">
+                              <code className="text-surface-800 mr-2 text-[0.8rem] break-all">
                                 {payment.toAddress}
                               </code>
                               <Button
@@ -304,18 +296,18 @@ export default function AdminPaymentDetail() {
                               </Button>
                             </div> :
 
-                            <span className="text-muted">-</span>
+                            <span className="text-surface-500">-</span>
                             }
                         </td>
                       </tr>
                       {payment.blockNumber &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.blockNumber', { defaultValue: 'Block Number' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.blockNumber', { defaultValue: 'Block Number' })}</td>
                           <td>{payment.blockNumber}</td>
                         </tr>
                         }
                     </tbody>
-                  </table>
+                  </Table>
                   </div>
                 </div>
               </Card>

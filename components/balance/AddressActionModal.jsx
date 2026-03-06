@@ -1,5 +1,5 @@
 'use client';
-import { Button, Input, Label, Spinner } from '../ui';
+import { Button, Input, Label, Spinner } from '@/components/ui';
 
 export default function AddressActionModal({
   selectedAddress,
@@ -15,18 +15,18 @@ export default function AddressActionModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !actionLoading && onClose()}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b">
+      <div className="bg-card rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
           <h5 className="font-semibold text-lg flex items-center">
             <i className={`bx ${actionConfig.icon} mr-2`}></i>
             {actionConfig.title}
           </h5>
-          <button type="button" className="text-surface-400 hover:text-surface-600 text-xl" onClick={onClose} disabled={actionLoading}>
+          <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={actionLoading}>
             <i className="bx bx-x"></i>
           </button>
         </div>
         <div className="px-6 py-4">
-          <div className="rounded-lg bg-surface-50 border border-surface-200 mb-3">
+          <div className="rounded-lg bg-surface-50 dark:bg-dark-elevated border border-surface-200 mb-3">
             <div className="py-2 px-3">
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -46,7 +46,7 @@ export default function AddressActionModal({
           </div>
 
           {actionType === 'delete' &&
-          <div className="rounded-lg bg-red-50 text-red-700 p-3 flex items-center mb-3" role="alert">
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 p-3 flex items-center mb-3" role="alert">
               <i className="bx bx-error-circle mr-2 text-xl"></i>
               <div>This action is <strong>irreversible</strong>. The address will be permanently deleted.</div>
             </div>
@@ -78,7 +78,7 @@ export default function AddressActionModal({
             </label>
           }
         </div>
-        <div className="flex justify-end gap-2 px-6 py-4 border-t">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-200">
           <Button type="button" onClick={onClose} disabled={actionLoading} variant="outline-secondary">
             Cancel
           </Button>

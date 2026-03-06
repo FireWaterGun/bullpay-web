@@ -1,29 +1,27 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useToast } from '@/app/providers';
 import { getSystemLedgerEntries } from '@/lib/api/admin';
-import { listCoins } from '@/lib/api/coins';
+import { useCoins } from '@/hooks/useCoins';
 import SystemLedgerFilters from '@/components/ledger/SystemLedgerFilters';
 import SystemLedgerTable from '@/components/ledger/SystemLedgerTable';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Card } from '../../../../components/ui'
+import { Card } from '@/components/ui'
 
 export default function SystemLedgerList() {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token } = useAuth();
   const toast = useToast();
   const searchParams = useNextSearchParams();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const initType = searchParams.get('type') || '';
   const initWalletId = searchParams.get('walletId') || '';
@@ -39,7 +37,7 @@ export default function SystemLedgerList() {
   const [entries, setEntries] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [currentPage, setCurrentPage] = useState(initPage);
-  const [coinNetworks, setCoinNetworks] = useState([]);
+  const { coins: coinNetworks } = useCoins();
 
   const [typeFilter, setTypeFilter] = useState(initType);
   const [walletIdFilter, setWalletIdFilter] = useState(initWalletId);
@@ -63,13 +61,27 @@ export default function SystemLedgerList() {
     return f;
   });
 
-  useEffect(() => {
-    loadEntries();
-  }, [currentPage, appliedFilters]);
+  const loadEntries = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getSystemLedgerEntries(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setEntries(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load system ledger entries:', error);
+      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {});
-  }, []);
+    loadEntries();
+  }, [loadEntries]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -108,24 +120,6 @@ export default function SystemLedgerList() {
     window.history.replaceState(null, '', window.location.pathname);
   }
 
-  async function loadEntries() {
-    try {
-      setLoading(true);
-      const data = await getSystemLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setEntries(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load system ledger entries:', error);
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   if (loading && entries.length === 0) {
     return <PageSpinner />;
   }
@@ -142,7 +136,7 @@ export default function SystemLedgerList() {
                     <i className="bx bx-server mr-2"></i>
                     {t('admin.ledger.systemLedger', { defaultValue: 'System Ledger' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.ledger.systemLedgerDesc', { defaultValue: 'View all system ledger entries' })}
                   </p>
                 </div>

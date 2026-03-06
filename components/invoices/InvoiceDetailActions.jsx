@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import CountdownTimer from './CountdownTimer';
-import { Button, Card } from '../ui';
+import { Button, Card } from '@/components/ui';
 
 export default function InvoiceDetailActions({ invoice, explorer }) {
   const { t } = useTranslation();
@@ -14,11 +14,11 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
   const [copiedPublic, setCopiedPublic] = useState(false);
   const [shareError, setShareError] = useState('');
 
-  const buildPublicUrl = useCallback(() => {
+  const buildPublicUrl = () => {
     if (!invoice?.publicCode) return '';
     if (typeof window === 'undefined') return `/pay/${invoice.publicCode}`;
     return `${window.location.origin}/pay/${invoice.publicCode}`;
-  }, [invoice?.publicCode]);
+  };
 
   const handleOpenPublic = () => {
     const url = buildPublicUrl();
@@ -94,7 +94,7 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
               {t('nav.history') || 'All invoices'}
             </Button>
           </div>
-          {shareError && <div className="rounded-lg bg-amber-50 text-amber-700 mt-3 py-2 px-3 text-sm">{shareError}</div>}
+          {shareError && <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 mt-3 py-2 px-3 text-sm">{shareError}</div>}
         </div>
       </Card>
       <Card>

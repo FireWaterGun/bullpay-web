@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
@@ -13,7 +13,7 @@ import AddressActionModal from '@/components/balance/AddressActionModal';
 import AddressAuditLog from '@/components/balance/AddressAuditLog';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card } from '../../../../components/ui'
+import { Button, Card } from '@/components/ui'
 
 export default function WithdrawalAddressDetailPage() {
   const params = useParams();
@@ -29,11 +29,8 @@ export default function WithdrawalAddressDetailPage() {
   const [actionType, setActionType] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
-  useEffect(() => {
-    if (token && addressId) loadAddress();
-  }, [token, addressId]);
-
-  async function loadAddress() {
+  const loadAddress = useCallback(async () => {
+    if (!token || !addressId) return;
     try {
       setLoading(true);
       const data = await getWithdrawalAddressById(token, addressId);
@@ -43,7 +40,11 @@ export default function WithdrawalAddressDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, addressId, toast, t]);
+
+  useEffect(() => {
+    loadAddress();
+  }, [loadAddress]);
 
   async function handleCopy(text) {
     const ok = await copyToClipboard(text);
@@ -83,7 +84,7 @@ export default function WithdrawalAddressDetailPage() {
   return (
     <>
       <div className="flex items-center mb-6">
-        <button className="mr-2 p-2 rounded-lg hover:bg-surface-100 text-surface-600" onClick={() => router.back()}>
+        <button type="button" className="mr-2 p-2 rounded-lg hover:bg-surface-100 text-surface-600" onClick={() => router.back()}>
           <i className="bx bx-arrow-back"></i>
         </button>
         <div>
@@ -128,7 +129,7 @@ export default function WithdrawalAddressDetailPage() {
                       <div className="flex items-center gap-1">
                         <span className="font-mono text-sm break-all">{address.address || '-'}</span>
                         {address.address &&
-                          <button className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 shrink-0" onClick={() => handleCopy(address.address)}>
+                          <button type="button" className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 shrink-0" onClick={() => handleCopy(address.address)}>
                             <i className="bx bx-copy"></i>
                           </button>
                           }
@@ -161,7 +162,7 @@ export default function WithdrawalAddressDetailPage() {
                   </Button>
                 }
                 {address.status !== 'suspended' &&
-                <button className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700" onClick={() => setActionType('suspend')}>
+                <button type="button" className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700" onClick={() => setActionType('suspend')}>
                     <i className="bx bx-block mr-1"></i>{t('common.suspend', { defaultValue: 'Suspend' })}
                   </button>
                 }

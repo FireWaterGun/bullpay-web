@@ -35,15 +35,8 @@
   --color-surface-900: #0f172a;
   --color-surface-950: #020617;
 
-  /* Dark theme surfaces */
-  --color-dark-body: #161820;
-  --color-dark-paper: #1e2028;
+  /* Dark elevated surface (used via dark:bg-dark-elevated for dropdowns, code blocks etc.) */
   --color-dark-elevated: #232630;
-  --color-dark-border: #2e3240;
-  --color-dark-border-hover: #3a3e4a;
-  --color-dark-text: #a0a4b0;
-  --color-dark-text-secondary: #858a98;
-  --color-dark-text-muted: #585c68;
 
   /* Status Colors */
   --color-success-500: #22c55e;
@@ -97,8 +90,38 @@
   --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* Semantic surface tokens (auto-switch in dark mode) */
+  --color-body: #f5f5f9;
+  --color-card: #ffffff;
+  --color-raised: #ffffff;
+
   /* Breakpoints — override Tailwind v4 xl to match our sidebar CSS @media (1200px) */
   --breakpoint-xl: 1200px;
+}
+
+/* ── Dark mode surface palette override ──
+   Makes text-surface-*, bg-surface-*, border-surface-* auto-switch.
+   No need for dark:text-white, dark:text-dark-text, dark:border-dark-border etc. */
+[data-theme="dark"] {
+  /* Backgrounds: light→dark (50=body, 100=paper, 200=border/divider, 300=border-hover) */
+  --color-surface-50:  #161820;
+  --color-surface-100: #1e2028;
+  --color-surface-200: #2e3240;
+  --color-surface-300: #3a3e4a;
+
+  /* Text: dark→light (400=muted, 500/600=secondary, 700/800=body, 900/950=heading) */
+  --color-surface-400: #585c68;
+  --color-surface-500: #858a98;
+  --color-surface-600: #858a98;
+  --color-surface-700: #a0a4b0;
+  --color-surface-800: #a0a4b0;
+  --color-surface-900: #ffffff;
+  --color-surface-950: #ffffff;
+
+  /* Semantic surfaces */
+  --color-body:   #161820;
+  --color-card:   #1e2028;
+  --color-raised: #232630;
 }
 
 /* ── Base Layer ── */
@@ -115,23 +138,13 @@
   body {
     @apply font-sans text-base antialiased;
     color: var(--color-surface-800);
-    background-color: var(--color-surface-100);
+    background-color: var(--color-body);
   }
 
-  /* Dark mode */
-  [data-theme="dark"] body {
-    color: var(--color-dark-text);
-    background-color: var(--color-dark-body);
-  }
-
-  /* Headings */
+  /* Headings — surface-900 auto-switches to white in dark mode */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold;
     color: var(--color-surface-900);
-  }
-
-  [data-theme="dark"] :is(h1, h2, h3, h4, h5, h6) {
-    color: var(--color-dark-text);
   }
 
   /* Links */
@@ -166,10 +179,8 @@
   .text-danger { color: var(--color-danger-500) !important; }
   .text-warning { color: var(--color-warning-600) !important; }
   .text-info { color: var(--color-info-600) !important; }
-  .text-muted { color: var(--color-surface-500) !important; }
 
   [data-theme="dark"] .text-primary { color: var(--color-primary-400) !important; }
-  [data-theme="dark"] .text-muted { color: var(--color-dark-text-secondary) !important; }
 }
 
 /* ── Utility Layer ── */
@@ -251,10 +262,10 @@
   left: 0;
   bottom: 0;
   width: var(--spacing-sidebar);
-  background: #fff;
+  background: var(--color-card);
   border-right: none;
   box-shadow: 0 0.125rem 0.375rem 0 rgba(34, 48, 62, 0.08);
-  z-index: 1050;
+  z-index: 40;
   display: flex;
   flex-direction: column;
   transition: width 0.3s;
@@ -533,7 +544,7 @@ li.bp-active-item::after {
   display: flex;
   flex-direction: column;
   transition: margin-left 0.3s;
-  background: #f5f5f9;
+  background: var(--color-body);
 }
 @media (min-width: 1200px) {
   .bp-main {
@@ -548,7 +559,7 @@ li.bp-active-item::after {
 .bp-navbar {
   position: sticky;
   top: 0;
-  z-index: 1040;
+  z-index: 9;
   margin: 12px 24px 0;
   padding: 0.5rem 1.25rem;
   border-radius: 0.5rem;
@@ -572,7 +583,7 @@ li.bp-active-item::after {
   position: fixed;
   inset: 0;
   background: rgba(34, 48, 62, 0.5);
-  z-index: 1045;
+  z-index: 45;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
@@ -588,7 +599,12 @@ li.bp-active-item::after {
 
 /* Sidebar */
 [data-theme="dark"] .bp-sidebar {
-  background: #2b2c40;
+  /* Scoped surface overrides — Sneat purple-tint palette for sidebar */
+  --color-surface-800: #e1def5;
+  --color-surface-700: #d2cfeb;
+  --color-surface-600: #b2b2c4;
+  --color-surface-500: #b2b2c4;
+  --color-surface-400: rgba(225, 222, 245, 0.38);
   box-shadow: 0 0.125rem 0.375rem 0 rgba(20, 20, 29, 0.2);
 }
 
@@ -602,35 +618,12 @@ li.bp-active-item::after {
   color: #b2b2c4;
 }
 
-/* Sidebar text in dark */
-[data-theme="dark"] .bp-sidebar .text-surface-800 {
-  color: #e1def5 !important;
-}
-[data-theme="dark"] .bp-sidebar .text-surface-600 {
-  color: #b2b2c4 !important;
-}
-[data-theme="dark"] .bp-sidebar .text-surface-500 {
-  color: #b2b2c4 !important;
-}
-[data-theme="dark"] .bp-sidebar .text-surface-400 {
-  color: rgba(225, 222, 245, 0.38) !important;
-}
-
-/* Sidebar hover in dark */
+/* Sidebar hover backgrounds in dark (can't scope — would affect solid bg-surface-* too) */
 [data-theme="dark"] .bp-sidebar .hover\:bg-surface-100:hover {
   background-color: rgba(230, 230, 241, 0.06) !important;
 }
 [data-theme="dark"] .bp-sidebar .hover\:bg-surface-50:hover {
   background-color: rgba(230, 230, 241, 0.04) !important;
-}
-[data-theme="dark"] .bp-sidebar .hover\:text-surface-800:hover {
-  color: #e1def5 !important;
-}
-[data-theme="dark"] .bp-sidebar .hover\:text-surface-700:hover {
-  color: #d2cfeb !important;
-}
-[data-theme="dark"] .bp-sidebar .hover\:text-surface-600:hover {
-  color: #b2b2c4 !important;
 }
 
 /* Section header in dark */
@@ -648,12 +641,11 @@ li.bp-active-item::after {
 
 /* Navbar in dark */
 [data-theme="dark"] .bp-navbar {
-  background: rgba(43, 44, 64, 0.88);
+  /* Scoped surface override for navbar icons */
+  --color-surface-500: #b2b2c4;
+  background: var(--color-card);
   backdrop-filter: saturate(200%) blur(6px);
   box-shadow: 0 0.125rem 0.375rem 0 rgba(20, 20, 29, 0.12);
-}
-[data-theme="dark"] .bp-navbar .text-surface-500 {
-  color: #b2b2c4 !important;
 }
 [data-theme="dark"] .bp-navbar .hover\:bg-surface-100:hover {
   background-color: rgba(230, 230, 241, 0.06) !important;
@@ -712,39 +704,11 @@ li.bp-active-item::after {
   }
 }
 
-/* Main content area in dark */
-[data-theme="dark"] .bp-main {
-  background: var(--color-dark-body);
-}
+/* Main content area — uses var(--color-body), auto-switches in dark */
 
 /* Footer in dark */
 [data-theme="dark"] .bp-main footer {
   color: rgba(225, 222, 245, 0.38);
-}
-
-/* ══════════════════════════════════════════════════════════════
-   Dropdown Utilities
-   ══════════════════════════════════════════════════════════════ */
-
-.bp-dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.9375rem;
-  color: var(--color-surface-700);
-  transition: background 0.15s;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.bp-dropdown-item:hover {
-  background: var(--color-surface-50);
-}
-[data-theme="dark"] .bp-dropdown-item {
-  color: #e1def5;
-}
-[data-theme="dark"] .bp-dropdown-item:hover {
-  background: rgba(230, 230, 241, 0.06);
 }
 
 /* ══════════════════════════════════════════════════════════════

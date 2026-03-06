@@ -24,7 +24,7 @@ export default function CoinSelector({ coins, formData, setFormData, isEdit }) {
               <div className="col-span-6 sm:col-span-4 md:col-span-3" key={coin.id}>
                 <div
                   role="button"
-                  className={`bg-white rounded-lg shadow-card dark:bg-dark-paper dark:shadow-card-dark h-full border-2 overflow-hidden ${isActive ? 'border-primary bg-primary-50 text-primary-600 shadow-sm' : 'border-2'}`}
+                  className={`bg-card rounded-lg shadow-card dark:shadow-card-dark h-full border-2 overflow-hidden ${isActive ? 'border-primary bg-primary-50 text-primary-600 shadow-sm' : 'border-2'}`}
                   onClick={() => {
                     if (!isEdit) {
                       setFormData((prev) => ({
@@ -35,11 +35,11 @@ export default function CoinSelector({ coins, formData, setFormData, isEdit }) {
                   }}
                   style={isEdit ? { cursor: 'default' } : {}}>
                   
-                  <div className="p-5 flex items-center gap-3 p-3">
+                  <div className="p-3 flex items-center gap-3">
                     <CoinImg coin={coin} symbol={coin.symbol} size={40} showFallback />
                     <div className="grow min-width-0">
                       <div className="font-bold">{coin.symbol}</div>
-                      <div className="text-muted text-sm truncate">{coin.name}</div>
+                      <div className="text-surface-500 text-sm truncate">{coin.name}</div>
                     </div>
                   </div>
                 </div>
@@ -47,7 +47,7 @@ export default function CoinSelector({ coins, formData, setFormData, isEdit }) {
 
           })}
           {coins.length === 0 &&
-          <div className="col-span-12 text-muted">{t('common.noData', { defaultValue: 'No data' })}</div>
+          <div className="col-span-12 text-surface-500">{t('common.noData', { defaultValue: 'No data' })}</div>
           }
         </div>
       </div>

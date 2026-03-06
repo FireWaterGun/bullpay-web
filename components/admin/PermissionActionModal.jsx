@@ -34,15 +34,15 @@ export default function PermissionActionModal({ action, role, permission, reason
 
   const cfg = MODAL_CONFIG[action];
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="bg-white rounded-xl shadow-xl">
+        <div className="bg-card rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
             <h5 className="text-lg font-semibold text-surface-800">
               <i className={`bx ${cfg.icon} ${cfg.iconColor} mr-2`}></i>
               {cfg.title}
             </h5>
-            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700" onClick={onClose}></button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-5">
             <div className="mb-3">
@@ -55,12 +55,12 @@ export default function PermissionActionModal({ action, role, permission, reason
                 onChange={(e) => onPermissionChange(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && onSubmit()} />
               
-              <small className="text-muted mt-1 block">
+              <small className="text-surface-500 mt-1 block">
                 {t('admin.permissions.enterPermission', { defaultValue: 'Enter the permission to {{verb}} {{role}}', verb: cfg.verb, role: formatRoleLabel(role) })}
               </small>
             </div>
             <div>
-              <Label>{t('admin.permissions.reason', { defaultValue: 'Reason' })} <span className="text-muted">{t('admin.permissions.optional', { defaultValue: '(optional)' })}</span></Label>
+              <Label>{t('admin.permissions.reason', { defaultValue: 'Reason' })} <span className="text-surface-500">{t('admin.permissions.optional', { defaultValue: '(optional)' })}</span></Label>
               <Input
 
                 rows="2"

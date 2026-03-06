@@ -13,7 +13,7 @@ const solid = {
   warning:
     'bg-warning-500 text-white border-warning-500 hover:bg-warning-600 hover:border-warning-600',
   secondary:
-    'bg-surface-200 text-surface-700 border-surface-200 hover:bg-surface-300 dark:bg-white/8 dark:text-surface-900-text dark:border-transparent dark:hover:bg-white/12',
+    'bg-surface-200 text-surface-700 border-surface-200 hover:bg-surface-300 dark:bg-white/8 dark:border-transparent dark:hover:bg-white/12',
   info:
     'bg-info-500 text-white border-info-500 hover:bg-info-600 hover:border-info-600',
 }
@@ -22,7 +22,7 @@ const outline = {
   primary:
     'bg-transparent text-primary-600 border-primary-600 hover:bg-primary-600 hover:text-white dark:text-primary-400 dark:border-primary-500/40 dark:hover:bg-primary-600 dark:hover:text-white dark:hover:border-primary-600',
   secondary:
-    'bg-transparent text-surface-500 border-surface-300 hover:text-surface-700 hover:bg-surface-100 hover:border-surface-400 dark:text-surface-900-text dark:border-dark-border dark:hover:text-[#e2e4e9] dark:hover:bg-white/6 dark:hover:border-dark-border-hover',
+    'bg-transparent text-surface-500 border-surface-200 hover:text-surface-700 hover:bg-surface-100 hover:border-surface-300 dark:hover:bg-white/6',
   danger:
     'bg-transparent text-danger-500 border-danger-500 hover:bg-danger-500 hover:text-white dark:text-[#fca5a5] dark:border-danger-500/40 dark:hover:bg-danger-600 dark:hover:text-white dark:hover:border-danger-600',
   warning:
@@ -37,12 +37,12 @@ const text = {
   primary:
     'bg-transparent text-primary-600 border-transparent shadow-none hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-500/10',
   secondary:
-    'bg-transparent text-surface-600 border-transparent shadow-none hover:bg-surface-100 dark:text-surface-900-text dark:hover:bg-white/6',
+    'bg-transparent text-surface-600 border-transparent shadow-none hover:bg-surface-100 dark:hover:bg-white/6',
 }
 
 const label = {
   secondary:
-    'bg-surface-100 text-surface-700 border-transparent shadow-none hover:bg-surface-200 dark:bg-white/8 dark:text-surface-900-text dark:hover:bg-white/12',
+    'bg-surface-100 text-surface-700 border-transparent shadow-none hover:bg-surface-200 dark:bg-white/8 dark:hover:bg-white/12',
 }
 
 /* Merge maps for lookup:  "primary" | "outline-secondary" | "text-primary" | "label-secondary" */
@@ -93,7 +93,7 @@ export default function Button(props) {
   }
 
   return (
-    <button className={cls} {...rest}>
+    <button type="button" className={cls} {...rest}>
       {children}
     </button>
   )

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useTranslation } from 'react-i18next';
@@ -10,13 +10,8 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Card, Button } from '../../../../components/ui';
-
-const EVENT_OPTIONS = [
-{ value: 'payment.completed', label: 'Completed', color: 'success' },
-{ value: 'payment.expired', label: 'Expired', color: 'warning' },
-{ value: 'payment.cancelled', label: 'Cancelled', color: 'secondary' },
-{ value: 'payment.failed', label: 'Failed', color: 'danger' }];
+import { Card, Button } from '@/components/ui';
+import { eventBadge, httpStatusBadge, successBadge } from '@/components/webhook/webhookHelpers';
 
 
 export default function WebhookLogDetailPage() {
@@ -29,11 +24,7 @@ export default function WebhookLogDetailPage() {
   const [loading, setLoading] = useState(false);
   const [log, setLog] = useState(null);
 
-  useEffect(() => {
-    loadLog();
-  }, [id]);
-
-  async function loadLog() {
+  const loadLog = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getUserWebhookLog(token, id);
@@ -44,26 +35,11 @@ export default function WebhookLogDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t]);
 
-  function eventBadge(event) {
-    if (!event) return '-';
-    const opt = EVENT_OPTIONS.find((o) => o.value === event);
-    const label = opt?.label || event;
-    const colorMap = { success: 'bg-green-100 text-green-700', warning: 'bg-yellow-100 text-yellow-700', secondary: 'bg-surface-100 text-surface-600', danger: 'bg-red-100 text-red-700', info: 'bg-blue-100 text-blue-700' };
-    const cls = colorMap[opt?.color] || colorMap.info;
-    return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cls}`}>{label}</span>;
-  }
-
-  function httpStatusBadge(status) {
-    if (!status && status !== 0) return '-';
-    const code = Number(status);
-    let cls = 'bg-surface-100 text-surface-600';
-    if (code >= 200 && code < 300) cls = 'bg-green-100 text-green-700';else
-    if (code >= 400 && code < 500) cls = 'bg-yellow-100 text-yellow-700';else
-    if (code >= 500) cls = 'bg-red-100 text-red-700';
-    return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cls}`}>{code}</span>;
-  }
+  useEffect(() => {
+    loadLog();
+  }, [loadLog]);
 
   function formatJson(val) {
     if (!val) return null;
@@ -81,7 +57,7 @@ export default function WebhookLogDetailPage() {
 
   if (!log) {
     return (
-      <div className="rounded-lg bg-yellow-50 text-yellow-700 px-4 py-3 text-sm">{t('webhookLog.notFound', { defaultValue: 'Webhook log not found' })}</div>);
+      <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950/30 text-yellow-700 dark:text-[#fcd34d] px-4 py-3 text-sm">{t('webhookLog.notFound', { defaultValue: 'Webhook log not found' })}</div>);
 
   }
 
@@ -97,11 +73,11 @@ export default function WebhookLogDetailPage() {
 
       {/* Header */}
       <Card className="mb-6">
-        <div className="px-6 py-4 border-b border-surface-100">
+        <div className="px-6 py-4 border-b border-surface-200">
           <div className="flex justify-between items-center flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <div
-                className={`rounded-full flex items-center justify-center ${log.success ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} w-12 h-12`}>
+                className={`rounded-full flex items-center justify-center ${log.success ? 'bg-[#dcfce7] text-[#166534] dark:bg-success-500/15 dark:text-[#86efac]' : 'bg-[#fee2e2] text-[#991b1b] dark:bg-danger-500/15 dark:text-[#fca5a5]'} w-12 h-12`}>
 
                 
                 <i className={`bx ${log.success ? 'bx-check' : 'bx-x'} text-2xl`}></i>
@@ -127,7 +103,7 @@ export default function WebhookLogDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left: Webhook Details */}
         <Card>
-          <div className="px-6 py-4 border-b border-surface-100">
+          <div className="px-6 py-4 border-b border-surface-200">
             <h5 className="font-semibold text-surface-900 mb-0">{t('webhookLog.webhookDetails', { defaultValue: 'Webhook Details' })}</h5>
           </div>
           <div className="p-6">
@@ -148,7 +124,7 @@ export default function WebhookLogDetailPage() {
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('webhookLog.callbackUrl', { defaultValue: 'Callback URL' })}</td>
                   <td className="py-2">
-                    <code className="text-xs break-all">{log.callbackUrl || '-'}</code>
+                    <code className="text-xs break-all dark:text-primary-400">{log.callbackUrl || '-'}</code>
                   </td>
                 </tr>
                 <tr>
@@ -162,7 +138,7 @@ export default function WebhookLogDetailPage() {
 
         {/* Right: Delivery Info */}
         <Card>
-          <div className="px-6 py-4 border-b border-surface-100">
+          <div className="px-6 py-4 border-b border-surface-200">
             <h5 className="font-semibold text-surface-900 mb-0">{t('webhookLog.deliveryInfo', { defaultValue: 'Delivery Info' })}</h5>
           </div>
           <div className="p-6">
@@ -174,17 +150,13 @@ export default function WebhookLogDetailPage() {
                 </tr>
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('webhookLog.success', { defaultValue: 'Success' })}</td>
-                  <td className="py-2">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${log.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                      {log.success ? t('webhookLog.success', { defaultValue: 'Success' }) : t('webhookLog.failed', { defaultValue: 'Failed' })}
-                    </span>
-                  </td>
+                  <td className="py-2">{successBadge(log.success, t)}</td>
                 </tr>
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('webhookLog.duration', { defaultValue: 'Duration' })}</td>
                   <td className="py-2">
                     {log.durationMs != null ?
-                    <span className={log.durationMs > 5000 ? 'text-red-600 font-medium' : ''}>
+                    <span className={log.durationMs > 5000 ? 'text-red-600 dark:text-red-400 font-medium' : ''}>
                         {log.durationMs.toLocaleString()}ms
                       </span> :
 
@@ -200,7 +172,7 @@ export default function WebhookLogDetailPage() {
                 <tr>
                     <td className="text-surface-500 py-2 pr-4">{t('webhookLog.error', { defaultValue: 'Error' })}</td>
                     <td className="py-2">
-                      <span className="text-red-600">{log.errorMessage}</span>
+                      <span className="text-red-600 dark:text-red-400">{log.errorMessage}</span>
                     </td>
                   </tr>
                 }
@@ -213,12 +185,12 @@ export default function WebhookLogDetailPage() {
       {/* Request Payload */}
       {log.requestPayload &&
       <Card className="mt-6">
-          <div className="px-6 py-4 border-b border-surface-100">
+          <div className="px-6 py-4 border-b border-surface-200">
             <h5 className="font-semibold text-surface-900 mb-0">{t('webhookLog.requestPayload', { defaultValue: 'Request Payload' })}</h5>
           </div>
           <div className="p-6">
             <pre
-            className="bg-surface-50 rounded-lg p-4 mb-0 text-xs overflow-auto max-h-[400px]">
+            className="bg-surface-50 dark:bg-dark-elevated rounded-lg p-4 mb-0 text-xs overflow-auto max-h-[400px]">
 
             
               {formatJson(log.requestPayload)}
@@ -230,12 +202,12 @@ export default function WebhookLogDetailPage() {
       {/* Response Body */}
       {log.responseBody &&
       <Card className="mt-6">
-          <div className="px-6 py-4 border-b border-surface-100">
+          <div className="px-6 py-4 border-b border-surface-200">
             <h5 className="font-semibold text-surface-900 mb-0">{t('webhookLog.responseBody', { defaultValue: 'Response Body' })}</h5>
           </div>
           <div className="p-6">
             <pre
-            className="bg-surface-50 rounded-lg p-4 mb-0 text-xs overflow-auto max-h-[400px]">
+            className="bg-surface-50 dark:bg-dark-elevated rounded-lg p-4 mb-0 text-xs overflow-auto max-h-[400px]">
 
             
               {formatJson(log.responseBody)}

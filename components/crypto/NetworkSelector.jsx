@@ -40,11 +40,11 @@ export default function NetworkSelector({ networks, formData, setFormData, isEdi
 
           })}
             {networks.length === 0 &&
-          <div className="text-muted text-sm">{t('common.noData', { defaultValue: 'No data' })}</div>
+          <div className="text-surface-500 text-sm">{t('common.noData', { defaultValue: 'No data' })}</div>
           }
           </div> :
 
-        <div className="text-muted">{t('crypto.selectCoinFirst', { defaultValue: 'Please select a coin first' })}</div>
+        <div className="text-surface-500">{t('crypto.selectCoinFirst', { defaultValue: 'Please select a coin first' })}</div>
         }
       </div>
     </Card>);

@@ -1,32 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
 import { getMyLedgerEntry } from '@/lib/api/userLedger';
 import { formatUsd } from '@/lib/utils/format';
+import { formatAmount, getEntryCodeLabel, userStateBadge } from '@/components/ledger/ledgerUtils';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import CoinImg from '@/components/CoinImg';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
 import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
-import { Card, Button } from '../../../../components/ui';
-
-const ENTRY_CODE_LABELS = {
-  'DP': 'Deposit',
-  'WA': 'Withdrawal Amount',
-  'WF': 'Withdrawal Fee',
-  'WR': 'Withdrawal Reversal',
-  'FR': 'Fee Revenue',
-  'XI': 'Internal Transfer In',
-  'XO': 'Internal Transfer Out'
-};
-
-function getEntryCodeLabel(code, t) {
-  return t(`userLedger.code.${code}`, { defaultValue: ENTRY_CODE_LABELS[code] || code });
-}
+import { Card, Button } from '@/components/ui';
 
 export default function MyLedgerDetail() {
   const { t } = useTranslation();
@@ -37,11 +24,7 @@ export default function MyLedgerDetail() {
   const [loading, setLoading] = useState(true);
   const [entry, setEntry] = useState(null);
 
-  useEffect(() => {
-    loadEntry();
-  }, [id]);
-
-  async function loadEntry() {
+  const loadEntry = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getMyLedgerEntry(token, id);
@@ -52,26 +35,16 @@ export default function MyLedgerDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t]);
 
-  function formatAmount(val) {
-    if (!val && val !== 0) return '0';
-    let str = String(val);
-    if (str.includes('.')) str = str.replace(/0+$/, '').replace(/\.$/, '');
-    return str || '0';
-  }
-
-  function stateText(state) {
-    if (state === 'settled') return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">{t('userLedger.settled', { defaultValue: 'Settled' })}</span>;
-    if (state === 'committed') return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">{t('userLedger.committed', { defaultValue: 'Committed' })}</span>;
-    if (state === 'reversed') return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-600">{t('userLedger.reversed', { defaultValue: 'Reversed' })}</span>;
-    return <span className="text-surface-500">{state || 'N/A'}</span>;
-  }
+  useEffect(() => {
+    loadEntry();
+  }, [loadEntry]);
 
   async function copyToClipboard(text) {
     const ok = await copyText(text);
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));else
-    toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }));
+    if (ok) {toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));}else
+    {toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }));}
   }
 
   if (loading) {
@@ -115,11 +88,11 @@ export default function MyLedgerDetail() {
                 </h4>
                 <div className="flex items-center gap-2 flex-wrap">
                   {entry.entryCode &&
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-600">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-600 dark:bg-dark-elevated">
                       {getEntryCodeLabel(entry.entryCode, t)}
                     </span>
                   }
-                  {stateText(entry.state)}
+                  {userStateBadge(entry.state, t)}
                 </div>
               </div>
             </div>
@@ -137,7 +110,7 @@ export default function MyLedgerDetail() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Entry Details */}
         <Card>
-          <div className="px-6 py-4 border-b border-surface-100">
+          <div className="px-6 py-4 border-b border-surface-200">
             <h5 className="font-semibold text-surface-900 mb-0">
               <i className="bx bx-detail mr-2"></i>
               {t('userLedger.details', { defaultValue: 'Details' })}
@@ -173,7 +146,7 @@ export default function MyLedgerDetail() {
                 }
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('userLedger.state', { defaultValue: 'State' })}</td>
-                  <td className="py-2">{stateText(entry.state)}</td>
+                  <td className="py-2">{userStateBadge(entry.state, t)}</td>
                 </tr>
                 <tr>
                   <td className="text-surface-500 py-2 pr-4">{t('userLedger.amount', { defaultValue: 'Amount' })}</td>
@@ -203,7 +176,7 @@ export default function MyLedgerDetail() {
         <div className="space-y-6">
           {entry.txHash &&
           <Card>
-              <div className="px-6 py-4 border-b border-surface-100">
+              <div className="px-6 py-4 border-b border-surface-200">
                 <h5 className="font-semibold text-surface-900 mb-0">
                   <i className="bx bx-link mr-2"></i>
                   {t('userLedger.transaction', { defaultValue: 'Transaction' })}
@@ -219,11 +192,11 @@ export default function MyLedgerDetail() {
                         <div className="flex gap-1 mt-2">
                           {entry.explorerUrl &&
                         <a href={`${entry.explorerUrl}/tx/${entry.txHash}`} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded border border-primary-200 text-primary-600 hover:bg-primary-50">
+                        className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded border border-primary-200 text-primary-600 hover:bg-primary-50 dark:border-primary-700 dark:text-primary-400 dark:hover:bg-primary-900/30">
                               <i className="bx bx-link-external"></i>{t('userLedger.viewExplorer', { defaultValue: 'View on Explorer' })}
                             </a>
                         }
-                          <button className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded border border-surface-200 text-surface-600 hover:bg-surface-50" onClick={() => copyToClipboard(entry.txHash)}>
+                          <button type="button" className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded border border-surface-200 text-surface-600 hover:bg-surface-50 dark:hover:bg-white/6" onClick={() => copyToClipboard(entry.txHash)}>
                             <i className="bx bx-copy"></i>{t('actions.copy', { defaultValue: 'Copy' })}
                           </button>
                         </div>
@@ -237,7 +210,7 @@ export default function MyLedgerDetail() {
 
           {/* Timestamps */}
           <Card>
-            <div className="px-6 py-4 border-b border-surface-100">
+            <div className="px-6 py-4 border-b border-surface-200">
               <h5 className="font-semibold text-surface-900 mb-0">
                 <i className="bx bx-time mr-2"></i>
                 {t('userLedger.timestamps', { defaultValue: 'Timestamps' })}

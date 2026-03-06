@@ -1,5 +1,5 @@
 'use client';
-import { Card } from '../ui'
+import { Card } from '@/components/ui'
 
 export default function PaymentProgressCard({ invoice, t }) {
   const status = String(invoice?.status || '').toLowerCase();
@@ -29,7 +29,7 @@ export default function PaymentProgressCard({ invoice, t }) {
           </div>
         </div>
 
-        <div className="flex justify-between text-sm text-muted mb-3">
+        <div className="flex justify-between text-sm text-surface-500 mb-3">
           <span>{amountReceived} / {amountRequired} {invoice?.coinSymbol || ''}</span>
           <span>{percentage.toFixed(1)}%</span>
         </div>
@@ -45,7 +45,7 @@ export default function PaymentProgressCard({ invoice, t }) {
               
                 {step.done ? <i className="bx bx-check text-sm"></i> : <span className="text-sm">&bull;</span>}
               </div>
-              <div className="text-sm text-muted">{step.label}</div>
+              <div className="text-sm text-surface-500">{step.label}</div>
             </div>
           )}
         </div>

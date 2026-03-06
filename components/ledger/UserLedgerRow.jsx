@@ -1,28 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-
 import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
+import { formatAmount, stateBadge } from '@/components/ledger/ledgerUtils';
 import { useDateFormat } from '@/hooks/useDateFormat';
-import { Badge, Button } from '../ui';
-
-export function stateBadge(state) {
-  if (state === 'settled') return <span>Settled</span>;
-  if (state === 'committed') return <span>Committed</span>;
-  if (state === 'pending') return <span>Pending</span>;
-  if (state === 'reversed') return <span>Reversed</span>;
-  return <span className="text-muted">{state || 'N/A'}</span>;
-}
-
-export function formatAmount(val) {
-  if (!val && val !== 0) return '0';
-  let str = String(val);
-  if (str.includes('.')) {
-    str = str.replace(/0+$/, '').replace(/\.$/, '');
-  }
-  return str || '0';
-}
+import { Badge, Button } from '@/components/ui';
 
 export default function UserLedgerRow({ entry, t }) {
   const router = useRouter();
@@ -38,7 +21,7 @@ export default function UserLedgerRow({ entry, t }) {
         <Badge className="bg-primary-50 text-primary-600">#{entry.userId}</Badge>
       </td>
       <td>
-        <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+        <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600 dark:bg-dark-elevated' : isCredit ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
           <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
           {isCredit ? 'Credit' : 'Debit'}
         </Badge>
@@ -54,7 +37,7 @@ export default function UserLedgerRow({ entry, t }) {
           <div>
             <div className="font-medium leading-[1.2]">{entry.coinSymbol || '-'}</div>
             {entry.networkName &&
-            <small className="text-muted text-xs">{entry.networkName}</small>
+            <small className="text-surface-500 text-xs">{entry.networkName}</small>
             }
           </div>
         </div>
@@ -63,7 +46,7 @@ export default function UserLedgerRow({ entry, t }) {
         {entry.entryCode ?
         <span className="font-medium">{entry.entryCode}</span> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td>
@@ -75,7 +58,7 @@ export default function UserLedgerRow({ entry, t }) {
         </span>
       </td>
       <td className="text-right whitespace-nowrap">
-        <span className="text-muted">{formatUsd(entry.amountUsd)}</span>
+        <span className="text-surface-500">{formatUsd(entry.amountUsd)}</span>
       </td>
       <td>
         {entry.txHash ?
@@ -95,7 +78,7 @@ export default function UserLedgerRow({ entry, t }) {
           }
           </div> :
 
-        <span className="text-muted">-</span>
+        <span className="text-surface-500">-</span>
         }
       </td>
       <td>

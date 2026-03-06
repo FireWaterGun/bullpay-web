@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '@/lib/api/userTransactions'
@@ -57,7 +57,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
   const c = kpiColors[color] || kpiColors.primary
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-surface-100 p-5">
+    <div className="bg-card rounded-xl shadow-sm border border-surface-100 p-5">
       <div className="flex items-start justify-between">
         <div className="min-w-0">
           <p className="text-sm text-surface-500 mb-1">{title}</p>
@@ -111,13 +111,13 @@ export default function TransactionsPage() {
   const dateRangeLabel = useMemo(() => {
     const { from, to } = dateRange
     if (from === to) return from
-    const fromDate = new Date(from + 'T00:00:00')
-    const toDate = new Date(to + 'T00:00:00')
+    const fromDate = new Date(`${from  }T00:00:00`)
+    const toDate = new Date(`${to  }T00:00:00`)
     const fmtDate = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
     return `${fmtDate(fromDate)} - ${fmtDate(toDate)}`
   }, [dateRange, locale])
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!token || !dateRange.from || !dateRange.to) return
     setError('')
     setLoadingSummary(true)
@@ -160,11 +160,13 @@ export default function TransactionsPage() {
       logger.error('Failed to load by-coin data:', byCoinResult.reason)
     }
     setLoadingByCoin(false)
-  }
+  }, [token, dateRange])
 
   useEffect(() => {
-    loadData()
-  }, [token, dateRange])
+    queueMicrotask(() => {
+      void loadData()
+    })
+  }, [loadData])
 
   const current = summary?.current || {}
   const changes = summary?.changes || {}
@@ -186,7 +188,7 @@ export default function TransactionsPage() {
           {!showCustom ? (
             <>
               <select
-                className="px-3 py-1.5 text-sm border border-surface-200 rounded-lg bg-white text-surface-700 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none"
+                className="px-3 py-1.5 text-sm border border-surface-200 rounded-lg bg-card text-surface-700 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none"
                 value={datePreset}
                 onChange={(e) => setDatePreset(e.target.value)}
               >
@@ -198,6 +200,7 @@ export default function TransactionsPage() {
                 <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
               </select>
               <button
+                type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-surface-200 rounded-lg text-surface-600 hover:bg-surface-50 transition-colors cursor-pointer"
                 onClick={() => setShowCustom(true)}
               >
@@ -214,7 +217,7 @@ export default function TransactionsPage() {
                 placeholder={t('filter.from', { defaultValue: 'From' })}
                 t={t}
                 maxDate={customTo ? customTo : undefined}
-                minDate={customTo ? (() => { const d = new Date(customTo + 'T00:00:00'); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
+                minDate={customTo ? (() => { const d = new Date(`${customTo  }T00:00:00`); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <span className="self-center text-surface-400">&ndash;</span>
               <LocaleDatePicker
@@ -224,9 +227,10 @@ export default function TransactionsPage() {
                 placeholder={t('filter.to', { defaultValue: 'To' })}
                 t={t}
                 minDate={customFrom ? customFrom : undefined}
-                maxDate={customFrom ? (() => { const d = new Date(customFrom + 'T00:00:00'); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
+                maxDate={customFrom ? (() => { const d = new Date(`${customFrom  }T00:00:00`); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
               />
               <button
+                type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-surface-200 rounded-lg text-surface-600 hover:bg-surface-50 transition-colors cursor-pointer"
                 onClick={() => { setShowCustom(false); setCustomFrom(''); setCustomTo('') }}
               >
@@ -286,7 +290,7 @@ export default function TransactionsPage() {
       )}
 
       {/* Daily Trend Chart */}
-      <div className="bg-white rounded-xl shadow-sm border border-surface-100 mb-5">
+      <div className="bg-card rounded-xl shadow-sm border border-surface-100 mb-5">
         <div className="px-5 py-4 border-b border-surface-100">
           <h5 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
             <i className="bx bx-bar-chart-alt-2 text-primary-600"></i>

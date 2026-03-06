@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/providers';
 import { useToast } from '@/app/providers';
@@ -12,7 +12,7 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import CardEmptyState from '@/components/CardEmptyState';
-import { AvatarInitial, Badge, bgLabelClass, Card } from '../../../../components/ui';
+import { AvatarInitial, Badge, bgLabelClass, Card } from '@/components/ui';
 
 const HIERARCHY_ORDER = ['super_admin', 'admin', 'support_agent', 'business_user', 'regular_user'];
 
@@ -30,11 +30,7 @@ export default function AdminRoles() {
   const [stats, setStats] = useState(null);
   const [requesterRole, setRequesterRole] = useState(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const [rolesData, statsData] = await Promise.all([
@@ -53,7 +49,11 @@ export default function AdminRoles() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, toast, t]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Build lookup: role key -> { count, percentage }
   function getRoleStats(roleKey) {
@@ -105,7 +105,7 @@ export default function AdminRoles() {
             <i className="bx bx-shield-alt-2 text-primary mr-2"></i>
             {t('admin.roles.title', { defaultValue: 'Roles & Permissions' })}
           </h4>
-          <p className="text-muted mb-0">
+          <p className="text-surface-500 mb-0">
             {t('admin.roles.description', { defaultValue: 'Manage role-based access control (RBAC)' })}
             {requesterRole &&
             <span className="ml-2">
@@ -138,7 +138,7 @@ export default function AdminRoles() {
       <Card className="mb-4">
           <div className="p-5">
             <h6 className="mb-3">
-              <i className="bx bx-sitemap mr-2 text-muted"></i>
+              <i className="bx bx-sitemap mr-2 text-surface-500"></i>
               {t('admin.roles.roleHierarchy', { defaultValue: 'Role Hierarchy' })}
             </h6>
             <div className="flex items-end gap-3 flex-wrap justify-center">
@@ -157,7 +157,7 @@ export default function AdminRoles() {
                   onClick={() => router.push(`/admin/roles/${roleKey}`)}>
                   
                     <div
-                    className={`flex flex-col items-center justify-end mx-auto rounded-top ${bgLabelClass(color)} w-full max-w-[120px]`}
+                    className={`flex flex-col items-center justify-end mx-auto rounded-t-lg ${bgLabelClass(color)} w-full max-w-[120px]`}
                     style={{ height: `${barHeight}px`, transition: 'opacity 0.2s' }}
                     onMouseEnter={(e) => {e.currentTarget.style.opacity = '0.8';}}
                     onMouseLeave={(e) => {e.currentTarget.style.opacity = '1';}}>
@@ -167,7 +167,7 @@ export default function AdminRoles() {
                     </div>
                     <div className="mt-2">
                       <small className="font-semibold block text-xs">{formatRoleLabel(roleKey)}</small>
-                      <small className="text-muted text-[0.7rem]">
+                      <small className="text-surface-500 text-[0.7rem]">
                         {rs.count} {rs.count === 1 ? t('admin.roles.user', { defaultValue: 'user' }) : t('admin.roles.users', { defaultValue: 'users' })} · {rs.percentage.toFixed(0)}%
                       </small>
                     </div>
@@ -207,14 +207,14 @@ export default function AdminRoles() {
                   {/* Role header */}
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className="avatar">
+                      <div>
                         <AvatarInitial className={bgLabelClass(color)}>
                           <i className={`bx ${icon} bx-sm`}></i>
                         </AvatarInitial>
                       </div>
                       <div>
                         <h5 className="mb-0">{roleName}</h5>
-                        <small className="text-muted">{roleKey}</small>
+                        <small className="text-surface-500">{roleKey}</small>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -226,18 +226,18 @@ export default function AdminRoles() {
 
                   {/* Description */}
                   {description &&
-                  <p className="text-muted mb-3 text-[0.85rem]">{description}</p>
+                  <p className="text-surface-500 mb-3 text-[0.85rem]">{description}</p>
                   }
 
                   {/* Stats */}
                   <div className="flex items-center gap-4 mb-3">
                     <div>
                       <h4 className="mb-0">{rs.count}</h4>
-                      <small className="text-muted">{t('admin.roles.users', { defaultValue: 'Users' })}</small>
+                      <small className="text-surface-500">{t('admin.roles.users', { defaultValue: 'Users' })}</small>
                     </div>
                     <div className="grow">
                       <div className="flex justify-between mb-1">
-                        <small className="text-muted">{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</small>
+                        <small className="text-surface-500">{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</small>
                         <small className={`font-medium text-${color}`}>{rs.percentage.toFixed(1)}%</small>
                       </div>
                       <div className="h-[6px] w-full rounded-full bg-surface-200 overflow-hidden">

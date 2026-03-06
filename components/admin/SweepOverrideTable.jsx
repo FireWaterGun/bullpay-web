@@ -3,6 +3,7 @@
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import CardEmptyState from '@/components/CardEmptyState';
 import { Button } from '../ui'
+import Table from '../ui/Table'
 
 /**
  * Reusable override table for coin or network sweep overrides.
@@ -43,8 +44,7 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
+    <Table>
         <thead>
           <tr>
             <th>{idLabel}</th>
@@ -63,14 +63,14 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
                 {config.minBalance !== undefined ?
               <code>{config.minBalance}</code> :
 
-              <span className="text-muted">-</span>
+              <span className="text-surface-500">-</span>
               }
               </td>
               <td>
                 {config.gasBuffer !== undefined ?
               <code>{config.gasBuffer}</code> :
 
-              <span className="text-muted">-</span>
+              <span className="text-surface-500">-</span>
               }
               </td>
               <td className="text-right">
@@ -86,7 +86,6 @@ export default function SweepOverrideTable({ overrides, type, loading, onEdit })
             </tr>
           )}
         </tbody>
-      </table>
-    </div>);
+      </Table>);
 
 }

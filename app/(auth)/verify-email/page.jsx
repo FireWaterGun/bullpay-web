@@ -56,7 +56,9 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (!calledRef.current) {
       calledRef.current = true;
-      runVerify();
+      queueMicrotask(() => {
+        void runVerify();
+      });
     }
   }, [runVerify]);
 
@@ -79,7 +81,7 @@ function VerifyEmailContent() {
 
   return (
     <div className="py-4">
-      <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+      <div className="bg-card rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
         <div className="p-8 sm:p-10 text-center">
           {/* Status icon */}
           <div className="flex justify-center mb-4">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Image from 'next/image'
 import { getCoinAssetCandidates } from '@/lib/utils/coinAssets'
 import { coinImageExists } from '@/lib/utils/coinImageManifest'
 
@@ -82,11 +83,12 @@ export function NetworkIcon({ networkSymbol, size = 24 }) {
   )
   const src = candidates[Math.min(idx, candidates.length - 1)]
   return (
-    <img
+    <Image
       src={src}
       alt={networkSymbol}
       width={size}
       height={size}
+      unoptimized
       className="rounded-full"
       style={objectFitCover}
       onError={() => setIdx((i) => (i + 1 < candidates.length ? i + 1 : i))}
@@ -191,11 +193,12 @@ export default function CoinImg({
   // ------ Simple image (no network badge) ------
   if (!showBadge) {
     return (
-      <img
+      <Image
         src={src}
         alt={symbol}
         width={size}
         height={size}
+        unoptimized
         className={imgClassName || className}
         style={objectFitCover}
         onError={handleCoinError}
@@ -209,24 +212,26 @@ export default function CoinImg({
       className={`relative${className ? ` ${className}` : ''} shrink-0`}
       style={{ width: size, height: size }}
     >
-      <img
+      <Image
         src={src}
         alt={symbol}
         width={size}
         height={size}
+        unoptimized
         className={imgClassName}
         style={objectFitCover}
         onError={handleCoinError}
       />
       <div
-        className="absolute rounded-full flex items-center justify-center bg-white"
+        className="absolute rounded-full flex items-center justify-center bg-card"
         style={{ bottom: -2, right: -2, width: badgeSize, height: badgeSize, boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: `${badgePadding}px` }}
       >
-        <img
+        <Image
           src={netSrc}
           alt={resolvedNetworkSymbol}
           width={badgeSize - badgePadding * 2}
           height={badgeSize - badgePadding * 2}
+          unoptimized
           className="rounded-full"
           style={objectFitCover}
           onError={() => {

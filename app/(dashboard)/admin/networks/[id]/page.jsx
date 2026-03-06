@@ -12,7 +12,7 @@ import { useToast } from '@/app/providers';
 import NetworkFormFields from '@/components/crypto/NetworkFormFields';
 import NetworkInfoPanel from '@/components/crypto/NetworkInfoPanel';
 import { validateAndBuildPayload } from '@/components/crypto/networkFormValidation';
-import { Alert, Button, Card, Spinner } from '../../../../../components/ui';
+import { Alert, Button, Card, Spinner } from '@/components/ui';
 
 export default function NetworkForm() {
   const { t } = useAdminTranslation();
@@ -155,7 +155,7 @@ export default function NetworkForm() {
           <Spinner role="status" className="text-primary" />
 
           
-          <p className="text-muted mt-2">{t('common.loading', { defaultValue: 'Loading...' })}</p>
+          <p className="text-surface-500 mt-2">{t('common.loading', { defaultValue: 'Loading...' })}</p>
         </div>
       </div>);
 
@@ -178,7 +178,7 @@ export default function NetworkForm() {
             t('crypto.createNetwork', { defaultValue: 'Create Network' })
             }
           </h4>
-          <p className="text-muted mb-0">
+          <p className="text-surface-500 mb-0">
             {isEdit ?
             t('crypto.editNetworkDesc', { defaultValue: 'Update network information' }) :
             t('crypto.createNetworkDesc', { defaultValue: 'Add a new blockchain network' })
@@ -229,17 +229,18 @@ export default function NetworkForm() {
 
       {/* Error Modal */}
       {showErrorModal &&
-      <div className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50" onClick={() => setShowErrorModal(false)}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowErrorModal(false)}>
           <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-white rounded-xl shadow-xl">
+            <div className="bg-card rounded-xl shadow-xl">
               <div className="flex items-center justify-between p-5 border-b border-surface-200">
                 <h5 className="text-lg font-semibold text-surface-800">
                   {t('crypto.operationFailed', { defaultValue: 'Operation Failed' })}
                 </h5>
                 <button
                 type="button"
-                className="cursor-pointer text-surface-500 hover:text-surface-700"
+                className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
                 onClick={() => setShowErrorModal(false)}>
+                <i className="bx bx-x"></i>
               </button>
               </div>
               <div className="p-5">

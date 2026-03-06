@@ -34,7 +34,7 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
       <div className="relative shrink-0">
         <CoinImg symbol={group.symbol} logoUrl={group.logoUrl} size={40} imgClassName="rounded-full" />
         {netSymbol && (
-          <div className="absolute bg-white rounded-full flex items-center justify-center" style={{ bottom: -2, right: -2, padding: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <div className="absolute bg-card rounded-full flex items-center justify-center" style={{ bottom: -2, right: -2, padding: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
             <NetworkIcon networkSymbol={netSymbol} size={16} />
           </div>
         )}

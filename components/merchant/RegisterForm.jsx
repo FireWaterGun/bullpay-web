@@ -59,7 +59,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
   { value: '24/7', label: t('merchant.statUptime', { defaultValue: 'Availability' }) }];
 
 
-  const featureColors = { primary: 'bg-primary-50 text-primary-700', success: 'bg-green-50 text-green-700', info: 'bg-cyan-50 text-cyan-700', warning: 'bg-amber-50 text-amber-700' };
+  const featureColors = { primary: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400', success: 'bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400', info: 'bg-cyan-50 dark:bg-cyan-950/30 text-cyan-700 dark:text-cyan-400', warning: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400' };
 
   /* ── Step 1: Welcome / Landing ────────────────────────────── */
   if (step === 1) {
@@ -115,7 +115,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                   <i className={`bx ${f.icon} text-[1.35rem]`}></i>
                 </span>
                 <div>
-                  <div className="font-semibold mb-1">{f.title}</div>
+                  <div className="font-semibold mb-1 text-surface-900">{f.title}</div>
                   <small className="text-surface-500">{f.desc}</small>
                 </div>
               </div>
@@ -144,7 +144,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
         <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-3">
           <button
             type="button"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
             onClick={() => setStep(1)}
             title={t('actions.back', { defaultValue: 'Back' })}>
             
@@ -168,13 +168,13 @@ export default function RegisterForm({ onRegistered, token, t }) {
             map((s, i) =>
             <div key={i} className="flex items-center gap-2">
                 <span
-                className={`inline-flex items-center justify-center rounded-full shrink-0 ${s.active ? 'bg-primary-600 text-white' : s.done ? 'bg-green-100 text-green-700' : 'bg-surface-100 text-surface-500'} w-7 h-7 text-xs font-semibold`
+                className={`inline-flex items-center justify-center rounded-full shrink-0 ${s.active ? 'bg-primary-600 text-white' : s.done ? 'bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400' : 'bg-surface-100 dark:bg-dark-elevated text-surface-500'} w-7 h-7 text-xs font-semibold`
                 }>
 
                 
                   {s.done ? <i className="bx bx-check"></i> : s.num}
                 </span>
-                <span className={`text-sm ${s.active ? 'font-semibold' : 'text-surface-500'} hidden sm:inline`}>{s.label}</span>
+                <span className={`text-sm ${s.active ? 'font-semibold text-surface-900' : 'text-surface-500'} hidden sm:inline`}>{s.label}</span>
                 {i < 2 && <i className="bx bx-chevron-right text-surface-400 ml-1"></i>}
               </div>
             )}
@@ -188,7 +188,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                   {t('merchant.name', { defaultValue: 'Merchant Name' })} <span className="text-red-500">*</span>
                 </Label>
                 <InputGroup>
-                  <InputIcon><i className="bx bx-store text-surface-500"></i></InputIcon>
+                  <InputIcon><i className="bx bx-store"></i></InputIcon>
                   <Input type="text" name="name" value={form.name} onChange={handleChange} placeholder={t('merchant.namePlaceholder', { defaultValue: 'Your business name' })} minLength={2} maxLength={100} required />
                 </InputGroup>
               </div>
@@ -199,7 +199,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                   {t('merchant.email', { defaultValue: 'Contact Email' })}
                 </Label>
                 <InputGroup>
-                  <InputIcon><i className="bx bx-envelope text-surface-500"></i></InputIcon>
+                  <InputIcon><i className="bx bx-envelope"></i></InputIcon>
                   <Input type="email" name="email" value={form.email} onChange={handleChange} placeholder={t('merchant.emailPlaceholder', { defaultValue: 'merchant@example.com' })} maxLength={255} />
                 </InputGroup>
               </div>
@@ -210,7 +210,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                   {t('merchant.websiteUrl', { defaultValue: 'Website URL' })}
                 </Label>
                 <InputGroup>
-                  <InputIcon><i className="bx bx-globe text-surface-500"></i></InputIcon>
+                  <InputIcon><i className="bx bx-globe"></i></InputIcon>
                   <Input type="url" name="websiteUrl" value={form.websiteUrl} onChange={handleChange} placeholder="https://example.com" maxLength={500} />
                 </InputGroup>
               </div>
@@ -227,12 +227,12 @@ export default function RegisterForm({ onRegistered, token, t }) {
               <div className="md:col-span-2">
                 <Label className="font-semibold text-sm">
                   {t('merchant.callbackUrl', { defaultValue: 'Webhook Callback URL' })}
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-500 ml-2">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-500 ml-2">
                     {t('merchant.optional', { defaultValue: 'Optional' })}
                   </span>
                 </Label>
                 <InputGroup>
-                  <InputIcon><i className="bx bx-link text-surface-500"></i></InputIcon>
+                  <InputIcon><i className="bx bx-link"></i></InputIcon>
                   <Input type="url" name="callbackUrl" value={form.callbackUrl} onChange={handleChange} placeholder="https://example.com/webhooks/payment" maxLength={500} />
                 </InputGroup>
                 <small className="text-surface-500">{t('merchant.callbackHint', { defaultValue: 'URL to receive payment notifications (can be set later)' })}</small>

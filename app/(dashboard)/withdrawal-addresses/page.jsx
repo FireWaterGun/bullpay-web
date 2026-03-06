@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
@@ -33,11 +33,8 @@ function WithdrawalAddressesContent() {
   const [actionType, setActionType] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
 
-  useEffect(() => {
-    if (token) loadAddresses()
-  }, [token, page, filters.status, filters.q])
-
-  async function loadAddresses() {
+  const loadAddresses = useCallback(async () => {
+    if (!token) return
     try {
       setLoading(true)
       const data = await getWithdrawalAddresses(token, {
@@ -53,7 +50,11 @@ function WithdrawalAddressesContent() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, page, filters.status, filters.q, toast, t])
+
+  useEffect(() => {
+    loadAddresses()
+  }, [loadAddresses])
 
   function handleAction(addr, action) {
     setActionAddress(addr)
@@ -97,7 +98,7 @@ function WithdrawalAddressesContent() {
         t={t}
       />
 
-      <div className="bg-white rounded-xl shadow-sm border border-surface-100">
+      <div className="bg-card rounded-xl shadow-sm border border-surface-100">
         <div className="p-5">
           {loading && addresses.length === 0 ? (
             <div className="flex justify-center py-10">
@@ -116,6 +117,7 @@ function WithdrawalAddressesContent() {
               <span className="text-sm text-surface-400">{t('common.page', { defaultValue: 'Page' })} {page} / {totalPages}</span>
               <div className="flex">
                 <button
+                  type="button"
                   className="inline-flex items-center justify-center w-8 h-8 border border-surface-200 rounded-l-lg text-surface-500 hover:bg-surface-50 disabled:opacity-40 transition-colors cursor-pointer"
                   disabled={page <= 1}
                   onClick={() => setPage(page - 1)}
@@ -123,6 +125,7 @@ function WithdrawalAddressesContent() {
                   <i className="bx bx-chevron-left"></i>
                 </button>
                 <button
+                  type="button"
                   className="inline-flex items-center justify-center w-8 h-8 border border-l-0 border-surface-200 rounded-r-lg text-surface-500 hover:bg-surface-50 disabled:opacity-40 transition-colors cursor-pointer"
                   disabled={page >= totalPages}
                   onClick={() => setPage(page + 1)}

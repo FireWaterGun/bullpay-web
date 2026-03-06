@@ -20,7 +20,7 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
   const router = useRouter();
   const { fiatBalance, pendingWithdrawalCount, notificationRefreshRef } = useDashboardData();
   const { subscribe, unsubscribe, isConnected } = usePusher() || {};
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const maintenanceChannelRef = useRef<any>(null);
 
   const [collapsed, setCollapsed] = useState(() => {
@@ -42,11 +42,11 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
   // ── Real-time maintenance redirect ──
   useEffect(() => {
     if (!subscribe || !isConnected || isAdmin || !isReady) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const channel = subscribe('system-maintenance') as any;
     maintenanceChannelRef.current = channel;
     if (channel) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       channel.bind('maintenance-status-changed', (data: any) => {
         if (data.maintenance) {
           checkMaintenanceBlocked(token || undefined).then((blocked) => {
@@ -93,11 +93,15 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
   useEffect(() => {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      if (savedTheme === 'light' || savedTheme === 'dark') setTheme(savedTheme);
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        queueMicrotask(() => setTheme(savedTheme));
+      }
       const savedLang = localStorage.getItem(LANG_STORAGE_KEY);
       if (savedLang) {
         const parsed = JSON.parse(savedLang);
-        if (parsed?.code) setLanguage(parsed);
+        if (parsed?.code) {
+          queueMicrotask(() => setLanguage(parsed));
+        }
       }
     } catch {}
   }, []);
@@ -127,8 +131,10 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
 
   // ── Close mobile menu on route change ──
   useEffect(() => {
-    setMobileOpen(false);
-  }, [children]);
+    if (mobileOpen) {
+      queueMicrotask(() => setMobileOpen(false));
+    }
+  }, [children, mobileOpen]);
 
   // ── Toggle sidebar ──
   const toggleMenu = (e?: React.MouseEvent) => {
@@ -292,13 +298,14 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
             <span className="flex items-center justify-center w-[25px] h-[34px] text-primary-600 shrink-0">
               <i className="bx bxs-wallet-alt text-[22px]"></i>
             </span>
-            <span className="bp-brand-text font-bold text-[1.25rem] tracking-tight whitespace-nowrap ms-0.5">
+            <span className="bp-brand-text font-bold text-[1.25rem] tracking-tight whitespace-nowrap ml-0.5">
               <span className="text-surface-800">BULL</span>
               <span className="text-primary-600">PAY</span>
             </span>
           </a>
           {/* Collapse toggle — absolute positioned at sidebar edge */}
           <button
+            type="button"
             onClick={toggleMenu}
             className="bp-collapse-btn absolute z-[3] hidden xl:flex items-center justify-center rounded-full bg-primary-600 border-[7px] border-[#f5f5f9] cursor-pointer transition-colors left-[15.2rem]">
 
@@ -306,6 +313,7 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
             <i className={`bx ${collapsed ? 'bx-chevron-right' : 'bx-chevron-left'} text-white text-[1.375rem] leading-none w-[1.375rem] h-[1.375rem] flex items-center justify-center`}></i>
           </button>
           <button
+            type="button"
             onClick={() => setMobileOpen(false)}
             className="bp-collapse-btn ml-auto flex items-center justify-center w-7 h-7 rounded-md text-surface-400 hover:bg-surface-100 transition-colors cursor-pointer xl:hidden">
             
@@ -355,8 +363,9 @@ export default function DashboardLayout({ children }: {children: ReactNode;}) {
         <nav className="bp-navbar">
           {/* Mobile hamburger */}
           <button
+            type="button"
             onClick={toggleMenu}
-            className="flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors cursor-pointer xl:hidden">
+            className="flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors cursor-pointer xl:hidden">
             
             <i className="bx bx-menu text-xl"></i>
           </button>

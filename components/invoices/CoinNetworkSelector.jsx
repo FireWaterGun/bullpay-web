@@ -2,7 +2,7 @@
 
 import { useTranslation } from 'react-i18next';
 import CoinImg, { NetworkIcon } from '@/components/CoinImg';
-import { Card } from '../ui'
+import { Card } from '@/components/ui'
 
 const NETWORK_LABELS = {
   1: 'Bitcoin',
@@ -52,7 +52,7 @@ export default function CoinNetworkSelector({
   return (
     <>
       <Card className="mb-4">
-        <div className="px-6 py-4 border-b flex items-center">
+        <div className="px-6 py-4 border-b border-surface-200 flex items-center">
           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium mr-2">1</span>
           <h6 className="mb-0 font-semibold">{t('form.selectCoin')}</h6>
         </div>
@@ -68,7 +68,7 @@ export default function CoinNetworkSelector({
                 <div key={sym}>
                     <div
                     role="button"
-                    className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ? 'border-primary-600 bg-primary-50 shadow-sm' : 'border-surface-200 hover:border-surface-300'}`}
+                    className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ? 'border-primary-600 bg-primary-50 shadow-sm dark:bg-primary-600/10' : 'border-surface-200 hover:border-surface-300'}`}
                     onClick={() => {
                       setSelectedCoin(sym);
                       if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
@@ -97,7 +97,7 @@ export default function CoinNetworkSelector({
       </Card>
 
       <Card className="mb-4">
-        <div className="px-6 py-4 border-b flex items-center">
+        <div className="px-6 py-4 border-b border-surface-200 flex items-center">
           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium mr-2">2</span>
           <h6 className="mb-0 font-semibold">{t('form.selectNetwork')}</h6>
         </div>
@@ -111,7 +111,7 @@ export default function CoinNetworkSelector({
                 <button
                   type="button"
                   key={n.id}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-surface-700 border-surface-300 hover:border-primary-400'}`}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ? 'bg-primary-600 text-white border-primary-600' : 'bg-card text-surface-700 border-surface-200 hover:border-primary-400'}`}
                   onClick={() => setCoinNetworkId(String(n.id))}>
                   
                     <NetworkIcon networkSymbol={n.network?.symbol || ''} size={18} />

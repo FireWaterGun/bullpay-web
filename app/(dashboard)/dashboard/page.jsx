@@ -1,66 +1,24 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/app/providers';
 import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '@/lib/api/userTransactions';
-import LocaleDatePicker from '@/components/LocaleDatePicker';
 import { formatUsd, formatChange } from '@/lib/utils/format';
 import DailyTrendChart from '@/components/dashboard/DailyTrendChart';
 import TransactionByCoinTable from '@/components/dashboard/TransactionByCoinTable';
+import DateFilterBar from '@/components/dashboard/DateFilterBar';
 import RefreshButton from '@/components/RefreshButton';
 import { logger } from '@/lib/utils/logger';
-import { Badge, Button, Card, Select, Spinner } from '../../../components/ui'
-
-function getDateRange(preset) {
-  const now = new Date();
-  const to = now.toISOString().split('T')[0];
-  let from = to;
-
-  switch (preset) {
-    case 'today':
-      from = to;
-      break;
-    case 'yesterday':{
-        const d = new Date(now);
-        d.setDate(d.getDate() - 1);
-        from = d.toISOString().split('T')[0];
-        break;
-      }
-    case 'last7days':{
-        const d = new Date(now);
-        d.setDate(d.getDate() - 6);
-        from = d.toISOString().split('T')[0];
-        break;
-      }
-    case 'last30days':{
-        const d = new Date(now);
-        d.setDate(d.getDate() - 29);
-        from = d.toISOString().split('T')[0];
-        break;
-      }
-    case 'thisMonth':{
-        from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-        break;
-      }
-    case 'lastMonth':{
-        const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const end = new Date(now.getFullYear(), now.getMonth(), 0);
-        from = start.toISOString().split('T')[0];
-        return { from, to: end.toISOString().split('T')[0] };
-      }
-    default:
-      from = to;
-  }
-  return { from, to };
-}
+import { Card, Spinner } from '@/components/ui'
+import { getDateRange } from '@/lib/utils/dateRange'
 
 const colorMap = {
-  primary: 'bg-primary-100 text-primary-600',
-  danger: 'bg-red-100 text-red-600',
-  warning: 'bg-amber-100 text-amber-600',
-  info: 'bg-blue-100 text-blue-600',
-  success: 'bg-green-100 text-green-600'
+  primary: 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400',
+  danger: 'bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-400',
+  warning: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400',
+  info: 'bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400',
+  success: 'bg-green-100 text-green-600 dark:bg-green-500/15 dark:text-green-400'
 };
 
 function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
@@ -129,16 +87,7 @@ export default function UserTransactionsDashboard() {
     return getDateRange(datePreset);
   }, [datePreset, showCustom, customFrom, customTo]);
 
-  const dateRangeLabel = useMemo(() => {
-    const { from, to } = dateRange;
-    if (from === to) return from;
-    const fromDate = new Date(from + 'T00:00:00');
-    const toDate = new Date(to + 'T00:00:00');
-    const fmtDate = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
-    return `${fmtDate(fromDate)} - ${fmtDate(toDate)}`;
-  }, [dateRange, locale]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!token || !dateRange.from || !dateRange.to) return;
     setError('');
     setLoadingSummary(true);
@@ -181,11 +130,13 @@ export default function UserTransactionsDashboard() {
       logger.error('Failed to load by-coin data:', byCoinResult.reason);
     }
     setLoadingByCoin(false);
-  };
+  }, [token, dateRange]);
 
   useEffect(() => {
-    loadData();
-  }, [token, dateRange]);
+    queueMicrotask(() => {
+      void loadData();
+    });
+  }, [loadData]);
 
   const current = summary?.current || {};
   const changes = summary?.changes || {};
@@ -199,71 +150,24 @@ export default function UserTransactionsDashboard() {
           {t('nav.dashboard', { defaultValue: 'Dashboard' })}
         </h4>
         <RefreshButton onClick={loadData} loading={loadingSummary || loadingDaily || loadingByCoin} />
-        <div className="flex gap-2 flex-nowrap items-center ml-auto">
-          <Badge className="bg-surface-100 text-surface-600 text-base font-normal px-3 py-2 hidden sm:inline rounded-lg">
-            {dateRangeLabel}
-          </Badge>
-          {!showCustom ?
-          <>
-              <Select
-
-              value={datePreset}
-              onChange={(e) => setDatePreset(e.target.value)} className="w-auto">
-              
-                <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
-                <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
-                <option value="last7days">{t('filter.last7days', { defaultValue: 'Last 7 Days' })}</option>
-                <option value="last30days">{t('filter.last30days', { defaultValue: 'Last 30 Days' })}</option>
-                <option value="thisMonth">{t('filter.thisMonth', { defaultValue: 'This Month' })}</option>
-                <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
-              </Select>
-              <Button
-
-              onClick={() => setShowCustom(true)} variant="outline-secondary" className="whitespace-nowrap">
-              
-                <i className="bx bx-calendar mr-1"></i>
-                {t('filter.custom', { defaultValue: 'Custom' })}
-              </Button>
-            </> :
-
-          <>
-              <LocaleDatePicker
-              value={customFrom}
-              onChange={setCustomFrom}
-              locale={locale}
-              placeholder={t('filter.from', { defaultValue: 'From' })}
-              t={t}
-              maxDate={customTo ? customTo : undefined}
-              minDate={customTo ? (() => {const d = new Date(customTo + 'T00:00:00');d.setMonth(d.getMonth() - 2);return d.toISOString().split('T')[0];})() : undefined} />
-            
-              <span className="self-center">–</span>
-              <LocaleDatePicker
-              value={customTo}
-              onChange={setCustomTo}
-              locale={locale}
-              placeholder={t('filter.to', { defaultValue: 'To' })}
-              t={t}
-              minDate={customFrom ? customFrom : undefined}
-              maxDate={customFrom ? (() => {const d = new Date(customFrom + 'T00:00:00');d.setMonth(d.getMonth() + 2);return d.toISOString().split('T')[0];})() : undefined} />
-            
-              <Button
-
-              onClick={() => {
-                setShowCustom(false);
-                setCustomFrom('');
-                setCustomTo('');
-              }} variant="outline-secondary" className="whitespace-nowrap">
-              
-                <i className="bx bx-reset mr-1"></i>
-                {t('filter.reset', { defaultValue: 'Reset' })}
-              </Button>
-            </>
-          }
+        <div className="ml-auto">
+          <DateFilterBar
+            locale={locale}
+            t={t}
+            datePreset={datePreset}
+            onPresetChange={setDatePreset}
+            customFrom={customFrom}
+            onCustomFromChange={setCustomFrom}
+            customTo={customTo}
+            onCustomToChange={setCustomTo}
+            showCustom={showCustom}
+            onShowCustomChange={setShowCustom}
+          />
         </div>
       </div>
 
       {error &&
-      <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">{error}</div>
+      <div className="rounded-lg bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 px-4 py-3 text-sm mb-4">{error}</div>
       }
 
       {/* KPI Summary Cards */}
@@ -312,7 +216,7 @@ export default function UserTransactionsDashboard() {
       {/* Daily Trend Chart */}
       <div className="mb-6">
         <Card>
-          <div className="px-6 py-4 border-b border-surface-100">
+          <div className="px-6 py-4 border-b border-surface-200">
             <h5 className="text-base font-semibold text-surface-900 mb-0">
               <i className="bx bx-bar-chart-alt-2 text-primary-600 mr-2"></i>
               {t('userDashboard.dailyTrend', { defaultValue: 'Daily Trend Chart' })}

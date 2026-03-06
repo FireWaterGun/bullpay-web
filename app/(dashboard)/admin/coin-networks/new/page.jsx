@@ -21,7 +21,7 @@ import CoinSelector from '@/components/crypto/CoinSelector';
 import NetworkSelector from '@/components/crypto/NetworkSelector';
 import ConfigurationForm from '@/components/crypto/ConfigurationForm';
 import { logger } from '@/lib/utils/logger';
-import { Alert, Spinner, Button } from '../../../../../components/ui';
+import { Alert, Spinner, Button } from '@/components/ui';
 
 export default function SupportedCryptoForm() {
   const { t } = useAdminTranslation();
@@ -215,7 +215,7 @@ export default function SupportedCryptoForm() {
             t('crypto.createCoinNetwork', { defaultValue: 'Add Coin-Network' })
             }
           </h4>
-          <p className="text-muted mb-0">
+          <p className="text-surface-500 mb-0">
             {isEdit ?
             t('crypto.editCoinNetworkDesc', { defaultValue: 'Update coin-network configuration' }) :
             t('crypto.createCoinNetworkDesc', { defaultValue: 'Add a new coin-network pair' })

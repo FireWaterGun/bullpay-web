@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { Input, Label } from '../ui';
+import { Input, Label } from '@/components/ui';
 
 export const MAX_DEPOSIT = 1000000;
 
@@ -9,7 +9,7 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
   const { t } = useTranslation();
 
   function onInput(e) {
-    let value = e.target.value;
+    const value = e.target.value;
 
     if (value.includes('.')) {
       const parts = value.split('.');

@@ -1,31 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link';
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getTempWalletHistory } from '@/lib/api/admin';
-import { useDateFormat } from '@/hooks/useDateFormat';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import { logger } from '@/lib/utils/logger';
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getTempWalletHistory } from '@/lib/api/admin'
+import { useDateFormat } from '@/hooks/useDateFormat'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card, badgeBase } from '../ui';
-
-function statusBadgeClass(s) {
-  const v = String(s || '').toLowerCase();
-  if (v === 'assigned') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-  if (v === 'deposited') return `${badgeBase} bg-primary-50 text-primary-600`;
-  if (v === 'swept') return `${badgeBase} bg-amber-50 text-amber-700`;
-  if (v === 'released') return `${badgeBase} bg-green-50 text-green-700`;
-  if (v === 'failed') return `${badgeBase} bg-red-50 text-red-700`;
-  return `${badgeBase} bg-surface-100 text-surface-600`;
-}
+import { Badge, Button, Card } from '../ui'
+import Table from '../ui/Table'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function TempWalletHistoryDetail() {
-  const { fmtDate } = useDateFormat();
+  const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation();
   const { id } = useParams();
   const router = useRouter();
@@ -34,9 +26,7 @@ export default function TempWalletHistoryDetail() {
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState(null);
 
-  useEffect(() => {loadHistory();}, [id]);
-
-  async function loadHistory() {
+  const loadHistory = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getTempWalletHistory(token, id);
@@ -47,7 +37,9 @@ export default function TempWalletHistoryDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t])
+
+  useEffect(() => {loadHistory();}, [loadHistory]);
 
   async function handleCopy(text) {
     const ok = await copyText(text);
@@ -63,7 +55,7 @@ export default function TempWalletHistoryDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-muted mt-2">History not found</p>
+          <p className="text-surface-500 mt-2">History not found</p>
           <Button onClick={() => router.back()}>Back</Button>
         </div>
       </div>);
@@ -88,7 +80,7 @@ export default function TempWalletHistoryDetail() {
                     Usage History #{history.id}
                   </h4>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={statusBadgeClass(history.status)}>
+                    <span className={getStatusBadgeClass(history.status, 'tempWalletHistory')}>
                       {String(history.status || '').toUpperCase()}
                     </span>
                     {history.tempWalletId &&
@@ -112,22 +104,22 @@ export default function TempWalletHistoryDetail() {
                   <h5 className="mb-0"><i className="bx bx-detail mr-2"></i>{t('admin.detail.details', { defaultValue: 'Details' })}</h5>
                 </div>
                 <div className="p-5">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="font-medium">{history.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
-                          <span className={statusBadgeClass(history.status)}>
+                          <span className={getStatusBadgeClass(history.status, 'tempWalletHistory')}>
                             {String(history.status || '').toUpperCase()}
                           </span>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Temp Wallet ID</td>
+                        <td className="text-surface-500">Temp Wallet ID</td>
                         <td>
                           <Link
                             href={`/admin/temp-wallets/${history.tempWalletId}`}
@@ -138,7 +130,7 @@ export default function TempWalletHistoryDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Invoice ID</td>
+                        <td className="text-surface-500">Invoice ID</td>
                         <td>
                           {history.invoiceId ?
                           <Link
@@ -151,19 +143,19 @@ export default function TempWalletHistoryDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td className="font-medium">{history.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}</td>
                         <td className="font-medium">{history.coinNetworkId || '-'}</td>
                       </tr>
                       {history.address &&
                       <tr>
-                          <td className="text-muted">{t('admin.detail.address', { defaultValue: 'Address' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.address', { defaultValue: 'Address' })}</td>
                           <td>
                             <div className="flex items-center">
-                              <code className="text-body mr-2 text-[0.8rem] break-all">
+                              <code className="text-surface-800 mr-2 text-[0.8rem] break-all">
                                 {history.address}
                               </code>
                               <Button
@@ -179,16 +171,16 @@ export default function TempWalletHistoryDetail() {
                       }
                       {history.amount != null &&
                       <tr>
-                          <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                           <td className="font-bold">{history.amount}</td>
                         </tr>
                       }
                       {history.sweepTxHash &&
                       <tr>
-                          <td className="text-muted">Sweep Tx Hash</td>
+                          <td className="text-surface-500">Sweep Tx Hash</td>
                           <td>
                             <div className="flex items-center">
-                              <code className="text-body mr-2 text-xs break-all">
+                              <code className="text-surface-800 mr-2 text-xs break-all">
                                 {history.sweepTxHash}
                               </code>
                               <Button
@@ -203,7 +195,7 @@ export default function TempWalletHistoryDetail() {
                         </tr>
                       }
                     </tbody>
-                  </table>
+                  </Table>
                 </div>
               </Card>
             </div>
@@ -215,40 +207,40 @@ export default function TempWalletHistoryDetail() {
                   <h5 className="mb-0"><i className="bx bx-time-five mr-2"></i>{t('admin.detail.timestamps', { defaultValue: 'Timestamps' })}</h5>
                 </div>
                 <div className="p-5">
-                  <table className="w-full mb-0">
+                  <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{fmtDate(history.createdAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                         <td>{fmtDate(history.updatedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Assigned At</td>
+                        <td className="text-surface-500">Assigned At</td>
                         <td>{fmtDate(history.assignedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">First Deposit</td>
+                        <td className="text-surface-500">First Deposit</td>
                         <td>{fmtDate(history.firstDepositAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Swept At</td>
+                        <td className="text-surface-500">Swept At</td>
                         <td>{fmtDate(history.sweptAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Released At</td>
+                        <td className="text-surface-500">Released At</td>
                         <td>{fmtDate(history.releasedAt)}</td>
                       </tr>
                       {history.failedAt &&
                       <tr>
-                          <td className="text-muted">Failed At</td>
+                          <td className="text-surface-500">Failed At</td>
                           <td className="text-danger">{fmtDate(history.failedAt)}</td>
                         </tr>
                       }
                     </tbody>
-                  </table>
+                  </Table>
                 </div>
               </Card>
 

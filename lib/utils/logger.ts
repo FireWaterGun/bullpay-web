@@ -8,6 +8,6 @@ export const logger = {
     if (isDev) console.warn(...args)
   },
   info: (...args: unknown[]) => {
-    if (isDev) console.info(...args)
+    if (isDev) console.warn(...args)
   },
 }

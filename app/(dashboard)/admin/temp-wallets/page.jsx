@@ -1,32 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSearchParams as useNextSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import Link from 'next/link';
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getTempWallets } from '@/lib/api/admin';
-import { listCoins } from '@/lib/api/coins';
-import { useDateFormat } from '@/hooks/useDateFormat';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getTempWallets } from '@/lib/api/admin'
+import { listCoins } from '@/lib/api/coins'
+import { useDateFormat } from '@/hooks/useDateFormat'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import CoinImg from '@/components/CoinImg';
-import { logger } from '@/lib/utils/logger';
+import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card, Input, Label, Select, inputClass, badgeBase } from '../../../../components/ui';
+import { Badge, Button, Card, CoinNetworkFilterDropdown, Input, Label, Select } from '@/components/ui'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
-const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled'];
-
-function statusBadgeClass(s) {
-  const v = String(s || '').toLowerCase();
-  if (v === 'active' || v === 'pooled') return `${badgeBase} bg-green-50 text-green-700`;
-  if (v === 'assigned') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-  if (v === 'used' || v === 'sweeped') return `${badgeBase} bg-amber-50 text-amber-700`;
-  if (v === 'expired' || v === 'disabled') return `${badgeBase} bg-red-50 text-red-700`;
-  return `${badgeBase} bg-surface-100 text-surface-600`;
-}
+const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
 
 export default function TempWalletList() {
   const { fmtDate } = useDateFormat();
@@ -70,11 +64,34 @@ export default function TempWalletList() {
     return f;
   });
 
-  useEffect(() => {loadWallets();}, [currentPage, appliedFilters]);
+  const loadWallets = useCallback(async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const data = await getTempWallets(token, { page: currentPage, limit: 20, ...appliedFilters });
+      setWallets(data.items || []);
+      const m = data.meta || data.pagination || null;
+      setPagination(m ? {
+        total: m.total,
+        page: m.page,
+        limit: m.perPage || m.limit || 20,
+        totalPages: m.lastPage || m.totalPages || 1,
+        hasNext: m.hasNextPage ?? m.hasNext ?? false,
+        hasPrev: m.hasPrevPage ?? m.hasPrev ?? false
+      } : null);
+    } catch (error) {
+      logger.error('Failed to load temp wallets:', error);
+      toast.error(t('admin.tempWallet.loadError', { defaultValue: 'Failed to load temp wallets' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
+  useEffect(() => {loadWallets();}, [loadWallets]);
 
   useEffect(() => {
     listCoins(token).then(setCoinNetworks).catch(() => {});
-  }, []);
+  }, [token]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -107,29 +124,6 @@ export default function TempWalletList() {
     syncSearchParams({}, 1);
   }
 
-  async function loadWallets() {
-    if (!token) return;
-    try {
-      setLoading(true);
-      const data = await getTempWallets(token, { page: currentPage, limit: 20, ...appliedFilters });
-      setWallets(data.items || []);
-      const m = data.meta || data.pagination || null;
-      setPagination(m ? {
-        total: m.total,
-        page: m.page,
-        limit: m.perPage || m.limit || 20,
-        totalPages: m.lastPage || m.totalPages || 1,
-        hasNext: m.hasNextPage ?? m.hasNext ?? false,
-        hasPrev: m.hasPrevPage ?? m.hasPrev ?? false
-      } : null);
-    } catch (error) {
-      logger.error('Failed to load temp wallets:', error);
-      toast.error(t('admin.tempWallet.loadError', { defaultValue: 'Failed to load temp wallets' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleCopy(text) {
     const ok = await copyText(text);
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
@@ -152,7 +146,7 @@ export default function TempWalletList() {
                     <i className="bx bx-wallet mr-2"></i>
                     {t('admin.tempWallets.title', { defaultValue: 'Temp Wallets' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.tempWallets.description', { defaultValue: 'Monitor temporary payment wallets' })}
                   </p>
                 </div>
@@ -180,51 +174,10 @@ export default function TempWalletList() {
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
                   <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
-                  <div className="dropdown">
-                    <button
-                      className={`${inputClass()} flex items-center justify-between text-left`}
-                      type="button"
-                      aria-expanded="false">
-
-                      
-                      {coinNetworkIdFilter ? (() => {
-                        const cn = coinNetworks.find((c) => String(c.id) === String(coinNetworkIdFilter));
-                        if (!cn) return 'All';
-                        const sym = (cn.coin?.symbol || '').toUpperCase();
-                        const net = (cn.network?.symbol || '').toUpperCase();
-                        return (
-                          <span className="flex items-center gap-2">
-                            <CoinImg symbol={sym} networkSymbol={net} size={22} />
-                            <span className="font-semibold text-[0.85rem]">{sym}</span>
-                            <span className="text-muted text-xs">{net}</span>
-                          </span>);
-
-                      })() : <span className="text-muted">All</span>}
-                    </button>
-                    <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 w-full max-h-[280px] overflow-y-auto">
-                      <li>
-                        <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => setCoinNetworkIdFilter('')}>
-                          <span className="text-muted">All</span>
-                        </button>
-                      </li>
-                      <li><hr className="dropdown-divider" /></li>
-                      {coinNetworks.map((cn) => {
-                        const sym = (cn.coin?.symbol || '').toUpperCase();
-                        const net = (cn.network?.symbol || '').toUpperCase();
-                        return (
-                          <li key={cn.id}>
-                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer flex items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
-                              <CoinImg symbol={sym} networkSymbol={net} size={28} />
-                              <div>
-                                <div className="font-semibold text-[0.85rem]">{sym}</div>
-                                <div className="text-muted text-[0.7rem]">{net}</div>
-                              </div>
-                            </button>
-                          </li>);
-
-                      })}
-                    </ul>
-                  </div>
+                  <CoinNetworkFilterDropdown
+                    coinNetworks={coinNetworks}
+                    value={coinNetworkIdFilter}
+                    onChange={setCoinNetworkIdFilter} />
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
                   <Label>{t('filter.address', { defaultValue: 'Address' })}</Label>
@@ -264,8 +217,7 @@ export default function TempWalletList() {
           {/* Table */}
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -294,7 +246,6 @@ export default function TempWalletList() {
                       message={t('admin.tempWallets.noWallets', { defaultValue: 'No temp wallets found' })}
                       sub={t('admin.tempWallets.noWalletsSub', { defaultValue: 'No temp wallets match the current filters' })} /> :
 
-
                     wallets.map((w) =>
                     <tr key={w.id}>
                           <td>
@@ -309,7 +260,7 @@ export default function TempWalletList() {
                                 {w.invoiceId}
                               </Link> :
 
-                        <span className="text-muted">-</span>
+                        <span className="text-surface-500">-</span>
                         }
                           </td>
                           <td className="text-center">
@@ -320,7 +271,7 @@ export default function TempWalletList() {
                               <CoinImg symbol={w.coinSymbol} networkSymbol={w.networkSymbol} size={28} />
                               <div>
                                 <div className="font-semibold text-[0.85rem]">{w.coinSymbol || '-'}</div>
-                                <div className="text-muted text-[0.7rem]">{w.networkSymbol || '-'}</div>
+                                <div className="text-surface-500 text-[0.7rem]">{w.networkSymbol || '-'}</div>
                               </div>
                             </div>
                           </td>
@@ -339,11 +290,11 @@ export default function TempWalletList() {
                                 </Button>
                               </div> :
 
-                        <span className="text-muted">-</span>
+                        <span className="text-surface-500">-</span>
                         }
                           </td>
                           <td className="whitespace-nowrap text-center">
-                            <span className={statusBadgeClass(w.status)}>
+                            <span className={getStatusBadgeClass(w.status, 'tempWallet')}>
                               {String(w.status || '').toUpperCase()}
                             </span>
                             {w.isExpired &&
@@ -390,46 +341,9 @@ export default function TempWalletList() {
                     )
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {/* Pagination */}
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', {
-                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                    end: Math.min(pagination.page * pagination.limit, pagination.total),
-                    total: pagination.total,
-                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                  })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      {t('actions.prev', { defaultValue: 'Previous' })}
-                    </Button>
-                    <Button
-
-                    disabled variant="outline-secondary" size="sm">
-                    
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-                    
-                      {t('actions.next', { defaultValue: 'Next' })}
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }} loading={loading} />
             </div>
           </Card>
         </div>

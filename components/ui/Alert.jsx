@@ -8,7 +8,7 @@ const colorMap = {
   ].join(' '),
   secondary: [
     'text-surface-700 bg-surface-100 border-surface-200',
-    'dark:text-surface-900-text dark:bg-white/6 dark:border-dark-border',
+    'dark:bg-white/6 dark:border-surface-200',
   ].join(' '),
   success: [
     'text-[#166534] bg-[#dcfce7] border-success-500/20',
@@ -52,11 +52,11 @@ export default function Alert({
       {dismissible && (
         <button
           type="button"
-          className="absolute top-0 right-0 p-[0.9375rem_1rem] bg-transparent border-none cursor-pointer opacity-50 hover:opacity-100 transition-opacity text-xs leading-none text-inherit"
+          className="absolute top-0 right-0 p-[0.9375rem_1rem] bg-transparent border-none cursor-pointer opacity-50 hover:opacity-100 transition-opacity text-xl leading-none text-inherit"
           onClick={onDismiss}
           aria-label="Close"
         >
-          ×
+          <i className="bx bx-x"></i>
         </button>
       )}
     </div>

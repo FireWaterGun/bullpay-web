@@ -1,32 +1,33 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react'
 
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getAdminInvoices } from '@/lib/api/admin';
-import { formatAmount } from '@/lib/utils/format';
-import { useDateFormat } from '@/hooks/useDateFormat';
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale'
+import { useToast } from '@/app/providers'
+import { getAdminInvoices } from '@/lib/api/admin'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
 import CoinImg from '@/components/CoinImg';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import { logger } from '@/lib/utils/logger';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, Input, Label, Select, badgeBase } from '../../../../components/ui';
+import Pagination from '@/components/ui/Pagination';
+import { Button, Card, Input, Label, Select } from '@/components/ui'
+import Table from '@/components/ui/Table';
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function AdminInvoiceList() {
-  const { fmtDate } = useDateFormat();
-  const { t, i18n } = useAdminTranslation();
+  const { fmtDate } = useDateFormat()
+  const { t } = useAdminTranslation();
   const { token } = useAuth();
   const toast = useToast();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -44,9 +45,27 @@ export default function AdminInvoiceList() {
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({});
 
+  const loadInvoices = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getAdminInvoices(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setInvoices(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load invoices:', error);
+      toast.error(t('admin.invoices.loadError', { defaultValue: 'Failed to load invoices' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t])
+
   useEffect(() => {
     loadInvoices();
-  }, [currentPage, appliedFilters]);
+  }, [loadInvoices]);
 
   function applyFilters() {
     setAppliedFilters({
@@ -73,34 +92,6 @@ export default function AdminInvoiceList() {
     setCurrentPage(1);
   }
 
-  async function loadInvoices() {
-    try {
-      setLoading(true);
-      const data = await getAdminInvoices(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setInvoices(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load invoices:', error);
-      toast.error(t('admin.invoices.loadError', { defaultValue: 'Failed to load invoices' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function statusBadgeClass(s) {
-    const v = String(s || '').toLowerCase();
-    if (v === 'paid' || v === 'completed' || v === 'confirmed') return `${badgeBase} bg-green-50 text-green-700`;
-    if (v === 'pending' || v === 'detecting') return `${badgeBase} bg-amber-50 text-amber-700`;
-    if (v === 'confirming' || v === 'processing') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-    if (v === 'expired' || v === 'cancelled' || v === 'canceled') return `${badgeBase} bg-surface-100 text-surface-600`;
-    if (v === 'failed' || v === 'unconfirmed') return `${badgeBase} bg-red-50 text-red-700`;
-    return `${badgeBase} bg-surface-100 text-surface-600`;
-  }
-
   async function handleCopy(text) {
     const ok = await copyText(text);
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
@@ -123,7 +114,7 @@ export default function AdminInvoiceList() {
                     <i className="bx bx-receipt mr-2"></i>
                     {t('admin.invoices.title', { defaultValue: 'Invoices' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.invoices.description', { defaultValue: 'View all invoices and their status' })}
                   </p>
                 </div>
@@ -198,8 +189,7 @@ export default function AdminInvoiceList() {
           {/* Table */}
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -222,7 +212,6 @@ export default function AdminInvoiceList() {
                       icon="bx-file"
                       message={t('admin.invoices.noInvoices', { defaultValue: 'No invoices found' })}
                       sub={t('admin.invoices.noInvoicesSub', { defaultValue: 'No invoices match the current filters' })} /> :
-
 
                     invoices.map((invoice) => {
                       const coinSymbol = (invoice.coin?.symbol || invoice.coinSymbol || '').toUpperCase();
@@ -251,7 +240,7 @@ export default function AdminInvoiceList() {
                                 <div>
                                   <div className="font-medium leading-[1.2]">{coinSymbol || '-'}</div>
                                   {networkName &&
-                                <small className="text-muted text-xs">{networkName}</small>
+                                <small className="text-surface-500 text-xs">{networkName}</small>
                                 }
                                 </div>
                               </div>
@@ -265,11 +254,11 @@ export default function AdminInvoiceList() {
                               {invoice.amountUsd ?
                             <span className="font-medium">${formatAmount(invoice.amountUsd)}</span> :
 
-                            <span className="text-muted">-</span>
+                            <span className="text-surface-500">-</span>
                             }
                             </td>
                             <td className="whitespace-nowrap text-center">
-                              <span className={statusBadgeClass(invoice.status)}>
+                              <span className={getStatusBadgeClass(invoice.status, 'invoice')}>
                                 {String(invoice.status || '').toUpperCase()}
                               </span>
                             </td>
@@ -282,13 +271,13 @@ export default function AdminInvoiceList() {
                                   <Button
 
                                 onClick={() => handleCopy(invoice.paymentAddress)}
-                                title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full">
+                                title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })} size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 dark:hover:bg-white/6 shadow-none rounded-full">
                                 
                                     <i className="bx bx-copy text-xl"></i>
                                   </Button>
                                 </div> :
 
-                            <span className="text-muted">-</span>
+                            <span className="text-surface-500">-</span>
                             }
                             </td>
                             <td>
@@ -311,45 +300,15 @@ export default function AdminInvoiceList() {
                     })
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
               {/* Pagination */}
               {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', {
-                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                    end: Math.min(pagination.page * pagination.limit, pagination.total),
-                    total: pagination.total,
-                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                  })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => setCurrentPage((p) => p - 1)} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      {t('actions.prev', { defaultValue: 'Previous' })}
-                    </Button>
-                    <Button
-
-                    disabled variant="outline-secondary" size="sm">
-                    
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => setCurrentPage((p) => p + 1)} variant="outline-secondary" size="sm">
-                    
-                      {t('actions.next', { defaultValue: 'Next' })}
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
+              <Pagination
+                pagination={pagination}
+                onPageChange={setCurrentPage}
+                loading={loading}
+              />
               }
             </div>
           </Card>

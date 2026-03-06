@@ -111,7 +111,7 @@ export default function HeroSection() {
         <div className="landing-hero-grid"></div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 relative z-10">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* ── Left column ── */}
           <div className="mb-5 lg:mb-0">
@@ -163,7 +163,7 @@ export default function HeroSection() {
             {FLOAT_COINS.map((c, i) => (
               <div
                 key={i}
-                className="absolute z-20 w-11 h-11 bg-white rounded-full hidden lg:flex items-center justify-center shadow-[0_8px_24px_rgba(15,23,42,0.1),0_2px_6px_rgba(15,23,42,0.05)]"
+                className="absolute z-20 w-11 h-11 bg-card rounded-full hidden lg:flex items-center justify-center shadow-[0_8px_24px_rgba(15,23,42,0.1),0_2px_6px_rgba(15,23,42,0.05)]"
                 style={{ animationDuration: '6s', animationTimingFunction: 'ease-in-out', animationIterationCount: 'infinite', ...c.style }}
               >
                 <Image src={c.img} alt="" width={c.style.width === 38 ? 22 : 26} height={c.style.width === 38 ? 22 : 26} />
@@ -200,7 +200,7 @@ export default function HeroSection() {
                 >
                   {/* Coin header card */}
                   <div className="flex items-center gap-2.5 py-3 px-3.5 sm:gap-3.5 sm:py-4 sm:px-[18px] rounded-[14px] bg-gradient-to-br from-slate-50/80 to-slate-100/50 border border-slate-200/60 mb-[22px]" style={{ '--coin-accent': sc.accent }}>
-                    <div className="w-[42px] h-[42px] sm:w-[52px] sm:h-[52px] rounded-[14px] bg-white flex items-center justify-center shadow-[0_2px_8px_rgba(15,23,42,0.06)] shrink-0">
+                    <div className="w-[42px] h-[42px] sm:w-[52px] sm:h-[52px] rounded-[14px] bg-card flex items-center justify-center shadow-[0_2px_8px_rgba(15,23,42,0.06)] shrink-0">
                       <Image src={sc.img} alt={sc.coin} width={44} height={44} />
                     </div>
                     <div className="flex-1 min-w-0">

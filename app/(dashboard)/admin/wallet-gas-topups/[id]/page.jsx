@@ -1,23 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getGasTopupById } from '@/lib/api/admin';
-import { AmountNormalizer } from '@/lib/utils/amount_normalizer';
-import { formatCoinAmount } from '@/lib/utils/format';
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getGasTopupById } from '@/lib/api/admin'
+import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
+import { formatCoinAmount } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import GasTopupDetailsCard from '@/components/admin/GasTopupDetailsCard';
 import GasTopupTransactionCard from '@/components/admin/GasTopupTransactionCard';
-import { logger } from '@/lib/utils/logger';
+import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card, badgeBase } from '../../../../../components/ui';
+import { Badge, Button, Card } from '@/components/ui'
+import Table from '@/components/ui/Table'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function GasTopupDetail() {
-  const { t } = useAdminTranslation();
+  const { t } = useAdminTranslation()
   const { token } = useAuth();
   const toast = useToast();
   const router = useRouter();
@@ -26,11 +28,7 @@ export default function GasTopupDetail() {
   const [loading, setLoading] = useState(true);
   const [topup, setTopup] = useState(null);
 
-  useEffect(() => {
-    loadTopup();
-  }, [id]);
-
-  async function loadTopup() {
+  const loadTopup = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getGasTopupById(token, Number(id));
@@ -41,7 +39,11 @@ export default function GasTopupDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t])
+
+  useEffect(() => {
+    loadTopup();
+  }, [loadTopup]);
 
   function formatAmount(amountRaw, decimals = 18) {
     if (!amountRaw) return '0';
@@ -58,16 +60,6 @@ export default function GasTopupDetail() {
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
   }
 
-  function statusBadgeClass(s) {
-    const v = String(s || '').toLowerCase();
-    if (v === 'pending') return `${badgeBase} bg-amber-50 text-amber-700`;
-    if (v === 'processing') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-    if (v === 'completed') return `${badgeBase} bg-green-50 text-green-700`;
-    if (v === 'failed') return `${badgeBase} bg-red-50 text-red-700`;
-    if (v === 'skipped') return `${badgeBase} bg-surface-100 text-surface-600`;
-    return `${badgeBase} bg-surface-100 text-surface-600`;
-  }
-
   if (loading) {
     return <PageSpinner />;
   }
@@ -77,7 +69,7 @@ export default function GasTopupDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-muted mt-2">{t('admin.gasTopup.notFound', { defaultValue: 'Gas topup not found' })}</p>
+          <p className="text-surface-500 mt-2">{t('admin.gasTopup.notFound', { defaultValue: 'Gas topup not found' })}</p>
           <Button onClick={() => router.back()}>
             {t('actions.back', { defaultValue: 'Back' })}
           </Button>
@@ -127,7 +119,7 @@ export default function GasTopupDetail() {
                       {t('admin.gasTopup.detailTitle', { id: topup.id, defaultValue: 'Gas Topup #{{id}}' })}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={statusBadgeClass(topup.status)}>
+                      <span className={getStatusBadgeClass(topup.status, 'gasTopup')}>
                         {String(topup.status || '').toUpperCase()}
                       </span>
                       {coinSymbol &&
@@ -148,7 +140,7 @@ export default function GasTopupDetail() {
                     {formatAmount(topup.topupGasRaw || topup.amountRaw || topup.amount, decimals)}{' '}
                     <span className="text-[0.75em] font-normal">ETH</span>
                   </div>
-                  <small className="text-muted">{t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}</small>
+                  <small className="text-surface-500">{t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}</small>
                 </div>
               </div>
             </div>
@@ -163,7 +155,7 @@ export default function GasTopupDetail() {
                 networkName={networkName}
                 decimals={decimals}
                 formatAmount={formatAmount}
-                statusBadgeClass={statusBadgeClass}
+                statusBadgeClass={(s) => getStatusBadgeClass(s, 'gasTopup')}
                 t={t} />
               
             </div>
@@ -187,18 +179,17 @@ export default function GasTopupDetail() {
                 </h5>
               </div>
               <div className="p-5">
-                <div className="overflow-x-auto">
-                <table className="w-full">
+                <Table>
                   <tbody>
                     {metadata.tokenSymbol &&
                     <tr>
-                        <td className="text-muted w-2/5">{t('admin.gasTopup.tokenSymbol', { defaultValue: 'Token Symbol' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.gasTopup.tokenSymbol', { defaultValue: 'Token Symbol' })}</td>
                         <td>{metadata.tokenSymbol}</td>
                       </tr>
                     }
                     {metadata.tokenContractAddress &&
                     <tr>
-                        <td className="text-muted">{t('admin.gasTopup.tokenContract', { defaultValue: 'Token Contract' })}</td>
+                        <td className="text-surface-500">{t('admin.gasTopup.tokenContract', { defaultValue: 'Token Contract' })}</td>
                         <td>
                           <code className="break-words text-xs">{metadata.tokenContractAddress}</code>
                           {explorerUrl &&
@@ -217,19 +208,18 @@ export default function GasTopupDetail() {
                     }
                     {metadata.networkName &&
                     <tr>
-                        <td className="text-muted">{t('admin.gasTopup.networkName', { defaultValue: 'Network Name' })}</td>
+                        <td className="text-surface-500">{t('admin.gasTopup.networkName', { defaultValue: 'Network Name' })}</td>
                         <td>{metadata.networkName}</td>
                       </tr>
                     }
                     {metadata.createdByTask &&
                     <tr>
-                        <td className="text-muted">{t('admin.gasTopup.createdByTask', { defaultValue: 'Created By' })}</td>
+                        <td className="text-surface-500">{t('admin.gasTopup.createdByTask', { defaultValue: 'Created By' })}</td>
                         <td><code>{metadata.createdByTask}</code></td>
                       </tr>
                     }
                   </tbody>
-                </table>
-                </div>
+                </Table>
               </div>
             </Card>
           }

@@ -20,19 +20,19 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
           <tbody>
             {entry.reservationId &&
             <tr>
-                <td className="text-muted w-2/5">Reservation ID</td>
+                <td className="text-surface-500 w-2/5">Reservation ID</td>
                 <td><code>{entry.reservationId}</code></td>
               </tr>
             }
             {entry.relatedId &&
             <tr>
-                <td className="text-muted">Related ID</td>
+                <td className="text-surface-500">Related ID</td>
                 <td>#{entry.relatedId}</td>
               </tr>
             }
             {entry.txHash &&
             <tr>
-                <td className="text-muted">Tx Hash</td>
+                <td className="text-surface-500">Tx Hash</td>
                 <td>
                   <code className="break-words text-xs">{entry.txHash}</code>
                   <div className="flex gap-1 mt-2">
@@ -60,20 +60,20 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
             }
             {metadata?.invoiceNumber &&
             <tr>
-                <td className="text-muted">Invoice</td>
+                <td className="text-surface-500">Invoice</td>
                 <td><Badge className="bg-primary-50 text-primary-600">{metadata.invoiceNumber}</Badge></td>
               </tr>
             }
             {metadata?.sweepId &&
             <tr>
-                <td className="text-muted">Sweep ID</td>
+                <td className="text-surface-500">Sweep ID</td>
                 <td>#{metadata.sweepId}</td>
               </tr>
             }
             {metadata?.note &&
             <tr>
-                <td className="text-muted">Note</td>
-                <td className="text-muted text-[0.85rem]">{metadata.note}</td>
+                <td className="text-surface-500">Note</td>
+                <td className="text-surface-500 text-[0.85rem]">{metadata.note}</td>
               </tr>
             }
           </tbody>
@@ -100,30 +100,30 @@ export function TimestampsCard({ entry }) {
         <table className="w-full">
           <tbody>
             <tr>
-              <td className="text-muted w-2/5">Created</td>
+              <td className="text-surface-500 w-2/5">Created</td>
               <td>{fmtDateTime(entry.createdAt)}</td>
             </tr>
             {entry.committedAt &&
             <tr>
-                <td className="text-muted">Committed</td>
+                <td className="text-surface-500">Committed</td>
                 <td>{fmtDateTime(entry.committedAt)}</td>
               </tr>
             }
             {entry.settledAt &&
             <tr>
-                <td className="text-muted">Settled</td>
+                <td className="text-surface-500">Settled</td>
                 <td>{fmtDateTime(entry.settledAt)}</td>
               </tr>
             }
             {entry.reversedAt &&
             <tr>
-                <td className="text-muted">Reversed</td>
+                <td className="text-surface-500">Reversed</td>
                 <td>{fmtDateTime(entry.reversedAt)}</td>
               </tr>
             }
             {entry.updatedAt &&
             <tr>
-                <td className="text-muted">Updated</td>
+                <td className="text-surface-500">Updated</td>
                 <td>{fmtDateTime(entry.updatedAt)}</td>
               </tr>
             }

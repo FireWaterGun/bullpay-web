@@ -82,7 +82,7 @@ export default function Verify2FAModal({
       const res = await verify2FA(token, code);
       if (res.isBackupCode && res.remainingBackupCodes !== undefined) {
         if (res.remainingBackupCodes <= 3) {
-          logger.warn("Warning: Only " + res.remainingBackupCodes + " backup codes remaining");
+          logger.warn(`Warning: Only ${  res.remainingBackupCodes  } backup codes remaining`);
         }
       }
       onSuccess?.(res);
@@ -104,12 +104,12 @@ export default function Verify2FAModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl mx-4 w-full max-w-[380px]">
+      <div className="bg-card rounded-xl shadow-xl mx-4 w-full max-w-[380px]">
           <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
             <h5 className="font-semibold">
               {title || t("2fa.verifyTitle", { defaultValue: "Two-Factor Authentication" })}
             </h5>
-            <button type="button" className="text-surface-400 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}>&times;</button>
+            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={handleClose} disabled={loading}><i className="bx bx-x"></i></button>
           </div>
           <div className="p-6">
             <p className="text-surface-500 text-center mb-4">
@@ -133,8 +133,8 @@ export default function Verify2FAModal({
           <div className="flex justify-center gap-2 mb-3" onPaste={handlePaste}>
                 {[0, 1, 2, 3, 4, 5].map((i) =>
             <Input
-              key={"digit-" + i}
-              ref={(el) => inputRefs.current[i] = el}
+              key={`digit-${  i}`}
+              ref={(el) => { inputRefs.current[i] = el; }}
               type="text"
               inputMode="numeric"
 

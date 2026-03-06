@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
 import { useAuth, useToast } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import {
   getUsers,
   changeUserStatus,
@@ -21,18 +22,15 @@ import CreateUserModal from '@/components/admin/CreateUserModal';
 import { STATUS_OPTIONS, ROLE_OPTIONS } from '@/components/admin/userListHelpers';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
-import { Button, Card, Input, Label, Select, Spinner } from '../../../../components/ui'
+import { Button, Card, Input, Label, Select, Spinner } from '@/components/ui'
 
 export default function AdminUsersPage() {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token, navigation } = useAuth();
   const toast = useToast();
   const searchParams = useNextSearchParams();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const initStatus = searchParams.get('status') || '';
   const initRole = searchParams.get('role') || '';
@@ -80,9 +78,28 @@ export default function AdminUsersPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
 
+  const loadUsers = useCallback(async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const data = await getUsers(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setUsers(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load users:', error);
+      toast.error(t('admin.users.loadError', { defaultValue: 'Failed to load users' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
   useEffect(() => {
     loadUsers();
-  }, [currentPage, appliedFilters]);
+  }, [loadUsers]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -117,25 +134,6 @@ export default function AdminUsersPage() {
     setAppliedFilters({});
     setCurrentPage(1);
     syncSearchParams({}, 1);
-  }
-
-  async function loadUsers() {
-    if (!token) return;
-    try {
-      setLoading(true);
-      const data = await getUsers(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setUsers(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load users:', error);
-      toast.error(t('admin.users.loadError', { defaultValue: 'Failed to load users' }));
-    } finally {
-      setLoading(false);
-    }
   }
 
   async function handleCopy(text) {
@@ -237,7 +235,7 @@ export default function AdminUsersPage() {
           <Spinner role="status" className="text-primary" />
 
           
-          <p className="mt-3 text-muted">{t('invoices.loading', { defaultValue: 'Loading...' })}</p>
+          <p className="mt-3 text-surface-500">{t('invoices.loading', { defaultValue: 'Loading...' })}</p>
         </div>
       </div>);
 
@@ -255,7 +253,7 @@ export default function AdminUsersPage() {
                     <i className="bx bx-group mr-2"></i>
                     {t('admin.users.title', { defaultValue: 'User Management' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.users.description', { defaultValue: 'Manage users, roles, and access' })}
                   </p>
                 </div>

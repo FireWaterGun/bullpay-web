@@ -10,7 +10,7 @@ import { getCoinById, createCoin, updateCoin, deleteCoin } from '@/lib/api/admin
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false });
 const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false });
 import { useToast } from '@/app/providers';
-import { Alert, Button, Card, Input, Label, Select, Spinner } from '../../../../../components/ui';
+import { Alert, Button, Card, Input, Label, Select, Spinner } from '@/components/ui';
 
 export default function CoinForm() {
   const { t } = useAdminTranslation();
@@ -194,7 +194,7 @@ export default function CoinForm() {
           <h4 className="mb-1">
             {isEdit ? t('crypto.editCoin', { defaultValue: 'Edit Coin' }) : t('crypto.createCoin', { defaultValue: 'Create Coin' })}
           </h4>
-          <p className="text-muted mb-0">
+          <p className="text-surface-500 mb-0">
             {isEdit ? t('crypto.editCoinDesc', { defaultValue: 'Update coin information' }) : t('crypto.createCoinDesc', { defaultValue: 'Add a new cryptocurrency' })}
           </p>
         </div>
@@ -233,7 +233,7 @@ export default function CoinForm() {
                       disabled={isEdit} className="uppercase" />
 
                     
-                    <small className="text-muted">{t('crypto.symbolHelp', { defaultValue: 'Coin ticker symbol (e.g., BTC, ETH)' })}</small>
+                    <small className="text-surface-500">{t('crypto.symbolHelp', { defaultValue: 'Coin ticker symbol (e.g., BTC, ETH)' })}</small>
                   </div>
 
                   {/* Name */}
@@ -252,7 +252,7 @@ export default function CoinForm() {
                       maxLength={30}
                       required />
                     
-                    <small className="text-muted">{t('crypto.nameHelp', { defaultValue: 'Full coin name' })}</small>
+                    <small className="text-surface-500">{t('crypto.nameHelp', { defaultValue: 'Full coin name' })}</small>
                   </div>
 
                   {/* Type */}
@@ -272,7 +272,7 @@ export default function CoinForm() {
                       <option value="native">{t('crypto.native', { defaultValue: 'Native' })}</option>
                       <option value="token">{t('crypto.token', { defaultValue: 'Token' })}</option>
                     </Select>
-                    <small className="text-muted">{t('crypto.typeHelp', { defaultValue: 'Native blockchain coin or ERC-20/BEP-20 token' })}</small>
+                    <small className="text-surface-500">{t('crypto.typeHelp', { defaultValue: 'Native blockchain coin or ERC-20/BEP-20 token' })}</small>
                   </div>
 
                   {/* Decimals */}
@@ -292,7 +292,7 @@ export default function CoinForm() {
                       required
                       disabled={isEdit} />
                     
-                    <small className="text-muted">{t('crypto.decimalsHelp', { defaultValue: 'Number of decimal places (0-18)' })}</small>
+                    <small className="text-surface-500">{t('crypto.decimalsHelp', { defaultValue: 'Number of decimal places (0-18)' })}</small>
                   </div>
 
                   {/* Status */}
@@ -326,7 +326,7 @@ export default function CoinForm() {
                       onChange={handleChange}
                       placeholder="https://example.com/logo.png" />
                     
-                    <small className="text-muted">{t('crypto.logoUrlHelp', { defaultValue: 'External URL to coin logo image' })}</small>
+                    <small className="text-surface-500">{t('crypto.logoUrlHelp', { defaultValue: 'External URL to coin logo image' })}</small>
                   </div>
 
                   {/* Actions */}

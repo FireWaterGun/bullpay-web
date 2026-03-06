@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/app/providers';
@@ -23,7 +23,7 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import CardEmptyState from '@/components/CardEmptyState';
-import { AvatarInitial, Badge, bgLabelClass, Button, Card, Input, Select } from '../../../../../components/ui';
+import { AvatarInitial, Badge, bgLabelClass, Button, Card, Input, InputGroup, InputAddon, InputIcon, Select } from '@/components/ui';
 
 export default function RolePermissions() {
   const { token, user } = useAuth();
@@ -55,11 +55,7 @@ export default function RolePermissions() {
   const myLevel = ROLE_LEVEL[user?.role] || 0;
   const accessDenied = level > myLevel;
 
-  useEffect(() => {
-    if (!accessDenied) loadData();
-  }, [role]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const [permsData, overridesData] = await Promise.all([
@@ -89,7 +85,11 @@ export default function RolePermissions() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, role, toast, t]);
+
+  useEffect(() => {
+    if (!accessDenied) loadData();
+  }, [accessDenied, loadData]);
 
   const overrideMap = useMemo(() => {
     const map = {};
@@ -251,7 +251,7 @@ export default function RolePermissions() {
           <div className="p-5 text-center py-5">
             <i className="bx bx-lock-alt text-danger text-[3rem]"></i>
             <h5 className="mt-3">{t('admin.roles.accessDenied', { defaultValue: 'Access Denied' })}</h5>
-            <p className="text-muted">{t('admin.roles.cannotViewHigherRole', { defaultValue: 'You do not have permission to view this role.' })}</p>
+            <p className="text-surface-500">{t('admin.roles.cannotViewHigherRole', { defaultValue: 'You do not have permission to view this role.' })}</p>
             <Button onClick={() => router.push('/admin/roles')}>
               <i className="bx bx-arrow-back mr-1"></i>{t('admin.roles.backToRoles', { defaultValue: 'Back to Roles' })}
             </Button>
@@ -265,21 +265,22 @@ export default function RolePermissions() {
     <div className="grow py-6">
       {/* Breadcrumb */}
       <nav aria-label="breadcrumb" className="mb-3">
-        <ol className="breadcrumb mb-0">
-          <li className="breadcrumb-item">
-            <Link href="/admin/roles" className="text-muted">
+        <ol className="flex items-center gap-1 text-sm mb-0">
+          <li>
+            <Link href="/admin/roles" className="text-surface-500 hover:text-primary-600 transition-colors">
               <i className="bx bx-shield-alt-2 mr-1"></i>{t('admin.roles.title', { defaultValue: 'Roles' })}
             </Link>
           </li>
-          <li className="breadcrumb-item active">{formatRoleLabel(role)}</li>
+          <li className="text-surface-400">/</li>
+          <li className="text-surface-800 font-medium">{formatRoleLabel(role)}</li>
         </ol>
       </nav>
 
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
         <div className="flex items-center gap-3">
-          <div className="avatar avatar-lg">
-            <AvatarInitial className={bgLabelClass(color)}>
+          <div>
+            <AvatarInitial className={`${bgLabelClass(color)} w-14 h-14 text-xl`}>
               <i className={`bx ${icon} text-3xl`}></i>
             </AvatarInitial>
           </div>
@@ -288,7 +289,7 @@ export default function RolePermissions() {
               <h4 className="mb-0">{formatRoleLabel(role)}</h4>
               {level > 0 && <Badge color={color} label>L{level}</Badge>}
             </div>
-            {description && <p className="text-muted mb-0 text-[0.85rem]">{description}</p>}
+            {description && <p className="text-surface-500 mb-0 text-[0.85rem]">{description}</p>}
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -340,8 +341,8 @@ export default function RolePermissions() {
         <div className="p-5 py-3">
           <div className="grid grid-cols-12 gap-x-6 gap-3 items-center">
             <div className="md:col-span-5">
-              <div className="flex items-stretch flex items-stretch">
-                <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg"><i className="bx bx-search"></i></span>
+              <InputGroup>
+                <InputAddon><i className="bx bx-search"></i></InputAddon>
                 <Input
                   type="text"
 
@@ -350,11 +351,11 @@ export default function RolePermissions() {
                   onChange={(e) => setSearchQuery(e.target.value)} />
                 
                 {searchQuery &&
-                <span className="flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg cursor-pointer" onClick={() => setSearchQuery('')}>
+                <InputIcon as="button" type="button" aria-label="Clear search" onClick={() => setSearchQuery('')}>
                     <i className="bx bx-x"></i>
-                  </span>
+                  </InputIcon>
                 }
-              </div>
+              </InputGroup>
             </div>
             <div className="md:col-span-3">
               <Select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
@@ -367,13 +368,13 @@ export default function RolePermissions() {
               </Select>
             </div>
             <div className="md:col-span-4 flex items-center justify-end gap-2">
-              <small className="text-muted mr-2">
+              <small className="text-surface-500 mr-2">
                 {filteredPermissions.length} / {permissions.length} · {groupCount} {t('admin.roles.groups', { defaultValue: 'groups' })}
               </small>
-              <Button onClick={expandAll} title={t('admin.roles.expandAll', { defaultValue: 'Expand all' })} variant="outline-secondary" size="sm" className="text-xs py-0.5 px-2 py-[0.2rem] px-[0.5rem] text-[0.7rem]">
+              <Button onClick={expandAll} title={t('admin.roles.expandAll', { defaultValue: 'Expand all' })} variant="outline-secondary" size="sm" className="py-[0.2rem] px-[0.5rem] text-[0.7rem]">
                 <i className="bx bx-expand-vertical"></i>
               </Button>
-              <Button onClick={collapseAll} title={t('admin.roles.collapseAll', { defaultValue: 'Collapse all' })} variant="outline-secondary" size="sm" className="text-xs py-0.5 px-2 py-[0.2rem] px-[0.5rem] text-[0.7rem]">
+              <Button onClick={collapseAll} title={t('admin.roles.collapseAll', { defaultValue: 'Collapse all' })} variant="outline-secondary" size="sm" className="py-[0.2rem] px-[0.5rem] text-[0.7rem]">
                 <i className="bx bx-collapse-vertical"></i>
               </Button>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
@@ -11,14 +11,9 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, Input, Label, Select } from '../../../components/ui'
-
-const EVENT_OPTIONS = [
-{ value: 'payment.completed', label: 'Completed', color: 'success' },
-{ value: 'payment.expired', label: 'Expired', color: 'warning' },
-{ value: 'payment.cancelled', label: 'Cancelled', color: 'secondary' },
-{ value: 'payment.failed', label: 'Failed', color: 'danger' }];
-
+import { Button, Card, Input, Label, Select, Pagination } from '@/components/ui'
+import Table from '@/components/ui/Table';
+import { EVENT_OPTIONS, successBadge, eventBadge, httpStatusBadge } from '@/components/webhook/webhookHelpers'
 
 const SORT_BY_OPTIONS = [
 { value: 'created_at', label: 'Created At' },
@@ -55,9 +50,27 @@ export default function WebhookLogsPage() {
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({});
 
+  const loadLogs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getUserWebhookLogs(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setLogs(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load webhook logs:', error);
+      toast.error(t('webhookLog.loadError', { defaultValue: 'Failed to load webhook logs' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
   useEffect(() => {
     loadLogs();
-  }, [currentPage, appliedFilters]);
+  }, [loadLogs]);
 
   function applyFilters() {
     setAppliedFilters({
@@ -84,51 +97,6 @@ export default function WebhookLogsPage() {
     setCurrentPage(1);
   }
 
-  async function loadLogs() {
-    try {
-      setLoading(true);
-      const data = await getUserWebhookLogs(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setLogs(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load webhook logs:', error);
-      toast.error(t('webhookLog.loadError', { defaultValue: 'Failed to load webhook logs' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function successBadge(val) {
-    if (val === true || val === 1)
-    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">{t('webhookLog.success', { defaultValue: 'Success' })}</span>;
-    if (val === false || val === 0)
-    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">{t('webhookLog.failed', { defaultValue: 'Failed' })}</span>;
-    return '-';
-  }
-
-  function eventBadge(event) {
-    if (!event) return '-';
-    const opt = EVENT_OPTIONS.find((o) => o.value === event);
-    const label = opt?.label || event;
-    const colorMap = { success: 'bg-green-100 text-green-700', warning: 'bg-yellow-100 text-yellow-700', secondary: 'bg-surface-100 text-surface-600', danger: 'bg-red-100 text-red-700', info: 'bg-blue-100 text-blue-700' };
-    const cls = colorMap[opt?.color] || colorMap.info;
-    return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cls}`}>{label}</span>;
-  }
-
-  function httpStatusBadge(status) {
-    if (!status && status !== 0) return '-';
-    const code = Number(status);
-    let cls = 'bg-surface-100 text-surface-600';
-    if (code >= 200 && code < 300) cls = 'bg-green-100 text-green-700';else
-    if (code >= 400 && code < 500) cls = 'bg-yellow-100 text-yellow-700';else
-    if (code >= 500) cls = 'bg-red-100 text-red-700';
-    return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cls}`}>{code}</span>;
-  }
-
   if (loading && logs.length === 0) {
     return <PageSpinner />;
   }
@@ -137,10 +105,10 @@ export default function WebhookLogsPage() {
     <>
       {/* Header + Filters */}
       <Card className="mb-6">
-        <div className="px-6 py-4 border-b border-surface-100 flex justify-between items-center flex-wrap gap-3">
+        <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center flex-wrap gap-3">
           <div>
             <h4 className="font-semibold text-surface-900 mb-1">
-              <i className="bx bx-broadcast mr-2 text-primary-500"></i>
+              <i className="bx bx-broadcast mr-2 text-primary-500 dark:text-primary-400"></i>
               {t('webhookLog.title', { defaultValue: 'Webhook Logs' })}
             </h4>
             <p className="text-surface-500 text-sm mb-0">
@@ -230,7 +198,7 @@ export default function WebhookLogsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-surface-100 text-surface-500 text-xs uppercase tracking-wider whitespace-nowrap">
+                <tr className="border-b border-surface-200 text-surface-500 text-xs uppercase tracking-wider whitespace-nowrap">
                   <th className="py-3 px-3 text-left font-medium">{t('webhookLog.paymentId', { defaultValue: 'Payment' })}</th>
                   <th className="py-3 px-3 text-left font-medium">{t('webhookLog.event', { defaultValue: 'Event' })}</th>
                   <th className="py-3 px-3 text-center font-medium">{t('webhookLog.httpStatus', { defaultValue: 'HTTP' })}</th>
@@ -253,14 +221,14 @@ export default function WebhookLogsPage() {
 
 
                 logs.map((log) =>
-                <tr key={log.id} className="border-b border-surface-50 hover:bg-surface-50/50 transition-colors whitespace-nowrap">
+                <tr key={log.id} className="border-b border-surface-200 hover:bg-surface-50/50 dark:hover:bg-white/4 transition-colors whitespace-nowrap">
                       <td className="py-3 px-3 font-medium text-surface-900">{log.merchantPaymentId || '-'}</td>
                       <td className="py-3 px-3">{eventBadge(log.event)}</td>
                       <td className="py-3 px-3 text-center">{httpStatusBadge(log.httpStatus)}</td>
-                      <td className="py-3 px-3 text-center">{successBadge(log.success)}</td>
+                      <td className="py-3 px-3 text-center">{successBadge(log.success, t)}</td>
                       <td className="py-3 px-3 text-right">
                         {log.durationMs != null ?
-                    <span className={log.durationMs > 5000 ? 'text-red-500 font-medium' : 'text-surface-600'}>
+                    <span className={log.durationMs > 5000 ? 'text-red-500 dark:text-red-400 font-medium' : 'text-surface-600'}>
                             {log.durationMs.toLocaleString()}ms
                           </span> :
                     '-'}
@@ -273,7 +241,7 @@ export default function WebhookLogsPage() {
                       </td>
                       <td className="py-3 px-3">
                         {log.errorMessage ?
-                    <span className="text-red-500 truncate inline-block max-w-[180px]" title={log.errorMessage}>
+                    <span className="text-red-500 dark:text-red-400 truncate inline-block max-w-[180px]" title={log.errorMessage}>
                             {log.errorMessage}
                           </span> :
                     '-'}
@@ -282,7 +250,7 @@ export default function WebhookLogsPage() {
                       <td className="py-3 px-3">
                         <Link
                       href={`/webhook-logs/${log.id}`}
-                      className="inline-flex items-center justify-center w-7 h-7 rounded-full text-surface-500 hover:bg-surface-100 transition-colors"
+                      className="inline-flex items-center justify-center w-7 h-7 rounded-full text-surface-500 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors"
                       title={t('webhookLog.viewDetails', { defaultValue: 'View details' })}>
                       
                           <i className="bx bx-chevron-right"></i>
@@ -295,41 +263,11 @@ export default function WebhookLogsPage() {
             </table>
           </div>
 
-          {/* Pagination */}
-          {pagination && pagination.total > 0 &&
-          <div className="flex justify-between items-center mt-4">
-              <span className="text-surface-500 text-xs">
-                {t('webhookLog.showing', { defaultValue: 'Showing' })}{' '}
-                {pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0}{' '}
-                –{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
-                {t('webhookLog.of', { defaultValue: 'of' })}{' '}
-                {pagination.total}{' '}
-                {t('webhookLog.entries', { defaultValue: 'entries' })}
-              </span>
-              <div className="flex">
-                <button
-                className="px-3 py-1.5 text-sm border border-surface-200 rounded-l-lg text-surface-600 hover:bg-surface-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                disabled={!pagination.hasPrev || loading}
-                onClick={() => setCurrentPage((p) => p - 1)}>
-                
-                  <i className="bx bx-chevron-left mr-1"></i>
-                  {t('webhookLog.previous', { defaultValue: 'Previous' })}
-                </button>
-                <button className="px-3 py-1.5 text-sm border-y border-surface-200 text-surface-600" disabled>
-                  {pagination.page} / {pagination.totalPages}
-                </button>
-                <button
-                className="px-3 py-1.5 text-sm border border-surface-200 rounded-r-lg text-surface-600 hover:bg-surface-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                disabled={!pagination.hasNext || loading}
-                onClick={() => setCurrentPage((p) => p + 1)}>
-                
-                  {t('webhookLog.next', { defaultValue: 'Next' })}
-                  <i className="bx bx-chevron-right ml-1"></i>
-                </button>
-              </div>
-            </div>
-          }
+          <Pagination
+            pagination={pagination}
+            onPageChange={setCurrentPage}
+            loading={loading}
+          />
         </div>
       </Card>
     </>);

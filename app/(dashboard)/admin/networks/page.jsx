@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { useAuth } from '@/app/providers';
 import { getNetworks } from '@/lib/api/admin';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Alert, Badge, Button, Card, Input, Label } from '../../../../components/ui';
+import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 // Network color mapping for gradient badges
 function getNetworkColor(symbol, darker = false) {
@@ -166,7 +169,7 @@ export default function NetworkList() {
                 <i className="bx bx-globe mr-2"></i>
                 {t('crypto.networksList', { defaultValue: 'Networks' })}
               </h4>
-              <p className="text-muted mb-0">{t('crypto.manageNetworksList', { defaultValue: 'Manage blockchain networks' })}</p>
+              <p className="text-surface-500 mb-0">{t('crypto.manageNetworksList', { defaultValue: 'Manage blockchain networks' })}</p>
             </div>
           </div>
 
@@ -207,8 +210,7 @@ export default function NetworkList() {
         }
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <Table>
             <thead>
               <tr>
                 <th>{t('crypto.networkName', { defaultValue: 'Network' })}</th>
@@ -218,7 +220,7 @@ export default function NetworkList() {
                 <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
-            <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+            <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
               {networks.length === 0 ?
               <TableEmptyState
                 colSpan={5}
@@ -234,11 +236,12 @@ export default function NetworkList() {
                     <td className="align-middle">
                       <div className="flex items-center">
                         {networkImages[network.id]?.url ?
-                    <img
+                    <Image
                       src={networkImages[network.id].url}
                       alt={network.symbol || network.name}
-                      width="40"
-                      height="40"
+                      width={40}
+                      height={40}
+                      unoptimized
                       className="mr-3 object-contain" /> :
 
 
@@ -269,7 +272,7 @@ export default function NetworkList() {
                           {new URL(network.explorerUrl).hostname}
                         </a> :
 
-                  <span className="text-muted">N/A</span>
+                  <span className="text-surface-500">N/A</span>
                   }
                     </td>
                     <td className="text-center align-middle">
@@ -298,13 +301,12 @@ export default function NetworkList() {
               )
               }
             </tbody>
-          </table>
-        </div>
+          </Table>
 
         {/* Search results info */}
         {!loading && searchQuery && networks.length > 0 &&
         <div className="px-5 py-3 border-t border-surface-200">
-            <div className="text-muted text-sm">
+            <div className="text-surface-500 text-sm">
               {t('crypto.searchResults', {
               count: networks.length,
               defaultValue: `Found ${networks.length} result(s) in current page`
@@ -315,40 +317,7 @@ export default function NetworkList() {
 
         {/* Pagination - hide when searching */}
         {!loading && networks.length > 0 && !searchQuery &&
-        <div className="px-5 py-3 border-t border-surface-200 flex justify-between items-center">
-            <div className="text-muted text-sm">
-              {t('invoices.showingEntries', {
-              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-              end: Math.min(pagination.page * pagination.limit, pagination.total),
-              total: pagination.total,
-              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-            })}
-            </div>
-            <div className="inline-flex rounded-lg shadow-sm">
-              <Button
-
-              disabled={!pagination.hasPrev || loading}
-              onClick={() => handlePageChange(pagination.page - 1)} variant="outline-secondary" size="sm">
-              
-                <i className="bx bx-chevron-left"></i>
-                {t('actions.prev', { defaultValue: 'Previous' })}
-              </Button>
-              <Button
-
-              disabled variant="outline-secondary" size="sm">
-              
-                {pagination.page} / {pagination.totalPages}
-              </Button>
-              <Button
-
-              disabled={!pagination.hasNext || loading}
-              onClick={() => handlePageChange(pagination.page + 1)} variant="outline-secondary" size="sm">
-              
-                {t('actions.next', { defaultValue: 'Next' })}
-                <i className="bx bx-chevron-right"></i>
-              </Button>
-            </div>
-          </div>
+          <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="px-5 py-3 border-t border-surface-200 mt-0" />
         }
       </Card>
     </div>);

@@ -25,10 +25,10 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
     <Card className="mb-4">
       <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
         <h6 className="mb-0 font-semibold">
-          <i className="bx bx-key mr-2 text-primary-600 text-[1.1rem]"></i>
+          <i className="bx bx-key mr-2 text-primary-600 dark:text-primary-400 text-[1.1rem]"></i>
           {t('merchant.apiCredentials', { defaultValue: 'API Credentials' })}
         </h6>
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400">
           <i className="bx bx-lock-alt mr-1"></i>
           {t('merchant.encrypted', { defaultValue: 'Encrypted' })}
         </span>
@@ -41,8 +41,8 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             {t('merchant.apiKey', { defaultValue: 'API Key' })}
           </Label>
           <InputGroup>
-            <InputIcon className="bg-surface-100">
-              <i className="bx bx-key text-surface-500 text-[0.9rem]"></i>
+            <InputIcon className="bg-surface-100 dark:bg-dark-elevated">
+              <i className="bx bx-key text-[0.9rem]"></i>
             </InputIcon>
             <Input
               type="text"
@@ -88,8 +88,8 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             {t('merchant.apiSecret', { defaultValue: 'API Secret' })}
           </Label>
           <InputGroup>
-            <InputIcon className="bg-surface-100">
-              <i className="bx bx-shield text-surface-500 text-[0.9rem]"></i>
+            <InputIcon className="bg-surface-100 dark:bg-dark-elevated">
+              <i className="bx bx-shield text-[0.9rem]"></i>
             </InputIcon>
             <Input
               type="text"
@@ -98,7 +98,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
               readOnly className="font-mono text-[0.85rem] tracking-[0.02em]" />
 
             
-            <InputIcon className="text-surface-500 text-sm bg-surface-100">
+            <InputIcon className="text-sm bg-surface-100 dark:bg-dark-elevated">
               <i className="bx bx-lock-alt mr-1 text-xs"></i>
               {t('merchant.secretMasked', { defaultValue: 'masked' })}
             </InputIcon>
@@ -111,7 +111,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             <i className="bx bx-refresh mr-1"></i>
             {t('merchant.rotateSecret', { defaultValue: 'Rotate Secret' })}
           </Button>
-          <Button onClick={onRegenerate} size="sm" className="border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white">
+          <Button onClick={onRegenerate} size="sm" className="border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white dark:text-danger-400 dark:border-danger-400 dark:hover:bg-danger-500 dark:hover:text-white">
             <i className="bx bx-reset mr-1"></i>
             {t('merchant.regenerateKey', { defaultValue: 'Regenerate Key & Secret' })}
           </Button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/app/providers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
@@ -12,7 +12,8 @@ import CoinImg from '@/components/CoinImg';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
 import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card } from '../../../../../components/ui';
+import { Badge, Button, Card } from '@/components/ui'
+import Table from '@/components/ui/Table';
 
 export default function UserLedgerDetail() {
   const { fmtDateTime } = useDateFormat();
@@ -24,11 +25,7 @@ export default function UserLedgerDetail() {
   const [loading, setLoading] = useState(true);
   const [entry, setEntry] = useState(null);
 
-  useEffect(() => {
-    loadEntry();
-  }, [id]);
-
-  async function loadEntry() {
+  const loadEntry = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getUserLedgerEntry(token, parseInt(id));
@@ -39,7 +36,11 @@ export default function UserLedgerDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t]);
+
+  useEffect(() => {
+    loadEntry();
+  }, [loadEntry]);
 
   function formatAmount(val) {
     if (!val && val !== 0) return '0';
@@ -56,13 +57,13 @@ export default function UserLedgerDetail() {
     if (state === 'committed') return <Badge className="bg-cyan-50 text-cyan-700">Committed</Badge>;
     if (state === 'pending') return <Badge className="bg-amber-50 text-amber-700">{t('status.pending', { defaultValue: 'Pending' })}</Badge>;
     if (state === 'reversed') return <Badge className="bg-surface-100 text-surface-600">Reversed</Badge>;
-    return <span className="text-muted">{state || 'N/A'}</span>;
+    return <span className="text-surface-500">{state || 'N/A'}</span>;
   }
 
   async function handleCopy(text) {
     const ok = await copyText(text);
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));else
-    toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }));
+    if (ok) {toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));}else
+    {toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }));}
   }
 
   if (loading) {
@@ -74,7 +75,7 @@ export default function UserLedgerDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-muted mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
+          <p className="text-surface-500 mt-2">{t('admin.ledger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
           <Button onClick={() => router.back()}>
             {t('actions.back', { defaultValue: 'Back' })}
           </Button>
@@ -155,11 +156,11 @@ export default function UserLedgerDetail() {
                   <div className={`text-2xl font-bold ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
                     {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
                   </div>
-                  <div className="text-muted">
+                  <div className="text-surface-500">
                     {formatUsd(entry.amountUsd)}
                   </div>
                   {entry.networkName &&
-                  <small className="text-muted">{entry.networkName}</small>
+                  <small className="text-surface-500">{entry.networkName}</small>
                   }
                 </div>
               </div>
@@ -177,33 +178,32 @@ export default function UserLedgerDetail() {
                   </h5>
                 </div>
                 <div className="p-5">
-                  <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <Table>
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="font-medium">{entry.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
                         <td><Badge className="bg-primary-50 text-primary-600">#{entry.userId}</Badge></td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.coin', { defaultValue: 'Coin' })}</td>
+                        <td className="text-surface-500">{t('admin.ledger.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="flex items-center">
                             <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="mr-3" />
                             <div>
                               <span className="font-medium">{entry.coinSymbol || 'N/A'}</span>
                               {entry.networkName &&
-                                <small className="text-muted ml-1">/ {entry.networkName}</small>
+                                <small className="text-surface-500 ml-1">/ {entry.networkName}</small>
                                 }
                             </div>
                           </div>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
+                        <td className="text-surface-500">{t('admin.ledger.entryType', { defaultValue: 'Entry Type' })}</td>
                         <td>
                           <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                             {isCredit ? 'Credit' : 'Debit'}
@@ -212,19 +212,19 @@ export default function UserLedgerDetail() {
                       </tr>
                       {entry.entryCode &&
                         <tr>
-                          <td className="text-muted">Entry Code</td>
+                          <td className="text-surface-500">Entry Code</td>
                           <td>
                             <code>{entry.entryCode}</code>
-                            <span className="text-muted ml-2">({entryCodeLabels[entry.entryCode] || entry.entryCode})</span>
+                            <span className="text-surface-500 ml-2">({entryCodeLabels[entry.entryCode] || entry.entryCode})</span>
                           </td>
                         </tr>
                         }
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.state', { defaultValue: 'State' })}</td>
+                        <td className="text-surface-500">{t('admin.ledger.state', { defaultValue: 'State' })}</td>
                         <td>{stateBadge(entry.state)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
+                        <td className="text-surface-500">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
                         <td>
                           <span className={`font-bold ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
                             {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)}
@@ -232,27 +232,26 @@ export default function UserLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Amount (Raw)</td>
+                        <td className="text-surface-500">Amount (Raw)</td>
                         <td><code className="text-[0.8rem]">{entry.amountRaw || 'N/A'}</code></td>
                       </tr>
                       <tr>
-                        <td className="text-muted">USD Value</td>
+                        <td className="text-surface-500">USD Value</td>
                         <td>{formatUsd(entry.amountUsd)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">USD Rate</td>
+                        <td className="text-surface-500">USD Rate</td>
                         <td>
                           {entry.usdRate ? formatUsd(entry.usdRate) : 'N/A'}
-                          {entry.rateSource && <small className="text-muted ml-1">({entry.rateSource})</small>}
+                          {entry.rateSource && <small className="text-surface-500 ml-1">({entry.rateSource})</small>}
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Decimals</td>
+                        <td className="text-surface-500">Decimals</td>
                         <td>{entry.decimals ?? 'N/A'}</td>
                       </tr>
                     </tbody>
-                  </table>
-                  </div>
+                  </Table>
                 </div>
               </Card>
             </div>
@@ -267,24 +266,23 @@ export default function UserLedgerDetail() {
                   </h5>
                 </div>
                 <div className="p-5">
-                  <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <Table>
                     <tbody>
                       {entry.reservationId &&
                         <tr>
-                          <td className="text-muted w-2/5">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
+                          <td className="text-surface-500 w-2/5">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
                           <td><code>{entry.reservationId}</code></td>
                         </tr>
                         }
                       {entry.relatedId &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.relatedId', { defaultValue: 'Related ID' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.relatedId', { defaultValue: 'Related ID' })}</td>
                           <td>#{entry.relatedId}</td>
                         </tr>
                         }
                       {entry.txHash &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                           <td>
                             <code className="break-words text-xs">{entry.txHash}</code>
                             <div className="flex gap-1 mt-2">
@@ -311,8 +309,7 @@ export default function UserLedgerDetail() {
                         </tr>
                         }
                     </tbody>
-                  </table>
-                  </div>
+                  </Table>
                 </div>
               </Card>
 
@@ -325,40 +322,38 @@ export default function UserLedgerDetail() {
                   </h5>
                 </div>
                 <div className="p-5">
-                  <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <Table>
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{fmtDateTime(entry.createdAt)}</td>
                       </tr>
                       {entry.committedAt &&
                         <tr>
-                          <td className="text-muted">Committed</td>
+                          <td className="text-surface-500">Committed</td>
                           <td>{fmtDateTime(entry.committedAt)}</td>
                         </tr>
                         }
                       {entry.settledAt &&
                         <tr>
-                          <td className="text-muted">Settled</td>
+                          <td className="text-surface-500">Settled</td>
                           <td>{fmtDateTime(entry.settledAt)}</td>
                         </tr>
                         }
                       {entry.reversedAt &&
                         <tr>
-                          <td className="text-muted">Reversed</td>
+                          <td className="text-surface-500">Reversed</td>
                           <td>{fmtDateTime(entry.reversedAt)}</td>
                         </tr>
                         }
                       {entry.updatedAt &&
                         <tr>
-                          <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                           <td>{fmtDateTime(entry.updatedAt)}</td>
                         </tr>
                         }
                     </tbody>
-                  </table>
-                  </div>
+                  </Table>
                 </div>
               </Card>
 
@@ -372,7 +367,7 @@ export default function UserLedgerDetail() {
                     </h5>
                   </div>
                   <div className="p-5">
-                    <pre className="mb-0 p-3 rounded text-[0.8rem] max-h-[300px] overflow-auto bg-surface-100" style={{ border: '1px solid var(--color-surface-200)' }}>
+                    <pre className="mb-0 p-3 rounded text-[0.8rem] max-h-[300px] overflow-auto bg-surface-100 border border-surface-200">
                       {JSON.stringify(metadata, null, 2)}
                     </pre>
                   </div>

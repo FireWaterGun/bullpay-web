@@ -9,14 +9,14 @@ import en from '../locales/en/common.json'
 const SUPPORTED_LANGS = ['en', 'th', 'zh'] as const
 
 // Lazy loaders — webpack/turbopack creates separate chunks for each locale
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const localeLoaders: Record<string, () => Promise<{ default: any }>> = {
   th: () => import('../locales/th/common.json'),
   zh: () => import('../locales/zh/common.json'),
 }
 
 // Admin locale loaders — loaded only when admin pages are visited
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const adminLocaleLoaders: Record<string, () => Promise<{ default: any }>> = {
   en: () => import('../locales/en/admin.json'),
   th: () => import('../locales/th/admin.json'),

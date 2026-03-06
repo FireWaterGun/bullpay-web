@@ -40,7 +40,7 @@ export default function LoginPage() {
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
   const completeLogin = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     (res: any) => {
       const token = extractToken(res);
       const user = res?.user || { email };
@@ -52,7 +52,7 @@ export default function LoginPage() {
     [email, login, router]
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const extractErrorMessage = (err: any): string => {
     if (typeof err?.message === 'string') return err.message;
     if (typeof err?.data?.error?.message === 'string') return err.data.error.message;
@@ -80,7 +80,7 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const res = (await loginApi({ email, password, cfToken })) as any;
 
       if (res?.requires2FA) {
@@ -93,14 +93,14 @@ export default function LoginPage() {
       }
 
       completeLogin(res);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {};
       setFieldErrors(details);
       const display = extractErrorMessage(err);
       if (!display && Array.isArray(details?.cfToken) && details.cfToken.length)
-      setError(details.cfToken[0]);else
-      setError(display || 'Login failed');
+      {setError(details.cfToken[0]);}else
+      {setError(display || 'Login failed');}
       setCfToken('');
       setCaptchaRenderKey((k) => k + 1);
     } finally {
@@ -125,7 +125,7 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const res = (await verify2FALoginApi({ tempToken, code })) as any;
 
       if (res?.isBackupCode) {
@@ -136,7 +136,7 @@ export default function LoginPage() {
       }
 
       completeLogin(res);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
     } catch (err: any) {
       let display = extractErrorMessage(err);
 
@@ -166,7 +166,7 @@ export default function LoginPage() {
   const captchaInvalid = Array.isArray(fieldErrors.cfToken) && fieldErrors.cfToken.length > 0;
 
   return (
-    <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+    <div className="bg-card rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
       <div className="p-8 sm:p-10">
         {/* Brand */}
         <div className="flex justify-center mb-6">
@@ -274,7 +274,7 @@ export default function LoginPage() {
                 
                   <span
                   className={`flex items-center justify-center w-[18px] h-[18px] shrink-0 mr-2.5 rounded-[4px] border-[1.5px] transition-colors ${rememberMe ? 'bg-primary-600 border-primary-600 text-white' :
-                  'bg-white border-surface-300'}`
+                  'bg-card border-surface-300'}`
                   }>
                   
                     {rememberMe &&

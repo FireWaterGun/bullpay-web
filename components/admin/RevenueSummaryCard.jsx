@@ -1,7 +1,7 @@
 'use client';
 
 import { formatChange } from '@/lib/utils/format';
-import { AvatarInitial, bgLabelClass, Card } from '../ui'
+import { AvatarInitial, bgLabelClass, Card } from '@/components/ui'
 
 export default function RevenueSummaryCard({ title, value, change, changeLabel, icon, color = 'primary', valueColor }) {
   const isPositive = change >= 0;
@@ -9,12 +9,12 @@ export default function RevenueSummaryCard({ title, value, change, changeLabel, 
   const changeIcon = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt';
 
   return (
-    <div className="col-span-6 col-xl">
+    <div className="col-span-6 xl:col-span-3">
       <Card className="h-full">
         <div className="p-5">
           <div className="flex items-start justify-between">
             <div className="content-left">
-              <span className="block text-sm font-medium text-surface-700 dark:text-surface-900-text mb-1.5">{title}</span>
+              <span className="block text-sm font-medium text-surface-700 mb-1.5">{title}</span>
               <div className="flex items-center">
                 <h4 className={`mb-0 mr-2${valueColor ? ` text-${valueColor}` : ''}`}>{value}</h4>
                 {change !== undefined && change !== null &&
@@ -25,7 +25,7 @@ export default function RevenueSummaryCard({ title, value, change, changeLabel, 
                 }
               </div>
             </div>
-            <div className="avatar">
+            <div>
               <AvatarInitial className={bgLabelClass(color)}>
                 <i className={`bx ${icon} bx-sm`}></i>
               </AvatarInitial>

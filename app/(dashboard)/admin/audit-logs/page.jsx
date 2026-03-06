@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useToast } from '@/app/providers';
 import { getAuditLogs } from '@/lib/api/auditLogs';
 import { useDateFormat } from '@/hooks/useDateFormat';
@@ -12,7 +13,9 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card, Input, Label, Select } from '../../../../components/ui';
+import { Badge, Button, Card, Input, Label, Select } from '@/components/ui';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 const ACTION_OPTIONS = [
 { value: 'list_sweeps', label: 'List Sweeps' },
@@ -37,14 +40,11 @@ const SORT_BY_OPTIONS = [
 
 export default function AuditLogList() {
   const { fmtDate } = useDateFormat();
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token } = useAuth();
   const toast = useToast();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState([]);
@@ -64,9 +64,27 @@ export default function AuditLogList() {
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({});
 
+  const loadLogs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getAuditLogs(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setLogs(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load audit logs:', error);
+      toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit logs' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
   useEffect(() => {
     loadLogs();
-  }, [currentPage, appliedFilters]);
+  }, [loadLogs]);
 
   function applyFilters() {
     setAppliedFilters({
@@ -93,24 +111,6 @@ export default function AuditLogList() {
     setSortOrderFilter('');
     setAppliedFilters({});
     setCurrentPage(1);
-  }
-
-  async function loadLogs() {
-    try {
-      setLoading(true);
-      const data = await getAuditLogs(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setLogs(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load audit logs:', error);
-      toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit logs' }));
-    } finally {
-      setLoading(false);
-    }
   }
 
   function actionBadge(action) {
@@ -151,7 +151,7 @@ export default function AuditLogList() {
                     <i className="bx bx-history mr-2"></i>
                     Audit Logs
                   </h4>
-                  <p className="text-muted mb-0">Track admin actions and system events</p>
+                  <p className="text-surface-500 mb-0">Track admin actions and system events</p>
                 </div>
                 <RefreshButton onClick={loadLogs} loading={loading} />
               </div>
@@ -245,8 +245,7 @@ export default function AuditLogList() {
           {/* Table */}
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -277,7 +276,7 @@ export default function AuditLogList() {
                           <td className="text-center">{log.resourceId || '-'}</td>
                           <td>
                             {log.ipAddress ?
-                        <code className="text-body text-[0.8rem]">{log.ipAddress}</code> :
+                        <code className="text-surface-800 text-[0.8rem]">{log.ipAddress}</code> :
                         '-'}
                           </td>
                           <td>{fmtDate(log.createdAt)}</td>
@@ -294,39 +293,9 @@ export default function AuditLogList() {
                     )
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {/* Pagination */}
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    Showing {pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to{' '}
-                    {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => setCurrentPage((p) => p - 1)} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      Previous
-                    </Button>
-                    <Button disabled variant="outline-secondary" size="sm">
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => setCurrentPage((p) => p + 1)} variant="outline-secondary" size="sm">
-                    
-                      Next
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
             </div>
           </Card>
         </div>

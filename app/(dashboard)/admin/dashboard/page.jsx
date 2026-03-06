@@ -2,65 +2,24 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useAuth } from '@/app/providers';
 import { getRevenueSummary, getRevenueDaily, getRevenueByCoin } from '@/lib/api/admin';
-import LocaleDatePicker from '@/components/LocaleDatePicker';
 import { formatUsdAuto, formatPercent as formatPercentShared } from '@/lib/utils/format';
 import SummaryCard from '@/components/admin/RevenueSummaryCard';
 import RevenueBarChart from '@/components/admin/RevenueBarChart';
 import { RevenueByCoinTable, RevenueVolumeSummary } from '@/components/admin/RevenueByCoinTable';
+import DateFilterBar from '@/components/dashboard/DateFilterBar';
 import { logger } from '@/lib/utils/logger';
-import { Alert, Badge, Button, Card, Select, Spinner } from '../../../../components/ui'
+import { Alert, Card, Spinner } from '@/components/ui'
+import { getDateRange } from '@/lib/utils/dateRange'
 
 const formatCurrency = formatUsdAuto;
 const formatPercent = formatPercentShared;
 
-function getDateRange(preset) {
-  const now = new Date();
-  const to = now.toISOString().split('T')[0];
-  let from = to;
-
-  switch (preset) {
-    case 'today':
-      from = to;
-      break;
-    case 'yesterday':{
-        const yesterday = new Date(now);
-        yesterday.setDate(yesterday.getDate() - 1);
-        from = yesterday.toISOString().split('T')[0];
-        break;
-      }
-    case 'last7days':{
-        const last7 = new Date(now);
-        last7.setDate(last7.getDate() - 6);
-        from = last7.toISOString().split('T')[0];
-        break;
-      }
-    case 'last30days':{
-        const last30 = new Date(now);
-        last30.setDate(last30.getDate() - 29);
-        from = last30.toISOString().split('T')[0];
-        break;
-      }
-    case 'thisMonth':{
-        from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-        break;
-      }
-    case 'lastMonth':{
-        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        from = lastMonth.toISOString().split('T')[0];
-        const endLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-        return { from, to: endLastMonth.toISOString().split('T')[0] };
-      }
-    default:
-      from = to;
-  }
-  return { from, to };
-}
-
 export default function AdminDashboardPage() {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token, hasPermission, navigation } = useAuth();
   const router = useRouter();
 
@@ -75,10 +34,7 @@ export default function AdminDashboardPage() {
     }
   }, [navigation, hasPermission, router]);
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const [datePreset, setDatePreset] = useState('thisMonth');
   const [customFrom, setCustomFrom] = useState('');
@@ -100,15 +56,6 @@ export default function AdminDashboardPage() {
     }
     return getDateRange(datePreset);
   }, [datePreset, showCustom, customFrom, customTo]);
-
-  const dateRangeLabel = useMemo(() => {
-    const { from, to } = dateRange;
-    if (from === to) return from;
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
-    const formatDate = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
-    return `${formatDate(fromDate)} - ${formatDate(toDate)}`;
-  }, [dateRange, locale]);
 
   useEffect(() => {
     if (!token || !dateRange.from || !dateRange.to) return;
@@ -172,70 +119,22 @@ export default function AdminDashboardPage() {
     <div className="grow py-6">
       <div className="flex flex-wrap items-center mb-4 gap-3">
         <h4 className="mb-0">
-          <i className="bx bx-bar-chart-alt-2 text-primary mr-2"></i>
+          <i className="bx bx-bar-chart-alt-2 text-primary-600 mr-2"></i>
           {t('admin.revenueDashboard', { defaultValue: 'Revenue Dashboard' })}
         </h4>
-        <div className="flex gap-2 flex-wrap items-center ml-auto">
-          <Badge className="bg-surface-100 text-surface-600 text-base font-normal px-3">
-            {dateRangeLabel}
-          </Badge>
-          {!showCustom ?
-          <>
-              <Select
-
-              value={datePreset}
-              onChange={(e) => setDatePreset(e.target.value)} className="w-auto">
-
-              
-                <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
-                <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
-                <option value="last7days">{t('filter.last7days', { defaultValue: 'Last 7 Days' })}</option>
-                <option value="last30days">{t('filter.last30days', { defaultValue: 'Last 30 Days' })}</option>
-                <option value="thisMonth">{t('filter.thisMonth', { defaultValue: 'This Month' })}</option>
-                <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
-              </Select>
-              <Button
-
-              onClick={() => setShowCustom(true)} variant="outline-secondary">
-              
-                <i className="bx bx-calendar mr-1"></i>
-                {t('filter.custom', { defaultValue: 'Custom' })}
-              </Button>
-            </> :
-
-          <>
-              <LocaleDatePicker
-              value={customFrom}
-              onChange={setCustomFrom}
-              locale={locale}
-              placeholder={t('filter.from', { defaultValue: 'From' })}
-              t={t}
-              maxDate={customTo ? customTo : undefined}
-              minDate={customTo ? (() => {const d = new Date(customTo + 'T00:00:00');d.setMonth(d.getMonth() - 2);return d.toISOString().split('T')[0];})() : undefined} />
-            
-              <span className="self-center">–</span>
-              <LocaleDatePicker
-              value={customTo}
-              onChange={setCustomTo}
-              locale={locale}
-              placeholder={t('filter.to', { defaultValue: 'To' })}
-              t={t}
-              minDate={customFrom ? customFrom : undefined}
-              maxDate={customFrom ? (() => {const d = new Date(customFrom + 'T00:00:00');d.setMonth(d.getMonth() + 2);return d.toISOString().split('T')[0];})() : undefined} />
-            
-              <Button
-
-              onClick={() => {
-                setShowCustom(false);
-                setCustomFrom('');
-                setCustomTo('');
-              }} variant="outline-secondary">
-              
-                <i className="bx bx-reset mr-1"></i>
-                {t('filter.reset', { defaultValue: 'Reset' })}
-              </Button>
-            </>
-          }
+        <div className="ml-auto">
+          <DateFilterBar
+            locale={locale}
+            t={t}
+            datePreset={datePreset}
+            onPresetChange={setDatePreset}
+            customFrom={customFrom}
+            onCustomFromChange={setCustomFrom}
+            customTo={customTo}
+            onCustomToChange={setCustomTo}
+            showCustom={showCustom}
+            onShowCustomChange={setShowCustom}
+          />
         </div>
       </div>
 
@@ -275,14 +174,14 @@ export default function AdminDashboardPage() {
         <div className="col-span-12">
           <Card>
             <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
-              <h5 className="text-lg font-semibold text-surface-800 mb-0 mb-0">
+              <h5 className="text-lg font-semibold text-surface-800 mb-0">
                 {t('admin.revenueCostTrend', { defaultValue: 'Revenue & Cost Trend (Daily)' })}
               </h5>
             </div>
             <div className="p-5">
               {loadingDaily ?
               <div className="flex justify-center py-5">
-                  <Spinner role="status" className="text-primary" />
+                  <Spinner role="status" className="text-primary-600" />
 
                 
                 </div> :

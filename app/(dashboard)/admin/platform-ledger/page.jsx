@@ -1,22 +1,23 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams as useNextSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useToast } from '@/app/providers';
 import { getPlatformLedgerEntries } from '@/lib/api/admin';
-import { listCoins } from '@/lib/api/coins';
+import { useCoins } from '@/hooks/useCoins';
 import PlatformLedgerFilterPanel from '@/components/ledger/PlatformLedgerFilterPanel';
 import PlatformLedgerTable from '@/components/ledger/PlatformLedgerTable';
 import AdjustmentModal from '@/components/ledger/AdjustmentModal';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card } from '../../../../components/ui'
+import { Button, Card } from '@/components/ui'
 
 export default function PlatformLedgerList() {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token, navigation } = useAuth();
   const toast = useToast();
   const searchParams = useNextSearchParams();
@@ -24,10 +25,7 @@ export default function PlatformLedgerList() {
   const isSuperAdmin = navigation?.role === 'super_admin';
   const [showAdjustModal, setShowAdjustModal] = useState(false);
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const initAccountType = searchParams.get('accountType') || '';
   const initEntryType = searchParams.get('entryType') || '';
@@ -43,7 +41,7 @@ export default function PlatformLedgerList() {
   const [entries, setEntries] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [currentPage, setCurrentPage] = useState(initPage);
-  const [coinNetworks, setCoinNetworks] = useState([]);
+  const { coins: coinNetworks } = useCoins();
 
   const [accountTypeFilter, setAccountTypeFilter] = useState(initAccountType);
   const [entryTypeFilter, setEntryTypeFilter] = useState(initEntryType);
@@ -67,13 +65,27 @@ export default function PlatformLedgerList() {
     return f;
   });
 
-  useEffect(() => {
-    loadEntries();
-  }, [currentPage, appliedFilters]);
+  const loadEntries = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getPlatformLedgerEntries(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setEntries(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load platform ledger entries:', error);
+      toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entries' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {});
-  }, []);
+    loadEntries();
+  }, [loadEntries]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -112,24 +124,6 @@ export default function PlatformLedgerList() {
     window.history.replaceState(null, '', window.location.pathname);
   }
 
-  async function loadEntries() {
-    try {
-      setLoading(true);
-      const data = await getPlatformLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setEntries(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load platform ledger entries:', error);
-      toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entries' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   if (loading && entries.length === 0) {
     return <PageSpinner />;
   }
@@ -160,7 +154,7 @@ export default function PlatformLedgerList() {
                     <i className="bx bx-book-open mr-2"></i>
                     {t('admin.platformLedger.title', { defaultValue: 'Revenue & Expenses' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
                   </p>
                 </div>

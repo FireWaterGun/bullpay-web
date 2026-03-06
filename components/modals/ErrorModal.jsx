@@ -15,7 +15,7 @@ export default function ErrorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center block bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
 
       onClick={onClose}>
       
@@ -23,15 +23,16 @@ export default function ErrorModal({
         className="w-full max-w-lg mx-4"
         onClick={(e) => e.stopPropagation()}>
         
-        <div className="bg-white rounded-xl shadow-xl">
+        <div className="bg-card rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">
             <h5 className="text-lg font-semibold text-surface-800">
               {title || t('crypto.operationFailed', { defaultValue: 'Operation Failed' })}
             </h5>
             <button
               type="button"
-              className="cursor-pointer text-surface-500 hover:text-surface-700"
+              className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
               onClick={onClose}>
+              <i className="bx bx-x"></i>
             </button>
           </div>
           <div className="p-5">

@@ -5,7 +5,8 @@ import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card } from '../ui';
+import { Button, Card, Pagination } from '@/components/ui';
+import Table from '@/components/ui/Table';
 
 export default function WithdrawalTxTable({
   withdrawals,
@@ -29,10 +30,10 @@ export default function WithdrawalTxTable({
   return (
     <Card>
       <div className="p-5">
-        <div className="overflow-x-auto overflow-x-auto">
-          <table className="w-full min-w-[1200px]">
+        <div className="overflow-x-auto">
+          <Table responsive={false} className="text-sm min-w-max">
             <thead>
-              <tr className="whitespace-nowrap">
+              <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500 whitespace-nowrap">
                 <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                 <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
                 <th>{t('withdrawal.chain', { defaultValue: 'Chain' })}</th>
@@ -49,7 +50,7 @@ export default function WithdrawalTxTable({
                 <th>{t('withdrawal.createdAt', { defaultValue: 'Created Date' })}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-surface-100">
               {withdrawals.length === 0 ?
               <TableEmptyState
                 colSpan={14}
@@ -66,7 +67,7 @@ export default function WithdrawalTxTable({
                     <span className="font-medium">{withdrawal.userId || withdrawal.user?.id || '-'}</span>
                   </td>
                   <td>
-                    <span className="text-muted">
+                    <span className="text-surface-500">
                       {(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || 'N/A'}
                     </span>
                   </td>
@@ -81,7 +82,7 @@ export default function WithdrawalTxTable({
                       <div>
                         <div className="font-medium leading-[1.2]">{(withdrawal.coin?.symbol || withdrawal.coinNetwork?.coin?.symbol || withdrawal.symbol || '-').toUpperCase()}</div>
                         {(withdrawal.network?.name || withdrawal.coinNetwork?.network?.name) &&
-                      <small className="text-muted text-xs">{withdrawal.network?.name || withdrawal.coinNetwork?.network?.name}</small>
+                      <small className="text-surface-500 text-xs">{withdrawal.network?.name || withdrawal.coinNetwork?.network?.name}</small>
                       }
                       </div>
                     </div>
@@ -95,19 +96,19 @@ export default function WithdrawalTxTable({
                     {withdrawal.amountUsd ?
                   <span className="font-medium">{formatUsd(withdrawal.amountUsd)}</span> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                   </td>
                   <td className="text-right whitespace-nowrap">
-                    <span className="text-muted">
+                    <span className="text-surface-500">
                       {formatAmount(withdrawal.totalFeeRaw || withdrawal.totalFee || withdrawal.feeRaw || withdrawal.fee, withdrawal.decimals || 18, 8, true)}
                     </span>
                   </td>
                   <td className="text-right whitespace-nowrap">
                     {withdrawal.totalFeeUsd ?
-                  <span className="text-muted">${withdrawal.totalFeeUsd}</span> :
+                  <span className="text-surface-500">${withdrawal.totalFeeUsd}</span> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                   </td>
                   <td className="text-center whitespace-nowrap"><span className={statusBadgeClass(withdrawal.status)}>{String(withdrawal.status || '').toUpperCase()}</span></td>
@@ -132,7 +133,7 @@ export default function WithdrawalTxTable({
                         </Button>
                       </div> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                   </td>
                   <td>
@@ -154,7 +155,7 @@ export default function WithdrawalTxTable({
                     }
                       </div> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                   </td>
                   <td>
@@ -196,44 +197,22 @@ export default function WithdrawalTxTable({
               )
               }
           </tbody>
-        </table>
+        </Table>
         </div>
 
         {pagination && pagination.total > 0 &&
-        <div className="flex justify-between items-center mt-4">
-            <div className="text-muted text-sm">
-              {t('invoices.showingEntries', {
-              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-              end: Math.min(pagination.page * pagination.limit, pagination.total),
-              total: pagination.total,
-              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-            })}
-            </div>
-            <div className="inline-flex rounded-lg shadow-sm">
-              <Button
-
-              disabled={!pagination.hasPrev || loading}
-              onClick={() => {onPageChange(currentPage - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-              
-                <i className="bx bx-chevron-left"></i>
-                {t('actions.prev', { defaultValue: 'Previous' })}
-              </Button>
-              <Button
-
-              disabled variant="outline-secondary" size="sm">
-              
-                {pagination.page} / {pagination.totalPages}
-              </Button>
-              <Button
-
-              disabled={!pagination.hasNext || loading}
-              onClick={() => {onPageChange(currentPage + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-              
-                {t('actions.next', { defaultValue: 'Next' })}
-                <i className="bx bx-chevron-right"></i>
-              </Button>
-            </div>
-          </div>
+        <Pagination
+          pagination={{
+            page: pagination.page,
+            totalPages: pagination.totalPages,
+            total: pagination.total,
+            limit: pagination.limit,
+            hasPrev: pagination.hasPrev,
+            hasNext: pagination.hasNext,
+          }}
+          loading={loading}
+          onPageChange={(newPage) => { onPageChange(newPage); syncSearchParams(appliedFilters, newPage); }}
+        />
         }
       </div>
     </Card>);

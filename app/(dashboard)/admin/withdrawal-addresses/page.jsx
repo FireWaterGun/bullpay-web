@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -13,7 +13,7 @@ import {
   deleteWithdrawalAddress,
 } from '@/lib/api/admin'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import { listCoins } from '@/lib/api/coins'
+import { useCoins } from '@/hooks/useCoins'
 import AddressFilters from '@/components/balance/AddressFilters'
 import AddressTable from '@/components/balance/AddressTable'
 import AddressActionModal from '@/components/balance/AddressActionModal'
@@ -37,7 +37,7 @@ export default function WithdrawalAddresses() {
   const [addresses, setAddresses] = useState([])
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
-  const [coinNetworks, setCoinNetworks] = useState([])
+  const { coins: coinNetworks } = useCoins()
 
   // Filter states
   const [statusFilter, setStatusFilter] = useState(initStatus)
@@ -65,13 +65,27 @@ export default function WithdrawalAddresses() {
   const [skipLockPeriod, setSkipLockPeriod] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
 
-  useEffect(() => {
-    loadAddresses()
-  }, [currentPage, appliedFilters])
+  const loadAddresses = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await getWithdrawalAddresses(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters,
+      })
+      setAddresses(data.items || [])
+      setPagination(data.pagination || null)
+    } catch (error) {
+      logger.error('Failed to load withdrawal addresses:', error)
+      toast.error(t('withdrawal.addressLoadError', { defaultValue: 'Failed to load withdrawal addresses' }))
+    } finally {
+      setLoading(false)
+    }
+  }, [token, currentPage, appliedFilters, toast, t])
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {})
-  }, [])
+    loadAddresses()
+  }, [loadAddresses])
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -102,24 +116,6 @@ export default function WithdrawalAddresses() {
     setAppliedFilters({})
     setCurrentPage(1)
     window.history.replaceState(null, '', window.location.pathname)
-  }
-
-  async function loadAddresses() {
-    try {
-      setLoading(true)
-      const data = await getWithdrawalAddresses(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setAddresses(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load withdrawal addresses:', error)
-      toast.error(t('withdrawal.addressLoadError', { defaultValue: 'Failed to load withdrawal addresses' }))
-    } finally {
-      setLoading(false)
-    }
   }
 
   async function handleCopy(text) {

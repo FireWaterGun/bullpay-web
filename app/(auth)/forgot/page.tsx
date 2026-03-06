@@ -19,7 +19,7 @@ export default function ForgotPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -29,7 +29,7 @@ export default function ForgotPage() {
       await forgotPasswordApi({ email, cfToken });
       try {sessionStorage.setItem('forgot_email', email);} catch {}
       router.replace('/forgot-complete');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
     } catch (err: any) {
       const details = err?.details || err?.data?.error?.details || err?.data?.details || {};
       setFieldErrors(details);
@@ -50,7 +50,7 @@ export default function ForgotPage() {
   const captchaInvalid = Array.isArray(fieldErrors.cfToken) && fieldErrors.cfToken.length > 0;
 
   return (
-    <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+    <div className="bg-card rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
       <div className="p-8 sm:p-10">
         {/* Brand */}
         <div className="flex justify-center mb-6">

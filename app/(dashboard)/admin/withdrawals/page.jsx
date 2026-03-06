@@ -1,35 +1,32 @@
 'use client'
 
-import { useState, useEffect, useMemo, Suspense } from 'react'
+import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale'
 import { getWithdrawals, approveWithdrawal, rejectWithdrawal } from '@/lib/api/admin'
-import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
-import { formatCoinAmount } from '@/lib/utils/format'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import { listCoins } from '@/lib/api/coins'
+import { useCoins } from '@/hooks/useCoins'
 import WithdrawalTxFilters from '@/components/admin/WithdrawalTxFilters'
 import WithdrawalTxTable from '@/components/admin/WithdrawalTxTable'
 import WithdrawalTxModals from '@/components/admin/WithdrawalTxModals'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
-import { badgeBase } from '../../../../components/ui'
+import { formatAmount as formatAmountHelper } from '@/components/balance/withdrawalHelpers'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function WithdrawalTransactions() {
   return <Suspense><WithdrawalTransactionsContent /></Suspense>
 }
 
 function WithdrawalTransactionsContent() {
-  const { t, i18n } = useAdminTranslation()
+  const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useSearchParams()
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
-    return map[i18n.language] || 'en-US'
-  }, [i18n.language])
+  const locale = useLocale();
 
   const initStatus = searchParams.get('status') || ''
   const initUserId = searchParams.get('userId') || ''
@@ -43,7 +40,7 @@ function WithdrawalTransactionsContent() {
   const [withdrawals, setWithdrawals] = useState([])
   const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
-  const [coinNetworks, setCoinNetworks] = useState([])
+  const { coins: coinNetworks } = useCoins()
 
   const [statusFilter, setStatusFilter] = useState(initStatus)
   const [userIdFilter, setUserIdFilter] = useState(initUserId)
@@ -70,13 +67,27 @@ function WithdrawalTransactionsContent() {
   const [rejecting, setRejecting] = useState(false)
   const [rejectReason, setRejectReason] = useState('')
 
-  useEffect(() => {
-    loadWithdrawals()
-  }, [currentPage, appliedFilters])
+  const loadWithdrawals = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await getWithdrawals(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters,
+      })
+      setWithdrawals(data.items || [])
+      setPagination(data.pagination || null)
+    } catch (error) {
+      logger.error('Failed to load withdrawal transactions:', error)
+      toast.error(t('withdrawal.loadError', { defaultValue: 'Failed to load withdrawal transactions' }))
+    } finally {
+      setLoading(false)
+    }
+  }, [token, currentPage, appliedFilters, toast, t])
 
   useEffect(() => {
-    listCoins(token).then(setCoinNetworks).catch(() => {})
-  }, [])
+    loadWithdrawals()
+  }, [loadWithdrawals])
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -111,32 +122,8 @@ function WithdrawalTransactionsContent() {
     window.history.replaceState(null, '', window.location.pathname)
   }
 
-  async function loadWithdrawals() {
-    try {
-      setLoading(true)
-      const data = await getWithdrawals(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setWithdrawals(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load withdrawal transactions:', error)
-      toast.error(t('withdrawal.loadError', { defaultValue: 'Failed to load withdrawal transactions' }))
-    } finally {
-      setLoading(false)
-    }
-  }
-
   function formatAmount(amountRaw, decimals = 18) {
-    if (!amountRaw) return '0'
-    try {
-      const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
-      return formatCoinAmount(value)
-    } catch (e) {
-      return amountRaw.toString()
-    }
+    return formatAmountHelper(amountRaw, decimals)
   }
 
   async function handleCopy(text) {
@@ -205,15 +192,6 @@ function WithdrawalTransactionsContent() {
     }
   }
 
-  function statusBadgeClass(s) {
-    const v = String(s || '').toUpperCase()
-    if (v === 'PENDING') return `${badgeBase} bg-amber-50 text-amber-700`
-    if (v === 'PROCESSING' || v === 'APPROVED') return `${badgeBase} bg-cyan-50 text-cyan-700`
-    if (v === 'COMPLETED' || v === 'SUCCESS') return `${badgeBase} bg-green-50 text-green-700`
-    if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR') return `${badgeBase} bg-red-50 text-red-700`
-    if (v === 'CANCELLED' || v === 'CANCELED') return `${badgeBase} bg-surface-100 text-surface-600`
-    return `${badgeBase} bg-surface-100 text-surface-600`
-  }
 
   if (loading && withdrawals.length === 0) {
     return <PageSpinner />
@@ -253,7 +231,7 @@ function WithdrawalTransactionsContent() {
             rejecting={rejecting}
             appliedFilters={appliedFilters}
             formatAmount={formatAmount}
-            statusBadgeClass={statusBadgeClass}
+            statusBadgeClass={(s) => getStatusBadgeClass(s, 'withdrawal')}
             onCopy={handleCopy}
             onApproveClick={handleApproveClick}
             onRejectClick={handleRejectClick}

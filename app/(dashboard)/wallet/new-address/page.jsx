@@ -4,24 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import { useAuth, useToast } from '@/app/providers';
-import { listCoins } from '@/lib/api/coins';
+import { useCoins } from '@/hooks/useCoins';
 import { createWallet } from '@/lib/api/wallets';
 import CoinImg from '@/components/CoinImg';
-import { Button, Card, Input, Label } from '../../../../components/ui';
+import { getNetworkLabel } from '@/components/balance/withdrawalHelpers';
+import { Button, Card, Input, Label } from '@/components/ui';
 
-const NETWORK_LABELS = { 1: 'Bitcoin', 2: 'Lightning', 10: 'Ethereum', 11: 'ERC-20', 20: 'BSC (BEP-20)', 21: 'BEP-20', 30: 'TRON (TRC-20)', 31: 'TRC-20', 40: 'Polygon', 50: 'Solana', 60: 'TON', 61: 'TON (Jetton)', 70: 'Base', 80: 'Arbitrum', 90: 'Optimism', 100: 'Avalanche C-Chain' };
-
-function getNetworkLabel(n, coin) {
-  if (n?.networkName) return n.networkName;
-  if (n?.network && typeof n.network === 'object' && n.network.name) return n.network.name;
-  if (typeof n?.network === 'string') return n.network;
-  const id = Number(n?.networkId);
-  if (NETWORK_LABELS[id]) return NETWORK_LABELS[id];
-  const sym = String(coin?.symbol || '').toUpperCase();
-  if (sym === 'BTC') return id === 2 ? 'Lightning' : 'Bitcoin';
-  if (sym === 'ETH' && n?.contractAddress) return 'ERC-20';
-  return `Network #${n?.networkId ?? '-'}`;
-}
 
 export default function WalletNewAddressPage() {
   const { t } = useTranslation();
@@ -29,8 +17,7 @@ export default function WalletNewAddressPage() {
   const toast = useToast();
   const router = useRouter();
 
-  const [coins, setCoins] = useState([]);
-  const [loadingCoins, setLoadingCoins] = useState(false);
+  const { coins, isLoading: loadingCoins } = useCoins();
   const [selectedCoin, setSelectedCoin] = useState('');
   const [coinNetworkId, setCoinNetworkId] = useState('');
   const [address, setAddress] = useState('');
@@ -38,35 +25,6 @@ export default function WalletNewAddressPage() {
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        setLoadingCoins(true);
-        const data = await listCoins(token);
-        if (!mounted) return;
-        setCoins(data || []);
-        const bySymbol = {};
-        for (const c of data || []) {
-          const sym = c.coin?.symbol || `COIN-${c.coinId}`;
-          if (!bySymbol[sym]) bySymbol[sym] = { coin: c.coin, items: [] };
-          bySymbol[sym].items.push(c);
-        }
-        const keys = Object.keys(bySymbol);
-        if (keys.length) {
-          const first = keys[0];
-          setSelectedCoin(first);
-          if (bySymbol[first]?.items?.length === 1) setCoinNetworkId(String(bySymbol[first].items[0].id));
-        }
-      } catch (e) {
-
-
-        // ignore
-      } finally {setLoadingCoins(false);}
-    })();
-    return () => {mounted = false;};
-  }, [token]);
 
   const grouped = useMemo(() => {
     const bySymbol = {};
@@ -77,6 +35,16 @@ export default function WalletNewAddressPage() {
     }
     return bySymbol;
   }, [coins]);
+
+  // Auto-select first coin when data loads
+  useEffect(() => {
+    const keys = Object.keys(grouped);
+    if (keys.length && !selectedCoin) {
+      const first = keys[0];
+      setSelectedCoin(first);
+      if (grouped[first]?.items?.length === 1) setCoinNetworkId(String(grouped[first].items[0].id));
+    }
+  }, [grouped, selectedCoin]);
 
   // Derive networks from grouped[selectedCoin] — no state needed
   const networks = useMemo(() => {
@@ -122,11 +90,11 @@ export default function WalletNewAddressPage() {
 
   return (
     <>
-      {error && <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">{error}</div>}
+      {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 px-4 py-3 text-sm">{error}</div>}
 
       {/* Step 1: Select Coin */}
       <Card className="mb-6">
-        <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
+        <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">1</span>
           <h6 className="font-semibold text-surface-900 mb-0">{t('form.selectCoin')}</h6>
         </div>
@@ -142,8 +110,8 @@ export default function WalletNewAddressPage() {
                 <button
                   type="button"
                   key={sym}
-                  className={`text-left rounded-xl border-2 p-3 transition-all cursor-pointer ${isActive ? 'border-primary-500 bg-primary-50 shadow-sm' :
-                  'border-surface-200 hover:border-surface-300 bg-white'}`
+                  className={`text-left rounded-xl border-2 p-3 transition-all cursor-pointer ${isActive ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/30 shadow-sm' :
+                  'border-surface-200 hover:border-surface-300 bg-raised'}`
                   }
                   onClick={() => {
                     setSelectedCoin(sym);
@@ -171,7 +139,7 @@ export default function WalletNewAddressPage() {
 
       {/* Step 2: Select Network */}
       <Card className="mb-6">
-        <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
+        <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">2</span>
           <h6 className="font-semibold text-surface-900 mb-0">{t('form.selectNetwork')}</h6>
         </div>
@@ -201,8 +169,8 @@ export default function WalletNewAddressPage() {
       </Card>
 
       {/* Step 3: Address + Save */}
-      <form onSubmit={onSubmit} className="bg-white border border-surface-200 rounded-card shadow-card dark:bg-dark-paper dark:border-dark-border dark:shadow-card-dark">
-        <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
+      <form onSubmit={onSubmit} className="bg-card border border-surface-200 rounded-card shadow-card dark:shadow-card-dark">
+        <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">3</span>
           <h6 className="font-semibold text-surface-900 mb-0">{t('wallet.enterAddress', { defaultValue: 'Enter address' })}</h6>
         </div>
@@ -244,7 +212,7 @@ export default function WalletNewAddressPage() {
             </div>
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-surface-100 flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">
           <Button type="button" onClick={() => router.back()} disabled={saving} variant="outline-secondary">
             {t('actions.back') || 'Back'}
           </Button>

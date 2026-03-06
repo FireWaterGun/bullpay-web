@@ -18,8 +18,8 @@ export default function Table({ responsive = true, className = '', children, ...
     // hover
     '[&_tbody_tr:hover>*]:bg-[rgba(34,48,62,0.04)]',
     // dark
-    'dark:[&_th]:text-surface-900-text-secondary dark:[&_thead_th]:border-dark-border',
-    'dark:[&>:not(caption)>*>*]:text-surface-900-text dark:[&>:not(caption)>*>*]:border-dark-border',
+    'dark:[&_th]:text-surface-500 dark:[&_thead_th]:border-surface-200',
+    'dark:[&>:not(caption)>*>*]:text-surface-700 dark:[&>:not(caption)>*>*]:border-surface-200',
     'dark:[&_tbody_tr:hover>*]:bg-white/4',
     className,
   ].filter(Boolean).join(' ')

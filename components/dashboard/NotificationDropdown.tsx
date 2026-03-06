@@ -20,18 +20,18 @@ interface NotificationDropdownProps {
 }
 
 const colorMap: Record<string, string> = {
-  primary: 'bg-primary-100 text-primary-600',
-  success: 'bg-green-100 text-green-600',
-  danger: 'bg-red-100 text-red-600',
-  warning: 'bg-amber-100 text-amber-600',
-  info: 'bg-blue-100 text-blue-600',
-  secondary: 'bg-surface-100 text-surface-600'
+  primary: 'bg-primary-100 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400',
+  success: 'bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400',
+  danger: 'bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400',
+  warning: 'bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400',
+  info: 'bg-blue-100 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400',
+  secondary: 'bg-surface-100 dark:bg-dark-elevated text-surface-600'
 };
 
 export default function NotificationDropdown({ refreshRef }: NotificationDropdownProps) {
   const { t } = useTranslation();
   const { token } = useAuth();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -99,22 +99,23 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
     <div ref={ref} className="relative">
       {/* Bell button */}
       <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="relative flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 transition-colors cursor-pointer"
+        className="relative flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors cursor-pointer"
         title="Notifications">
         
         <i className="bx bx-bell text-xl"></i>
         {unreadCount > 0 &&
-        <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-danger-500 rounded-full border-2 border-white"></span>
+        <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-danger-500 rounded-full border-2 border-card"></span>
         }
       </button>
 
       {/* Dropdown */}
-      <div
-        className={`bp-absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 !min-w-[360px] !max-w-[calc(100vw-2rem)] !p-0 ${open ? 'bp-dropdown-open' : ''}`}>
+      {open && (
+        <div className="absolute right-0 z-50 mt-1 min-w-[360px] max-w-[calc(100vw-2rem)] bg-raised border border-surface-200 rounded-lg shadow-lg">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-surface-100">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-surface-200">
           <h6 className="text-sm font-semibold text-surface-900">
             {t('notifications.title', { defaultValue: 'Notifications' })}
             {unreadCount > 0 &&
@@ -124,8 +125,9 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
             }
           </h6>
           <button
+            type="button"
             onClick={handleMarkAllAsRead}
-            className="text-surface-400 hover:text-primary-600 transition-colors cursor-pointer"
+            className="text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
             title={t('notifications.markAllRead', { defaultValue: 'Mark all as read' })}>
             
             <i className="bx bx-check-double text-lg"></i>
@@ -152,8 +154,8 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
               return (
                 <li
                   key={notif.id}
-                  className={`px-4 py-3 cursor-pointer transition-colors border-l-[3px] ${notif.isRead ? 'border-l-transparent hover:bg-surface-50' :
-                  'border-l-primary-500 bg-primary-50/30 hover:bg-primary-50/50 font-medium'}`
+                  className={`px-4 py-3 cursor-pointer transition-colors border-l-[3px] ${notif.isRead ? 'border-l-transparent hover:bg-surface-50 dark:hover:bg-white/6' :
+                  'border-l-primary-500 bg-primary-50/30 dark:bg-primary-500/10 hover:bg-primary-50/50 dark:hover:bg-primary-500/15 font-medium'}`
                   }
                   onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}>
                   
@@ -186,16 +188,18 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
         </div>
 
         {/* Footer */}
-        <div className="border-t border-surface-100">
+        <div className="border-t border-surface-200">
           <button
+            type="button"
             onClick={loadNotifications}
-            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-primary-600 hover:bg-surface-50 transition-colors cursor-pointer">
+            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-primary-600 dark:text-primary-400 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer rounded-b-lg">
             
             <i className="bx bx-refresh"></i>
             {t('notifications.refresh', { defaultValue: 'Refresh' })}
           </button>
         </div>
       </div>
+      )}
     </div>);
 
 }

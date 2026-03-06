@@ -9,7 +9,9 @@ import { getCoinNetworks } from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Alert, Badge, Button, Card, Input, Label } from '../../../../components/ui';
+import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 export default function SupportedCrypto() {
   const { t } = useAdminTranslation();
@@ -84,7 +86,7 @@ export default function SupportedCrypto() {
                 <i className="bx bx-link mr-2"></i>
                 {t('nav.coinNetworks', { defaultValue: 'Coin Networks' })}
               </h4>
-              <p className="text-muted mb-0">{t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}</p>
+              <p className="text-surface-500 mb-0">{t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}</p>
             </div>
           </div>
 
@@ -125,8 +127,7 @@ export default function SupportedCrypto() {
         }
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <Table>
             <thead>
               <tr>
                 <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
@@ -136,7 +137,7 @@ export default function SupportedCrypto() {
                 <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
-            <tbody style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+            <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
               {coinNetworks.length === 0 ?
               <TableEmptyState
                 colSpan={5}
@@ -161,7 +162,7 @@ export default function SupportedCrypto() {
                     
                         <div>
                           <div className="font-medium">{coinNetwork.coin?.name || 'N/A'}</div>
-                          <small className="text-muted">{coinNetwork.coin?.symbol || 'N/A'}</small>
+                          <small className="text-surface-500">{coinNetwork.coin?.symbol || 'N/A'}</small>
                         </div>
                       </div>
                     </td>
@@ -169,7 +170,7 @@ export default function SupportedCrypto() {
                       <div>
                         <div className="font-medium">{coinNetwork.network?.name || 'N/A'}</div>
                         {coinNetwork.network?.chainId &&
-                    <small className="text-muted">Chain ID: {coinNetwork.network.chainId}</small>
+                    <small className="text-surface-500">Chain ID: {coinNetwork.network.chainId}</small>
                     }
                       </div>
                     </td>
@@ -191,7 +192,7 @@ export default function SupportedCrypto() {
                           </Button>
                         </div> :
 
-                  <span className="text-muted">{t('admin.detail.native', { defaultValue: 'Native' })}</span>
+                  <span className="text-surface-500">{t('admin.detail.native', { defaultValue: 'Native' })}</span>
                   }
                     </td>
                     <td className="text-center align-middle">
@@ -220,46 +221,12 @@ export default function SupportedCrypto() {
               )
               }
             </tbody>
-          </table>
-        </div>
+          </Table>
 
         {/* Pagination */}
         {pagination.totalPages > 1 &&
         <div className="px-5 py-3 border-t border-surface-200">
-            <div className="flex justify-between items-center">
-              <div className="text-muted text-sm">
-                {t('invoices.showingEntries', {
-                start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                end: Math.min(pagination.page * pagination.limit, pagination.total),
-                total: pagination.total,
-                defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-              })}
-              </div>
-              <div className="inline-flex rounded-lg shadow-sm">
-                <Button
-
-                disabled={!pagination.hasPrev || loading}
-                onClick={() => handlePageChange(pagination.page - 1)} variant="outline-secondary" size="sm">
-                
-                  <i className="bx bx-chevron-left"></i>
-                  {t('actions.prev', { defaultValue: 'Previous' })}
-                </Button>
-                <Button
-
-                disabled variant="outline-secondary" size="sm">
-                
-                  {pagination.page} / {pagination.totalPages}
-                </Button>
-                <Button
-
-                disabled={!pagination.hasNext || loading}
-                onClick={() => handlePageChange(pagination.page + 1)} variant="outline-secondary" size="sm">
-                
-                  {t('actions.next', { defaultValue: 'Next' })}
-                  <i className="bx bx-chevron-right"></i>
-                </Button>
-              </div>
-            </div>
+            <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="mt-0" />
           </div>
         }
       </Card>

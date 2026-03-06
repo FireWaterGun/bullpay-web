@@ -1,37 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link';
-import { useSearchParams as useNextSearchParams } from 'next/navigation';
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getTempWalletHistories } from '@/lib/api/admin';
-import { listCoins } from '@/lib/api/coins';
-import { useDateFormat } from '@/hooks/useDateFormat';
+import { useSearchParams as useNextSearchParams } from 'next/navigation'
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getTempWalletHistories } from '@/lib/api/admin'
+import { listCoins } from '@/lib/api/coins'
+import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
-import { logger } from '@/lib/utils/logger';
+import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card, Input, Label, Select, inputClass, badgeBase } from '../ui';
+import { Button, Card, CoinNetworkFilterDropdown, Input, Label, Select } from '../ui'
+import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
-const HISTORY_STATUS_OPTIONS = ['assigned', 'deposited', 'swept', 'released', 'failed'];
+const HISTORY_STATUS_OPTIONS = ['assigned', 'deposited', 'swept', 'released', 'failed']
 const SORT_BY_OPTIONS = [
 { value: 'createdAt', label: 'Created At' },
 { value: 'firstDepositAt', label: 'First Deposit' },
 { value: 'sweptAt', label: 'Swept At' },
 { value: 'releasedAt', label: 'Released At' }];
-
-
-function statusBadgeClass(s) {
-  const v = String(s || '').toLowerCase();
-  if (v === 'assigned') return `${badgeBase} bg-cyan-50 text-cyan-700`;
-  if (v === 'deposited') return `${badgeBase} bg-primary-50 text-primary-600`;
-  if (v === 'swept') return `${badgeBase} bg-amber-50 text-amber-700`;
-  if (v === 'released') return `${badgeBase} bg-green-50 text-green-700`;
-  if (v === 'failed') return `${badgeBase} bg-red-50 text-red-700`;
-  return `${badgeBase} bg-surface-100 text-surface-600`;
-}
 
 export default function TempWalletHistoryList() {
   const { fmtDate } = useDateFormat();
@@ -72,11 +64,26 @@ export default function TempWalletHistoryList() {
     return f;
   });
 
-  useEffect(() => {loadHistories();}, [currentPage, appliedFilters]);
+  const loadHistories = useCallback(async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const data = await getTempWalletHistories(token, { page: currentPage, limit: 20, ...appliedFilters });
+      setHistories(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load temp wallet histories:', error);
+      toast.error(t('admin.tempWallet.loadHistoriesError', { defaultValue: 'Failed to load temp wallet histories' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
+  useEffect(() => {loadHistories();}, [loadHistories]);
 
   useEffect(() => {
     listCoins(token).then(setCoinNetworks).catch(() => {});
-  }, []);
+  }, [token]);
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams();
@@ -111,21 +118,6 @@ export default function TempWalletHistoryList() {
     syncSearchParams({}, 1);
   }
 
-  async function loadHistories() {
-    if (!token) return;
-    try {
-      setLoading(true);
-      const data = await getTempWalletHistories(token, { page: currentPage, limit: 20, ...appliedFilters });
-      setHistories(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load temp wallet histories:', error);
-      toast.error(t('admin.tempWallet.loadHistoriesError', { defaultValue: 'Failed to load temp wallet histories' }));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   if (loading && histories.length === 0) {
     return <PageSpinner />;
   }
@@ -143,7 +135,7 @@ export default function TempWalletHistoryList() {
                     <i className="bx bx-history mr-2"></i>
                     {t('admin.tempWalletHistories.title', { defaultValue: 'Temp Wallet Histories' })}
                   </h4>
-                  <p className="text-muted mb-0">
+                  <p className="text-surface-500 mb-0">
                     {t('admin.tempWalletHistories.description', { defaultValue: 'Monitor wallet usage history (read-only)' })}
                   </p>
                 </div>
@@ -182,51 +174,10 @@ export default function TempWalletHistoryList() {
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
                   <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
-                  <div className="dropdown">
-                    <button
-                      className={`${inputClass()} flex items-center justify-between text-left`}
-                      type="button"
-                      aria-expanded="false">
-
-                      
-                      {coinNetworkIdFilter ? (() => {
-                        const cn = coinNetworks.find((c) => String(c.id) === String(coinNetworkIdFilter));
-                        if (!cn) return 'All';
-                        const sym = (cn.coin?.symbol || '').toUpperCase();
-                        const net = (cn.network?.symbol || '').toUpperCase();
-                        return (
-                          <span className="flex items-center gap-2">
-                            <CoinImg symbol={sym} networkSymbol={net} size={22} />
-                            <span className="font-semibold text-[0.85rem]">{sym}</span>
-                            <span className="text-muted text-xs">{net}</span>
-                          </span>);
-
-                      })() : <span className="text-muted">All</span>}
-                    </button>
-                    <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 w-full max-h-[280px] overflow-y-auto">
-                      <li>
-                        <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => setCoinNetworkIdFilter('')}>
-                          <span className="text-muted">All</span>
-                        </button>
-                      </li>
-                      <li><hr className="dropdown-divider" /></li>
-                      {coinNetworks.map((cn) => {
-                        const sym = (cn.coin?.symbol || '').toUpperCase();
-                        const net = (cn.network?.symbol || '').toUpperCase();
-                        return (
-                          <li key={cn.id}>
-                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer flex items-center gap-2 py-2" onClick={() => setCoinNetworkIdFilter(String(cn.id))}>
-                              <CoinImg symbol={sym} networkSymbol={net} size={28} />
-                              <div>
-                                <div className="font-semibold text-[0.85rem]">{sym}</div>
-                                <div className="text-muted text-[0.7rem]">{net}</div>
-                              </div>
-                            </button>
-                          </li>);
-
-                      })}
-                    </ul>
-                  </div>
+                  <CoinNetworkFilterDropdown
+                    coinNetworks={coinNetworks}
+                    value={coinNetworkIdFilter}
+                    onChange={setCoinNetworkIdFilter} />
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
                   <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
@@ -262,8 +213,7 @@ export default function TempWalletHistoryList() {
           {/* Table */}
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -285,7 +235,6 @@ export default function TempWalletHistoryList() {
                       colSpan={11}
                       icon="bx-history"
                       message={t('admin.tempWalletHistories.noHistories', { defaultValue: 'No histories found' })} /> :
-
 
                     histories.map((h) =>
                     <tr key={h.id}>
@@ -309,7 +258,7 @@ export default function TempWalletHistoryList() {
                                 {h.invoiceId}
                               </Link> :
 
-                        <span className="text-muted">-</span>
+                        <span className="text-surface-500">-</span>
                         }
                           </td>
                           <td className="text-center">
@@ -326,14 +275,14 @@ export default function TempWalletHistoryList() {
                                   <CoinImg symbol={sym} networkSymbol={(cn.network?.symbol || '').toUpperCase()} size={24} className="mr-3" />
                                   <div>
                                     <div className="font-medium leading-[1.2]">{sym}</div>
-                                    {net && <small className="text-muted text-xs">{net}</small>}
+                                    {net && <small className="text-surface-500 text-xs">{net}</small>}
                                   </div>
                                 </div>);
 
                         })()}
                           </td>
                           <td className="whitespace-nowrap text-center">
-                            <span className={statusBadgeClass(h.status)}>
+                            <span className={getStatusBadgeClass(h.status, 'tempWalletHistory')}>
                               {String(h.status || '').toUpperCase()}
                             </span>
                           </td>
@@ -362,46 +311,9 @@ export default function TempWalletHistoryList() {
                     )
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {/* Pagination */}
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    {t('invoices.showingEntries', {
-                    start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-                    end: Math.min(pagination.page * pagination.limit, pagination.total),
-                    total: pagination.total,
-                    defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-                  })}
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => {setCurrentPage((p) => p - 1);syncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      {t('actions.prev', { defaultValue: 'Previous' })}
-                    </Button>
-                    <Button
-
-                    disabled variant="outline-secondary" size="sm">
-                    
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => {setCurrentPage((p) => p + 1);syncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-                    
-                      {t('actions.next', { defaultValue: 'Next' })}
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={(p) => { setCurrentPage(p); syncSearchParams(appliedFilters, p); }} loading={loading} />
             </div>
           </Card>
         </div>

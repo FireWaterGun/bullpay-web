@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
-import { listCoins } from '@/lib/api/coins';
 import { getBalancesWithFiat } from '@/lib/api/balance';
 import { formatCoinAmount, formatUsd } from '@/lib/utils/format';
-import CoinImg, { NetworkIcon } from '@/components/CoinImg';
+import CoinImg from '@/components/CoinImg';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Card, Input, Spinner, Button } from '../../../components/ui';
+import { Card, Input, Spinner, Button } from '@/components/ui';
 
 export default function BalancePage() {
   const { t } = useTranslation();
@@ -24,11 +23,8 @@ export default function BalancePage() {
   const [loading, setLoading] = useState(true);
   const [showZero, setShowZero] = useState(false);
 
-  useEffect(() => {
-    if (token) loadBalances();
-  }, [token]);
-
-  async function loadBalances() {
+  const loadBalances = useCallback(async () => {
+    if (!token) return;
     try {
       setLoading(true);
       const data = await getBalancesWithFiat(token);
@@ -41,7 +37,11 @@ export default function BalancePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, toast, t]);
+
+  useEffect(() => {
+    loadBalances();
+  }, [loadBalances]);
 
   const filteredBalances = showZero ?
   balances :

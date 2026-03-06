@@ -47,7 +47,7 @@ export function StatCard({ icon, color, value, label }) {
           <h4 className="mb-1 font-bold text-3xl">
             {value}
           </h4>
-          <p className="text-muted mb-0 text-[0.875rem] font-medium">
+          <p className="text-surface-500 mb-0 text-[0.875rem] font-medium">
             {label}
           </p>
         </div>

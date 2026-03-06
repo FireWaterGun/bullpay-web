@@ -41,25 +41,25 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
   return (
     <Card className="mb-3">
       <div
-        className="px-5 py-4 border-b border-surface-200 py-3 cursor-pointer"
+        className="px-5 py-3 border-b border-surface-200 cursor-pointer"
 
         onClick={() => onToggle(group)}>
         
         <div className="flex items-center justify-between">
           <h6 className="mb-0 flex items-center gap-2">
-            <i className={`bx ${isCollapsed ? 'bx-chevron-right' : 'bx-chevron-down'} text-muted`}></i>
+            <i className={`bx ${isCollapsed ? 'bx-chevron-right' : 'bx-chevron-down'} text-surface-500`}></i>
             <i className={`bx ${groupIcon} text-${color}`}></i>
             {formatGroupLabel(group)}
           </h6>
           <div className="flex items-center gap-2">
-            <small className="text-muted">{activeInGroup}/{perms.length} {t('admin.roles.active', { defaultValue: 'active' }).toLowerCase()}</small>
+            <small className="text-surface-500">{activeInGroup}/{perms.length} {t('admin.roles.active', { defaultValue: 'active' }).toLowerCase()}</small>
             <Badge color={color} label className="rounded-full text-[0.7rem]">{perms.length}</Badge>
           </div>
         </div>
       </div>
       {!isCollapsed &&
-      <div className="p-5 p-0">
-          <ul className="list-group list-group-flush">
+      <div className="px-3">
+          <ul className="divide-y divide-surface-200">
             {perms.map((p) => {
             const override = overrideMap[p.permission];
             const isOverridden = !!override;
@@ -68,7 +68,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
             const action = getPermAction(p.permission);
 
             return (
-              <li key={p.permission} className="list-group-item flex items-center gap-3 py-2 px-3">
+              <li key={p.permission} className="flex items-center gap-3 py-2 px-3">
                   {/* Status icon */}
                   <div className="w-[24px] text-center shrink-0">
                     {p.active ?
@@ -90,7 +90,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
                     }
                     </div>
                     {isOverridden && override.reason &&
-                  <small className="text-muted block mt-1 text-xs">
+                  <small className="text-surface-500 block mt-1 text-xs">
                         <i className="bx bx-message-detail mr-1"></i>{override.reason}
                       </small>
                   }
@@ -107,7 +107,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
 
 
                       onClick={(e) => {e.stopPropagation();onRevert(override.id, p.permission);}}
-                      title={t('admin.roles.revertToDefault', { defaultValue: 'Revert to default' })} size="sm" className="text-xs py-0.5 px-2 border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white py-[0.15rem] px-[0.5rem] text-[0.7rem]">
+                      title={t('admin.roles.revertToDefault', { defaultValue: 'Revert to default' })} size="sm" className="border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white py-[0.15rem] px-[0.5rem] text-[0.7rem]">
                       
                             <i className="bx bx-undo mr-1"></i>{t('admin.roles.revert', { defaultValue: 'Revert' })}
                           </Button>
@@ -117,7 +117,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
 
 
                       onClick={(e) => {e.stopPropagation();onDeny(p.permission);}}
-                      title={t('admin.roles.denyPermission', { defaultValue: 'Deny this permission' })} size="sm" className="text-xs py-0.5 px-2 border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white py-[0.15rem] px-[0.5rem] text-[0.7rem]">
+                      title={t('admin.roles.denyPermission', { defaultValue: 'Deny this permission' })} size="sm" className="border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white py-[0.15rem] px-[0.5rem] text-[0.7rem]">
                       
                             <i className="bx bx-x mr-1"></i>{t('admin.roles.deny', { defaultValue: 'Deny' })}
                           </Button> :
@@ -126,7 +126,7 @@ export default function PermissionGroupCard({ group, perms, color = 'primary', i
 
 
                       onClick={(e) => {e.stopPropagation();onGrant(p.permission);}}
-                      title={t('admin.roles.grantPermission', { defaultValue: 'Grant this permission' })} size="sm" className="text-xs py-0.5 px-2 border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white py-[0.15rem] px-[0.5rem] text-[0.7rem]">
+                      title={t('admin.roles.grantPermission', { defaultValue: 'Grant this permission' })} size="sm" className="border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white py-[0.15rem] px-[0.5rem] text-[0.7rem]">
                       
                             <i className="bx bx-check mr-1"></i>{t('admin.roles.grant', { defaultValue: 'Grant' })}
                           </Button>

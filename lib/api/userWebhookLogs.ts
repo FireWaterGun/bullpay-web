@@ -23,7 +23,7 @@ export async function getUserWebhookLogs(
   if (params.page) qp.append('page', String(params.page))
   if (params.limit) qp.append('limit', String(params.limit))
   if (params.merchantPaymentId)
-    qp.append('merchantPaymentId', String(params.merchantPaymentId))
+    {qp.append('merchantPaymentId', String(params.merchantPaymentId))}
   if (params.event) qp.append('event', params.event)
   if (params.success) qp.append('success', params.success)
   if (params.fromDate) qp.append('fromDate', params.fromDate)
@@ -34,7 +34,7 @@ export async function getUserWebhookLogs(
   const qs = qp.toString()
   const url = `${BASE}${qs ? `?${qs}` : ''}`
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const data = await apiFetch<any>(url, { token })
 
   const items = data?.items || []
@@ -57,7 +57,7 @@ export async function getUserWebhookLog(
   token: string | null,
   id: number | string
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const data = await apiFetch<any>(`${BASE}/${id}`, { token })
   return data?.webhookLog || data
 }

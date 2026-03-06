@@ -4,20 +4,22 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';import { Button } from "../../../components/ui";
 
 export default function ForgotCompletePage() {
-  const [email, setEmail] = useState('');
+  const [email] = useState(() => {
+    try {
+      return sessionStorage.getItem('forgot_email') || '';
+    } catch {
+      return '';
+    }
+  });
 
   useEffect(() => {
     try {
-      const stored = sessionStorage.getItem('forgot_email');
-      if (stored) {
-        setEmail(stored);
-        sessionStorage.removeItem('forgot_email');
-      }
+      sessionStorage.removeItem('forgot_email');
     } catch {}
   }, []);
 
   return (
-    <div className="bg-white rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
+    <div className="bg-card rounded-[20px] border border-surface-200 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_24px_rgba(37,99,235,0.06)]">
       <div className="p-8 sm:p-10">
         {/* Brand */}
         <div className="flex justify-center mb-6">

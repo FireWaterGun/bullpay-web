@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { getPublicInvoice } from '@/lib/api/invoices';
-import { listCoins } from '@/lib/api/coins';
+import { useCoins } from '@/hooks/useCoins';
 
 import CoinNetworkList from '@/components/payment/CoinNetworkList';
-import { Input, Spinner } from '../../../../components/ui'
+import { Input, Spinner } from '@/components/ui'
+
+const STABLECOINS = ['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FDUSD'];
 
 export default function PaySelect() {
   const { t } = useTranslation();
@@ -15,13 +17,18 @@ export default function PaySelect() {
   const router = useRouter();
 
   const [invoice, setInvoice] = useState(null);
-  const [coins, setCoins] = useState([]);
+  const { coins: allCoins, isLoading: coinsLoading } = useCoins({ publicMode: true });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedCoinId, setSelectedCoinId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const year = new Date().getFullYear();
+
+  // Filter only active and visible coins
+  const coins = useMemo(() => {
+    return (allCoins || []).filter((c) => c.isActive && c.isVisible && c.status === 'active');
+  }, [allCoins]);
 
   useEffect(() => {
     if (!code) return;
@@ -31,17 +38,11 @@ export default function PaySelect() {
       setLoading(true);
       setError('');
       try {
-        const [invoiceRes, coinList] = await Promise.all([
-        getPublicInvoice(code).catch(() => null),
-        listCoins().catch(() => [])]
-        );
+        const invoiceRes = await getPublicInvoice(code).catch(() => null);
         if (cancelled) return;
         if (invoiceRes?.invoice) {
           setInvoice(invoiceRes.invoice);
         }
-        // Filter only active and visible coins
-        const enabled = (coinList || []).filter((c) => c.isActive && c.isVisible && c.status === 'active');
-        setCoins(enabled);
       } catch (e) {
         if (!cancelled) setError(e?.message || 'Failed to load data');
       } finally {
@@ -52,8 +53,6 @@ export default function PaySelect() {
     load();
     return () => {cancelled = true;};
   }, [code]);
-
-  const STABLECOINS = ['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FDUSD'];
 
   // Group coins by symbol
   const coinGroups = useMemo(() => {
@@ -257,6 +256,7 @@ export default function PaySelect() {
                       {/* Confirm Button */}
                       <div className="mt-3">
                         <button
+                        type="button"
                         className="w-full py-3 font-bold cursor-pointer border-none rounded-[12px] text-[1rem] tracking-[0.5px]"
                         disabled={!selectedCoinId}
                         onClick={handleConfirm}

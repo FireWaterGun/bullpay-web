@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useAuth, useToast } from '@/app/providers';
@@ -13,7 +13,8 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Button, Card } from '../../../../../components/ui';
+import { Button, Card } from '@/components/ui'
+import Table from '@/components/ui/Table';
 
 export default function UserBalanceDetailPage() {
   const { fmtDate } = useDateFormat();
@@ -24,9 +25,7 @@ export default function UserBalanceDetailPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
 
-  useEffect(() => {loadDetail();}, [userId]);
-
-  async function loadDetail() {
+  const loadDetail = useCallback(async () => {
     if (!token) return;
     try {
       setLoading(true);
@@ -38,7 +37,9 @@ export default function UserBalanceDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, userId, toast, t]);
+
+  useEffect(() => {loadDetail();}, [loadDetail]);
 
   if (loading) {
     return <PageSpinner />;
@@ -49,7 +50,7 @@ export default function UserBalanceDetailPage() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-muted mt-2">User balance not found</p>
+          <p className="text-surface-500 mt-2">User balance not found</p>
           <Button onClick={() => router.back()} className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none">Back</Button>
         </div>
       </div>);
@@ -75,7 +76,7 @@ export default function UserBalanceDetailPage() {
                     User #{userId} Balances
                   </h4>
                   {data.valuedAt &&
-                  <span className="text-muted text-[0.8rem]">
+                  <span className="text-surface-500 text-[0.8rem]">
                       Valued at {fmtDate(data.valuedAt)}
                     </span>
                   }
@@ -101,8 +102,7 @@ export default function UserBalanceDetailPage() {
                 message="No assets found for this user" /> :
 
 
-              <div className="overflow-x-auto">
-                  <table className="w-full">
+              <Table>
                     <thead>
                       <tr className="whitespace-nowrap">
                         <th>{t('admin.detail.coin', { defaultValue: 'Coin' })}</th>
@@ -130,7 +130,7 @@ export default function UserBalanceDetailPage() {
                                 <CoinImg symbol={coinSym} networkSymbol={netSym} size={28} />
                                 <div>
                                   <div className="font-semibold text-[0.85rem]">{coinSym}</div>
-                                  <div className="text-muted text-[0.7rem]">
+                                  <div className="text-surface-500 text-[0.7rem]">
                                     {asset.coin?.type === 'native' ? 'Native' : 'Token'}
                                   </div>
                                 </div>
@@ -140,7 +140,7 @@ export default function UserBalanceDetailPage() {
                               <div>
                                 <div className="font-medium text-[0.85rem]">{netName}</div>
                                 {asset.network?.explorerUrl &&
-                              <a href={asset.network.explorerUrl} target="_blank" rel="noopener noreferrer" className="text-muted text-[0.7rem]">
+                              <a href={asset.network.explorerUrl} target="_blank" rel="noopener noreferrer" className="text-surface-500 text-[0.7rem]">
                                     Explorer <i className="bx bx-link-external text-[0.65rem]"></i>
                                   </a>
                               }
@@ -148,12 +148,12 @@ export default function UserBalanceDetailPage() {
                             </td>
                             <td className="text-right whitespace-nowrap"><span className="font-medium">{asset.confirmedBalance || '0'}</span></td>
                             <td className="text-right whitespace-nowrap">
-                              <span className={`font-medium ${parseFloat(asset.unconfirmedBalance) > 0 ? 'text-warning' : 'text-muted'}`}>
+                              <span className={`font-medium ${parseFloat(asset.unconfirmedBalance) > 0 ? 'text-warning' : 'text-surface-500'}`}>
                                 {asset.unconfirmedBalance || '0'}
                               </span>
                             </td>
                             <td className="text-right whitespace-nowrap">
-                              <span className={`font-medium ${parseFloat(asset.lockedBalance) > 0 ? 'text-danger' : 'text-muted'}`}>
+                              <span className={`font-medium ${parseFloat(asset.lockedBalance) > 0 ? 'text-danger' : 'text-surface-500'}`}>
                                 {asset.lockedBalance || '0'}
                               </span>
                             </td>
@@ -166,8 +166,7 @@ export default function UserBalanceDetailPage() {
 
                     })}
                     </tbody>
-                  </table>
-                </div>
+                  </Table>
               }
             </div>
           </Card>

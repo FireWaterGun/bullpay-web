@@ -15,14 +15,14 @@ import RefreshButton from '@/components/RefreshButton';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { logger } from '@/lib/utils/logger';
 import { COMMON_TIMEZONES } from '@/lib/constants';
-import { Button, Card, Input, InputGroup, InputIcon, Label, Select, Spinner } from '../../../components/ui';
+import { Button, Card, Input, InputGroup, InputIcon, Label, Select, Spinner } from '@/components/ui';
 
 const iconBoxColors = {
-  primary: 'bg-primary-100 text-primary-600',
-  success: 'bg-green-100 text-green-600',
-  warning: 'bg-amber-100 text-amber-600',
-  info: 'bg-blue-100 text-blue-600',
-  danger: 'bg-red-100 text-red-600'
+  primary: 'bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400',
+  success: 'bg-green-100 text-green-600 dark:bg-success-500/15 dark:text-[#86efac]',
+  warning: 'bg-amber-100 text-amber-600 dark:bg-warning-500/15 dark:text-[#fcd34d]',
+  info: 'bg-blue-100 text-blue-600 dark:bg-info-500/15 dark:text-[#67e8f9]',
+  danger: 'bg-red-100 text-red-600 dark:bg-danger-500/15 dark:text-[#fca5a5]'
 };
 
 function IconBox({ icon, color = 'primary', size = 40 }) {
@@ -137,8 +137,8 @@ export default function SettingsPage() {
         <div className="p-5 pb-4">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             {/* Avatar */}
-            <div className="flex items-center justify-center w-20 h-20 rounded-xl bg-primary-50 shrink-0">
-              <i className="bx bx-user-circle text-[2.5rem] text-primary-600"></i>
+            <div className="flex items-center justify-center w-20 h-20 rounded-xl bg-primary-50 dark:bg-primary-500/15 shrink-0">
+              <i className="bx bx-user-circle text-[2.5rem] text-primary-600 dark:text-primary-400"></i>
             </div>
 
             {/* Info */}
@@ -166,7 +166,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Stats strip */}
-        <div className="border-t border-surface-100 py-3 px-5">
+        <div className="border-t border-surface-200 py-3 px-5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {/* Active */}
             <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ export default function SettingsPage() {
         <div className="lg:col-span-8">
           {/* Change Password */}
           <Card className="mb-6">
-            <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-3">
+            <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-3">
               <IconBox icon="bx-key" color="primary" size={36} />
               <div>
                 <h6 className="font-semibold text-surface-900 mb-0">
@@ -263,7 +263,7 @@ export default function SettingsPage() {
                       </InputIcon>
                     </InputGroup>
                     {errors.currentPassword &&
-                    <p className="text-red-500 text-xs mt-1">{errors.currentPassword.message}</p>
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.currentPassword.message}</p>
                     }
                   </div>
 
@@ -291,7 +291,7 @@ export default function SettingsPage() {
                       </InputIcon>
                     </InputGroup>
                     {errors.newPassword &&
-                    <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.newPassword.message}</p>
                     }
                     <p className="text-surface-400 text-xs mt-1">
                       {t('settings.password.requirements', {
@@ -324,7 +324,7 @@ export default function SettingsPage() {
                       </InputIcon>
                     </InputGroup>
                     {errors.newPasswordConfirmation &&
-                    <p className="text-red-500 text-xs mt-1">{errors.newPasswordConfirmation.message}</p>
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.newPasswordConfirmation.message}</p>
                     }
                   </div>
 
@@ -332,7 +332,7 @@ export default function SettingsPage() {
                   {is2FAEnabled &&
                   <div className="mb-4">
                       <Label htmlFor="totpCode">
-                        <i className="bx bx-shield-quarter mr-1 text-amber-500"></i>
+                        <i className="bx bx-shield-quarter mr-1 text-amber-500 dark:text-[#fcd34d]"></i>
                         {t('settings.password.totpLabel', { defaultValue: '2FA Verification Code' })}
                       </Label>
                       <Input
@@ -346,7 +346,7 @@ export default function SettingsPage() {
                       {...register('totpCode')} error={errors.totpCode} />
                     
                       {errors.totpCode &&
-                    <p className="text-red-500 text-xs mt-1">{errors.totpCode.message}</p>
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.totpCode.message}</p>
                     }
                       <p className="text-surface-400 text-xs mt-1">
                         {t('settings.password.totpHint', {
@@ -384,7 +384,7 @@ export default function SettingsPage() {
         <div className="lg:col-span-4">
           {/* Timezone */}
           <Card className="mb-6">
-            <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-3">
+            <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-3">
               <IconBox icon="bx-time-five" color="info" size={36} />
               <div>
                 <h6 className="font-semibold text-surface-900 mb-0">
@@ -397,8 +397,8 @@ export default function SettingsPage() {
             </div>
             <div className="p-6">
               {/* Clock preview */}
-              <div className="text-center mb-4 py-3 rounded-xl bg-primary-50">
-                <div className="font-bold text-3xl text-primary-600 tabular-nums tracking-wider">
+              <div className="text-center mb-4 py-3 rounded-xl bg-primary-50 dark:bg-primary-500/10">
+                <div className="font-bold text-3xl text-primary-600 dark:text-primary-400 tabular-nums tracking-wider">
                   {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
                 </div>
                 <small className="text-surface-500">{selectedTimezone.replace(/_/g, ' ')}</small>
@@ -454,7 +454,7 @@ export default function SettingsPage() {
 
           {/* Security / 2FA */}
           <Card className="mb-6">
-            <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-3">
+            <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-3">
               <IconBox icon="bx-shield-quarter" color="warning" size={36} />
               <div>
                 <h6 className="font-semibold text-surface-900 mb-0">
@@ -467,9 +467,9 @@ export default function SettingsPage() {
             </div>
             <div className="p-6">
               {/* 2FA Status */}
-              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${is2FAEnabled ? 'bg-green-50' : 'bg-amber-50'}`
+              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${is2FAEnabled ? 'bg-green-50 dark:bg-success-500/10' : 'bg-amber-50 dark:bg-warning-500/10'}`
               }>
-                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${is2FAEnabled ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`
+                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${is2FAEnabled ? 'bg-green-100 text-green-600 dark:bg-success-500/15 dark:text-[#86efac]' : 'bg-amber-100 text-amber-600 dark:bg-warning-500/15 dark:text-[#fcd34d]'}`
                 }>
                   <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} text-xl`}></i>
                 </div>
@@ -478,7 +478,7 @@ export default function SettingsPage() {
                     {t('settings.2fa.title', { defaultValue: 'Two-Factor Authentication' })}
                   </h6>
                   {loading ?
-                  <div className="h-3 w-24 bg-surface-100 rounded animate-pulse mt-1"></div> :
+                  <div className="h-3 w-24 bg-surface-100 dark:bg-dark-elevated rounded animate-pulse mt-1"></div> :
                   is2FAEnabled ?
                   <div className="flex items-center gap-2 mt-1">
                       <span className="inline-flex items-center px-1.5 py-0.5 text-[0.7rem] font-semibold text-white bg-green-500 rounded">
@@ -514,7 +514,7 @@ export default function SettingsPage() {
               is2FAEnabled ?
               <Button
 
-                onClick={() => setShowDisableModal(true)} className="w-full border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer rounded-[10px] py-2">
+                onClick={() => setShowDisableModal(true)} className="w-full border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer rounded-[10px] py-2">
                 
                   <i className="bx bx-power-off mr-1"></i>
                   {t('settings.2fa.disable', { defaultValue: 'Disable 2FA' })}

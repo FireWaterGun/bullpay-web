@@ -64,7 +64,7 @@ export default function ConfirmModal({
       onClick={handleBackdropClick}>
       
       <div
-        className="bg-white rounded-xl shadow-xl mx-4 w-full"
+        className="bg-card rounded-xl shadow-xl mx-4 w-full"
         style={{ maxWidth: maxW }}>
         
         {variant === 'basic' ?
@@ -73,12 +73,12 @@ export default function ConfirmModal({
               <h5 className="font-semibold text-lg">{title}</h5>
               <button
               type="button"
-              className="text-surface-400 hover:text-surface-700 text-xl leading-none"
+              className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
               aria-label="Close"
               onClick={busy ? undefined : onCancel}
               disabled={busy}>
               
-                &times;
+                <i className="bx bx-x"></i>
               </button>
             </div>
             <div className="p-6">
@@ -100,12 +100,12 @@ export default function ConfirmModal({
         <div className="p-6 relative">
             <button
             type="button"
-            className="absolute top-4 right-4 text-surface-400 hover:text-surface-700 text-xl leading-none"
+            className="absolute top-4 right-4 cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
             aria-label="Close"
             onClick={busy ? undefined : onCancel}
             disabled={busy}>
             
-              &times;
+              <i className="bx bx-x"></i>
             </button>
             <div className="text-center mb-6">
               <h4 className="mb-2 font-semibold text-lg">{title}</h4>

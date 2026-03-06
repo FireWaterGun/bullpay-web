@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 
 import { useAuth } from '@/app/providers';
@@ -12,7 +12,8 @@ import CoinImg from '@/components/CoinImg';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { logger } from '@/lib/utils/logger';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Alert, Badge, Button, Card, Spinner } from '../../../../components/ui';
+import { Alert, Badge, Button, Card, Spinner } from '@/components/ui'
+import Table from '@/components/ui/Table';
 
 export default function SystemBalance() {
   const { t } = useAdminTranslation();
@@ -35,11 +36,7 @@ export default function SystemBalance() {
     }
   };
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  async function loadStats() {
+  const loadStats = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -51,7 +48,11 @@ export default function SystemBalance() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   if (loading) {
     return (
@@ -90,7 +91,7 @@ export default function SystemBalance() {
                       <i className="bx bxs-wallet bx-lg text-info"></i>
                     </div>
                     <div>
-                      <small className="text-muted block">{t('admin.totalWallets', { defaultValue: 'Total Wallets' })}</small>
+                      <small className="text-surface-500 block">{t('admin.totalWallets', { defaultValue: 'Total Wallets' })}</small>
                       <h4 className="mb-0">{stats?.totalWallets || 0}</h4>
                     </div>
                   </div>
@@ -106,7 +107,7 @@ export default function SystemBalance() {
                       <i className="bx bxs-gas-pump bx-lg text-warning"></i>
                     </div>
                     <div>
-                      <small className="text-muted block">{t('admin.gasPurposeWallets', { defaultValue: 'Gas Purpose Wallets' })}</small>
+                      <small className="text-surface-500 block">{t('admin.gasPurposeWallets', { defaultValue: 'Gas Purpose Wallets' })}</small>
                       <h4 className="mb-0">{stats?.gasPurposeWallets || 0}</h4>
                     </div>
                   </div>
@@ -122,7 +123,7 @@ export default function SystemBalance() {
                       <i className="bx bxs-bank bx-lg text-primary"></i>
                     </div>
                     <div>
-                      <small className="text-muted block">{t('admin.treasuryPurposeWallets', { defaultValue: 'Treasury Purpose Wallets' })}</small>
+                      <small className="text-surface-500 block">{t('admin.treasuryPurposeWallets', { defaultValue: 'Treasury Purpose Wallets' })}</small>
                       <h4 className="mb-0">{stats?.treasuryPurposeWallets || 0}</h4>
                     </div>
                   </div>
@@ -168,8 +169,7 @@ export default function SystemBalance() {
                 message={t('admin.noWalletsFound', { defaultValue: 'No wallets with balance found' })} /> :
 
 
-              <div className="overflow-x-auto overflow-x-auto">
-                  <table className="w-full min-w-[1600px]">
+              <Table className="min-w-max">
                     <thead>
                       <tr>
                         <th>{t('invoices.chain') || 'Chain'}</th>
@@ -207,7 +207,7 @@ export default function SystemBalance() {
                       return (
                         <tr key={wallet.id}>
                             <td>
-                              <span className="text-muted">
+                              <span className="text-surface-500">
                                 {(networkSymbol || '').toUpperCase() || 'N/A'}
                               </span>
                             </td>
@@ -216,7 +216,7 @@ export default function SystemBalance() {
                                 <CoinImg coin={coin} symbol={coinSymbol} networkSymbol={networkSymbol} size={32} className="mr-3" />
                                 <div>
                                   <div>{coinSymbol || 'N/A'}</div>
-                                  <small className="text-muted">{networkName || 'N/A'}</small>
+                                  <small className="text-surface-500">{networkName || 'N/A'}</small>
                                 </div>
                               </div>
                             </td>
@@ -275,7 +275,7 @@ export default function SystemBalance() {
                                     <span className="font-medium" title={`Raw: ${wallet.confirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
                                       {formatCoinAmount(val)}
                                     </span>
-                                    <small className="text-muted ml-1">{coinSymbol}</small>
+                                    <small className="text-surface-500 ml-1">{coinSymbol}</small>
                                   </>);
 
                             })()}
@@ -288,7 +288,7 @@ export default function SystemBalance() {
                                     <span className="font-medium" title={`Raw: ${wallet.unconfirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
                                       {formatCoinAmount(val)}
                                     </span>
-                                    <small className="text-muted ml-1">{coinSymbol}</small>
+                                    <small className="text-surface-500 ml-1">{coinSymbol}</small>
                                   </>);
 
                             })()}
@@ -297,7 +297,7 @@ export default function SystemBalance() {
                               <span className="font-medium" title={`Raw: ${wallet.totalBalanceRaw || '0'}\nDecimals: ${decimals}`}>
                                 {formatCoinAmount(decimalBalance)}
                               </span>
-                              <small className="text-muted ml-1">{coinSymbol}</small>
+                              <small className="text-surface-500 ml-1">{coinSymbol}</small>
                             </td>
                             <td className="text-right whitespace-nowrap">
                               <span className="font-medium">
@@ -328,8 +328,7 @@ export default function SystemBalance() {
 
                     })}
                     </tbody>
-                  </table>
-                </div>
+                  </Table>
               }
             </div>
           </Card>

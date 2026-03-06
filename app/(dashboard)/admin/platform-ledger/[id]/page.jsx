@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/app/providers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
@@ -12,7 +12,8 @@ import CoinImg from '@/components/CoinImg';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
 import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card } from '../../../../../components/ui';
+import { Badge, Button, Card } from '@/components/ui'
+import Table from '@/components/ui/Table';
 
 export default function PlatformLedgerDetail() {
   const { fmtDateTime } = useDateFormat();
@@ -24,11 +25,7 @@ export default function PlatformLedgerDetail() {
   const [loading, setLoading] = useState(true);
   const [entry, setEntry] = useState(null);
 
-  useEffect(() => {
-    loadEntry();
-  }, [id]);
-
-  async function loadEntry() {
+  const loadEntry = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getPlatformLedgerEntry(token, parseInt(id));
@@ -39,7 +36,11 @@ export default function PlatformLedgerDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token, id, toast, t]);
+
+  useEffect(() => {
+    loadEntry();
+  }, [loadEntry]);
 
   function formatAmount(val) {
     if (!val && val !== 0) return '0';
@@ -55,13 +56,13 @@ export default function PlatformLedgerDetail() {
     if (state === 'settled') return <Badge className="bg-green-50 text-green-700">Settled</Badge>;
     if (state === 'committed') return <Badge className="bg-cyan-50 text-cyan-700">Committed</Badge>;
     if (state === 'reversed') return <Badge className="bg-surface-100 text-surface-600">Reversed</Badge>;
-    return <span className="text-muted">{state || 'N/A'}</span>;
+    return <span className="text-surface-500">{state || 'N/A'}</span>;
   }
 
   async function handleCopy(text) {
     const ok = await copyText(text);
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));else
-    toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }));
+    if (ok) {toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));}else
+    {toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }));}
   }
 
   const entryCodeLabels = {
@@ -83,7 +84,7 @@ export default function PlatformLedgerDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-muted mt-2">{t('admin.platformLedger.notFound', { defaultValue: 'Platform ledger entry not found' })}</p>
+          <p className="text-surface-500 mt-2">{t('admin.platformLedger.notFound', { defaultValue: 'Platform ledger entry not found' })}</p>
           <Button onClick={() => router.back()}>
             {t('actions.back', { defaultValue: 'Back' })}
           </Button>
@@ -153,11 +154,11 @@ export default function PlatformLedgerDetail() {
                   <div className={`text-2xl font-bold ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
                     {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
                   </div>
-                  <div className="text-muted">
+                  <div className="text-surface-500">
                     {formatUsd(entry.amountUsd)}
                   </div>
                   {entry.networkName &&
-                  <small className="text-muted">{entry.networkName}</small>
+                  <small className="text-surface-500">{entry.networkName}</small>
                   }
                 </div>
               </div>
@@ -175,14 +176,14 @@ export default function PlatformLedgerDetail() {
                   </h5>
                 </div>
                 <div className="p-5">
-                  <table className="w-full">
+                  <Table responsive={false}>
                     <tbody>
                       <tr>
-                        <td className="text-muted w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
                         <td className="font-medium">{entry.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Account Type</td>
+                        <td className="text-surface-500">Account Type</td>
                         <td>
                           <Badge className={`${entry.accountType === 'revenue' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
                             {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
@@ -190,26 +191,26 @@ export default function PlatformLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="flex items-center">
                             <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="mr-3" />
                             <span className="font-medium">{entry.coinSymbol || '-'}</span>
-                            {entry.networkName && <span className="text-muted ml-1">({entry.networkName})</span>}
+                            {entry.networkName && <span className="text-surface-500 ml-1">({entry.networkName})</span>}
                           </div>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Entry Code</td>
+                        <td className="text-surface-500">Entry Code</td>
                         <td>
                           <span className="font-medium">{entry.entryCode || '-'}</span>
                           {entry.entryCode && entryCodeLabels[entry.entryCode] &&
-                          <span className="text-muted ml-1">- {entryCodeLabels[entry.entryCode]}</span>
+                          <span className="text-surface-500 ml-1">- {entryCodeLabels[entry.entryCode]}</span>
                           }
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">Entry Type</td>
+                        <td className="text-surface-500">Entry Type</td>
                         <td>
                           <Badge className={`${entry.state === 'reversed' ? 'bg-surface-100 text-surface-600' : isCredit ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                             {isCredit ? 'Credit' : 'Debit'}
@@ -217,11 +218,11 @@ export default function PlatformLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.state', { defaultValue: 'State' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.state', { defaultValue: 'State' })}</td>
                         <td>{stateBadge(entry.state)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td>
                           <span className={`font-medium ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
                             {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)} {entry.coinSymbol}
@@ -229,21 +230,21 @@ export default function PlatformLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-muted">USD Value</td>
+                        <td className="text-surface-500">USD Value</td>
                         <td className="font-medium">{formatUsd(entry.amountUsd)}</td>
                       </tr>
                       <tr>
-                        <td className="text-muted">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                        <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{fmtDateTime(entry.createdAt)}</td>
                       </tr>
                       {entry.updatedAt &&
                       <tr>
-                          <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
+                          <td className="text-surface-500">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                           <td>{fmtDateTime(entry.updatedAt)}</td>
                         </tr>
                       }
                     </tbody>
-                  </table>
+                  </Table>
                 </div>
               </Card>
             </div>
@@ -259,10 +260,10 @@ export default function PlatformLedgerDetail() {
                     </h5>
                   </div>
                   <div className="p-5">
-                    <table className="w-full">
+                    <Table responsive={false}>
                       <tbody>
                         <tr>
-                          <td className="text-muted w-[30%]">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
+                          <td className="text-surface-500 w-[30%]">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                           <td>
                             <div className="flex items-center">
                               <code className="mr-2 break-all">{entry.txHash}</code>
@@ -288,7 +289,7 @@ export default function PlatformLedgerDetail() {
                           </td>
                         </tr>
                       </tbody>
-                    </table>
+                    </Table>
                   </div>
                 </Card>
               }

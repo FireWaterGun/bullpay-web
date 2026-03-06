@@ -6,6 +6,9 @@ import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHel
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import TableEmptyState from '@/components/TableEmptyState';
 import { Badge, Button, Card } from '../ui'
+import ActionMenu from '../ui/ActionMenu'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 export default function UserListTable({
   t,
@@ -23,8 +26,7 @@ export default function UserListTable({
   return (
     <Card>
       <div className="p-5">
-        <div className="overflow-x-auto overflow-x-auto">
-          <table className="w-full">
+        <Table>
             <thead>
               <tr className="whitespace-nowrap">
                 <th>{t('table.id', { defaultValue: 'ID' })}</th>
@@ -66,7 +68,7 @@ export default function UserListTable({
                     <td>
                       {user.fullName || user.firstName || user.lastName ?
                   `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.fullName :
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
                     </td>
                     <td className="text-center whitespace-nowrap">
@@ -93,84 +95,31 @@ export default function UserListTable({
                       {fmtDate(user.createdAt)}
                     </td>
                     <td className="text-center">
-                      <div className="dropdown">
-                        <Button size="icon" className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none rounded-full cursor-pointer hide-arrow">
-                          <i className="bx bx-dots-vertical-rounded"></i>
-                        </Button>
-                        <ul className="absolute z-50 mt-1 min-w-[160px] bg-white border border-surface-200 rounded-lg shadow-lg py-1 right-0">
-                          <li>
-                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('changeStatus', user)}>
-                              <i className="bx bx-user-check mr-2 text-warning"></i>
-                              {t('admin.users.changeStatus', { defaultValue: 'Change Status' })}
-                            </button>
-                          </li>
-                          <li>
-                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('changeRole', user)}>
-                              <i className="bx bx-shield mr-2 text-primary"></i>
-                              {t('admin.users.changeRole', { defaultValue: 'Change Role' })}
-                            </button>
-                          </li>
-                          <li><hr className="dropdown-divider" /></li>
-                          <li>
-                            <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('resetPassword', user)}>
-                              <i className="bx bx-lock-open mr-2 text-danger"></i>
-                              {t('admin.users.resetPassword', { defaultValue: 'Reset Password' })}
-                            </button>
-                          </li>
-                          {(user.twoFactorEnabled || user.is2FAEnabled) &&
-                      <li>
-                              <button className="block w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 cursor-pointer" onClick={() => onOpenModal('disable2FA', user)}>
-                                <i className="bx bx-shield-x mr-2 text-danger"></i>
-                                {t('admin.users.disable2FA', { defaultValue: 'Disable 2FA' })}
-                              </button>
-                            </li>
-                      }
-                        </ul>
-                      </div>
+                      <ActionMenu>
+                        <ActionMenu.Item icon="bx-user-check" onClick={() => onOpenModal('changeStatus', user)}>
+                          {t('admin.users.changeStatus', { defaultValue: 'Change Status' })}
+                        </ActionMenu.Item>
+                        <ActionMenu.Item icon="bx-shield" onClick={() => onOpenModal('changeRole', user)}>
+                          {t('admin.users.changeRole', { defaultValue: 'Change Role' })}
+                        </ActionMenu.Item>
+                        <ActionMenu.Divider />
+                        <ActionMenu.Item icon="bx-lock-open" onClick={() => onOpenModal('resetPassword', user)}>
+                          {t('admin.users.resetPassword', { defaultValue: 'Reset Password' })}
+                        </ActionMenu.Item>
+                        {(user.twoFactorEnabled || user.is2FAEnabled) &&
+                          <ActionMenu.Item icon="bx-shield-x" danger onClick={() => onOpenModal('disable2FA', user)}>
+                            {t('admin.users.disable2FA', { defaultValue: 'Disable 2FA' })}
+                          </ActionMenu.Item>
+                        }
+                      </ActionMenu>
                     </td>
                   </tr>
               )
               }
             </tbody>
-          </table>
-        </div>
+          </Table>
 
-        {pagination && pagination.total > 0 &&
-        <div className="flex justify-between items-center mt-4">
-            <div className="text-muted text-sm">
-              {t('invoices.showingEntries', {
-              start: pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0,
-              end: Math.min(pagination.page * pagination.limit, pagination.total),
-              total: pagination.total,
-              defaultValue: 'Showing {{start}} to {{end}} of {{total}} entries'
-            })}
-            </div>
-            <div className="inline-flex rounded-lg shadow-sm">
-              <Button
-
-              disabled={!pagination.hasPrev || loading}
-              onClick={() => {onPageChange(currentPage - 1);onSyncSearchParams(appliedFilters, currentPage - 1);}} variant="outline-secondary" size="sm">
-              
-                <i className="bx bx-chevron-left"></i>
-                {t('actions.prev', { defaultValue: 'Previous' })}
-              </Button>
-              <Button
-
-              disabled variant="outline-secondary" size="sm">
-              
-                {pagination.page} / {pagination.totalPages}
-              </Button>
-              <Button
-
-              disabled={!pagination.hasNext || loading}
-              onClick={() => {onPageChange(currentPage + 1);onSyncSearchParams(appliedFilters, currentPage + 1);}} variant="outline-secondary" size="sm">
-              
-                {t('actions.next', { defaultValue: 'Next' })}
-                <i className="bx bx-chevron-right"></i>
-              </Button>
-            </div>
-          </div>
-        }
+        <Pagination pagination={pagination} onPageChange={onPageChange} loading={loading} />
       </div>
     </Card>);
 

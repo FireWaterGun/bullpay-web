@@ -6,14 +6,14 @@ const colorMap = {
   success:   'bg-[#dcfce7] text-[#166534] dark:bg-success-500/15 dark:text-[#86efac]',
   warning:   'bg-[#fef3c7] text-[#92400e] dark:bg-warning-500/15 dark:text-[#fcd34d]',
   danger:    'bg-[#fee2e2] text-[#991b1b] dark:bg-danger-500/15 dark:text-[#fca5a5]',
-  secondary: 'bg-surface-100 text-surface-600 dark:bg-white/8 dark:text-surface-900-text',
+  secondary: 'bg-surface-100 text-surface-600 dark:bg-white/8',
   info:      'bg-[#cffafe] text-[#0e7490] dark:bg-info-500/15 dark:text-[#67e8f9]',
 }
 
 /* ── Label (bg-label-*) color map — identical visual to badge but used in dynamic contexts ── */
 const labelMap = {
   primary:   'bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400',
-  secondary: 'bg-surface-100 text-surface-600 dark:bg-white/8 dark:text-surface-900-text',
+  secondary: 'bg-surface-100 text-surface-600 dark:bg-white/8',
   success:   'bg-[#dcfce7] text-[#15803d] dark:bg-success-500/15 dark:text-[#86efac]',
   danger:    'bg-[#fee2e2] text-[#b91c1c] dark:bg-danger-500/15 dark:text-[#fca5a5]',
   warning:   'bg-[#fef3c7] text-[#b45309] dark:bg-warning-500/15 dark:text-[#fcd34d]',

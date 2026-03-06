@@ -1,7 +1,8 @@
 'use client';
 
 import { useDateFormat } from '@/hooks/useDateFormat';
-import { Button, Card } from '../ui';
+import { Button, Card } from '../ui'
+import Table from '../ui/Table';
 
 export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t }) {
   const { fmtDate } = useDateFormat();
@@ -15,11 +16,10 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
           </h5>
         </div>
         <div className="p-5">
-          <div className="overflow-x-auto">
-          <table className="w-full">
+          <Table>
             <tbody>
               <tr>
-                <td className="text-muted w-2/5">{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</td>
+                <td className="text-surface-500 w-2/5">{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</td>
                 <td>
                   {topup.txHash ?
                     <>
@@ -44,30 +44,30 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
                       </div>
                     </> :
 
-                    <span className="text-muted">-</span>
+                    <span className="text-surface-500">-</span>
                     }
                 </td>
               </tr>
               {topup.blockNumber &&
                 <tr>
-                  <td className="text-muted">{t('admin.gasTopup.blockNumber', { defaultValue: 'Block Number' })}</td>
+                  <td className="text-surface-500">{t('admin.gasTopup.blockNumber', { defaultValue: 'Block Number' })}</td>
                   <td>{topup.blockNumber}</td>
                 </tr>
                 }
               {topup.gasUsedRaw &&
                 <tr>
-                  <td className="text-muted">{t('admin.gasTopup.gasUsed', { defaultValue: 'Gas Used' })}</td>
+                  <td className="text-surface-500">{t('admin.gasTopup.gasUsed', { defaultValue: 'Gas Used' })}</td>
                   <td><code className="text-[0.8rem]">{topup.gasUsedRaw}</code></td>
                 </tr>
                 }
               {topup.gasPriceRaw &&
                 <tr>
-                  <td className="text-muted">{t('admin.gasTopup.gasPrice', { defaultValue: 'Gas Price' })}</td>
+                  <td className="text-surface-500">{t('admin.gasTopup.gasPrice', { defaultValue: 'Gas Price' })}</td>
                   <td><code className="text-[0.8rem]">{topup.gasPriceRaw}</code></td>
                 </tr>
                 }
               <tr>
-                <td className="text-muted">{t('admin.gasTopup.fromAddress', { defaultValue: 'From Address' })}</td>
+                <td className="text-surface-500">{t('admin.gasTopup.fromAddress', { defaultValue: 'From Address' })}</td>
                 <td>
                   {topup.fromAddress ?
                     <>
@@ -92,12 +92,12 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
                       </div>
                     </> :
 
-                    <span className="text-muted">N/A</span>
+                    <span className="text-surface-500">N/A</span>
                     }
                 </td>
               </tr>
               <tr>
-                <td className="text-muted">{t('admin.gasTopup.toAddress', { defaultValue: 'To Address' })}</td>
+                <td className="text-surface-500">{t('admin.gasTopup.toAddress', { defaultValue: 'To Address' })}</td>
                 <td>
                   {topup.toAddress ?
                     <>
@@ -122,13 +122,12 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
                       </div>
                     </> :
 
-                    <span className="text-muted">N/A</span>
+                    <span className="text-surface-500">N/A</span>
                     }
                 </td>
               </tr>
             </tbody>
-          </table>
-          </div>
+          </Table>
         </div>
       </Card>
 
@@ -140,34 +139,32 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
           </h5>
         </div>
         <div className="p-5">
-          <div className="overflow-x-auto">
-          <table className="w-full">
+          <Table>
             <tbody>
               <tr>
-                <td className="text-muted w-2/5">{t('admin.gasTopup.created', { defaultValue: 'Created' })}</td>
+                <td className="text-surface-500 w-2/5">{t('admin.gasTopup.created', { defaultValue: 'Created' })}</td>
                 <td>{fmtDate(topup.createdAt)}</td>
               </tr>
               {topup.processingStartedAt &&
                 <tr>
-                  <td className="text-muted">{t('admin.gasTopup.processingStartedAt', { defaultValue: 'Processing Started' })}</td>
+                  <td className="text-surface-500">{t('admin.gasTopup.processingStartedAt', { defaultValue: 'Processing Started' })}</td>
                   <td>{fmtDate(topup.processingStartedAt)}</td>
                 </tr>
                 }
               {topup.completedAt &&
                 <tr>
-                  <td className="text-muted">{t('admin.gasTopup.completedAt', { defaultValue: 'Completed' })}</td>
+                  <td className="text-surface-500">{t('admin.gasTopup.completedAt', { defaultValue: 'Completed' })}</td>
                   <td>{fmtDate(topup.completedAt)}</td>
                 </tr>
                 }
               {topup.updatedAt &&
                 <tr>
-                  <td className="text-muted">{t('admin.gasTopup.updated', { defaultValue: 'Updated' })}</td>
+                  <td className="text-surface-500">{t('admin.gasTopup.updated', { defaultValue: 'Updated' })}</td>
                   <td>{fmtDate(topup.updatedAt)}</td>
                 </tr>
                 }
             </tbody>
-          </table>
-          </div>
+          </Table>
         </div>
       </Card>
     </>);

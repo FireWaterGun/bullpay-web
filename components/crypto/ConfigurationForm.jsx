@@ -32,7 +32,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                 disabled={loading}
                 placeholder="0x..." />
               
-                <small className="text-muted">
+                <small className="text-surface-500">
                   {t('crypto.contractAddressHelp', { defaultValue: 'Leave empty for native coins' })}
                 </small>
               </div>
@@ -54,7 +54,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                 max="18"
                 placeholder="18" />
               
-                <small className="text-muted">
+                <small className="text-surface-500">
                   {isEdit ?
                 t('crypto.decimalsReadOnly', { defaultValue: 'Decimals cannot be changed after creation' }) :
                 t('crypto.coinNetworkDecimalsHelp', { defaultValue: 'Override coin decimals if needed' })
@@ -79,7 +79,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                   <option value="inactive">{t('crypto.statusInactive', { defaultValue: 'Inactive' })}</option>
                   <option value="maintenance">{t('crypto.statusMaintenance', { defaultValue: 'Maintenance' })}</option>
                 </Select>
-                <small className="text-muted">
+                <small className="text-surface-500">
                   {t('crypto.statusHelp', { defaultValue: 'Current status of this coin-network pair' })}
                 </small>
               </div>
@@ -89,9 +89,9 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
                 <div className="flex items-center justify-between p-3 border rounded">
                   <div>
                     <h6 className="mb-1">{t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</h6>
-                    <small className="text-muted">{t('crypto.allowWithdrawals', { defaultValue: 'Allow users to withdraw' })}</small>
+                    <small className="text-surface-500">{t('crypto.allowWithdrawals', { defaultValue: 'Allow users to withdraw' })}</small>
                   </div>
-                  <div className="flex items-center gap-2 relative inline-flex items-center relative inline-flex items-center scale-125 m-0">
+                  <div className="flex items-center gap-2 scale-125 m-0">
                     <input
                     className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"
                     type="checkbox"

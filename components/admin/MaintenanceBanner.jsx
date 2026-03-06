@@ -44,7 +44,9 @@ export default function MaintenanceBanner() {
 
   // Initial fetch on mount
   useEffect(() => {
-    poll()
+    queueMicrotask(() => {
+      void poll()
+    })
   }, [poll])
 
   // Pusher real-time subscription
@@ -93,14 +95,14 @@ export default function MaintenanceBanner() {
 
   const config = isMaintenance
     ? {
-        bg: status.level === 'full' ? 'rgba(234,84,85,0.12)' : 'rgba(255,171,0,0.12)',
-        color: status.level === 'full' ? '#ea5455' : '#ffab00',
+        cls: status.level === 'full'
+          ? 'bg-red-500/12 text-red-500'
+          : 'bg-amber-500/12 text-amber-500',
         label: `${t('maintenance.title', { defaultValue: 'Maintenance' })} (${levelLabel})`,
         pulse: true,
       }
     : {
-        bg: 'rgba(40,199,111,0.12)',
-        color: '#28c76f',
+        cls: 'bg-green-500/12 text-green-500',
         label: t('maintenance.systemUp', { defaultValue: 'System Normal' }),
         pulse: false,
       }
@@ -108,8 +110,7 @@ export default function MaintenanceBanner() {
   return (
     <Link
       href="/admin/maintenance"
-      className="flex items-center gap-2 no-underline mr-auto text-sm whitespace-nowrap py-[0.3rem] px-[0.75rem]"
-      style={{ borderRadius: '6px', backgroundColor: config.bg, color: config.color, transition: 'background-color 0.2s, color 0.2s' }}
+      className={`flex items-center gap-2 no-underline mr-auto text-sm whitespace-nowrap py-[0.3rem] px-[0.75rem] rounded-md transition-colors ${config.cls}`}
     >
       <span
         style={{

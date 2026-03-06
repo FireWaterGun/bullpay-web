@@ -3,12 +3,13 @@
 import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Button, Card } from '../ui';
+import { Button, Card } from '../ui'
+import Table from '../ui/Table';
 
 function AddressRow({ label, address, explorerUrl, onCopy }) {
   return (
     <tr>
-      <td className="text-muted">{label}</td>
+      <td className="text-surface-500">{label}</td>
       <td>
         {address ?
         <>
@@ -33,7 +34,7 @@ function AddressRow({ label, address, explorerUrl, onCopy }) {
             </div>
           </> :
 
-        <span className="text-muted">N/A</span>
+        <span className="text-surface-500">N/A</span>
         }
       </td>
     </tr>);
@@ -52,11 +53,10 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
         </h5>
       </div>
       <div className="p-5">
-        <div className="overflow-x-auto">
-        <table className="w-full">
+        <Table>
           <tbody>
             <tr>
-              <td className="text-muted w-2/5">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
+              <td className="text-surface-500 w-2/5">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
               <td>
                 {sweep.txHash ?
                   <>
@@ -81,39 +81,38 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
                     </div>
                   </> :
 
-                  <span className="text-muted">-</span>
+                  <span className="text-surface-500">-</span>
                   }
               </td>
             </tr>
             {sweep.blockNumber &&
               <tr>
-                <td className="text-muted">{t('admin.detail.blockNumber', { defaultValue: 'Block Number' })}</td>
+                <td className="text-surface-500">{t('admin.detail.blockNumber', { defaultValue: 'Block Number' })}</td>
                 <td>{sweep.blockNumber}</td>
               </tr>
               }
             {sweep.gasFee &&
               <tr>
-                <td className="text-muted">Gas Fee</td>
+                <td className="text-surface-500">Gas Fee</td>
                 <td>{sweep.gasFee}</td>
               </tr>
               }
             {sweep.networkFeeRaw &&
               <tr>
-                <td className="text-muted">Network Fee (Raw)</td>
+                <td className="text-surface-500">Network Fee (Raw)</td>
                 <td><code className="text-[0.8rem]">{sweep.networkFeeRaw}</code></td>
               </tr>
               }
             {sweep.networkFeeUsd &&
               <tr>
-                <td className="text-muted">Network Fee (USD)</td>
+                <td className="text-surface-500">Network Fee (USD)</td>
                 <td>{formatUsd(sweep.networkFeeUsd)}</td>
               </tr>
               }
             <AddressRow label="From Address" address={sweep.fromAddress} explorerUrl={explorerUrl} onCopy={onCopy} />
             <AddressRow label="To Address" address={sweep.toAddress} explorerUrl={explorerUrl} onCopy={onCopy} />
           </tbody>
-        </table>
-        </div>
+        </Table>
       </div>
     </Card>);
 
@@ -130,40 +129,38 @@ export function SweepTimestampsCard({ sweep, metadata }) {
         </h5>
       </div>
       <div className="p-5">
-        <div className="overflow-x-auto">
-        <table className="w-full">
+        <Table>
           <tbody>
             <tr>
-              <td className="text-muted w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+              <td className="text-surface-500 w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
               <td>{fmtDate(sweep.createdAt)}</td>
             </tr>
             {sweep.completedAt &&
               <tr>
-                <td className="text-muted">{t('status.completed', { defaultValue: 'Completed' })}</td>
+                <td className="text-surface-500">{t('status.completed', { defaultValue: 'Completed' })}</td>
                 <td>{fmtDate(sweep.completedAt)}</td>
               </tr>
               }
             {sweep.updatedAt &&
               <tr>
-                <td className="text-muted">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
+                <td className="text-surface-500">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                 <td>{fmtDate(sweep.updatedAt)}</td>
               </tr>
               }
             {metadata.lastAttemptAt &&
               <tr>
-                <td className="text-muted">Last Attempt</td>
+                <td className="text-surface-500">Last Attempt</td>
                 <td>{fmtDate(metadata.lastAttemptAt)}</td>
               </tr>
               }
             {metadata.failedAt &&
               <tr>
-                <td className="text-muted">Failed At</td>
+                <td className="text-surface-500">Failed At</td>
                 <td className="text-danger">{fmtDate(metadata.failedAt)}</td>
               </tr>
               }
           </tbody>
-        </table>
-        </div>
+        </Table>
       </div>
     </Card>);
 

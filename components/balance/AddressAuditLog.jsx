@@ -17,7 +17,7 @@ export default function AddressAuditLog({ logs = EMPTY_LOGS, t }) {
   return (
     <ul className="list-none mb-0">
       {logs.map((log, idx) => (
-        <li key={log.id || idx} className="flex gap-2 mb-2 pb-2 border-b">
+        <li key={log.id || idx} className="flex gap-2 mb-2 pb-2 border-b border-surface-200">
           <i className="bx bx-time-five text-surface-400 mt-1"></i>
           <div>
             <div className="text-sm">{log.action || log.event || '-'}</div>

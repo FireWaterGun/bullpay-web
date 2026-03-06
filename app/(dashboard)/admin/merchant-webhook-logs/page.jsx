@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale';
 import { useToast } from '@/app/providers';
 import { getWebhookLogs } from '@/lib/api/merchantWebhookLogs';
 import { useDateFormat } from '@/hooks/useDateFormat';
@@ -12,7 +13,9 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card, Input, Label, Select } from '../../../../components/ui';
+import { Badge, Button, Card, Input, Label, Select } from '@/components/ui';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table';
 
 const EVENT_OPTIONS = [
 { value: 'payment.completed', label: 'Completed' },
@@ -30,14 +33,11 @@ const SORT_BY_OPTIONS = [
 
 export default function MerchantWebhookLogList() {
   const { fmtDate } = useDateFormat();
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const { token } = useAuth();
   const toast = useToast();
 
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+  const locale = useLocale();
 
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState([]);
@@ -57,9 +57,27 @@ export default function MerchantWebhookLogList() {
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({});
 
+  const loadLogs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getWebhookLogs(token, {
+        page: currentPage,
+        limit: 20,
+        ...appliedFilters
+      });
+      setLogs(data.items || []);
+      setPagination(data.pagination || null);
+    } catch (error) {
+      logger.error('Failed to load webhook logs:', error);
+      toast.error(t('admin.webhookLog.loadError', { defaultValue: 'Failed to load webhook logs' }));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, currentPage, appliedFilters, toast, t]);
+
   useEffect(() => {
     loadLogs();
-  }, [currentPage, appliedFilters]);
+  }, [loadLogs]);
 
   function applyFilters() {
     setAppliedFilters({
@@ -86,24 +104,6 @@ export default function MerchantWebhookLogList() {
     setSortOrderFilter('');
     setAppliedFilters({});
     setCurrentPage(1);
-  }
-
-  async function loadLogs() {
-    try {
-      setLoading(true);
-      const data = await getWebhookLogs(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters
-      });
-      setLogs(data.items || []);
-      setPagination(data.pagination || null);
-    } catch (error) {
-      logger.error('Failed to load webhook logs:', error);
-      toast.error(t('admin.webhookLog.loadError', { defaultValue: 'Failed to load webhook logs' }));
-    } finally {
-      setLoading(false);
-    }
   }
 
   function successText(val) {
@@ -147,7 +147,7 @@ export default function MerchantWebhookLogList() {
                     <i className="bx bx-broadcast mr-2"></i>
                     Merchant Webhook Logs
                   </h4>
-                  <p className="text-muted mb-0">View and monitor webhook delivery attempts to merchants</p>
+                  <p className="text-surface-500 mb-0">View and monitor webhook delivery attempts to merchants</p>
                 </div>
                 <RefreshButton onClick={loadLogs} loading={loading} />
               </div>
@@ -240,8 +240,7 @@ export default function MerchantWebhookLogList() {
           {/* Table */}
           <Card>
             <div className="p-5">
-              <div className="overflow-x-auto overflow-x-auto">
-                <table className="w-full">
+              <Table>
                   <thead>
                     <tr className="whitespace-nowrap">
                       <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
@@ -307,39 +306,9 @@ export default function MerchantWebhookLogList() {
                     )
                     }
                   </tbody>
-                </table>
-              </div>
+                </Table>
 
-              {/* Pagination */}
-              {pagination && pagination.total > 0 &&
-              <div className="flex justify-between items-center mt-4">
-                  <div className="text-muted text-sm">
-                    Showing {pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to{' '}
-                    {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
-                  </div>
-                  <div className="inline-flex rounded-lg shadow-sm">
-                    <Button
-
-                    disabled={!pagination.hasPrev || loading}
-                    onClick={() => setCurrentPage((p) => p - 1)} variant="outline-secondary" size="sm">
-                    
-                      <i className="bx bx-chevron-left"></i>
-                      Previous
-                    </Button>
-                    <Button disabled variant="outline-secondary" size="sm">
-                      {pagination.page} / {pagination.totalPages}
-                    </Button>
-                    <Button
-
-                    disabled={!pagination.hasNext || loading}
-                    onClick={() => setCurrentPage((p) => p + 1)} variant="outline-secondary" size="sm">
-                    
-                      Next
-                      <i className="bx bx-chevron-right"></i>
-                    </Button>
-                  </div>
-                </div>
-              }
+              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
             </div>
           </Card>
         </div>

@@ -8,7 +8,7 @@ import { Badge, Card } from '../ui'
  */
 function valueColor(value) {
   const n = parseFloat(value);
-  if (n === 0) return { cls: 'text-muted', bgStyle: 'rgba(168,170,174,0.1)', cssColor: 'var(--color-surface-500)' };
+  if (n === 0) return { cls: 'text-surface-500', bgStyle: 'rgba(168,170,174,0.1)', cssColor: 'var(--color-surface-500)' };
   if (n > 0) return { cls: 'text-success', bgStyle: 'rgba(40, 199, 111, 0.1)', cssColor: 'var(--color-green-500)' };
   return { cls: 'text-danger', bgStyle: 'rgba(234, 84, 85, 0.1)', cssColor: 'var(--color-red-500)' };
 }
@@ -37,7 +37,7 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
               {/* Deductions */}
               {deductionItems.length > 0 &&
               <>
-                  <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted font-semibold">DEDUCTIONS</small></td></tr>
+                  <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-surface-500 font-semibold">DEDUCTIONS</small></td></tr>
                   {deductionItems.map((item, i) =>
                 <tr key={`d-${i}`}>
                       <td>
@@ -107,7 +107,7 @@ function OperatingIncomeCard({ operatingIncome, profitMargin }) {
                 <i className={`bx ${parseFloat(operatingIncome) === 0 ? 'bx-minus-circle' : parseFloat(operatingIncome) > 0 ? 'bx-trending-up' : 'bx-trending-down'} text-[2.5rem]`} style={{ color: oi.cssColor }}></i>
               </div>
               <div>
-                <h6 className="text-muted mb-1">OPERATING INCOME</h6>
+                <h6 className="text-surface-500 mb-1">OPERATING INCOME</h6>
                 <h2 className={`mb-0 font-bold ${oi.cls}`}>
                   {formatUsd(operatingIncome)}
                 </h2>
@@ -115,7 +115,7 @@ function OperatingIncomeCard({ operatingIncome, profitMargin }) {
             </div>
           </div>
           <div className="md:col-span-6 md:text-right mt-3 md:mt-0">
-            <h6 className="text-muted mb-1">Profit Margin</h6>
+            <h6 className="text-surface-500 mb-1">Profit Margin</h6>
             <h2 className={`mb-0 font-bold ${pm.cls}`}>
               {formatPercent(profitMargin)}
             </h2>
@@ -132,20 +132,20 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
     <Card className="mb-4">
       <div className="px-5 py-4 border-b border-surface-200 flex items-center">
         <i className="bx bx-transfer-alt text-info mr-2 text-2xl"></i>
-        <h5 className="mb-0">ADJUSTMENTS <small className="text-muted font-normal">(Non-operating)</small></h5>
+        <h5 className="mb-0">ADJUSTMENTS <small className="text-surface-500 font-normal">(Non-operating)</small></h5>
       </div>
       <div className="p-5">
         <table className="w-full mb-0">
           <tbody>
             {adjustIncrease.length > 0 &&
             <>
-                <tr><td colSpan="2" className="pb-0 pt-0"><small className="text-muted font-semibold">INCREASES</small></td></tr>
+                <tr><td colSpan="2" className="pb-0 pt-0"><small className="text-surface-500 font-semibold">INCREASES</small></td></tr>
                 {adjustIncrease.map((item, i) =>
               <tr key={`ai-${i}`}>
                     <td>
                       <Badge className="bg-green-50 text-green-700 mr-2">{item.code}</Badge>
                       <span>{item.name || item.code}</span>
-                      <small className="text-muted ml-2">({item.entries || 0} entries)</small>
+                      <small className="text-surface-500 ml-2">({item.entries || 0} entries)</small>
                     </td>
                     <td className="text-right font-medium text-success whitespace-nowrap">+{formatUsd(item.amountUsd)}</td>
                   </tr>
@@ -154,13 +154,13 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
             }
             {adjustDecrease.length > 0 &&
             <>
-                <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-muted font-semibold">DECREASES</small></td></tr>
+                <tr><td colSpan="2" className="pb-0 pt-2"><small className="text-surface-500 font-semibold">DECREASES</small></td></tr>
                 {adjustDecrease.map((item, i) =>
               <tr key={`ad-${i}`}>
                     <td>
                       <Badge className="bg-red-50 text-red-700 mr-2">{item.code}</Badge>
                       <span>{item.name || item.code}</span>
-                      <small className="text-muted ml-2">({item.entries || 0} entries)</small>
+                      <small className="text-surface-500 ml-2">({item.entries || 0} entries)</small>
                     </td>
                     <td className="text-right font-medium text-danger whitespace-nowrap">({formatUsd(item.amountUsd)})</td>
                   </tr>
@@ -190,7 +190,7 @@ function NetIncomeCard({ netIncome }) {
             <i className={`bx ${parseFloat(netIncome) === 0 ? 'bx-minus-circle' : parseFloat(netIncome) > 0 ? 'bx-wallet' : 'bx-error-circle'} text-[2.5rem]`} style={{ color: ni.cssColor }}></i>
           </div>
           <div>
-            <h6 className="text-muted mb-1">NET INCOME</h6>
+            <h6 className="text-surface-500 mb-1">NET INCOME</h6>
             <h2 className={`mb-0 font-bold ${ni.cls}`}>
               {formatUsd(netIncome)}
             </h2>
@@ -209,7 +209,7 @@ function CountsCard({ allItems }) {
           {allItems.map((item) =>
           <div key={item.code} className="flex items-center gap-2">
               <Badge className="bg-surface-100 text-surface-600">{item.code}</Badge>
-              <span className="text-muted">{item.name || item.code}:</span>
+              <span className="text-surface-500">{item.name || item.code}:</span>
               <span className="font-semibold">{item.entries || 0}</span>
             </div>
           )}

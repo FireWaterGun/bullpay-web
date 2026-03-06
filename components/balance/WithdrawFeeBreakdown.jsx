@@ -17,7 +17,7 @@ export default function WithdrawFeeBreakdown({ feeEstimate, sym, t }) {
 
   return (
     <div className="mb-3">
-      <div className="border rounded-lg p-3">
+      <div className="border border-surface-200 rounded-lg p-3">
         <div className="text-sm text-surface-500 mb-2">{t('balance.feeBreakdown', { defaultValue: 'Fee Breakdown' })}</div>
         <div className="flex justify-between mb-2">
           <span className="text-sm">{t('balance.withdrawAmount', { defaultValue: 'Withdraw amount' })}</span>
@@ -31,7 +31,7 @@ export default function WithdrawFeeBreakdown({ feeEstimate, sym, t }) {
           <span className="text-sm">{t('balance.platformFee', { defaultValue: 'Platform fee' })} ({feeEstimate.display?.percentFeeText || `${feeEstimate.feePercentage}%`})</span>
           <span className="text-sm">{feeEstimate.display?.percentFee || `${formatCoinAmount(fromRaw(feeEstimate.percentFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</span>
         </div>
-        <div className="flex justify-between mb-2 pt-2 border-t">
+        <div className="flex justify-between mb-2 pt-2 border-t border-surface-200">
           <span className="text-sm">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
           <div className="text-right">
             <div className="text-sm font-medium">{feeEstimate.display?.totalFee || `${formatCoinAmount(fromRaw(feeEstimate.totalFeeRaw, feeEstimate.decimals), 4)} ${sym}`}</div>
@@ -41,7 +41,7 @@ export default function WithdrawFeeBreakdown({ feeEstimate, sym, t }) {
           </div>
         </div>
 
-        <div className="flex justify-between pt-2 border-t">
+        <div className="flex justify-between pt-2 border-t border-surface-200">
           <span className="text-sm text-surface-500 flex items-center">
             {t('balance.total', { defaultValue: 'Total' })}
             <i

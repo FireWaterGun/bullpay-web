@@ -11,7 +11,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
 
   if (!payments) {
     return (
-      <div className="rounded-lg bg-blue-50 text-blue-700 p-4 flex items-center gap-2">
+      <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 p-4 flex items-center gap-2">
         <i className="bx bx-info-circle text-lg"></i>
         {t('invoices.noPaymentsData', { defaultValue: 'No payments data available' })}
       </div>
@@ -20,7 +20,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
 
   if (!Array.isArray(payments)) {
     return (
-      <div className="rounded-lg bg-amber-50 text-amber-700 p-4 flex items-center gap-2">
+      <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 p-4 flex items-center gap-2">
         <i className="bx bx-error text-lg"></i>
         {t('invoices.paymentsNotArray', { defaultValue: 'Payments data format error' })}
       </div>
@@ -29,7 +29,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
 
   if (payments.length === 0) {
     return (
-      <div className="rounded-lg bg-blue-50 text-blue-700 p-4 flex items-center gap-2">
+      <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 p-4 flex items-center gap-2">
         <i className="bx bx-info-circle text-lg"></i>
         {t('invoices.noPaymentTransactions', { defaultValue: 'No payment transactions yet' })}
       </div>
@@ -40,7 +40,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b text-left text-xs uppercase text-surface-500">
+          <tr className="border-b border-surface-200 text-left text-xs uppercase text-surface-500">
             <th className="px-3 py-2">#</th>
             <th className="px-3 py-2">{t('invoices.txHash') || 'Tx Hash'}</th>
             <th className="px-3 py-2">{t('invoices.amount') || 'Amount'}</th>
@@ -50,7 +50,7 @@ export default function InvoicePaymentsTable({ payments, coinSym, explorer }) {
         </thead>
         <tbody className="divide-y">
           {payments.map((p, idx) => (
-            <tr key={p.id || idx} className="hover:bg-surface-50">
+            <tr key={p.id || idx} className="hover:bg-surface-50 dark:hover:bg-white/6">
               <td className="px-3 py-2">{idx + 1}</td>
               <td className="px-3 py-2 whitespace-nowrap">
                 {p.txHash ? (
