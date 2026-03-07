@@ -81,63 +81,26 @@ export default function SystemBalance() {
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
-            <div className="md:col-span-4 sm:col-span-6">
-              <Card>
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="shrink-0 mr-3">
-                      <i className="bx bxs-wallet bx-lg text-info"></i>
-                    </div>
-                    <div>
-                      <small className="text-surface-500 block">{t('admin.totalWallets', { defaultValue: 'Total Wallets' })}</small>
-                      <h4 className="mb-0">{stats?.totalWallets || 0}</h4>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            <div className="md:col-span-4 sm:col-span-6">
-              <Card>
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="shrink-0 mr-3">
-                      <i className="bx bxs-gas-pump bx-lg text-warning"></i>
-                    </div>
-                    <div>
-                      <small className="text-surface-500 block">{t('admin.gasPurposeWallets', { defaultValue: 'Gas Purpose Wallets' })}</small>
-                      <h4 className="mb-0">{stats?.gasPurposeWallets || 0}</h4>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            <div className="md:col-span-4 sm:col-span-6">
-              <Card>
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="shrink-0 mr-3">
-                      <i className="bx bxs-bank bx-lg text-primary"></i>
-                    </div>
-                    <div>
-                      <small className="text-surface-500 block">{t('admin.treasuryPurposeWallets', { defaultValue: 'Treasury Purpose Wallets' })}</small>
-                      <h4 className="mb-0">{stats?.treasuryPurposeWallets || 0}</h4>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </div>
-
-          {/* Total Balance Card */}
+          {/* System Balance Card */}
           <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
                 <div>
                   <h4 className="text-lg font-semibold text-surface-800 mb-1">{t('admin.systemBalance', { defaultValue: 'System Balance' })}</h4>
+                </div>
+                <div className="flex items-center gap-4 text-surface-500">
+                  <span className="flex items-center gap-1.5">
+                    <i className="bx bxs-wallet bx-sm text-info"></i>
+                    {stats?.totalWallets || 0}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <i className="bx bxs-gas-pump bx-sm text-warning"></i>
+                    {stats?.gasPurposeWallets || 0}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <i className="bx bxs-bank bx-sm text-primary"></i>
+                    {stats?.treasuryPurposeWallets || 0}
+                  </span>
                 </div>
               </div>
             </div>
@@ -145,11 +108,27 @@ export default function SystemBalance() {
               <div className="text-5xl font-bold text-surface-900">
                 {formatUsd(stats?.fiat?.totalValueUsd || 0)}
               </div>
-              <div className="mt-3">
+              <div className="flex flex-wrap items-center gap-3 mt-3">
                 <Badge color="primary" label>
                   <i className="bx bx-wallet mr-1"></i>
                   {stats?.walletsWithFunds || 0} {t('admin.walletsWithFunds', { defaultValue: 'wallets with funds' })}
                 </Badge>
+                <Badge color="success" label>
+                  <i className="bx bx-check-circle mr-1"></i>
+                  {t('admin.confirmedBalance', { defaultValue: 'Confirmed' })}: {formatUsd(stats?.fiat?.confirmedValueUsd || 0)}
+                </Badge>
+                {parseFloat(stats?.fiat?.unconfirmedValueUsd || 0) > 0 && (
+                  <Badge color="warning" label>
+                    <i className="bx bx-time-five mr-1"></i>
+                    {t('admin.unconfirmedBalance', { defaultValue: 'Unconfirmed' })}: {formatUsd(stats?.fiat?.unconfirmedValueUsd || 0)}
+                  </Badge>
+                )}
+                {parseFloat(stats?.fiat?.lockedValueUsd || 0) > 0 && (
+                  <Badge color="danger" label>
+                    <i className="bx bx-lock-alt mr-1"></i>
+                    {t('admin.lockedBalance', { defaultValue: 'Locked' })}: {formatUsd(stats?.fiat?.lockedValueUsd || 0)}
+                  </Badge>
+                )}
               </div>
             </div>
           </Card>
@@ -181,6 +160,7 @@ export default function SystemBalance() {
                         <th>{t('invoices.statusCol')}</th>
                         <th className="text-right min-w-[200px] whitespace-nowrap">{t('admin.confirmedBalance', { defaultValue: 'Confirmed' })}</th>
                         <th className="text-right min-w-[200px] whitespace-nowrap">{t('admin.unconfirmedBalance', { defaultValue: 'Unconfirmed' })}</th>
+                        <th className="text-right min-w-[200px] whitespace-nowrap">{t('admin.lockedBalance', { defaultValue: 'Locked' })}</th>
                         <th className="text-right min-w-[200px] whitespace-nowrap">{t('admin.totalBalance', { defaultValue: 'Total Balance' })}</th>
                         <th className="text-right min-w-[140px] whitespace-nowrap">{t('admin.valueUSD', { defaultValue: 'Value (USD)' })}</th>
                         <th className="text-center min-w-[120px]">{t('invoices.actions')}</th>
@@ -287,6 +267,19 @@ export default function SystemBalance() {
                               return (
                                 <>
                                     <span className="font-medium" title={`Raw: ${wallet.unconfirmedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
+                                      {formatCoinAmount(val)}
+                                    </span>
+                                    <small className="text-surface-500 ml-1">{coinSymbol}</small>
+                                  </>);
+
+                            })()}
+                            </td>
+                            <td className="text-right whitespace-nowrap">
+                              {(() => {
+                              const val = AmountNormalizer.fromRawSimple(wallet.lockedBalanceRaw || '0', decimals);
+                              return (
+                                <>
+                                    <span className="font-medium" title={`Raw: ${wallet.lockedBalanceRaw || '0'}\nDecimals: ${decimals}`}>
                                       {formatCoinAmount(val)}
                                     </span>
                                     <small className="text-surface-500 ml-1">{coinSymbol}</small>
