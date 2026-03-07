@@ -7,6 +7,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { useAuth } from '@/app/providers';
 import { getNetworks } from '@/lib/api/admin';
 import TableEmptyState from '@/components/TableEmptyState';
+import NetworkEditModal from '@/components/admin/NetworkEditModal';
 import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
@@ -106,7 +107,7 @@ function getStatusBadge(status, t) {
   return <Badge color="secondary" label>{t('crypto.inactive', { defaultValue: 'Inactive' })}</Badge>;
 }
 
-function NetworkRow({ network, imageInfo, t }) {
+function NetworkRow({ network, imageInfo, t, onEdit }) {
   return (
     <tr>
       <td className="align-middle">
@@ -128,9 +129,9 @@ function NetworkRow({ network, imageInfo, t }) {
       </td>
       <td className="text-center align-middle">{getStatusBadge(network.status, t)}</td>
       <td className="text-center align-middle">
-        <a href={`/admin/networks/${network.id}`} title={t('actions.edit', { defaultValue: 'Edit' })} className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
+        <button onClick={() => onEdit(network.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
           <i className="bx bx-edit text-primary text-xl"></i>
-        </a>
+        </button>
       </td>
     </tr>
   );
@@ -146,6 +147,7 @@ export default function NetworkList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [draftSearch, setDraftSearch] = useState('');
   const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
+  const [editNetworkId, setEditNetworkId] = useState(null);
 
   const loadNetworks = useCallback(async ({ page = 1, search = '' } = {}) => {
     setLoading(true);
@@ -274,7 +276,7 @@ export default function NetworkList() {
                 } /> :
 
               networks.map((network) =>
-                <NetworkRow key={network.id} network={network} imageInfo={networkImages[network.id]} t={t} />
+                <NetworkRow key={network.id} network={network} imageInfo={networkImages[network.id]} t={t} onEdit={setEditNetworkId} />
               )
               }
             </tbody>
@@ -297,6 +299,14 @@ export default function NetworkList() {
           <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="px-5 py-3 border-t border-surface-200 mt-0" />
         }
       </Card>
+
+      {editNetworkId && (
+        <NetworkEditModal
+          networkId={editNetworkId}
+          onClose={() => setEditNetworkId(null)}
+          onSaved={() => loadNetworks({ page: pagination.page, search: searchQuery })}
+        />
+      )}
     </div>);
 
 }

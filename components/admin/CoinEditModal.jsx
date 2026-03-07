@@ -16,6 +16,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const [formData, setFormData] = useState({
     type: 'native',
     symbol: '',
@@ -72,25 +73,34 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
       if (num < 0 || num > 18) return
     }
     setFormData((prev) => ({ ...prev, [name]: v }))
+    if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: '' }))
+  }
+
+  function validate() {
+    const errors = {}
+    if (!formData.name || !formData.name.trim()) {
+      errors.name = t('crypto.nameRequired', { defaultValue: 'Name is required' })
+    } else if (formData.name.length > 30) {
+      errors.name = t('crypto.nameTooLong', { defaultValue: 'Name must be max 30 characters' })
+    }
+    if (formData.logoUrl) {
+      try { new URL(formData.logoUrl) } catch { errors.logoUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' }) }
+    }
+    return errors
   }
 
   async function handleSubmit(e) {
     e.preventDefault()
+    const errors = validate()
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      return
+    }
     setSaving(true)
     setError('')
+    setFieldErrors({})
 
     try {
-      if (formData.decimals !== '' && formData.decimals !== null && formData.decimals !== undefined) {
-        const decimals = parseInt(formData.decimals)
-        if (decimals < 0 || decimals > 18) {
-          throw new Error(t('crypto.decimalsRangeError', { defaultValue: 'Decimals must be between 0 and 18' }))
-        }
-      }
-
-      if (formData.logoUrl) {
-        try { new URL(formData.logoUrl) } catch { throw new Error('Logo URL must be a valid URL') }
-      }
-
       await updateCoin(token, coinId, {
         name: formData.name,
         symbol: formData.symbol.toUpperCase(),
@@ -145,7 +155,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
                   </Alert>
                 )}
 
-                <form onSubmit={handleSubmit} id="coin-edit-form">
+                <form onSubmit={handleSubmit} id="coin-edit-form" noValidate>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="modal-symbol">
@@ -170,8 +180,10 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
                         onChange={handleChange}
                         placeholder="Bitcoin"
                         maxLength={30}
-                        required
+                        aria-invalid={!!fieldErrors.name}
+                        error={!!fieldErrors.name}
                       />
+                      {fieldErrors.name && <p className="mt-1 text-sm text-danger-500">{fieldErrors.name}</p>}
                     </div>
                     <div>
                       <Label htmlFor="modal-status">
@@ -193,7 +205,10 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
                         value={formData.logoUrl}
                         onChange={handleChange}
                         placeholder="https://example.com/logo.png"
+                        aria-invalid={!!fieldErrors.logoUrl}
+                        error={!!fieldErrors.logoUrl}
                       />
+                      {fieldErrors.logoUrl && <p className="mt-1 text-sm text-danger-500">{fieldErrors.logoUrl}</p>}
                     </div>
                   </div>
                 </form>
