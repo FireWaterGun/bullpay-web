@@ -45,9 +45,12 @@ export default function InvoicePaymentV2() {
     networkSym,
     year,
     remainingMs,
+    timerPercent,
     isPaid,
+    hasPartial,
     isExpiredUnpaid,
     currentStep,
+    confirmations,
     uiStatus,
     paymentValue,
     copied,
@@ -59,7 +62,7 @@ export default function InvoicePaymentV2() {
 
   return (
     <div
-      className="min-h-screen relative overflow-x-hidden"
+      className="min-h-screen flex flex-col relative overflow-x-hidden"
       style={{ background: 'linear-gradient(180deg, var(--color-surface-0, #fff) 0%, var(--color-surface-100) 100%)' }}
     >
       {/* Subtle Background */}
@@ -96,7 +99,7 @@ export default function InvoicePaymentV2() {
       `}</style>
 
       {/* Main Content */}
-      <div className="grow flex items-center py-4 pt-5">
+      <div className="grow flex items-center justify-center w-full py-4 pt-5">
         <div className="container">
           {loading ? (
             <div className="text-center">
@@ -122,47 +125,47 @@ export default function InvoicePaymentV2() {
                 <div className="relative">
                   {/* Card Glow */}
                   <div
-                    className="absolute w-full h-full rounded-[12px] opacity-60"
+                    className="absolute w-full h-full rounded-[16px] opacity-40"
                     style={{
-                      background: 'color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
-                      filter: 'blur(30px)',
+                      background: 'color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
+                      filter: 'blur(25px)',
                     }}
                   ></div>
 
                   <div
-                    className="relative rounded-[12px] overflow-hidden bg-white/95"
+                    className="relative rounded-[16px] overflow-hidden bg-white/95"
                     style={{
                       backdropFilter: 'blur(20px)',
-                      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-                      border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                      border: '1px solid color-mix(in srgb, var(--color-primary-600) 12%, transparent)',
                     }}
                   >
                     {/* Status Banner (Step 2 / paid / expired) */}
                     {!(isPaymentMode && needsNetworkSelection && !isPaid && !isExpiredUnpaid) && (
                       <div
-                        className="relative overflow-hidden py-[14px] px-[20px]"
+                        className="relative overflow-hidden py-[12px] px-[20px]"
                         style={{
                           background:
                             uiStatus === 'paid'
-                              ? 'linear-gradient(135deg, #22c55e, color-mix(in srgb, #22c55e, #000 20%))'
+                              ? 'linear-gradient(135deg, #4ade80, #22c55e)'
                               : uiStatus === 'expired'
-                                ? 'linear-gradient(135deg, #ef4444, color-mix(in srgb, #ef4444, #000 20%))'
-                                : 'linear-gradient(135deg, #f59e0b, color-mix(in srgb, #f59e0b, #000 20%))',
+                                ? 'linear-gradient(135deg, #f87171, #ef4444)'
+                                : 'linear-gradient(135deg, #fbbf24, #f59e0b)',
                         }}
                       >
                         <div
                           className="absolute w-full h-full z-0 top-[0px] left-[0px]"
                           style={{
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
                             animation: 'shimmer 3s infinite',
                           }}
                         ></div>
-                        <div className="text-center relative z-[1]">
-                          <div className="inline-flex items-center gap-2">
+                        <div className="flex items-center justify-center relative z-[1]">
+                          <div className="flex items-center gap-2">
                             <i
-                              className={`bx ${uiStatus === 'paid' ? 'bx-check-circle' : uiStatus === 'pending' ? 'bx-time-five' : uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'} text-white text-[20px]`}
+                              className={`bx ${uiStatus === 'paid' ? 'bx-check-circle' : uiStatus === 'pending' ? 'bx-time-five' : uiStatus === 'expired' ? 'bx-x-circle' : 'bx-info-circle'} text-white/90 text-[18px]`}
                             ></i>
-                            <span className="font-bold uppercase text-white tracking-[2px] text-[0.875rem]">
+                            <span className="font-semibold uppercase text-white/95 tracking-[1.5px] text-[0.8rem]">
                               {statusLabel(uiStatus, t)}
                             </span>
                           </div>
@@ -171,7 +174,7 @@ export default function InvoicePaymentV2() {
                     )}
 
                     {/* Card Body */}
-                    <div className="p-3 md:p-4">
+                    <div className="p-4 md:p-5">
                       {needsNetworkSelection ? (
                         <div>
                           {/* Amount card */}
@@ -258,29 +261,51 @@ export default function InvoicePaymentV2() {
                         </div>
                       ) : (
                         <div>
+                          {/* Merchant Name */}
+                          {invoice.merchantName && (
+                            <div className="flex items-center gap-2 mb-3 pb-3" style={{ borderBottom: '1px solid var(--color-surface-200)' }}>
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                                style={{
+                                  background: 'color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
+                                }}
+                              >
+                                <i className="bx bx-store text-primary-600 text-[16px]"></i>
+                              </div>
+                              <div>
+                                <div className="text-[0.58rem] text-surface-400 uppercase tracking-[1px] font-semibold">
+                                  {t('payment.payingTo', { defaultValue: 'Paying to' })}
+                                </div>
+                                <div className="text-[0.9rem] font-bold text-surface-900">
+                                  {invoice.merchantName}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           {/* Payment ID & Network Badge */}
                           <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
                             <div>
-                              <div className="text-sm mb-1 text-surface-500 uppercase tracking-[1px] text-[0.65rem] font-semibold">
+                              <div className="text-[0.6rem] mb-0.5 text-surface-400 uppercase tracking-[1px] font-semibold">
                                 {isPaymentMode
                                   ? t('payment.payment', { defaultValue: 'Payment' })
                                   : t('invoices.invoice')}
                               </div>
-                              <div className="break-all text-[0.85rem] text-surface-500">
+                              <div className="break-all text-[0.85rem] text-surface-600 font-medium">
                                 {isPaymentMode
                                   ? invoice.publicCode || invoice.id
                                   : `#${invoice.invoiceNumber || invoice.publicCode || invoice.id}`}
                               </div>
                             </div>
                             <div
-                              className="flex items-center gap-2 px-3 py-2 rounded-full"
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                               style={{
-                                background: 'color-mix(in srgb, var(--color-primary-600) 8%, transparent)',
-                                border: '1px solid color-mix(in srgb, var(--color-primary-600) 20%, transparent)',
+                                background: 'color-mix(in srgb, var(--color-primary-600) 6%, transparent)',
+                                border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
                               }}
                             >
-                              <NetworkIcon networkSymbol={networkSym} size={20} />
-                              <span className="font-bold text-xs text-surface-900 uppercase tracking-[0.5px]">
+                              <NetworkIcon networkSymbol={networkSym} size={18} />
+                              <span className="font-semibold text-[0.7rem] text-primary-600 uppercase tracking-[0.5px]">
                                 {networkSym || 'N/A'}
                               </span>
                             </div>
@@ -288,34 +313,67 @@ export default function InvoicePaymentV2() {
 
                           {/* Timer - horizontal row */}
                           {!isPaid && remainingMs !== undefined && (
-                            <div
-                              className="flex items-center justify-between mb-3 p-3 rounded-lg"
-                              style={{
-                                border: '1px solid var(--color-surface-200)',
-                              }}
-                            >
-                              <div className="flex items-center gap-2">
-                                <i
-                                  className="bx bx-time text-[20px]"
-                                  style={{ color: remainingMs <= 60_000 ? '#ef4444' : 'var(--color-surface-500)' }}
-                                ></i>
-                                <span className="text-xs font-semibold uppercase tracking-[1px] text-surface-500">
-                                  {t('payment.timeRemaining')}
-                                </span>
-                              </div>
+                            <div className="mb-3">
                               <div
-                                className="font-extrabold text-xl tracking-[2px]"
+                                className="flex items-center justify-between p-3 rounded-xl"
                                 style={{
-                                  color:
-                                    remainingMs <= 60_000
-                                      ? '#ef4444'
-                                      : remainingMs <= 5 * 60_000
-                                        ? '#f59e0b'
-                                        : 'var(--color-primary-600)',
+                                  background:
+                                    'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
+                                  border:
+                                    '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
                                 }}
                               >
-                                {formatDuration(remainingMs)}
+                                <div className="flex items-center gap-2">
+                                  <i
+                                    className="bx bx-time text-[20px]"
+                                    style={{
+                                      color:
+                                        remainingMs <= 60_000
+                                          ? '#ef4444'
+                                          : 'var(--color-surface-500)',
+                                    }}
+                                  ></i>
+                                  <span className="text-xs font-semibold uppercase tracking-[1px] text-surface-500">
+                                    {t('payment.timeRemaining')}
+                                  </span>
+                                </div>
+                                <div
+                                  className="font-extrabold text-xl tracking-[2px]"
+                                  style={{
+                                    color:
+                                      remainingMs <= 60_000
+                                        ? '#ef4444'
+                                        : remainingMs <= 5 * 60_000
+                                          ? '#f59e0b'
+                                          : 'var(--color-primary-600)',
+                                  }}
+                                >
+                                  {formatDuration(remainingMs)}
+                                </div>
                               </div>
+                              {/* Progress bar */}
+                              {timerPercent !== undefined && (
+                                <div
+                                  className="mt-1.5 h-[3px] rounded-full overflow-hidden"
+                                  style={{
+                                    background: 'color-mix(in srgb, var(--color-surface-200) 60%, transparent)',
+                                  }}
+                                >
+                                  <div
+                                    className="h-full rounded-full"
+                                    style={{
+                                      width: `${timerPercent}%`,
+                                      background:
+                                        timerPercent <= 10
+                                          ? '#ef4444'
+                                          : timerPercent <= 30
+                                            ? '#f59e0b'
+                                            : 'var(--color-primary-600)',
+                                      transition: 'width 1s linear',
+                                    }}
+                                  />
+                                </div>
+                              )}
                             </div>
                           )}
 
@@ -349,12 +407,13 @@ export default function InvoicePaymentV2() {
                           {/* Payment Address */}
                           {!isExpiredUnpaid && !isPaid && (
                             <div className="mb-4">
-                              <div className="text-sm mb-2 text-surface-500 uppercase tracking-[2px] text-[0.65rem] font-bold">
+                              <div className="text-sm mb-2 text-surface-500 uppercase tracking-[1.5px] text-[0.65rem] font-semibold">
                                 {t('invoices.paymentAddress')}
                               </div>
                               <div
-                                className="flex items-center gap-2 p-3 rounded-lg"
+                                className="flex items-center gap-2 p-3 rounded-xl"
                                 style={{
+                                  background: 'var(--color-surface-50, #f8f9fa)',
                                   border: '1px solid var(--color-surface-200)',
                                 }}
                               >
@@ -366,11 +425,12 @@ export default function InvoicePaymentV2() {
                                     type="button"
                                     className="shrink-0 cursor-pointer w-9 h-9 rounded-lg flex items-center justify-center"
                                     style={{
-                                      border: '1px solid var(--color-surface-200)',
+                                      border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
                                       background: copied ? '#22c55e' : 'var(--color-surface-0, #fff)',
-                                      color: copied ? '#fff' : 'var(--color-surface-500)',
+                                      color: copied ? '#fff' : 'var(--color-primary-600)',
                                       padding: 0,
                                       transition: 'all 0.2s ease',
+                                      boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
                                     }}
                                     onClick={handleCopy}
                                   >
@@ -384,12 +444,13 @@ export default function InvoicePaymentV2() {
                           {/* Description */}
                           {invoice.description && (
                             <div
-                              className="mb-3 p-3 rounded-lg"
+                              className="mb-3 p-3 rounded-xl"
                               style={{
+                                background: 'var(--color-surface-50, #f8f9fa)',
                                 border: '1px solid var(--color-surface-200)',
                               }}
                             >
-                              <div className="text-sm mb-2 text-surface-500 uppercase tracking-[1px] text-[0.65rem] font-bold">
+                              <div className="text-sm mb-2 text-surface-500 uppercase tracking-[1px] text-[0.65rem] font-semibold">
                                 {t('invoices.description')}
                               </div>
                               <div className="text-surface-900 leading-[1.4] text-[0.875rem]">
@@ -401,33 +462,24 @@ export default function InvoicePaymentV2() {
                           {/* Paid At Info */}
                           {isPaid && invoice.paidAt && (
                             <div
-                              className="mb-3 p-3 rounded-lg"
+                              className="mb-3 flex items-center gap-2 py-3 px-4 rounded-xl"
                               style={{
-                                background: 'color-mix(in srgb, #22c55e 6%, transparent)',
-                                border: '1px solid color-mix(in srgb, #22c55e 20%, transparent)',
+                                background: 'color-mix(in srgb, #22c55e 5%, transparent)',
+                                border: '1px solid color-mix(in srgb, #22c55e 15%, transparent)',
                               }}
                             >
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="rounded-full flex items-center justify-center w-7 h-7 bg-success-500">
-                                  <i className="bx bx-check text-white text-[16px]"></i>
-                                </div>
-                                <span className="text-sm text-success-500 uppercase tracking-[1.5px] text-[0.65rem] font-bold">
+                              <i className="bx bx-calendar-check text-success-500 text-[22px] shrink-0"></i>
+                              <div className="grow">
+                                <div className="text-[0.6rem] text-success-600 uppercase tracking-[1px] font-semibold mb-0.5">
                                   {t('payment.paidAt', { defaultValue: 'Paid At' })}
-                                </span>
-                              </div>
-                              <div className="flex flex-col gap-1">
-                                <div className="font-bold text-success-500 text-[1.1rem]">
+                                </div>
+                                <div className="font-semibold text-success-600 text-[0.88rem]">
                                   {new Intl.DateTimeFormat(undefined, {
                                     year: 'numeric',
-                                    month: 'long',
+                                    month: 'short',
                                     day: 'numeric',
-                                  }).format(new Date(invoice.paidAt))}
-                                </div>
-                                <div className="font-semibold text-success-500 text-[0.9rem] tracking-[1px]">
-                                  {new Intl.DateTimeFormat(undefined, {
                                     hour: '2-digit',
                                     minute: '2-digit',
-                                    second: '2-digit',
                                     hour12: false,
                                   }).format(new Date(invoice.paidAt))}
                                 </div>
@@ -442,10 +494,48 @@ export default function InvoicePaymentV2() {
                             currentStep={currentStep}
                           />
 
+                          {/* Partial Payment Progress */}
+                          {hasPartial && (
+                            <div
+                              className="mb-3 p-3 rounded-xl"
+                              style={{
+                                background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
+                                border: '1px solid color-mix(in srgb, var(--color-primary-600) 12%, transparent)',
+                              }}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-[0.65rem] font-semibold uppercase tracking-[1px] text-surface-500">
+                                  {t('payment.amountReceived', { defaultValue: 'Amount received' })}
+                                </span>
+                                <span className="text-[0.78rem] font-bold text-primary-600">
+                                  {formatAmount(invoice.paidAmount || '0')} / {formatAmount(invoice.amount)} {coinSym}
+                                </span>
+                              </div>
+                              <div
+                                className="h-[4px] rounded-full overflow-hidden"
+                                style={{ background: 'var(--color-surface-200)' }}
+                              >
+                                <div
+                                  className="h-full rounded-full"
+                                  style={{
+                                    width: `${Math.min(100, (Number(invoice.paidAmount || 0) / Number(invoice.amount || 1)) * 100)}%`,
+                                    background: 'var(--color-primary-600)',
+                                    transition: 'width 0.5s ease',
+                                  }}
+                                />
+                              </div>
+                              {invoice.remainingAmount && (
+                                <div className="mt-1.5 text-[0.7rem] text-surface-500">
+                                  {t('payment.remaining', { defaultValue: 'Remaining' })}: <span className="font-semibold text-surface-700">{formatAmount(invoice.remainingAmount)} {coinSym}</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
                           {/* Network Warning */}
                           {!isPaid && !isExpiredUnpaid && coinSym && networkName && (
                             <div
-                              className="flex items-start gap-2 p-3 rounded-lg mt-3"
+                              className="flex items-start gap-2.5 p-3 rounded-xl mt-3"
                               style={{
                                 background: 'color-mix(in srgb, #f59e0b 8%, transparent)',
                                 border: '1px solid color-mix(in srgb, #f59e0b 25%, transparent)',
@@ -460,6 +550,15 @@ export default function InvoicePaymentV2() {
                                     defaultValue: 'network. Using wrong network may result in permanent loss of funds.',
                                   })}
                                 </span>
+                                {confirmations != null && (
+                                  <div className="mt-1 text-[0.75rem] text-surface-600">
+                                    <i className="bx bx-check-shield text-[14px] mr-0.5 align-middle"></i>
+                                    {t('payment.confirmationsRequired', {
+                                      count: confirmations,
+                                      defaultValue: `Requires ${confirmations} network confirmation${confirmations !== 1 ? 's' : ''}`,
+                                    })}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
@@ -469,7 +568,7 @@ export default function InvoicePaymentV2() {
                             <div className="mt-3">
                               <a
                                 href={invoice.successUrl}
-                                className="w-full py-3 font-bold flex items-center justify-center gap-2 text-white border-none rounded-[12px] text-[1rem] tracking-[0.5px] no-underline"
+                                className="w-full py-3 font-bold flex items-center justify-center gap-2 text-white border-none rounded-xl text-[1rem] tracking-[0.5px] no-underline"
                                 style={{
                                   background:
                                     'linear-gradient(135deg, #22c55e 0%, color-mix(in srgb, #22c55e, #000 20%) 100%)',
@@ -496,13 +595,19 @@ export default function InvoicePaymentV2() {
       </div>
 
       {/* Footer */}
-      <footer className="py-2 relative z-[1]">
-        <div className="container text-center">
-          <div className="mb-2 text-surface-500 text-xs tracking-[1px] font-semibold">
+      <footer className="py-3 relative z-[1] w-full">
+        <div className="w-full text-center">
+          <div className="mb-1.5 text-surface-400 text-[0.65rem] tracking-[1px] font-medium">
             {t('common.poweredBy', { defaultValue: 'Powered by' })}
           </div>
-          <div className="mb-2 text-[1.1rem] font-bold text-primary-600 tracking-[1px]">BULL PAY</div>
-          <div className="text-surface-500 text-xs">
+          <div className="mb-1.5 inline-flex items-center gap-1.5">
+            <i className="bx bxs-wallet-alt text-xl text-primary-600"></i>
+            <span className="text-[1rem] font-bold tracking-[-0.02em]">
+              <span className="text-surface-900">BULL</span>
+              <span className="text-primary-600">PAY</span>
+            </span>
+          </div>
+          <div className="text-surface-400 text-[0.65rem]">
             {t('common.copyright', { year }) || `© ${year} · All rights reserved`}
           </div>
         </div>

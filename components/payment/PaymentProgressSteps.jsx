@@ -27,30 +27,26 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
     return 'inactive'
   }
 
+  const size = 28
+
   return (
-    <div
-      className="mt-4 mb-3 py-3 px-2 rounded-lg"
-      style={{
-        border: '1px solid var(--color-surface-200)',
-      }}
-    >
+    <div className="mt-4 mb-3 py-4 px-6">
       <div className="flex items-start justify-between relative">
-        {/* Connector lines */}
-        <div className="absolute top-[22px] left-[0px] right-[0px] z-0 py-[0] px-[60px]">
-          <div className="h-0.5 bg-surface-200 rounded-sm">
+        {/* Connector line */}
+        <div className="absolute left-0 right-0 z-0" style={{ top: size / 2 - 1, paddingLeft: `calc(100% / ${steps.length * 2})`, paddingRight: `calc(100% / ${steps.length * 2})` }}>
+          <div className="h-[2px] rounded-full" style={{ background: 'var(--color-surface-200)' }}>
             <div
-              className="rounded-sm"
+              className="h-full rounded-full"
               style={{
-                height: '100%',
                 background: isPaid
-                  ? 'var(--color-success-500)'
+                  ? 'var(--color-success-400)'
                   : currentStep >= 2
-                    ? 'var(--color-primary-600)'
+                    ? 'var(--color-primary-500)'
                     : 'transparent',
                 width: isPaid ? '100%' : currentStep >= 2 ? '50%' : '0%',
-                transition: 'width 0.4s ease',
+                transition: 'width 0.5s ease',
               }}
-            ></div>
+            />
           </div>
         </div>
 
@@ -59,58 +55,58 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
           const isActive = state === 'active'
           const isDone = state === 'done'
           const isError = state === 'error'
-          const circleSize = isActive ? 44 : 14
+
+          const circleStyle = isDone
+            ? {
+                width: size, height: size,
+                background: '#dcfce7',
+                border: '1.5px solid var(--color-success-400)',
+              }
+            : isError
+              ? {
+                  width: size, height: size,
+                  background: '#fef2f2',
+                  border: '1.5px solid var(--color-danger-400)',
+                }
+              : isActive
+                ? {
+                    width: size, height: size,
+                    background: 'var(--color-primary-600)',
+                    border: '1.5px solid var(--color-primary-600)',
+                    boxShadow: '0 0 0 4px color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
+                  }
+                : {
+                    width: 10, height: 10,
+                    background: 'var(--color-surface-200)',
+                    border: '1.5px solid var(--color-surface-300)',
+                  }
 
           return (
             <div key={step.key} className="text-center flex-1 relative z-[1]">
-              <div className="flex justify-center h-11 items-center">
-                {isActive ? (
-                  <div
-                    className="flex items-center justify-center rounded-full"
-                    style={{
-                      width: circleSize,
-                      height: circleSize,
-                      border: `2px solid var(--color-primary-600)`,
-                      background: 'color-mix(in srgb, var(--color-primary-600) 8%, transparent)',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    <i className={`bx ${step.icon} text-[20px] text-primary-600`}></i>
-                  </div>
-                ) : isDone ? (
-                  <div
-                    className="flex items-center justify-center rounded-full w-11 h-11 bg-success-500"
-                    style={{
-                      transition: 'all 0.3s ease',
-                      animation: step.key === 3 ? 'progressBounce 0.6s ease' : 'none',
-                    }}
-                  >
-                    <i className="bx bx-check text-white text-[22px]"></i>
-                  </div>
-                ) : isError ? (
-                  <div
-                    className="flex items-center justify-center rounded-full w-11 h-11 bg-danger-500"
-                    style={{ transition: 'all 0.3s ease' }}
-                  >
-                    <i className="bx bx-x text-white text-[22px]"></i>
-                  </div>
-                ) : (
-                  <div
-                    className="rounded-full bg-surface-200"
-                    style={{ width: circleSize, height: circleSize, transition: 'all 0.3s ease' }}
-                  ></div>
-                )}
+              <div className="flex justify-center items-center" style={{ height: size }}>
+                <div
+                  className="flex items-center justify-center rounded-full"
+                  style={{
+                    ...circleStyle,
+                    transition: 'all 0.3s ease',
+                    animation: isDone && step.key === 3 ? 'progressPop 0.5s ease' : 'none',
+                  }}
+                >
+                  {isDone && <i className="bx bx-check text-success-500 text-[15px]" />}
+                  {isError && <i className="bx bx-x text-danger-500 text-[15px]" />}
+                  {isActive && <i className={`bx ${step.icon} text-white text-[13px]`} />}
+                </div>
               </div>
               <div
-                className="mt-1 text-[0.7rem] font-semibold"
+                className="mt-2 text-[0.64rem] font-medium leading-tight"
                 style={{
                   color: isDone
-                    ? 'var(--color-success-500)'
+                    ? 'var(--color-success-600)'
                     : isError
                       ? 'var(--color-danger-500)'
                       : isActive
                         ? 'var(--color-primary-600)'
-                        : 'var(--color-surface-500)',
+                        : 'var(--color-surface-400)',
                 }}
               >
                 {step.label}
@@ -121,9 +117,9 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
       </div>
 
       <style>{`
-        @keyframes progressBounce {
+        @keyframes progressPop {
           0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.15); }
+          40% { transform: scale(1.15); }
         }
       `}</style>
     </div>

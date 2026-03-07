@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { getInvoice } from '@/lib/api/invoices'
@@ -15,6 +15,7 @@ import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions'
 import RefreshButton from '@/components/RefreshButton'
 import Card from '@/components/ui/Card'
 import { Label } from '@/components/ui/Input'
+import Link from 'next/link'
 
 export default function InvoiceDetailPage() {
   const { fmtDateTime } = useDateFormat()
@@ -23,19 +24,27 @@ export default function InvoiceDetailPage() {
   const id = params?.id
   const { token } = useAuth()
   const [invoice, setInvoice] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+  const hasLoadedRef = useRef(false)
 
   const loadInvoice = useCallback(async () => {
-    setLoading(true)
+    if (hasLoadedRef.current) {
+      setRefreshing(true)
+    } else {
+      setInitialLoading(true)
+    }
     setError('')
     try {
       const res = await getInvoice(id, token)
       setInvoice(res)
+      hasLoadedRef.current = true
     } catch (e) {
       setError(typeof e?.message === 'string' ? e.message : 'Failed to load invoice')
     } finally {
-      setLoading(false)
+      setInitialLoading(false)
+      setRefreshing(false)
     }
   }, [id, token])
 
@@ -66,12 +75,28 @@ export default function InvoiceDetailPage() {
 
   return (
     <>
+      {/* Breadcrumb */}
+      <nav aria-label="breadcrumb" className="mb-3">
+        <ol className="flex items-center gap-1 text-sm mb-0">
+          <li>
+            <Link href="/invoices" className="text-surface-500 hover:text-primary-600 transition-colors">
+              <i className="bx bx-receipt mr-1"></i>
+              {t('invoices.title', { defaultValue: 'Invoices' })}
+            </Link>
+          </li>
+          <li className="text-surface-400">/</li>
+          <li className="text-surface-800 dark:text-surface-200 font-medium">
+            {invoice?.publicCode || invoice?.code || `#${id}`}
+          </li>
+        </ol>
+      </nav>
+
       {error && (
         <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm mb-4">
           {error}
         </div>
       )}
-      {loading ? (
+      {initialLoading && !invoice ? (
         <Card>
           <div className="p-6">
             <div className="animate-pulse space-y-3">
@@ -99,7 +124,7 @@ export default function InvoiceDetailPage() {
                         ? t(`invoices.${invoice.status.toLowerCase()}`, { defaultValue: invoice.status })
                         : '-'}
                     </span>
-                    <RefreshButton onClick={loadInvoice} loading={loading} />
+                    <RefreshButton onClick={loadInvoice} loading={refreshing} />
                   </h5>
                   <div className="text-surface-500 text-sm">
                     {t('invoices.createdAt') || 'Created'}: {fmtDateTime(invoice.createdAt || invoice.created_at)}

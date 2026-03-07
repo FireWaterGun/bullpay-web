@@ -28,7 +28,7 @@ export default function NetworkSelectionPanel({
           return (
             <div
               key={net.networkSymbol}
-              className="flex items-center rounded-lg cursor-pointer py-[14px] px-[16px] gap-[14px]"
+              className="flex items-center rounded-xl cursor-pointer py-[14px] px-[16px] gap-[14px]"
               style={{
                 transition: 'all 0.2s ease',
                 background: isSelected
@@ -111,7 +111,7 @@ export default function NetworkSelectionPanel({
               ? '0 6px 20px color-mix(in srgb, var(--color-primary-600) 35%, transparent)'
               : 'none',
           }}
-          className="w-full font-bold flex items-center justify-center border-none rounded-[12px] text-[1rem] py-[14px] px-[24px] gap-2"
+          className="w-full font-bold flex items-center justify-center border-none rounded-xl text-[1rem] py-[14px] px-[24px] gap-2"
         >
           {selectingNetwork ? (
             <Spinner role="status" className="w-4 h-4" />

@@ -136,6 +136,7 @@ export default function useInvoicePayment() {
             paymentAddress: qrData?.address || inv.paymentAddress,
             createdAt: inv.createdAt || inv.created_at,
             paidAmount: inv.paidAmount || inv.paid_amount,
+            remainingAmount: inv.remainingAmount,
             paidAt: inv.paidAt || inv.paid_at,
             decimals: inv.decimals,
             coin: inv.coin,
@@ -270,12 +271,32 @@ export default function useInvoicePayment() {
   const remainingMs = expiryMs ? Math.max(0, expiryMs - now) : undefined
   const isExpired = expiryMs ? remainingMs === 0 : false
 
+  // Timer percentage for progress bar
+  const timerPercent = useMemo(() => {
+    if (!invoice?.createdAt || !expiryMs) return undefined
+    const createdMs = new Date(String(invoice.createdAt)).getTime()
+    const totalMs = expiryMs - createdMs
+    if (totalMs <= 0) return 0
+    return Math.max(0, Math.min(100, ((expiryMs - now) / totalMs) * 100))
+  }, [invoice?.createdAt, expiryMs, now])
+
   const isPaid =
     invoice?.status === 'paid' ||
     invoice?.status === 'completed' ||
     (Number(invoice?.paidAmount) || 0) >= (Number(invoice?.amount) || 0)
   const hasPartial = !isPaid && (Number(invoice?.paidAmount) || 0) > 0
   const currentStep = isPaid ? 3 : hasPartial ? 2 : 1
+
+  // Confirmations required for the selected network
+  const confirmations = useMemo(() => {
+    if (!paymentData?.availableNetworks) return undefined
+    const nw = paymentData.networkSymbol || invoice?.network?.symbol
+    if (!nw) return undefined
+    const found = paymentData.availableNetworks.find(
+      (n) => n.networkSymbol.toLowerCase() === nw.toLowerCase()
+    )
+    return found?.confirmations
+  }, [paymentData, invoice?.network?.symbol])
 
   // Auto-redirect countdown when paid + successUrl
   const redirectTimerRef = useRef(null)
@@ -359,9 +380,12 @@ export default function useInvoicePayment() {
     networkSym,
     year,
     remainingMs,
+    timerPercent,
     isPaid,
+    hasPartial,
     isExpiredUnpaid,
     currentStep,
+    confirmations,
     uiStatus,
     paymentValue,
     copied,
