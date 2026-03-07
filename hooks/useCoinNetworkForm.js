@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useAuth, useToast } from '@/app/providers';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAuth, useToast } from '@/app/providers'
 import {
   getCoinNetworkById,
   createCoinNetwork,
@@ -12,8 +12,8 @@ import {
   deleteCoinNetwork,
   getCoins,
   getNetworks,
-} from '@/lib/api/admin';
-import { logger } from '@/lib/utils/logger';
+} from '@/lib/api/admin'
+import { logger } from '@/lib/utils/logger'
 
 const DEFAULT_FORM_DATA = {
   coinId: '',
@@ -22,7 +22,7 @@ const DEFAULT_FORM_DATA = {
   decimals: '',
   withdrawEnabled: true,
   status: 'active',
-};
+}
 
 function mapCoinNetworkToFormData(coinNetwork) {
   return {
@@ -32,7 +32,7 @@ function mapCoinNetworkToFormData(coinNetwork) {
     decimals: coinNetwork.decimals?.toString() || '',
     withdrawEnabled: coinNetwork.withdrawEnabled ?? true,
     status: coinNetwork.status || 'active',
-  };
+  }
 }
 
 /**
@@ -40,128 +40,127 @@ function mapCoinNetworkToFormData(coinNetwork) {
  * Encapsulates data fetching, form state, validation, submit, and delete.
  */
 export default function useCoinNetworkForm() {
-  const { t } = useAdminTranslation();
-  const { token } = useAuth();
-  const router = useRouter();
-  const { id } = useParams();
-  const toast = useToast();
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const router = useRouter()
+  const { id } = useParams()
+  const toast = useToast()
 
-  const coinNetworkId = Number(id);
-  const isEdit = Boolean(id);
-  const hasValidId = Number.isFinite(coinNetworkId) && coinNetworkId > 0;
+  const coinNetworkId = Number(id)
+  const isEdit = Boolean(id)
+  const hasValidId = Number.isFinite(coinNetworkId) && coinNetworkId > 0
 
   /* ── State ── */
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [coins, setCoins] = useState([]);
-  const [networks, setNetworks] = useState([]);
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [coins, setCoins] = useState([])
+  const [networks, setNetworks] = useState([])
+  const [formData, setFormData] = useState(DEFAULT_FORM_DATA)
 
   /* ── Derived ── */
   const selectedCoin = useMemo(() => {
-    const selectedCoinId = Number(formData.coinId);
-    return coins.find((coin) => coin.id === selectedCoinId);
-  }, [coins, formData.coinId]);
+    const selectedCoinId = Number(formData.coinId)
+    return coins.find((coin) => coin.id === selectedCoinId)
+  }, [coins, formData.coinId])
 
   const selectedNetwork = useMemo(() => {
-    const selectedNetworkId = Number(formData.networkId);
-    return networks.find((network) => network.id === selectedNetworkId);
-  }, [networks, formData.networkId]);
+    const selectedNetworkId = Number(formData.networkId)
+    return networks.find((network) => network.id === selectedNetworkId)
+  }, [networks, formData.networkId])
 
   /* ── Data loaders ── */
   const loadCoinsAndNetworks = useCallback(async () => {
-    if (!token) return;
+    if (!token) return
 
     try {
-      const [coinsRes, networksRes] = await Promise.all([
-        getCoins(token, 1, 100),
-        getNetworks(token, 1, 100),
-      ]);
-      setCoins(coinsRes?.items || []);
-      setNetworks(networksRes?.items || []);
+      const [coinsRes, networksRes] = await Promise.all([getCoins(token, 1, 100), getNetworks(token, 1, 100)])
+      setCoins(coinsRes?.items || [])
+      setNetworks(networksRes?.items || [])
     } catch (e) {
-      logger.error('Failed to load coins and networks:', e);
+      logger.error('Failed to load coins and networks:', e)
     }
-  }, [token]);
+  }, [token])
 
   const loadCoinNetwork = useCallback(async () => {
-    if (!token || !isEdit || !hasValidId) return;
+    if (!token || !isEdit || !hasValidId) return
 
-    setLoading(true);
-    setError('');
+    setLoading(true)
+    setError('')
 
     try {
-      const coinNetwork = await getCoinNetworkById(token, coinNetworkId);
+      const coinNetwork = await getCoinNetworkById(token, coinNetworkId)
 
       if (coinNetwork) {
-        setFormData(mapCoinNetworkToFormData(coinNetwork));
+        setFormData(mapCoinNetworkToFormData(coinNetwork))
       } else {
-        setError('Supported crypto not found');
+        setError('Supported crypto not found')
       }
     } catch (e) {
-      setError(e?.message || 'Failed to load supported crypto');
+      setError(e?.message || 'Failed to load supported crypto')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [coinNetworkId, hasValidId, isEdit, token]);
+  }, [coinNetworkId, hasValidId, isEdit, token])
 
   useEffect(() => {
-    loadCoinsAndNetworks();
-  }, [loadCoinsAndNetworks]);
+    loadCoinsAndNetworks()
+  }, [loadCoinsAndNetworks])
 
   useEffect(() => {
-    if (!isEdit) return;
-    loadCoinNetwork();
-  }, [isEdit, loadCoinNetwork]);
+    if (!isEdit) return
+    loadCoinNetwork()
+  }, [isEdit, loadCoinNetwork])
 
   /* ── Handlers ── */
   function handleChange(e) {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
-    }));
+    }))
   }
 
   function showError(message) {
-    setErrorMessage(message);
-    setShowErrorModal(true);
+    setErrorMessage(message)
+    setShowErrorModal(true)
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
-      const coinId = Number(formData.coinId);
-      const networkId = Number(formData.networkId);
-      const contractAddress = formData.contractAddress.trim();
+      const coinId = Number(formData.coinId)
+      const networkId = Number(formData.networkId)
+      const contractAddress = formData.contractAddress.trim()
 
       if (contractAddress && contractAddress.length > 255) {
-        throw new Error(t('crypto.contractAddressTooLong', { defaultValue: 'Contract address must be 255 characters or less' }));
+        throw new Error(
+          t('crypto.contractAddressTooLong', { defaultValue: 'Contract address must be 255 characters or less' })
+        )
       }
 
-      let data;
+      let data
 
       if (isEdit) {
         if (!hasValidId) {
-          throw new Error(t('common.invalidId', { defaultValue: 'Invalid ID' }));
+          throw new Error(t('common.invalidId', { defaultValue: 'Invalid ID' }))
         }
 
         data = {
           withdrawEnabled: formData.withdrawEnabled,
           status: formData.status || 'active',
-        };
+        }
 
-        await updateCoinNetwork(token, coinNetworkId, data);
-        toast.success(t('crypto.updateSuccess', { defaultValue: 'Coin network updated successfully' }));
+        await updateCoinNetwork(token, coinNetworkId, data)
+        toast.success(t('crypto.updateSuccess', { defaultValue: 'Coin network updated successfully' }))
       } else {
         if (!coinId || !networkId) {
-          throw new Error(t('crypto.coinNetworkRequired', { defaultValue: 'Please select coin and network' }));
+          throw new Error(t('crypto.coinNetworkRequired', { defaultValue: 'Please select coin and network' }))
         }
 
         data = {
@@ -171,41 +170,41 @@ export default function useCoinNetworkForm() {
           ...(formData.decimals && { decimals: Number(formData.decimals) }),
           withdrawEnabled: formData.withdrawEnabled,
           status: formData.status || 'active',
-        };
+        }
 
-        await createCoinNetwork(token, data);
-        toast.success(t('crypto.createSuccess', { defaultValue: 'Coin network created successfully' }));
+        await createCoinNetwork(token, data)
+        toast.success(t('crypto.createSuccess', { defaultValue: 'Coin network created successfully' }))
       }
 
-      router.push('/admin/coin-networks');
+      router.push('/admin/coin-networks')
     } catch (e) {
-      const message = e?.message || (isEdit ? 'Failed to update coin-network' : 'Failed to create coin-network');
-      showError(message);
+      const message = e?.message || (isEdit ? 'Failed to update coin-network' : 'Failed to create coin-network')
+      showError(message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   async function handleDelete() {
-    if (!isEdit || !hasValidId) return;
+    if (!isEdit || !hasValidId) return
 
-    setLoading(true);
-    setError('');
-    setShowDeleteConfirm(false);
+    setLoading(true)
+    setError('')
+    setShowDeleteConfirm(false)
 
     try {
-      await deleteCoinNetwork(token, coinNetworkId);
-      router.push('/admin/coin-networks');
+      await deleteCoinNetwork(token, coinNetworkId)
+      router.push('/admin/coin-networks')
     } catch (e) {
-      const message = e?.message || 'Failed to delete coin-network';
-      showError(message);
+      const message = e?.message || 'Failed to delete coin-network'
+      showError(message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   function goBack() {
-    router.push('/admin/coin-networks');
+    router.push('/admin/coin-networks')
   }
 
   return {
@@ -235,5 +234,5 @@ export default function useCoinNetworkForm() {
 
     // Translation
     t,
-  };
+  }
 }

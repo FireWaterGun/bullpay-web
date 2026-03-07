@@ -1,102 +1,104 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth, useToast } from '@/app/providers';
-import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents';
-import { listWithdrawals } from '@/lib/api/withdrawals';
-import { useCoins } from '@/hooks/useCoins';
-import { listWallets } from '@/lib/api/wallets';
-import WalletAddressTable from '@/components/balance/WalletAddressTable';
-import WithdrawalTable from '@/components/withdrawals/WithdrawalTable';
-import { formatStatusLabel, WITHDRAWAL_STATUSES } from '@/components/balance/withdrawalHelpers';
-import RefreshButton from '@/components/RefreshButton';
-import CardEmptyState from '@/components/CardEmptyState';
-import PageSpinner from '@/components/PageSpinner';
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useAuth, useToast } from '@/app/providers'
+import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents'
+import { listWithdrawals } from '@/lib/api/withdrawals'
+import { useCoins } from '@/hooks/useCoins'
+import { listWallets } from '@/lib/api/wallets'
+import WalletAddressTable from '@/components/balance/WalletAddressTable'
+import WithdrawalTable from '@/components/withdrawals/WithdrawalTable'
+import { formatStatusLabel, WITHDRAWAL_STATUSES } from '@/components/balance/withdrawalHelpers'
+import RefreshButton from '@/components/RefreshButton'
+import CardEmptyState from '@/components/CardEmptyState'
+import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
 import Spinner from '@/components/ui/Spinner'
 import Button from '@/components/ui/Button'
 
 export default function WithdrawalsPage() {
-  const { t } = useTranslation();
-  const { token, user } = useAuth();
-  const toast = useToast();
+  const { t } = useTranslation()
+  const { token, user } = useAuth()
+  const toast = useToast()
 
   // Wallets state
-  const [walletItems, setWalletItems] = useState([]);
-  const [walletLoading, setWalletLoading] = useState(false);
-  const [walletError, setWalletError] = useState('');
+  const [walletItems, setWalletItems] = useState([])
+  const [walletLoading, setWalletLoading] = useState(false)
+  const [walletError, setWalletError] = useState('')
 
   // Withdrawals state
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { coins } = useCoins();
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
-  const [status, setStatus] = useState('ALL');
-  const [pagination, setPagination] = useState(null);
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { coins } = useCoins()
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const [status, setStatus] = useState('ALL')
+  const [pagination, setPagination] = useState(null)
 
   // Load wallets
   useEffect(() => {
-    let mounted = true;
-    (async () => {
+    let mounted = true
+    ;(async () => {
       try {
-        setWalletLoading(true);
-        const walletsData = await listWallets(token);
-        if (!mounted) return;
-        setWalletItems(Array.isArray(walletsData) ? walletsData : []);
+        setWalletLoading(true)
+        const walletsData = await listWallets(token)
+        if (!mounted) return
+        setWalletItems(Array.isArray(walletsData) ? walletsData : [])
       } catch (e) {
-        if (!mounted) return;
-        setWalletError(typeof e?.message === 'string' ? e.message : 'Failed to load');
+        if (!mounted) return
+        setWalletError(typeof e?.message === 'string' ? e.message : 'Failed to load')
       } finally {
-        setWalletLoading(false);
+        setWalletLoading(false)
       }
-    })();
-    return () => { mounted = false; };
-  }, [token]);
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [token])
 
   const loadWithdrawals = useCallback(async () => {
     try {
-      setLoading(true);
-      const queryStatus = status === 'ALL' ? undefined : status.toLowerCase();
-      const result = await listWithdrawals({ page, limit, status: queryStatus }, token);
-      setItems(Array.isArray(result.items) ? result.items : []);
-      setPagination(result.pagination || null);
+      setLoading(true)
+      const queryStatus = status === 'ALL' ? undefined : status.toLowerCase()
+      const result = await listWithdrawals({ page, limit, status: queryStatus }, token)
+      setItems(Array.isArray(result.items) ? result.items : [])
+      setPagination(result.pagination || null)
     } catch (e) {
-      setError(typeof e?.message === 'string' ? e.message : 'Failed to load');
+      setError(typeof e?.message === 'string' ? e.message : 'Failed to load')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [token, page, limit, status]);
+  }, [token, page, limit, status])
 
   useEffect(() => {
-    loadWithdrawals();
-  }, [loadWithdrawals]);
+    loadWithdrawals()
+  }, [loadWithdrawals])
 
   // Subscribe to Pusher events for real-time withdrawal updates
-  const userIdentifier = user?.id || user?.userId || user?.email;
+  const userIdentifier = user?.id || user?.userId || user?.email
   useUserInvoiceEvents(userIdentifier, {
     onWithdrawalCompleted: () => loadWithdrawals(),
-  });
+  })
 
   const cnById = useMemo(() => {
-    const m = new Map();
+    const m = new Map()
     for (const cn of coins) {
-      m.set(Number(cn.id), cn);
+      m.set(Number(cn.id), cn)
     }
-    return m;
-  }, [coins]);
+    return m
+  }, [coins])
 
   function changeStatus(s) {
-    setStatus(s);
-    setPage(1);
+    setStatus(s)
+    setPage(1)
   }
 
-  const totalPages = pagination ? Number(pagination.totalPages || 1) : 1;
+  const totalPages = pagination ? Number(pagination.totalPages || 1) : 1
 
   if (loading && items.length === 0 && walletLoading) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   return (
@@ -195,5 +197,5 @@ export default function WithdrawalsPage() {
         />
       </Card>
     </>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 
 /**
  * A React-state-managed action menu dropdown (three-dot / kebab menu).
@@ -34,43 +34,45 @@ export default function ActionMenu({
   menuClassName = '',
   align = 'right',
 }) {
-  const [open, setOpen] = useState(false);
-  const triggerRef = useRef(null);
-  const menuRef = useRef(null);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [open, setOpen] = useState(false)
+  const triggerRef = useRef(null)
+  const menuRef = useRef(null)
+  const [pos, setPos] = useState({ top: 0, left: 0 })
 
   const updatePosition = useCallback(() => {
-    if (!triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
+    if (!triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
     setPos({
       top: rect.bottom + 4,
       left: align === 'right' ? rect.right : rect.left,
-    });
-  }, [align]);
+    })
+  }, [align])
 
   useEffect(() => {
     function handleClickOutside(e) {
       if (
-        triggerRef.current && !triggerRef.current.contains(e.target) &&
-        menuRef.current && !menuRef.current.contains(e.target)
+        triggerRef.current &&
+        !triggerRef.current.contains(e.target) &&
+        menuRef.current &&
+        !menuRef.current.contains(e.target)
       ) {
-        setOpen(false);
+        setOpen(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   useEffect(() => {
-    if (!open) return;
-    updatePosition();
-    window.addEventListener('scroll', updatePosition, true);
-    window.addEventListener('resize', updatePosition);
+    if (!open) return
+    updatePosition()
+    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('resize', updatePosition)
     return () => {
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
-    };
-  }, [open, updatePosition]);
+      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('resize', updatePosition)
+    }
+  }, [open, updatePosition])
 
   return (
     <div className={`relative inline-block ${className}`} ref={triggerRef} onClick={(e) => e.stopPropagation()}>
@@ -84,23 +86,24 @@ export default function ActionMenu({
         <i className={`bx ${icon} text-lg`} />
       </button>
 
-      {open && createPortal(
-        <div
-          ref={menuRef}
-          role="menu"
-          className={`fixed z-[9999] min-w-[160px] bg-card border border-surface-200 rounded-lg shadow-lg py-1 ${menuClassName}`}
-          style={{
-            top: pos.top,
-            ...(align === 'right' ? { right: window.innerWidth - pos.left } : { left: pos.left }),
-          }}
-          onClick={() => setOpen(false)}
-        >
-          {children}
-        </div>,
-        document.body
-      )}
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            role="menu"
+            className={`fixed z-[9999] min-w-[160px] bg-card border border-surface-200 rounded-lg shadow-lg py-1 ${menuClassName}`}
+            style={{
+              top: pos.top,
+              ...(align === 'right' ? { right: window.innerWidth - pos.left } : { left: pos.left }),
+            }}
+            onClick={() => setOpen(false)}
+          >
+            {children}
+          </div>,
+          document.body
+        )}
     </div>
-  );
+  )
 }
 
 function Item({ children, onClick, className = '', danger = false, icon, disabled = false }) {
@@ -115,12 +118,12 @@ function Item({ children, onClick, className = '', danger = false, icon, disable
       {icon && <i className={`bx ${icon} mr-2`} />}
       {children}
     </button>
-  );
+  )
 }
 
 function Divider() {
-  return <hr className="border-surface-200 my-1" />;
+  return <hr className="border-surface-200 my-1" />
 }
 
-ActionMenu.Item = Item;
-ActionMenu.Divider = Divider;
+ActionMenu.Item = Item
+ActionMenu.Divider = Divider

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from '@/app/providers';
-import { get2FAStatus } from '@/lib/api/twoFactor';
+import { useState, useEffect, useCallback } from 'react'
+import { useAuth } from '@/app/providers'
+import { get2FAStatus } from '@/lib/api/twoFactor'
 import { logger } from '@/lib/utils/logger'
 
 /**
@@ -21,34 +21,34 @@ import { logger } from '@/lib/utils/logger'
  * ```
  */
 export default function use2FAStatus() {
-  const { token } = useAuth();
-  const [status, setStatus] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { token } = useAuth()
+  const [status, setStatus] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const fetchStatus = useCallback(async () => {
     if (!token) {
-      setIsLoading(false);
-      return;
+      setIsLoading(false)
+      return
     }
 
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
-      const res = await get2FAStatus(token);
-      setStatus(res.data || res);
+      const res = await get2FAStatus(token)
+      setStatus(res.data || res)
     } catch (err) {
-      logger.error("Failed to fetch 2FA status:", err);
-      setError(err?.message || "Failed to fetch 2FA status");
+      logger.error('Failed to fetch 2FA status:', err)
+      setError(err?.message || 'Failed to fetch 2FA status')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [token]);
+  }, [token])
 
   useEffect(() => {
-    fetchStatus();
-  }, [fetchStatus]);
+    fetchStatus()
+  }, [fetchStatus])
 
   return {
     // Status data
@@ -68,5 +68,5 @@ export default function use2FAStatus() {
 
     // Actions
     refetch: fetchStatus,
-  };
+  }
 }

@@ -14,16 +14,14 @@ export interface UserWebhookLogListParams {
   sortOrder?: string
 }
 
-export async function getUserWebhookLogs(
-  token: string | null,
-  params: UserWebhookLogListParams = {}
-) {
+export async function getUserWebhookLogs(token: string | null, params: UserWebhookLogListParams = {}) {
   const qp = new URLSearchParams()
 
   if (params.page) qp.append('page', String(params.page))
   if (params.limit) qp.append('limit', String(params.limit))
-  if (params.merchantPaymentId)
-    {qp.append('merchantPaymentId', String(params.merchantPaymentId))}
+  if (params.merchantPaymentId) {
+    qp.append('merchantPaymentId', String(params.merchantPaymentId))
+  }
   if (params.event) qp.append('event', params.event)
   if (params.success) qp.append('success', params.success)
   if (params.fromDate) qp.append('fromDate', params.fromDate)
@@ -34,7 +32,6 @@ export async function getUserWebhookLogs(
   const qs = qp.toString()
   const url = `${BASE}${qs ? `?${qs}` : ''}`
 
-   
   const data = await apiFetch<any>(url, { token })
 
   const items = data?.items || []
@@ -53,11 +50,7 @@ export async function getUserWebhookLogs(
   }
 }
 
-export async function getUserWebhookLog(
-  token: string | null,
-  id: number | string
-) {
-   
+export async function getUserWebhookLog(token: string | null, id: number | string) {
   const data = await apiFetch<any>(`${BASE}/${id}`, { token })
   return data?.webhookLog || data
 }

@@ -1,7 +1,7 @@
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
 const NETWORKS = [
   { key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559' },
@@ -11,7 +11,7 @@ const NETWORKS = [
   { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559' },
   { key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559' },
   { key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559' },
-];
+]
 
 export default function GasTopupTab({ t, getVal, onEdit }) {
   return (
@@ -24,7 +24,8 @@ export default function GasTopupTab({ t, getVal, onEdit }) {
         </h6>
         <p className="text-sm text-surface-500 mb-0">
           {t('admin.gasSettings.gasTopupInfo', {
-            defaultValue: 'Safety cap for native coin sent to temp wallets for gas. Actual topup is based on gas deficit.',
+            defaultValue:
+              'Safety cap for native coin sent to temp wallets for gas. Actual topup is based on gas deficit.',
           })}
         </p>
       </div>
@@ -41,7 +42,7 @@ export default function GasTopupTab({ t, getVal, onEdit }) {
         </thead>
         <tbody>
           {NETWORKS.map((net) => {
-            const amount = getVal(`gas_topup.${net.key}.max_topup_amount`);
+            const amount = getVal(`gas_topup.${net.key}.max_topup_amount`)
             return (
               <tr key={net.key}>
                 <td>
@@ -52,19 +53,22 @@ export default function GasTopupTab({ t, getVal, onEdit }) {
                   <span className="font-semibold">{amount}</span>
                 </td>
                 <td className="text-center">
-                  <Badge color="primary" label>{net.nativeCoin}</Badge>
+                  <Badge color="primary" label>
+                    {net.nativeCoin}
+                  </Badge>
                 </td>
                 <td className="text-right">
                   <Button
                     title={t('admin.gasSettings.edit', { defaultValue: 'Edit' })}
                     onClick={() => onEdit(net)}
                     variant="text-secondary"
-                    size="icon-sm">
+                    size="icon-sm"
+                  >
                     <i className="bx bx-edit text-[1rem]"></i>
                   </Button>
                 </td>
               </tr>
-            );
+            )
           })}
         </tbody>
       </Table>
@@ -80,11 +84,12 @@ export default function GasTopupTab({ t, getVal, onEdit }) {
           </span>
           <div className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
             {t('admin.gasSettings.gasTopupHowItWorksDesc', {
-              defaultValue: 'When a temp wallet needs to sweep tokens but lacks gas, the system sends native coin from the gas wallet. The topup amount = (required gas) − (current balance), capped at the max above.',
+              defaultValue:
+                'When a temp wallet needs to sweep tokens but lacks gas, the system sends native coin from the gas wallet. The topup amount = (required gas) − (current balance), capped at the max above.',
             })}
           </div>
         </div>
       </div>
     </Card>
-  );
+  )
 }

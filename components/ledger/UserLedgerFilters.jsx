@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
+import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import Button from '../ui/Button'
 import CoinNetworkFilterDropdown from '../ui/CoinNetworkFilterDropdown'
 import { Input, Label, Select } from '../ui/Input'
@@ -27,7 +27,7 @@ export default function UserLedgerFilters({
   endDateFilter,
   setEndDateFilter,
   onApply,
-  onReset
+  onReset,
 }) {
   return (
     <div className="p-5">
@@ -64,32 +64,42 @@ export default function UserLedgerFilters({
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.userId', { defaultValue: 'User ID' })}</Label>
-          <Input type="number" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+          <Input
+            type="number"
+            placeholder={t('filter.userId', { defaultValue: 'User ID' })}
+            value={userIdFilter}
+            onChange={(e) => setUserIdFilter(e.target.value)}
+          />
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
           <CoinNetworkFilterDropdown
             coinNetworks={coinNetworks}
             value={coinNetworkIdFilter}
-            onChange={setCoinNetworkIdFilter} />
-          
+            onChange={setCoinNetworkIdFilter}
+          />
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.txHash', { defaultValue: 'Tx Hash' })}</Label>
-          <Input type="text" placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })} value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+          <Input
+            type="text"
+            placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })}
+            value={txHashFilter}
+            onChange={(e) => setTxHashFilter(e.target.value)}
+          />
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
-          <LocaleDateRangePicker className="w-full"
-          startDate={startDateFilter}
-          endDate={endDateFilter}
-          onChangeStart={setStartDateFilter}
-          onChangeEnd={setEndDateFilter}
-          locale={locale}
-          placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
-          t={t} />
-
-          
+          <LocaleDateRangePicker
+            className="w-full"
+            startDate={startDateFilter}
+            endDate={endDateFilter}
+            onChangeStart={setStartDateFilter}
+            onChangeEnd={setEndDateFilter}
+            locale={locale}
+            placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
+            t={t}
+          />
         </div>
       </div>
       <div className="flex gap-2 mt-3">
@@ -102,6 +112,6 @@ export default function UserLedgerFilters({
           {t('filter.reset', { defaultValue: 'Reset' })}
         </Button>
       </div>
-    </div>);
-
+    </div>
+  )
 }

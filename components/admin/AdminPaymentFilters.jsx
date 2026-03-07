@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import Button from '../ui/Button'
 import { Input, Label, Select } from '../ui/Input'
 
@@ -25,9 +25,9 @@ export default function AdminPaymentFilters({
   sortOrderFilter,
   setSortOrderFilter,
   onApply,
-  onReset
+  onReset,
 }) {
-  const { t } = useAdminTranslation();
+  const { t } = useAdminTranslation()
 
   return (
     <div className="p-5">
@@ -49,28 +49,43 @@ export default function AdminPaymentFilters({
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.userId', { defaultValue: 'User ID' })}</Label>
-          <Input type="number" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+          <Input
+            type="number"
+            placeholder={t('filter.userId', { defaultValue: 'User ID' })}
+            value={userIdFilter}
+            onChange={(e) => setUserIdFilter(e.target.value)}
+          />
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.invoiceId', { defaultValue: 'Invoice ID' })}</Label>
-          <Input type="number" placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })} value={invoiceIdFilter} onChange={(e) => setInvoiceIdFilter(e.target.value)} />
+          <Input
+            type="number"
+            placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })}
+            value={invoiceIdFilter}
+            onChange={(e) => setInvoiceIdFilter(e.target.value)}
+          />
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.txHash', { defaultValue: 'Tx Hash' })}</Label>
-          <Input type="text" placeholder="0x..." value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+          <Input
+            type="text"
+            placeholder="0x..."
+            value={txHashFilter}
+            onChange={(e) => setTxHashFilter(e.target.value)}
+          />
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
-          <LocaleDateRangePicker className="w-full"
-          startDate={fromDateFilter}
-          endDate={toDateFilter}
-          onChangeStart={setFromDateFilter}
-          onChangeEnd={setToDateFilter}
-          locale={locale}
-          placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
-          t={t} />
-
-          
+          <LocaleDateRangePicker
+            className="w-full"
+            startDate={fromDateFilter}
+            endDate={toDateFilter}
+            onChangeStart={setFromDateFilter}
+            onChangeEnd={setToDateFilter}
+            locale={locale}
+            placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
+            t={t}
+          />
         </div>
         <div className="md:col-span-3 sm:col-span-6">
           <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
@@ -86,8 +101,12 @@ export default function AdminPaymentFilters({
           <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
           <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
             <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-            <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
-            <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
+            <option value="asc">
+              {t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}
+            </option>
+            <option value="desc">
+              {t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}
+            </option>
           </Select>
         </div>
       </div>
@@ -101,6 +120,6 @@ export default function AdminPaymentFilters({
           {t('filter.reset', { defaultValue: 'Reset' })}
         </Button>
       </div>
-    </div>);
-
+    </div>
+  )
 }

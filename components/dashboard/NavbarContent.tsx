@@ -24,7 +24,11 @@ interface NavbarContentProps {
 }
 
 /** Hook for click-outside-to-close dropdown */
-function useDropdown(): [React.RefObject<HTMLDivElement | null>, boolean, React.Dispatch<React.SetStateAction<boolean>>] {
+function useDropdown(): [
+  React.RefObject<HTMLDivElement | null>,
+  boolean,
+  React.Dispatch<React.SetStateAction<boolean>>,
+] {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -105,7 +109,7 @@ export default function NavbarContent({
         className="flex items-center justify-center w-9 h-9 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors cursor-pointer"
         title={theme === 'dark' ? t('theme.light') : t('theme.dark')}
       >
-        <i className={`bx ${theme ==='dark' ? 'bx-sun' : 'bx-moon'} text-xl`}></i>
+        <i className={`bx ${theme === 'dark' ? 'bx-sun' : 'bx-moon'} text-xl`}></i>
       </button>
 
       {/* Notifications */}

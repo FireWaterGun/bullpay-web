@@ -1,7 +1,7 @@
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
 const NETWORKS = [
   { key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559' },
@@ -11,9 +11,9 @@ const NETWORKS = [
   { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559' },
   { key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559' },
   { key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559' },
-];
+]
 
-const OPERATIONS = ['withdrawal', 'sweep', 'topup'];
+const OPERATIONS = ['withdrawal', 'sweep', 'topup']
 
 export default function GasPriceTab({ t, getVal, onEdit }) {
   return (
@@ -26,7 +26,8 @@ export default function GasPriceTab({ t, getVal, onEdit }) {
         </h6>
         <p className="text-sm text-surface-500 mb-0">
           {t('admin.gasSettings.gasPriceInfo', {
-            defaultValue: 'Control how aggressively transactions are priced. Higher multipliers = faster confirmation but higher cost.',
+            defaultValue:
+              'Control how aggressively transactions are priced. Higher multipliers = faster confirmation but higher cost.',
           })}
         </p>
       </div>
@@ -45,7 +46,7 @@ export default function GasPriceTab({ t, getVal, onEdit }) {
         </thead>
         <tbody>
           {NETWORKS.map((net) => {
-            const maxGwei = getVal(`gas_price.${net.key}.max_gas_price_gwei`);
+            const maxGwei = getVal(`gas_price.${net.key}.max_gas_price_gwei`)
             return (
               <tr key={net.key}>
                 <td>
@@ -64,34 +65,42 @@ export default function GasPriceTab({ t, getVal, onEdit }) {
                   {maxGwei !== '—' && <div className="text-surface-500 text-xs">gwei</div>}
                 </td>
                 {OPERATIONS.map((op) => {
-                  const baseVal = getVal(`gas_price.${net.key}.${op}.base_multiplier`);
-                  const priVal = net.type === 'eip1559' ? getVal(`gas_price.${net.key}.${op}.priority_multiplier`) : null;
+                  const baseVal = getVal(`gas_price.${net.key}.${op}.base_multiplier`)
+                  const priVal =
+                    net.type === 'eip1559' ? getVal(`gas_price.${net.key}.${op}.priority_multiplier`) : null
                   return (
                     <td key={op} className="text-center">
                       <div>
-                        <span className="font-medium">{baseVal}{baseVal !== '—' && '×'}</span>
+                        <span className="font-medium">
+                          {baseVal}
+                          {baseVal !== '—' && '×'}
+                        </span>
                         <div className="text-surface-500 text-xs">base</div>
                       </div>
                       {priVal !== null && (
                         <div className="mt-1">
-                          <span className="font-medium">{priVal}{priVal !== '—' && '×'}</span>
+                          <span className="font-medium">
+                            {priVal}
+                            {priVal !== '—' && '×'}
+                          </span>
                           <div className="text-surface-500 text-xs">priority</div>
                         </div>
                       )}
                     </td>
-                  );
+                  )
                 })}
                 <td className="text-right">
                   <Button
                     title={t('admin.gasSettings.edit', { defaultValue: 'Edit' })}
                     onClick={() => onEdit(net)}
                     variant="text-secondary"
-                    size="icon-sm">
+                    size="icon-sm"
+                  >
                     <i className="bx bx-edit text-[1rem]"></i>
                   </Button>
                 </td>
               </tr>
-            );
+            )
           })}
         </tbody>
       </Table>
@@ -103,14 +112,19 @@ export default function GasPriceTab({ t, getVal, onEdit }) {
         </h6>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-100 dark:bg-white/[0.03]">
-            <Badge color="info" label className="shrink-0 mt-0.5">EIP-1559</Badge>
+            <Badge color="info" label className="shrink-0 mt-0.5">
+              EIP-1559
+            </Badge>
             <div className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
-              <code className="text-xs">maxFeePerGas = baseFee × base</code><br />
+              <code className="text-xs">maxFeePerGas = baseFee × base</code>
+              <br />
               <code className="text-xs">maxPriorityFee = tip × priority</code>
             </div>
           </div>
           <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-100 dark:bg-white/[0.03]">
-            <Badge color="warning" label className="shrink-0 mt-0.5">Legacy</Badge>
+            <Badge color="warning" label className="shrink-0 mt-0.5">
+              Legacy
+            </Badge>
             <div className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
               <code className="text-xs">gasPrice = networkPrice × base</code>
               <div className="text-surface-500 mt-0.5">BSC only</div>
@@ -119,5 +133,5 @@ export default function GasPriceTab({ t, getVal, onEdit }) {
         </div>
       </div>
     </Card>
-  );
+  )
 }

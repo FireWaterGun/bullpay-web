@@ -17,12 +17,7 @@ export async function getUserTransactionSummary(
   return apiFetch(url, { token })
 }
 
-export async function getUserTransactionDaily(
-  token: string | null,
-  from: string,
-  to: string,
-  coinNetworkId?: number
-) {
+export async function getUserTransactionDaily(token: string | null, from: string, to: string, coinNetworkId?: number) {
   const params = new URLSearchParams()
   if (from) params.append('from', from)
   if (to) params.append('to', to)
@@ -34,12 +29,7 @@ export async function getUserTransactionDaily(
   return apiFetch(url, { token })
 }
 
-export async function getUserTransactionByCoin(
-  token: string | null,
-  from: string,
-  to: string,
-  coinNetworkId?: number
-) {
+export async function getUserTransactionByCoin(token: string | null, from: string, to: string, coinNetworkId?: number) {
   const params = new URLSearchParams()
   if (from) params.append('from', from)
   if (to) params.append('to', to)

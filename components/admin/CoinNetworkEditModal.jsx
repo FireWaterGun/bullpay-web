@@ -95,7 +95,10 @@ export default function CoinNetworkEditModal({ coinNetworkId, onClose, onSaved }
   const network = coinNetwork?.network
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={saving ? undefined : onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={saving ? undefined : onClose}
+    >
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="bg-card rounded-xl shadow-xl">
           {/* Header */}
@@ -123,22 +126,19 @@ export default function CoinNetworkEditModal({ coinNetworkId, onClose, onSaved }
               <>
                 {error && (
                   <Alert role="alert" className="mb-4">
-                    <i className="bx bx-error-circle mr-2"></i>{error}
+                    <i className="bx bx-error-circle mr-2"></i>
+                    {error}
                   </Alert>
                 )}
 
                 {/* Read-only info */}
                 {coinNetwork && (
                   <div className="flex items-center gap-3 p-3 bg-surface-50 dark:bg-white/4 rounded-lg mb-4">
-                    <CoinImg
-                      coin={coin}
-                      symbol={coin?.symbol}
-                      networkSymbol={network?.symbol}
-                      size={36}
-                      showFallback
-                    />
+                    <CoinImg coin={coin} symbol={coin?.symbol} networkSymbol={network?.symbol} size={36} showFallback />
                     <div className="min-w-0">
-                      <div className="font-medium">{coin?.name || 'N/A'} <span className="text-surface-500">({coin?.symbol})</span></div>
+                      <div className="font-medium">
+                        {coin?.name || 'N/A'} <span className="text-surface-500">({coin?.symbol})</span>
+                      </div>
                       <div className="text-sm text-surface-500">
                         {network?.name || 'N/A'}
                         {network?.chainId && <span className="ml-1">(Chain ID: {network.chainId})</span>}
@@ -158,17 +158,27 @@ export default function CoinNetworkEditModal({ coinNetworkId, onClose, onSaved }
                       <Label htmlFor="modal-cn-status">
                         {t('crypto.status', { defaultValue: 'Status' })} <span className="text-danger">*</span>
                       </Label>
-                      <Select id="modal-cn-status" name="status" value={formData.status} onChange={handleChange} required>
+                      <Select
+                        id="modal-cn-status"
+                        name="status"
+                        value={formData.status}
+                        onChange={handleChange}
+                        required
+                      >
                         <option value="active">{t('crypto.statusActive', { defaultValue: 'Active' })}</option>
                         <option value="inactive">{t('crypto.statusInactive', { defaultValue: 'Inactive' })}</option>
-                        <option value="maintenance">{t('crypto.statusMaintenance', { defaultValue: 'Maintenance' })}</option>
+                        <option value="maintenance">
+                          {t('crypto.statusMaintenance', { defaultValue: 'Maintenance' })}
+                        </option>
                       </Select>
                     </div>
 
                     <div className="flex items-end">
                       <div className="flex items-center justify-between w-full p-3 border border-surface-200 rounded-lg">
                         <div>
-                          <div className="text-sm font-medium">{t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</div>
+                          <div className="text-sm font-medium">
+                            {t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}
+                          </div>
                         </div>
                         <input
                           className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500"

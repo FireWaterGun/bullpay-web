@@ -42,10 +42,7 @@ const COIN_ALIASES: Record<string, string[]> = {
  * Only includes paths for images that actually exist in the manifest,
  * plus any external logoUrl and the default fallback.
  */
-export function getCoinAssetCandidates(
-  symbol: string | null | undefined,
-  logoUrl?: string | null,
-): string[] {
+export function getCoinAssetCandidates(symbol: string | null | undefined, logoUrl?: string | null): string[] {
   const sym = String(symbol || '')
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '')
@@ -56,15 +53,9 @@ export function getCoinAssetCandidates(
   if (sym.startsWith('usdt') && !names.includes('usdt')) names.push('usdt')
 
   const exts = ['svg', 'png']
-  const byAssets = names
-    .flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`))
-    .filter(coinImageExists)
+  const byAssets = names.flatMap((n) => exts.map((ext) => `/assets/img/coins/${n}.${ext}`)).filter(coinImageExists)
 
-  const candidates = [
-    ...byAssets,
-    ...(logoUrl ? [logoUrl] : []),
-    '/assets/img/coins/default.svg',
-  ]
+  const candidates = [...byAssets, ...(logoUrl ? [logoUrl] : []), '/assets/img/coins/default.svg']
 
   return Array.from(new Set(candidates))
 }

@@ -2,15 +2,7 @@
 
 import '@/lib/i18n'
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  type ReactNode,
-} from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import { apiFetch } from '@/lib/api-client'
 import { ADMIN_ROLES, AUTH_COOKIE_NAME } from '@/lib/constants'
 import { ToastContainer } from '@/components/Toast'
@@ -104,14 +96,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const parsedUser = JSON.parse(savedUser)
         queueMicrotask(() => setUser(parsedUser))
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
     const savedNav = getCookie('bullpay_nav')
     if (savedNav) {
       try {
         const parsedNav = JSON.parse(savedNav)
         queueMicrotask(() => setNavigation(parsedNav))
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
     queueMicrotask(() => setIsReady(true))
   }, [])
@@ -126,12 +122,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setNavigation(nav)
         setCookie('bullpay_nav', JSON.stringify(nav))
       })
-      .catch(() => { /* navigation fetch failed */ })
+      .catch(() => {
+        /* navigation fetch failed */
+      })
   }, [token, isReady])
 
-  const isAdmin =
-    !!navigation &&
-    ADMIN_ROLES.includes(navigation.role as (typeof ADMIN_ROLES)[number])
+  const isAdmin = !!navigation && ADMIN_ROLES.includes(navigation.role as (typeof ADMIN_ROLES)[number])
 
   const login = useCallback((newToken: string, newUser: AuthUser) => {
     setToken(newToken)
@@ -175,13 +171,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (key: string) => {
       if (!navigation) return false
       if (navigation.role === 'super_admin') return true
-      return navigation.menus?.some(
-        (section) =>
-          section.items?.some(
-            (m) =>
-              m.key === key || m.children?.some((c) => c.key === key)
-          )
-      ) ?? false
+      return (
+        navigation.menus?.some((section) =>
+          section.items?.some((m) => m.key === key || m.children?.some((c) => c.key === key))
+        ) ?? false
+      )
     },
     [navigation]
   )
@@ -334,7 +328,7 @@ export function PusherProvider({ children }: { children: ReactNode }) {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
                 socket_id: socketId,
@@ -385,11 +379,7 @@ export function PusherProvider({ children }: { children: ReactNode }) {
     ;(pusherRef.current as any).unsubscribe(channel)
   }, [])
 
-  return (
-    <PusherContext.Provider value={{ subscribe, unsubscribe, isConnected }}>
-      {children}
-    </PusherContext.Provider>
-  )
+  return <PusherContext.Provider value={{ subscribe, unsubscribe, isConnected }}>{children}</PusherContext.Provider>
 }
 
 // ═══════════════════════════════════════════

@@ -1,22 +1,22 @@
-'use client';
+'use client'
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react'
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useAuth } from '@/app/providers';
-import { getCoins } from '@/lib/api/admin';
-import CoinImg from '@/components/CoinImg';
-import CoinEditModal from '@/components/admin/CoinEditModal';
-import TableEmptyState from '@/components/TableEmptyState';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAuth } from '@/app/providers'
+import { getCoins } from '@/lib/api/admin'
+import CoinImg from '@/components/CoinImg'
+import CoinEditModal from '@/components/admin/CoinEditModal'
+import TableEmptyState from '@/components/TableEmptyState'
 import Alert from '@/components/ui/Alert'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input, Label } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
-const DEFAULT_PAGINATION = { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false };
+const DEFAULT_PAGINATION = { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false }
 
 function CoinRow({ coin, t, onEdit }) {
   return (
@@ -33,70 +33,89 @@ function CoinRow({ coin, t, onEdit }) {
         <span className="font-medium">{coin.symbol}</span>
       </td>
       <td className="text-center align-middle">
-        {coin.type === 'native' ? t('crypto.native', { defaultValue: 'Native' }) : t('crypto.token', { defaultValue: 'Token' })}
+        {coin.type === 'native'
+          ? t('crypto.native', { defaultValue: 'Native' })
+          : t('crypto.token', { defaultValue: 'Token' })}
       </td>
       <td className="text-center align-middle">{coin.decimals || 0}</td>
       <td className="text-center align-middle">
-        {coin.status === 'active'
-          ? <Badge color="success" label>{t('admin.active')}</Badge>
-          : <Badge color="secondary">{coin.status}</Badge>}
+        {coin.status === 'active' ? (
+          <Badge color="success" label>
+            {t('admin.active')}
+          </Badge>
+        ) : (
+          <Badge color="secondary">{coin.status}</Badge>
+        )}
       </td>
       <td className="text-center align-middle">
-        <button type="button" onClick={() => onEdit(coin.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
+        <button
+          type="button"
+          onClick={() => onEdit(coin.id)}
+          title={t('actions.edit', { defaultValue: 'Edit' })}
+          className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
+        >
           <i className="bx bx-edit text-primary text-xl"></i>
         </button>
       </td>
     </tr>
-  );
+  )
 }
 
 export default function CoinList() {
-  const { t } = useAdminTranslation();
-  const { token } = useAuth();
-  const [coins, setCoins] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [draftSearch, setDraftSearch] = useState('');
-  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
-  const [editCoinId, setEditCoinId] = useState(null);
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const [coins, setCoins] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [draftSearch, setDraftSearch] = useState('')
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION)
+  const [editCoinId, setEditCoinId] = useState(null)
 
-  const loadCoins = useCallback(async ({ page = 1, limit = 10, search = '' } = {}) => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await getCoins(token, page, limit, search);
-      const coinList = response?.items || [];
-      const pd = response?.pagination || {};
-      setCoins(coinList);
-      setPagination({
-        page: pd.page || page, limit: pd.limit || limit,
-        total: pd.total || 0, totalPages: pd.totalPages || 0,
-        hasNext: pd.hasNext || false, hasPrev: pd.hasPrev || false,
-      });
-    } catch (e) {
-      setError(e?.message || 'Failed to load coins');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+  const loadCoins = useCallback(
+    async ({ page = 1, limit = 10, search = '' } = {}) => {
+      setLoading(true)
+      setError('')
+      try {
+        const response = await getCoins(token, page, limit, search)
+        const coinList = response?.items || []
+        const pd = response?.pagination || {}
+        setCoins(coinList)
+        setPagination({
+          page: pd.page || page,
+          limit: pd.limit || limit,
+          total: pd.total || 0,
+          totalPages: pd.totalPages || 0,
+          hasNext: pd.hasNext || false,
+          hasPrev: pd.hasPrev || false,
+        })
+      } catch (e) {
+        setError(e?.message || 'Failed to load coins')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [token]
+  )
 
-  useEffect(() => { loadCoins(); }, [loadCoins]);
+  useEffect(() => {
+    loadCoins()
+  }, [loadCoins])
 
   function handleApplyFilter() {
-    setSearchQuery(draftSearch);
-    loadCoins({ page: 1, limit: pagination.limit, search: draftSearch });
+    setSearchQuery(draftSearch)
+    loadCoins({ page: 1, limit: pagination.limit, search: draftSearch })
   }
 
   function handleResetFilter() {
-    setDraftSearch('');
-    setSearchQuery('');
-    loadCoins({ page: 1, limit: pagination.limit, search: '' });
+    setDraftSearch('')
+    setSearchQuery('')
+    loadCoins({ page: 1, limit: pagination.limit, search: '' })
   }
 
   function handlePageChange(newPage) {
-    loadCoins({ page: newPage, limit: pagination.limit, search: searchQuery });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    loadCoins({ page: newPage, limit: pagination.limit, search: searchQuery })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -109,7 +128,9 @@ export default function CoinList() {
                 <i className="bx bx-coin mr-2"></i>
                 {t('nav.coins', { defaultValue: 'Coins' })}
               </h4>
-              <p className="text-surface-500 mb-0">{t('crypto.manageCoinsList', { defaultValue: 'Manage cryptocurrency coins' })}</p>
+              <p className="text-surface-500 mb-0">
+                {t('crypto.manageCoinsList', { defaultValue: 'Manage cryptocurrency coins' })}
+              </p>
             </div>
           </div>
         </div>
@@ -122,7 +143,8 @@ export default function CoinList() {
                 placeholder={t('crypto.searchCoins', { defaultValue: 'Search by name or symbol...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()} />
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
+              />
             </div>
             <div className="flex gap-2 shrink-0">
               <Button onClick={handleApplyFilter} disabled={loading}>
@@ -140,46 +162,53 @@ export default function CoinList() {
 
       <Card>
         {/* Error Alert */}
-        {error &&
-        <div className="p-5">
+        {error && (
+          <div className="p-5">
             <Alert role="alert" className="mb-0">
               <i className="bx bx-error-circle mr-2"></i>
               {error}
             </Alert>
           </div>
-        }
+        )}
 
         {/* Table */}
         <Table>
-            <thead>
-              <tr>
-                <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
-                <th>{t('crypto.symbol', { defaultValue: 'Symbol' })}</th>
-                <th className="text-center">{t('crypto.type', { defaultValue: 'Type' })}</th>
-                <th className="text-center">{t('crypto.decimals', { defaultValue: 'Decimals' })}</th>
-                <th className="text-center">{t('invoices.statusCol')}</th>
-                <th className="text-center">{t('invoices.actions')}</th>
-              </tr>
-            </thead>
-            <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
-              {coins.length === 0 ?
+          <thead>
+            <tr>
+              <th>{t('crypto.coinName', { defaultValue: 'Coin' })}</th>
+              <th>{t('crypto.symbol', { defaultValue: 'Symbol' })}</th>
+              <th className="text-center">{t('crypto.type', { defaultValue: 'Type' })}</th>
+              <th className="text-center">{t('crypto.decimals', { defaultValue: 'Decimals' })}</th>
+              <th className="text-center">{t('invoices.statusCol')}</th>
+              <th className="text-center">{t('invoices.actions')}</th>
+            </tr>
+          </thead>
+          <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+            {coins.length === 0 ? (
               <TableEmptyState
                 colSpan={6}
                 icon="bx-coin"
-                message={searchQuery ?
-                t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' }) :
-                t('crypto.noCoins', { defaultValue: 'No coins found' })
-                } /> :
-
+                message={
+                  searchQuery
+                    ? t('crypto.noSearchResults', { defaultValue: 'No coins found matching your search' })
+                    : t('crypto.noCoins', { defaultValue: 'No coins found' })
+                }
+              />
+            ) : (
               coins.map((coin) => <CoinRow key={coin.id} coin={coin} t={t} onEdit={setEditCoinId} />)
-              }
-            </tbody>
-          </Table>
+            )}
+          </tbody>
+        </Table>
 
         {/* Pagination */}
-        {!error && coins.length > 0 &&
-          <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="px-5 py-3 border-t border-surface-200 mt-0" />
-        }
+        {!error && coins.length > 0 && (
+          <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            loading={loading}
+            className="px-5 py-3 border-t border-surface-200 mt-0"
+          />
+        )}
       </Card>
 
       {editCoinId && (
@@ -189,6 +218,6 @@ export default function CoinList() {
           onSaved={() => loadCoins({ page: pagination.page, limit: pagination.limit, search: searchQuery })}
         />
       )}
-    </div>);
-
+    </div>
+  )
 }

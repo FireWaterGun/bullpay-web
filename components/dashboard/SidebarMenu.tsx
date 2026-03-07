@@ -8,9 +8,7 @@ import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 export function SectionHeader({ label }: { label: string }) {
   return (
     <li className="bp-section-hdr px-[2rem]">
-      <span className="text-[11px] font-bold uppercase tracking-[0.4px] text-surface-400">
-        {label}
-      </span>
+      <span className="text-[11px] font-bold uppercase tracking-[0.4px] text-surface-400">{label}</span>
     </li>
   )
 }
@@ -30,14 +28,14 @@ export function MenuItem({
   badge?: number
 }) {
   const pathname = usePathname()
-  const isActive = end ? pathname === to : pathname === to || pathname.startsWith(`${to  }/`)
+  const isActive = end ? pathname === to : pathname === to || pathname.startsWith(`${to}/`)
 
   return (
     <li className={isActive ? 'bp-active-item' : ''}>
       <Link
         href={to}
-        className={`bp-menu-link flex items-center gap-2 mx-4 px-[0.9375rem] py-[0.3125rem] text-[0.9375rem] relative ${ isActive ?'bp-active'
-            : ''
+        className={`bp-menu-link flex items-center gap-2 mx-4 px-[0.9375rem] py-[0.3125rem] text-[0.9375rem] relative ${
+          isActive ? 'bp-active' : ''
         }`}
       >
         <i className={`bp-menu-icon bx ${icon} text-[1.375rem] shrink-0 w-[1.375rem] mr-2`}></i>
@@ -67,8 +65,7 @@ export function SubItem({
   external?: boolean
 }) {
   const pathname = usePathname()
-  const isActive =
-    !external && (end ? pathname === to : pathname === to || pathname.startsWith(`${to  }/`))
+  const isActive = !external && (end ? pathname === to : pathname === to || pathname.startsWith(`${to}/`))
 
   if (external) {
     return (
@@ -92,8 +89,8 @@ export function SubItem({
     <li>
       <Link
         href={to}
-        className={`bp-menu-link flex items-center pl-10 pr-[0.9375rem] py-[0.3125rem] mx-4 text-[0.9375rem] relative ${ isActive ?'bp-active'
-            : ''
+        className={`bp-menu-link flex items-center pl-10 pr-[0.9375rem] py-[0.3125rem] mx-4 text-[0.9375rem] relative ${
+          isActive ? 'bp-active' : ''
         }`}
       >
         <span className="bp-label truncate leading-[1.375rem]">{label}</span>
@@ -108,15 +105,7 @@ export function SubItem({
 }
 
 /* ── Sub Menu Group (nested inside MenuGroup) ── */
-export function SubMenuGroup({
-  base,
-  label,
-  children,
-}: {
-  base: string
-  label: string
-  children: React.ReactNode
-}) {
+export function SubMenuGroup({ base, label, children }: { base: string; label: string; children: React.ReactNode }) {
   const pathname = usePathname()
   const match = pathname.startsWith(base)
   const [open, setOpen] = useState(match)
@@ -143,7 +132,7 @@ export function SubMenuGroup({
       <a
         href="#"
         onClick={toggle}
-        className={`bp-menu-link bp-menu-toggle flex items-center pl-10 pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] mx-4 text-[0.9375rem] cursor-pointer relative ${open ?'bp-open' : ''}`}
+        className={`bp-menu-link bp-menu-toggle flex items-center pl-10 pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] mx-4 text-[0.9375rem] cursor-pointer relative ${open ? 'bp-open' : ''}`}
       >
         <span className="bp-label truncate flex-1 leading-[1.375rem]">{label}</span>
       </a>
@@ -208,12 +197,8 @@ export function MenuGroup({
       <a
         href="#"
         onClick={toggle}
-        className={`bp-menu-link bp-menu-toggle flex items-center gap-2 mx-4 px-[0.9375rem] pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] text-[0.9375rem] cursor-pointer relative ${open ?'bp-open' : ''} ${
-          isMatched && open
-            ? 'bp-active-toggle'
-            : isMatched && !open
-              ? 'bp-active'
-              : ''
+        className={`bp-menu-link bp-menu-toggle flex items-center gap-2 mx-4 px-[0.9375rem] pr-[calc(0.9375rem+1.76em)] py-[0.3125rem] text-[0.9375rem] cursor-pointer relative ${open ? 'bp-open' : ''} ${
+          isMatched && open ? 'bp-active-toggle' : isMatched && !open ? 'bp-active' : ''
         }`}
       >
         <i className={`bp-menu-icon bx ${icon} text-[1.375rem] shrink-0 w-[1.375rem] mr-2`}></i>
@@ -224,11 +209,7 @@ export function MenuGroup({
           </span>
         )}
       </a>
-      <ul
-        ref={subRef}
-        className="bp-submenu"
-        style={{ maxHeight: open ? '3000px' : '0px' }}
-      >
+      <ul ref={subRef} className="bp-submenu" style={{ maxHeight: open ? '3000px' : '0px' }}>
         {children}
       </ul>
     </li>

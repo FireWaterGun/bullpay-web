@@ -1,53 +1,53 @@
-'use client';
+'use client'
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/app/providers';
-import { listInvoices } from '@/lib/api/invoices';
-import { useCoins } from '@/hooks/useCoins';
-import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents';
-import InvoiceFilterPanel from '@/components/invoices/InvoiceFilterPanel';
-import InvoiceTable from '@/components/invoices/InvoiceTable';
-import RefreshButton from '@/components/RefreshButton';
-import PageSpinner from '@/components/PageSpinner';
+import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '@/app/providers'
+import { listInvoices } from '@/lib/api/invoices'
+import { useCoins } from '@/hooks/useCoins'
+import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents'
+import InvoiceFilterPanel from '@/components/invoices/InvoiceFilterPanel'
+import InvoiceTable from '@/components/invoices/InvoiceTable'
+import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 
 export default function InvoiceList() {
-  const { t, i18n } = useTranslation();
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [status, setStatus] = useState('');
-  const [sortBy, setSortBy] = useState('created_at');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('');
-  const [startDateFilter, setStartDateFilter] = useState('');
-  const [endDateFilter, setEndDateFilter] = useState('');
-  const { coins: coinNetworks } = useCoins();
+  const { t, i18n } = useTranslation()
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [status, setStatus] = useState('')
+  const [sortBy, setSortBy] = useState('created_at')
+  const [sortOrder, setSortOrder] = useState('desc')
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('')
+  const [startDateFilter, setStartDateFilter] = useState('')
+  const [endDateFilter, setEndDateFilter] = useState('')
+  const { coins: coinNetworks } = useCoins()
   const [appliedFilters, setAppliedFilters] = useState({
     status: '',
     sortBy: 'created_at',
     sortOrder: 'desc',
     coinNetworkId: '',
     dateFrom: '',
-    dateTo: ''
-  });
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
-  const [total, setTotal] = useState(0);
-  const { token, user } = useAuth();
+    dateTo: '',
+  })
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const [total, setTotal] = useState(0)
+  const { token, user } = useAuth()
 
   const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' };
-    return map[i18n.language] || 'en-US';
-  }, [i18n.language]);
+    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    return map[i18n.language] || 'en-US'
+  }, [i18n.language])
 
-  const totalPages = useMemo(() => limit ? Math.ceil((total || 0) / limit) : 1, [total, limit]);
+  const totalPages = useMemo(() => (limit ? Math.ceil((total || 0) / limit) : 1), [total, limit])
 
   const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
+    setLoading(true)
+    setError('')
     try {
       const res = await listInvoices(
         {
@@ -58,57 +58,64 @@ export default function InvoiceList() {
           status: appliedFilters.status || undefined,
           coinNetworkId: appliedFilters.coinNetworkId || undefined,
           dateFrom: appliedFilters.dateFrom || undefined,
-          dateTo: appliedFilters.dateTo || undefined
+          dateTo: appliedFilters.dateTo || undefined,
         },
         token
-      );
-      setItems(res.items);
-      setTotal(res.total || 0);
+      )
+      setItems(res.items)
+      setTotal(res.total || 0)
     } catch (e) {
-      setError(typeof e?.message === 'string' ? e.message : 'Failed to load invoices');
+      setError(typeof e?.message === 'string' ? e.message : 'Failed to load invoices')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }, [page, limit, appliedFilters, token])
 
   useEffect(() => {
-    load();
-  }, [load]);
+    load()
+  }, [load])
 
-  const userIdentifier = user?.id || user?.userId || user?.email;
+  const userIdentifier = user?.id || user?.userId || user?.email
   useUserInvoiceEvents(userIdentifier, {
     onInvoiceCreated: () => load(),
     onInvoiceUpdated: () => load(),
     onStatusChanged: () => load(),
     onPaymentReceived: () => load(),
     onPaymentCompleted: () => load(),
-    onWithdrawalCompleted: () => load()
-  });
+    onWithdrawalCompleted: () => load(),
+  })
 
   function applyFilters() {
-    setPage(1);
+    setPage(1)
     setAppliedFilters({
       status,
       sortBy,
       sortOrder,
       coinNetworkId: coinNetworkIdFilter,
       dateFrom: startDateFilter,
-      dateTo: endDateFilter
-    });
+      dateTo: endDateFilter,
+    })
   }
   function resetFilters() {
-    setStatus('');
-    setSortBy('created_at');
-    setSortOrder('desc');
-    setCoinNetworkIdFilter('');
-    setStartDateFilter('');
-    setEndDateFilter('');
-    setPage(1);
-    setAppliedFilters({ status: '', sortBy: 'created_at', sortOrder: 'desc', coinNetworkId: '', dateFrom: '', dateTo: '' });
+    setStatus('')
+    setSortBy('created_at')
+    setSortOrder('desc')
+    setCoinNetworkIdFilter('')
+    setStartDateFilter('')
+    setEndDateFilter('')
+    setPage(1)
+    setAppliedFilters({
+      status: '',
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+      coinNetworkId: '',
+      dateFrom: '',
+      dateTo: '',
+    })
   }
 
   if (loading && items.length === 0) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   return (
@@ -177,5 +184,5 @@ export default function InvoiceList() {
         onPageChange={setPage}
       />
     </>
-  );
+  )
 }

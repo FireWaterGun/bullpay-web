@@ -41,14 +41,19 @@ export async function listWithdrawals(params: ListWithdrawalsParams = {}, token?
   // Support meta, pagination, or summary
   const rawPagination = res?.meta || res?.pagination || res?.summary || null
   // Normalize pagination structure
-  const pagination = rawPagination ? {
-    total: rawPagination.total,
-    page: rawPagination.page,
-    perPage: rawPagination.perPage || rawPagination.limit,
-    totalPages: rawPagination.lastPage || rawPagination.totalPages || Math.ceil(rawPagination.total / (rawPagination.perPage || rawPagination.limit || 10)),
-    hasNextPage: rawPagination.hasNextPage,
-    hasPrevPage: rawPagination.hasPrevPage
-  } : null
+  const pagination = rawPagination
+    ? {
+        total: rawPagination.total,
+        page: rawPagination.page,
+        perPage: rawPagination.perPage || rawPagination.limit,
+        totalPages:
+          rawPagination.lastPage ||
+          rawPagination.totalPages ||
+          Math.ceil(rawPagination.total / (rawPagination.perPage || rawPagination.limit || 10)),
+        hasNextPage: rawPagination.hasNextPage,
+        hasPrevPage: rawPagination.hasPrevPage,
+      }
+    : null
   return { items, pagination }
 }
 
@@ -103,7 +108,11 @@ export async function getWithdrawalById(id: number | string, token?: string) {
   return res?.withdrawal ?? res
 }
 
-export async function estimateWithdrawalFee(coinNetworkId: number | string, amount: string | number, token?: string): Promise<FeeEstimate | null> {
+export async function estimateWithdrawalFee(
+  coinNetworkId: number | string,
+  amount: string | number,
+  token?: string
+): Promise<FeeEstimate | null> {
   const qs = new URLSearchParams()
   qs.set('coinNetworkId', String(coinNetworkId))
   qs.set('amount', String(amount))

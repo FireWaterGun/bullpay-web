@@ -26,7 +26,9 @@ function ActionMenu({ wallet, onEdit, onDelete }) {
 
   useEffect(() => {
     if (!open) return
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) close() }
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) close()
+    }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [open, close])
@@ -42,10 +44,24 @@ function ActionMenu({ wallet, onEdit, onDelete }) {
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-1 z-50 min-w-[140px] py-1 bg-raised rounded-lg shadow-lg border border-surface-200">
-          <button type="button" onClick={() => { onEdit(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer">
+          <button
+            type="button"
+            onClick={() => {
+              onEdit()
+              close()
+            }}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer"
+          >
             <i className="bx bx-edit text-base"></i>Edit
           </button>
-          <button type="button" onClick={() => { onDelete(); close() }} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/30 transition-colors cursor-pointer">
+          <button
+            type="button"
+            onClick={() => {
+              onDelete()
+              close()
+            }}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/30 transition-colors cursor-pointer"
+          >
             <i className="bx bx-trash text-base"></i>Delete
           </button>
         </div>
@@ -102,7 +118,9 @@ export default function WalletsPage() {
     <>
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
-          <h4 className="text-xl font-semibold text-surface-900">{t('wallets.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
+          <h4 className="text-xl font-semibold text-surface-900">
+            {t('wallets.title', { defaultValue: 'Withdrawal Addresses' })}
+          </h4>
           <RefreshButton onClick={loadData} loading={loading} />
         </div>
         <Link
@@ -115,78 +133,78 @@ export default function WalletsPage() {
       </div>
 
       <Card>
-          {loading ? (
-            <div className="flex justify-center py-10">
-              <Spinner size="lg" />
-            </div>
-          ) : wallets.length === 0 ? (
-            <div className="p-5">
-              <CardEmptyState
-                icon="bx-wallet"
-                message={t('wallets.empty', { defaultValue: 'No withdrawal addresses found' })}
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <Spinner size="lg" />
+          </div>
+        ) : wallets.length === 0 ? (
+          <div className="p-5">
+            <CardEmptyState
+              icon="bx-wallet"
+              message={t('wallets.empty', { defaultValue: 'No withdrawal addresses found' })}
+            >
+              <Link
+                href="/wallets/create"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-3 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
               >
-                <Link
-                  href="/wallets/create"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-3 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  <i className="bx bx-plus"></i>
-                  {t('wallets.addFirst', { defaultValue: 'Add your first address' })}
-                </Link>
-              </CardEmptyState>
-            </div>
-          ) : (
-            <Table>
-                <thead>
-                  <tr>
-                    <th>{t('wallets.label', { defaultValue: 'Label' })}</th>
-                    <th>{t('wallets.coin', { defaultValue: 'Coin' })}</th>
-                    <th>{t('wallets.address', { defaultValue: 'Address' })}</th>
-                    <th>{t('wallets.status', { defaultValue: 'Status' })}</th>
-                    <th>{t('wallets.added', { defaultValue: 'Added' })}</th>
-                    <th className="w-10"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {wallets.map((w) => (
-                    <tr key={w.id}>
-                      <td className="font-medium">{w.label || '-'}</td>
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          <CoinImg symbol={w.coin?.symbol} networkSymbol={w.network?.symbol} size={20} />
-                          <span>{w.coin?.symbol || '-'}</span>
-                          <span className="text-xs text-surface-400">({w.network?.symbol || ''})</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="font-mono text-xs text-surface-600 truncate inline-block max-w-[180px]">
-                          {w.address || '-'}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={addressStatusBadgeClass(w.status)}>
-                          {formatAddressStatus(w.status)}
-                        </span>
-                      </td>
-                      <td className="text-xs text-surface-500">{fmtDate(w.createdAt)}</td>
-                      <td>
-                        <ActionMenu
-                          wallet={w}
-                          onEdit={() => router.push(`/wallets/${w.id}/edit`)}
-                          onDelete={() => setDeleteTarget(w)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-          )}
+                <i className="bx bx-plus"></i>
+                {t('wallets.addFirst', { defaultValue: 'Add your first address' })}
+              </Link>
+            </CardEmptyState>
+          </div>
+        ) : (
+          <Table>
+            <thead>
+              <tr>
+                <th>{t('wallets.label', { defaultValue: 'Label' })}</th>
+                <th>{t('wallets.coin', { defaultValue: 'Coin' })}</th>
+                <th>{t('wallets.address', { defaultValue: 'Address' })}</th>
+                <th>{t('wallets.status', { defaultValue: 'Status' })}</th>
+                <th>{t('wallets.added', { defaultValue: 'Added' })}</th>
+                <th className="w-10"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {wallets.map((w) => (
+                <tr key={w.id}>
+                  <td className="font-medium">{w.label || '-'}</td>
+                  <td>
+                    <div className="flex items-center gap-1.5">
+                      <CoinImg symbol={w.coin?.symbol} networkSymbol={w.network?.symbol} size={20} />
+                      <span>{w.coin?.symbol || '-'}</span>
+                      <span className="text-xs text-surface-400">({w.network?.symbol || ''})</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="font-mono text-xs text-surface-600 truncate inline-block max-w-[180px]">
+                      {w.address || '-'}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={addressStatusBadgeClass(w.status)}>{formatAddressStatus(w.status)}</span>
+                  </td>
+                  <td className="text-xs text-surface-500">{fmtDate(w.createdAt)}</td>
+                  <td>
+                    <ActionMenu
+                      wallet={w}
+                      onEdit={() => router.push(`/wallets/${w.id}/edit`)}
+                      onDelete={() => setDeleteTarget(w)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Card>
 
       {deleteTarget && (
         <ConfirmModal
           show
           title={t('wallets.deleteTitle', { defaultValue: 'Delete Address' })}
-          message={t('wallets.deleteConfirm', { defaultValue: 'Are you sure you want to delete this withdrawal address?' })}
+          message={t('wallets.deleteConfirm', {
+            defaultValue: 'Are you sure you want to delete this withdrawal address?',
+          })}
           confirmText={t('wallets.delete', { defaultValue: 'Delete' })}
           confirmVariant="danger"
           loading={deleting}

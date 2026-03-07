@@ -79,15 +79,14 @@ export default function MaintenanceBanner() {
   if (status === null) return null
 
   const isMaintenance = status?.maintenance
-  const levelLabel = status?.level === 'full'
-    ? t('maintenance.levelFull', { defaultValue: 'Full' })
-    : t('maintenance.levelPartial', { defaultValue: 'Partial' })
+  const levelLabel =
+    status?.level === 'full'
+      ? t('maintenance.levelFull', { defaultValue: 'Full' })
+      : t('maintenance.levelPartial', { defaultValue: 'Partial' })
 
   const config = isMaintenance
     ? {
-        cls: status.level === 'full'
-          ? 'bg-danger-500/12 text-danger-500'
-          : 'bg-warning-500/12 text-warning-500',
+        cls: status.level === 'full' ? 'bg-danger-500/12 text-danger-500' : 'bg-warning-500/12 text-warning-500',
         label: `${t('maintenance.title', { defaultValue: 'Maintenance' })} (${levelLabel})`,
         pulse: true,
       }
@@ -102,9 +101,7 @@ export default function MaintenanceBanner() {
       href="/admin/maintenance"
       className={`flex items-center gap-2 no-underline mr-auto text-sm whitespace-nowrap py-[0.3rem] px-3 rounded-md transition-colors ${config.cls}`}
     >
-      <span
-        className={`w-2 h-2 rounded-full bg-current shrink-0 ${config.pulse ? 'animate-pulse' : ''}`}
-      />
+      <span className={`w-2 h-2 rounded-full bg-current shrink-0 ${config.pulse ? 'animate-pulse' : ''}`} />
       <span className="font-semibold">{config.label}</span>
     </Link>
   )

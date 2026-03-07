@@ -11,13 +11,19 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
         <div className="rounded-full bg-surface-100 text-surface-600 dark:bg-dark-elevated flex items-center justify-center mb-3 w-16 h-16">
           <i className="bx bx-bar-chart-alt-2 text-[2rem]"></i>
         </div>
-        <span className="font-medium text-surface-900">{t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
-        <span className="text-surface-500 text-sm mt-1">{t ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' }) : 'Select a date range with data'}</span>
+        <span className="font-medium text-surface-900">
+          {t ? t('admin.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}
+        </span>
+        <span className="text-surface-500 text-sm mt-1">
+          {t
+            ? t('admin.noDataSub', { defaultValue: 'Select a date range with data' })
+            : 'Select a date range with data'}
+        </span>
       </div>
     )
   }
 
-  const allValues = data.flatMap(d => [d.revenue || 0, d.cost || 0, d.profit || 0])
+  const allValues = data.flatMap((d) => [d.revenue || 0, d.cost || 0, d.profit || 0])
   const rawMax = Math.max(...allValues, 0)
   const rawMin = Math.min(...allValues, 0)
 
@@ -27,10 +33,15 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
     const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
     const nice = roughStep / mag
     let step
-    if (nice <= 1.5) { step = Number(mag); }
-    else if (nice <= 3) { step = 2 * mag; }
-    else if (nice <= 7) { step = 5 * mag; }
-    else { step = 10 * mag; }
+    if (nice <= 1.5) {
+      step = Number(mag)
+    } else if (nice <= 3) {
+      step = 2 * mag
+    } else if (nice <= 7) {
+      step = 5 * mag
+    } else {
+      step = 10 * mag
+    }
     const niceMin = Math.floor(min / step) * step
     const niceMax = Math.ceil(max / step) * step
     const labels = []
@@ -79,7 +90,8 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
           {/* Y-axis */}
           <div className="shrink-0 relative" style={{ width: yAxisW, height: chartH }}>
             {yScale.labels.map((v) => (
-              <div className="absolute right-[8px] text-[0.72rem] text-surface-500 whitespace-nowrap"
+              <div
+                className="absolute right-[8px] text-[0.72rem] text-surface-500 whitespace-nowrap"
                 key={`y-${v}`}
                 style={{ top: yPos(v) - 8 }}
               >
@@ -90,9 +102,13 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
           {/* Chart area */}
           <div className="relative flex-1" style={{ minWidth: barAreaW, height: chartH }}>
             {yScale.labels.map((v) => (
-              <div className="absolute left-[0px] right-[0px]"
+              <div
+                className="absolute left-[0px] right-[0px]"
                 key={`grid-${v}`}
-                style={{ top: yPos(v), borderTop: v === 0 ? '1.5px solid var(--color-surface-500)' : '1px dashed var(--color-surface-200)' }}
+                style={{
+                  top: yPos(v),
+                  borderTop: v === 0 ? '1.5px solid var(--color-surface-500)' : '1px dashed var(--color-surface-200)',
+                }}
               />
             ))}
             <svg className="absolute top-[0px] left-[0px]" width={barAreaW} height={chartH}>
@@ -125,7 +141,9 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                       rx={2}
                       fill="var(--color-primary-600, #2563eb)"
                     >
-                      <title>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}: {formatCurrency(rev)}</title>
+                      <title>
+                        {t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}: {formatCurrency(rev)}
+                      </title>
                     </rect>
                     <rect
                       x={cx + 1}
@@ -137,7 +155,9 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                       stroke="#8898b8"
                       strokeWidth="0.5"
                     >
-                      <title>{t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}: {formatCurrency(cost)}</title>
+                      <title>
+                        {t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}: {formatCurrency(cost)}
+                      </title>
                     </rect>
                   </g>
                 )
@@ -154,8 +174,19 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
                 const cx = i * barGroupW + barGroupW / 2
                 const cy = yPos(item.profit || 0)
                 return (
-                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="#03c3ec" className="stroke-card" strokeWidth="1.5">
-                    <title>{t ? t('admin.operatingProfit', { defaultValue: 'Profit' }) : 'Profit'}: {formatCurrency(item.profit)}</title>
+                  <circle
+                    key={`dot-${item.date || i}`}
+                    cx={cx}
+                    cy={cy}
+                    r={3}
+                    fill="#03c3ec"
+                    className="stroke-card"
+                    strokeWidth="1.5"
+                  >
+                    <title>
+                      {t ? t('admin.operatingProfit', { defaultValue: 'Profit' }) : 'Profit'}:{' '}
+                      {formatCurrency(item.profit)}
+                    </title>
                   </circle>
                 )
               })}
@@ -168,11 +199,20 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
               <small>{t ? t('admin.revenue', { defaultValue: 'Revenue' }) : 'Revenue'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0" style={{ background: 'repeating-conic-gradient(var(--color-surface-400) 0% 25%, var(--color-surface-500) 0% 50%) 50%/6px 6px' }}></span>
+              <span
+                className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0"
+                style={{
+                  background:
+                    'repeating-conic-gradient(var(--color-surface-400) 0% 25%, var(--color-surface-500) 0% 50%) 50%/6px 6px',
+                }}
+              ></span>
               <small>{t ? t('admin.cost', { defaultValue: 'Cost' }) : 'Cost'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-4 inline-block shrink-0" style={{ borderBottom: '2px solid var(--color-cyan-500)' }}></span>
+              <span
+                className="w-4 inline-block shrink-0"
+                style={{ borderBottom: '2px solid var(--color-cyan-500)' }}
+              ></span>
               <small>{t ? t('admin.operatingProfit', { defaultValue: 'Operating Profit' }) : 'Operating Profit'}</small>
             </div>
           </div>
@@ -182,7 +222,9 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
           {data.map((item) => (
             <div className="shrink-0 text-center" key={`x-${item.date}`} style={{ width: barGroupW }}>
               <small className="text-surface-500 text-xs">
-                {item.date ? new Date(`${item.date  }T00:00:00`).toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
+                {item.date
+                  ? new Date(`${item.date}T00:00:00`).toLocaleDateString(locale, { month: 'short', day: 'numeric' })
+                  : ''}
               </small>
             </div>
           ))}

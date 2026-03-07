@@ -89,7 +89,9 @@ export default function WithdrawalAddresses() {
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') params.set(k, v)
+    })
     if (page > 1) params.set('page', page)
     window.history.replaceState(null, '', `?${params.toString()}`)
   }
@@ -149,11 +151,15 @@ export default function WithdrawalAddresses() {
 
   async function handleAction() {
     if (!selectedAddress || !actionReason.trim()) {
-      toast.error(t('admin.withdrawalAddress.reasonRequired', { defaultValue: 'Please provide a reason (minimum 10 characters)' }))
+      toast.error(
+        t('admin.withdrawalAddress.reasonRequired', { defaultValue: 'Please provide a reason (minimum 10 characters)' })
+      )
       return
     }
     if (actionReason.trim().length < 10) {
-      toast.error(t('admin.withdrawalAddress.reasonTooShort', { defaultValue: 'Reason must be at least 10 characters' }))
+      toast.error(
+        t('admin.withdrawalAddress.reasonTooShort', { defaultValue: 'Reason must be at least 10 characters' })
+      )
       return
     }
 
@@ -171,7 +177,9 @@ export default function WithdrawalAddresses() {
           break
         case 'forceVerify':
           await forceVerifyWithdrawalAddress(token, selectedAddress.id, actionReason.trim(), skipLockPeriod)
-          toast.success(t('admin.withdrawalAddress.verifySuccess', { defaultValue: 'Address force verified successfully' }))
+          toast.success(
+            t('admin.withdrawalAddress.verifySuccess', { defaultValue: 'Address force verified successfully' })
+          )
           break
         case 'delete':
           await deleteWithdrawalAddress(token, selectedAddress.id, actionReason.trim())

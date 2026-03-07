@@ -4,14 +4,24 @@ import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
-import { getWithdrawalAddresses, flagWithdrawalAddress, unflagWithdrawalAddress, approveWithdrawalAddress, suspendWithdrawalAddress } from '@/lib/api/admin'
+import {
+  getWithdrawalAddresses,
+  flagWithdrawalAddress,
+  unflagWithdrawalAddress,
+  approveWithdrawalAddress,
+  suspendWithdrawalAddress,
+} from '@/lib/api/admin'
 import AddressFilters from '@/components/balance/AddressFilters'
 import AddressTable from '@/components/balance/AddressTable'
 import AddressActionModal from '@/components/balance/AddressActionModal'
 import RefreshButton from '@/components/RefreshButton'
 
 export default function WithdrawalAddressesPage() {
-  return <Suspense><WithdrawalAddressesContent /></Suspense>
+  return (
+    <Suspense>
+      <WithdrawalAddressesContent />
+    </Suspense>
+  )
 }
 
 function WithdrawalAddressesContent() {
@@ -46,7 +56,7 @@ function WithdrawalAddressesContent() {
       setAddresses(data.items || [])
       setPagination(data.pagination || null)
     } catch (err) {
-      toast.error( t('withdrawalAddresses.loadError', { defaultValue: 'Failed to load addresses' }))
+      toast.error(t('withdrawalAddresses.loadError', { defaultValue: 'Failed to load addresses' }))
     } finally {
       setLoading(false)
     }
@@ -67,16 +77,16 @@ function WithdrawalAddressesContent() {
       setActionLoading(true)
       if (actionType === 'approve') {
         await approveWithdrawalAddress(token, actionAddress.id)
-        toast.success( t('withdrawalAddresses.approved', { defaultValue: 'Address approved' }))
+        toast.success(t('withdrawalAddresses.approved', { defaultValue: 'Address approved' }))
       } else if (actionType === 'suspend') {
         await suspendWithdrawalAddress(token, actionAddress.id, reason)
-        toast.success( t('withdrawalAddresses.suspended', { defaultValue: 'Address suspended' }))
+        toast.success(t('withdrawalAddresses.suspended', { defaultValue: 'Address suspended' }))
       }
       setActionAddress(null)
       setActionType('')
       loadAddresses()
     } catch (err) {
-      toast.error( err?.message || t('withdrawalAddresses.actionError', { defaultValue: 'Action failed' }))
+      toast.error(err?.message || t('withdrawalAddresses.actionError', { defaultValue: 'Action failed' }))
     } finally {
       setActionLoading(false)
     }
@@ -87,14 +97,22 @@ function WithdrawalAddressesContent() {
   return (
     <>
       <div className="flex items-center gap-2 mb-6">
-        <h4 className="text-xl font-semibold text-surface-900">{t('withdrawalAddresses.title', { defaultValue: 'Withdrawal Addresses' })}</h4>
+        <h4 className="text-xl font-semibold text-surface-900">
+          {t('withdrawalAddresses.title', { defaultValue: 'Withdrawal Addresses' })}
+        </h4>
         <RefreshButton onClick={loadAddresses} loading={loading} />
       </div>
 
       <AddressFilters
         filters={filters}
-        onFilterChange={(f) => { setFilters(f); setPage(1) }}
-        onReset={() => { setFilters({ status: '', q: '' }); setPage(1) }}
+        onFilterChange={(f) => {
+          setFilters(f)
+          setPage(1)
+        }}
+        onReset={() => {
+          setFilters({ status: '', q: '' })
+          setPage(1)
+        }}
         t={t}
       />
 
@@ -105,16 +123,14 @@ function WithdrawalAddressesContent() {
               <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
             </div>
           ) : (
-            <AddressTable
-              addresses={addresses}
-              onAction={handleAction}
-              t={t}
-            />
+            <AddressTable addresses={addresses} onAction={handleAction} t={t} />
           )}
 
           {pagination && pagination.total > 20 && (
             <div className="flex justify-between items-center mt-4">
-              <span className="text-sm text-surface-400">{t('common.page', { defaultValue: 'Page' })} {page} / {totalPages}</span>
+              <span className="text-sm text-surface-400">
+                {t('common.page', { defaultValue: 'Page' })} {page} / {totalPages}
+              </span>
               <div className="flex">
                 <button
                   type="button"
@@ -144,7 +160,10 @@ function WithdrawalAddressesContent() {
         action={actionType}
         loading={actionLoading}
         onConfirm={handleConfirmAction}
-        onClose={() => { setActionAddress(null); setActionType('') }}
+        onClose={() => {
+          setActionAddress(null)
+          setActionType('')
+        }}
         t={t}
       />
     </>

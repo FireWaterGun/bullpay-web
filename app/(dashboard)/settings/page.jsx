@@ -1,20 +1,22 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import dynamic from 'next/dynamic';
-import { useAuth, useToast } from '@/app/providers';
-import { get2FAStatus } from '@/lib/api/twoFactor';
-import { changePasswordApi, updateProfileApi } from '@/lib/api/auth';
-import { changePasswordSchema } from '@/lib/validations/change-password';
-const Setup2FAModal = dynamic(() => import('@/components/TwoFactorModals').then((m) => m.Setup2FAModal), { ssr: false });
-const Disable2FAModal = dynamic(() => import('@/components/TwoFactorModals').then((m) => m.Disable2FAModal), { ssr: false });
-import RefreshButton from '@/components/RefreshButton';
-import { useDateFormat } from '@/hooks/useDateFormat';
-import { logger } from '@/lib/utils/logger';
-import { COMMON_TIMEZONES } from '@/lib/constants';
+import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import dynamic from 'next/dynamic'
+import { useAuth, useToast } from '@/app/providers'
+import { get2FAStatus } from '@/lib/api/twoFactor'
+import { changePasswordApi, updateProfileApi } from '@/lib/api/auth'
+import { changePasswordSchema } from '@/lib/validations/change-password'
+const Setup2FAModal = dynamic(() => import('@/components/TwoFactorModals').then((m) => m.Setup2FAModal), { ssr: false })
+const Disable2FAModal = dynamic(() => import('@/components/TwoFactorModals').then((m) => m.Disable2FAModal), {
+  ssr: false,
+})
+import RefreshButton from '@/components/RefreshButton'
+import { useDateFormat } from '@/hooks/useDateFormat'
+import { logger } from '@/lib/utils/logger'
+import { COMMON_TIMEZONES } from '@/lib/constants'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input, InputGroup, InputIcon, Label, Select } from '@/components/ui/Input'
@@ -25,42 +27,44 @@ const iconBoxColors = {
   success: 'bg-success-100 text-success-600 dark:bg-success-500/15 dark:text-success-300',
   warning: 'bg-warning-100 text-warning-600 dark:bg-warning-500/15 dark:text-warning-300',
   info: 'bg-info-100 text-info-600 dark:bg-info-500/15 dark:text-info-300',
-  danger: 'bg-danger-100 text-danger-600 dark:bg-danger-500/15 dark:text-danger-300'
-};
+  danger: 'bg-danger-100 text-danger-600 dark:bg-danger-500/15 dark:text-danger-300',
+}
 
 function IconBox({ icon, color = 'primary', size = 40 }) {
   return (
     <span
       className={`inline-flex items-center justify-center rounded-lg shrink-0 ${iconBoxColors[color] || iconBoxColors.primary}`}
-      style={{ width: size, height: size }}>
-      
+      style={{ width: size, height: size }}
+    >
       <i className={`bx ${icon} text-xl`}></i>
-    </span>);
-
+    </span>
+  )
 }
 
 export default function SettingsPage() {
-  const { t } = useTranslation();
-  const { fmtDate } = useDateFormat();
-  const { token, user, logout, updateUser } = useAuth();
-  const toast = useToast();
-  const [twoFAStatus, setTwoFAStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showSetupModal, setShowSetupModal] = useState(false);
-  const [showDisableModal, setShowDisableModal] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [selectedTimezone, setSelectedTimezone] = useState(user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
-  const [savingTimezone, setSavingTimezone] = useState(false);
+  const { t } = useTranslation()
+  const { fmtDate } = useDateFormat()
+  const { token, user, logout, updateUser } = useAuth()
+  const toast = useToast()
+  const [twoFAStatus, setTwoFAStatus] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [showSetupModal, setShowSetupModal] = useState(false)
+  const [showDisableModal, setShowDisableModal] = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [selectedTimezone, setSelectedTimezone] = useState(
+    user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+  )
+  const [savingTimezone, setSavingTimezone] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
     reset: resetForm,
-    setError: setFormError
+    setError: setFormError,
   } = useForm({
     resolver: zodResolver(changePasswordSchema),
     mode: 'onChange',
@@ -68,70 +72,77 @@ export default function SettingsPage() {
       currentPassword: '',
       newPassword: '',
       newPasswordConfirmation: '',
-      totpCode: ''
-    }
-  });
+      totpCode: '',
+    },
+  })
 
   const fetchStatus = useCallback(async () => {
-    if (!token) return;
-    setLoading(true);
+    if (!token) return
+    setLoading(true)
     try {
-      const res = await get2FAStatus(token);
-      setTwoFAStatus(res);
+      const res = await get2FAStatus(token)
+      setTwoFAStatus(res)
     } catch (err) {
-      logger.error('Failed to fetch 2FA status:', err);
+      logger.error('Failed to fetch 2FA status:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [token]);
+  }, [token])
 
   useEffect(() => {
-    fetchStatus();
-  }, [fetchStatus]);
+    fetchStatus()
+  }, [fetchStatus])
 
-  const is2FAEnabled = twoFAStatus?.enabled && twoFAStatus?.verified;
+  const is2FAEnabled = twoFAStatus?.enabled && twoFAStatus?.verified
 
   const onChangePassword = async (formData) => {
-    setChangingPassword(true);
+    setChangingPassword(true)
     try {
       const payload = {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,
-        newPasswordConfirmation: formData.newPasswordConfirmation
-      };
-      if (is2FAEnabled && formData.totpCode) {
-        payload.totpCode = formData.totpCode;
+        newPasswordConfirmation: formData.newPasswordConfirmation,
       }
-      await changePasswordApi(token, payload);
+      if (is2FAEnabled && formData.totpCode) {
+        payload.totpCode = formData.totpCode
+      }
+      await changePasswordApi(token, payload)
 
       toast.success(
         t('settings.password.changeSuccess', {
-          defaultValue: 'Password changed successfully. Please log in again.'
+          defaultValue: 'Password changed successfully. Please log in again.',
         })
-      );
-      resetForm();
-      setTimeout(() => logout(), 1500);
+      )
+      resetForm()
+      setTimeout(() => logout(), 1500)
     } catch (err) {
-      const errorMsg = err?.message || err?.details || 'Password change failed';
-      const errorCode = err?.code || '';
+      const errorMsg = err?.message || err?.details || 'Password change failed'
+      const errorCode = err?.code || ''
       if (errorCode === 'TWO_FACTOR_REQUIRED') {
         setFormError('totpCode', {
-          message: t('settings.password.totpRequired', { defaultValue: 'Please enter your 2FA code' })
-        });
-      } else if (errorMsg.toLowerCase().includes('invalid code') || errorMsg.toLowerCase().includes('too many attempts')) {
-        setFormError('totpCode', { message: errorMsg });
+          message: t('settings.password.totpRequired', { defaultValue: 'Please enter your 2FA code' }),
+        })
+      } else if (
+        errorMsg.toLowerCase().includes('invalid code') ||
+        errorMsg.toLowerCase().includes('too many attempts')
+      ) {
+        setFormError('totpCode', { message: errorMsg })
       } else if (errorMsg.toLowerCase().includes('current password')) {
-        setFormError('currentPassword', { message: t('settings.password.incorrectCurrent', { defaultValue: 'Current password is incorrect' }) });
+        setFormError('currentPassword', {
+          message: t('settings.password.incorrectCurrent', { defaultValue: 'Current password is incorrect' }),
+        })
       } else {
-        logger.error('Failed to change password:', err);
-        toast.error(t('settings.password.changeFailed', { defaultValue: 'Failed to change password. Please try again.' }));
+        logger.error('Failed to change password:', err)
+        toast.error(
+          t('settings.password.changeFailed', { defaultValue: 'Failed to change password. Please try again.' })
+        )
       }
     } finally {
-      setChangingPassword(false);
+      setChangingPassword(false)
     }
-  };
+  }
 
-  const timezoneChanged = selectedTimezone !== (user?.timezone || 'UTC');
+  const timezoneChanged = selectedTimezone !== (user?.timezone || 'UTC')
 
   return (
     <>
@@ -156,9 +167,12 @@ export default function SettingsPage() {
               </div>
 
               <div className="flex flex-wrap gap-3 text-surface-500 text-sm mt-1">
-                {user?.email &&
-                <span><i className="bx bx-envelope mr-1"></i>{user.email}</span>
-                }
+                {user?.email && (
+                  <span>
+                    <i className="bx bx-envelope mr-1"></i>
+                    {user.email}
+                  </span>
+                )}
                 <span>
                   <i className="bx bx-globe mr-1"></i>
                   {selectedTimezone}
@@ -185,13 +199,16 @@ export default function SettingsPage() {
             <div className="flex items-center gap-3">
               <IconBox
                 icon={is2FAEnabled ? 'bx-lock-alt' : 'bx-lock-open-alt'}
-                color={is2FAEnabled ? 'success' : 'warning'} />
-              
+                color={is2FAEnabled ? 'success' : 'warning'}
+              />
+
               <div className="min-w-0">
                 <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
-                  {loading ? '...' : is2FAEnabled ?
-                  t('settings.2fa.enabled', { defaultValue: 'Enabled' }) :
-                  t('settings.2fa.disabled', { defaultValue: 'Disabled' })}
+                  {loading
+                    ? '...'
+                    : is2FAEnabled
+                      ? t('settings.2fa.enabled', { defaultValue: 'Enabled' })
+                      : t('settings.2fa.disabled', { defaultValue: 'Disabled' })}
                 </div>
                 <small className="text-surface-500">{t('settings.stats.twoFA', { defaultValue: '2FA' })}</small>
               </div>
@@ -201,9 +218,16 @@ export default function SettingsPage() {
               <IconBox icon="bx-time-five" color="info" />
               <div className="min-w-0">
                 <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
-                  {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', hour12: false })}
+                  {new Date().toLocaleString(undefined, {
+                    timeZone: selectedTimezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                  })}
                 </div>
-                <small className="text-surface-500">{t('settings.stats.localTime', { defaultValue: 'Local Time' })}</small>
+                <small className="text-surface-500">
+                  {t('settings.stats.localTime', { defaultValue: 'Local Time' })}
+                </small>
               </div>
             </div>
             {/* Date */}
@@ -211,7 +235,12 @@ export default function SettingsPage() {
               <IconBox icon="bx-calendar" color="primary" />
               <div className="min-w-0">
                 <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
-                  {new Date().toLocaleDateString(undefined, { timeZone: selectedTimezone, month: 'short', day: 'numeric', year: 'numeric' })}
+                  {new Date().toLocaleDateString(undefined, {
+                    timeZone: selectedTimezone,
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
                 </div>
                 <small className="text-surface-500">{t('settings.stats.date', { defaultValue: 'Date' })}</small>
               </div>
@@ -234,7 +263,7 @@ export default function SettingsPage() {
                 </h6>
                 <small className="text-surface-500">
                   {t('settings.password.description', {
-                    defaultValue: "For security, you'll be logged out of all devices after changing your password."
+                    defaultValue: "For security, you'll be logged out of all devices after changing your password.",
                   })}
                 </small>
               </div>
@@ -251,23 +280,25 @@ export default function SettingsPage() {
                       <Input
                         type={showCurrentPassword ? 'text' : 'password'}
                         id="currentPassword"
-
                         placeholder="••••••••"
                         autoComplete="current-password"
-                        {...register('currentPassword')} />
-                      
+                        {...register('currentPassword')}
+                      />
+
                       <InputIcon
                         as="button"
                         type="button"
                         tabIndex={-1}
-                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
-                        
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      >
                         <i className={`bx text-lg ${showCurrentPassword ? 'bx-show' : 'bx-hide'}`}></i>
                       </InputIcon>
                     </InputGroup>
-                    {errors.currentPassword &&
-                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.currentPassword.message}</p>
-                    }
+                    {errors.currentPassword && (
+                      <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">
+                        {errors.currentPassword.message}
+                      </p>
+                    )}
                   </div>
 
                   {/* New Password */}
@@ -279,26 +310,26 @@ export default function SettingsPage() {
                       <Input
                         type={showNewPassword ? 'text' : 'password'}
                         id="newPassword"
-
                         placeholder="••••••••"
                         autoComplete="new-password"
-                        {...register('newPassword')} />
-                      
+                        {...register('newPassword')}
+                      />
+
                       <InputIcon
                         as="button"
                         type="button"
                         tabIndex={-1}
-                        onClick={() => setShowNewPassword(!showNewPassword)}>
-                        
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
                         <i className={`bx text-lg ${showNewPassword ? 'bx-show' : 'bx-hide'}`}></i>
                       </InputIcon>
                     </InputGroup>
-                    {errors.newPassword &&
-                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.newPassword.message}</p>
-                    }
+                    {errors.newPassword && (
+                      <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.newPassword.message}</p>
+                    )}
                     <p className="text-surface-400 text-xs mt-1">
                       {t('settings.password.requirements', {
-                        defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.'
+                        defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.',
                       })}
                     </p>
                   </div>
@@ -312,70 +343,69 @@ export default function SettingsPage() {
                       <Input
                         type={showConfirmPassword ? 'text' : 'password'}
                         id="newPasswordConfirmation"
-
                         placeholder="••••••••"
                         autoComplete="new-password"
-                        {...register('newPasswordConfirmation')} />
-                      
+                        {...register('newPasswordConfirmation')}
+                      />
+
                       <InputIcon
                         as="button"
                         type="button"
                         tabIndex={-1}
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                        
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
                         <i className={`bx text-lg ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
                       </InputIcon>
                     </InputGroup>
-                    {errors.newPasswordConfirmation &&
-                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.newPasswordConfirmation.message}</p>
-                    }
+                    {errors.newPasswordConfirmation && (
+                      <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">
+                        {errors.newPasswordConfirmation.message}
+                      </p>
+                    )}
                   </div>
 
                   {/* 2FA Code */}
-                  {is2FAEnabled &&
-                  <div className="mb-4">
+                  {is2FAEnabled && (
+                    <div className="mb-4">
                       <Label htmlFor="totpCode">
                         <i className="bx bx-shield-quarter mr-1 text-warning-500 dark:text-warning-300"></i>
                         {t('settings.password.totpLabel', { defaultValue: '2FA Verification Code' })}
                       </Label>
                       <Input
-                      type="text"
-                      id="totpCode"
+                        type="text"
+                        id="totpCode"
+                        placeholder="000000"
+                        inputMode="numeric"
+                        maxLength={20}
+                        autoComplete="one-time-code"
+                        {...register('totpCode')}
+                        error={errors.totpCode}
+                      />
 
-                      placeholder="000000"
-                      inputMode="numeric"
-                      maxLength={20}
-                      autoComplete="one-time-code"
-                      {...register('totpCode')} error={errors.totpCode} />
-                    
-                      {errors.totpCode &&
-                    <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.totpCode.message}</p>
-                    }
+                      {errors.totpCode && (
+                        <p className="text-danger-500 dark:text-danger-400 text-xs mt-1">{errors.totpCode.message}</p>
+                      )}
                       <p className="text-surface-400 text-xs mt-1">
                         {t('settings.password.totpHint', {
-                        defaultValue: 'Enter the code from your authenticator app or a backup code.'
-                      })}
+                          defaultValue: 'Enter the code from your authenticator app or a backup code.',
+                        })}
                       </p>
                     </div>
-                  }
+                  )}
 
                   {/* Submit */}
-                  <Button
-                    type="submit"
-
-                    disabled={changingPassword || !isValid} className="mt-2">
-                    
-                    {changingPassword ?
-                    <>
+                  <Button type="submit" disabled={changingPassword || !isValid} className="mt-2">
+                    {changingPassword ? (
+                      <>
                         <Spinner className="w-4 h-4 mr-2" />
                         {t('settings.password.changing', { defaultValue: 'Changing...' })}
-                      </> :
-
-                    <>
+                      </>
+                    ) : (
+                      <>
                         <i className="bx bx-check mr-1"></i>
                         {t('settings.password.changeButton', { defaultValue: 'Change Password' })}
                       </>
-                    }
+                    )}
                   </Button>
                 </div>
               </form>
@@ -394,7 +424,9 @@ export default function SettingsPage() {
                   {t('settings.timezone.title', { defaultValue: 'Timezone' })}
                 </h6>
                 <small className="text-surface-500">
-                  {t('settings.timezone.description', { defaultValue: 'Set your preferred timezone for displaying dates and times.' })}
+                  {t('settings.timezone.description', {
+                    defaultValue: 'Set your preferred timezone for displaying dates and times.',
+                  })}
                 </small>
               </div>
             </div>
@@ -402,55 +434,61 @@ export default function SettingsPage() {
               {/* Clock preview */}
               <div className="text-center mb-4 py-3 rounded-xl bg-primary-50 dark:bg-primary-500/10">
                 <div className="font-bold text-3xl text-primary-600 dark:text-primary-400 tabular-nums tracking-wider">
-                  {new Date().toLocaleString(undefined, { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                  {new Date().toLocaleString(undefined, {
+                    timeZone: selectedTimezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                  })}
                 </div>
                 <small className="text-surface-500">{selectedTimezone.replace(/_/g, ' ')}</small>
               </div>
 
               <div className="mb-4">
-                <Label htmlFor="timezone">
-                  {t('settings.timezone.label', { defaultValue: 'Timezone' })}
-                </Label>
+                <Label htmlFor="timezone">{t('settings.timezone.label', { defaultValue: 'Timezone' })}</Label>
                 <Select
                   id="timezone"
-
                   value={selectedTimezone}
-                  onChange={(e) => setSelectedTimezone(e.target.value)} className="w-full">
-                  
-                  {COMMON_TIMEZONES.map((tz) =>
-                  <option key={tz.value} value={tz.value}>{tz.label}</option>
-                  )}
+                  onChange={(e) => setSelectedTimezone(e.target.value)}
+                  className="w-full"
+                >
+                  {COMMON_TIMEZONES.map((tz) => (
+                    <option key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </option>
+                  ))}
                 </Select>
               </div>
               <Button
                 type="button"
-
                 disabled={savingTimezone || !timezoneChanged}
                 onClick={async () => {
-                  setSavingTimezone(true);
+                  setSavingTimezone(true)
                   try {
-                    await updateProfileApi(token, { timezone: selectedTimezone });
-                    updateUser({ timezone: selectedTimezone });
-                    toast.success(t('settings.timezone.saved', { defaultValue: 'Timezone updated successfully' }));
+                    await updateProfileApi(token, { timezone: selectedTimezone })
+                    updateUser({ timezone: selectedTimezone })
+                    toast.success(t('settings.timezone.saved', { defaultValue: 'Timezone updated successfully' }))
                   } catch (err) {
-                    logger.error('Failed to update timezone:', err);
-                    toast.error(t('settings.timezone.failed', { defaultValue: 'Failed to update timezone' }));
+                    logger.error('Failed to update timezone:', err)
+                    toast.error(t('settings.timezone.failed', { defaultValue: 'Failed to update timezone' }))
                   } finally {
-                    setSavingTimezone(false);
+                    setSavingTimezone(false)
                   }
-                }} className="w-full">
-                
-                {savingTimezone ?
-                <>
+                }}
+                className="w-full"
+              >
+                {savingTimezone ? (
+                  <>
                     <Spinner className="w-4 h-4 mr-2" />
                     {t('common.saving', { defaultValue: 'Saving...' })}
-                  </> :
-
-                <>
+                  </>
+                ) : (
+                  <>
                     <i className="bx bx-check mr-1"></i>
                     {t('common.save', { defaultValue: 'Save' })}
                   </>
-                }
+                )}
               </Button>
             </div>
           </Card>
@@ -470,67 +508,70 @@ export default function SettingsPage() {
             </div>
             <div className="p-6">
               {/* 2FA Status */}
-              <div className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${is2FAEnabled ? 'bg-success-50 dark:bg-success-500/10' : 'bg-warning-50 dark:bg-warning-500/10'}`
-              }>
-                <div className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${is2FAEnabled ? 'bg-success-100 text-success-600 dark:bg-success-500/15 dark:text-success-300' : 'bg-warning-100 text-warning-600 dark:bg-warning-500/15 dark:text-warning-300'}`
-                }>
+              <div
+                className={`flex items-center gap-3 mb-4 p-3 rounded-xl ${is2FAEnabled ? 'bg-success-50 dark:bg-success-500/10' : 'bg-warning-50 dark:bg-warning-500/10'}`}
+              >
+                <div
+                  className={`flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${is2FAEnabled ? 'bg-success-100 text-success-600 dark:bg-success-500/15 dark:text-success-300' : 'bg-warning-100 text-warning-600 dark:bg-warning-500/15 dark:text-warning-300'}`}
+                >
                   <i className={`bx ${is2FAEnabled ? 'bx-check-shield' : 'bx-error'} text-xl`}></i>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h6 className="text-sm font-semibold text-surface-900 mb-0">
                     {t('settings.2fa.title', { defaultValue: 'Two-Factor Authentication' })}
                   </h6>
-                  {loading ?
-                  <div className="h-3 w-24 bg-surface-100 dark:bg-dark-elevated rounded animate-pulse mt-1"></div> :
-                  is2FAEnabled ?
-                  <div className="flex items-center gap-2 mt-1">
+                  {loading ? (
+                    <div className="h-3 w-24 bg-surface-100 dark:bg-dark-elevated rounded animate-pulse mt-1"></div>
+                  ) : is2FAEnabled ? (
+                    <div className="flex items-center gap-2 mt-1">
                       <span className="inline-flex items-center px-1.5 py-0.5 text-[0.7rem] font-semibold text-white bg-success-500 rounded">
                         <i className="bx bx-check-circle mr-1"></i>
                         {t('settings.2fa.enabled', { defaultValue: 'Enabled' })}
                       </span>
-                      {twoFAStatus?.verifiedAt &&
-                    <small className="text-surface-500">
-                          {t('settings.2fa.enabledSince', { defaultValue: 'Since' })}{' '}
-                          {fmtDate(twoFAStatus.verifiedAt)}
+                      {twoFAStatus?.verifiedAt && (
+                        <small className="text-surface-500">
+                          {t('settings.2fa.enabledSince', { defaultValue: 'Since' })} {fmtDate(twoFAStatus.verifiedAt)}
                         </small>
-                    }
-                    </div> :
-
-                  <small className="text-surface-500">
+                      )}
+                    </div>
+                  ) : (
+                    <small className="text-surface-500">
                       {t('settings.2fa.disabledHint', { defaultValue: 'Not enabled — your account is less secure' })}
                     </small>
-                  }
+                  )}
                 </div>
               </div>
 
               <p className="text-surface-500 text-sm mb-4">
                 {t('settings.2fa.description', {
-                  defaultValue: "Add an extra layer of security. We'll ask for a code from your authenticator app when you sign in."
+                  defaultValue:
+                    "Add an extra layer of security. We'll ask for a code from your authenticator app when you sign in.",
                 })}
               </p>
 
-              {loading ?
-              <Button disabled variant="outline-primary" className="bg-transparent hover:bg-primary-600 hover:text-white w-full">
+              {loading ? (
+                <Button
+                  disabled
+                  variant="outline-primary"
+                  className="bg-transparent hover:bg-primary-600 hover:text-white w-full"
+                >
                   <Spinner className="w-4 h-4 mr-2" />
                   {t('common.loading', { defaultValue: 'Loading...' })}
-                </Button> :
-              is2FAEnabled ?
-              <Button
-
-                onClick={() => setShowDisableModal(true)} className="w-full border border-danger-200 dark:border-danger-500/30 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-500/10 transition-colors cursor-pointer rounded-[10px] py-2">
-                
+                </Button>
+              ) : is2FAEnabled ? (
+                <Button
+                  onClick={() => setShowDisableModal(true)}
+                  className="w-full border border-danger-200 dark:border-danger-500/30 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-500/10 transition-colors cursor-pointer rounded-[10px] py-2"
+                >
                   <i className="bx bx-power-off mr-1"></i>
                   {t('settings.2fa.disable', { defaultValue: 'Disable 2FA' })}
-                </Button> :
-
-              <Button
-
-                onClick={() => setShowSetupModal(true)} className="w-full">
-                
+                </Button>
+              ) : (
+                <Button onClick={() => setShowSetupModal(true)} className="w-full">
                   <i className="bx bx-lock mr-1"></i>
                   {t('settings.2fa.enable', { defaultValue: 'Enable 2FA' })}
                 </Button>
-              }
+              )}
             </div>
           </Card>
         </div>
@@ -541,20 +582,25 @@ export default function SettingsPage() {
         show={showSetupModal}
         onClose={() => setShowSetupModal(false)}
         onSuccess={() => {
-          fetchStatus();
-          toast.success(t('settings.2fa.enableSuccess', { defaultValue: 'Two-factor authentication enabled successfully' }));
+          fetchStatus()
+          toast.success(
+            t('settings.2fa.enableSuccess', { defaultValue: 'Two-factor authentication enabled successfully' })
+          )
         }}
-        token={token} />
-      
+        token={token}
+      />
+
       <Disable2FAModal
         show={showDisableModal}
         onClose={() => setShowDisableModal(false)}
         onSuccess={() => {
-          fetchStatus();
-          toast.success(t('settings.2fa.disableSuccess', { defaultValue: 'Two-factor authentication has been disabled' }));
+          fetchStatus()
+          toast.success(
+            t('settings.2fa.disableSuccess', { defaultValue: 'Two-factor authentication has been disabled' })
+          )
         }}
-        token={token} />
-      
-    </>);
-
+        token={token}
+      />
+    </>
+  )
 }

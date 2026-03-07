@@ -11,9 +11,7 @@ export default function PageSpinner() {
     <div className="flex-grow py-6">
       <div className="flex justify-center items-center py-12">
         <Spinner role="status" size="lg" className="text-primary-600" />
-
-        
       </div>
-    </div>);
-
+    </div>
+  )
 }

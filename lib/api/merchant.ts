@@ -23,10 +23,7 @@ export async function getMerchantProfile(token: string | null) {
   return apiFetch('/api/v1/user/merchant', { token })
 }
 
-export async function rotateSecret(
-  token: string | null,
-  data?: { password?: string; totpCode?: string }
-) {
+export async function rotateSecret(token: string | null, data?: { password?: string; totpCode?: string }) {
   return apiFetch('/api/v1/user/merchant/rotate-secret', {
     method: 'POST',
     token,
@@ -34,10 +31,7 @@ export async function rotateSecret(
   })
 }
 
-export async function regenerateKey(
-  token: string | null,
-  data?: { password?: string; totpCode?: string }
-) {
+export async function regenerateKey(token: string | null, data?: { password?: string; totpCode?: string }) {
   return apiFetch('/api/v1/user/merchant/regenerate-key', {
     method: 'POST',
     token,

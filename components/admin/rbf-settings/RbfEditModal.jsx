@@ -3,7 +3,7 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input, InputGroup, InputAddon, Label, Select } from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
-import { formatMs, formatRatio } from '@/lib/utils/settingsFormatters';
+import { formatMs, formatRatio } from '@/lib/utils/settingsFormatters'
 
 export default function RbfEditModal({
   t,
@@ -16,36 +16,42 @@ export default function RbfEditModal({
   onClose,
   onSave,
 }) {
-  const { tab } = editModal;
+  const { tab } = editModal
 
-  let modalTitle = '';
-  let modalIcon = 'bx-cog';
-  let modalSize = '';
+  let modalTitle = ''
+  let modalIcon = 'bx-cog'
+  let modalSize = ''
 
   if (tab === 'global') {
     const groupTitles = {
       droppedDetection: t('admin.rbfSettings.editDroppedDetection', { defaultValue: 'Edit Dropped Detection' }),
       rateLimiting: t('admin.rbfSettings.editRateLimiting', { defaultValue: 'Edit Rate Limiting' }),
       safety: t('admin.rbfSettings.editSafety', { defaultValue: 'Edit Safety Limits' }),
-    };
+    }
     const groupIcons = {
       droppedDetection: 'bx-search-alt',
       rateLimiting: 'bx-shield',
       safety: 'bx-lock-alt',
-    };
-    modalTitle = groupTitles[editModal.group];
-    modalIcon = groupIcons[editModal.group];
+    }
+    modalTitle = groupTitles[editModal.group]
+    modalIcon = groupIcons[editModal.group]
   } else {
-    modalTitle = t('admin.rbfSettings.editNetwork', { defaultValue: 'Edit RBF — {{network}}', network: editModal.network.name });
-    modalIcon = 'bx-network-chart';
-    modalSize = 'max-w-[800px]';
+    modalTitle = t('admin.rbfSettings.editNetwork', {
+      defaultValue: 'Edit RBF — {{network}}',
+      network: editModal.network.name,
+    })
+    modalIcon = 'bx-network-chart'
+    modalSize = 'max-w-[800px]'
   }
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       tabIndex="-1"
-      onClick={(e) => { if (e.target === e.currentTarget && !saving) onClose(); }}>
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !saving) onClose()
+      }}
+    >
       <div className={`w-full max-w-lg mx-4 ${modalSize}`}>
         <div className="bg-card rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200 dark:border-surface-300">
@@ -53,11 +59,35 @@ export default function RbfEditModal({
               <i className={`bx ${modalIcon} mr-2`}></i>
               {modalTitle}
             </h5>
-            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={saving}><i className="bx bx-x"></i></button>
+            <button
+              type="button"
+              className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
+              onClick={onClose}
+              disabled={saving}
+            >
+              <i className="bx bx-x"></i>
+            </button>
           </div>
           <div className="p-5">
-            {tab === 'global' && <GlobalForm t={t} editModal={editModal} editForm={editForm} updateField={updateField} formErrors={formErrors} />}
-            {tab === 'network' && <NetworkForm t={t} editModal={editModal} editForm={editForm} setEditForm={setEditForm} updateField={updateField} formErrors={formErrors} />}
+            {tab === 'global' && (
+              <GlobalForm
+                t={t}
+                editModal={editModal}
+                editForm={editForm}
+                updateField={updateField}
+                formErrors={formErrors}
+              />
+            )}
+            {tab === 'network' && (
+              <NetworkForm
+                t={t}
+                editModal={editModal}
+                editForm={editForm}
+                setEditForm={setEditForm}
+                updateField={updateField}
+                formErrors={formErrors}
+              />
+            )}
           </div>
           <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200 dark:border-surface-300">
             <Button onClick={onClose} disabled={saving} variant="outline-secondary">
@@ -71,11 +101,11 @@ export default function RbfEditModal({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
-  const { group } = editModal;
+  const { group } = editModal
 
   if (group === 'droppedDetection') {
     return (
@@ -89,11 +119,15 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
             inputMode="numeric"
             value={editForm.minNotFoundCount ?? ''}
             onChange={(e) => updateField('minNotFoundCount', e.target.value)}
-            error={formErrors.minNotFoundCount} />
-          {formErrors.minNotFoundCount && <div className="text-xs text-danger-500 mt-1">{formErrors.minNotFoundCount}</div>}
+            error={formErrors.minNotFoundCount}
+          />
+          {formErrors.minNotFoundCount && (
+            <div className="text-xs text-danger-500 mt-1">{formErrors.minNotFoundCount}</div>
+          )}
           <div className="text-xs text-surface-500 mt-1">
             {t('admin.rbfSettings.minNotFoundCountDesc', {
-              defaultValue: 'Number of consecutive checks where transaction is not found before considering it dropped.',
+              defaultValue:
+                'Number of consecutive checks where transaction is not found before considering it dropped.',
             })}
           </div>
         </div>
@@ -107,10 +141,12 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
               inputMode="numeric"
               value={editForm.minNotFoundDuration ?? ''}
               onChange={(e) => updateField('minNotFoundDuration', e.target.value)}
-               />
+            />
             <InputAddon>ms</InputAddon>
           </InputGroup>
-          {formErrors.minNotFoundDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minNotFoundDuration}</div>}
+          {formErrors.minNotFoundDuration && (
+            <div className="text-xs text-danger-500 mt-1 block">{formErrors.minNotFoundDuration}</div>
+          )}
           <div className="text-xs text-surface-500 mt-1">
             {t('admin.rbfSettings.minNotFoundDurationDesc', {
               defaultValue: 'Minimum time (milliseconds) a transaction must be missing before considering it dropped.',
@@ -118,13 +154,12 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
           </div>
           {editForm.minNotFoundDuration && !isNaN(Number(editForm.minNotFoundDuration)) && (
             <span className="text-xs text-surface-500 mt-1 inline-block">
-              <i className="bx bx-time mr-1 align-middle"></i>
-              ≈ {formatMs(editForm.minNotFoundDuration)}
+              <i className="bx bx-time mr-1 align-middle"></i>≈ {formatMs(editForm.minNotFoundDuration)}
             </span>
           )}
         </div>
       </>
-    );
+    )
   }
 
   if (group === 'rateLimiting') {
@@ -139,7 +174,8 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
             inputMode="numeric"
             value={editForm.maxRbfPerHour ?? ''}
             onChange={(e) => updateField('maxRbfPerHour', e.target.value)}
-            error={formErrors.maxRbfPerHour} />
+            error={formErrors.maxRbfPerHour}
+          />
           {formErrors.maxRbfPerHour && <div className="text-xs text-danger-500 mt-1">{formErrors.maxRbfPerHour}</div>}
           <div className="text-xs text-surface-500 mt-1">
             {t('admin.rbfSettings.maxRbfPerHourDesc', {
@@ -156,8 +192,11 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
             inputMode="numeric"
             value={editForm.maxRbfPerAddress ?? ''}
             onChange={(e) => updateField('maxRbfPerAddress', e.target.value)}
-            error={formErrors.maxRbfPerAddress} />
-          {formErrors.maxRbfPerAddress && <div className="text-xs text-danger-500 mt-1">{formErrors.maxRbfPerAddress}</div>}
+            error={formErrors.maxRbfPerAddress}
+          />
+          {formErrors.maxRbfPerAddress && (
+            <div className="text-xs text-danger-500 mt-1">{formErrors.maxRbfPerAddress}</div>
+          )}
           <div className="text-xs text-surface-500 mt-1">
             {t('admin.rbfSettings.maxRbfPerAddressDesc', {
               defaultValue: 'Maximum number of RBF replacement transactions per wallet address.',
@@ -165,7 +204,7 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
           </div>
         </div>
       </>
-    );
+    )
   }
 
   if (group === 'safety') {
@@ -179,22 +218,26 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
           inputMode="numeric"
           value={editForm.maxReplacementsPerTx ?? ''}
           onChange={(e) => updateField('maxReplacementsPerTx', e.target.value)}
-          error={formErrors.maxReplacementsPerTx} />
-        {formErrors.maxReplacementsPerTx && <div className="text-xs text-danger-500 mt-1">{formErrors.maxReplacementsPerTx}</div>}
+          error={formErrors.maxReplacementsPerTx}
+        />
+        {formErrors.maxReplacementsPerTx && (
+          <div className="text-xs text-danger-500 mt-1">{formErrors.maxReplacementsPerTx}</div>
+        )}
         <div className="text-xs text-surface-500 mt-1">
           {t('admin.rbfSettings.maxReplacementsPerTxDesc', {
-            defaultValue: 'Maximum number of times a single transaction can be replaced. Prevents infinite replacement loops.',
+            defaultValue:
+              'Maximum number of times a single transaction can be replaced. Prevents infinite replacement loops.',
           })}
         </div>
       </div>
-    );
+    )
   }
 
-  return null;
+  return null
 }
 
 function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErrors }) {
-  const { network } = editModal;
+  const { network } = editModal
 
   return (
     <>
@@ -208,13 +251,16 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
 
       {/* Enabled toggle */}
       <div className="mb-4">
-        <Label className="font-semibold">
-          {t('admin.rbfSettings.enabledLabel', { defaultValue: 'RBF Enabled' })}
-        </Label>
+        <Label className="font-semibold">{t('admin.rbfSettings.enabledLabel', { defaultValue: 'RBF Enabled' })}</Label>
         <Select
           value={editForm.enabled ?? ''}
-          onChange={(e) => setEditForm((f) => ({ ...f, enabled: e.target.value }))}>
-          {editForm.enabled === '' && <option value="" disabled>—</option>}
+          onChange={(e) => setEditForm((f) => ({ ...f, enabled: e.target.value }))}
+        >
+          {editForm.enabled === '' && (
+            <option value="" disabled>
+              —
+            </option>
+          )}
           <option value="true">{t('admin.rbfSettings.enabled', { defaultValue: 'Enabled' })}</option>
           <option value="false">{t('admin.rbfSettings.disabled', { defaultValue: 'Disabled' })}</option>
         </Select>
@@ -239,12 +285,16 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
               inputMode="numeric"
               value={editForm.gasBumpPercent ?? ''}
               onChange={(e) => updateField('gasBumpPercent', e.target.value)}
-               />
+            />
             <InputAddon>%</InputAddon>
           </InputGroup>
-          {formErrors.gasBumpPercent && <div className="text-xs text-danger-500 mt-1 block">{formErrors.gasBumpPercent}</div>}
+          {formErrors.gasBumpPercent && (
+            <div className="text-xs text-danger-500 mt-1 block">{formErrors.gasBumpPercent}</div>
+          )}
           <div className="text-xs text-surface-500 mt-1">
-            {t('admin.rbfSettings.gasBumpPercentDesc', { defaultValue: 'Percentage to increase gas price when submitting RBF replacement.' })}
+            {t('admin.rbfSettings.gasBumpPercentDesc', {
+              defaultValue: 'Percentage to increase gas price when submitting RBF replacement.',
+            })}
           </div>
         </div>
       </Card>
@@ -262,33 +312,60 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
                 {t('admin.rbfSettings.minPendingDuration', { defaultValue: 'Min Pending Duration' })}
               </Label>
               <InputGroup error={formErrors.minPendingDuration}>
-                <Input type="text" inputMode="numeric" value={editForm.minPendingDuration ?? ''} onChange={(e) => updateField('minPendingDuration', e.target.value)} />
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={editForm.minPendingDuration ?? ''}
+                  onChange={(e) => updateField('minPendingDuration', e.target.value)}
+                />
                 <InputAddon>ms</InputAddon>
               </InputGroup>
-              {formErrors.minPendingDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minPendingDuration}</div>}
-              {editForm.minPendingDuration && !isNaN(Number(editForm.minPendingDuration)) && <span className="text-xs text-surface-500">≈ {formatMs(editForm.minPendingDuration)}</span>}
+              {formErrors.minPendingDuration && (
+                <div className="text-xs text-danger-500 mt-1 block">{formErrors.minPendingDuration}</div>
+              )}
+              {editForm.minPendingDuration && !isNaN(Number(editForm.minPendingDuration)) && (
+                <span className="text-xs text-surface-500">≈ {formatMs(editForm.minPendingDuration)}</span>
+              )}
             </div>
             <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.maxPendingDuration', { defaultValue: 'Max Pending Duration' })}
               </Label>
               <InputGroup error={formErrors.maxPendingDuration}>
-                <Input type="text" inputMode="numeric" value={editForm.maxPendingDuration ?? ''} onChange={(e) => updateField('maxPendingDuration', e.target.value)} />
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={editForm.maxPendingDuration ?? ''}
+                  onChange={(e) => updateField('maxPendingDuration', e.target.value)}
+                />
                 <InputAddon>ms</InputAddon>
               </InputGroup>
-              {formErrors.maxPendingDuration && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxPendingDuration}</div>}
-              {editForm.maxPendingDuration && !isNaN(Number(editForm.maxPendingDuration)) && <span className="text-xs text-surface-500">≈ {formatMs(editForm.maxPendingDuration)}</span>}
+              {formErrors.maxPendingDuration && (
+                <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxPendingDuration}</div>
+              )}
+              {editForm.maxPendingDuration && !isNaN(Number(editForm.maxPendingDuration)) && (
+                <span className="text-xs text-surface-500">≈ {formatMs(editForm.maxPendingDuration)}</span>
+              )}
             </div>
             <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.minTimeBetweenReplaces', { defaultValue: 'Min Replace Interval' })}
               </Label>
               <InputGroup error={formErrors.minTimeBetweenReplaces}>
-                <Input type="text" inputMode="numeric" value={editForm.minTimeBetweenReplaces ?? ''} onChange={(e) => updateField('minTimeBetweenReplaces', e.target.value)} />
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={editForm.minTimeBetweenReplaces ?? ''}
+                  onChange={(e) => updateField('minTimeBetweenReplaces', e.target.value)}
+                />
                 <InputAddon>ms</InputAddon>
               </InputGroup>
-              {formErrors.minTimeBetweenReplaces && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minTimeBetweenReplaces}</div>}
-              {editForm.minTimeBetweenReplaces && !isNaN(Number(editForm.minTimeBetweenReplaces)) && <span className="text-xs text-surface-500">≈ {formatMs(editForm.minTimeBetweenReplaces)}</span>}
+              {formErrors.minTimeBetweenReplaces && (
+                <div className="text-xs text-danger-500 mt-1 block">{formErrors.minTimeBetweenReplaces}</div>
+              )}
+              {editForm.minTimeBetweenReplaces && !isNaN(Number(editForm.minTimeBetweenReplaces)) && (
+                <span className="text-xs text-surface-500">≈ {formatMs(editForm.minTimeBetweenReplaces)}</span>
+              )}
             </div>
           </div>
         </div>
@@ -308,23 +385,42 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
               </Label>
               <InputGroup error={formErrors.minAmountUsd}>
                 <InputAddon>$</InputAddon>
-                <Input type="text" inputMode="decimal" value={editForm.minAmountUsd ?? ''} onChange={(e) => updateField('minAmountUsd', e.target.value)} />
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  value={editForm.minAmountUsd ?? ''}
+                  onChange={(e) => updateField('minAmountUsd', e.target.value)}
+                />
               </InputGroup>
-              {formErrors.minAmountUsd && <div className="text-xs text-danger-500 mt-1 block">{formErrors.minAmountUsd}</div>}
+              {formErrors.minAmountUsd && (
+                <div className="text-xs text-danger-500 mt-1 block">{formErrors.minAmountUsd}</div>
+              )}
               <div className="text-xs text-surface-500 mt-1">
-                {t('admin.rbfSettings.minAmountUsdDesc', { defaultValue: 'Minimum transaction USD value to allow RBF.' })}
+                {t('admin.rbfSettings.minAmountUsdDesc', {
+                  defaultValue: 'Minimum transaction USD value to allow RBF.',
+                })}
               </div>
             </div>
             <div>
               <Label className="text-sm text-surface-500 mb-1">
                 {t('admin.rbfSettings.maxCostRatio', { defaultValue: 'Max Cost Ratio' })}
               </Label>
-              <Input type="text" inputMode="decimal" value={editForm.maxCostRatio ?? ''} onChange={(e) => updateField('maxCostRatio', e.target.value)} error={formErrors.maxCostRatio} />
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={editForm.maxCostRatio ?? ''}
+                onChange={(e) => updateField('maxCostRatio', e.target.value)}
+                error={formErrors.maxCostRatio}
+              />
               {formErrors.maxCostRatio && <div className="text-xs text-danger-500 mt-1">{formErrors.maxCostRatio}</div>}
               <div className="text-xs text-surface-500 mt-1">
-                {t('admin.rbfSettings.maxCostRatioDesc', { defaultValue: 'Max gas cost as fraction of tx value (0.05 = 5%).' })}
+                {t('admin.rbfSettings.maxCostRatioDesc', {
+                  defaultValue: 'Max gas cost as fraction of tx value (0.05 = 5%).',
+                })}
               </div>
-              {editForm.maxCostRatio && !isNaN(Number(editForm.maxCostRatio)) && <span className="text-xs text-info">= {formatRatio(editForm.maxCostRatio)}</span>}
+              {editForm.maxCostRatio && !isNaN(Number(editForm.maxCostRatio)) && (
+                <span className="text-xs text-info">= {formatRatio(editForm.maxCostRatio)}</span>
+              )}
             </div>
             <div>
               <Label className="text-sm text-surface-500 mb-1">
@@ -332,16 +428,25 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
               </Label>
               <InputGroup error={formErrors.maxCostUsd}>
                 <InputAddon>$</InputAddon>
-                <Input type="text" inputMode="decimal" value={editForm.maxCostUsd ?? ''} onChange={(e) => updateField('maxCostUsd', e.target.value)} />
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  value={editForm.maxCostUsd ?? ''}
+                  onChange={(e) => updateField('maxCostUsd', e.target.value)}
+                />
               </InputGroup>
-              {formErrors.maxCostUsd && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxCostUsd}</div>}
+              {formErrors.maxCostUsd && (
+                <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxCostUsd}</div>
+              )}
               <div className="text-xs text-surface-500 mt-1">
-                {t('admin.rbfSettings.maxCostUsdDesc', { defaultValue: 'Maximum USD gas cost for a single RBF replacement.' })}
+                {t('admin.rbfSettings.maxCostUsdDesc', {
+                  defaultValue: 'Maximum USD gas cost for a single RBF replacement.',
+                })}
               </div>
             </div>
           </div>
         </div>
       </Card>
     </>
-  );
+  )
 }

@@ -67,7 +67,11 @@ export async function verify2FA(token: string | null, code: string): Promise<Two
   })
 }
 
-export async function disable2FA(token: string | null, password: string, totpCode: string): Promise<TwoFactorDisableResponse> {
+export async function disable2FA(
+  token: string | null,
+  password: string,
+  totpCode: string
+): Promise<TwoFactorDisableResponse> {
   return apiFetch<TwoFactorDisableResponse>('/api/v1/user/2fa/disable', {
     method: 'POST',
     token,

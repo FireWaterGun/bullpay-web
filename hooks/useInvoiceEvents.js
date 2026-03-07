@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react';
-import { usePusher } from '@/app/providers';
+import { useEffect, useRef } from 'react'
+import { usePusher } from '@/app/providers'
 
-const EMPTY_CALLBACKS = {};
+const EMPTY_CALLBACKS = {}
 
 /**
  * Hook to subscribe to invoice events via Pusher
@@ -16,52 +16,52 @@ const EMPTY_CALLBACKS = {};
  * @param {Function} callbacks.onWithdrawalCompleted - Called when withdrawal is completed
  */
 export function useInvoiceEvents(invoiceId, callbacks = EMPTY_CALLBACKS) {
-  const { subscribe, unsubscribe, isConnected } = usePusher() || {};
-  const channelRef = useRef(null);
-  const callbacksRef = useRef(callbacks);
+  const { subscribe, unsubscribe, isConnected } = usePusher() || {}
+  const channelRef = useRef(null)
+  const callbacksRef = useRef(callbacks)
 
   // Keep callbacks ref up to date (intentionally no deps — runs every render)
   useEffect(() => {
-    callbacksRef.current = callbacks;
-  });
+    callbacksRef.current = callbacks
+  })
 
   useEffect(() => {
-    if (!subscribe || !isConnected || !invoiceId) return;
+    if (!subscribe || !isConnected || !invoiceId) return
 
-    const channelName = `private-invoice.${invoiceId}`;
-    const channel = subscribe(channelName);
-    channelRef.current = channel;
+    const channelName = `private-invoice.${invoiceId}`
+    const channel = subscribe(channelName)
+    channelRef.current = channel
 
     channel.bind('payment.received', (data) => {
-      callbacksRef.current.onPaymentReceived?.(data);
-    });
+      callbacksRef.current.onPaymentReceived?.(data)
+    })
 
     channel.bind('invoice.status.changed', (data) => {
-      callbacksRef.current.onStatusChanged?.(data);
-    });
+      callbacksRef.current.onStatusChanged?.(data)
+    })
 
     channel.bind('invoice.updated', (data) => {
-      callbacksRef.current.onUpdated?.(data);
-    });
+      callbacksRef.current.onUpdated?.(data)
+    })
 
     channel.bind('payment_completed', (data) => {
-      callbacksRef.current.onPaymentCompleted?.(data);
-    });
+      callbacksRef.current.onPaymentCompleted?.(data)
+    })
 
     channel.bind('withdrawal_completed', (data) => {
-      callbacksRef.current.onWithdrawalCompleted?.(data);
-    });
+      callbacksRef.current.onWithdrawalCompleted?.(data)
+    })
 
     return () => {
       if (channelRef.current) {
-        channelRef.current.unbind_all();
-        unsubscribe(channelName);
-        channelRef.current = null;
+        channelRef.current.unbind_all()
+        unsubscribe(channelName)
+        channelRef.current = null
       }
-    };
-  }, [subscribe, unsubscribe, isConnected, invoiceId]);
+    }
+  }, [subscribe, unsubscribe, isConnected, invoiceId])
 
-  return { isConnected };
+  return { isConnected }
 }
 
 /**
@@ -80,98 +80,98 @@ export function useInvoiceEvents(invoiceId, callbacks = EMPTY_CALLBACKS) {
  * @param {Function} callbacks.onWithdrawalAddressApproved - Called when withdrawal address is approved
  */
 export function useUserInvoiceEvents(userId, callbacks = EMPTY_CALLBACKS) {
-  const { subscribe, unsubscribe, isConnected } = usePusher() || {};
-  const channelRef = useRef(null);
-  const callbacksRef = useRef(callbacks);
-  const userIdRef = useRef(userId);
-  const isSubscribingRef = useRef(false);
+  const { subscribe, unsubscribe, isConnected } = usePusher() || {}
+  const channelRef = useRef(null)
+  const callbacksRef = useRef(callbacks)
+  const userIdRef = useRef(userId)
+  const isSubscribingRef = useRef(false)
 
   // Keep callbacks ref up to date (intentionally no deps — runs every render)
   useEffect(() => {
-    callbacksRef.current = callbacks;
-  });
+    callbacksRef.current = callbacks
+  })
 
   useEffect(() => {
-    if (!subscribe || !isConnected || !userId) return;
+    if (!subscribe || !isConnected || !userId) return
 
     // Prevent double subscription
-    if (isSubscribingRef.current) return;
+    if (isSubscribingRef.current) return
 
     // Only re-subscribe if userId actually changed
-    if (userIdRef.current === userId && channelRef.current) return;
+    if (userIdRef.current === userId && channelRef.current) return
 
-    isSubscribingRef.current = true;
+    isSubscribingRef.current = true
 
     // Unsubscribe from old channel if userId changed
     if (channelRef.current && userIdRef.current !== userId) {
-      const oldChannelName = `private-user.${userIdRef.current}.notifications`;
-      channelRef.current.unbind_all();
-      unsubscribe(oldChannelName);
+      const oldChannelName = `private-user.${userIdRef.current}.notifications`
+      channelRef.current.unbind_all()
+      unsubscribe(oldChannelName)
     }
 
-    userIdRef.current = userId;
+    userIdRef.current = userId
 
-    const channelName = `private-user.${userId}.notifications`;
-    const channel = subscribe(channelName);
-    channelRef.current = channel;
+    const channelName = `private-user.${userId}.notifications`
+    const channel = subscribe(channelName)
+    channelRef.current = channel
 
     channel.bind('invoice.created', (data) => {
-      callbacksRef.current.onInvoiceCreated?.(data);
-    });
+      callbacksRef.current.onInvoiceCreated?.(data)
+    })
 
     channel.bind('invoice.updated', (data) => {
-      callbacksRef.current.onInvoiceUpdated?.(data);
-    });
+      callbacksRef.current.onInvoiceUpdated?.(data)
+    })
 
     channel.bind('invoice.status.changed', (data) => {
-      callbacksRef.current.onStatusChanged?.(data);
-    });
+      callbacksRef.current.onStatusChanged?.(data)
+    })
 
     channel.bind('payment.received', (data) => {
-      callbacksRef.current.onPaymentReceived?.(data);
-    });
+      callbacksRef.current.onPaymentReceived?.(data)
+    })
 
     channel.bind('payment_completed', (data) => {
-      callbacksRef.current.onPaymentCompleted?.(data);
-    });
+      callbacksRef.current.onPaymentCompleted?.(data)
+    })
 
     channel.bind('withdrawal_completed', (data) => {
-      callbacksRef.current.onWithdrawalCompleted?.(data);
-    });
+      callbacksRef.current.onWithdrawalCompleted?.(data)
+    })
 
     channel.bind('invoice_expired', (data) => {
-      callbacksRef.current.onInvoiceExpired?.(data);
-    });
+      callbacksRef.current.onInvoiceExpired?.(data)
+    })
 
     channel.bind('withdrawal_approved', (data) => {
-      callbacksRef.current.onWithdrawalApproved?.(data);
-    });
+      callbacksRef.current.onWithdrawalApproved?.(data)
+    })
 
     channel.bind('withdrawal_rejected', (data) => {
-      callbacksRef.current.onWithdrawalRejected?.(data);
-    });
+      callbacksRef.current.onWithdrawalRejected?.(data)
+    })
 
     channel.bind('merchant_approved', (data) => {
-      callbacksRef.current.onMerchantApproved?.(data);
-    });
+      callbacksRef.current.onMerchantApproved?.(data)
+    })
 
     channel.bind('withdrawal_address_approved', (data) => {
-      callbacksRef.current.onWithdrawalAddressApproved?.(data);
-    });
+      callbacksRef.current.onWithdrawalAddressApproved?.(data)
+    })
 
-    isSubscribingRef.current = false;
+    isSubscribingRef.current = false
 
     return () => {
       if (channelRef.current) {
-        const chName = `private-user.${userIdRef.current}.notifications`;
-        channelRef.current.unbind_all();
-        if (unsubscribe) unsubscribe(chName);
-        channelRef.current = null;
+        const chName = `private-user.${userIdRef.current}.notifications`
+        channelRef.current.unbind_all()
+        if (unsubscribe) unsubscribe(chName)
+        channelRef.current = null
       }
-    };
-  }, [userId, isConnected, subscribe, unsubscribe]);
+    }
+  }, [userId, isConnected, subscribe, unsubscribe])
 
-  return { isConnected };
+  return { isConnected }
 }
 
 /**
@@ -182,40 +182,40 @@ export function useUserInvoiceEvents(userId, callbacks = EMPTY_CALLBACKS) {
  * @param {Function} callbacks.onSweepCompleted - Called when sweep is completed
  */
 export function useSystemNotifications(isAdmin, callbacks = EMPTY_CALLBACKS) {
-  const { subscribe, unsubscribe, isConnected } = usePusher() || {};
-  const channelRef = useRef(null);
-  const callbacksRef = useRef(callbacks);
-  const isSubscribingRef = useRef(false);
+  const { subscribe, unsubscribe, isConnected } = usePusher() || {}
+  const channelRef = useRef(null)
+  const callbacksRef = useRef(callbacks)
+  const isSubscribingRef = useRef(false)
 
   // Keep callbacks ref up to date (intentionally no deps — runs every render)
   useEffect(() => {
-    callbacksRef.current = callbacks;
-  });
+    callbacksRef.current = callbacks
+  })
 
   useEffect(() => {
-    if (!subscribe || !isConnected || !isAdmin) return;
-    if (isSubscribingRef.current || channelRef.current) return;
+    if (!subscribe || !isConnected || !isAdmin) return
+    if (isSubscribingRef.current || channelRef.current) return
 
-    isSubscribingRef.current = true;
+    isSubscribingRef.current = true
 
-    const channelName = 'private-system.notifications';
-    const channel = subscribe(channelName);
-    channelRef.current = channel;
+    const channelName = 'private-system.notifications'
+    const channel = subscribe(channelName)
+    channelRef.current = channel
 
     channel.bind('sweep_completed', (data) => {
-      callbacksRef.current.onSweepCompleted?.(data);
-    });
+      callbacksRef.current.onSweepCompleted?.(data)
+    })
 
-    isSubscribingRef.current = false;
+    isSubscribingRef.current = false
 
     return () => {
       if (channelRef.current) {
-        channelRef.current.unbind_all();
-        unsubscribe(channelName);
-        channelRef.current = null;
+        channelRef.current.unbind_all()
+        unsubscribe(channelName)
+        channelRef.current = null
       }
-    };
-  }, [isAdmin, isConnected, subscribe, unsubscribe]);
+    }
+  }, [isAdmin, isConnected, subscribe, unsubscribe])
 
-  return { isConnected };
+  return { isConnected }
 }

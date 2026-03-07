@@ -41,7 +41,7 @@ export async function getNotifications(
   const queryParams = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
-    includeRead: String(includeRead)
+    includeRead: String(includeRead),
   })
 
   const data = await apiFetch<any>(`/api/v1/user/notifications?${queryParams}`, { token })
@@ -59,7 +59,7 @@ export async function getNotifications(
       totalPages: meta.lastPage || meta.totalPages || 1,
       hasNext: meta.hasNextPage ?? false,
       hasPrev: meta.hasPrevPage ?? false,
-    }
+    },
   }
 }
 
@@ -68,10 +68,7 @@ export async function getUnreadCount(token?: string): Promise<number> {
   return data.unreadCount || 0
 }
 
-export async function markAsRead(
-  notificationIds: string[],
-  token?: string
-): Promise<void> {
+export async function markAsRead(notificationIds: string[], token?: string): Promise<void> {
   await apiFetch<any>('/api/v1/user/notifications/mark-as-read', {
     method: 'PATCH',
     token,
@@ -86,10 +83,7 @@ export async function markAllAsRead(token?: string): Promise<void> {
   })
 }
 
-export async function deleteNotifications(
-  notificationIds: string[],
-  token?: string
-): Promise<void> {
+export async function deleteNotifications(notificationIds: string[], token?: string): Promise<void> {
   await apiFetch<any>('/api/v1/user/notifications', {
     method: 'DELETE',
     token,

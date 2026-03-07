@@ -1,27 +1,27 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { useState, useEffect, useRef } from 'react'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
 import { Input, InputGroup, InputIcon, Label } from '../ui/Input'
 
 export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, onRegenerate, toast, t }) {
-  const [showApiKey, setShowApiKey] = useState(false);
-  const apiKeyTimerRef = useRef(null);
+  const [showApiKey, setShowApiKey] = useState(false)
+  const apiKeyTimerRef = useRef(null)
 
   useEffect(() => {
     if (showApiKey) {
-      apiKeyTimerRef.current = setTimeout(() => setShowApiKey(false), 30_000);
-      return () => clearTimeout(apiKeyTimerRef.current);
+      apiKeyTimerRef.current = setTimeout(() => setShowApiKey(false), 30_000)
+      return () => clearTimeout(apiKeyTimerRef.current)
     }
-  }, [showApiKey]);
+  }, [showApiKey])
 
-  const displayKey = apiKey ?
-  showApiKey ?
-  apiKey :
-  `${apiKey.slice(0, 8)}${'••••••••••••••••'}${apiKey.slice(-6)}` :
-  '-';
+  const displayKey = apiKey
+    ? showApiKey
+      ? apiKey
+      : `${apiKey.slice(0, 8)}${'••••••••••••••••'}${apiKey.slice(-6)}`
+    : '-'
 
   return (
     <Card className="mb-4">
@@ -46,47 +46,48 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             <InputIcon className="bg-surface-100 dark:bg-dark-elevated">
               <i className="bx bx-key text-[0.9rem]"></i>
             </InputIcon>
-            <Input
-              type="text"
+            <Input type="text" value={displayKey} readOnly className="font-mono text-[0.85rem] tracking-[0.02em]" />
 
-              value={displayKey}
-              readOnly className="font-mono text-[0.85rem] tracking-[0.02em]" />
-
-            
-            {apiKey &&
-            <>
+            {apiKey && (
+              <>
                 <Button
-
-                onClick={() => setShowApiKey((v) => !v)}
-                title={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })}
-                aria-label={showApiKey ? t('merchant.hide', { defaultValue: 'Hide' }) : t('merchant.reveal', { defaultValue: 'Reveal' })}
-                variant="outline-secondary"
-                size="icon">
-                
+                  onClick={() => setShowApiKey((v) => !v)}
+                  title={
+                    showApiKey
+                      ? t('merchant.hide', { defaultValue: 'Hide' })
+                      : t('merchant.reveal', { defaultValue: 'Reveal' })
+                  }
+                  aria-label={
+                    showApiKey
+                      ? t('merchant.hide', { defaultValue: 'Hide' })
+                      : t('merchant.reveal', { defaultValue: 'Reveal' })
+                  }
+                  variant="outline-secondary"
+                  size="icon"
+                >
                   <i className={`bx ${showApiKey ? 'bx-hide' : 'bx-show'}`}></i>
                 </Button>
                 <Button
-
-                onClick={async () => {
-                  const ok = await copyText(apiKey);
-                  if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }));
-                }}
-                title={t('actions.copy', { defaultValue: 'Copy' })}
-                aria-label={t('actions.copy', { defaultValue: 'Copy' })}
-                variant="outline-secondary"
-                size="icon">
-                
+                  onClick={async () => {
+                    const ok = await copyText(apiKey)
+                    if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
+                  }}
+                  title={t('actions.copy', { defaultValue: 'Copy' })}
+                  aria-label={t('actions.copy', { defaultValue: 'Copy' })}
+                  variant="outline-secondary"
+                  size="icon"
+                >
                   <i className="bx bx-copy"></i>
                 </Button>
               </>
-            }
+            )}
           </InputGroup>
-          {showApiKey &&
-          <small className="text-warning-600 dark:text-warning-400 block mt-1">
+          {showApiKey && (
+            <small className="text-warning-600 dark:text-warning-400 block mt-1">
               <i className="bx bx-info-circle mr-1"></i>
               {t('merchant.autoHide', { defaultValue: 'Auto-hides after 30 seconds' })}
             </small>
-          }
+          )}
         </div>
 
         {/* API Secret */}
@@ -101,11 +102,11 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             </InputIcon>
             <Input
               type="text"
-
               value={apiSecretMasked || '••••••••••••••••••••••••'}
-              readOnly className="font-mono text-[0.85rem] tracking-[0.02em]" />
+              readOnly
+              className="font-mono text-[0.85rem] tracking-[0.02em]"
+            />
 
-            
             <InputIcon className="text-sm bg-surface-100 dark:bg-dark-elevated">
               <i className="bx bx-lock-alt mr-1 text-xs"></i>
               {t('merchant.secretMasked', { defaultValue: 'masked' })}
@@ -125,6 +126,6 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
           </Button>
         </div>
       </div>
-    </Card>);
-
+    </Card>
+  )
 }

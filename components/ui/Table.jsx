@@ -7,8 +7,10 @@
 export default function Table({ responsive = true, className = '', children, ...rest }) {
   const tableCls = [
     'w-full text-base align-middle',
+    // thead row bg
+    '[&_thead]:bg-surface-100/60 dark:[&_thead]:bg-white/4',
     // th
-    '[&_th]:font-semibold [&_th]:text-surface-600 [&_th]:text-[0.8125rem] [&_th]:uppercase [&_th]:tracking-[0.2px]',
+    '[&_th]:font-semibold [&_th]:text-surface-500 [&_th]:text-[0.8125rem] [&_th]:tracking-[0.2px]',
     '[&_th]:px-5 [&_th]:py-[0.782rem]',
     '[&_thead_th]:border-b [&_thead_th]:border-surface-200',
     // td
@@ -22,7 +24,9 @@ export default function Table({ responsive = true, className = '', children, ...
     'dark:[&>:not(caption)>*>*]:border-surface-200',
     'dark:[&_tbody_tr:hover>*]:bg-white/4',
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   const table = (
     <table className={tableCls} {...rest}>
@@ -32,9 +36,5 @@ export default function Table({ responsive = true, className = '', children, ...
 
   if (!responsive) return table
 
-  return (
-    <div className="overflow-x-auto [-webkit-overflow-scrolling:touch]">
-      {table}
-    </div>
-  )
+  return <div className="overflow-x-auto [-webkit-overflow-scrolling:touch]">{table}</div>
 }

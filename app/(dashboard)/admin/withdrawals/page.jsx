@@ -17,7 +17,11 @@ import { formatAmount as formatAmountHelper } from '@/components/balance/withdra
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function WithdrawalTransactions() {
-  return <Suspense><WithdrawalTransactionsContent /></Suspense>
+  return (
+    <Suspense>
+      <WithdrawalTransactionsContent />
+    </Suspense>
+  )
 }
 
 function WithdrawalTransactionsContent() {
@@ -26,7 +30,7 @@ function WithdrawalTransactionsContent() {
   const toast = useToast()
   const searchParams = useSearchParams()
 
-  const locale = useLocale();
+  const locale = useLocale()
 
   const initStatus = searchParams.get('status') || ''
   const initUserId = searchParams.get('userId') || ''
@@ -91,7 +95,9 @@ function WithdrawalTransactionsContent() {
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
-    Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') params.set(k, v) })
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') params.set(k, v)
+    })
     if (page > 1) params.set('page', page)
     window.history.replaceState(null, '', `?${params.toString()}`)
   }
@@ -170,7 +176,9 @@ function WithdrawalTransactionsContent() {
     }
 
     if (rejectReason.trim().length < 10) {
-      toast.error(t('withdrawal.rejectReasonTooShort', { defaultValue: 'The reason field must have at least 10 characters' }))
+      toast.error(
+        t('withdrawal.rejectReasonTooShort', { defaultValue: 'The reason field must have at least 10 characters' })
+      )
       return
     }
 
@@ -191,7 +199,6 @@ function WithdrawalTransactionsContent() {
       setRejecting(false)
     }
   }
-
 
   if (loading && withdrawals.length === 0) {
     return <PageSpinner />

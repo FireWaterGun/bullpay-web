@@ -4,13 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 /* Pagination — replaces the 257 inline pagination blocks.
    Expects: { page, totalPages, total, limit, hasPrev, hasNext } */
-export default function Pagination({
-  pagination,
-  onPageChange,
-  loading = false,
-  showInfo = true,
-  className = '',
-}) {
+export default function Pagination({ pagination, onPageChange, loading = false, showInfo = true, className = '' }) {
   const { t } = useTranslation()
 
   if (!pagination || pagination.total <= 0) return null
@@ -30,8 +24,8 @@ export default function Pagination({
   ].join(' ')
 
   const btnFirst = `${btn} rounded-l-btn -mr-px`
-  const btnMid   = `${btn} -mr-px`
-  const btnLast  = `${btn} rounded-r-btn`
+  const btnMid = `${btn} -mr-px`
+  const btnLast = `${btn} rounded-r-btn`
 
   return (
     <div className={`flex flex-wrap justify-between items-center gap-3 ${className}`}>
@@ -61,12 +55,7 @@ export default function Pagination({
           {page} / {totalPages}
         </button>
 
-        <button
-          type="button"
-          className={btnLast}
-          disabled={!hasNext || loading}
-          onClick={() => onPageChange(page + 1)}
-        >
+        <button type="button" className={btnLast} disabled={!hasNext || loading} onClick={() => onPageChange(page + 1)}>
           {t('actions.next', { defaultValue: 'Next' })}
           <i className="bx bx-chevron-right text-base" />
         </button>

@@ -41,8 +41,8 @@ export async function getMyLedgerEntries(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
     },
   }
 }

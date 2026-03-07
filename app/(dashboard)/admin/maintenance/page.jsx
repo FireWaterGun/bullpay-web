@@ -25,12 +25,12 @@ const MAINTENANCE_KEYS = [
 ]
 
 const LEVEL_MATRIX = [
-  { label: 'User API',        none: true,  partial: false, full: false },
-  { label: 'Merchant (GET)',   none: true,  partial: true,  full: false },
-  { label: 'Merchant (POST)',  none: true,  partial: false, full: false },
-  { label: 'Admin API',        none: true,  partial: true,  full: true },
-  { label: 'Background Jobs',  none: true,  partial: true,  full: true },
-  { label: 'Webhooks',         none: true,  partial: true,  full: true },
+  { label: 'User API', none: true, partial: false, full: false },
+  { label: 'Merchant (GET)', none: true, partial: true, full: false },
+  { label: 'Merchant (POST)', none: true, partial: false, full: false },
+  { label: 'Admin API', none: true, partial: true, full: true },
+  { label: 'Background Jobs', none: true, partial: true, full: true },
+  { label: 'Webhooks', none: true, partial: true, full: true },
 ]
 
 const LEVEL_CARD_STYLES = {
@@ -63,7 +63,9 @@ function getLevelOptions(t) {
     {
       value: 'partial',
       label: t('admin.maintenance.levelPartial', { defaultValue: 'Partial' }),
-      description: t('admin.maintenance.levelPartialDesc', { defaultValue: 'Block user API + merchant write, allow merchant read + background jobs' }),
+      description: t('admin.maintenance.levelPartialDesc', {
+        defaultValue: 'Block user API + merchant write, allow merchant read + background jobs',
+      }),
       color: 'warning',
       icon: 'bx-error',
     },
@@ -85,16 +87,17 @@ function isValidIp(ip) {
   if (!trimmed) return false
   const ipv4Re = /^(\d{1,3}\.){3}\d{1,3}$/
   if (ipv4Re.test(trimmed)) {
-    return trimmed.split('.').every((o) => { const n = Number(o); return n >= 0 && n <= 255 })
+    return trimmed.split('.').every((o) => {
+      const n = Number(o)
+      return n >= 0 && n <= 255
+    })
   }
   if (trimmed === '::1') return true
   return /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/.test(trimmed)
 }
 
 function StatusIcon({ ok }) {
-  return ok
-    ? <i className="bx bx-check text-success-500" />
-    : <i className="bx bx-x text-danger-500" />
+  return ok ? <i className="bx bx-check text-success-500" /> : <i className="bx bx-x text-danger-500" />
 }
 
 function HintText({ children }) {
@@ -149,10 +152,18 @@ function LevelMatrix({ t }) {
       <tbody>
         {LEVEL_MATRIX.map((row) => (
           <tr key={row.label}>
-            <td><small>{row.label}</small></td>
-            <td className="text-center"><StatusIcon ok={row.none} /></td>
-            <td className="text-center"><StatusIcon ok={row.partial} /></td>
-            <td className="text-center"><StatusIcon ok={row.full} /></td>
+            <td>
+              <small>{row.label}</small>
+            </td>
+            <td className="text-center">
+              <StatusIcon ok={row.none} />
+            </td>
+            <td className="text-center">
+              <StatusIcon ok={row.partial} />
+            </td>
+            <td className="text-center">
+              <StatusIcon ok={row.full} />
+            </td>
           </tr>
         ))}
       </tbody>
@@ -162,9 +173,15 @@ function LevelMatrix({ t }) {
 
 function TipsCard({ t }) {
   const tips = [
-    t('admin.maintenance.tip1', { defaultValue: 'Use Partial for UI/frontend updates \u2014 merchants can still check payment status.' }),
-    t('admin.maintenance.tip2', { defaultValue: 'Use Full only for database migrations or critical infrastructure changes.' }),
-    t('admin.maintenance.tip3', { defaultValue: 'Background jobs (watchers, sweeps, webhooks) continue running in both modes.' }),
+    t('admin.maintenance.tip1', {
+      defaultValue: 'Use Partial for UI/frontend updates \u2014 merchants can still check payment status.',
+    }),
+    t('admin.maintenance.tip2', {
+      defaultValue: 'Use Full only for database migrations or critical infrastructure changes.',
+    }),
+    t('admin.maintenance.tip3', {
+      defaultValue: 'Background jobs (watchers, sweeps, webhooks) continue running in both modes.',
+    }),
     t('admin.maintenance.tip4', { defaultValue: 'Changes take effect immediately via Redis cache invalidation.' }),
   ]
 
@@ -218,7 +235,9 @@ export default function AdminMaintenancePage() {
   const validateForm = useCallback(() => {
     const e = {}
     if (level !== 'none' && !messageEn.trim()) {
-      e.messageEn = t('admin.maintenance.messageEnRequired', { defaultValue: 'Message is required when maintenance is active' })
+      e.messageEn = t('admin.maintenance.messageEnRequired', {
+        defaultValue: 'Message is required when maintenance is active',
+      })
     }
     if (estimatedEnd.trim()) {
       if (isNaN(new Date(estimatedEnd).getTime())) {
@@ -233,11 +252,16 @@ export default function AdminMaintenancePage() {
         } else {
           for (const entry of parsed) {
             if (typeof entry !== 'string' || !entry.trim()) {
-              e.allowedIps = t('admin.maintenance.invalidIpEntry', { defaultValue: 'Each entry must be a non-empty string' })
+              e.allowedIps = t('admin.maintenance.invalidIpEntry', {
+                defaultValue: 'Each entry must be a non-empty string',
+              })
               break
             }
             if (!isValidIp(entry)) {
-              e.allowedIps = t('admin.maintenance.invalidIpFormat', { ip: entry.trim(), defaultValue: `"${entry.trim()}" is not a valid IPv4 or IPv6 address` })
+              e.allowedIps = t('admin.maintenance.invalidIpFormat', {
+                ip: entry.trim(),
+                defaultValue: `"${entry.trim()}" is not a valid IPv4 or IPv6 address`,
+              })
               break
             }
           }
@@ -251,50 +275,72 @@ export default function AdminMaintenancePage() {
 
   /* ── Data loading ── */
 
-  const loadSettings = useCallback(async (silent = false) => {
-    if (!token) return
-    if (!silent) setLoading(true)
-    try {
-      const results = await Promise.all(
-        MAINTENANCE_KEYS.map(async (key) => {
-          try {
-            const s = await getSettingByKey(token, key)
-            return { key, value: s?.value ?? s?.defaultValue ?? '' }
-          } catch { return { key, value: '' } }
-        }),
-      )
-      const values = Object.fromEntries(results.map(({ key, value }) => [key, value]))
-      setLevel(values['maintenance.level'] || 'none')
-      setMessageEn(values['maintenance.message_en'] || '')
-      setEstimatedEnd(values['maintenance.estimated_end'] || '')
-      setAllowedIps(values['maintenance.allowed_ips'] || '[]')
-    } catch (error) {
-      logger.error('Failed to load maintenance settings:', error)
-      toastRef.current.error(t('admin.maintenance.loadError', { defaultValue: 'Failed to load maintenance settings' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, t])
+  const loadSettings = useCallback(
+    async (silent = false) => {
+      if (!token) return
+      if (!silent) setLoading(true)
+      try {
+        const results = await Promise.all(
+          MAINTENANCE_KEYS.map(async (key) => {
+            try {
+              const s = await getSettingByKey(token, key)
+              return { key, value: s?.value ?? s?.defaultValue ?? '' }
+            } catch {
+              return { key, value: '' }
+            }
+          })
+        )
+        const values = Object.fromEntries(results.map(({ key, value }) => [key, value]))
+        setLevel(values['maintenance.level'] || 'none')
+        setMessageEn(values['maintenance.message_en'] || '')
+        setEstimatedEnd(values['maintenance.estimated_end'] || '')
+        setAllowedIps(values['maintenance.allowed_ips'] || '[]')
+      } catch (error) {
+        logger.error('Failed to load maintenance settings:', error)
+        toastRef.current.error(
+          t('admin.maintenance.loadError', { defaultValue: 'Failed to load maintenance settings' })
+        )
+      } finally {
+        setLoading(false)
+      }
+    },
+    [token, t]
+  )
 
   const loadLiveStatus = useCallback(async () => {
-    try { setLiveStatus(await getSystemStatus()) }
-    catch { setLiveStatus(null) }
+    try {
+      setLiveStatus(await getSystemStatus())
+    } catch {
+      setLiveStatus(null)
+    }
   }, [])
 
-  useEffect(() => { loadSettings(); loadLiveStatus() }, [loadSettings, loadLiveStatus])
-  useEffect(() => { const id = setInterval(loadLiveStatus, 15_000); return () => clearInterval(id) }, [loadLiveStatus])
+  useEffect(() => {
+    loadSettings()
+    loadLiveStatus()
+  }, [loadSettings, loadLiveStatus])
+  useEffect(() => {
+    const id = setInterval(loadLiveStatus, 15_000)
+    return () => clearInterval(id)
+  }, [loadLiveStatus])
 
   /* ── Actions ── */
 
   const notifyStatusChanged = () => window.dispatchEvent(new Event('maintenance-status-changed'))
 
-  const toastResult = useCallback((lv) => {
-    toastRef.current.success(
-      lv === 'none'
-        ? t('admin.maintenance.disabled', { defaultValue: 'Maintenance mode disabled' })
-        : t('admin.maintenance.enabled', { defaultValue: 'Maintenance mode activated ({level})' }).replace('{level}', lv),
-    )
-  }, [t])
+  const toastResult = useCallback(
+    (lv) => {
+      toastRef.current.success(
+        lv === 'none'
+          ? t('admin.maintenance.disabled', { defaultValue: 'Maintenance mode disabled' })
+          : t('admin.maintenance.enabled', { defaultValue: 'Maintenance mode activated ({level})' }).replace(
+              '{level}',
+              lv
+            )
+      )
+    },
+    [t]
+  )
 
   async function handleSave() {
     if (!token) return
@@ -375,12 +421,20 @@ export default function AdminMaintenancePage() {
 
       {/* Live Status */}
       {liveStatus && (
-        <Alert variant={liveStatus.maintenance ? (liveStatus.level === 'full' ? 'danger' : 'warning') : 'success'} className="flex items-center mb-4">
-          <i className={`bx ${liveStatus.maintenance ? (liveStatus.level === 'full' ? 'bx-x-circle' : 'bx-error') : 'bx-check-circle'} mr-2 text-xl`} />
+        <Alert
+          variant={liveStatus.maintenance ? (liveStatus.level === 'full' ? 'danger' : 'warning') : 'success'}
+          className="flex items-center mb-4"
+        >
+          <i
+            className={`bx ${liveStatus.maintenance ? (liveStatus.level === 'full' ? 'bx-x-circle' : 'bx-error') : 'bx-check-circle'} mr-2 text-xl`}
+          />
           <div>
             <strong>{t('admin.maintenance.liveStatus', { defaultValue: 'Live Status' })}:</strong>{' '}
             {liveStatus.maintenance
-              ? t('admin.maintenance.systemDown', { defaultValue: 'System is in maintenance mode ({level})' }).replace('{level}', liveStatus.level)
+              ? t('admin.maintenance.systemDown', { defaultValue: 'System is in maintenance mode ({level})' }).replace(
+                  '{level}',
+                  liveStatus.level
+                )
               : t('admin.maintenance.systemUp', { defaultValue: 'System is operating normally' })}
           </div>
         </Alert>
@@ -431,7 +485,10 @@ export default function AdminMaintenancePage() {
                 <Input
                   rows={2}
                   value={messageEn}
-                  onChange={(e) => { setMessageEn(e.target.value); clearError('messageEn') }}
+                  onChange={(e) => {
+                    setMessageEn(e.target.value)
+                    clearError('messageEn')
+                  }}
                   placeholder="System is under maintenance. Please try again later."
                   error={errors.messageEn}
                 />
@@ -440,9 +497,7 @@ export default function AdminMaintenancePage() {
 
               {/* Estimated End */}
               <div className="mb-4">
-                <Label>
-                  {t('admin.maintenance.estimatedEnd', { defaultValue: 'Estimated End Time' })}
-                </Label>
+                <Label>{t('admin.maintenance.estimatedEnd', { defaultValue: 'Estimated End Time' })}</Label>
                 <div className="grid grid-cols-12 gap-x-6 gap-2">
                   <div className="col-span-7">
                     <Input
@@ -450,7 +505,10 @@ export default function AdminMaintenancePage() {
                       value={estimatedEnd ? estimatedEnd.slice(0, 10) : ''}
                       onChange={(e) => {
                         const d = e.target.value
-                        if (!d) { setEstimatedEnd(''); return }
+                        if (!d) {
+                          setEstimatedEnd('')
+                          return
+                        }
                         const time = estimatedEnd ? estimatedEnd.slice(11, 16) : '00:00'
                         setEstimatedEnd(new Date(`${d}T${time}`).toISOString())
                       }}
@@ -470,25 +528,34 @@ export default function AdminMaintenancePage() {
                   </div>
                 </div>
                 <HintText>
-                  {t('admin.maintenance.estimatedEndHelp', { defaultValue: 'Leave empty if unknown. Shown to users and in Retry-After header.' })}
+                  {t('admin.maintenance.estimatedEndHelp', {
+                    defaultValue: 'Leave empty if unknown. Shown to users and in Retry-After header.',
+                  })}
                 </HintText>
               </div>
 
               {/* Allowed IPs */}
               <div className="mb-5">
-                <Label>
-                  {t('admin.maintenance.allowedIps', { defaultValue: 'Allowed IPs (bypass maintenance)' })}
-                </Label>
+                <Label>{t('admin.maintenance.allowedIps', { defaultValue: 'Allowed IPs (bypass maintenance)' })}</Label>
                 <Input
                   type="text"
                   value={allowedIps}
-                  onChange={(e) => { setAllowedIps(e.target.value); clearError('allowedIps') }}
+                  onChange={(e) => {
+                    setAllowedIps(e.target.value)
+                    clearError('allowedIps')
+                  }}
                   placeholder='["1.2.3.4", "5.6.7.8"]'
                   error={errors.allowedIps}
                 />
-                {errors.allowedIps
-                  ? <ErrorText>{errors.allowedIps}</ErrorText>
-                  : <HintText>{t('admin.maintenance.allowedIpsHelp', { defaultValue: 'JSON array of IPs that can access the system during maintenance.' })}</HintText>}
+                {errors.allowedIps ? (
+                  <ErrorText>{errors.allowedIps}</ErrorText>
+                ) : (
+                  <HintText>
+                    {t('admin.maintenance.allowedIpsHelp', {
+                      defaultValue: 'JSON array of IPs that can access the system during maintenance.',
+                    })}
+                  </HintText>
+                )}
               </div>
 
               {/* Save */}
@@ -533,10 +600,19 @@ export default function AdminMaintenancePage() {
         title={t('admin.maintenance.confirmToggleTitle', { defaultValue: 'Change Maintenance Mode' })}
         message={
           pendingToggle === 'none'
-            ? t('admin.maintenance.confirmDisable', { defaultValue: 'Are you sure you want to disable maintenance mode? The system will be fully accessible to all users.' })
+            ? t('admin.maintenance.confirmDisable', {
+                defaultValue:
+                  'Are you sure you want to disable maintenance mode? The system will be fully accessible to all users.',
+              })
             : pendingToggle === 'full'
-              ? t('admin.maintenance.confirmFull', { defaultValue: 'Are you sure you want to enable Full maintenance mode? All user and merchant APIs will be blocked immediately.' })
-              : t('admin.maintenance.confirmPartial', { defaultValue: 'Are you sure you want to enable Partial maintenance mode? User APIs and merchant write operations will be blocked.' })
+              ? t('admin.maintenance.confirmFull', {
+                  defaultValue:
+                    'Are you sure you want to enable Full maintenance mode? All user and merchant APIs will be blocked immediately.',
+                })
+              : t('admin.maintenance.confirmPartial', {
+                  defaultValue:
+                    'Are you sure you want to enable Partial maintenance mode? User APIs and merchant write operations will be blocked.',
+                })
         }
         confirmText={
           pendingToggle === 'none'

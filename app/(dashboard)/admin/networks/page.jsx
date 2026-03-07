@@ -1,22 +1,22 @@
-'use client';
+'use client'
 
-import { useEffect, useState, useCallback } from 'react';
-import NextImage from 'next/image';
+import { useEffect, useState, useCallback } from 'react'
+import NextImage from 'next/image'
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useAuth } from '@/app/providers';
-import { getNetworks } from '@/lib/api/admin';
-import TableEmptyState from '@/components/TableEmptyState';
-import NetworkEditModal from '@/components/admin/NetworkEditModal';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useAuth } from '@/app/providers'
+import { getNetworks } from '@/lib/api/admin'
+import TableEmptyState from '@/components/TableEmptyState'
+import NetworkEditModal from '@/components/admin/NetworkEditModal'
 import Alert from '@/components/ui/Alert'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input, Label } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
-const DEFAULT_PAGINATION = { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false };
+const DEFAULT_PAGINATION = { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false }
 
 // Network color mapping for gradient badges
 function getNetworkColor(symbol, darker = false) {
@@ -31,19 +31,22 @@ function getNetworkColor(symbol, darker = false) {
     ARB: darker ? '#1F4FA0' : '#2D374B',
     BASE: darker ? '#0040C8' : '#0052FF',
     OP: darker ? '#CC0000' : '#FF0420',
-    MANTA: darker ? '#1A1A2E' : '#2A2A4A'
-  };
-  return colors[symbol?.toUpperCase()] || (darker ? '#6366F1' : '#818CF8');
+    MANTA: darker ? '#1A1A2E' : '#2A2A4A',
+  }
+  return colors[symbol?.toUpperCase()] || (darker ? '#6366F1' : '#818CF8')
 }
 
 function tryLoadImage(url) {
   return new Promise((resolve) => {
-    if (!url) {resolve(false);return;}
-    const img = new Image();
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = url;
-  });
+    if (!url) {
+      resolve(false)
+      return
+    }
+    const img = new Image()
+    img.onload = () => resolve(true)
+    img.onerror = () => resolve(false)
+    img.src = url
+  })
 }
 
 // Manual mapping: network symbol or name → icon filename (without extension)
@@ -51,35 +54,35 @@ const NETWORK_ICON_MAP = {
   'bitcoin segwit': 'segwit',
   'lightning network': 'btc',
   'zksync era': 'zk',
-  'starknet': 'strk',
-  'opbnb': 'bnb',
+  starknet: 'strk',
+  opbnb: 'bnb',
   'avalanche c-chain': 'avax',
   'bnb smart chain': 'bsc',
   'arbitrum one': 'arbitrum',
-  'scroll': 'scroll',
-  'celo': 'celo',
+  scroll: 'scroll',
+  celo: 'celo',
   'kava evm': 'kava',
   'polkadot asset hub': 'dot',
-  'ronin': 'ronin',
-  'sonic': 's'
-};
+  ronin: 'ronin',
+  sonic: 's',
+}
 
 async function findNetworkImage(network) {
   if (network.logoUrl) {
-    if (await tryLoadImage(network.logoUrl)) return { id: network.id, url: network.logoUrl, type: 'remote' };
+    if (await tryLoadImage(network.logoUrl)) return { id: network.id, url: network.logoUrl, type: 'remote' }
   }
-  const symbol = (network.symbol || '').toLowerCase();
-  const name = (network.name || '').toLowerCase();
-  const nameNoSpaces = name.replace(/\s+/g, '');
-  const mapped = NETWORK_ICON_MAP[name];
-  const candidates = [...new Set([mapped, symbol, nameNoSpaces].filter(Boolean))];
+  const symbol = (network.symbol || '').toLowerCase()
+  const name = (network.name || '').toLowerCase()
+  const nameNoSpaces = name.replace(/\s+/g, '')
+  const mapped = NETWORK_ICON_MAP[name]
+  const candidates = [...new Set([mapped, symbol, nameNoSpaces].filter(Boolean))]
   for (const key of candidates) {
     for (const ext of ['svg', 'png']) {
-      const url = `/assets/img/coins/${key}.${ext}`;
-      if (await tryLoadImage(url)) return { id: network.id, url, type: 'local' };
+      const url = `/assets/img/coins/${key}.${ext}`
+      if (await tryLoadImage(url)) return { id: network.id, url, type: 'local' }
     }
   }
-  return { id: network.id, url: null, type: 'gradient' };
+  return { id: network.id, url: null, type: 'gradient' }
 }
 
 function NetworkIcon({ network, imageInfo }) {
@@ -88,27 +91,45 @@ function NetworkIcon({ network, imageInfo }) {
       <NextImage
         src={imageInfo.url}
         alt={network.symbol || network.name}
-        width={28} height={28}
+        width={28}
+        height={28}
         unoptimized
         className="mr-2 object-contain"
       />
-    );
+    )
   }
   return (
     <div
       className="mr-2 rounded-full flex items-center justify-center font-bold w-7 h-7 text-white text-[0.6rem]"
-      style={{ background: `linear-gradient(135deg, ${getNetworkColor(network.symbol)} 0%, ${getNetworkColor(network.symbol, true)} 100%)`, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+      style={{
+        background: `linear-gradient(135deg, ${getNetworkColor(network.symbol)} 0%, ${getNetworkColor(network.symbol, true)} 100%)`,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+      }}
       title={network.name}
     >
       {(network.symbol || network.name || '?').substring(0, 3)}
     </div>
-  );
+  )
 }
 
 function getStatusBadge(status, t) {
-  if (status === 'active') return <Badge color="success" label>{t('admin.active', { defaultValue: 'Active' })}</Badge>;
-  if (status === 'maintenance') return <Badge color="warning" label>{t('crypto.maintenance', { defaultValue: 'Maintenance' })}</Badge>;
-  return <Badge color="secondary" label>{t('crypto.inactive', { defaultValue: 'Inactive' })}</Badge>;
+  if (status === 'active')
+    return (
+      <Badge color="success" label>
+        {t('admin.active', { defaultValue: 'Active' })}
+      </Badge>
+    )
+  if (status === 'maintenance')
+    return (
+      <Badge color="warning" label>
+        {t('crypto.maintenance', { defaultValue: 'Maintenance' })}
+      </Badge>
+    )
+  return (
+    <Badge color="secondary" label>
+      {t('crypto.inactive', { defaultValue: 'Inactive' })}
+    </Badge>
+  )
 }
 
 function NetworkRow({ network, imageInfo, t, onEdit }) {
@@ -133,77 +154,92 @@ function NetworkRow({ network, imageInfo, t, onEdit }) {
       </td>
       <td className="text-center align-middle">{getStatusBadge(network.status, t)}</td>
       <td className="text-center align-middle">
-        <button type="button" onClick={() => onEdit(network.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
+        <button
+          type="button"
+          onClick={() => onEdit(network.id)}
+          title={t('actions.edit', { defaultValue: 'Edit' })}
+          className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
+        >
           <i className="bx bx-edit text-primary text-xl"></i>
         </button>
       </td>
     </tr>
-  );
+  )
 }
 
 export default function NetworkList() {
-  const { t } = useAdminTranslation();
-  const { token } = useAuth();
-  const [networks, setNetworks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [networkImages, setNetworkImages] = useState({});
-  const [searchQuery, setSearchQuery] = useState('');
-  const [draftSearch, setDraftSearch] = useState('');
-  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
-  const [editNetworkId, setEditNetworkId] = useState(null);
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const [networks, setNetworks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [networkImages, setNetworkImages] = useState({})
+  const [searchQuery, setSearchQuery] = useState('')
+  const [draftSearch, setDraftSearch] = useState('')
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION)
+  const [editNetworkId, setEditNetworkId] = useState(null)
 
-  const loadNetworks = useCallback(async ({ page = 1, search = '' } = {}) => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await getNetworks(token, page, 10);
-      const networkList = response?.items || [];
-      const pd = response?.pagination || {};
+  const loadNetworks = useCallback(
+    async ({ page = 1, search = '' } = {}) => {
+      setLoading(true)
+      setError('')
+      try {
+        const response = await getNetworks(token, page, 10)
+        const networkList = response?.items || []
+        const pd = response?.pagination || {}
 
-      // Client-side search filtering if search query exists
-      const filtered = search
-        ? networkList.filter((n) =>
-            n.name?.toLowerCase().includes(search.toLowerCase()) ||
-            n.chainId?.toString().includes(search))
-        : networkList;
+        // Client-side search filtering if search query exists
+        const filtered = search
+          ? networkList.filter(
+              (n) => n.name?.toLowerCase().includes(search.toLowerCase()) || n.chainId?.toString().includes(search)
+            )
+          : networkList
 
-      setNetworks(filtered);
-      setPagination({
-        page: pd.page || page, limit: pd.limit || 10,
-        total: pd.total || filtered.length, totalPages: pd.totalPages || 1,
-        hasNext: pd.hasNext || false, hasPrev: pd.hasPrev || false,
-      });
+        setNetworks(filtered)
+        setPagination({
+          page: pd.page || page,
+          limit: pd.limit || 10,
+          total: pd.total || filtered.length,
+          totalPages: pd.totalPages || 1,
+          hasNext: pd.hasNext || false,
+          hasPrev: pd.hasPrev || false,
+        })
 
-      // Find icons for all networks
-      const results = await Promise.all(filtered.map((n) => findNetworkImage(n)));
-      const imgMap = {};
-      results.forEach((r) => { imgMap[r.id] = { url: r.url, type: r.type }; });
-      setNetworkImages(imgMap);
-    } catch (e) {
-      setError(e?.message || 'Failed to load networks');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+        // Find icons for all networks
+        const results = await Promise.all(filtered.map((n) => findNetworkImage(n)))
+        const imgMap = {}
+        results.forEach((r) => {
+          imgMap[r.id] = { url: r.url, type: r.type }
+        })
+        setNetworkImages(imgMap)
+      } catch (e) {
+        setError(e?.message || 'Failed to load networks')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [token]
+  )
 
-  useEffect(() => { loadNetworks(); }, [loadNetworks]);
+  useEffect(() => {
+    loadNetworks()
+  }, [loadNetworks])
 
   function handleApplyFilter() {
-    setSearchQuery(draftSearch);
-    loadNetworks({ page: 1, search: draftSearch });
+    setSearchQuery(draftSearch)
+    loadNetworks({ page: 1, search: draftSearch })
   }
 
   function handleResetFilter() {
-    setDraftSearch('');
-    setSearchQuery('');
-    loadNetworks({ page: 1, search: '' });
+    setDraftSearch('')
+    setSearchQuery('')
+    loadNetworks({ page: 1, search: '' })
   }
 
   function handlePageChange(newPage) {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      loadNetworks({ page: newPage, search: searchQuery });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      loadNetworks({ page: newPage, search: searchQuery })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
@@ -218,7 +254,9 @@ export default function NetworkList() {
                 <i className="bx bx-globe mr-2"></i>
                 {t('crypto.networksList', { defaultValue: 'Networks' })}
               </h4>
-              <p className="text-surface-500 mb-0">{t('crypto.manageNetworksList', { defaultValue: 'Manage blockchain networks' })}</p>
+              <p className="text-surface-500 mb-0">
+                {t('crypto.manageNetworksList', { defaultValue: 'Manage blockchain networks' })}
+              </p>
             </div>
           </div>
         </div>
@@ -231,7 +269,8 @@ export default function NetworkList() {
                 placeholder={t('crypto.searchNetworks', { defaultValue: 'Search by name or chain ID...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()} />
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
+              />
             </div>
             <div className="flex gap-2 shrink-0">
               <Button onClick={handleApplyFilter} disabled={loading}>
@@ -249,59 +288,72 @@ export default function NetworkList() {
 
       <Card>
         {/* Error Alert */}
-        {error &&
-        <div className="p-5">
+        {error && (
+          <div className="p-5">
             <Alert role="alert" className="mb-0">
               <i className="bx bx-error-circle mr-2"></i>
               {error}
             </Alert>
           </div>
-        }
+        )}
 
         {/* Table */}
         <Table>
-            <thead>
-              <tr>
-                <th>{t('crypto.networkName', { defaultValue: 'Network' })}</th>
-                <th className="text-center">{t('crypto.chainId', { defaultValue: 'Chain ID' })}</th>
-                <th>{t('crypto.explorerUrl', { defaultValue: 'Explorer' })}</th>
-                <th className="text-center">{t('invoices.statusCol', { defaultValue: 'Status' })}</th>
-                <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
-              </tr>
-            </thead>
-            <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
-              {networks.length === 0 ?
+          <thead>
+            <tr>
+              <th>{t('crypto.networkName', { defaultValue: 'Network' })}</th>
+              <th className="text-center">{t('crypto.chainId', { defaultValue: 'Chain ID' })}</th>
+              <th>{t('crypto.explorerUrl', { defaultValue: 'Explorer' })}</th>
+              <th className="text-center">{t('invoices.statusCol', { defaultValue: 'Status' })}</th>
+              <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
+            </tr>
+          </thead>
+          <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+            {networks.length === 0 ? (
               <TableEmptyState
                 colSpan={5}
                 icon="bx-network-chart"
-                message={searchQuery ?
-                t('crypto.noNetworksFound', { defaultValue: 'No networks found' }) :
-                t('crypto.noNetworks', { defaultValue: 'No networks yet' })
-                } /> :
-
-              networks.map((network) =>
-                <NetworkRow key={network.id} network={network} imageInfo={networkImages[network.id]} t={t} onEdit={setEditNetworkId} />
-              )
-              }
-            </tbody>
-          </Table>
+                message={
+                  searchQuery
+                    ? t('crypto.noNetworksFound', { defaultValue: 'No networks found' })
+                    : t('crypto.noNetworks', { defaultValue: 'No networks yet' })
+                }
+              />
+            ) : (
+              networks.map((network) => (
+                <NetworkRow
+                  key={network.id}
+                  network={network}
+                  imageInfo={networkImages[network.id]}
+                  t={t}
+                  onEdit={setEditNetworkId}
+                />
+              ))
+            )}
+          </tbody>
+        </Table>
 
         {/* Search results info */}
-        {!loading && searchQuery && networks.length > 0 &&
-        <div className="px-5 py-3 border-t border-surface-200">
+        {!loading && searchQuery && networks.length > 0 && (
+          <div className="px-5 py-3 border-t border-surface-200">
             <div className="text-surface-500 text-sm">
               {t('crypto.searchResults', {
-              count: networks.length,
-              defaultValue: `Found ${networks.length} result(s) in current page`
-            })}
+                count: networks.length,
+                defaultValue: `Found ${networks.length} result(s) in current page`,
+              })}
             </div>
           </div>
-        }
+        )}
 
         {/* Pagination - hide when searching */}
-        {!loading && networks.length > 0 && !searchQuery &&
-          <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="px-5 py-3 border-t border-surface-200 mt-0" />
-        }
+        {!loading && networks.length > 0 && !searchQuery && (
+          <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            loading={loading}
+            className="px-5 py-3 border-t border-surface-200 mt-0"
+          />
+        )}
       </Card>
 
       {editNetworkId && (
@@ -311,6 +363,6 @@ export default function NetworkList() {
           onSaved={() => loadNetworks({ page: pagination.page, search: searchQuery })}
         />
       )}
-    </div>);
-
+    </div>
+  )
 }

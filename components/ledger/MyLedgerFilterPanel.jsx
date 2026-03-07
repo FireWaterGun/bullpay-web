@@ -1,23 +1,28 @@
-'use client';
+'use client'
 
-import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import CoinImg from '@/components/CoinImg';
+import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import CoinImg from '@/components/CoinImg'
 import Button from '@/components/ui/Button'
 import { Input, Label, Select, inputClass } from '@/components/ui/Input'
 
 export default function MyLedgerFilterPanel({
-  entryCodeFilter, setEntryCodeFilter,
-  stateFilter, setStateFilter,
-  coinNetworkIdFilter, setCoinNetworkIdFilter,
-  datePresetFilter, setDatePresetFilter,
-  txHashFilter, setTxHashFilter,
+  entryCodeFilter,
+  setEntryCodeFilter,
+  stateFilter,
+  setStateFilter,
+  coinNetworkIdFilter,
+  setCoinNetworkIdFilter,
+  datePresetFilter,
+  setDatePresetFilter,
+  txHashFilter,
+  setTxHashFilter,
   coinNetworks,
   loading,
   onApply,
-  onReset
+  onReset,
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <div className="p-6">
@@ -49,12 +54,17 @@ export default function MyLedgerFilterPanel({
           <CoinNetworkDropdown
             coinNetworks={coinNetworks}
             coinNetworkIdFilter={coinNetworkIdFilter}
-            setCoinNetworkIdFilter={setCoinNetworkIdFilter} />
-          
+            setCoinNetworkIdFilter={setCoinNetworkIdFilter}
+          />
         </div>
         <div>
           <Label>{t('filter.txHash', { defaultValue: 'Tx Hash' })}</Label>
-          <Input type="text" placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })} value={txHashFilter} onChange={(e) => setTxHashFilter(e.target.value)} />
+          <Input
+            type="text"
+            placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })}
+            value={txHashFilter}
+            onChange={(e) => setTxHashFilter(e.target.value)}
+          />
         </div>
         <div>
           <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
@@ -79,66 +89,85 @@ export default function MyLedgerFilterPanel({
           {t('filter.reset', { defaultValue: 'Reset' })}
         </Button>
       </div>
-    </div>);
-
+    </div>
+  )
 }
 
 function CoinNetworkDropdown({ coinNetworks, coinNetworkIdFilter, setCoinNetworkIdFilter }) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <div className="relative" ref={ref}>
       <button
         className={`${inputClass()} w-full flex items-center justify-between text-left`}
         type="button"
-        onClick={() => setOpen(!open)}>
-        
-        {coinNetworkIdFilter ? (() => {
-          const cn = coinNetworks.find((c) => String(c.id) === String(coinNetworkIdFilter));
-          if (!cn) return t('common.all', { defaultValue: 'All' });
-          const sym = (cn.coin?.symbol || '').toUpperCase();
-          const net = (cn.network?.symbol || '').toUpperCase();
-          return (
-            <span className="flex items-center gap-2">
-              <CoinImg symbol={sym} networkSymbol={net} size={22} />
-              <span className="font-semibold text-[0.85rem]">{sym}</span>
-              <span className="text-surface-500 text-xs">{net}</span>
-            </span>);
-
-        })() : <span className="text-surface-500">{t('common.all', { defaultValue: 'All' })}</span>}
+        onClick={() => setOpen(!open)}
+      >
+        {coinNetworkIdFilter ? (
+          (() => {
+            const cn = coinNetworks.find((c) => String(c.id) === String(coinNetworkIdFilter))
+            if (!cn) return t('common.all', { defaultValue: 'All' })
+            const sym = (cn.coin?.symbol || '').toUpperCase()
+            const net = (cn.network?.symbol || '').toUpperCase()
+            return (
+              <span className="flex items-center gap-2">
+                <CoinImg symbol={sym} networkSymbol={net} size={22} />
+                <span className="font-semibold text-[0.85rem]">{sym}</span>
+                <span className="text-surface-500 text-xs">{net}</span>
+              </span>
+            )
+          })()
+        ) : (
+          <span className="text-surface-500">{t('common.all', { defaultValue: 'All' })}</span>
+        )}
         <i className={`bx bx-chevron-${open ? 'up' : 'down'} text-surface-400`}></i>
       </button>
-      {open &&
-      <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-raised shadow-lg max-h-[280px] overflow-y-auto">
-          <button type="button" className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 text-sm text-surface-500" onClick={() => {setCoinNetworkIdFilter('');setOpen(false);}}>
+      {open && (
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-raised shadow-lg max-h-[280px] overflow-y-auto">
+          <button
+            type="button"
+            className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 text-sm text-surface-500"
+            onClick={() => {
+              setCoinNetworkIdFilter('')
+              setOpen(false)
+            }}
+          >
             {t('common.all', { defaultValue: 'All' })}
           </button>
           <hr className="border-surface-200" />
           {coinNetworks.map((cn) => {
-          const sym = (cn.coin?.symbol || '').toUpperCase();
-          const net = (cn.network?.symbol || '').toUpperCase();
-          return (
-            <button type="button" key={cn.id} className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 flex items-center gap-2" onClick={() => {setCoinNetworkIdFilter(String(cn.id));setOpen(false);}}>
+            const sym = (cn.coin?.symbol || '').toUpperCase()
+            const net = (cn.network?.symbol || '').toUpperCase()
+            return (
+              <button
+                type="button"
+                key={cn.id}
+                className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 flex items-center gap-2"
+                onClick={() => {
+                  setCoinNetworkIdFilter(String(cn.id))
+                  setOpen(false)
+                }}
+              >
                 <CoinImg symbol={sym} networkSymbol={net} size={28} />
                 <div>
                   <div className="font-semibold text-[0.85rem]">{sym}</div>
                   <div className="text-surface-500 text-[0.7rem]">{net}</div>
                 </div>
-              </button>);
-
-        })}
+              </button>
+            )
+          })}
         </div>
-      }
-    </div>);
-
+      )}
+    </div>
+  )
 }

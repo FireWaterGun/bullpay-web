@@ -1,16 +1,16 @@
-'use client';
+'use client'
 
-import dynamic from 'next/dynamic';
-import useCoinNetworkForm from '@/hooks/useCoinNetworkForm';
-import CoinSelector from '@/components/crypto/CoinSelector';
-import NetworkSelector from '@/components/crypto/NetworkSelector';
-import ConfigurationForm from '@/components/crypto/ConfigurationForm';
+import dynamic from 'next/dynamic'
+import useCoinNetworkForm from '@/hooks/useCoinNetworkForm'
+import CoinSelector from '@/components/crypto/CoinSelector'
+import NetworkSelector from '@/components/crypto/NetworkSelector'
+import ConfigurationForm from '@/components/crypto/ConfigurationForm'
 import Alert from '@/components/ui/Alert'
 import Spinner from '@/components/ui/Spinner'
 import Button from '@/components/ui/Button'
 
-const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false });
-const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false });
+const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
+const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false })
 
 export default function SupportedCryptoForm() {
   const {
@@ -33,7 +33,7 @@ export default function SupportedCryptoForm() {
     handleDelete,
     goBack,
     t,
-  } = useCoinNetworkForm();
+  } = useCoinNetworkForm()
 
   if (loading && isEdit) {
     return (
@@ -42,7 +42,7 @@ export default function SupportedCryptoForm() {
           <Spinner role="status" className="text-primary" />
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -75,19 +75,9 @@ export default function SupportedCryptoForm() {
 
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <CoinSelector
-            coins={coins}
-            formData={formData}
-            setFormData={setFormData}
-            isEdit={isEdit}
-          />
+          <CoinSelector coins={coins} formData={formData} setFormData={setFormData} isEdit={isEdit} />
 
-          <NetworkSelector
-            networks={networks}
-            formData={formData}
-            setFormData={setFormData}
-            isEdit={isEdit}
-          />
+          <NetworkSelector networks={networks} formData={formData} setFormData={setFormData} isEdit={isEdit} />
 
           <ConfigurationForm
             formData={formData}
@@ -100,21 +90,19 @@ export default function SupportedCryptoForm() {
         </div>
       </div>
 
-      <ErrorModal
-        show={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-        message={errorMessage}
-      />
+      <ErrorModal show={showErrorModal} onClose={() => setShowErrorModal(false)} message={errorMessage} />
 
       <DeleteConfirmModal
         show={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
         loading={loading}
-        message={t('crypto.deleteCoinNetworkConfirm', { defaultValue: 'Are you sure you want to delete this coin-network pair?' })}
+        message={t('crypto.deleteCoinNetworkConfirm', {
+          defaultValue: 'Are you sure you want to delete this coin-network pair?',
+        })}
         itemName={selectedCoin?.symbol || formData.coinId}
         itemDetails={`on ${selectedNetwork?.symbol || formData.networkId}`}
       />
     </div>
-  );
+  )
 }

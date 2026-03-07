@@ -35,13 +35,16 @@ export default function DateFilterBar({
   showCustom,
   onShowCustomChange,
 }) {
-  const presets = useMemo(() => [
-    { key: 'today',      label: t('filter.today',      { defaultValue: 'Today' }) },
-    { key: 'yesterday',  label: t('filter.yesterday',  { defaultValue: 'Yesterday' }) },
-    { key: 'last7days',  label: t('filter.last7days',  { defaultValue: '7D' }) },
-    { key: 'thisMonth',  label: t('filter.thisMonth',  { defaultValue: 'This Month' }) },
-    { key: 'lastMonth',  label: t('filter.lastMonth',  { defaultValue: 'Last Month' }) },
-  ], [t])
+  const presets = useMemo(
+    () => [
+      { key: 'today', label: t('filter.today', { defaultValue: 'Today' }) },
+      { key: 'yesterday', label: t('filter.yesterday', { defaultValue: 'Yesterday' }) },
+      { key: 'last7days', label: t('filter.last7days', { defaultValue: '7D' }) },
+      { key: 'thisMonth', label: t('filter.thisMonth', { defaultValue: 'This Month' }) },
+      { key: 'lastMonth', label: t('filter.lastMonth', { defaultValue: 'Last Month' }) },
+    ],
+    [t]
+  )
 
   const dateRange = useMemo(() => {
     if (showCustom && customFrom && customTo) {
@@ -53,8 +56,8 @@ export default function DateFilterBar({
   const dateRangeLabel = useMemo(() => {
     const { from, to } = dateRange
     if (from === to) return from
-    const fromDate = new Date(`${from  }T00:00:00`)
-    const toDate   = new Date(`${to    }T00:00:00`)
+    const fromDate = new Date(`${from}T00:00:00`)
+    const toDate = new Date(`${to}T00:00:00`)
     const fmt = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
     return `${fmt(fromDate)} – ${fmt(toDate)}`
   }, [dateRange, locale])
@@ -92,16 +95,17 @@ export default function DateFilterBar({
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
       {/* Preset chips row */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        {!showCustom && presets.map((p) => (
-          <button
-            key={p.key}
-            type="button"
-            onClick={() => handlePreset(p.key)}
-            className={`${chipBase} ${datePreset === p.key ? chipActive : chipInactive}`}
-          >
-            {p.label}
-          </button>
-        ))}
+        {!showCustom &&
+          presets.map((p) => (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => handlePreset(p.key)}
+              className={`${chipBase} ${datePreset === p.key ? chipActive : chipInactive}`}
+            >
+              {p.label}
+            </button>
+          ))}
 
         {!showCustom && (
           <button
@@ -123,7 +127,15 @@ export default function DateFilterBar({
               placeholder={t('filter.from', { defaultValue: 'From' })}
               t={t}
               maxDate={customTo || undefined}
-              minDate={customTo ? (() => { const d = new Date(`${customTo  }T00:00:00`); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
+              minDate={
+                customTo
+                  ? (() => {
+                      const d = new Date(`${customTo}T00:00:00`)
+                      d.setMonth(d.getMonth() - 2)
+                      return d.toISOString().split('T')[0]
+                    })()
+                  : undefined
+              }
             />
             <span className="text-surface-400 text-sm select-none">–</span>
             <LocaleDatePicker
@@ -133,7 +145,15 @@ export default function DateFilterBar({
               placeholder={t('filter.to', { defaultValue: 'To' })}
               t={t}
               minDate={customFrom || undefined}
-              maxDate={customFrom ? (() => { const d = new Date(`${customFrom  }T00:00:00`); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
+              maxDate={
+                customFrom
+                  ? (() => {
+                      const d = new Date(`${customFrom}T00:00:00`)
+                      d.setMonth(d.getMonth() + 2)
+                      return d.toISOString().split('T')[0]
+                    })()
+                  : undefined
+              }
             />
             <button
               type="button"

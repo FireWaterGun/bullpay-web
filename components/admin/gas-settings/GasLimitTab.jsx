@@ -1,7 +1,7 @@
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
 const NETWORKS = [
   { key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559' },
@@ -11,7 +11,7 @@ const NETWORKS = [
   { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559' },
   { key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559' },
   { key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559' },
-];
+]
 
 export default function GasLimitTab({ t, getVal, onEdit }) {
   return (
@@ -41,8 +41,8 @@ export default function GasLimitTab({ t, getVal, onEdit }) {
         </thead>
         <tbody>
           {NETWORKS.map((net) => {
-            const multiplier = getVal(`gas_limit.${net.key}.multiplier`);
-            const bufferPct = multiplier !== '—' ? ((parseFloat(multiplier) - 1) * 100).toFixed(0) : '—';
+            const multiplier = getVal(`gas_limit.${net.key}.multiplier`)
+            const bufferPct = multiplier !== '—' ? ((parseFloat(multiplier) - 1) * 100).toFixed(0) : '—'
             return (
               <tr key={net.key}>
                 <td>
@@ -50,11 +50,18 @@ export default function GasLimitTab({ t, getVal, onEdit }) {
                   <div className="text-surface-500 text-xs">{net.symbol}</div>
                 </td>
                 <td className="text-center">
-                  <span className="font-semibold">{multiplier}{multiplier !== '—' && '×'}</span>
+                  <span className="font-semibold">
+                    {multiplier}
+                    {multiplier !== '—' && '×'}
+                  </span>
                 </td>
                 <td className="text-center">
                   {bufferPct !== '—' ? (
-                    <Badge color={parseInt(bufferPct) >= 20 ? 'warning' : parseInt(bufferPct) >= 15 ? 'info' : 'success'} label className="rounded-full">
+                    <Badge
+                      color={parseInt(bufferPct) >= 20 ? 'warning' : parseInt(bufferPct) >= 15 ? 'info' : 'success'}
+                      label
+                      className="rounded-full"
+                    >
                       +{bufferPct}%
                     </Badge>
                   ) : (
@@ -66,12 +73,13 @@ export default function GasLimitTab({ t, getVal, onEdit }) {
                     title={t('admin.gasSettings.edit', { defaultValue: 'Edit' })}
                     onClick={() => onEdit(net)}
                     variant="text-secondary"
-                    size="icon-sm">
+                    size="icon-sm"
+                  >
                     <i className="bx bx-edit text-[1rem]"></i>
                   </Button>
                 </td>
               </tr>
-            );
+            )
           })}
         </tbody>
       </Table>
@@ -82,7 +90,9 @@ export default function GasLimitTab({ t, getVal, onEdit }) {
           {t('admin.gasSettings.gasLimitFormula', { defaultValue: 'Formula' })}
         </h6>
         <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-100 dark:bg-white/[0.03]">
-          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 text-primary-600 text-xs font-bold shrink-0 dark:bg-primary-600/20">f</span>
+          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 text-primary-600 text-xs font-bold shrink-0 dark:bg-primary-600/20">
+            f
+          </span>
           <div className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
             <code className="text-xs">gasLimit = estimateGas() × multiplier</code>
             <div className="text-surface-500 mt-0.5">
@@ -94,5 +104,5 @@ export default function GasLimitTab({ t, getVal, onEdit }) {
         </div>
       </div>
     </Card>
-  );
+  )
 }

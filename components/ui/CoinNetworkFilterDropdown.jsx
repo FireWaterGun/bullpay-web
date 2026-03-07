@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import { useState, useRef, useEffect } from 'react';
-import CoinImg from '@/components/CoinImg';
+import { useState, useRef, useEffect } from 'react'
+import CoinImg from '@/components/CoinImg'
 import { inputClass } from '@/components/ui/Input'
 
 /**
@@ -15,20 +15,18 @@ import { inputClass } from '@/components/ui/Input'
  * @param {string} [props.allLabel='All'] - Label for the "All" option
  */
 export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, onChange, allLabel = 'All' }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
-  const selected = value
-    ? coinNetworks.find((c) => String(c.id) === String(value))
-    : null;
+  const selected = value ? coinNetworks.find((c) => String(c.id) === String(value)) : null
 
   return (
     <div className="relative" ref={ref}>
@@ -44,12 +42,8 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
               networkSymbol={(selected.network?.symbol || '').toUpperCase()}
               size={22}
             />
-            <span className="font-semibold text-[0.85rem]">
-              {(selected.coin?.symbol || '').toUpperCase()}
-            </span>
-            <span className="text-surface-500 text-xs">
-              {(selected.network?.symbol || '').toUpperCase()}
-            </span>
+            <span className="font-semibold text-[0.85rem]">{(selected.coin?.symbol || '').toUpperCase()}</span>
+            <span className="text-surface-500 text-xs">{(selected.network?.symbol || '').toUpperCase()}</span>
           </span>
         ) : (
           <span className="text-surface-500">{allLabel}</span>
@@ -62,20 +56,26 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
           <button
             type="button"
             className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 text-sm text-surface-500"
-            onClick={() => { onChange(''); setOpen(false); }}
+            onClick={() => {
+              onChange('')
+              setOpen(false)
+            }}
           >
             {allLabel}
           </button>
           <hr className="border-surface-200" />
           {coinNetworks.map((cn) => {
-            const sym = (cn.coin?.symbol || '').toUpperCase();
-            const net = (cn.network?.symbol || '').toUpperCase();
+            const sym = (cn.coin?.symbol || '').toUpperCase()
+            const net = (cn.network?.symbol || '').toUpperCase()
             return (
               <button
                 type="button"
                 key={cn.id}
                 className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 flex items-center gap-2"
-                onClick={() => { onChange(String(cn.id)); setOpen(false); }}
+                onClick={() => {
+                  onChange(String(cn.id))
+                  setOpen(false)
+                }}
               >
                 <CoinImg symbol={sym} networkSymbol={net} size={28} />
                 <div>
@@ -83,10 +83,10 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
                   <div className="text-surface-500 text-[0.7rem]">{net}</div>
                 </div>
               </button>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }

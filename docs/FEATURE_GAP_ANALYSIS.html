@@ -1,484 +1,909 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BullPay — Feature &amp; Report Gap Analysis vs Industry</title>
-<style>
-  @page {
-    size: A4;
-    margin: 18mm 15mm;
-  }
-  @media print {
-    body { font-size: 9pt; }
-    .no-print { display: none !important; }
-    h1 { font-size: 16pt; }
-    h2 { font-size: 13pt; page-break-after: avoid; }
-    h3 { font-size: 11pt; page-break-after: avoid; }
-    table { page-break-inside: auto; }
-    tr { page-break-inside: avoid; }
-    .section { page-break-inside: avoid; }
-    pre { page-break-inside: avoid; }
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Thai', sans-serif;
-    color: #1a202c;
-    line-height: 1.6;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 24px;
-    background: #fff;
-  }
-  h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #1a202c;
-    margin-bottom: 4px;
-    border-bottom: 3px solid #667eea;
-    padding-bottom: 8px;
-  }
-  .subtitle {
-    color: #718096;
-    font-size: 0.9rem;
-    margin-bottom: 32px;
-  }
-  h2 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin: 32px 0 16px;
-    padding: 8px 12px;
-    background: linear-gradient(90deg, #eef2ff, #f7f8fc);
-    border-left: 4px solid #667eea;
-    border-radius: 0 6px 6px 0;
-  }
-  h3 {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #4a5568;
-    margin: 20px 0 10px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 0.85rem;
-  }
-  th {
-    background: #f7fafc;
-    font-weight: 600;
-    color: #4a5568;
-    text-align: left;
-    padding: 8px 10px;
-    border-bottom: 2px solid #e2e8f0;
-  }
-  td {
-    padding: 7px 10px;
-    border-bottom: 1px solid #edf2f7;
-    vertical-align: top;
-  }
-  tr:hover td { background: #fafbfe; }
-  .check { color: #38a169; font-weight: 600; }
-  .missing { color: #e53e3e; font-weight: 600; }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-  .badge-critical { background: #fed7d7; color: #c53030; }
-  .badge-high { background: #fefcbf; color: #975a16; }
-  .badge-medium { background: #bee3f8; color: #2b6cb0; }
-  .badge-low { background: #e2e8f0; color: #4a5568; }
-  .roadmap-phase {
-    background: #f7fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 16px;
-  }
-  .roadmap-phase h4 {
-    font-size: 0.95rem;
-    color: #2d3748;
-    margin-bottom: 8px;
-  }
-  .roadmap-phase ul {
-    list-style: none;
-    padding: 0;
-  }
-  .roadmap-phase ul li {
-    padding: 3px 0 3px 20px;
-    position: relative;
-    font-size: 0.85rem;
-    color: #4a5568;
-  }
-  .roadmap-phase ul li::before {
-    content: '├──';
-    position: absolute;
-    left: 0;
-    color: #a0aec0;
-    font-family: monospace;
-    font-size: 0.8rem;
-  }
-  .roadmap-phase ul li:last-child::before { content: '└──'; }
-  .roadmap-result {
-    margin-top: 8px;
-    font-size: 0.85rem;
-    color: #2b6cb0;
-    font-weight: 500;
-  }
-  .competitive-table td, .competitive-table th {
-    text-align: center;
-    padding: 6px 8px;
-    font-size: 0.8rem;
-  }
-  .competitive-table td:first-child, .competitive-table th:first-child {
-    text-align: left;
-    font-weight: 600;
-  }
-  .star-5 { color: #38a169; }
-  .star-4 { color: #68d391; }
-  .star-3 { color: #ecc94b; }
-  .star-2 { color: #ed8936; }
-  .star-0 { color: #e53e3e; }
-  .summary-box {
-    background: linear-gradient(135deg, #eef2ff 0%, #e8ecfb 100%);
-    border: 1px solid rgba(102,126,234,0.2);
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-top: 24px;
-    font-size: 0.9rem;
-    line-height: 1.7;
-  }
-  .summary-box strong { color: #553c9a; }
-  .print-btn {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    border: none;
-    padding: 12px 28px;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(102,126,234,0.4);
-    z-index: 100;
-    transition: transform 0.15s;
-  }
-  .print-btn:hover { transform: translateY(-2px); }
-  .debt-table td:first-child { font-weight: 600; white-space: nowrap; }
-  hr { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
-</style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BullPay — Feature &amp; Report Gap Analysis vs Industry</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 18mm 15mm;
+      }
+      @media print {
+        body {
+          font-size: 9pt;
+        }
+        .no-print {
+          display: none !important;
+        }
+        h1 {
+          font-size: 16pt;
+        }
+        h2 {
+          font-size: 13pt;
+          page-break-after: avoid;
+        }
+        h3 {
+          font-size: 11pt;
+          page-break-after: avoid;
+        }
+        table {
+          page-break-inside: auto;
+        }
+        tr {
+          page-break-inside: avoid;
+        }
+        .section {
+          page-break-inside: avoid;
+        }
+        pre {
+          page-break-inside: avoid;
+        }
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Thai', sans-serif;
+        color: #1a202c;
+        line-height: 1.6;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 24px;
+        background: #fff;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 4px;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 8px;
+      }
+      .subtitle {
+        color: #718096;
+        font-size: 0.9rem;
+        margin-bottom: 32px;
+      }
+      h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 32px 0 16px;
+        padding: 8px 12px;
+        background: linear-gradient(90deg, #eef2ff, #f7f8fc);
+        border-left: 4px solid #667eea;
+        border-radius: 0 6px 6px 0;
+      }
+      h3 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin: 20px 0 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 0.85rem;
+      }
+      th {
+        background: #f7fafc;
+        font-weight: 600;
+        color: #4a5568;
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 2px solid #e2e8f0;
+      }
+      td {
+        padding: 7px 10px;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: top;
+      }
+      tr:hover td {
+        background: #fafbfe;
+      }
+      .check {
+        color: #38a169;
+        font-weight: 600;
+      }
+      .missing {
+        color: #e53e3e;
+        font-weight: 600;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-critical {
+        background: #fed7d7;
+        color: #c53030;
+      }
+      .badge-high {
+        background: #fefcbf;
+        color: #975a16;
+      }
+      .badge-medium {
+        background: #bee3f8;
+        color: #2b6cb0;
+      }
+      .badge-low {
+        background: #e2e8f0;
+        color: #4a5568;
+      }
+      .roadmap-phase {
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+      }
+      .roadmap-phase h4 {
+        font-size: 0.95rem;
+        color: #2d3748;
+        margin-bottom: 8px;
+      }
+      .roadmap-phase ul {
+        list-style: none;
+        padding: 0;
+      }
+      .roadmap-phase ul li {
+        padding: 3px 0 3px 20px;
+        position: relative;
+        font-size: 0.85rem;
+        color: #4a5568;
+      }
+      .roadmap-phase ul li::before {
+        content: '├──';
+        position: absolute;
+        left: 0;
+        color: #a0aec0;
+        font-family: monospace;
+        font-size: 0.8rem;
+      }
+      .roadmap-phase ul li:last-child::before {
+        content: '└──';
+      }
+      .roadmap-result {
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #2b6cb0;
+        font-weight: 500;
+      }
+      .competitive-table td,
+      .competitive-table th {
+        text-align: center;
+        padding: 6px 8px;
+        font-size: 0.8rem;
+      }
+      .competitive-table td:first-child,
+      .competitive-table th:first-child {
+        text-align: left;
+        font-weight: 600;
+      }
+      .star-5 {
+        color: #38a169;
+      }
+      .star-4 {
+        color: #68d391;
+      }
+      .star-3 {
+        color: #ecc94b;
+      }
+      .star-2 {
+        color: #ed8936;
+      }
+      .star-0 {
+        color: #e53e3e;
+      }
+      .summary-box {
+        background: linear-gradient(135deg, #eef2ff 0%, #e8ecfb 100%);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 10px;
+        padding: 20px 24px;
+        margin-top: 24px;
+        font-size: 0.9rem;
+        line-height: 1.7;
+      }
+      .summary-box strong {
+        color: #553c9a;
+      }
+      .print-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        z-index: 100;
+        transition: transform 0.15s;
+      }
+      .print-btn:hover {
+        transform: translateY(-2px);
+      }
+      .debt-table td:first-child {
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 28px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Save as PDF</button>
 
-<button class="print-btn no-print" onclick="window.print()">🖨️ Save as PDF</button>
+    <h1>BullPay — Feature &amp; Report Gap Analysis</h1>
+    <div class="subtitle">
+      <strong>Date:</strong> March 4, 2026 &nbsp;|&nbsp; <strong>Compared against:</strong> BitPay, CoinGate,
+      NOWPayments, Coinbase Commerce
+    </div>
 
-<h1>BullPay — Feature &amp; Report Gap Analysis</h1>
-<div class="subtitle">
-  <strong>Date:</strong> March 4, 2026 &nbsp;|&nbsp;
-  <strong>Compared against:</strong> BitPay, CoinGate, NOWPayments, Coinbase Commerce
-</div>
+    <!-- ═══════════════════════════════════════════ -->
+    <h2>1. Current Feature Inventory</h2>
 
-<!-- ═══════════════════════════════════════════ -->
-<h2>1. Current Feature Inventory</h2>
+    <h3>Authentication &amp; Security</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Email + Password login</td>
+        <td class="check">✅</td>
+        <td>With Cloudflare Turnstile captcha</td>
+      </tr>
+      <tr>
+        <td>2FA (TOTP) + backup codes</td>
+        <td class="check">✅</td>
+        <td>Setup/disable/backup download</td>
+      </tr>
+      <tr>
+        <td>Email verification</td>
+        <td class="check">✅</td>
+        <td>Token-based</td>
+      </tr>
+      <tr>
+        <td>Forgot / Reset password</td>
+        <td class="check">✅</td>
+        <td>Email flow with confirmation page</td>
+      </tr>
+      <tr>
+        <td>Idle auto-logout</td>
+        <td class="check">✅</td>
+        <td>Configurable inactivity timeout</td>
+      </tr>
+      <tr>
+        <td>Change password (with 2FA)</td>
+        <td class="check">✅</td>
+        <td>Forces logout on all devices</td>
+      </tr>
+    </table>
 
-<h3>Authentication &amp; Security</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Email + Password login</td><td class="check">✅</td><td>With Cloudflare Turnstile captcha</td></tr>
-  <tr><td>2FA (TOTP) + backup codes</td><td class="check">✅</td><td>Setup/disable/backup download</td></tr>
-  <tr><td>Email verification</td><td class="check">✅</td><td>Token-based</td></tr>
-  <tr><td>Forgot / Reset password</td><td class="check">✅</td><td>Email flow with confirmation page</td></tr>
-  <tr><td>Idle auto-logout</td><td class="check">✅</td><td>Configurable inactivity timeout</td></tr>
-  <tr><td>Change password (with 2FA)</td><td class="check">✅</td><td>Forces logout on all devices</td></tr>
-</table>
+    <h3>Invoice Management</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Create invoice</td>
+        <td class="check">✅</td>
+        <td>Coin/network, amount, description, memo, expiry</td>
+      </tr>
+      <tr>
+        <td>Invoice list + filters</td>
+        <td class="check">✅</td>
+        <td>Status, coin/network, date range, amount range, search</td>
+      </tr>
+      <tr>
+        <td>Invoice detail</td>
+        <td class="check">✅</td>
+        <td>Status badge, payments table, actions</td>
+      </tr>
+      <tr>
+        <td>Real-time invoice events</td>
+        <td class="check">✅</td>
+        <td>Pusher WebSocket — instant status updates</td>
+      </tr>
+      <tr>
+        <td>Public payment page</td>
+        <td class="check">✅</td>
+        <td>QR code, address, countdown timer, status tracking</td>
+      </tr>
+      <tr>
+        <td>Multi-network pay-select</td>
+        <td class="check">✅</td>
+        <td>Network chooser for multi-network invoices</td>
+      </tr>
+    </table>
 
-<h3>Invoice Management</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Create invoice</td><td class="check">✅</td><td>Coin/network, amount, description, memo, expiry</td></tr>
-  <tr><td>Invoice list + filters</td><td class="check">✅</td><td>Status, coin/network, date range, amount range, search</td></tr>
-  <tr><td>Invoice detail</td><td class="check">✅</td><td>Status badge, payments table, actions</td></tr>
-  <tr><td>Real-time invoice events</td><td class="check">✅</td><td>Pusher WebSocket — instant status updates</td></tr>
-  <tr><td>Public payment page</td><td class="check">✅</td><td>QR code, address, countdown timer, status tracking</td></tr>
-  <tr><td>Multi-network pay-select</td><td class="check">✅</td><td>Network chooser for multi-network invoices</td></tr>
-</table>
+    <h3>Balance &amp; Wallet</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Per-asset balance breakdown</td>
+        <td class="check">✅</td>
+        <td>Confirmed, unconfirmed, locked + USD value</td>
+      </tr>
+      <tr>
+        <td>Wallet view with coin grouping</td>
+        <td class="check">✅</td>
+        <td>Network labels, deposit/withdraw actions</td>
+      </tr>
+      <tr>
+        <td>Show/hide zero balances</td>
+        <td class="check">✅</td>
+        <td>Toggle filter</td>
+      </tr>
+    </table>
 
-<h3>Balance &amp; Wallet</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Per-asset balance breakdown</td><td class="check">✅</td><td>Confirmed, unconfirmed, locked + USD value</td></tr>
-  <tr><td>Wallet view with coin grouping</td><td class="check">✅</td><td>Network labels, deposit/withdraw actions</td></tr>
-  <tr><td>Show/hide zero balances</td><td class="check">✅</td><td>Toggle filter</td></tr>
-</table>
+    <h3>Withdrawal</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Withdrawal address CRUD</td>
+        <td class="check">✅</td>
+        <td>Create, edit, delete, email verification</td>
+      </tr>
+      <tr>
+        <td>Withdrawal request</td>
+        <td class="check">✅</td>
+        <td>Address select, amount, fee estimate, 2FA required</td>
+      </tr>
+      <tr>
+        <td>Fee estimate preview</td>
+        <td class="check">✅</td>
+        <td>Real-time: base + percent fee + total + net + USD</td>
+      </tr>
+      <tr>
+        <td>Withdrawal list + filter</td>
+        <td class="check">✅</td>
+        <td>Status filter (pending/processing/completed/failed/rejected)</td>
+      </tr>
+      <tr>
+        <td>Withdrawal detail</td>
+        <td class="check">✅</td>
+        <td>Full transaction info</td>
+      </tr>
+    </table>
 
-<h3>Withdrawal</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Withdrawal address CRUD</td><td class="check">✅</td><td>Create, edit, delete, email verification</td></tr>
-  <tr><td>Withdrawal request</td><td class="check">✅</td><td>Address select, amount, fee estimate, 2FA required</td></tr>
-  <tr><td>Fee estimate preview</td><td class="check">✅</td><td>Real-time: base + percent fee + total + net + USD</td></tr>
-  <tr><td>Withdrawal list + filter</td><td class="check">✅</td><td>Status filter (pending/processing/completed/failed/rejected)</td></tr>
-  <tr><td>Withdrawal detail</td><td class="check">✅</td><td>Full transaction info</td></tr>
-</table>
+    <h3>Reports &amp; Analytics (User)</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Transaction summary cards</td>
+        <td class="check">✅</td>
+        <td>Total received, withdrawals, fees, net + change %</td>
+      </tr>
+      <tr>
+        <td>Daily trend chart</td>
+        <td class="check">✅</td>
+        <td>Custom SVG bar + line chart</td>
+      </tr>
+      <tr>
+        <td>Transaction by coin table</td>
+        <td class="check">✅</td>
+        <td>Per coin/network breakdown</td>
+      </tr>
+      <tr>
+        <td>Date range presets</td>
+        <td class="check">✅</td>
+        <td>Today, yesterday, 7d, 30d, this/last month, custom</td>
+      </tr>
+      <tr>
+        <td>User ledger</td>
+        <td class="check">✅</td>
+        <td>Double-entry ledger with full filters</td>
+      </tr>
+    </table>
 
-<h3>Reports &amp; Analytics (User)</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Transaction summary cards</td><td class="check">✅</td><td>Total received, withdrawals, fees, net + change %</td></tr>
-  <tr><td>Daily trend chart</td><td class="check">✅</td><td>Custom SVG bar + line chart</td></tr>
-  <tr><td>Transaction by coin table</td><td class="check">✅</td><td>Per coin/network breakdown</td></tr>
-  <tr><td>Date range presets</td><td class="check">✅</td><td>Today, yesterday, 7d, 30d, this/last month, custom</td></tr>
-  <tr><td>User ledger</td><td class="check">✅</td><td>Double-entry ledger with full filters</td></tr>
-</table>
+    <h3>Merchant / API Integration</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Merchant registration</td>
+        <td class="check">✅</td>
+        <td>Name, email, website, callback URL</td>
+      </tr>
+      <tr>
+        <td>API key + masked secret</td>
+        <td class="check">✅</td>
+        <td>Copy to clipboard</td>
+      </tr>
+      <tr>
+        <td>Rotate secret / Regenerate key</td>
+        <td class="check">✅</td>
+        <td>Password + optional 2FA required</td>
+      </tr>
+      <tr>
+        <td>Webhook URL management</td>
+        <td class="check">✅</td>
+        <td>Update with password + 2FA</td>
+      </tr>
+      <tr>
+        <td>Merchant stats</td>
+        <td class="check">✅</td>
+        <td>Invoice count, total received, commission</td>
+      </tr>
+    </table>
 
-<h3>Merchant / API Integration</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Merchant registration</td><td class="check">✅</td><td>Name, email, website, callback URL</td></tr>
-  <tr><td>API key + masked secret</td><td class="check">✅</td><td>Copy to clipboard</td></tr>
-  <tr><td>Rotate secret / Regenerate key</td><td class="check">✅</td><td>Password + optional 2FA required</td></tr>
-  <tr><td>Webhook URL management</td><td class="check">✅</td><td>Update with password + 2FA</td></tr>
-  <tr><td>Merchant stats</td><td class="check">✅</td><td>Invoice count, total received, commission</td></tr>
-</table>
+    <h3>Settings &amp; Personalization</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Profile (name, email)</td>
+        <td class="check">✅</td>
+        <td>Editable</td>
+      </tr>
+      <tr>
+        <td>Timezone selector (30+ zones)</td>
+        <td class="check">✅</td>
+        <td>Live clock preview</td>
+      </tr>
+      <tr>
+        <td>Language (EN/TH/ZH)</td>
+        <td class="check">✅</td>
+        <td>Full i18n coverage</td>
+      </tr>
+      <tr>
+        <td>Change password</td>
+        <td class="check">✅</td>
+        <td>With 2FA verification</td>
+      </tr>
+      <tr>
+        <td>2FA management</td>
+        <td class="check">✅</td>
+        <td>Enable/disable with modals</td>
+      </tr>
+    </table>
 
-<h3>Settings &amp; Personalization</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Profile (name, email)</td><td class="check">✅</td><td>Editable</td></tr>
-  <tr><td>Timezone selector (30+ zones)</td><td class="check">✅</td><td>Live clock preview</td></tr>
-  <tr><td>Language (EN/TH/ZH)</td><td class="check">✅</td><td>Full i18n coverage</td></tr>
-  <tr><td>Change password</td><td class="check">✅</td><td>With 2FA verification</td></tr>
-  <tr><td>2FA management</td><td class="check">✅</td><td>Enable/disable with modals</td></tr>
-</table>
+    <h3>Notifications</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>In-app notification dropdown</td>
+        <td class="check">✅</td>
+        <td>Real-time via Pusher</td>
+      </tr>
+      <tr>
+        <td>Mark read / Mark all read</td>
+        <td class="check">✅</td>
+        <td>Individual + batch</td>
+      </tr>
+      <tr>
+        <td>7 notification event types</td>
+        <td class="check">✅</td>
+        <td>deposit, withdrawal, payment, sweep, system</td>
+      </tr>
+      <tr>
+        <td>Transactional emails (backend)</td>
+        <td class="check">✅</td>
+        <td>8 email types via Mailgun</td>
+      </tr>
+    </table>
 
-<h3>Notifications</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>In-app notification dropdown</td><td class="check">✅</td><td>Real-time via Pusher</td></tr>
-  <tr><td>Mark read / Mark all read</td><td class="check">✅</td><td>Individual + batch</td></tr>
-  <tr><td>7 notification event types</td><td class="check">✅</td><td>deposit, withdrawal, payment, sweep, system</td></tr>
-  <tr><td>Transactional emails (backend)</td><td class="check">✅</td><td>8 email types via Mailgun</td></tr>
-</table>
+    <h3>Infrastructure Strengths</h3>
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Status</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td>Multi-chain (EVM/BTC/SOL/TRX)</td>
+        <td class="check">✅</td>
+        <td>4 chain families, 50+ coins</td>
+      </tr>
+      <tr>
+        <td>Atomic Redis operations (Lua)</td>
+        <td class="check">✅</td>
+        <td>All balance mutations atomic</td>
+      </tr>
+      <tr>
+        <td>Double-entry ledger</td>
+        <td class="check">✅</td>
+        <td>User + system ledger</td>
+      </tr>
+      <tr>
+        <td>Real-time WebSocket events</td>
+        <td class="check">✅</td>
+        <td>Pusher with 10+ event types</td>
+      </tr>
+      <tr>
+        <td>BullMQ background jobs</td>
+        <td class="check">✅</td>
+        <td>Watchers, sweeps, notifications</td>
+      </tr>
+      <tr>
+        <td>HD Wallets + AWS KMS</td>
+        <td class="check">✅</td>
+        <td>Enterprise-grade key management</td>
+      </tr>
+      <tr>
+        <td>Maintenance mode</td>
+        <td class="check">✅</td>
+        <td>Graceful + instant Pusher recovery</td>
+      </tr>
+    </table>
 
-<h3>Infrastructure Strengths</h3>
-<table>
-  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Multi-chain (EVM/BTC/SOL/TRX)</td><td class="check">✅</td><td>4 chain families, 50+ coins</td></tr>
-  <tr><td>Atomic Redis operations (Lua)</td><td class="check">✅</td><td>All balance mutations atomic</td></tr>
-  <tr><td>Double-entry ledger</td><td class="check">✅</td><td>User + system ledger</td></tr>
-  <tr><td>Real-time WebSocket events</td><td class="check">✅</td><td>Pusher with 10+ event types</td></tr>
-  <tr><td>BullMQ background jobs</td><td class="check">✅</td><td>Watchers, sweeps, notifications</td></tr>
-  <tr><td>HD Wallets + AWS KMS</td><td class="check">✅</td><td>Enterprise-grade key management</td></tr>
-  <tr><td>Maintenance mode</td><td class="check">✅</td><td>Graceful + instant Pusher recovery</td></tr>
-</table>
+    <hr />
 
-<hr>
+    <!-- ═══════════════════════════════════════════ -->
+    <h2>2. Gap Analysis — What's Missing vs Industry</h2>
 
-<!-- ═══════════════════════════════════════════ -->
-<h2>2. Gap Analysis — What's Missing vs Industry</h2>
+    <h3>🔴 Priority 1 — Critical Gaps <span class="badge badge-critical">ทุกคู่แข่งมี</span></h3>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Feature</th>
+        <th>Who Has It</th>
+        <th>Impact</th>
+      </tr>
+      <tr>
+        <td><strong>1</strong></td>
+        <td>
+          <strong>CSV/Excel Export</strong><br />Export ข้อมูลจากทุกตาราง (invoices, payments, withdrawals, ledger)
+        </td>
+        <td>BitPay, CoinGate, NOWPayments</td>
+        <td>
+          <span class="badge badge-critical">สูงมาก</span><br />User/Merchant ดึงข้อมูลออกไปทำบัญชี, audit, reconcile
+          ไม่ได้เลย
+        </td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td><strong>Invoice PDF / Receipt</strong><br />Download invoice เป็น PDF สำหรับ print หรือ archive</td>
+        <td>BitPay, Coinbase Commerce</td>
+        <td><span class="badge badge-critical">สูง</span><br />ไม่มี printable tax record, ลูกค้าขอ receipt ไม่ได้</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td><strong>Settlement / Payout Report</strong><br />สรุปยอดที่จ่ายเข้า wallet รายวัน/สัปดาห์/เดือน</td>
+        <td>BitPay (Settlement Ledger), CoinGate (Payout Report)</td>
+        <td><span class="badge badge-critical">สูง</span><br />Merchant reconcile balance กับ bank statement ไม่ได้</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td><strong>Merchant Webhook Logs</strong><br />Merchant เห็น delivery history + retry ของ webhook ตัวเอง</td>
+        <td>CoinGate, NOWPayments</td>
+        <td>
+          <span class="badge badge-critical">สูง</span><br />Merchant debug integration ไม่ได้ ต้องพึ่ง admin ทุกครั้ง
+        </td>
+      </tr>
+    </table>
 
-<h3>🔴 Priority 1 — Critical Gaps <span class="badge badge-critical">ทุกคู่แข่งมี</span></h3>
-<table>
-  <tr><th>#</th><th>Feature</th><th>Who Has It</th><th>Impact</th></tr>
-  <tr>
-    <td><strong>1</strong></td>
-    <td><strong>CSV/Excel Export</strong><br>Export ข้อมูลจากทุกตาราง (invoices, payments, withdrawals, ledger)</td>
-    <td>BitPay, CoinGate, NOWPayments</td>
-    <td><span class="badge badge-critical">สูงมาก</span><br>User/Merchant ดึงข้อมูลออกไปทำบัญชี, audit, reconcile ไม่ได้เลย</td>
-  </tr>
-  <tr>
-    <td><strong>2</strong></td>
-    <td><strong>Invoice PDF / Receipt</strong><br>Download invoice เป็น PDF สำหรับ print หรือ archive</td>
-    <td>BitPay, Coinbase Commerce</td>
-    <td><span class="badge badge-critical">สูง</span><br>ไม่มี printable tax record, ลูกค้าขอ receipt ไม่ได้</td>
-  </tr>
-  <tr>
-    <td><strong>3</strong></td>
-    <td><strong>Settlement / Payout Report</strong><br>สรุปยอดที่จ่ายเข้า wallet รายวัน/สัปดาห์/เดือน</td>
-    <td>BitPay (Settlement Ledger), CoinGate (Payout Report)</td>
-    <td><span class="badge badge-critical">สูง</span><br>Merchant reconcile balance กับ bank statement ไม่ได้</td>
-  </tr>
-  <tr>
-    <td><strong>4</strong></td>
-    <td><strong>Merchant Webhook Logs</strong><br>Merchant เห็น delivery history + retry ของ webhook ตัวเอง</td>
-    <td>CoinGate, NOWPayments</td>
-    <td><span class="badge badge-critical">สูง</span><br>Merchant debug integration ไม่ได้ ต้องพึ่ง admin ทุกครั้ง</td>
-  </tr>
-</table>
+    <h3>🟡 Priority 2 — Strong Differentiators <span class="badge badge-high">ทำให้โดดเด่น</span></h3>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Feature</th>
+        <th>Who Has It</th>
+        <th>Impact</th>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td>
+          <strong>Login / Session History</strong><br />User เห็นว่า login จากที่ไหน เมื่อไหร่ + revoke session ได้
+        </td>
+        <td>Coinbase, Binance, ทุก exchange</td>
+        <td>
+          <span class="badge badge-high">กลาง-สูง</span><br />ขาดด้าน security transparency, เป็น compliance best
+          practice
+        </td>
+      </tr>
+      <tr>
+        <td><strong>6</strong></td>
+        <td><strong>Notification Preferences</strong><br />Toggle on/off แต่ละ event (email / push)</td>
+        <td>BitPay, CoinGate</td>
+        <td>
+          <span class="badge badge-medium">กลาง</span><br />User customize ไม่ได้ → อาจ spam หรือ miss critical alert
+        </td>
+      </tr>
+      <tr>
+        <td><strong>7</strong></td>
+        <td><strong>Payment Link / Payment Button</strong><br />สร้าง reusable link หรือ embed button ไม่ต้อง code</td>
+        <td>CoinGate, NOWPayments, Coinbase Commerce</td>
+        <td>
+          <span class="badge badge-high">กลาง-สูง</span><br />พ่อค้าที่ไม่ tech ใช้งานไม่ได้ ต้องมี developer เสมอ
+        </td>
+      </tr>
+      <tr>
+        <td><strong>8</strong></td>
+        <td><strong>Auto-conversion / Fiat Settlement</strong><br />Auto-convert crypto → stablecoin / fiat</td>
+        <td>BitPay (auto-settle USD), CoinGate (EUR/USD)</td>
+        <td><span class="badge badge-medium">กลาง</span><br />ผู้ใช้รับ volatility risk เอง</td>
+      </tr>
+    </table>
 
-<h3>🟡 Priority 2 — Strong Differentiators <span class="badge badge-high">ทำให้โดดเด่น</span></h3>
-<table>
-  <tr><th>#</th><th>Feature</th><th>Who Has It</th><th>Impact</th></tr>
-  <tr>
-    <td><strong>5</strong></td>
-    <td><strong>Login / Session History</strong><br>User เห็นว่า login จากที่ไหน เมื่อไหร่ + revoke session ได้</td>
-    <td>Coinbase, Binance, ทุก exchange</td>
-    <td><span class="badge badge-high">กลาง-สูง</span><br>ขาดด้าน security transparency, เป็น compliance best practice</td>
-  </tr>
-  <tr>
-    <td><strong>6</strong></td>
-    <td><strong>Notification Preferences</strong><br>Toggle on/off แต่ละ event (email / push)</td>
-    <td>BitPay, CoinGate</td>
-    <td><span class="badge badge-medium">กลาง</span><br>User customize ไม่ได้ → อาจ spam หรือ miss critical alert</td>
-  </tr>
-  <tr>
-    <td><strong>7</strong></td>
-    <td><strong>Payment Link / Payment Button</strong><br>สร้าง reusable link หรือ embed button ไม่ต้อง code</td>
-    <td>CoinGate, NOWPayments, Coinbase Commerce</td>
-    <td><span class="badge badge-high">กลาง-สูง</span><br>พ่อค้าที่ไม่ tech ใช้งานไม่ได้ ต้องมี developer เสมอ</td>
-  </tr>
-  <tr>
-    <td><strong>8</strong></td>
-    <td><strong>Auto-conversion / Fiat Settlement</strong><br>Auto-convert crypto → stablecoin / fiat</td>
-    <td>BitPay (auto-settle USD), CoinGate (EUR/USD)</td>
-    <td><span class="badge badge-medium">กลาง</span><br>ผู้ใช้รับ volatility risk เอง</td>
-  </tr>
-</table>
+    <h3>🔵 Priority 3 — Nice to Have <span class="badge badge-low">ยกระดับ</span></h3>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Feature</th>
+        <th>Who Has It</th>
+        <th>Impact</th>
+      </tr>
+      <tr>
+        <td><strong>9</strong></td>
+        <td><strong>API Docs Portal</strong> — Interactive Swagger / OpenAPI docs</td>
+        <td>BitPay, NOWPayments</td>
+        <td><span class="badge badge-medium">กลาง</span></td>
+      </tr>
+      <tr>
+        <td><strong>10</strong></td>
+        <td><strong>Chart Interactivity</strong> — Tooltip, zoom, drill-down</td>
+        <td>ทุกรายที่ใช้ charting lib</td>
+        <td><span class="badge badge-low">ต่ำ</span></td>
+      </tr>
+      <tr>
+        <td><strong>11</strong></td>
+        <td><strong>Multi-currency Invoice</strong> — 1 invoice รับได้หลาย coin</td>
+        <td>NOWPayments, CoinGate</td>
+        <td><span class="badge badge-medium">กลาง</span></td>
+      </tr>
+      <tr>
+        <td><strong>12</strong></td>
+        <td><strong>Recurring Invoice / Subscription</strong></td>
+        <td>Coinbase Commerce, BitPay</td>
+        <td><span class="badge badge-medium">กลาง</span></td>
+      </tr>
+      <tr>
+        <td><strong>13</strong></td>
+        <td><strong>Sub-account / Team</strong> — team member + permission แยก</td>
+        <td>BitPay, Coinbase Commerce</td>
+        <td><span class="badge badge-medium">กลาง</span></td>
+      </tr>
+      <tr>
+        <td><strong>14</strong></td>
+        <td><strong>IP Allowlist (API)</strong> — จำกัด IP ที่เรียก API ได้</td>
+        <td>BitPay, CoinGate</td>
+        <td><span class="badge badge-medium">กลาง</span></td>
+      </tr>
+      <tr>
+        <td><strong>15</strong></td>
+        <td><strong>Refund Management</strong> — Issue refund กลับ customer</td>
+        <td>BitPay, Coinbase Commerce</td>
+        <td><span class="badge badge-medium">กลาง</span></td>
+      </tr>
+    </table>
 
-<h3>🔵 Priority 3 — Nice to Have <span class="badge badge-low">ยกระดับ</span></h3>
-<table>
-  <tr><th>#</th><th>Feature</th><th>Who Has It</th><th>Impact</th></tr>
-  <tr><td><strong>9</strong></td><td><strong>API Docs Portal</strong> — Interactive Swagger / OpenAPI docs</td><td>BitPay, NOWPayments</td><td><span class="badge badge-medium">กลาง</span></td></tr>
-  <tr><td><strong>10</strong></td><td><strong>Chart Interactivity</strong> — Tooltip, zoom, drill-down</td><td>ทุกรายที่ใช้ charting lib</td><td><span class="badge badge-low">ต่ำ</span></td></tr>
-  <tr><td><strong>11</strong></td><td><strong>Multi-currency Invoice</strong> — 1 invoice รับได้หลาย coin</td><td>NOWPayments, CoinGate</td><td><span class="badge badge-medium">กลาง</span></td></tr>
-  <tr><td><strong>12</strong></td><td><strong>Recurring Invoice / Subscription</strong></td><td>Coinbase Commerce, BitPay</td><td><span class="badge badge-medium">กลาง</span></td></tr>
-  <tr><td><strong>13</strong></td><td><strong>Sub-account / Team</strong> — team member + permission แยก</td><td>BitPay, Coinbase Commerce</td><td><span class="badge badge-medium">กลาง</span></td></tr>
-  <tr><td><strong>14</strong></td><td><strong>IP Allowlist (API)</strong> — จำกัด IP ที่เรียก API ได้</td><td>BitPay, CoinGate</td><td><span class="badge badge-medium">กลาง</span></td></tr>
-  <tr><td><strong>15</strong></td><td><strong>Refund Management</strong> — Issue refund กลับ customer</td><td>BitPay, Coinbase Commerce</td><td><span class="badge badge-medium">กลาง</span></td></tr>
-</table>
+    <hr />
 
-<hr>
+    <!-- ═══════════════════════════════════════════ -->
+    <h2>3. Technical Debt &amp; Cleanup</h2>
+    <table class="debt-table">
+      <tr>
+        <th>Item</th>
+        <th>Detail</th>
+      </tr>
+      <tr>
+        <td>Unused ApexCharts</td>
+        <td>CSS/JS loaded via Sneat theme layout แต่ไม่ได้ใช้ — เป็น dead weight</td>
+      </tr>
+      <tr>
+        <td>No server-side export endpoints</td>
+        <td>Controllers return JSON only — ต้องเพิ่ม CSV/PDF endpoints</td>
+      </tr>
+      <tr>
+        <td>Activity data exists but no UI</td>
+        <td>UserActivity entity + repository มีใน API แต่ไม่มี frontend page</td>
+      </tr>
+      <tr>
+        <td>COMMON_TIMEZONES duplicated</td>
+        <td>Array เหมือนกันอยู่ทั้ง settings/page.jsx และ admin/account/page.jsx — ควร extract เป็น shared constant</td>
+      </tr>
+    </table>
 
-<!-- ═══════════════════════════════════════════ -->
-<h2>3. Technical Debt &amp; Cleanup</h2>
-<table class="debt-table">
-  <tr><th>Item</th><th>Detail</th></tr>
-  <tr><td>Unused ApexCharts</td><td>CSS/JS loaded via Sneat theme layout แต่ไม่ได้ใช้ — เป็น dead weight</td></tr>
-  <tr><td>No server-side export endpoints</td><td>Controllers return JSON only — ต้องเพิ่ม CSV/PDF endpoints</td></tr>
-  <tr><td>Activity data exists but no UI</td><td>UserActivity entity + repository มีใน API แต่ไม่มี frontend page</td></tr>
-  <tr><td>COMMON_TIMEZONES duplicated</td><td>Array เหมือนกันอยู่ทั้ง settings/page.jsx และ admin/account/page.jsx — ควร extract เป็น shared constant</td></tr>
-</table>
+    <hr />
 
-<hr>
+    <!-- ═══════════════════════════════════════════ -->
+    <h2>4. Recommended Roadmap</h2>
 
-<!-- ═══════════════════════════════════════════ -->
-<h2>4. Recommended Roadmap</h2>
+    <div class="roadmap-phase" style="border-left: 4px solid #e53e3e">
+      <h4>🔴 Phase 1 — Data Export <span style="color: #718096; font-weight: 400">(Week 1–2, High impact)</span></h4>
+      <ul>
+        <li>API: CSV export endpoints สำหรับ invoices, payments, withdrawals, ledger</li>
+        <li>Web: "Export CSV" button บนทุกตาราง</li>
+        <li>API: Invoice PDF generation endpoint (jsPDF / Puppeteer)</li>
+        <li>Web: "Download PDF" button บน invoice detail</li>
+      </ul>
+      <div class="roadmap-result">→ User/Merchant ดึงข้อมูลออกมาใช้ได้ — ปิด gap ใหญ่สุดทันที</div>
+    </div>
 
-<div class="roadmap-phase" style="border-left: 4px solid #e53e3e;">
-  <h4>🔴 Phase 1 — Data Export <span style="color:#718096;font-weight:400">(Week 1–2, High impact)</span></h4>
-  <ul>
-    <li>API: CSV export endpoints สำหรับ invoices, payments, withdrawals, ledger</li>
-    <li>Web: "Export CSV" button บนทุกตาราง</li>
-    <li>API: Invoice PDF generation endpoint (jsPDF / Puppeteer)</li>
-    <li>Web: "Download PDF" button บน invoice detail</li>
-  </ul>
-  <div class="roadmap-result">→ User/Merchant ดึงข้อมูลออกมาใช้ได้ — ปิด gap ใหญ่สุดทันที</div>
-</div>
+    <div class="roadmap-phase" style="border-left: 4px solid #ed8936">
+      <h4>
+        🟠 Phase 2 — Merchant Experience
+        <span style="color: #718096; font-weight: 400">(Week 3–5, Business value)</span>
+      </h4>
+      <ul>
+        <li>Merchant-facing webhook delivery log page</li>
+        <li>Settlement/Payout report (daily/weekly/monthly summary)</li>
+        <li>Payment Link creation UI (no-code payment)</li>
+        <li>Payment Button embed code generator</li>
+      </ul>
+      <div class="roadmap-result">→ Merchant self-serve มากขึ้น, ลด support load</div>
+    </div>
 
-<div class="roadmap-phase" style="border-left: 4px solid #ed8936;">
-  <h4>🟠 Phase 2 — Merchant Experience <span style="color:#718096;font-weight:400">(Week 3–5, Business value)</span></h4>
-  <ul>
-    <li>Merchant-facing webhook delivery log page</li>
-    <li>Settlement/Payout report (daily/weekly/monthly summary)</li>
-    <li>Payment Link creation UI (no-code payment)</li>
-    <li>Payment Button embed code generator</li>
-  </ul>
-  <div class="roadmap-result">→ Merchant self-serve มากขึ้น, ลด support load</div>
-</div>
+    <div class="roadmap-phase" style="border-left: 4px solid #3182ce">
+      <h4>
+        🔵 Phase 3 — Security &amp; UX <span style="color: #718096; font-weight: 400">(Week 6–8, Trust building)</span>
+      </h4>
+      <ul>
+        <li>Login/Session history page (show IP, device, time)</li>
+        <li>Session revoke functionality</li>
+        <li>Notification preferences settings page</li>
+        <li>IP allowlist for API keys</li>
+        <li>Extract COMMON_TIMEZONES to shared constant</li>
+      </ul>
+      <div class="roadmap-result">→ สร้างความเชื่อมั่นด้าน security, ลด noise</div>
+    </div>
 
-<div class="roadmap-phase" style="border-left: 4px solid #3182ce;">
-  <h4>🔵 Phase 3 — Security &amp; UX <span style="color:#718096;font-weight:400">(Week 6–8, Trust building)</span></h4>
-  <ul>
-    <li>Login/Session history page (show IP, device, time)</li>
-    <li>Session revoke functionality</li>
-    <li>Notification preferences settings page</li>
-    <li>IP allowlist for API keys</li>
-    <li>Extract COMMON_TIMEZONES to shared constant</li>
-  </ul>
-  <div class="roadmap-result">→ สร้างความเชื่อมั่นด้าน security, ลด noise</div>
-</div>
+    <div class="roadmap-phase" style="border-left: 4px solid #805ad5">
+      <h4>
+        🟣 Phase 4 — Advanced Features
+        <span style="color: #718096; font-weight: 400">(Week 9–12+, Scale &amp; compete)</span>
+      </h4>
+      <ul>
+        <li>Auto-conversion to stablecoin/fiat</li>
+        <li>Interactive charts (migrate to Recharts/ApexCharts)</li>
+        <li>Multi-currency invoice</li>
+        <li>Recurring invoice / subscription billing</li>
+        <li>Sub-account / team management + RBAC</li>
+        <li>Refund management workflow</li>
+        <li>API docs portal (Swagger UI)</li>
+      </ul>
+      <div class="roadmap-result">→ Feature parity กับ BitPay/CoinGate ทุกจุด</div>
+    </div>
 
-<div class="roadmap-phase" style="border-left: 4px solid #805ad5;">
-  <h4>🟣 Phase 4 — Advanced Features <span style="color:#718096;font-weight:400">(Week 9–12+, Scale &amp; compete)</span></h4>
-  <ul>
-    <li>Auto-conversion to stablecoin/fiat</li>
-    <li>Interactive charts (migrate to Recharts/ApexCharts)</li>
-    <li>Multi-currency invoice</li>
-    <li>Recurring invoice / subscription billing</li>
-    <li>Sub-account / team management + RBAC</li>
-    <li>Refund management workflow</li>
-    <li>API docs portal (Swagger UI)</li>
-  </ul>
-  <div class="roadmap-result">→ Feature parity กับ BitPay/CoinGate ทุกจุด</div>
-</div>
+    <hr />
 
-<hr>
+    <!-- ═══════════════════════════════════════════ -->
+    <h2>5. Competitive Positioning Summary</h2>
 
-<!-- ═══════════════════════════════════════════ -->
-<h2>5. Competitive Positioning Summary</h2>
+    <table class="competitive-table">
+      <tr>
+        <th>Category</th>
+        <th>BullPay</th>
+        <th>BitPay</th>
+        <th>CoinGate</th>
+        <th>NOWPayments</th>
+        <th>Coinbase Commerce</th>
+      </tr>
+      <tr>
+        <td>Infrastructure</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-3">★★★</td>
+        <td class="star-5">★★★★★</td>
+      </tr>
+      <tr>
+        <td>Real-time Events</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-3">★★★</td>
+        <td class="star-3">★★★</td>
+        <td class="star-3">★★★</td>
+        <td class="star-3">★★★</td>
+      </tr>
+      <tr>
+        <td>Multi-chain</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-3">★★★</td>
+      </tr>
+      <tr>
+        <td>Data Export</td>
+        <td class="star-0">☆</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-4">★★★★</td>
+      </tr>
+      <tr>
+        <td>Reports / PDF</td>
+        <td class="star-0">☆</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-3">★★★</td>
+        <td class="star-4">★★★★</td>
+      </tr>
+      <tr>
+        <td>Developer Tools</td>
+        <td class="star-3">★★★</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-4">★★★★</td>
+      </tr>
+      <tr>
+        <td>No-code Payments</td>
+        <td class="star-0">☆</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-5">★★★★★</td>
+      </tr>
+      <tr>
+        <td>Refunds</td>
+        <td class="star-0">☆</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-3">★★★</td>
+        <td class="star-2">★★</td>
+        <td class="star-5">★★★★★</td>
+      </tr>
+      <tr>
+        <td>Auto-conversion</td>
+        <td class="star-0">☆</td>
+        <td class="star-5">★★★★★</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-0">☆</td>
+        <td class="star-4">★★★★</td>
+      </tr>
+      <tr>
+        <td>Team / Sub-accounts</td>
+        <td class="star-0">☆</td>
+        <td class="star-4">★★★★</td>
+        <td class="star-3">★★★</td>
+        <td class="star-0">☆</td>
+        <td class="star-4">★★★★</td>
+      </tr>
+    </table>
+    <p style="font-size: 0.75rem; color: #a0aec0; margin-top: 4px">
+      ★★★★★ = Best-in-class &nbsp; ★★★ = Average &nbsp; ☆ = Missing
+    </p>
 
-<table class="competitive-table">
-  <tr>
-    <th>Category</th><th>BullPay</th><th>BitPay</th><th>CoinGate</th><th>NOWPayments</th><th>Coinbase Commerce</th>
-  </tr>
-  <tr>
-    <td>Infrastructure</td>
-    <td class="star-5">★★★★★</td><td class="star-4">★★★★</td><td class="star-4">★★★★</td><td class="star-3">★★★</td><td class="star-5">★★★★★</td>
-  </tr>
-  <tr>
-    <td>Real-time Events</td>
-    <td class="star-5">★★★★★</td><td class="star-3">★★★</td><td class="star-3">★★★</td><td class="star-3">★★★</td><td class="star-3">★★★</td>
-  </tr>
-  <tr>
-    <td>Multi-chain</td>
-    <td class="star-4">★★★★</td><td class="star-5">★★★★★</td><td class="star-4">★★★★</td><td class="star-5">★★★★★</td><td class="star-3">★★★</td>
-  </tr>
-  <tr>
-    <td>Data Export</td>
-    <td class="star-0">☆</td><td class="star-5">★★★★★</td><td class="star-4">★★★★</td><td class="star-4">★★★★</td><td class="star-4">★★★★</td>
-  </tr>
-  <tr>
-    <td>Reports / PDF</td>
-    <td class="star-0">☆</td><td class="star-5">★★★★★</td><td class="star-4">★★★★</td><td class="star-3">★★★</td><td class="star-4">★★★★</td>
-  </tr>
-  <tr>
-    <td>Developer Tools</td>
-    <td class="star-3">★★★</td><td class="star-5">★★★★★</td><td class="star-4">★★★★</td><td class="star-5">★★★★★</td><td class="star-4">★★★★</td>
-  </tr>
-  <tr>
-    <td>No-code Payments</td>
-    <td class="star-0">☆</td><td class="star-4">★★★★</td><td class="star-5">★★★★★</td><td class="star-5">★★★★★</td><td class="star-5">★★★★★</td>
-  </tr>
-  <tr>
-    <td>Refunds</td>
-    <td class="star-0">☆</td><td class="star-5">★★★★★</td><td class="star-3">★★★</td><td class="star-2">★★</td><td class="star-5">★★★★★</td>
-  </tr>
-  <tr>
-    <td>Auto-conversion</td>
-    <td class="star-0">☆</td><td class="star-5">★★★★★</td><td class="star-4">★★★★</td><td class="star-0">☆</td><td class="star-4">★★★★</td>
-  </tr>
-  <tr>
-    <td>Team / Sub-accounts</td>
-    <td class="star-0">☆</td><td class="star-4">★★★★</td><td class="star-3">★★★</td><td class="star-0">☆</td><td class="star-4">★★★★</td>
-  </tr>
-</table>
-<p style="font-size:0.75rem;color:#a0aec0;margin-top:4px;">★★★★★ = Best-in-class &nbsp; ★★★ = Average &nbsp; ☆ = Missing</p>
+    <div class="summary-box">
+      <strong>BullPay มี infrastructure ดีเยี่ยม</strong> — real-time tracking, double-entry ledger, multi-chain, atomic
+      Redis ดีกว่า industry average หลายจุด<br /><br />
+      <strong>แต่ขาด "output layer" ทั้งหมด</strong> — ข้อมูลอยู่ในระบบเต็มแต่ user/merchant ดึงออกมาใช้งานต่อไม่ได้
+      (ไม่มี export, ไม่มี PDF, ไม่มี settlement report)<br /><br />
+      <strong>ปิด Phase 1–2 จะก้าวข้ามคู่แข่งระดับกลางได้ทันที</strong>
+    </div>
 
-<div class="summary-box">
-  <strong>BullPay มี infrastructure ดีเยี่ยม</strong> — real-time tracking, double-entry ledger, multi-chain, atomic Redis ดีกว่า industry average หลายจุด<br><br>
-  <strong>แต่ขาด "output layer" ทั้งหมด</strong> — ข้อมูลอยู่ในระบบเต็มแต่ user/merchant ดึงออกมาใช้งานต่อไม่ได้ (ไม่มี export, ไม่มี PDF, ไม่มี settlement report)<br><br>
-  <strong>ปิด Phase 1–2 จะก้าวข้ามคู่แข่งระดับกลางได้ทันที</strong>
-</div>
-
-<p style="text-align:center;color:#a0aec0;font-size:0.8rem;margin-top:40px;">
-  © 2026 BullPay — Internal Document — Confidential
-</p>
-
-</body>
+    <p style="text-align: center; color: #a0aec0; font-size: 0.8rem; margin-top: 40px">
+      © 2026 BullPay — Internal Document — Confidential
+    </p>
+  </body>
 </html>

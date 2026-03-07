@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import RefreshButton from '@/components/RefreshButton';
+import RefreshButton from '@/components/RefreshButton'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import CoinNetworkFilterDropdown from '@/components/ui/CoinNetworkFilterDropdown'
@@ -22,7 +22,7 @@ export default function AddressFilters({
   onApply,
   onReset,
   onRefresh,
-  t
+  t,
 }) {
   return (
     <Card className="mb-4">
@@ -54,14 +54,20 @@ export default function AddressFilters({
           </div>
           <div className="md:col-span-2 sm:col-span-6">
             <Label>User ID</Label>
-            <Input type="number" placeholder="User ID" value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+            <Input
+              type="number"
+              placeholder="User ID"
+              value={userIdFilter}
+              onChange={(e) => setUserIdFilter(e.target.value)}
+            />
           </div>
           <div className="md:col-span-3 sm:col-span-6">
             <Label>Coin / Network</Label>
             <CoinNetworkFilterDropdown
               coinNetworks={coinNetworks}
               value={coinNetworkIdFilter}
-              onChange={setCoinNetworkIdFilter} />
+              onChange={setCoinNetworkIdFilter}
+            />
           </div>
           <div className="md:col-span-2 sm:col-span-6">
             <Label>Flagged</Label>
@@ -91,6 +97,6 @@ export default function AddressFilters({
           </Button>
         </div>
       </div>
-    </Card>);
-
+    </Card>
+  )
 }

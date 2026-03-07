@@ -1,8 +1,8 @@
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import Table from '@/components/ui/Table';
-import { formatMs, formatPercent, formatUsd } from '@/lib/utils/settingsFormatters';
+import Table from '@/components/ui/Table'
+import { formatMs, formatPercent, formatUsd } from '@/lib/utils/settingsFormatters'
 
 const NETWORKS = [
   { key: 'eth', name: 'Ethereum', symbol: 'ETH' },
@@ -12,7 +12,7 @@ const NETWORKS = [
   { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM' },
   { key: 'base', name: 'Base', symbol: 'BASE' },
   { key: 'avax', name: 'Avalanche', symbol: 'AVAX' },
-];
+]
 
 export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
   return (
@@ -38,7 +38,9 @@ export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
             <th className="text-center">{t('admin.rbfSettings.colStatus', { defaultValue: 'Status' })}</th>
             <th className="text-center">{t('admin.rbfSettings.colGasBump', { defaultValue: 'Gas Bump' })}</th>
             <th className="text-center">{t('admin.rbfSettings.colMinPending', { defaultValue: 'Min Pending' })}</th>
-            <th className="text-center">{t('admin.rbfSettings.colReplaceInterval', { defaultValue: 'Replace Interval' })}</th>
+            <th className="text-center">
+              {t('admin.rbfSettings.colReplaceInterval', { defaultValue: 'Replace Interval' })}
+            </th>
             <th className="text-center">{t('admin.rbfSettings.colMinAmount', { defaultValue: 'Min Amount' })}</th>
             <th className="text-center">{t('admin.rbfSettings.colMaxCost', { defaultValue: 'Max Cost' })}</th>
             <th className="text-right">{t('admin.rbfSettings.colActions', { defaultValue: 'Actions' })}</th>
@@ -46,12 +48,12 @@ export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
         </thead>
         <tbody>
           {NETWORKS.map((net) => {
-            const enabled = getVal(`rbf.${net.key}.enabled`, '');
-            const gasBump = getVal(`rbf.${net.key}.gas_bump_percent`, '');
-            const minPending = getVal(`rbf.${net.key}.min_pending_duration`, '');
-            const replaceInterval = getVal(`rbf.${net.key}.min_time_between_replaces`, '');
-            const minAmount = getVal(`rbf.${net.key}.min_amount_usd`, '');
-            const maxCost = getVal(`rbf.${net.key}.max_cost_usd`, '');
+            const enabled = getVal(`rbf.${net.key}.enabled`, '')
+            const gasBump = getVal(`rbf.${net.key}.gas_bump_percent`, '')
+            const minPending = getVal(`rbf.${net.key}.min_pending_duration`, '')
+            const replaceInterval = getVal(`rbf.${net.key}.min_time_between_replaces`, '')
+            const minAmount = getVal(`rbf.${net.key}.min_amount_usd`, '')
+            const maxCost = getVal(`rbf.${net.key}.max_cost_usd`, '')
 
             return (
               <tr key={net.key}>
@@ -60,12 +62,16 @@ export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
                   <div className="text-surface-500 text-xs">{net.symbol}</div>
                 </td>
                 <td className="text-center">
-                  <Badge color={enabled === 'true' ? 'success' : enabled === 'false' ? 'danger' : 'secondary'} label className="rounded-full">
-                    {enabled === 'true' ?
-                      t('admin.rbfSettings.enabled', { defaultValue: 'Enabled' }) :
-                      enabled === 'false' ?
-                      t('admin.rbfSettings.disabled', { defaultValue: 'Disabled' }) :
-                      '—'}
+                  <Badge
+                    color={enabled === 'true' ? 'success' : enabled === 'false' ? 'danger' : 'secondary'}
+                    label
+                    className="rounded-full"
+                  >
+                    {enabled === 'true'
+                      ? t('admin.rbfSettings.enabled', { defaultValue: 'Enabled' })
+                      : enabled === 'false'
+                        ? t('admin.rbfSettings.disabled', { defaultValue: 'Disabled' })
+                        : '—'}
                   </Badge>
                 </td>
                 <td className="text-center">
@@ -88,12 +94,13 @@ export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
                     title={t('admin.rbfSettings.edit', { defaultValue: 'Edit' })}
                     onClick={() => openNetworkEdit(net)}
                     variant="text-secondary"
-                    size="icon-sm">
+                    size="icon-sm"
+                  >
                     <i className="bx bx-edit text-[1rem]"></i>
                   </Button>
                 </td>
               </tr>
-            );
+            )
           })}
         </tbody>
       </Table>
@@ -109,11 +116,12 @@ export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
           </span>
           <div className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
             {t('admin.rbfSettings.howRbfWorksDesc', {
-              defaultValue: 'When a transaction is stuck pending longer than Min Pending duration, the system bumps the gas price by the Gas Bump percentage and resubmits. Replacements are spaced by the Replace Interval. Cost guards prevent uneconomical replacements.',
+              defaultValue:
+                'When a transaction is stuck pending longer than Min Pending duration, the system bumps the gas price by the Gas Bump percentage and resubmits. Replacements are spaced by the Replace Interval. Cost guards prevent uneconomical replacements.',
             })}
           </div>
         </div>
       </div>
     </Card>
-  );
+  )
 }

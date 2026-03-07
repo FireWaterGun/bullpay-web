@@ -10,10 +10,7 @@ export default function CardEmptyState({ icon = 'bx-data', message, sub, childre
   return (
     <div className="text-center py-12">
       <div className="flex flex-col items-center gap-2">
-        <div
-          className="rounded-full bg-surface-100 dark:bg-dark-elevated flex items-center justify-center mb-1 w-16 h-16"
-         
-        >
+        <div className="rounded-full bg-surface-100 dark:bg-dark-elevated flex items-center justify-center mb-1 w-16 h-16">
           <i className={`bx ${icon} text-3xl text-surface-500`}></i>
         </div>
         <span className="font-medium text-surface-900">{message}</span>

@@ -81,20 +81,32 @@ export interface BalancesWithFiatResult {
   fiat?: { currency: string; amount: string; rates?: Record<string, string> }
 }
 
-export async function getBalancesWithFiat(token?: string, currency?: string, coinNetworkId?: number | string): Promise<BalancesWithFiatResult> {
+export async function getBalancesWithFiat(
+  token?: string,
+  currency?: string,
+  coinNetworkId?: number | string
+): Promise<BalancesWithFiatResult> {
   const queryParams = new URLSearchParams()
   if (currency) queryParams.append('currency', String(currency))
   if (coinNetworkId) queryParams.append('coinNetworkId', String(coinNetworkId))
   const qs = queryParams.toString() ? `?${queryParams.toString()}` : ''
   const data: any = await apiFetch<any>(`/api/v1/user/balance${qs}`, { token })
   // Support new structure with data.balances, fallback to old data.breakdown
-  const breakdown: BalanceBreakdownItem[] = Array.isArray(data?.balances) ? data.balances : Array.isArray(data?.breakdown) ? data.breakdown : []
+  const breakdown: BalanceBreakdownItem[] = Array.isArray(data?.balances)
+    ? data.balances
+    : Array.isArray(data?.breakdown)
+      ? data.breakdown
+      : []
   const totalBalance = data?.totalBalance
   // Map new summary structure to old fiat structure for backward compatibility
-  const fiat = data?.fiat || (data?.summary ? {
-    currency: data.summary.currency || 'USD',
-    amount: data.summary.totalValueUsd || '0',
-    rates: {}
-  } : undefined)
+  const fiat =
+    data?.fiat ||
+    (data?.summary
+      ? {
+          currency: data.summary.currency || 'USD',
+          amount: data.summary.totalValueUsd || '0',
+          rates: {},
+        }
+      : undefined)
   return { breakdown, totalBalance, fiat }
 }

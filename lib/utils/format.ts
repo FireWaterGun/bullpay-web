@@ -34,9 +34,9 @@ export function formatUsd(value: string | number | null | undefined): string {
 
   const abs = Math.abs(num)
   if (abs < 0.01) {
-    return `$${  trimNum(abs.toFixed(8))}`
+    return `$${trimNum(abs.toFixed(8))}`
   }
-  return `$${  trimNum(abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}`
+  return `$${trimNum(abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}`
 }
 
 /**
@@ -75,10 +75,15 @@ export function formatUsdAuto(value: string | number | null | undefined): string
 
   const prefix = num < 0 ? '-$' : '$'
   const minD = Math.min(2, decimals)
-  return prefix + trimNum(abs.toLocaleString('en-US', {
-    minimumFractionDigits: minD,
-    maximumFractionDigits: Math.max(minD, decimals),
-  }))
+  return (
+    prefix +
+    trimNum(
+      abs.toLocaleString('en-US', {
+        minimumFractionDigits: minD,
+        maximumFractionDigits: Math.max(minD, decimals),
+      })
+    )
+  )
 }
 
 /**
@@ -91,7 +96,7 @@ export function formatPercent(value: string | number | null | undefined, decimal
   if (value === null || value === undefined) return '0%'
   const num = typeof value === 'string' ? parseFloat(value) : value
   if (!Number.isFinite(num) || num === 0) return '0%'
-  return `${parseFloat(num.toFixed(decimals))  }%`
+  return `${parseFloat(num.toFixed(decimals))}%`
 }
 
 /**
@@ -105,7 +110,7 @@ export function formatCommission(rate: string | number | null | undefined): stri
   const num = typeof rate === 'string' ? parseFloat(rate) : rate
   if (!Number.isFinite(num) || num === 0) return '0%'
   const pct = num * 100
-  return `${parseFloat(pct.toFixed(2))  }%`
+  return `${parseFloat(pct.toFixed(2))}%`
 }
 
 /**
@@ -133,7 +138,7 @@ export function formatChange(value: string | number | null | undefined, decimals
   if (!Number.isFinite(num)) return '+0%'
   const prefix = num >= 0 ? '+' : ''
   if (num === 0) return '+0%'
-  return `${prefix + parseFloat(num.toFixed(decimals))  }%`
+  return `${prefix + parseFloat(num.toFixed(decimals))}%`
 }
 
 // ---------------------------------------------------------------------------
@@ -158,10 +163,7 @@ interface DateFormatOptions {
  *     → "15 ม.ค. 2567, 17:30"
  *   formatDate(null) → "N/A"
  */
-export function formatDate(
-  value: string | number | Date | null | undefined,
-  options?: DateFormatOptions
-): string {
+export function formatDate(value: string | number | Date | null | undefined, options?: DateFormatOptions): string {
   if (!value) return 'N/A'
   const d = value instanceof Date ? value : new Date(String(value))
   if (isNaN(d.getTime())) return 'N/A'
@@ -204,10 +206,7 @@ export function formatAmount(value: string | number | null | undefined): string 
   return trimTrailingZerosDecimal(s)
 }
 
-export function formatDateTime(
-  value: string | number | Date | null | undefined,
-  options?: DateFormatOptions
-): string {
+export function formatDateTime(value: string | number | Date | null | undefined, options?: DateFormatOptions): string {
   if (!value) return '-'
   const d = value instanceof Date ? value : new Date(String(value))
   if (isNaN(d.getTime())) return String(value)

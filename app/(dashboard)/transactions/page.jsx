@@ -3,7 +3,11 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
-import { getUserTransactionSummary, getUserTransactionDaily, getUserTransactionByCoin } from '@/lib/api/userTransactions'
+import {
+  getUserTransactionSummary,
+  getUserTransactionDaily,
+  getUserTransactionByCoin,
+} from '@/lib/api/userTransactions'
 import LocaleDatePicker from '@/components/LocaleDatePicker'
 import { formatUsd, formatChange } from '@/lib/utils/format'
 import DailyTrendChart from '@/components/dashboard/DailyTrendChart'
@@ -45,10 +49,10 @@ function getDateRange(preset) {
 }
 
 const kpiColors = {
-  primary:   { bg: 'bg-primary-50 dark:bg-primary-500/10',  icon: 'text-primary-600 dark:text-primary-400' },
-  danger:    { bg: 'bg-danger-50 dark:bg-danger-500/10',   icon: 'text-danger-600 dark:text-danger-400' },
-  warning:   { bg: 'bg-warning-50 dark:bg-warning-500/10',  icon: 'text-warning-600 dark:text-warning-400' },
-  info:      { bg: 'bg-info-50 dark:bg-info-500/10',     icon: 'text-info-600 dark:text-info-400' },
+  primary: { bg: 'bg-primary-50 dark:bg-primary-500/10', icon: 'text-primary-600 dark:text-primary-400' },
+  danger: { bg: 'bg-danger-50 dark:bg-danger-500/10', icon: 'text-danger-600 dark:text-danger-400' },
+  warning: { bg: 'bg-warning-50 dark:bg-warning-500/10', icon: 'text-warning-600 dark:text-warning-400' },
+  info: { bg: 'bg-info-50 dark:bg-info-500/10', icon: 'text-info-600 dark:text-info-400' },
 }
 
 function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
@@ -61,10 +65,14 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
       <div className="flex items-start justify-between">
         <div className="min-w-0">
           <p className="text-sm text-surface-500 mb-1">{title}</p>
-          <p className={`text-2xl font-bold mb-0 ${valueColor ?`text-${valueColor}-600` : 'text-surface-900'}`}>{value}</p>
+          <p className={`text-2xl font-bold mb-0 ${valueColor ? `text-${valueColor}-600` : 'text-surface-900'}`}>
+            {value}
+          </p>
           {change !== undefined && change !== null && !isNaN(numChange) && (
-            <span className={`text-xs ${isPositive ?'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}>
-              <i className={`bx ${isPositive ?'bx-up-arrow-alt' : 'bx-down-arrow-alt'}`}></i>
+            <span
+              className={`text-xs ${isPositive ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}
+            >
+              <i className={`bx ${isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt'}`}></i>
               {formatChange(numChange)} {t ? t('userDashboard.vsPrev', { defaultValue: 'vs prev' }) : 'vs prev'}
             </span>
           )}
@@ -111,8 +119,8 @@ export default function TransactionsPage() {
   const dateRangeLabel = useMemo(() => {
     const { from, to } = dateRange
     if (from === to) return from
-    const fromDate = new Date(`${from  }T00:00:00`)
-    const toDate = new Date(`${to  }T00:00:00`)
+    const fromDate = new Date(`${from}T00:00:00`)
+    const toDate = new Date(`${to}T00:00:00`)
     const fmtDate = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
     return `${fmtDate(fromDate)} - ${fmtDate(toDate)}`
   }, [dateRange, locale])
@@ -141,12 +149,14 @@ export default function TransactionsPage() {
     if (dailyResult.status === 'fulfilled') {
       const res = dailyResult.value
       const items = res?.items || res || []
-      setDailyData(items.map(item => ({
-        date: item.date,
-        deposit: parseFloat(item.depositUsd || 0),
-        withdrawal: parseFloat(item.withdrawalUsd || 0),
-        netFlow: parseFloat(item.netFlowUsd || 0),
-      })))
+      setDailyData(
+        items.map((item) => ({
+          date: item.date,
+          deposit: parseFloat(item.depositUsd || 0),
+          withdrawal: parseFloat(item.withdrawalUsd || 0),
+          netFlow: parseFloat(item.netFlowUsd || 0),
+        }))
+      )
       setDailyMeta(res?.meta || null)
     } else {
       logger.error('Failed to load daily data:', dailyResult.reason)
@@ -217,7 +227,15 @@ export default function TransactionsPage() {
                 placeholder={t('filter.from', { defaultValue: 'From' })}
                 t={t}
                 maxDate={customTo ? customTo : undefined}
-                minDate={customTo ? (() => { const d = new Date(`${customTo  }T00:00:00`); d.setMonth(d.getMonth() - 2); return d.toISOString().split('T')[0] })() : undefined}
+                minDate={
+                  customTo
+                    ? (() => {
+                        const d = new Date(`${customTo}T00:00:00`)
+                        d.setMonth(d.getMonth() - 2)
+                        return d.toISOString().split('T')[0]
+                      })()
+                    : undefined
+                }
               />
               <span className="self-center text-surface-400">&ndash;</span>
               <LocaleDatePicker
@@ -227,12 +245,24 @@ export default function TransactionsPage() {
                 placeholder={t('filter.to', { defaultValue: 'To' })}
                 t={t}
                 minDate={customFrom ? customFrom : undefined}
-                maxDate={customFrom ? (() => { const d = new Date(`${customFrom  }T00:00:00`); d.setMonth(d.getMonth() + 2); return d.toISOString().split('T')[0] })() : undefined}
+                maxDate={
+                  customFrom
+                    ? (() => {
+                        const d = new Date(`${customFrom}T00:00:00`)
+                        d.setMonth(d.getMonth() + 2)
+                        return d.toISOString().split('T')[0]
+                      })()
+                    : undefined
+                }
               />
               <button
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-surface-200 rounded-lg text-surface-600 hover:bg-surface-50 transition-colors cursor-pointer"
-                onClick={() => { setShowCustom(false); setCustomFrom(''); setCustomTo('') }}
+                onClick={() => {
+                  setShowCustom(false)
+                  setCustomFrom('')
+                  setCustomTo('')
+                }}
               >
                 <i className="bx bx-reset"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
@@ -243,7 +273,9 @@ export default function TransactionsPage() {
       </div>
 
       {error && (
-        <div className="bg-danger-50 dark:bg-danger-500/10 border border-danger-200 dark:border-danger-800 text-danger-700 dark:text-danger-300 rounded-lg p-3 text-sm mb-5">{error}</div>
+        <div className="bg-danger-50 dark:bg-danger-500/10 border border-danger-200 dark:border-danger-800 text-danger-700 dark:text-danger-300 rounded-lg p-3 text-sm mb-5">
+          {error}
+        </div>
       )}
 
       {/* KPI Summary Cards */}
@@ -283,7 +315,10 @@ export default function TransactionsPage() {
             change={changes.netFlowPercent}
             icon="bx-line-chart"
             color="info"
-            valueColor={(() => { const nf = parseFloat(current.netFlowUsd || 0); return nf > 0 ? 'success' : nf < 0 ? 'danger' : undefined })()}
+            valueColor={(() => {
+              const nf = parseFloat(current.netFlowUsd || 0)
+              return nf > 0 ? 'success' : nf < 0 ? 'danger' : undefined
+            })()}
             t={t}
           />
         </div>

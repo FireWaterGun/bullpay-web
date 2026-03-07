@@ -34,11 +34,11 @@ export default function useIdleLogout(logout, isAuthenticated) {
     }, IDLE_TIMEOUT_MS)
 
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart']
-    events.forEach(e => window.addEventListener(e, resetTimer, { passive: true }))
+    events.forEach((e) => window.addEventListener(e, resetTimer, { passive: true }))
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
-      events.forEach(e => window.removeEventListener(e, resetTimer))
+      events.forEach((e) => window.removeEventListener(e, resetTimer))
     }
   }, [logout, isAuthenticated])
 }

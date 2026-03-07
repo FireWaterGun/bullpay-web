@@ -1,74 +1,74 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react'
+import { useParams } from 'next/navigation'
 
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getAdminInvoice } from '@/lib/api/admin';
-import { formatAmount } from '@/lib/utils/format';
-import { useDateFormat } from '@/hooks/useDateFormat';
-import CoinImg from '@/components/CoinImg';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import { statusBadgeClass } from '@/components/admin/adminInvoiceHelpers';
-import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTable';
-import { logger } from '@/lib/utils/logger';
-import RefreshButton from '@/components/RefreshButton';
-import PageSpinner from '@/components/PageSpinner';
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getAdminInvoice } from '@/lib/api/admin'
+import { formatAmount } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
+import CoinImg from '@/components/CoinImg'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { statusBadgeClass } from '@/components/admin/adminInvoiceHelpers'
+import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTable'
+import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 import Alert from '@/components/ui/Alert'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
 export default function AdminInvoiceDetail() {
-  const { fmtDate } = useDateFormat();
-  const { t } = useAdminTranslation();
-  const { id } = useParams();
-  const { token } = useAuth();
-  const toast = useToast();
-  const [loading, setLoading] = useState(false);
-  const [invoice, setInvoice] = useState(null);
+  const { fmtDate } = useDateFormat()
+  const { t } = useAdminTranslation()
+  const { id } = useParams()
+  const { token } = useAuth()
+  const toast = useToast()
+  const [loading, setLoading] = useState(false)
+  const [invoice, setInvoice] = useState(null)
 
   const loadInvoice = useCallback(async () => {
     try {
-      setLoading(true);
-      const data = await getAdminInvoice(token, id);
-      setInvoice(data);
+      setLoading(true)
+      const data = await getAdminInvoice(token, id)
+      setInvoice(data)
     } catch (error) {
-      logger.error('Failed to load invoice:', error);
-      toast.error(t('admin.invoices.loadError', { defaultValue: 'Failed to load invoice' }));
+      logger.error('Failed to load invoice:', error)
+      toast.error(t('admin.invoices.loadError', { defaultValue: 'Failed to load invoice' }))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [token, id, toast, t]);
+  }, [token, id, toast, t])
 
   useEffect(() => {
-    loadInvoice();
-  }, [loadInvoice]);
+    loadInvoice()
+  }, [loadInvoice])
 
   async function handleCopy(text) {
-    const ok = await copyText(text);
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
   if (loading && !invoice) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   if (!invoice) {
     return (
       <div className="grow py-6">
         <Alert variant="warning">{t('admin.invoiceDetail.notFound', { defaultValue: 'Invoice not found' })}</Alert>
-      </div>);
-
+      </div>
+    )
   }
 
-  const coinSymbol = (invoice.coin?.symbol || invoice.coinSymbol || '').toUpperCase();
-  const networkSymbol = (invoice.network?.symbol || invoice.networkSymbol || '').toUpperCase();
-  const networkName = invoice.network?.name || invoice.networkName || '';
-  const payments = invoice.payments || [];
+  const coinSymbol = (invoice.coin?.symbol || invoice.coinSymbol || '').toUpperCase()
+  const networkSymbol = (invoice.network?.symbol || invoice.networkSymbol || '').toUpperCase()
+  const networkName = invoice.network?.name || invoice.networkName || ''
+  const payments = invoice.payments || []
 
   return (
     <div className="grow py-6">
@@ -91,16 +91,18 @@ export default function AdminInvoiceDetail() {
                   <div>
                     <h4 className="mb-0">
                       Invoice #{invoice.id}
-                      {invoice.invoiceNumber &&
-                      <small className="text-surface-500 ml-2">({invoice.invoiceNumber})</small>
-                      }
+                      {invoice.invoiceNumber && (
+                        <small className="text-surface-500 ml-2">({invoice.invoiceNumber})</small>
+                      )}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={statusBadgeClass(invoice.status)}>
                         {String(invoice.status || '').toUpperCase()}
                       </span>
                       <span className="text-surface-500">•</span>
-                      <span className="text-surface-500">{coinSymbol} on {networkName || networkSymbol}</span>
+                      <span className="text-surface-500">
+                        {coinSymbol} on {networkName || networkSymbol}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -141,38 +143,46 @@ export default function AdminInvoiceDetail() {
                       </tr>
                       <tr>
                         <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
-                        <td className="font-medium">{formatAmount(invoice.amount)} {coinSymbol}</td>
+                        <td className="font-medium">
+                          {formatAmount(invoice.amount)} {coinSymbol}
+                        </td>
                       </tr>
                       <tr>
                         <td className="text-surface-500">Paid Amount</td>
-                        <td className="font-medium">{formatAmount(invoice.paidAmount)} {coinSymbol}</td>
+                        <td className="font-medium">
+                          {formatAmount(invoice.paidAmount)} {coinSymbol}
+                        </td>
                       </tr>
                       <tr>
                         <td className="text-surface-500">Remaining</td>
                         <td className="font-medium">
                           {formatAmount(invoice.remainingAmount)} {coinSymbol}
-                          {invoice.isFullyPaid &&
-                          <Badge color="success" label className="ml-2">Fully Paid</Badge>
-                          }
+                          {invoice.isFullyPaid && (
+                            <Badge color="success" label className="ml-2">
+                              Fully Paid
+                            </Badge>
+                          )}
                         </td>
                       </tr>
-                      {invoice.amountUsd &&
-                      <tr>
-                          <td className="text-surface-500">{t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}</td>
+                      {invoice.amountUsd && (
+                        <tr>
+                          <td className="text-surface-500">
+                            {t('admin.detail.amountUsd', { defaultValue: 'Amount (USD)' })}
+                          </td>
                           <td className="font-medium">${formatAmount(invoice.amountUsd)}</td>
                         </tr>
-                      }
-                      {invoice.usdRate &&
-                      <tr>
+                      )}
+                      {invoice.usdRate && (
+                        <tr>
                           <td className="text-surface-500">USD Rate</td>
                           <td>
                             ${formatAmount(invoice.usdRate)}
-                            {invoice.rateSource &&
-                          <small className="text-surface-500 ml-1">({invoice.rateSource})</small>
-                          }
+                            {invoice.rateSource && (
+                              <small className="text-surface-500 ml-1">({invoice.rateSource})</small>
+                            )}
                           </td>
                         </tr>
-                      }
+                      )}
                       <tr>
                         <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
@@ -194,12 +204,12 @@ export default function AdminInvoiceDetail() {
                         <td className="text-surface-500">Expires</td>
                         <td>{fmtDate(invoice.expiryAt || invoice.expiry_at)}</td>
                       </tr>
-                      {invoice.paidAt &&
-                      <tr>
+                      {invoice.paidAt && (
+                        <tr>
                           <td className="text-surface-500">Paid At</td>
                           <td>{fmtDate(invoice.paidAt || invoice.paid_at)}</td>
                         </tr>
-                      }
+                      )}
                     </tbody>
                   </Table>
                 </div>
@@ -215,29 +225,29 @@ export default function AdminInvoiceDetail() {
                   <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-surface-500 w-2/5">{t('admin.detail.userId', { defaultValue: 'User ID' })}</td>
+                        <td className="text-surface-500 w-2/5">
+                          {t('admin.detail.userId', { defaultValue: 'User ID' })}
+                        </td>
                         <td className="font-medium">{invoice.userId || invoice.user?.id || '-'}</td>
                       </tr>
-                      {invoice.user?.email &&
-                      <tr>
+                      {invoice.user?.email && (
+                        <tr>
                           <td className="text-surface-500">{t('admin.detail.email', { defaultValue: 'Email' })}</td>
                           <td className="font-medium">{invoice.user.email}</td>
                         </tr>
-                      }
-                      {invoice.merchantId &&
-                      <tr>
+                      )}
+                      {invoice.merchantId && (
+                        <tr>
                           <td className="text-surface-500">Merchant ID</td>
                           <td className="font-medium">{invoice.merchantId}</td>
                         </tr>
-                      }
+                      )}
                       <tr>
                         <td className="text-surface-500">Payment Address</td>
                         <td>
-                          {invoice.paymentAddress ?
-                          <div className="flex items-center">
-                              <code className="mr-2 text-[0.8rem] break-all">
-                                {invoice.paymentAddress}
-                              </code>
+                          {invoice.paymentAddress ? (
+                            <div className="flex items-center">
+                              <code className="mr-2 text-[0.8rem] break-all">{invoice.paymentAddress}</code>
                               <Button
                                 onClick={() => handleCopy(invoice.paymentAddress)}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
@@ -247,24 +257,24 @@ export default function AdminInvoiceDetail() {
                               >
                                 <i className="bx bx-copy"></i>
                               </Button>
-                            </div> :
-
-                          <span className="text-surface-500">-</span>
-                          }
+                            </div>
+                          ) : (
+                            <span className="text-surface-500">-</span>
+                          )}
                         </td>
                       </tr>
-                      {invoice.memo &&
-                      <tr>
+                      {invoice.memo && (
+                        <tr>
                           <td className="text-surface-500">Memo</td>
                           <td>{invoice.memo}</td>
                         </tr>
-                      }
-                      {invoice.description &&
-                      <tr>
+                      )}
+                      {invoice.description && (
+                        <tr>
                           <td className="text-surface-500">Description</td>
                           <td>{invoice.description}</td>
                         </tr>
-                      }
+                      )}
                     </tbody>
                   </Table>
                 </div>
@@ -277,10 +287,10 @@ export default function AdminInvoiceDetail() {
             payments={payments}
             coinSymbol={coinSymbol}
             network={invoice.network}
-            onCopy={handleCopy} />
-          
+            onCopy={handleCopy}
+          />
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

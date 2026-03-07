@@ -12,7 +12,9 @@ export default function Spinner({ size = 'md', className = '', ...rest }) {
     'border-current border-r-transparent',
     sizeMap[size] ?? sizeMap.md,
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <span className={cls} role="status" {...rest}>

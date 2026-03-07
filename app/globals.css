@@ -2,7 +2,7 @@
    Main stylesheet — replaces Sneat/Bootstrap theme
    Import this in app/layout.tsx */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ── Dark mode via data-theme attribute ── */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -39,7 +39,7 @@
   --color-dark-elevated: #232630;
 
   /* Status Colors — Full palette (Tailwind green / red / amber / cyan scales) */
-  --color-success-50:  #f0fdf4;
+  --color-success-50: #f0fdf4;
   --color-success-100: #dcfce7;
   --color-success-200: #bbf7d0;
   --color-success-300: #86efac;
@@ -51,7 +51,7 @@
   --color-success-900: #14532d;
   --color-success-950: #052e16;
 
-  --color-warning-50:  #fffbeb;
+  --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;
   --color-warning-200: #fde68a;
   --color-warning-300: #fcd34d;
@@ -63,7 +63,7 @@
   --color-warning-900: #78350f;
   --color-warning-950: #451a03;
 
-  --color-danger-50:  #fef2f2;
+  --color-danger-50: #fef2f2;
   --color-danger-100: #fee2e2;
   --color-danger-200: #fecaca;
   --color-danger-300: #fca5a5;
@@ -75,7 +75,7 @@
   --color-danger-900: #7f1d1d;
   --color-danger-950: #450a0a;
 
-  --color-info-50:  #ecfeff;
+  --color-info-50: #ecfeff;
   --color-info-100: #cffafe;
   --color-info-200: #a5f3fc;
   --color-info-300: #67e8f9;
@@ -141,9 +141,9 @@
 /* ── Dark mode surface palette override ──
    Makes text-surface-*, bg-surface-*, border-surface-* auto-switch.
    No need for dark:text-white, dark:text-dark-text, dark:border-dark-border etc. */
-[data-theme="dark"] {
+[data-theme='dark'] {
   /* Backgrounds: light→dark (50=body, 100=paper, 200=border/divider, 300=border-hover) */
-  --color-surface-50:  #161820;
+  --color-surface-50: #161820;
   --color-surface-100: #1e2028;
   --color-surface-200: #2e3240;
   --color-surface-300: #3a3e4a;
@@ -158,8 +158,8 @@
   --color-surface-950: #ffffff;
 
   /* Semantic surfaces */
-  --color-body:   #161820;
-  --color-card:   #1e2028;
+  --color-body: #161820;
+  --color-card: #1e2028;
   --color-raised: #232630;
 }
 
@@ -181,7 +181,12 @@
   }
 
   /* Headings — surface-900 auto-switches to white in dark mode */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold;
     color: var(--color-surface-900);
   }
@@ -197,18 +202,17 @@
     color: var(--color-primary-700);
   }
 
-  [data-theme="dark"] a {
+  [data-theme='dark'] a {
     color: var(--color-primary-400);
   }
 
-  [data-theme="dark"] a:hover {
+  [data-theme='dark'] a:hover {
     color: var(--color-primary-300);
   }
 }
 
 /* ── Component Layer (reusable patterns) ── */
 @layer components {
-
   /* ── Form primitives ── */
 
   /* Base for <input> and <select> */
@@ -216,7 +220,7 @@
     @apply block w-full transition-all;
     @apply px-[0.9375rem] py-[0.543rem];
     @apply text-base font-normal leading-[1.375];
-    @apply text-surface-800 bg-transparent;
+    @apply text-surface-800 bg-surface-50;
     @apply border border-surface-300 rounded-input;
     @apply placeholder:text-surface-400 placeholder:opacity-100;
     @apply hover:not-focus:not-disabled:not-read-only:border-surface-500;
@@ -237,13 +241,13 @@
 
   /* Native <select> additions */
   .select-base {
-    @apply appearance-none cursor-pointer pr-[2.625rem];
+    @apply appearance-none cursor-pointer pr-[2.625rem] bg-surface-50;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22' fill='none'%3e%3cpath d='M10.9999 12.0743L15.5374 7.53676L16.8336 8.83292L10.9999 14.6666L5.16626 8.83292L6.46243 7.53676L10.9999 12.0743Z' fill='%2322303e' fill-opacity='0.9'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 0.9375rem center;
     background-size: 22px 24px;
   }
-  [data-theme="dark"] .select-base {
+  [data-theme='dark'] .select-base {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22' fill='none'%3e%3cpath d='M10.9999 12.0743L15.5374 7.53676L16.8336 8.83292L10.9999 14.6666L5.16626 8.83292L6.46243 7.53676L10.9999 12.0743Z' fill='%23fff' fill-opacity='0.9'/%3e%3c/svg%3e");
   }
 
@@ -255,7 +259,7 @@
   /* InputGroup wrapper */
   .input-group {
     @apply relative flex items-stretch w-full;
-    @apply border rounded-input bg-transparent;
+    @apply border rounded-input bg-surface-50;
     @apply transition-[border-color,box-shadow];
     @apply border-surface-300 hover:border-surface-500;
     @apply focus-within:border-primary-600 focus-within:shadow-input-focus focus-within:hover:border-primary-600;
@@ -314,10 +318,10 @@
   .input-group:hover .input-addon:last-child {
     border-left-color: var(--color-surface-500);
   }
-  [data-theme="dark"] .input-group:hover .input-addon:first-child {
+  [data-theme='dark'] .input-group:hover .input-addon:first-child {
     border-right-color: var(--color-surface-300);
   }
-  [data-theme="dark"] .input-group:hover .input-addon:last-child {
+  [data-theme='dark'] .input-group:hover .input-addon:last-child {
     border-left-color: var(--color-surface-300);
   }
   /* Match group focus color on addon separator (overrides hover) */
@@ -327,10 +331,10 @@
   .input-group:focus-within .input-addon:last-child {
     border-left-color: var(--color-primary-600);
   }
-  [data-theme="dark"] .input-group:focus-within .input-addon:first-child {
+  [data-theme='dark'] .input-group:focus-within .input-addon:first-child {
     border-right-color: var(--color-primary-500);
   }
-  [data-theme="dark"] .input-group:focus-within .input-addon:last-child {
+  [data-theme='dark'] .input-group:focus-within .input-addon:last-child {
     border-left-color: var(--color-primary-500);
   }
   /* Error state — addon separator turns danger */
@@ -429,23 +433,47 @@
   }
 
   /* Sizes */
-  .btn-sm { @apply px-[0.8rem] py-[0.4rem] text-sm; }
-  .btn-md { @apply px-5 py-[0.4812rem] text-base; }
-  .btn-lg { @apply px-6 py-[0.8rem] text-lg; }
-  .btn-icon { @apply p-2 w-[38px] h-[38px]; }
-  .btn-icon-sm { @apply p-1 w-7 h-7 text-base rounded-full; }
+  .btn-sm {
+    @apply px-[0.8rem] py-[0.4rem] text-sm;
+  }
+  .btn-md {
+    @apply px-5 py-[0.4812rem] text-base;
+  }
+  .btn-lg {
+    @apply px-6 py-[0.8rem] text-lg;
+  }
+  .btn-icon {
+    @apply p-2 w-[38px] h-[38px];
+  }
+  .btn-icon-sm {
+    @apply p-1 w-7 h-7 text-base rounded-full;
+  }
 
   /* ── Misc Bootstrap compat ── */
-  .rounded-top { border-radius: var(--radius-card) var(--radius-card) 0 0; }
+  .rounded-top {
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+  }
 
   /* ── Text utilities (semantic) ── */
-  .text-primary { color: var(--color-primary-600) !important; }
-  .text-success { color: var(--color-success-600) !important; }
-  .text-danger { color: var(--color-danger-500) !important; }
-  .text-warning { color: var(--color-warning-600) !important; }
-  .text-info { color: var(--color-info-600) !important; }
+  .text-primary {
+    color: var(--color-primary-600) !important;
+  }
+  .text-success {
+    color: var(--color-success-600) !important;
+  }
+  .text-danger {
+    color: var(--color-danger-500) !important;
+  }
+  .text-warning {
+    color: var(--color-warning-600) !important;
+  }
+  .text-info {
+    color: var(--color-info-600) !important;
+  }
 
-  [data-theme="dark"] .text-primary { color: var(--color-primary-400) !important; }
+  [data-theme='dark'] .text-primary {
+    color: var(--color-primary-400) !important;
+  }
 }
 
 /* ── Utility Layer ── */
@@ -513,7 +541,6 @@
     mask-image: radial-gradient(ellipse 70% 50% at 50% 40%, black, transparent);
     -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 40%, black, transparent);
   }
-
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -591,7 +618,9 @@
   min-height: 2.625rem;
   border-radius: 0.375rem;
   color: var(--color-surface-800);
-  transition: color 0.3s, background-color 0.3s;
+  transition:
+    color 0.3s,
+    background-color 0.3s;
 }
 
 /* ── Hover state ── */
@@ -863,7 +892,7 @@ li.bp-active-item::after {
    ══════════════════════════════════════════════════════════════ */
 
 /* Sidebar */
-[data-theme="dark"] .bp-sidebar {
+[data-theme='dark'] .bp-sidebar {
   /* Scoped surface overrides — Sneat purple-tint palette for sidebar */
   --color-surface-800: #e1def5;
   --color-surface-700: #d2cfeb;
@@ -873,90 +902,91 @@ li.bp-active-item::after {
   box-shadow: 0 0.125rem 0.375rem 0 rgba(20, 20, 29, 0.2);
 }
 
-/* Toggle button border in dark (match dark paper bg) */
-[data-theme="dark"] .bp-collapse-btn {
-  border-color: #2b2c40;
+/* Toggle button border — match body bg for concave illusion (auto light/dark) */
+.bp-collapse-btn {
+  border-color: var(--color-body) !important;
+  transition: border-color 0s !important;
 }
 
 /* Menu link color in dark */
-[data-theme="dark"] .bp-menu-link {
+[data-theme='dark'] .bp-menu-link {
   color: var(--color-surface-600);
 }
 
 /* Sidebar hover backgrounds in dark (can't scope — would affect solid bg-surface-* too) */
-[data-theme="dark"] .bp-sidebar .hover\:bg-surface-100:hover {
+[data-theme='dark'] .bp-sidebar .hover\:bg-surface-100:hover {
   background-color: rgba(230, 230, 241, 0.06) !important;
 }
-[data-theme="dark"] .bp-sidebar .hover\:bg-surface-50:hover {
+[data-theme='dark'] .bp-sidebar .hover\:bg-surface-50:hover {
   background-color: rgba(230, 230, 241, 0.04) !important;
 }
 
 /* Section header in dark */
-[data-theme="dark"] .bp-section-hdr span {
+[data-theme='dark'] .bp-section-hdr span {
   color: rgba(225, 222, 245, 0.38) !important;
 }
-[data-theme="dark"] .bp-section-hdr::before {
+[data-theme='dark'] .bp-section-hdr::before {
   background: rgba(225, 222, 245, 0.12);
 }
 
 /* User section in dark */
-[data-theme="dark"] .bp-sidebar-user {
+[data-theme='dark'] .bp-sidebar-user {
   border-top-color: rgba(225, 222, 245, 0.08);
 }
 
 /* Navbar in dark */
-[data-theme="dark"] .bp-navbar {
+[data-theme='dark'] .bp-navbar {
   /* Scoped surface override for navbar icons */
   --color-surface-500: #b2b2c4;
   background: var(--color-card);
   backdrop-filter: saturate(200%) blur(6px);
   box-shadow: 0 0.125rem 0.375rem 0 rgba(20, 20, 29, 0.12);
 }
-[data-theme="dark"] .bp-navbar .hover\:bg-surface-100:hover {
+[data-theme='dark'] .bp-navbar .hover\:bg-surface-100:hover {
   background-color: rgba(230, 230, 241, 0.06) !important;
 }
 
 /* Menu hover in dark */
-[data-theme="dark"] .bp-menu-link:hover {
+[data-theme='dark'] .bp-menu-link:hover {
   background: rgba(230, 230, 241, 0.06) !important;
 }
 
 /* Active menu in dark (Sneat: solid primary bg + white text) */
-[data-theme="dark"] .bp-menu-link.bp-active {
+[data-theme='dark'] .bp-menu-link.bp-active {
   background: var(--color-primary-600) !important;
   color: #fff !important;
   box-shadow: none;
 }
-[data-theme="dark"] li.bp-active-item::after {
+[data-theme='dark'] li.bp-active-item::after {
   display: none;
 }
-[data-theme="dark"] .bp-menu-link.bp-active .bp-menu-icon {
+[data-theme='dark'] .bp-menu-link.bp-active .bp-menu-icon {
   color: #fff !important;
 }
 
 /* Active open toggle in dark */
-[data-theme="dark"] .bp-menu-link.bp-active-toggle {
+[data-theme='dark'] .bp-menu-link.bp-active-toggle {
   background: var(--color-primary-600) !important;
   color: #fff !important;
 }
-[data-theme="dark"] .bp-menu-link.bp-active-toggle .bp-menu-icon {
+[data-theme='dark'] .bp-menu-link.bp-active-toggle .bp-menu-icon {
   color: #fff !important;
 }
 
 /* Sub dots in dark */
-[data-theme="dark"] .bp-submenu > li > .bp-menu-link::before {
+[data-theme='dark'] .bp-submenu > li > .bp-menu-link::before {
   background-color: rgba(225, 222, 245, 0.3);
 }
-[data-theme="dark"] .bp-submenu > li > .bp-menu-link:hover::before {
+[data-theme='dark'] .bp-submenu > li > .bp-menu-link:hover::before {
   background-color: rgba(225, 222, 245, 0.5);
 }
-[data-theme="dark"] .bp-submenu > li > .bp-menu-link.bp-active::before {
+[data-theme='dark'] .bp-submenu > li > .bp-menu-link.bp-active::before {
   background-color: var(--color-primary-400);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-400) 15%, transparent);
 }
 
 /* Submenu active in dark */
-[data-theme="dark"] .bp-submenu .bp-menu-link.bp-active {
+[data-theme='dark'] .bp-submenu .bp-menu-link.bp-active {
   background: transparent !important;
   color: var(--color-primary-300) !important;
   box-shadow: none;
@@ -964,10 +994,10 @@ li.bp-active-item::after {
 
 /* Collapsed hover shadow in dark */
 @media (min-width: 1200px) {
-  [data-theme="dark"] .bp-sidebar.bp-collapsed:hover {
+  [data-theme='dark'] .bp-sidebar.bp-collapsed:hover {
     box-shadow: 0 0.125rem 0.75rem 0 rgba(20, 20, 29, 0.3);
   }
-  [data-theme="dark"] .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-link.bp-active {
+  [data-theme='dark'] .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-link.bp-active {
     background: var(--color-primary-600) !important;
   }
 }
@@ -975,7 +1005,7 @@ li.bp-active-item::after {
 /* Main content area — uses var(--color-body), auto-switches in dark */
 
 /* Footer in dark */
-[data-theme="dark"] .bp-main footer {
+[data-theme='dark'] .bp-main footer {
   color: rgba(225, 222, 245, 0.38);
 }
 
@@ -984,18 +1014,35 @@ li.bp-active-item::after {
    ══════════════════════════════════════════════════════════════ */
 
 @keyframes landing-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.6); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.6);
+  }
 }
 
 @keyframes landing-float-1 {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 @keyframes landing-float-2 {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(5deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
 }
 
 /* Hero grid pattern — multi-background + mask-image */

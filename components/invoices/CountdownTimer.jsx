@@ -49,7 +49,9 @@ export default function CountdownTimer({ expiryAt, expiresAt, onExpired }) {
           <i className="bx bx-time-five text-xl mr-2 text-danger-600 dark:text-danger-400"></i>
           <div className="font-medium text-danger-700 dark:text-danger-400">{t('payment.expired') || 'Expired'}</div>
         </div>
-        <small className="text-danger-600 dark:text-danger-400">{t('payment.expiredMessage') || 'This invoice has expired'}</small>
+        <small className="text-danger-600 dark:text-danger-400">
+          {t('payment.expiredMessage') || 'This invoice has expired'}
+        </small>
       </div>
     )
   }
@@ -60,7 +62,9 @@ export default function CountdownTimer({ expiryAt, expiresAt, onExpired }) {
     <div className="rounded-lg border border-warning-200 dark:border-warning-800 bg-warning-50 dark:bg-warning-950/30 p-4">
       <div className="flex items-center mb-2">
         <i className="bx bx-time-five text-xl mr-2 text-warning-600 dark:text-warning-400"></i>
-        <div className="font-medium text-warning-700 dark:text-warning-400">{t('payment.timeRemaining') || 'Time Remaining'}</div>
+        <div className="font-medium text-warning-700 dark:text-warning-400">
+          {t('payment.timeRemaining') || 'Time Remaining'}
+        </div>
       </div>
       <div className="flex gap-3 justify-center">
         {timeLeft.days > 0 && (

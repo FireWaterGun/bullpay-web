@@ -86,9 +86,12 @@ export function validateAndBuildPayload(formData, isEdit) {
     explorerUrl: formData.explorerUrl?.trim() || undefined,
     apiUrl: formData.apiUrl?.trim() || undefined,
     isTestnet: formData.isTestnet,
-    confirmationBlocks: formData.confirmationBlocks !== '' && formData.confirmationBlocks !== null && formData.confirmationBlocks !== undefined
-      ? parseInt(formData.confirmationBlocks)
-      : 1,
-    status: formData.status || 'active'
+    confirmationBlocks:
+      formData.confirmationBlocks !== '' &&
+      formData.confirmationBlocks !== null &&
+      formData.confirmationBlocks !== undefined
+        ? parseInt(formData.confirmationBlocks)
+        : 1,
+    status: formData.status || 'active',
   }
 }

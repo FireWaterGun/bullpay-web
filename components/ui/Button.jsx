@@ -35,9 +35,7 @@ const sizeCls = {
  * Useful when you need button styling on a non-Button element.
  */
 export function buttonClass(variant = 'primary', size = 'md', extra = '') {
-  return ['btn-base', variantCls[variant] ?? 'btn-primary', sizeCls[size] ?? 'btn-md', extra]
-    .filter(Boolean)
-    .join(' ')
+  return ['btn-base', variantCls[variant] ?? 'btn-primary', sizeCls[size] ?? 'btn-md', extra].filter(Boolean).join(' ')
 }
 
 /**

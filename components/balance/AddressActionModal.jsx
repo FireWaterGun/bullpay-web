@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import Button from '@/components/ui/Button'
 import { Input, Label } from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
@@ -13,17 +13,25 @@ export default function AddressActionModal({
   setSkipLockPeriod,
   actionLoading,
   onAction,
-  onClose
+  onClose,
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !actionLoading && onClose()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={() => !actionLoading && onClose()}
+    >
       <div className="bg-card rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
           <h5 className="font-semibold text-lg flex items-center">
             <i className={`bx ${actionConfig.icon} mr-2`}></i>
             {actionConfig.title}
           </h5>
-          <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={actionLoading}>
+          <button
+            type="button"
+            className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
+            onClick={onClose}
+            disabled={actionLoading}
+          >
             <i className="bx bx-x"></i>
           </button>
         </div>
@@ -47,38 +55,46 @@ export default function AddressActionModal({
             </div>
           </div>
 
-          {actionType === 'delete' &&
-          <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 p-3 flex items-center mb-3" role="alert">
+          {actionType === 'delete' && (
+            <div
+              className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 p-3 flex items-center mb-3"
+              role="alert"
+            >
               <i className="bx bx-error-circle mr-2 text-xl"></i>
-              <div>This action is <strong>irreversible</strong>. The address will be permanently deleted.</div>
+              <div>
+                This action is <strong>irreversible</strong>. The address will be permanently deleted.
+              </div>
             </div>
-          }
+          )}
 
           <div className="mb-3">
-            <Label>Reason <span className="text-danger-500">*</span></Label>
+            <Label>
+              Reason <span className="text-danger-500">*</span>
+            </Label>
             <Input
-
               rows="3"
               placeholder="Enter reason (minimum 10 characters)..."
               value={actionReason}
               onChange={(e) => setActionReason(e.target.value)}
-              disabled={actionLoading} className="w-full">
-            </Input>
+              disabled={actionLoading}
+              className="w-full"
+            ></Input>
             <small className="text-surface-500">{actionReason.trim().length}/500 characters</small>
           </div>
 
-          {actionType === 'forceVerify' &&
-          <label className="flex items-center gap-2 cursor-pointer">
+          {actionType === 'forceVerify' && (
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
-              className="rounded border-surface-300"
-              type="checkbox"
-              checked={skipLockPeriod}
-              onChange={(e) => setSkipLockPeriod(e.target.checked)}
-              disabled={actionLoading} />
-            
+                className="rounded border-surface-300"
+                type="checkbox"
+                checked={skipLockPeriod}
+                onChange={(e) => setSkipLockPeriod(e.target.checked)}
+                disabled={actionLoading}
+              />
+
               <span className="text-sm">Skip lock period</span>
             </label>
-          }
+          )}
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-200">
           <Button type="button" onClick={onClose} disabled={actionLoading} variant="outline-secondary">
@@ -88,22 +104,22 @@ export default function AddressActionModal({
             type="button"
             variant={actionConfig.btnVariant}
             onClick={onAction}
-            disabled={actionLoading || actionReason.trim().length < 10}>
-            
-            {actionLoading ?
-            <>
+            disabled={actionLoading || actionReason.trim().length < 10}
+          >
+            {actionLoading ? (
+              <>
                 <Spinner className="w-4 h-4 mr-1" />
                 Processing...
-              </> :
-
-            <>
+              </>
+            ) : (
+              <>
                 <i className={`bx ${actionConfig.icon} mr-1`}></i>
                 {actionConfig.btnLabel}
               </>
-            }
+            )}
           </Button>
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

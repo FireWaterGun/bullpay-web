@@ -20,13 +20,9 @@ const VERBOSE = process.argv.includes('--verbose')
 const ROOT = process.cwd()
 const APP_DIR = join(ROOT, 'app')
 
-const EXCLUDE_DIRS = new Set([
-  'node_modules', '.next', '.git', 'backup-vite', 'public', 'locales', 'scripts',
-])
+const EXCLUDE_DIRS = new Set(['node_modules', '.next', '.git', 'backup-vite', 'public', 'locales', 'scripts'])
 
-const SCAN_EXTENSIONS = new Set([
-  '.js', '.jsx', '.ts', '.tsx', '.mjs', '.mts',
-])
+const SCAN_EXTENSIONS = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.mts'])
 
 const SEVERITY_ORDER = { CRITICAL: 0, WARNING: 1, INFO: 2 }
 
@@ -98,12 +94,7 @@ async function readFileLines(filePath) {
  */
 function isCommentLine(line) {
   const trimmed = line.trim()
-  return (
-    trimmed.startsWith('//') ||
-    trimmed.startsWith('/*') ||
-    trimmed.startsWith('*') ||
-    trimmed.startsWith('*/')
-  )
+  return trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')
 }
 
 /**
@@ -170,11 +161,21 @@ function checkDangerousHtml(filePath, lines, relPath) {
       const context = lines.slice(Math.max(0, i - 10), i + 10).join('\n')
       const hasNoEscape = /escapeValue\s*:\s*false/.test(context)
       if (hasNoEscape) {
-        addFinding('sec-dangerous-html', 'CRITICAL', filePath, i + 1,
-          'dangerouslySetInnerHTML with escapeValue:false nearby — XSS risk')
+        addFinding(
+          'sec-dangerous-html',
+          'CRITICAL',
+          filePath,
+          i + 1,
+          'dangerouslySetInnerHTML with escapeValue:false nearby — XSS risk'
+        )
       } else {
-        addFinding('sec-dangerous-html', 'WARNING', filePath, i + 1,
-          'dangerouslySetInnerHTML usage — ensure input is sanitized')
+        addFinding(
+          'sec-dangerous-html',
+          'WARNING',
+          filePath,
+          i + 1,
+          'dangerouslySetInnerHTML usage — ensure input is sanitized'
+        )
       }
     }
   }
@@ -207,7 +208,10 @@ function checkHardcodedSecrets(filePath, lines, relPath) {
   const secretPatterns = [
     { re: /(['"`])(?:sk|pk)[-_](?:live|test)[-_][a-zA-Z0-9]{20,}\1/, msg: 'Possible hardcoded API key' },
     { re: /(['"`])eyJ[a-zA-Z0-9_-]{20,}\.[a-zA-Z0-9_-]{20,}\1/, msg: 'Possible hardcoded JWT token' },
-    { re: /(?:password|passwd|secret|api_key|apikey|api_secret)\s*[:=]\s*(['"`])[^'"`\n]{8,}\1/i, msg: 'Possible hardcoded secret/password' },
+    {
+      re: /(?:password|passwd|secret|api_key|apikey|api_secret)\s*[:=]\s*(['"`])[^'"`\n]{8,}\1/i,
+      msg: 'Possible hardcoded secret/password',
+    },
   ]
 
   for (let i = 0; i < lines.length; i++) {
@@ -235,8 +239,13 @@ async function checkMissingHeaders() {
 
   const content = await readFile(configPath, 'utf-8')
   if (!content.includes('headers()') && !content.includes('headers:')) {
-    addFinding('sec-missing-headers', 'WARNING', configPath, null,
-      'Missing headers() in next.config — add security headers (CSP, X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy)')
+    addFinding(
+      'sec-missing-headers',
+      'WARNING',
+      configPath,
+      null,
+      'Missing headers() in next.config — add security headers (CSP, X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy)'
+    )
   }
 }
 
@@ -253,14 +262,16 @@ function checkCookieFlags(filePath, lines) {
 
       // Check both inline flags and template literal variables (e.g. ${secure})
       const context5 = lines.slice(Math.max(0, i - 5), i + 5).join('\n')
-      const hasSecure = /;\s*[Ss]ecure/.test(line) || /\$\{.*[Ss]ecure.*\}/.test(line) || /[Ss]ecure/.test(context5) && /\$\{/.test(line)
+      const hasSecure =
+        /;\s*[Ss]ecure/.test(line) ||
+        /\$\{.*[Ss]ecure.*\}/.test(line) ||
+        (/[Ss]ecure/.test(context5) && /\$\{/.test(line))
       const hasSameSite = /;\s*[Ss]ame[Ss]ite\s*=/.test(line) || /SameSite/.test(line)
       if (!hasSecure || !hasSameSite) {
         const missing = []
         if (!hasSecure) missing.push('Secure')
         if (!hasSameSite) missing.push('SameSite')
-        addFinding('sec-cookie-flags', 'WARNING', filePath, i + 1,
-          `Cookie set without ${missing.join(', ')} flag(s)`)
+        addFinding('sec-cookie-flags', 'WARNING', filePath, i + 1, `Cookie set without ${missing.join(', ')} flag(s)`)
       }
     }
   }
@@ -283,8 +294,13 @@ function checkOpenRedirect(filePath, lines) {
       // Skip if guarded by isSafeRedirectUrl within 5 lines above
       const lookback = lines.slice(Math.max(0, i - 5), i + 1).join('\n')
       if (/isSafeRedirectUrl/.test(lookback)) continue
-      addFinding('sec-open-redirect', 'WARNING', filePath, i + 1,
-        'Dynamic redirect — validate the URL domain to prevent open redirect')
+      addFinding(
+        'sec-open-redirect',
+        'WARNING',
+        filePath,
+        i + 1,
+        'Dynamic redirect — validate the URL domain to prevent open redirect'
+      )
     }
   }
 }
@@ -295,15 +311,20 @@ function checkOpenRedirect(filePath, lines) {
 function checkConsoleProd(filePath, lines, relPath) {
   // Skip the logger itself and config files
   const skipFiles = ['lib/utils/logger.ts', 'next.config.ts', 'eslint.config.mjs', 'proxy.ts']
-  if (skipFiles.some(f => relPath.endsWith(f))) return
+  if (skipFiles.some((f) => relPath.endsWith(f))) return
   // Skip scripts/
   if (relPath.startsWith('scripts/') || relPath.startsWith('scripts\\')) return
 
   for (let i = 0; i < lines.length; i++) {
     if (isCommentLine(lines[i])) continue
     if (/\bconsole\.(log|warn|error|info|debug)\s*\(/.test(lines[i])) {
-      addFinding('sec-console-prod', 'INFO', filePath, i + 1,
-        'Direct console.* usage — prefer logger utility for production code')
+      addFinding(
+        'sec-console-prod',
+        'INFO',
+        filePath,
+        i + 1,
+        'Direct console.* usage — prefer logger utility for production code'
+      )
     }
   }
 }
@@ -318,8 +339,13 @@ async function checkCsrf() {
   const content = await readFile(apiClientPath, 'utf-8')
   const hasCsrf = /csrf|xsrf|x-csrf|x-xsrf/i.test(content)
   if (!hasCsrf) {
-    addFinding('sec-csrf', 'INFO', apiClientPath, null,
-      'API client has no CSRF/XSRF token handling — consider adding if using cookie-based auth')
+    addFinding(
+      'sec-csrf',
+      'INFO',
+      apiClientPath,
+      null,
+      'API client has no CSRF/XSRF token handling — consider adding if using cookie-based auth'
+    )
   }
 }
 
@@ -336,8 +362,13 @@ function checkNativeImg(filePath, lines, relPath) {
     if (isCommentLine(lines[i])) continue
     // Match <img but not <Image (Next.js) or inside a string
     if (/<img\s/i.test(lines[i]) && !/<Image\s/.test(lines[i])) {
-      addFinding('nx-native-img', 'WARNING', filePath, i + 1,
-        'Native <img> tag — consider using next/image for optimization')
+      addFinding(
+        'nx-native-img',
+        'WARNING',
+        filePath,
+        i + 1,
+        'Native <img> tag — consider using next/image for optimization'
+      )
     }
   }
 }
@@ -348,11 +379,16 @@ function checkNativeImg(filePath, lines, relPath) {
 async function checkMissingError() {
   const groups = await getRouteGroups()
   for (const group of groups) {
-    const hasError = (await fileExists(join(group.path, 'error.tsx'))) ||
-                     (await fileExists(join(group.path, 'error.jsx')))
+    const hasError =
+      (await fileExists(join(group.path, 'error.tsx'))) || (await fileExists(join(group.path, 'error.jsx')))
     if (!hasError) {
-      addFinding('nx-missing-error', 'WARNING', group.path, null,
-        `Route group ${group.name} missing error.tsx — add error boundary`)
+      addFinding(
+        'nx-missing-error',
+        'WARNING',
+        group.path,
+        null,
+        `Route group ${group.name} missing error.tsx — add error boundary`
+      )
     }
   }
 }
@@ -400,8 +436,13 @@ async function checkMissingMetadata() {
     }
     if (foundInLayout) continue
 
-    addFinding('nx-missing-metadata', 'WARNING', fullPath, null,
-      'Public page without metadata export — add metadata or generateMetadata for SEO')
+    addFinding(
+      'nx-missing-metadata',
+      'WARNING',
+      fullPath,
+      null,
+      'Public page without metadata export — add metadata or generateMetadata for SEO'
+    )
   }
 }
 
@@ -423,8 +464,7 @@ async function checkMissingSeo() {
       }
     }
     if (!found) {
-      addFinding('nx-missing-seo', 'WARNING', null, null,
-        `Missing ${check.file} — add to public/ or app/ for SEO`)
+      addFinding('nx-missing-seo', 'WARNING', null, null, `Missing ${check.file} — add to public/ or app/ for SEO`)
     }
   }
 }
@@ -435,11 +475,16 @@ async function checkMissingSeo() {
 async function checkMissingLoading() {
   const groups = await getRouteGroups()
   for (const group of groups) {
-    const hasLoading = (await fileExists(join(group.path, 'loading.tsx'))) ||
-                       (await fileExists(join(group.path, 'loading.jsx')))
+    const hasLoading =
+      (await fileExists(join(group.path, 'loading.tsx'))) || (await fileExists(join(group.path, 'loading.jsx')))
     if (!hasLoading) {
-      addFinding('nx-missing-loading', 'INFO', group.path, null,
-        `Route group ${group.name} missing loading.tsx — add for better UX`)
+      addFinding(
+        'nx-missing-loading',
+        'INFO',
+        group.path,
+        null,
+        `Route group ${group.name} missing loading.tsx — add for better UX`
+      )
     }
   }
 }
@@ -451,7 +496,7 @@ function checkThinWrapper(filePath, lines, relPath) {
   // Only check page files
   if (!basename(relPath).startsWith('page.')) return
 
-  const nonEmptyLines = lines.filter(l => l.trim().length > 0)
+  const nonEmptyLines = lines.filter((l) => l.trim().length > 0)
   if (nonEmptyLines.length > 15) return
 
   const content = lines.join('\n')
@@ -461,8 +506,13 @@ function checkThinWrapper(filePath, lines, relPath) {
   const hasHooks = /\buse[A-Z]\w+\s*\(/.test(content)
   if (hasHooks) return
 
-  addFinding('nx-thin-wrapper', 'INFO', filePath, 1,
-    "'use client' page with < 15 lines and no hooks — may not need client directive")
+  addFinding(
+    'nx-thin-wrapper',
+    'INFO',
+    filePath,
+    1,
+    "'use client' page with < 15 lines and no hooks — may not need client directive"
+  )
 }
 
 /**
@@ -475,11 +525,19 @@ function checkRouterPush(filePath, lines) {
     if (match) {
       // Check context — skip if inside a submit handler, try/catch, or after await
       const prevLines = lines.slice(Math.max(0, i - 5), i).join('\n')
-      const isPostAction = /\bawait\b|\bsubmit\b|\btry\b|\bcatch\b|\b\.then\b|toast\.|\.post\(|\.put\(|\.delete\(|\.patch\(|apiFetch/.test(prevLines)
+      const isPostAction =
+        /\bawait\b|\bsubmit\b|\btry\b|\bcatch\b|\b\.then\b|toast\.|\.post\(|\.put\(|\.delete\(|\.patch\(|apiFetch/.test(
+          prevLines
+        )
       if (isPostAction) continue
 
-      addFinding('nx-router-push', 'INFO', filePath, i + 1,
-        `router.push('${match[2]}') for navigation — consider using <Link> for better prefetching`)
+      addFinding(
+        'nx-router-push',
+        'INFO',
+        filePath,
+        i + 1,
+        `router.push('${match[2]}') for navigation — consider using <Link> for better prefetching`
+      )
     }
   }
 }
@@ -501,8 +559,7 @@ function checkAnyType(filePath, lines, relPath) {
     if (isCommentLine(lines[i])) continue
     for (const { re, msg } of patterns) {
       if (re.test(lines[i])) {
-        addFinding('nx-any-type', 'INFO', filePath, i + 1,
-          `${msg} — prefer specific types`)
+        addFinding('nx-any-type', 'INFO', filePath, i + 1, `${msg} — prefer specific types`)
         break // One finding per line
       }
     }
@@ -523,8 +580,13 @@ function trackExtension(relPath) {
 
 function reportMixedExtensions() {
   if (jsxCount > 0 && tsxCount > 0) {
-    addFinding('nx-mixed-ext', 'INFO', null, null,
-      `Project has ${jsxCount} .jsx and ${tsxCount} .tsx files — consider standardizing to .tsx`)
+    addFinding(
+      'nx-mixed-ext',
+      'INFO',
+      null,
+      null,
+      `Project has ${jsxCount} .jsx and ${tsxCount} .tsx files — consider standardizing to .tsx`
+    )
   }
 }
 
@@ -541,8 +603,13 @@ function checkUseEffectFetch(filePath, lines, relPath) {
       // Look ahead 10 lines for fetch/api calls
       const effectBody = lines.slice(i, Math.min(lines.length, i + 15)).join('\n')
       if (/\bawait\b.*\b(fetch|apiFetch|get|post)\b|\b(fetch|apiFetch|get|post)\b.*\bthen\b/i.test(effectBody)) {
-        addFinding('nx-useeffect-fetch', 'INFO', filePath, i + 1,
-          'useEffect with data fetching in page — consider server-side data loading')
+        addFinding(
+          'nx-useeffect-fetch',
+          'INFO',
+          filePath,
+          i + 1,
+          'useEffect with data fetching in page — consider server-side data loading'
+        )
       }
     }
   }
@@ -560,10 +627,15 @@ function checkClientLayout(filePath, lines, relPath) {
   // Skip (dashboard) layout — legitimately needs 'use client' (useState, useEffect, useRouter, localStorage, Pusher)
   if (relPath.includes('(dashboard)')) return
 
-  const firstNonEmpty = lines.find(l => l.trim().length > 0)
+  const firstNonEmpty = lines.find((l) => l.trim().length > 0)
   if (firstNonEmpty && /^['"]use client['"]/.test(firstNonEmpty.trim())) {
-    addFinding('nx-client-layout', 'WARNING', filePath, 1,
-      "'use client' in layout — forces all children to be client components")
+    addFinding(
+      'nx-client-layout',
+      'WARNING',
+      filePath,
+      1,
+      "'use client' in layout — forces all children to be client components"
+    )
   }
 }
 
@@ -576,10 +648,15 @@ async function checkRootLayoutClient() {
     if (!(await fileExists(layoutPath))) continue
 
     const lines = await readFileLines(layoutPath)
-    const firstNonEmpty = lines.find(l => l.trim().length > 0)
+    const firstNonEmpty = lines.find((l) => l.trim().length > 0)
     if (firstNonEmpty && /^['"]use client['"]/.test(firstNonEmpty.trim())) {
-      addFinding('nx-root-layout-client', 'CRITICAL', layoutPath, 1,
-        "Root layout has 'use client' — breaks SSR for entire app")
+      addFinding(
+        'nx-root-layout-client',
+        'CRITICAL',
+        layoutPath,
+        1,
+        "Root layout has 'use client' — breaks SSR for entire app"
+      )
     }
     break
   }
@@ -591,11 +668,16 @@ async function checkRootLayoutClient() {
 async function checkMissingNotFound() {
   const groups = await getRouteGroups()
   for (const group of groups) {
-    const hasNotFound = (await fileExists(join(group.path, 'not-found.tsx'))) ||
-                        (await fileExists(join(group.path, 'not-found.jsx')))
+    const hasNotFound =
+      (await fileExists(join(group.path, 'not-found.tsx'))) || (await fileExists(join(group.path, 'not-found.jsx')))
     if (!hasNotFound) {
-      addFinding('nx-missing-notfound', 'WARNING', group.path, null,
-        `Route group ${group.name} missing not-found.tsx — add custom 404 page`)
+      addFinding(
+        'nx-missing-notfound',
+        'WARNING',
+        group.path,
+        null,
+        `Route group ${group.name} missing not-found.tsx — add custom 404 page`
+      )
     }
   }
 }
@@ -616,8 +698,13 @@ function checkUnnecessaryClient(filePath, lines, relPath) {
   const hasBrowserApi = /\bwindow\b|\bdocument\b|\bnavigator\b|\blocalStorage\b|\bsessionStorage\b/.test(content)
 
   if (!hasHooks && !hasEventHandler && !hasRef && !hasState && !hasBrowserApi) {
-    addFinding('nx-unnecessary-client', 'INFO', filePath, 1,
-      "'use client' page has no hooks/event handlers — could be a server component")
+    addFinding(
+      'nx-unnecessary-client',
+      'INFO',
+      filePath,
+      1,
+      "'use client' page has no hooks/event handlers — could be a server component"
+    )
   }
 }
 
@@ -647,8 +734,13 @@ async function checkMissingFont() {
 
     const content = await readFile(layoutPath, 'utf-8')
     if (/href\s*=\s*['"][^'"]*fonts\.googleapis\.com/.test(content)) {
-      addFinding('nx-missing-font', 'WARNING', layoutPath, null,
-        '<link> to Google Fonts — use next/font/google for better performance & no layout shift')
+      addFinding(
+        'nx-missing-font',
+        'WARNING',
+        layoutPath,
+        null,
+        '<link> to Google Fonts — use next/font/google for better performance & no layout shift'
+      )
     }
     break
   }
@@ -668,8 +760,13 @@ function checkHeavyPageImport(filePath, lines, relPath) {
     if (isCommentLine(lines[i])) continue
     for (const { re, name } of HEAVY_LIBRARIES) {
       if (re.test(lines[i])) {
-        addFinding('nx-heavy-page-import', 'INFO', filePath, i + 1,
-          `Page imports heavy library '${name}' directly — consider next/dynamic for code splitting`)
+        addFinding(
+          'nx-heavy-page-import',
+          'INFO',
+          filePath,
+          i + 1,
+          `Page imports heavy library '${name}' directly — consider next/dynamic for code splitting`
+        )
       }
     }
   }
@@ -681,10 +778,15 @@ function checkHeavyPageImport(filePath, lines, relPath) {
 function checkLargePage(filePath, lines, relPath) {
   if (!basename(relPath).startsWith('page.')) return
 
-  const nonEmptyCount = lines.filter(l => l.trim().length > 0).length
+  const nonEmptyCount = lines.filter((l) => l.trim().length > 0).length
   if (nonEmptyCount > LARGE_PAGE_THRESHOLD) {
-    addFinding('nx-large-page', 'INFO', filePath, null,
-      `Page has ${nonEmptyCount} non-empty lines (threshold: ${LARGE_PAGE_THRESHOLD}) — consider extracting components`)
+    addFinding(
+      'nx-large-page',
+      'INFO',
+      filePath,
+      null,
+      `Page has ${nonEmptyCount} non-empty lines (threshold: ${LARGE_PAGE_THRESHOLD}) — consider extracting components`
+    )
   }
 }
 
@@ -705,8 +807,13 @@ function checkInlineHandlerList(filePath, lines) {
     // Check context: is this inside a .map()? Look back 15 lines
     const prevLines = lines.slice(Math.max(0, i - 15), i + 1).join('\n')
     if (/\.map\s*\(/.test(prevLines)) {
-      addFinding('nx-inline-handler-list', 'INFO', filePath, i + 1,
-        'Inline arrow handler inside .map() — creates new function each render, consider useCallback or extract handler')
+      addFinding(
+        'nx-inline-handler-list',
+        'INFO',
+        filePath,
+        i + 1,
+        'Inline arrow handler inside .map() — creates new function each render, consider useCallback or extract handler'
+      )
     }
   }
 }
@@ -722,8 +829,13 @@ function checkIndexKey(filePath, lines) {
       // Verify .map() context — look back 15 lines
       const prevLines = lines.slice(Math.max(0, i - 15), i + 1).join('\n')
       if (/\.map\s*\(/.test(prevLines)) {
-        addFinding('nx-index-key', 'INFO', filePath, i + 1,
-          'Array index used as key in .map() — use a stable unique ID for better reconciliation')
+        addFinding(
+          'nx-index-key',
+          'INFO',
+          filePath,
+          i + 1,
+          'Array index used as key in .map() — use a stable unique ID for better reconciliation'
+        )
       }
     }
   }
@@ -745,12 +857,18 @@ function checkSessionStorage(filePath, lines) {
     const lookback = lines.slice(Math.max(0, i - 40), i).join('\n')
     const isInUseEffect = /\buseEffect\s*\(/.test(lookback)
     const isInEventHandler = /\bon[A-Z]\w*\s*=\s*\{/.test(lookback)
-    const isInFunction = /\bfunction\s+\w+\s*\(/.test(lookback) && !/^(export\s+)?(default\s+)?function\s+\w+/.test(lookback)
+    const isInFunction =
+      /\bfunction\s+\w+\s*\(/.test(lookback) && !/^(export\s+)?(default\s+)?function\s+\w+/.test(lookback)
     const isInCallback = /\buseCallback\s*\(/.test(lookback)
 
     if (!isInUseEffect && !isInEventHandler && !isInFunction && !isInCallback) {
-      addFinding('nx-session-storage', 'WARNING', filePath, i + 1,
-        'localStorage/sessionStorage.getItem outside useEffect — causes hydration mismatch')
+      addFinding(
+        'nx-session-storage',
+        'WARNING',
+        filePath,
+        i + 1,
+        'localStorage/sessionStorage.getItem outside useEffect — causes hydration mismatch'
+      )
     }
   }
 }
@@ -777,7 +895,10 @@ function checkPropCount(filePath, lines) {
         if (ch === '{') braceDepth++
         else if (ch === '}') {
           braceDepth--
-          if (braceDepth === 0) { found = true; break }
+          if (braceDepth === 0) {
+            found = true
+            break
+          }
         }
         if (braceDepth === 1 && ch !== '{') braceContent += ch
       }
@@ -787,10 +908,18 @@ function checkPropCount(filePath, lines) {
     if (!found) continue
 
     // Count props — split by comma, filter empties
-    const props = braceContent.split(',').map(p => p.trim()).filter(p => p.length > 0 && !p.startsWith('//'))
+    const props = braceContent
+      .split(',')
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0 && !p.startsWith('//'))
     if (props.length > PROP_COUNT_THRESHOLD) {
-      addFinding('nx-prop-count', 'INFO', filePath, i + 1,
-        `Component ${funcMatch[1]} has ${props.length} props (threshold: ${PROP_COUNT_THRESHOLD}) — consider consolidating into an object prop`)
+      addFinding(
+        'nx-prop-count',
+        'INFO',
+        filePath,
+        i + 1,
+        `Component ${funcMatch[1]} has ${props.length} props (threshold: ${PROP_COUNT_THRESHOLD}) — consider consolidating into an object prop`
+      )
     }
   }
 }
@@ -799,14 +928,24 @@ function checkPropCount(filePath, lines) {
  * nx-barrel-reexport: Barrel index.ts with `as` rename — naming conflict signal.
  */
 function checkBarrelReexport(filePath, lines, relPath) {
-  if (basename(relPath) !== 'index.ts' && basename(relPath) !== 'index.tsx' &&
-      basename(relPath) !== 'index.js' && basename(relPath) !== 'index.jsx') return
+  if (
+    basename(relPath) !== 'index.ts' &&
+    basename(relPath) !== 'index.tsx' &&
+    basename(relPath) !== 'index.js' &&
+    basename(relPath) !== 'index.jsx'
+  )
+    return
 
   for (let i = 0; i < lines.length; i++) {
     if (isCommentLine(lines[i])) continue
     if (/export\s+\{[^}]*\bas\b[^}]*\}\s+from/.test(lines[i])) {
-      addFinding('nx-barrel-reexport', 'INFO', filePath, i + 1,
-        'Barrel re-export with `as` rename — may indicate naming conflict, consider renaming at source')
+      addFinding(
+        'nx-barrel-reexport',
+        'INFO',
+        filePath,
+        i + 1,
+        'Barrel re-export with `as` rename — may indicate naming conflict, consider renaming at source'
+      )
     }
   }
 }
@@ -824,8 +963,13 @@ function checkTargetBlank(filePath, lines) {
       // Check same line and next 2 lines for rel="noopener"
       const context = lines.slice(i, Math.min(lines.length, i + 3)).join(' ')
       if (!/rel\s*=\s*['"][^'"]*noopener/.test(context)) {
-        addFinding('sec-target-blank', 'INFO', filePath, i + 1,
-          'target="_blank" without rel="noopener noreferrer" — tabnabbing risk')
+        addFinding(
+          'sec-target-blank',
+          'INFO',
+          filePath,
+          i + 1,
+          'target="_blank" without rel="noopener noreferrer" — tabnabbing risk'
+        )
       }
     }
   }
@@ -842,8 +986,13 @@ function checkEnvExposed(filePath, lines) {
     if (isCommentLine(lines[i])) continue
     const match = lines[i].match(/process\.env\.([A-Z_][A-Z0-9_]*)/)
     if (match && !match[1].startsWith('NEXT_PUBLIC_') && match[1] !== 'NODE_ENV') {
-      addFinding('sec-env-exposed', 'WARNING', filePath, i + 1,
-        `Server-only env var process.env.${match[1]} in 'use client' file — undefined in browser, use NEXT_PUBLIC_ prefix`)
+      addFinding(
+        'sec-env-exposed',
+        'WARNING',
+        filePath,
+        i + 1,
+        `Server-only env var process.env.${match[1]} in 'use client' file — undefined in browser, use NEXT_PUBLIC_ prefix`
+      )
     }
   }
 }
@@ -860,8 +1009,13 @@ function checkNativeAnchor(filePath, lines) {
       if (/onClick/.test(line)) continue
       // Skip if has target="_blank"
       if (/target\s*=\s*['"]_blank/.test(line)) continue
-      addFinding('nx-native-anchor', 'INFO', filePath, i + 1,
-        'Native <a> with internal href — use next/link <Link> for client-side navigation & prefetching')
+      addFinding(
+        'nx-native-anchor',
+        'INFO',
+        filePath,
+        i + 1,
+        'Native <a> with internal href — use next/link <Link> for client-side navigation & prefetching'
+      )
     }
   }
 }
@@ -874,13 +1028,23 @@ function checkPagesRouterApi(filePath, lines) {
     if (isCommentLine(lines[i])) continue
     const line = lines[i]
     if (/from\s+['"]next\/router['"]/.test(line)) {
-      addFinding('nx-pages-router-api', 'WARNING', filePath, i + 1,
-        "Import from 'next/router' — use 'next/navigation' in App Router")
+      addFinding(
+        'nx-pages-router-api',
+        'WARNING',
+        filePath,
+        i + 1,
+        "Import from 'next/router' — use 'next/navigation' in App Router"
+      )
     }
     if (/export\s+(async\s+)?function\s+(getServerSideProps|getStaticProps|getStaticPaths)\b/.test(line)) {
       const fn = line.match(/(getServerSideProps|getStaticProps|getStaticPaths)/)[1]
-      addFinding('nx-pages-router-api', 'WARNING', filePath, i + 1,
-        `${fn} is a Pages Router API — use App Router data fetching patterns`)
+      addFinding(
+        'nx-pages-router-api',
+        'WARNING',
+        filePath,
+        i + 1,
+        `${fn} is a Pages Router API — use App Router data fetching patterns`
+      )
     }
   }
 }
@@ -895,8 +1059,13 @@ function checkSearchParamsSuspense(filePath, lines) {
 
   for (let i = 0; i < lines.length; i++) {
     if (/\buseSearchParams\s*\(/.test(lines[i])) {
-      addFinding('nx-searchparams-suspense', 'WARNING', filePath, i + 1,
-        'useSearchParams() without Suspense boundary — causes hydration errors in production')
+      addFinding(
+        'nx-searchparams-suspense',
+        'WARNING',
+        filePath,
+        i + 1,
+        'useSearchParams() without Suspense boundary — causes hydration errors in production'
+      )
       break
     }
   }
@@ -912,8 +1081,13 @@ function checkMissingAlt(filePath, lines) {
       const context = lines.slice(i, Math.min(lines.length, i + 4)).join(' ')
       const tagMatch = context.match(/<(?:img|Image)\s[^>]*\/?>/)
       if (tagMatch && !/\balt\s*=/.test(tagMatch[0])) {
-        addFinding('nx-missing-alt', 'INFO', filePath, i + 1,
-          '<img>/<Image> without alt attribute — required for accessibility')
+        addFinding(
+          'nx-missing-alt',
+          'INFO',
+          filePath,
+          i + 1,
+          '<img>/<Image> without alt attribute — required for accessibility'
+        )
       }
     }
   }
@@ -926,10 +1100,15 @@ function checkErrorClient(filePath, lines, relPath) {
   const name = basename(relPath)
   if (name !== 'error.tsx' && name !== 'error.jsx') return
 
-  const firstNonEmpty = lines.find(l => l.trim().length > 0)
+  const firstNonEmpty = lines.find((l) => l.trim().length > 0)
   if (!firstNonEmpty || !/^['"]use client['"]/.test(firstNonEmpty.trim())) {
-    addFinding('nx-error-client', 'CRITICAL', filePath, 1,
-      "error.tsx must have 'use client' — Next.js requires error boundaries to be client components")
+    addFinding(
+      'nx-error-client',
+      'CRITICAL',
+      filePath,
+      1,
+      "error.tsx must have 'use client' — Next.js requires error boundaries to be client components"
+    )
   }
 }
 
@@ -943,10 +1122,15 @@ function checkLargeClient(filePath, lines, relPath) {
   const content = lines.join('\n')
   if (!content.includes("'use client'") && !content.includes('"use client"')) return
 
-  const nonEmptyCount = lines.filter(l => l.trim().length > 0).length
+  const nonEmptyCount = lines.filter((l) => l.trim().length > 0).length
   if (nonEmptyCount > LARGE_CLIENT_THRESHOLD) {
-    addFinding('nx-large-client', 'INFO', filePath, null,
-      `Client component has ${nonEmptyCount} non-empty lines (threshold: ${LARGE_CLIENT_THRESHOLD}) — consider splitting server/client parts`)
+    addFinding(
+      'nx-large-client',
+      'INFO',
+      filePath,
+      null,
+      `Client component has ${nonEmptyCount} non-empty lines (threshold: ${LARGE_CLIENT_THRESHOLD}) — consider splitting server/client parts`
+    )
   }
 }
 
@@ -967,15 +1151,25 @@ function checkSequentialAwait(filePath, lines) {
       consecutive++
     } else {
       if (consecutive >= 3) {
-        addFinding('nx-sequential-await', 'INFO', filePath, startLine + 1,
-          `${consecutive} sequential await statements — consider Promise.all() for independent calls`)
+        addFinding(
+          'nx-sequential-await',
+          'INFO',
+          filePath,
+          startLine + 1,
+          `${consecutive} sequential await statements — consider Promise.all() for independent calls`
+        )
       }
       consecutive = 0
     }
   }
   if (consecutive >= 3) {
-    addFinding('nx-sequential-await', 'INFO', filePath, startLine + 1,
-      `${consecutive} sequential await statements — consider Promise.all() for independent calls`)
+    addFinding(
+      'nx-sequential-await',
+      'INFO',
+      filePath,
+      startLine + 1,
+      `${consecutive} sequential await statements — consider Promise.all() for independent calls`
+    )
   }
 }
 
@@ -985,15 +1179,20 @@ function checkSequentialAwait(filePath, lines) {
 function checkHardcodedLocalhost(filePath, lines, relPath) {
   // Skip config files that legitimately define defaults
   const skipFiles = ['next.config.ts', 'next.config.js', 'next.config.mjs', 'lib/api-client.ts', 'lib/constants.ts']
-  if (skipFiles.some(f => relPath.endsWith(f))) return
+  if (skipFiles.some((f) => relPath.endsWith(f))) return
 
   for (let i = 0; i < lines.length; i++) {
     if (isCommentLine(lines[i])) continue
     // Skip lines with process.env (likely fallback/default)
     if (/process\.env/.test(lines[i])) continue
     if (/['"`]https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(lines[i])) {
-      addFinding('nx-hardcoded-localhost', 'WARNING', filePath, i + 1,
-        'Hardcoded localhost URL — use environment variable instead')
+      addFinding(
+        'nx-hardcoded-localhost',
+        'WARNING',
+        filePath,
+        i + 1,
+        'Hardcoded localhost URL — use environment variable instead'
+      )
     }
   }
 }
@@ -1067,9 +1266,7 @@ async function runProjectRules() {
 // ─── Reporter ───────────────────────────────────────────────────────────────
 
 function formatFinding(f) {
-  const loc = f.file
-    ? f.line ? `${f.file}:${f.line}` : f.file
-    : '(project-level)'
+  const loc = f.file ? (f.line ? `${f.file}:${f.line}` : f.file) : '(project-level)'
   return `  ${C.dim}[${f.ruleId}]${C.reset} ${C.white}${loc}${C.reset}\n    ${f.message}`
 }
 
@@ -1145,9 +1342,9 @@ function printReport() {
   const warnColor = counts.WARNING > 0 ? C.yellow : C.green
   console.log(
     `${C.bold} Summary: ` +
-    `${critColor}${counts.CRITICAL} CRITICAL${C.reset}${C.bold}, ` +
-    `${warnColor}${counts.WARNING} WARNING${C.reset}${C.bold}, ` +
-    `${C.cyan}${counts.INFO} INFO${C.reset}`
+      `${critColor}${counts.CRITICAL} CRITICAL${C.reset}${C.bold}, ` +
+      `${warnColor}${counts.WARNING} WARNING${C.reset}${C.bold}, ` +
+      `${C.cyan}${counts.INFO} INFO${C.reset}`
   )
   console.log(`${C.bold}${'='.repeat(56)}${C.reset}`)
   console.log()

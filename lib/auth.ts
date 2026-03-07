@@ -63,9 +63,7 @@ export async function isAdmin(): Promise<boolean> {
  * Fetch navigation/permissions from API (server-side).
  * Used in dashboard layout to build sidebar menu.
  */
-export async function getNavigation(
-  token: string
-): Promise<Navigation | null> {
+export async function getNavigation(token: string): Promise<Navigation | null> {
   try {
     return await apiFetch<Navigation>('/api/v1/me/navigation', { token })
   } catch {
@@ -76,10 +74,7 @@ export async function getNavigation(
 /**
  * Check if user has a specific permission (server-side).
  */
-export function hasPermission(
-  navigation: Navigation | null,
-  permission: string
-): boolean {
+export function hasPermission(navigation: Navigation | null, permission: string): boolean {
   if (!navigation) return false
   if (navigation.role === 'super_admin') return true
   return navigation.permissions?.includes(permission) ?? false

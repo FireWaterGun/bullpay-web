@@ -36,9 +36,9 @@ export async function getCoins(token: string | null, page: number = 1, limit: nu
       limit: meta.perPage || meta.limit || 10,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -71,9 +71,9 @@ export async function getNetworks(token: string | null, page: number = 1, limit:
       limit: meta.perPage || meta.limit || 10,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -88,18 +88,21 @@ export async function getNetworkById(token: string | null, id: number) {
 /**
  * Create a new network (Admin only)
  */
-export async function createNetwork(token: string | null, networkData: {
-  name: string
-  symbol: string
-  chainId?: number | null
-  rpcUrl?: string
-  explorerUrl?: string
-  apiUrl?: string
-  isTestnet?: boolean
-  gasPrice?: string
-  confirmationBlocks?: number
-  status?: string
-}) {
+export async function createNetwork(
+  token: string | null,
+  networkData: {
+    name: string
+    symbol: string
+    chainId?: number | null
+    rpcUrl?: string
+    explorerUrl?: string
+    apiUrl?: string
+    isTestnet?: boolean
+    gasPrice?: string
+    confirmationBlocks?: number
+    status?: string
+  }
+) {
   return apiFetch('/api/v1/admin/networks', {
     method: 'POST',
     token,
@@ -110,18 +113,22 @@ export async function createNetwork(token: string | null, networkData: {
 /**
  * Update an existing network (Admin only)
  */
-export async function updateNetwork(token: string | null, id: number, networkData: {
-  name?: string
-  symbol?: string
-  chainId?: number | null
-  rpcUrl?: string
-  explorerUrl?: string
-  apiUrl?: string
-  isTestnet?: boolean
-  gasPrice?: string
-  confirmationBlocks?: number
-  status?: string
-}) {
+export async function updateNetwork(
+  token: string | null,
+  id: number,
+  networkData: {
+    name?: string
+    symbol?: string
+    chainId?: number | null
+    rpcUrl?: string
+    explorerUrl?: string
+    apiUrl?: string
+    isTestnet?: boolean
+    gasPrice?: string
+    confirmationBlocks?: number
+    status?: string
+  }
+) {
   return apiFetch(`/api/v1/admin/networks/${id}`, {
     method: 'PUT',
     token,
@@ -142,7 +149,14 @@ export async function deleteNetwork(token: string | null, id: number) {
 /**
  * Get all coin-networks (Admin only)
  */
-export async function getCoinNetworks(token: string | null, page = 1, limit = 10, search = '', coin?: string, network?: string) {
+export async function getCoinNetworks(
+  token: string | null,
+  page = 1,
+  limit = 10,
+  search = '',
+  coin?: string,
+  network?: string
+) {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
@@ -172,24 +186,27 @@ export async function getCoinNetworks(token: string | null, page = 1, limit = 10
       limit: meta.perPage || meta.limit || 10,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
 /**
  * Create a new coin (Admin only)
  */
-export async function createCoin(token: string | null, coinData: {
-  name: string
-  symbol: string
-  decimals: number
-  type?: string
-  isStableCoin: boolean
-  logoUrl?: string
-  status: string
-}) {
+export async function createCoin(
+  token: string | null,
+  coinData: {
+    name: string
+    symbol: string
+    decimals: number
+    type?: string
+    isStableCoin: boolean
+    logoUrl?: string
+    status: string
+  }
+) {
   return apiFetch('/api/v1/admin/coins', {
     method: 'POST',
     token,
@@ -203,15 +220,19 @@ export async function createCoin(token: string | null, coinData: {
 /**
  * Update an existing coin (Admin only)
  */
-export async function updateCoin(token: string | null, id: number, coinData: {
-  name?: string
-  symbol?: string
-  decimals?: number
-  type?: string
-  isStableCoin?: boolean
-  logoUrl?: string
-  status?: string
-}) {
+export async function updateCoin(
+  token: string | null,
+  id: number,
+  coinData: {
+    name?: string
+    symbol?: string
+    decimals?: number
+    type?: string
+    isStableCoin?: boolean
+    logoUrl?: string
+    status?: string
+  }
+) {
   return apiFetch(`/api/v1/admin/coins/${id}`, {
     method: 'PUT',
     token,
@@ -240,21 +261,24 @@ export async function getCoinNetworkById(token: string | null, id: number) {
 /**
  * Create a new coin-network (Admin only)
  */
-export async function createCoinNetwork(token: string | null, coinNetworkData: {
-  coinId: number
-  networkId: number
-  contractAddress?: string
-  decimals?: number
-  depositEnabled: boolean
-  withdrawEnabled: boolean
-  minDepositAmount: string
-  minWithdrawAmount: string
-  maxWithdrawAmount: string
-  depositFee?: string
-  withdrawFee: string
-  depositConfirmations: number
-  dailyWithdrawLimitUsd?: string
-}) {
+export async function createCoinNetwork(
+  token: string | null,
+  coinNetworkData: {
+    coinId: number
+    networkId: number
+    contractAddress?: string
+    decimals?: number
+    depositEnabled: boolean
+    withdrawEnabled: boolean
+    minDepositAmount: string
+    minWithdrawAmount: string
+    maxWithdrawAmount: string
+    depositFee?: string
+    withdrawFee: string
+    depositConfirmations: number
+    dailyWithdrawLimitUsd?: string
+  }
+) {
   return apiFetch('/api/v1/admin/coin-networks', {
     method: 'POST',
     token,
@@ -265,22 +289,26 @@ export async function createCoinNetwork(token: string | null, coinNetworkData: {
 /**
  * Update an existing coin-network (Admin only)
  */
-export async function updateCoinNetwork(token: string | null, id: number, coinNetworkData: {
-  coinId?: number
-  networkId?: number
-  contractAddress?: string
-  decimals?: number
-  depositEnabled?: boolean
-  withdrawEnabled?: boolean
-  minDepositAmount?: string
-  minWithdrawAmount?: string
-  maxWithdrawAmount?: string
-  depositFee?: string
-  withdrawFee?: string
-  withdrawFeePercent?: string
-  depositConfirmations?: number
-  dailyWithdrawLimitUsd?: string
-}) {
+export async function updateCoinNetwork(
+  token: string | null,
+  id: number,
+  coinNetworkData: {
+    coinId?: number
+    networkId?: number
+    contractAddress?: string
+    decimals?: number
+    depositEnabled?: boolean
+    withdrawEnabled?: boolean
+    minDepositAmount?: string
+    minWithdrawAmount?: string
+    maxWithdrawAmount?: string
+    depositFee?: string
+    withdrawFee?: string
+    withdrawFeePercent?: string
+    depositConfirmations?: number
+    dailyWithdrawLimitUsd?: string
+  }
+) {
   return apiFetch(`/api/v1/admin/coin-networks/${id}`, {
     method: 'PUT',
     token,
@@ -322,15 +350,10 @@ export async function getSweepSettings(
  * Update sweep setting (Admin only)
  * Uses the correct PUT /settings/ route with { keyName, value } body
  */
-export async function updateSweepSetting(
-  token: string | null,
-  keyName: string,
-  value: any
-) {
+export async function updateSweepSetting(token: string | null, keyName: string, value: any) {
   // API expects value as string — stringify objects/booleans
-  const stringValue = typeof value === 'object' ? JSON.stringify(value)
-    : typeof value === 'boolean' ? String(value)
-    : String(value)
+  const stringValue =
+    typeof value === 'object' ? JSON.stringify(value) : typeof value === 'boolean' ? String(value) : String(value)
 
   return apiFetch('/api/v1/admin/settings', {
     method: 'PUT',
@@ -349,10 +372,7 @@ export async function getPaymentStats(token: string | null) {
 /**
  * Get system wallet details (Admin only)
  */
-export async function getSystemWallet(
-  token: string | null,
-  systemWalletId: number
-) {
+export async function getSystemWallet(token: string | null, systemWalletId: number) {
   const data = await apiFetch<any>(`/api/v1/admin/system-wallets/${systemWalletId}`, { token })
 
   const wallet = data?.wallet || {}
@@ -365,16 +385,18 @@ export async function getSystemWallet(
     ...wallet,
     assets,
     signers,
-    coinNetwork: firstAsset ? {
-      id: firstAsset.coinNetworkId,
-      coin: {
-        symbol: firstAsset.coinSymbol
-      },
-      network: {
-        symbol: firstAsset.networkSymbol,
-        name: firstAsset.networkName
-      }
-    } : null
+    coinNetwork: firstAsset
+      ? {
+          id: firstAsset.coinNetworkId,
+          coin: {
+            symbol: firstAsset.coinSymbol,
+          },
+          network: {
+            symbol: firstAsset.networkSymbol,
+            name: firstAsset.networkName,
+          },
+        }
+      : null,
   }
 }
 
@@ -423,11 +445,11 @@ export async function getSystemWalletLedger(
       total: total,
       totalPages: totalPages,
       currentPage: currentPage,
-      from: items.length > 0 ? ((currentPage - 1) * limit) + 1 : 0,
+      from: items.length > 0 ? (currentPage - 1) * limit + 1 : 0,
       to: items.length > 0 ? Math.min(currentPage * limit, total) : 0,
       hasNext: currentPage < totalPages,
       hasPrev: currentPage > 1,
-    }
+    },
   }
 }
 
@@ -471,9 +493,9 @@ export async function getLedgerEntries(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -521,9 +543,9 @@ export async function getSweeps(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -587,39 +609,31 @@ export async function getWithdrawals(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
 /**
  * Approve a withdrawal transaction
  */
-export async function approveWithdrawal(
-  token: string | null,
-  withdrawalId: number,
-  reason?: string
-) {
+export async function approveWithdrawal(token: string | null, withdrawalId: number, reason?: string) {
   return apiFetch(`/api/v1/admin/withdrawals/${withdrawalId}/approve`, {
     method: 'PATCH',
     token,
-    body: reason ? { reason } : undefined
+    body: reason ? { reason } : undefined,
   })
 }
 
 /**
  * Reject a withdrawal transaction
  */
-export async function rejectWithdrawal(
-  token: string | null,
-  withdrawalId: number,
-  reason: string
-) {
+export async function rejectWithdrawal(token: string | null, withdrawalId: number, reason: string) {
   return apiFetch(`/api/v1/admin/withdrawals/${withdrawalId}/reject`, {
     method: 'PATCH',
     token,
-    body: { reason }
+    body: { reason },
   })
 }
 
@@ -688,9 +702,9 @@ export async function getSystemLedgerEntries(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -747,9 +761,9 @@ export async function getUserLedgerEntries(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -814,9 +828,9 @@ export async function getAdminInvoices(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -876,9 +890,9 @@ export async function getAdminPayments(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -936,9 +950,9 @@ export async function getPlatformLedgerEntries(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -997,9 +1011,9 @@ export async function getGasTopups(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -1053,9 +1067,9 @@ export async function getWithdrawalAddresses(
       limit: meta.perPage || meta.limit || 50,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -1073,7 +1087,7 @@ export async function flagWithdrawalAddress(token: string | null, id: number, re
   return apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/flag`, {
     method: 'PATCH',
     token,
-    body: { reason }
+    body: { reason },
   })
 }
 
@@ -1084,18 +1098,23 @@ export async function unflagWithdrawalAddress(token: string | null, id: number, 
   return apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/unflag`, {
     method: 'PATCH',
     token,
-    body: { reason }
+    body: { reason },
   })
 }
 
 /**
  * Force verify a withdrawal address (Admin only)
  */
-export async function forceVerifyWithdrawalAddress(token: string | null, id: number, reason: string, skipLockPeriod?: boolean) {
+export async function forceVerifyWithdrawalAddress(
+  token: string | null,
+  id: number,
+  reason: string,
+  skipLockPeriod?: boolean
+) {
   return apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/force-verify`, {
     method: 'PATCH',
     token,
-    body: { reason, skipLockPeriod: skipLockPeriod || false }
+    body: { reason, skipLockPeriod: skipLockPeriod || false },
   })
 }
 
@@ -1106,7 +1125,7 @@ export async function deleteWithdrawalAddress(token: string | null, id: number, 
   return apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/permanent`, {
     method: 'DELETE',
     token,
-    body: { reason, confirmed: true }
+    body: { reason, confirmed: true },
   })
 }
 
@@ -1121,7 +1140,7 @@ export async function suspendWithdrawalAddress(token: string | null, id: number,
   return apiFetch(`/api/v1/admin/withdrawal-addresses/${id}/suspend`, {
     method: 'PATCH',
     token,
-    body: { reason }
+    body: { reason },
   })
 }
 
@@ -1177,9 +1196,9 @@ export async function getMerchants(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -1251,9 +1270,9 @@ export async function getUsers(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -1365,9 +1384,9 @@ export async function getSettings(
       limit: meta.perPage || meta.limit || 50,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -1526,9 +1545,9 @@ export async function getTempWallets(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -1584,9 +1603,9 @@ export async function getTempWalletHistories(
       limit: meta.perPage || meta.limit || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 
@@ -1630,7 +1649,7 @@ export async function getUserBalances(
   const qs = query.toString()
   const raw = await apiFetch<any>(`/api/v1/admin/user-balances${qs ? `?${qs}` : ''}`, { token })
 
-  const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : [])
+  const items = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : []
   const meta = raw?.meta || {}
 
   return {
@@ -1640,9 +1659,9 @@ export async function getUserBalances(
       limit: meta.limit || meta.perPage || 20,
       total: meta.total || 0,
       totalPages: meta.lastPage || meta.totalPages || 1,
-      hasNext: meta.hasNextPage ?? ((meta.page || 1) < (meta.lastPage || 1)),
-      hasPrev: meta.hasPrevPage ?? ((meta.page || 1) > 1),
-    }
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
   }
 }
 

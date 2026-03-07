@@ -1,21 +1,21 @@
-'use client';
+'use client'
 
-import { useCallback, useEffect, useState } from 'react';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useCallback, useEffect, useState } from 'react'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
-import { useAuth, useToast } from '@/app/providers';
-import { getCoinNetworks } from '@/lib/api/admin';
-import CoinImg from '@/components/CoinImg';
-import CoinNetworkEditModal from '@/components/admin/CoinNetworkEditModal';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import TableEmptyState from '@/components/TableEmptyState';
+import { useAuth, useToast } from '@/app/providers'
+import { getCoinNetworks } from '@/lib/api/admin'
+import CoinImg from '@/components/CoinImg'
+import CoinNetworkEditModal from '@/components/admin/CoinNetworkEditModal'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import TableEmptyState from '@/components/TableEmptyState'
 import Alert from '@/components/ui/Alert'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input, Label } from '@/components/ui/Input'
-import Pagination from '@/components/ui/Pagination';
-import Table from '@/components/ui/Table';
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table'
 
 const DEFAULT_PAGINATION = {
   page: 1,
@@ -24,7 +24,7 @@ const DEFAULT_PAGINATION = {
   totalPages: 0,
   hasNext: false,
   hasPrev: false,
-};
+}
 
 function getPaginationState(paginationData, fallbackPage, fallbackLimit) {
   return {
@@ -34,7 +34,7 @@ function getPaginationState(paginationData, fallbackPage, fallbackLimit) {
     totalPages: paginationData.totalPages || 0,
     hasNext: paginationData.hasNext || false,
     hasPrev: paginationData.hasPrev || false,
-  };
+  }
 }
 
 function getStatusBadge(status, t) {
@@ -42,24 +42,24 @@ function getStatusBadge(status, t) {
     return {
       color: 'success',
       label: t('admin.active', { defaultValue: 'Active' }),
-    };
+    }
   }
 
   if (status === 'maintenance') {
     return {
       color: 'warning',
       label: t('crypto.maintenance', { defaultValue: 'Maintenance' }),
-    };
+    }
   }
 
   return {
     color: 'secondary',
     label: t('crypto.inactive', { defaultValue: 'Inactive' }),
-  };
+  }
 }
 
 function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit }) {
-  const statusBadge = getStatusBadge(coinNetwork.status, t);
+  const statusBadge = getStatusBadge(coinNetwork.status, t)
 
   return (
     <tr key={coinNetwork.id}>
@@ -124,77 +124,80 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit }) {
         </button>
       </td>
     </tr>
-  );
+  )
 }
 
 export default function SupportedCrypto() {
-  const { t } = useAdminTranslation();
-  const { token } = useAuth();
-  const toast = useToast();
-  const [coinNetworks, setCoinNetworks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [draftSearch, setDraftSearch] = useState('');
-  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
-  const [editCoinNetworkId, setEditCoinNetworkId] = useState(null);
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const toast = useToast()
+  const [coinNetworks, setCoinNetworks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [draftSearch, setDraftSearch] = useState('')
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION)
+  const [editCoinNetworkId, setEditCoinNetworkId] = useState(null)
 
-  const loadCoinNetworks = useCallback(async ({ page = 1, limit = DEFAULT_PAGINATION.limit, search = '' } = {}) => {
-    if (!token) return;
+  const loadCoinNetworks = useCallback(
+    async ({ page = 1, limit = DEFAULT_PAGINATION.limit, search = '' } = {}) => {
+      if (!token) return
 
-    setLoading(true);
-    setError('');
+      setLoading(true)
+      setError('')
 
-    try {
-      const response = await getCoinNetworks(token, page, limit, search, '', '');
-      const items = response?.items || [];
-      const paginationData = response?.pagination || {};
+      try {
+        const response = await getCoinNetworks(token, page, limit, search, '', '')
+        const items = response?.items || []
+        const paginationData = response?.pagination || {}
 
-      setCoinNetworks(items);
-      setPagination(getPaginationState(paginationData, page, limit));
-    } catch (e) {
-      setError(e?.message || 'Failed to load supported crypto');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+        setCoinNetworks(items)
+        setPagination(getPaginationState(paginationData, page, limit))
+      } catch (e) {
+        setError(e?.message || 'Failed to load supported crypto')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [token]
+  )
 
   useEffect(() => {
-    loadCoinNetworks({ page: 1, limit: DEFAULT_PAGINATION.limit, search: searchQuery });
-  }, [loadCoinNetworks, searchQuery]);
+    loadCoinNetworks({ page: 1, limit: DEFAULT_PAGINATION.limit, search: searchQuery })
+  }, [loadCoinNetworks, searchQuery])
 
   function handleApplyFilter() {
-    const nextSearch = draftSearch.trim();
+    const nextSearch = draftSearch.trim()
 
     if (nextSearch === searchQuery) {
-      loadCoinNetworks({ page: 1, limit: pagination.limit, search: nextSearch });
-      return;
+      loadCoinNetworks({ page: 1, limit: pagination.limit, search: nextSearch })
+      return
     }
 
-    setSearchQuery(nextSearch);
+    setSearchQuery(nextSearch)
   }
 
   function handleResetFilter() {
-    if (!draftSearch && !searchQuery) return;
+    if (!draftSearch && !searchQuery) return
 
-    setDraftSearch('');
+    setDraftSearch('')
 
     if (!searchQuery) {
-      loadCoinNetworks({ page: 1, limit: pagination.limit, search: '' });
-      return;
+      loadCoinNetworks({ page: 1, limit: pagination.limit, search: '' })
+      return
     }
 
-    setSearchQuery('');
+    setSearchQuery('')
   }
 
   function handlePageChange(newPage) {
-    loadCoinNetworks({ page: newPage, limit: pagination.limit, search: searchQuery });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    loadCoinNetworks({ page: newPage, limit: pagination.limit, search: searchQuery })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function handleCopyContract(contractAddress) {
-    const ok = await copyText(contractAddress);
-    if (ok) toast.success(t('actions.copied', { defaultValue: 'Copied' }));
+    const ok = await copyText(contractAddress)
+    if (ok) toast.success(t('actions.copied', { defaultValue: 'Copied' }))
   }
 
   return (
@@ -207,7 +210,9 @@ export default function SupportedCrypto() {
                 <i className="bx bx-link mr-2"></i>
                 {t('nav.coinNetworks', { defaultValue: 'Coin Networks' })}
               </h4>
-              <p className="text-surface-500 mb-0">{t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}</p>
+              <p className="text-surface-500 mb-0">
+                {t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}
+              </p>
             </div>
           </div>
         </div>
@@ -264,9 +269,11 @@ export default function SupportedCrypto() {
               <TableEmptyState
                 colSpan={5}
                 icon="bx-coin-stack"
-                message={searchQuery
-                  ? t('crypto.noSupportedFound', { defaultValue: 'No supported crypto found' })
-                  : t('crypto.noSupported', { defaultValue: 'No supported crypto yet' })}
+                message={
+                  searchQuery
+                    ? t('crypto.noSupportedFound', { defaultValue: 'No supported crypto found' })
+                    : t('crypto.noSupported', { defaultValue: 'No supported crypto yet' })
+                }
               />
             ) : (
               coinNetworks.map((coinNetwork) => (
@@ -298,5 +305,5 @@ export default function SupportedCrypto() {
         />
       )}
     </div>
-  );
+  )
 }

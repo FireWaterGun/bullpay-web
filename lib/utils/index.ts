@@ -33,13 +33,7 @@ export { requestId } from './requestId'
 export { isSafeRedirectUrl } from './url'
 
 // Roles
-export {
-  ROLE_ICON,
-  ROLE_COLOR,
-  ROLE_LEVEL,
-  ROLE_DESCRIPTION,
-  formatRoleLabel,
-} from './roles'
+export { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from './roles'
 
 // Notification sounds & browser notifications
 export {

@@ -15,15 +15,11 @@ export function useCoins({ publicMode = false } = {}) {
 
   const key = publicMode ? 'coins:public' : token ? ['coins', token] : null
 
-  const { data, error, isLoading, mutate } = useSWR(
-    key,
-    () => listCoins(publicMode ? undefined : token),
-    {
-      dedupingInterval: 60_000,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-    }
-  )
+  const { data, error, isLoading, mutate } = useSWR(key, () => listCoins(publicMode ? undefined : token), {
+    dedupingInterval: 60_000,
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+  })
 
   return {
     coins: data || [],

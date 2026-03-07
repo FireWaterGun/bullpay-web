@@ -10,13 +10,19 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
   return (
     <div
       className="flex items-center gap-3 p-3 rounded-lg mb-2 cursor-pointer"
-      style={{ transition: 'all 0.2s ease', background: isSelected
+      style={{
+        transition: 'all 0.2s ease',
+        background: isSelected
           ? 'color-mix(in srgb, var(--color-primary-600) 15%, transparent)'
-          : 'rgba(255, 255, 255, 0.6)', border: isSelected
+          : 'rgba(255, 255, 255, 0.6)',
+        border: isSelected
           ? '2px solid color-mix(in srgb, var(--color-primary-600) 40%, transparent)'
-          : '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)', boxShadow: isSelected
+          : '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
+        boxShadow: isSelected
           ? '0 4px 16px color-mix(in srgb, var(--color-primary-600) 15%, transparent)'
-          : '0 1px 3px rgba(0, 0, 0, 0.04)', transform: isSelected ? 'scale(1.01)' : 'scale(1)' }}
+          : '0 1px 3px rgba(0, 0, 0, 0.04)',
+        transform: isSelected ? 'scale(1.01)' : 'scale(1)',
+      }}
       onClick={() => onSelect(cn.id)}
       onMouseEnter={(e) => {
         if (!isSelected) {
@@ -34,7 +40,10 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
       <div className="relative shrink-0">
         <CoinImg symbol={group.symbol} logoUrl={group.logoUrl} size={40} imgClassName="rounded-full" />
         {netSymbol && (
-          <div className="absolute bg-card rounded-full flex items-center justify-center" style={{ bottom: -2, right: -2, padding: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <div
+            className="absolute bg-card rounded-full flex items-center justify-center"
+            style={{ bottom: -2, right: -2, padding: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+          >
             <NetworkIcon networkSymbol={netSymbol} size={16} />
           </div>
         )}
@@ -44,19 +53,17 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
         <div className="flex items-center gap-2">
           <span className="font-bold text-[0.95rem] text-surface-900">{group.symbol}</span>
           {group.isStableCoin ? (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-white text-[0.6rem] bg-success-500 font-semibold">Stable</span>
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-white text-[0.6rem] bg-success-500 font-semibold">
+              Stable
+            </span>
           ) : null}
         </div>
         <div className="flex items-center gap-1">
-          <span className="text-sm text-surface-500 text-[0.8rem]">
-            {group.name}
-          </span>
+          <span className="text-sm text-surface-500 text-[0.8rem]">{group.name}</span>
           {netName && (
             <>
               <span className="text-sm text-surface-500">·</span>
-              <span className="text-sm text-primary-600 font-semibold text-xs">
-                {netName}
-              </span>
+              <span className="text-sm text-primary-600 font-semibold text-xs">{netName}</span>
             </>
           )}
         </div>
@@ -64,7 +71,14 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
 
       <div className="shrink-0">
         {isSelected ? (
-          <div className="flex items-center justify-center rounded-full w-7 h-7" style={{ background: 'linear-gradient(135deg, var(--color-primary-600), color-mix(in srgb, var(--color-primary-600), #000 25%))', boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary-600) 40%, transparent)' }}>
+          <div
+            className="flex items-center justify-center rounded-full w-7 h-7"
+            style={{
+              background:
+                'linear-gradient(135deg, var(--color-primary-600), color-mix(in srgb, var(--color-primary-600), #000 25%))',
+              boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary-600) 40%, transparent)',
+            }}
+          >
             <i className="bx bx-check text-white text-[18px]"></i>
           </div>
         ) : (

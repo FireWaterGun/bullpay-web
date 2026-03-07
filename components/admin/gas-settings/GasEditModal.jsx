@@ -9,9 +9,9 @@ const TABS = [
   { key: 'gasPrice', icon: 'bx-gas-pump' },
   { key: 'gasLimit', icon: 'bx-tachometer' },
   { key: 'gasTopup', icon: 'bx-coin-stack' },
-];
+]
 
-const OPERATIONS = ['withdrawal', 'sweep', 'topup'];
+const OPERATIONS = ['withdrawal', 'sweep', 'topup']
 
 // ─── Sub-forms ─────────────────────────────────────────────
 
@@ -20,10 +20,14 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
     withdrawal: t('admin.gasSettings.opWithdrawal', { defaultValue: 'Withdrawal' }),
     sweep: t('admin.gasSettings.opSweep', { defaultValue: 'Sweep' }),
     topup: t('admin.gasSettings.opTopup', { defaultValue: 'Topup' }),
-  };
-  const opIcons = { withdrawal: 'bx-upload', sweep: 'bx-transfer', topup: 'bx-coin-stack' };
-  const opBorderColors = { withdrawal: 'border-l-primary-600', sweep: 'border-l-green-500', topup: 'border-l-amber-500' };
-  const opTextColors = { withdrawal: 'text-primary', sweep: 'text-success', topup: 'text-warning' };
+  }
+  const opIcons = { withdrawal: 'bx-upload', sweep: 'bx-transfer', topup: 'bx-coin-stack' }
+  const opBorderColors = {
+    withdrawal: 'border-l-primary-600',
+    sweep: 'border-l-green-500',
+    topup: 'border-l-amber-500',
+  }
+  const opTextColors = { withdrawal: 'text-primary', sweep: 'text-success', topup: 'text-warning' }
 
   return (
     <>
@@ -49,9 +53,13 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
           />
           <InputAddon>Gwei</InputAddon>
         </InputGroup>
-        {formErrors.maxGasPriceGwei && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxGasPriceGwei}</div>}
+        {formErrors.maxGasPriceGwei && (
+          <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxGasPriceGwei}</div>
+        )}
         <div className="text-xs text-surface-500 mt-1">
-          {t('admin.gasSettings.maxGasPriceDesc', { defaultValue: 'Safety cap — transactions will not exceed this gas price regardless of multipliers.' })}
+          {t('admin.gasSettings.maxGasPriceDesc', {
+            defaultValue: 'Safety cap — transactions will not exceed this gas price regardless of multipliers.',
+          })}
         </div>
       </div>
 
@@ -84,7 +92,9 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
                   />
                   <InputAddon>×</InputAddon>
                 </InputGroup>
-                {formErrors[`${op}Base`] && <div className="text-xs text-danger-500 mt-1 block">{formErrors[`${op}Base`]}</div>}
+                {formErrors[`${op}Base`] && (
+                  <div className="text-xs text-danger-500 mt-1 block">{formErrors[`${op}Base`]}</div>
+                )}
               </div>
               {isEip1559 && (
                 <div>
@@ -100,7 +110,9 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
                     />
                     <InputAddon>×</InputAddon>
                   </InputGroup>
-                  {formErrors[`${op}Priority`] && <div className="text-xs text-danger-500 mt-1 block">{formErrors[`${op}Priority`]}</div>}
+                  {formErrors[`${op}Priority`] && (
+                    <div className="text-xs text-danger-500 mt-1 block">{formErrors[`${op}Priority`]}</div>
+                  )}
                 </div>
               )}
             </div>
@@ -108,7 +120,7 @@ function GasPriceForm({ t, network, isEip1559, editForm, updateField, formErrors
         </Card>
       ))}
     </>
-  );
+  )
 }
 
 function GasLimitForm({ t, network, editForm, updateField, formErrors }) {
@@ -133,18 +145,22 @@ function GasLimitForm({ t, network, editForm, updateField, formErrors }) {
         {formErrors.multiplier && <div className="text-xs text-danger-500 mt-1 block">{formErrors.multiplier}</div>}
         <div className="text-xs text-surface-500 mt-1">
           {t('admin.gasSettings.gasLimitMultiplierDesc', {
-            defaultValue: 'Applied to estimateGas() result. 1.10 = 10% buffer, 1.20 = 20% buffer. Higher buffer prevents out-of-gas failures.',
+            defaultValue:
+              'Applied to estimateGas() result. 1.10 = 10% buffer, 1.20 = 20% buffer. Higher buffer prevents out-of-gas failures.',
           })}
         </div>
       </div>
       {editForm.multiplier && !isNaN(parseFloat(editForm.multiplier)) && (
         <Alert variant="info" className="mb-0">
           <i className="bx bx-calculator mr-1"></i>
-          {t('admin.gasSettings.bufferPreview', { defaultValue: 'Buffer: +{{pct}}% above gas estimate', pct: ((parseFloat(editForm.multiplier) - 1) * 100).toFixed(0) })}
+          {t('admin.gasSettings.bufferPreview', {
+            defaultValue: 'Buffer: +{{pct}}% above gas estimate',
+            pct: ((parseFloat(editForm.multiplier) - 1) * 100).toFixed(0),
+          })}
         </Alert>
       )}
     </div>
-  );
+  )
 }
 
 function GasTopupForm({ t, network, editForm, updateField, formErrors }) {
@@ -152,7 +168,9 @@ function GasTopupForm({ t, network, editForm, updateField, formErrors }) {
     <div>
       <div className="mb-3">
         <span className="text-surface-500">{network.symbol}</span>
-        <Badge color="primary" label className="ml-2">{network.nativeCoin}</Badge>
+        <Badge color="primary" label className="ml-2">
+          {network.nativeCoin}
+        </Badge>
       </div>
       <div className="mb-3">
         <Label className="font-semibold">
@@ -167,36 +185,60 @@ function GasTopupForm({ t, network, editForm, updateField, formErrors }) {
           />
           <InputAddon>{network.nativeCoin}</InputAddon>
         </InputGroup>
-        {formErrors.maxTopupAmount && <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxTopupAmount}</div>}
+        {formErrors.maxTopupAmount && (
+          <div className="text-xs text-danger-500 mt-1 block">{formErrors.maxTopupAmount}</div>
+        )}
         <div className="text-xs text-surface-500 mt-1">
           {t('admin.gasSettings.maxTopupAmountDesc', {
-            defaultValue: 'Maximum native coin to send per topup operation. Safety cap to prevent over-funding temp wallets.',
+            defaultValue:
+              'Maximum native coin to send per topup operation. Safety cap to prevent over-funding temp wallets.',
           })}
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Main Modal ────────────────────────────────────────────
 
-export default function GasEditModal({ t, editModal, editForm, setEditForm, formErrors, updateField, saving, onClose, onSave }) {
-  const { tab, network } = editModal;
-  const isEip1559 = network.type === 'eip1559';
+export default function GasEditModal({
+  t,
+  editModal,
+  editForm,
+  setEditForm,
+  formErrors,
+  updateField,
+  saving,
+  onClose,
+  onSave,
+}) {
+  const { tab, network } = editModal
+  const isEip1559 = network.type === 'eip1559'
 
   const modalTitle = {
-    gasPrice: t('admin.gasSettings.editGasPrice', { defaultValue: 'Edit Gas Price — {{network}}', network: network.name }),
-    gasLimit: t('admin.gasSettings.editGasLimit', { defaultValue: 'Edit Gas Limit — {{network}}', network: network.name }),
-    gasTopup: t('admin.gasSettings.editGasTopup', { defaultValue: 'Edit Gas Topup — {{network}}', network: network.name }),
-  }[tab];
+    gasPrice: t('admin.gasSettings.editGasPrice', {
+      defaultValue: 'Edit Gas Price — {{network}}',
+      network: network.name,
+    }),
+    gasLimit: t('admin.gasSettings.editGasLimit', {
+      defaultValue: 'Edit Gas Limit — {{network}}',
+      network: network.name,
+    }),
+    gasTopup: t('admin.gasSettings.editGasTopup', {
+      defaultValue: 'Edit Gas Topup — {{network}}',
+      network: network.name,
+    }),
+  }[tab]
 
-  const tabIcon = TABS.find((item) => item.key === tab)?.icon || 'bx-cog';
+  const tabIcon = TABS.find((item) => item.key === tab)?.icon || 'bx-cog'
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       tabIndex="-1"
-      onClick={(e) => { if (e.target === e.currentTarget && !saving) onClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !saving) onClose()
+      }}
     >
       <div className={`w-full mx-4 ${tab === 'gasPrice' ? 'max-w-[800px]' : 'max-w-lg'}`}>
         <div className="bg-card rounded-xl shadow-xl">
@@ -205,17 +247,43 @@ export default function GasEditModal({ t, editModal, editForm, setEditForm, form
               <i className={`bx ${tabIcon} mr-2`}></i>
               {modalTitle}
             </h5>
-            <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={saving}><i className="bx bx-x"></i></button>
+            <button
+              type="button"
+              className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
+              onClick={onClose}
+              disabled={saving}
+            >
+              <i className="bx bx-x"></i>
+            </button>
           </div>
           <div className="p-5">
             {tab === 'gasPrice' && (
-              <GasPriceForm t={t} network={network} isEip1559={isEip1559} editForm={editForm} updateField={updateField} formErrors={formErrors} />
+              <GasPriceForm
+                t={t}
+                network={network}
+                isEip1559={isEip1559}
+                editForm={editForm}
+                updateField={updateField}
+                formErrors={formErrors}
+              />
             )}
             {tab === 'gasLimit' && (
-              <GasLimitForm t={t} network={network} editForm={editForm} updateField={updateField} formErrors={formErrors} />
+              <GasLimitForm
+                t={t}
+                network={network}
+                editForm={editForm}
+                updateField={updateField}
+                formErrors={formErrors}
+              />
             )}
             {tab === 'gasTopup' && (
-              <GasTopupForm t={t} network={network} editForm={editForm} updateField={updateField} formErrors={formErrors} />
+              <GasTopupForm
+                t={t}
+                network={network}
+                editForm={editForm}
+                updateField={updateField}
+                formErrors={formErrors}
+              />
             )}
           </div>
           <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200 dark:border-surface-300">
@@ -230,5 +298,5 @@ export default function GasEditModal({ t, editModal, editForm, setEditForm, form
         </div>
       </div>
     </div>
-  );
+  )
 }

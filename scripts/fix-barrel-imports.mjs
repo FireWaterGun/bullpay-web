@@ -15,41 +15,41 @@ const DRY_RUN = process.argv.includes('--dry-run')
 // Based on components/ui/index.js
 const EXPORT_MAP = {
   // Button.jsx
-  Button:    { file: 'Button', isDefault: true },
+  Button: { file: 'Button', isDefault: true },
   buttonClass: { file: 'Button', isDefault: false },
 
   // Badge.jsx
-  Badge:     { file: 'Badge', isDefault: true },
+  Badge: { file: 'Badge', isDefault: true },
   labelClass: { file: 'Badge', isDefault: false },
   bgLabelClass: { file: 'Badge', isDefault: false },
   badgeBase: { file: 'Badge', isDefault: false },
 
   // Input.jsx (all named exports, no default)
-  Input:     { file: 'Input', isDefault: false },
-  Select:    { file: 'Input', isDefault: false },
-  Label:     { file: 'Input', isDefault: false },
+  Input: { file: 'Input', isDefault: false },
+  Select: { file: 'Input', isDefault: false },
+  Label: { file: 'Input', isDefault: false },
   InputGroup: { file: 'Input', isDefault: false },
   InputIcon: { file: 'Input', isDefault: false },
   InputAddon: { file: 'Input', isDefault: false },
   inputClass: { file: 'Input', isDefault: false },
 
   // Card.jsx
-  Card:      { file: 'Card', isDefault: true },
+  Card: { file: 'Card', isDefault: true },
   CardHeader: { file: 'Card', isDefault: false },
-  CardBody:  { file: 'Card', isDefault: false },
+  CardBody: { file: 'Card', isDefault: false },
 
   // Pagination.jsx
   Pagination: { file: 'Pagination', isDefault: true },
 
   // Spinner.jsx
-  Spinner:   { file: 'Spinner', isDefault: true },
+  Spinner: { file: 'Spinner', isDefault: true },
   PageSpinner: { file: 'Spinner', isDefault: false },
 
   // Alert.jsx
-  Alert:     { file: 'Alert', isDefault: true },
+  Alert: { file: 'Alert', isDefault: true },
 
   // Table.jsx
-  Table:     { file: 'Table', isDefault: true },
+  Table: { file: 'Table', isDefault: true },
 
   // AvatarInitial.jsx
   AvatarInitial: { file: 'AvatarInitial', isDefault: true },
@@ -77,9 +77,9 @@ function parseNamedImports(importBlock) {
   if (!match) return []
   return match[1]
     .split(',')
-    .map(s => s.trim())
+    .map((s) => s.trim())
     .filter(Boolean)
-    .map(s => {
+    .map((s) => {
       // Handle `Foo as Bar`
       const parts = s.split(/\s+as\s+/)
       return { original: parts[0].trim(), alias: parts.length > 1 ? parts[1].trim() : null }
@@ -123,20 +123,20 @@ function buildDirectImports(namedImports, basePath) {
     }
 
     if (named.length > 0) {
-      const namedStr = named.map(n => n.alias ? `${n.original} as ${n.alias}` : n.original).join(', ')
+      const namedStr = named.map((n) => (n.alias ? `${n.original} as ${n.alias}` : n.original)).join(', ')
       parts.push(`{ ${namedStr} }`)
     }
 
     // If file has both default and named
     if (defaults.length > 0 && named.length > 0) {
       const defStr = defaults[0].alias || defaults[0].original
-      const namedStr = named.map(n => n.alias ? `${n.original} as ${n.alias}` : n.original).join(', ')
+      const namedStr = named.map((n) => (n.alias ? `${n.original} as ${n.alias}` : n.original)).join(', ')
       lines.push(`import ${defStr}, { ${namedStr} } from '${importPath}'`)
     } else if (defaults.length > 0) {
       const defStr = defaults[0].alias || defaults[0].original
       lines.push(`import ${defStr} from '${importPath}'`)
     } else if (named.length > 0) {
-      const namedStr = named.map(n => n.alias ? `${n.original} as ${n.alias}` : n.original).join(', ')
+      const namedStr = named.map((n) => (n.alias ? `${n.original} as ${n.alias}` : n.original)).join(', ')
       lines.push(`import { ${namedStr} } from '${importPath}'`)
     }
   }
@@ -176,7 +176,8 @@ function processFile(filePath) {
       let block = line
       let j = i + 1
       let found = false
-      while (j < lines.length && j < i + 20) { // max 20 lines
+      while (j < lines.length && j < i + 20) {
+        // max 20 lines
         block += '\n' + lines[j]
         if (BARREL_IMPORT_MULTILINE_FROM.test(lines[j])) {
           found = true
@@ -231,7 +232,11 @@ function findFiles() {
     `grep -rl --include='*.jsx' --include='*.tsx' --include='*.ts' -e "from '@/components/ui'" -e "from \\"@/components/ui\\"" -e "from '../ui'" -e "from \\"../ui\\"" -e "from '../../ui'" -e "from \\"../../ui\\"" .`,
     { cwd: '/Users/recordset/Projects/bullpay-web', encoding: 'utf-8' }
   )
-  return out.trim().split('\n').filter(Boolean).map(f => f.startsWith('./') ? f.slice(2) : f)
+  return out
+    .trim()
+    .split('\n')
+    .filter(Boolean)
+    .map((f) => (f.startsWith('./') ? f.slice(2) : f))
 }
 
 // Main

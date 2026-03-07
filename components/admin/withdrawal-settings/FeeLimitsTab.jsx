@@ -1,13 +1,13 @@
-import CoinImg from '@/components/CoinImg';
-import CardEmptyState from '@/components/CardEmptyState';
+import CoinImg from '@/components/CoinImg'
+import CardEmptyState from '@/components/CardEmptyState'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
-import Table from '@/components/ui/Table';
-import Pagination from '@/components/ui/Pagination';
-import { formatAmount } from '@/lib/utils/settingsFormatters';
+import Table from '@/components/ui/Table'
+import Pagination from '@/components/ui/Pagination'
+import { formatAmount } from '@/lib/utils/settingsFormatters'
 
 export default function FeeLimitsTab({
   t,
@@ -29,23 +29,30 @@ export default function FeeLimitsTab({
               {t('admin.withdrawalSettings.perCoinNetworkTitle', { defaultValue: 'Per Coin-Network Fee & Limits' })}
             </h5>
             <p className="text-surface-500 mb-0 text-sm">
-              {t('admin.withdrawalSettings.perCoinNetworkDesc', { defaultValue: 'Each row is a coin-network pair with its own withdrawal configuration. Click Edit to modify.' })}
+              {t('admin.withdrawalSettings.perCoinNetworkDesc', {
+                defaultValue:
+                  'Each row is a coin-network pair with its own withdrawal configuration. Click Edit to modify.',
+              })}
             </p>
           </div>
           <div className="flex gap-2">
             <div className="flex items-stretch text-sm w-[220px]">
               <Input
                 type="text"
-                placeholder={t('admin.withdrawalSettings.searchPlaceholder', { defaultValue: 'Search coin/network...' })}
+                placeholder={t('admin.withdrawalSettings.searchPlaceholder', {
+                  defaultValue: 'Search coin/network...',
+                })}
                 value={cnSearch}
                 onChange={(e) => setCnSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && loadCoinNetworks(1, cnSearch)}
-                className="rounded-r-none border-r-0" />
+                className="rounded-r-none border-r-0"
+              />
               <Button
                 type="button"
                 onClick={() => loadCoinNetworks(1, cnSearch)}
                 variant="outline-primary"
-                className="rounded-l-none">
+                className="rounded-l-none"
+              >
                 <i className="bx bx-search"></i>
               </Button>
             </div>
@@ -61,7 +68,8 @@ export default function FeeLimitsTab({
         ) : coinNetworks.length === 0 ? (
           <CardEmptyState
             icon="bx-search-alt-2"
-            message={t('admin.withdrawalSettings.noCoinNetworks', { defaultValue: 'No coin-networks found' })} />
+            message={t('admin.withdrawalSettings.noCoinNetworks', { defaultValue: 'No coin-networks found' })}
+          />
         ) : (
           <Table responsive={false} className="mb-0">
             <thead>
@@ -72,14 +80,16 @@ export default function FeeLimitsTab({
                 <th className="text-right">{t('admin.withdrawalSettings.colMax', { defaultValue: 'Max' })}</th>
                 <th className="text-right">{t('admin.withdrawalSettings.colFeeBase', { defaultValue: 'Fee Base' })}</th>
                 <th className="text-right">{t('admin.withdrawalSettings.colFeePercent', { defaultValue: 'Fee %' })}</th>
-                <th className="text-right">{t('admin.withdrawalSettings.colDailyLimit', { defaultValue: 'Daily Limit (USD)' })}</th>
+                <th className="text-right">
+                  {t('admin.withdrawalSettings.colDailyLimit', { defaultValue: 'Daily Limit (USD)' })}
+                </th>
                 <th className="text-center">{t('admin.withdrawalSettings.colActions', { defaultValue: 'Actions' })}</th>
               </tr>
             </thead>
             <tbody>
               {coinNetworks.map((cn) => {
-                const coinSymbol = cn.coin?.symbol || '?';
-                const networkSymbol = cn.network?.symbol || cn.network?.name || '?';
+                const coinSymbol = cn.coin?.symbol || '?'
+                const networkSymbol = cn.network?.symbol || cn.network?.name || '?'
                 return (
                   <tr key={cn.id}>
                     <td>
@@ -104,15 +114,19 @@ export default function FeeLimitsTab({
                     </td>
                     <td className="text-right">
                       <code className="text-surface-800">{formatAmount(cn.withdrawFeeBase)}</code>
-                      {cn.withdrawFeeBase && cn.withdrawFeeBase !== '0' &&
+                      {cn.withdrawFeeBase && cn.withdrawFeeBase !== '0' && (
                         <small className="text-surface-500 block text-xs">auto</small>
-                      }
+                      )}
                     </td>
                     <td className="text-right">
-                      <code className="text-surface-800">{cn.withdrawFeePercent ? `${cn.withdrawFeePercent}%` : '-'}</code>
+                      <code className="text-surface-800">
+                        {cn.withdrawFeePercent ? `${cn.withdrawFeePercent}%` : '-'}
+                      </code>
                     </td>
                     <td className="text-right">
-                      <code className="text-surface-800">{cn.dailyWithdrawLimitUsd ? `$${Number(cn.dailyWithdrawLimitUsd).toLocaleString()}` : '-'}</code>
+                      <code className="text-surface-800">
+                        {cn.dailyWithdrawLimitUsd ? `$${Number(cn.dailyWithdrawLimitUsd).toLocaleString()}` : '-'}
+                      </code>
                     </td>
                     <td className="text-center">
                       <Button
@@ -120,12 +134,13 @@ export default function FeeLimitsTab({
                         title={t('actions.edit', { defaultValue: 'Edit' })}
                         onClick={() => openCnEditModal(cn)}
                         variant="text-secondary"
-                        size="icon-sm">
+                        size="icon-sm"
+                      >
                         <i className="bx bx-edit text-[1rem]"></i>
                       </Button>
                     </td>
                   </tr>
-                );
+                )
               })}
             </tbody>
           </Table>
@@ -137,5 +152,5 @@ export default function FeeLimitsTab({
         <Pagination pagination={cnPagination} onPageChange={(p) => loadCoinNetworks(p, cnSearch)} loading={cnLoading} />
       </div>
     </Card>
-  );
+  )
 }

@@ -11,10 +11,7 @@ import { coinImageExists } from '@/lib/utils/coinImageManifest'
 
 const objectFitCover = { objectFit: 'cover' }
 
-const AVATAR_COLORS = [
-  '#7367F0', '#00CFE8', '#28C76F', '#FF9F43',
-  '#EA5455', '#9966FF', '#00D4BD',
-]
+const AVATAR_COLORS = ['#7367F0', '#00CFE8', '#28C76F', '#FF9F43', '#EA5455', '#9966FF', '#00D4BD']
 
 function getAvatarColor(text) {
   const idx = (text || 'C').charCodeAt(0) % AVATAR_COLORS.length
@@ -60,7 +57,9 @@ const NETWORK_ALIASES = {
 }
 
 function getNetworkAssetCandidates(networkSymbol) {
-  const sym = String(networkSymbol || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const sym = String(networkSymbol || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
   if (!sym) return []
   const names = [sym, ...(NETWORK_ALIASES[sym] || [])]
   const exts = ['svg', 'png']
@@ -77,10 +76,7 @@ function getNetworkAssetCandidates(networkSymbol) {
 
 export function NetworkIcon({ networkSymbol, size = 24 }) {
   const [idx, setIdx] = useState(0)
-  const candidates = useMemo(
-    () => getNetworkAssetCandidates(networkSymbol),
-    [networkSymbol],
-  )
+  const candidates = useMemo(() => getNetworkAssetCandidates(networkSymbol), [networkSymbol])
   const src = candidates[Math.min(idx, candidates.length - 1)]
   return (
     <Image
@@ -130,14 +126,11 @@ export default function CoinImg({
 
   // ------ Coin image candidates ------
   const resolvedLogoUrl = logoUrl || coin?.logoUrl || null
-  const candidatesRaw = useMemo(
-    () => getCoinAssetCandidates(symbol, resolvedLogoUrl),
-    [symbol, resolvedLogoUrl],
-  )
+  const candidatesRaw = useMemo(() => getCoinAssetCandidates(symbol, resolvedLogoUrl), [symbol, resolvedLogoUrl])
   // When fallback mode is enabled, strip default.svg so we can detect exhaustion
   const candidates = useMemo(
     () => (showFallback ? candidatesRaw.filter((c) => !c.includes('default.svg')) : candidatesRaw),
-    [candidatesRaw, showFallback],
+    [candidatesRaw, showFallback]
   )
   const [idx, setIdx] = useState(0)
   const [coinExhausted, setCoinExhausted] = useState(false)
@@ -154,11 +147,11 @@ export default function CoinImg({
   // ------ Network badge candidates ------
   const networkCandidatesRaw = useMemo(
     () => getCoinAssetCandidates(resolvedNetworkSymbol, null),
-    [resolvedNetworkSymbol],
+    [resolvedNetworkSymbol]
   )
   const networkCandidates = useMemo(
     () => networkCandidatesRaw.filter((c) => !c.includes('default.svg')),
-    [networkCandidatesRaw],
+    [networkCandidatesRaw]
   )
   const [netIdx, setNetIdx] = useState(0)
   const [netExhausted, setNetExhausted] = useState(false)
@@ -183,7 +176,13 @@ export default function CoinImg({
     return (
       <div
         className={`${className} text-white flex items-center justify-center font-bold shrink-0`}
-        style={{ width: size, height: size, borderRadius: '8px', backgroundColor: getAvatarColor(symbol || 'C'), fontSize: size * 0.5 }}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '8px',
+          backgroundColor: getAvatarColor(symbol || 'C'),
+          fontSize: size * 0.5,
+        }}
       >
         {letter}
       </div>
@@ -208,10 +207,7 @@ export default function CoinImg({
 
   // ------ Image with network badge overlay ------
   return (
-    <div
-      className={`relative${className ? ` ${className}` : ''} shrink-0`}
-      style={{ width: size, height: size }}
-    >
+    <div className={`relative${className ? ` ${className}` : ''} shrink-0`} style={{ width: size, height: size }}>
       <Image
         src={src}
         alt={symbol}
@@ -224,7 +220,14 @@ export default function CoinImg({
       />
       <div
         className="absolute rounded-full flex items-center justify-center bg-card"
-        style={{ bottom: -2, right: -2, width: badgeSize, height: badgeSize, boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: `${badgePadding}px` }}
+        style={{
+          bottom: -2,
+          right: -2,
+          width: badgeSize,
+          height: badgeSize,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          padding: `${badgePadding}px`,
+        }}
       >
         <Image
           src={netSrc}

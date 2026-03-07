@@ -26,9 +26,9 @@ const config = [
     rules: {
       'no-var': 'error',
       'prefer-const': 'error',
-      'eqeqeq': ['error', 'always', { null: 'ignore' }],
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-implicit-coercion': ['error', { boolean: false }],
-      'curly': ['error', 'multi-line', 'consistent'],
+      curly: ['error', 'multi-line', 'consistent'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'no-alert': 'error',
@@ -40,7 +40,7 @@ const config = [
       'no-throw-literal': 'error',
       'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
       'prefer-template': 'warn',
-      'no-nested-ternary': 'off',  // common in JSX conditional rendering
+      'no-nested-ternary': 'off', // common in JSX conditional rendering
     },
   },
 

@@ -28,11 +28,9 @@ const colorMap = {
   ].join(' '),
 }
 
-const base = [
-  'relative flex items-start gap-2',
-  'px-4 py-3 mb-4 text-sm leading-[1.375]',
-  'border rounded-input',
-].join(' ')
+const base = ['relative flex items-start gap-2', 'px-4 py-3 mb-4 text-sm leading-[1.375]', 'border rounded-input'].join(
+  ' '
+)
 
 export default function Alert({
   variant = 'danger',

@@ -53,13 +53,20 @@ export async function listWallets(token?: string, coinNetworkId?: number | strin
   return []
 }
 
-export async function listAllWallets(token?: string, pageSize = 100, coinNetworkId?: number | string): Promise<WalletRecord[]> {
+export async function listAllWallets(
+  token?: string,
+  pageSize = 100,
+  coinNetworkId?: number | string
+): Promise<WalletRecord[]> {
   let page = 1
   const out: WalletRecord[] = []
   const MAX_PAGES = 50
   while (page <= MAX_PAGES) {
     const coinNetworkParam = coinNetworkId ? `&coinNetworkId=${coinNetworkId}` : ''
-    const res = await apiFetch<any>(`/api/v1/user/wallet/withdrawal-addresses?page=${page}&limit=${pageSize}${coinNetworkParam}`, { token })
+    const res = await apiFetch<any>(
+      `/api/v1/user/wallet/withdrawal-addresses?page=${page}&limit=${pageSize}${coinNetworkParam}`,
+      { token }
+    )
     // Support new structure: data.addresses
     const items: WalletRecord[] = Array.isArray(res?.addresses)
       ? res.addresses

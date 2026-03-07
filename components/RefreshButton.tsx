@@ -28,9 +28,13 @@ let progressListeners: Array<() => void> = []
 
 function subscribe(fn: () => void) {
   progressListeners.push(fn)
-  return () => { progressListeners = progressListeners.filter(l => l !== fn) }
+  return () => {
+    progressListeners = progressListeners.filter((l) => l !== fn)
+  }
 }
-function notifyAll() { progressListeners.forEach(fn => fn()) }
+function notifyAll() {
+  progressListeners.forEach((fn) => fn())
+}
 
 interface RefreshButtonProps {
   /** The async function to call when clicked */
@@ -110,7 +114,10 @@ export default function RefreshButton({
           setProgress(0)
           setIsOwner(false)
         }, 700)
-        return () => { clearTimeout(fadeTimeout); clearTimeout(hideTimeout) }
+        return () => {
+          clearTimeout(fadeTimeout)
+          clearTimeout(hideTimeout)
+        }
       }
 
       if (isOwner && activeCount > 0) {
@@ -158,31 +165,30 @@ export default function RefreshButton({
   return (
     <>
       {/* YouTube-style top bar – only the owner instance renders it */}
-      {isOwner && showBar && typeof document !== 'undefined' && createPortal(
-        <div
-          style={{
-            ...topBarContainerStyle,
-            opacity: fading ? 0 : 1,
-            transition: 'opacity 0.4s ease-out',
-          }}
-        >
+      {isOwner &&
+        showBar &&
+        typeof document !== 'undefined' &&
+        createPortal(
           <div
             style={{
-              ...topBarStyle,
-              width: `${progress}%`,
-              transition: progress === 100
-                ? 'width 0.2s ease-out'
-                : 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              ...topBarContainerStyle,
+              opacity: fading ? 0 : 1,
+              transition: 'opacity 0.4s ease-out',
             }}
           >
-            {/* Glowing tip like YouTube */}
-            {progress < 100 && (
-              <div style={topBarTipStyle} />
-            )}
-          </div>
-        </div>,
-        document.body
-      )}
+            <div
+              style={{
+                ...topBarStyle,
+                width: `${progress}%`,
+                transition: progress === 100 ? 'width 0.2s ease-out' : 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            >
+              {/* Glowing tip like YouTube */}
+              {progress < 100 && <div style={topBarTipStyle} />}
+            </div>
+          </div>,
+          document.body
+        )}
 
       <button
         type="button"

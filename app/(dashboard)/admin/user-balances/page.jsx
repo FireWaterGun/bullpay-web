@@ -1,130 +1,137 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams as useNextSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams as useNextSearchParams } from 'next/navigation'
 
-import { useAuth, useToast } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { getUserBalances, getUserBalancesSummary } from '@/lib/api/admin';
-import { useDateFormat } from '@/hooks/useDateFormat';
-import SummaryCard from '@/components/admin/RevenueSummaryCard';
-import { logger } from '@/lib/utils/logger';
-import RefreshButton from '@/components/RefreshButton';
-import PageSpinner from '@/components/PageSpinner';
-import TableEmptyState from '@/components/TableEmptyState';
+import { useAuth, useToast } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { getUserBalances, getUserBalancesSummary } from '@/lib/api/admin'
+import { useDateFormat } from '@/hooks/useDateFormat'
+import SummaryCard from '@/components/admin/RevenueSummaryCard'
+import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
+import TableEmptyState from '@/components/TableEmptyState'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input, Label, Select } from '@/components/ui/Input'
 import { badgeBase } from '@/components/ui/Badge'
 import Pagination from '@/components/ui/Pagination'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
 function roleBadgeClass(role) {
-  const v = String(role || '').toLowerCase();
-  if (v === 'super_admin') return `${badgeBase} bg-danger-50 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300`;
-  if (v === 'admin') return `${badgeBase} bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300`;
-  if (v === 'business_user') return `${badgeBase} bg-info-50 text-info-700 dark:bg-info-500/15 dark:text-info-300`;
-  if (v === 'support_agent') return `${badgeBase} bg-surface-100 text-surface-600 dark:bg-white/8 dark:text-surface-400`;
-  return `${badgeBase} bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400`;
+  const v = String(role || '').toLowerCase()
+  if (v === 'super_admin') return `${badgeBase} bg-danger-50 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300`
+  if (v === 'admin') return `${badgeBase} bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300`
+  if (v === 'business_user') return `${badgeBase} bg-info-50 text-info-700 dark:bg-info-500/15 dark:text-info-300`
+  if (v === 'support_agent') return `${badgeBase} bg-surface-100 text-surface-600 dark:bg-white/8 dark:text-surface-400`
+  return `${badgeBase} bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400`
 }
 
 export default function UserBalanceListPage() {
-  const { fmtDate } = useDateFormat();
-  const { t } = useAdminTranslation();
+  const { fmtDate } = useDateFormat()
+  const { t } = useAdminTranslation()
   const SORT_BY_OPTIONS = [
-  { value: 'totalValueUsd', label: t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' }) },
-  { value: 'totalAssets', label: t('admin.userBalance.totalAssets', { defaultValue: 'Total Assets' }) },
-  { value: 'updatedAt', label: t('admin.detail.updatedAt', { defaultValue: 'Updated At' }) }];
+    { value: 'totalValueUsd', label: t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' }) },
+    { value: 'totalAssets', label: t('admin.userBalance.totalAssets', { defaultValue: 'Total Assets' }) },
+    { value: 'updatedAt', label: t('admin.detail.updatedAt', { defaultValue: 'Updated At' }) },
+  ]
 
-  const { token } = useAuth();
-  const toast = useToast();
-  const searchParams = useNextSearchParams();
+  const { token } = useAuth()
+  const toast = useToast()
+  const searchParams = useNextSearchParams()
 
-  const initSortBy = searchParams.get('sortBy') || '';
-  const initSortOrder = searchParams.get('sortOrder') || '';
-  const initMinValue = searchParams.get('minValueUsd') || '';
-  const initPage = parseInt(searchParams.get('page')) || 1;
+  const initSortBy = searchParams.get('sortBy') || ''
+  const initSortOrder = searchParams.get('sortOrder') || ''
+  const initMinValue = searchParams.get('minValueUsd') || ''
+  const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [pagination, setPagination] = useState(null);
-  const [currentPage, setCurrentPage] = useState(initPage);
-  const [summary, setSummary] = useState(null);
-  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [users, setUsers] = useState([])
+  const [pagination, setPagination] = useState(null)
+  const [currentPage, setCurrentPage] = useState(initPage)
+  const [summary, setSummary] = useState(null)
+  const [summaryLoading, setSummaryLoading] = useState(false)
 
-  const [sortByFilter, setSortByFilter] = useState(initSortBy);
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder);
-  const [minValueFilter, setMinValueFilter] = useState(initMinValue);
+  const [sortByFilter, setSortByFilter] = useState(initSortBy)
+  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
+  const [minValueFilter, setMinValueFilter] = useState(initMinValue)
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
-    const f = {};
-    if (initSortBy) f.sortBy = initSortBy;
-    if (initSortOrder) f.sortOrder = initSortOrder;
-    if (initMinValue) f.minValueUsd = Number(initMinValue);
-    return f;
-  });
+    const f = {}
+    if (initSortBy) f.sortBy = initSortBy
+    if (initSortOrder) f.sortOrder = initSortOrder
+    if (initMinValue) f.minValueUsd = Number(initMinValue)
+    return f
+  })
 
   const loadSummary = useCallback(async () => {
-    if (!token) return;
+    if (!token) return
     try {
-      setSummaryLoading(true);
-      const data = await getUserBalancesSummary(token);
-      setSummary(data);
+      setSummaryLoading(true)
+      const data = await getUserBalancesSummary(token)
+      setSummary(data)
     } catch (error) {
-      logger.error('Failed to load balance summary:', error);
+      logger.error('Failed to load balance summary:', error)
     } finally {
-      setSummaryLoading(false);
+      setSummaryLoading(false)
     }
-  }, [token]);
+  }, [token])
 
   const loadUsers = useCallback(async () => {
-    if (!token) return;
+    if (!token) return
     try {
-      setLoading(true);
-      const data = await getUserBalances(token, { page: currentPage, limit: 20, ...appliedFilters });
-      setUsers(data.items || []);
-      setPagination(data.pagination || null);
+      setLoading(true)
+      const data = await getUserBalances(token, { page: currentPage, limit: 20, ...appliedFilters })
+      setUsers(data.items || [])
+      setPagination(data.pagination || null)
     } catch (error) {
-      logger.error('Failed to load user balances:', error);
-      toast.error(t('admin.userBalance.loadError', { defaultValue: 'Failed to load user balances' }));
+      logger.error('Failed to load user balances:', error)
+      toast.error(t('admin.userBalance.loadError', { defaultValue: 'Failed to load user balances' }))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [token, currentPage, appliedFilters, toast, t]);
+  }, [token, currentPage, appliedFilters, toast, t])
 
-  useEffect(() => {loadUsers();}, [loadUsers]);
+  useEffect(() => {
+    loadUsers()
+  }, [loadUsers])
   // Load summary once on mount (parallel with first loadUsers via React batching)
-  useEffect(() => {loadSummary();}, [loadSummary]);
+  useEffect(() => {
+    loadSummary()
+  }, [loadSummary])
 
   function syncSearchParams(filters, page) {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => {if (v !== undefined && v !== '') params.set(k, String(v));});
-    if (page > 1) params.set('page', page);
-    window.history.replaceState(null, '', `?${params.toString()}`);
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') params.set(k, String(v))
+    })
+    if (page > 1) params.set('page', page)
+    window.history.replaceState(null, '', `?${params.toString()}`)
   }
 
   function applyFilters() {
     const f = {
       sortBy: sortByFilter || undefined,
       sortOrder: sortOrderFilter || undefined,
-      minValueUsd: minValueFilter ? Number(minValueFilter) : undefined
-    };
-    setAppliedFilters(f);
-    setCurrentPage(1);
-    syncSearchParams(f, 1);
+      minValueUsd: minValueFilter ? Number(minValueFilter) : undefined,
+    }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
   }
 
   function resetFilters() {
-    setSortByFilter('');
-    setSortOrderFilter('');
-    setMinValueFilter('');
-    setAppliedFilters({});
-    setCurrentPage(1);
-    syncSearchParams({}, 1);
+    setSortByFilter('')
+    setSortOrderFilter('')
+    setMinValueFilter('')
+    setAppliedFilters({})
+    setCurrentPage(1)
+    syncSearchParams({}, 1)
   }
 
   if (loading && users.length === 0 && !summary) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   return (
@@ -140,20 +147,48 @@ export default function UserBalanceListPage() {
                     {t('admin.userBalances.title', { defaultValue: 'User Balances' })}
                   </h4>
                   <p className="text-surface-500 mb-0">
-                    {t('admin.userBalances.description', { defaultValue: 'Overview of all user balances across the platform' })}
+                    {t('admin.userBalances.description', {
+                      defaultValue: 'Overview of all user balances across the platform',
+                    })}
                   </p>
                 </div>
-                <RefreshButton onClick={() => {loadUsers();loadSummary();}} loading={loading} />
+                <RefreshButton
+                  onClick={() => {
+                    loadUsers()
+                    loadSummary()
+                  }}
+                  loading={loading}
+                />
               </div>
             </div>
-            {summary &&
-            <div className="grid grid-cols-12 gap-x-6 gap-4 p-5">
-                <SummaryCard title={t('admin.userBalance.totalUsers', { defaultValue: 'Total Users' })} value={summary.totalUsers ?? 0} icon="bx-group" color="primary" />
-                <SummaryCard title={t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' })} value={`$${summary.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
-                <SummaryCard title={t('admin.userBalance.averageUsd', { defaultValue: 'Average (USD)' })} value={`$${summary.averageValueUsd ?? '0.00'}`} icon="bx-bar-chart-alt-2" color="info" />
-                <SummaryCard title={t('admin.userBalance.withBalance', { defaultValue: 'With Balance' })} value={summary.totalUsersWithBalance ?? summary.usersWithBalance ?? 0} icon="bx-user-check" color="warning" />
+            {summary && (
+              <div className="grid grid-cols-12 gap-x-6 gap-4 p-5">
+                <SummaryCard
+                  title={t('admin.userBalance.totalUsers', { defaultValue: 'Total Users' })}
+                  value={summary.totalUsers ?? 0}
+                  icon="bx-group"
+                  color="primary"
+                />
+                <SummaryCard
+                  title={t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' })}
+                  value={`$${summary.totalValueUsd ?? '0.00'}`}
+                  icon="bx-dollar-circle"
+                  color="success"
+                />
+                <SummaryCard
+                  title={t('admin.userBalance.averageUsd', { defaultValue: 'Average (USD)' })}
+                  value={`$${summary.averageValueUsd ?? '0.00'}`}
+                  icon="bx-bar-chart-alt-2"
+                  color="info"
+                />
+                <SummaryCard
+                  title={t('admin.userBalance.withBalance', { defaultValue: 'With Balance' })}
+                  value={summary.totalUsersWithBalance ?? summary.usersWithBalance ?? 0}
+                  icon="bx-user-check"
+                  color="warning"
+                />
               </div>
-            }
+            )}
           </Card>
 
           <Card className="mb-4">
@@ -163,22 +198,39 @@ export default function UserBalanceListPage() {
                   <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
                   <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    {SORT_BY_OPTIONS.map((o) =>
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                    )}
+                    {SORT_BY_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </Select>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
                   <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}</option>
+                    <option value="asc">
+                      {t('filter.ascending', {
+                        defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }),
+                      })}
+                    </option>
+                    <option value="desc">
+                      {t('filter.descending', {
+                        defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }),
+                      })}
+                    </option>
                   </Select>
                 </div>
                 <div className="md:col-span-3 sm:col-span-6">
                   <Label>{t('admin.userBalances.minValue', { defaultValue: 'Min Value (USD)' })}</Label>
-                  <Input type="number" placeholder="0.00" value={minValueFilter} onChange={(e) => setMinValueFilter(e.target.value)} min="0" step="0.01" />
+                  <Input
+                    type="number"
+                    placeholder="0.00"
+                    value={minValueFilter}
+                    onChange={(e) => setMinValueFilter(e.target.value)}
+                    min="0"
+                    step="0.01"
+                  />
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
@@ -195,62 +247,79 @@ export default function UserBalanceListPage() {
           </Card>
 
           <Card>
-              <Table>
-                  <thead>
-                    <tr className="whitespace-nowrap">
-                      <th>{t('table.userId', { defaultValue: 'User ID' })}</th>
-                      <th>{t('table.email', { defaultValue: 'Email' })}</th>
-                      <th>{t('table.name', { defaultValue: 'Name' })}</th>
-                      <th className="text-center">{t('table.role', { defaultValue: 'Role' })}</th>
-                      <th className="text-center">{t('admin.userBalances.totalAssets', { defaultValue: 'Assets' })}</th>
-                      <th className="text-right">{t('admin.userBalances.totalValueUsd', { defaultValue: 'Value (USD)' })}</th>
-                      <th>{t('admin.userBalances.valuedAt', { defaultValue: 'Valued At' })}</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.length === 0 ?
-                    <TableEmptyState
-                      colSpan={8}
-                      icon="bx-money"
-                      message={t('admin.userBalances.noData', { defaultValue: 'No user balances found' })}
-                      sub={t('admin.userBalances.noDataSub', { defaultValue: 'No users match the current search' })} /> :
-
-
-                    users.map((u) =>
+            <Table>
+              <thead>
+                <tr className="whitespace-nowrap">
+                  <th>{t('table.userId', { defaultValue: 'User ID' })}</th>
+                  <th>{t('table.email', { defaultValue: 'Email' })}</th>
+                  <th>{t('table.name', { defaultValue: 'Name' })}</th>
+                  <th className="text-center">{t('table.role', { defaultValue: 'Role' })}</th>
+                  <th className="text-center">{t('admin.userBalances.totalAssets', { defaultValue: 'Assets' })}</th>
+                  <th className="text-right">
+                    {t('admin.userBalances.totalValueUsd', { defaultValue: 'Value (USD)' })}
+                  </th>
+                  <th>{t('admin.userBalances.valuedAt', { defaultValue: 'Valued At' })}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length === 0 ? (
+                  <TableEmptyState
+                    colSpan={8}
+                    icon="bx-money"
+                    message={t('admin.userBalances.noData', { defaultValue: 'No user balances found' })}
+                    sub={t('admin.userBalances.noDataSub', { defaultValue: 'No users match the current search' })}
+                  />
+                ) : (
+                  users.map((u) => (
                     <tr key={u.userId}>
-                          <td><span className="font-semibold text-primary">{u.userId}</span></td>
-                          <td><span className="text-[0.85rem]">{u.email || '-'}</span></td>
-                          <td><span className="font-medium">{u.fullName || '-'}</span></td>
-                          <td className="text-center">
-                            <span className={roleBadgeClass(u.role)}>
-                              {String(u.role || '').replace(/_/g, ' ').toUpperCase()}
-                            </span>
-                          </td>
-                          <td className="text-center"><span className="font-medium">{u.totalAssets ?? 0}</span></td>
-                          <td className="text-right whitespace-nowrap"><span className="font-bold">${u.totalValueUsd || '0.00'}</span></td>
-                          <td><span className="whitespace-nowrap text-[0.85rem]">{fmtDate(u.valuedAt)}</span></td>
-                          <td>
-                            <Button variant="text-secondary" size="icon"
-                        href={`/admin/user-balances/${u.userId}`}
+                      <td>
+                        <span className="font-semibold text-primary">{u.userId}</span>
+                      </td>
+                      <td>
+                        <span className="text-[0.85rem]">{u.email || '-'}</span>
+                      </td>
+                      <td>
+                        <span className="font-medium">{u.fullName || '-'}</span>
+                      </td>
+                      <td className="text-center">
+                        <span className={roleBadgeClass(u.role)}>
+                          {String(u.role || '')
+                            .replace(/_/g, ' ')
+                            .toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="text-center">
+                        <span className="font-medium">{u.totalAssets ?? 0}</span>
+                      </td>
+                      <td className="text-right whitespace-nowrap">
+                        <span className="font-bold">${u.totalValueUsd || '0.00'}</span>
+                      </td>
+                      <td>
+                        <span className="whitespace-nowrap text-[0.85rem]">{fmtDate(u.valuedAt)}</span>
+                      </td>
+                      <td>
+                        <Button
+                          variant="text-secondary"
+                          size="icon"
+                          href={`/admin/user-balances/${u.userId}`}
+                          title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
+                        >
+                          <i className="bx bx-show text-xl"></i>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
 
-                        title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}>
-                          
-                              <i className="bx bx-show text-xl"></i>
-                            </Button>
-                          </td>
-                        </tr>
-                    )
-                    }
-                  </tbody>
-                </Table>
-
-              <div className="px-5 py-1.5">
-                <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
-              </div>
+            <div className="px-5 py-1.5">
+              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+            </div>
           </Card>
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

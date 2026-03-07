@@ -29,18 +29,9 @@ export const viewport: Viewport = {
   themeColor: '#2563eb',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={publicSans.className}
-      dir="ltr"
-      suppressHydrationWarning
-    >
+    <html lang="en" className={publicSans.className} dir="ltr" suppressHydrationWarning>
       <head>
         {/* Icon font (Boxicons via CSS masks) */}
         <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />

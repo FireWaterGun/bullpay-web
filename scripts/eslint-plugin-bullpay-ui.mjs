@@ -134,7 +134,8 @@ const rules = {
       },
     },
     create(context) {
-      const BOOTSTRAP_RE = /^(?:btn-(?:primary|secondary|danger|success|outline|close|sm|lg)|card-(?:body|header|footer)|modal-(?:dialog|content|header|body|footer)|form-(?:control|select|check|label|group)|input-group-text|dropdown-(?:menu|item|toggle)|nav-(?:tabs|link)|spinner-border|progress-bar|container-fluid|d-flex|d-none|d-block|fw-bold|fw-semibold|fw-normal|rounded-circle|text-muted|text-body|bg-light)$/
+      const BOOTSTRAP_RE =
+        /^(?:btn-(?:primary|secondary|danger|success|outline|close|sm|lg)|card-(?:body|header|footer)|modal-(?:dialog|content|header|body|footer)|form-(?:control|select|check|label|group)|input-group-text|dropdown-(?:menu|item|toggle)|nav-(?:tabs|link)|spinner-border|progress-bar|container-fluid|d-flex|d-none|d-block|fw-bold|fw-semibold|fw-normal|rounded-circle|text-muted|text-body|bg-light)$/
       return {
         JSXAttribute(node) {
           if (node.name.name !== 'className') return
@@ -271,9 +272,7 @@ const rules = {
       return {
         JSXOpeningElement(node) {
           if (node.name.type !== 'JSXIdentifier' || node.name.name !== 'button') return
-          const hasType = node.attributes.some(
-            (attr) => attr.type === 'JSXAttribute' && attr.name.name === 'type'
-          )
+          const hasType = node.attributes.some((attr) => attr.type === 'JSXAttribute' && attr.name.name === 'type')
           if (!hasType) {
             context.report({ node, messageId: 'missing' })
           }

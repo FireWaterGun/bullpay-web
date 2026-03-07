@@ -109,14 +109,16 @@ export default function WithdrawalDetailPage() {
                 <RefreshButton onClick={loadWithdrawal} loading={loading} />
               </h4>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={statusBadgeClass(withdrawal.status)}>
-                  {formatStatusLabel(withdrawal.status)}
-                </span>
+                <span className={statusBadgeClass(withdrawal.status)}>{formatStatusLabel(withdrawal.status)}</span>
                 {coinSymbol && (
-                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-600 rounded-md">{coinSymbol}</span>
+                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-600 rounded-md">
+                    {coinSymbol}
+                  </span>
                 )}
                 {networkSymbol && networkSymbol !== coinSymbol && (
-                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-info-50 dark:bg-info-900/30 text-info-600 dark:text-info-400 rounded-md">{networkSymbol}</span>
+                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-info-50 dark:bg-info-900/30 text-info-600 dark:text-info-400 rounded-md">
+                    {networkSymbol}
+                  </span>
                 )}
               </div>
             </div>
@@ -124,7 +126,9 @@ export default function WithdrawalDetailPage() {
           {totalAmount && (
             <div className="text-right">
               <p className="text-xl font-semibold text-surface-900 mb-0">{formatCoinAmount(totalAmount)}</p>
-              {withdrawal.amountUsd && <p className="text-sm text-surface-400 mb-0">${Number(withdrawal.amountUsd).toFixed(2)}</p>}
+              {withdrawal.amountUsd && (
+                <p className="text-sm text-surface-400 mb-0">${Number(withdrawal.amountUsd).toFixed(2)}</p>
+              )}
             </div>
           )}
         </div>
@@ -145,7 +149,9 @@ export default function WithdrawalDetailPage() {
                 <div className="flex items-center gap-2">
                   <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} />
                   <span>{coinSymbol}</span>
-                  {networkSymbol && networkSymbol !== coinSymbol && <span className="text-surface-400 text-xs">({networkSymbol})</span>}
+                  {networkSymbol && networkSymbol !== coinSymbol && (
+                    <span className="text-surface-400 text-xs">({networkSymbol})</span>
+                  )}
                 </div>
               </DetailRow>
               <DetailRow label={t('withdrawals.totalAmount', { defaultValue: 'Total Amount' })}>
@@ -157,7 +163,9 @@ export default function WithdrawalDetailPage() {
                 </DetailRow>
               )}
               <DetailRow label={t('withdrawals.netAmount', { defaultValue: 'Net Amount' })}>
-                <span className="text-success-600 dark:text-success-400 font-medium">{formatCoinAmount(withdrawal.amount || 0)} {coinSymbol}</span>
+                <span className="text-success-600 dark:text-success-400 font-medium">
+                  {formatCoinAmount(withdrawal.amount || 0)} {coinSymbol}
+                </span>
               </DetailRow>
               {fromAddress && (
                 <DetailRow label={t('withdrawals.fromAddress', { defaultValue: 'From Address' })}>
@@ -192,9 +200,7 @@ export default function WithdrawalDetailPage() {
                 </DetailRow>
               )}
               {withdrawal.memo && (
-                <DetailRow label={t('withdrawals.memo', { defaultValue: 'Memo' })}>
-                  {withdrawal.memo}
-                </DetailRow>
+                <DetailRow label={t('withdrawals.memo', { defaultValue: 'Memo' })}>{withdrawal.memo}</DetailRow>
               )}
               {withdrawal.failureReason && (
                 <DetailRow label={t('withdrawals.reason', { defaultValue: 'Failure Reason' })}>
@@ -219,24 +225,32 @@ export default function WithdrawalDetailPage() {
             </h6>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-surface-500">{t('withdrawals.created', { defaultValue: 'Created' })}</span>
+                <span className="text-sm text-surface-500">
+                  {t('withdrawals.created', { defaultValue: 'Created' })}
+                </span>
                 <span className="text-xs text-surface-700">{fmtDate(withdrawal.createdAt)}</span>
               </div>
               {withdrawal.processedAt && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-surface-500">{t('withdrawals.processed', { defaultValue: 'Processed' })}</span>
+                  <span className="text-sm text-surface-500">
+                    {t('withdrawals.processed', { defaultValue: 'Processed' })}
+                  </span>
                   <span className="text-xs text-surface-700">{fmtDate(withdrawal.processedAt)}</span>
                 </div>
               )}
               {withdrawal.completedAt && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-surface-500">{t('withdrawals.completed', { defaultValue: 'Completed' })}</span>
+                  <span className="text-sm text-surface-500">
+                    {t('withdrawals.completed', { defaultValue: 'Completed' })}
+                  </span>
                   <span className="text-xs text-surface-700">{fmtDate(withdrawal.completedAt)}</span>
                 </div>
               )}
               {withdrawal.updatedAt && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-surface-500">{t('withdrawals.updated', { defaultValue: 'Updated' })}</span>
+                  <span className="text-sm text-surface-500">
+                    {t('withdrawals.updated', { defaultValue: 'Updated' })}
+                  </span>
                   <span className="text-xs text-surface-700">{fmtDate(withdrawal.updatedAt)}</span>
                 </div>
               )}

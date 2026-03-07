@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import Link from 'next/link';
+import Link from 'next/link'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
@@ -10,8 +10,8 @@ import { getTempWalletHistory } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
-import RefreshButton from '@/components/RefreshButton';
-import PageSpinner from '@/components/PageSpinner';
+import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 import Badge from '../ui/Badge'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
@@ -20,36 +20,38 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function TempWalletHistoryDetail() {
   const { fmtDate } = useDateFormat()
-  const { t } = useAdminTranslation();
-  const { id } = useParams();
-  const router = useRouter();
-  const { token } = useAuth();
-  const toast = useToast();
-  const [loading, setLoading] = useState(true);
-  const [history, setHistory] = useState(null);
+  const { t } = useAdminTranslation()
+  const { id } = useParams()
+  const router = useRouter()
+  const { token } = useAuth()
+  const toast = useToast()
+  const [loading, setLoading] = useState(true)
+  const [history, setHistory] = useState(null)
 
   const loadHistory = useCallback(async () => {
     try {
-      setLoading(true);
-      const data = await getTempWalletHistory(token, id);
-      setHistory(data);
+      setLoading(true)
+      const data = await getTempWalletHistory(token, id)
+      setHistory(data)
     } catch (error) {
-      logger.error('Failed to load temp wallet history:', error);
-      toast.error(t('admin.tempWallet.loadHistoryError', { defaultValue: 'Failed to load history' }));
+      logger.error('Failed to load temp wallet history:', error)
+      toast.error(t('admin.tempWallet.loadHistoryError', { defaultValue: 'Failed to load history' }))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }, [token, id, toast, t])
 
-  useEffect(() => {loadHistory();}, [loadHistory]);
+  useEffect(() => {
+    loadHistory()
+  }, [loadHistory])
 
   async function handleCopy(text) {
-    const ok = await copyText(text);
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
   }
 
   if (loading) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   if (!history) {
@@ -60,8 +62,8 @@ export default function TempWalletHistoryDetail() {
           <p className="text-surface-500 mt-2">History not found</p>
           <Button onClick={() => router.back()}>Back</Button>
         </div>
-      </div>);
-
+      </div>
+    )
   }
 
   return (
@@ -85,12 +87,8 @@ export default function TempWalletHistoryDetail() {
                     <span className={getStatusBadgeClass(history.status, 'tempWalletHistory')}>
                       {String(history.status || '').toUpperCase()}
                     </span>
-                    {history.tempWalletId &&
-                    <Badge color="secondary">Wallet #{history.tempWalletId}</Badge>
-                    }
-                    {history.invoiceId &&
-                    <Badge color="secondary">Invoice #{history.invoiceId}</Badge>
-                    }
+                    {history.tempWalletId && <Badge color="secondary">Wallet #{history.tempWalletId}</Badge>}
+                    {history.invoiceId && <Badge color="secondary">Invoice #{history.invoiceId}</Badge>}
                   </div>
                 </div>
                 <RefreshButton onClick={loadHistory} loading={loading} />
@@ -103,7 +101,10 @@ export default function TempWalletHistoryDetail() {
             <div className="md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0"><i className="bx bx-detail mr-2"></i>{t('admin.detail.details', { defaultValue: 'Details' })}</h5>
+                  <h5 className="mb-0">
+                    <i className="bx bx-detail mr-2"></i>
+                    {t('admin.detail.details', { defaultValue: 'Details' })}
+                  </h5>
                 </div>
                 <div className="p-5">
                   <Table responsive={false} className="mb-0">
@@ -125,8 +126,8 @@ export default function TempWalletHistoryDetail() {
                         <td>
                           <Link
                             href={`/admin/temp-wallets/${history.tempWalletId}`}
-                            className="font-medium text-primary">
-                            
+                            className="font-medium text-primary"
+                          >
                             {history.tempWalletId}
                           </Link>
                         </td>
@@ -134,14 +135,13 @@ export default function TempWalletHistoryDetail() {
                       <tr>
                         <td className="text-surface-500">Invoice ID</td>
                         <td>
-                          {history.invoiceId ?
-                          <Link
-                            href={`/admin/invoices/${history.invoiceId}`}
-                            className="font-medium text-primary">
-                            
+                          {history.invoiceId ? (
+                            <Link href={`/admin/invoices/${history.invoiceId}`} className="font-medium text-primary">
                               {history.invoiceId}
-                            </Link> :
-                          '-'}
+                            </Link>
+                          ) : (
+                            '-'
+                          )}
                         </td>
                       </tr>
                       <tr>
@@ -149,53 +149,55 @@ export default function TempWalletHistoryDetail() {
                         <td className="font-medium">{history.userId || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.coinNetworkId', { defaultValue: 'Coin Network ID' })}
+                        </td>
                         <td className="font-medium">{history.coinNetworkId || '-'}</td>
                       </tr>
-                      {history.address &&
-                      <tr>
+                      {history.address && (
+                        <tr>
                           <td className="text-surface-500">{t('admin.detail.address', { defaultValue: 'Address' })}</td>
                           <td>
                             <div className="flex items-center">
-                              <code className="text-surface-800 mr-2 text-[0.8rem] break-all">
-                                {history.address}
-                              </code>
+                              <code className="text-surface-800 mr-2 text-[0.8rem] break-all">{history.address}</code>
                               <Button
-
-                              onClick={() => handleCopy(history.address)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
-                              
+                                onClick={() => handleCopy(history.address)}
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
+                                size="icon-sm"
+                                variant="text-secondary"
+                                className="shrink-0"
+                              >
                                 <i className="bx bx-copy"></i>
                               </Button>
                             </div>
                           </td>
                         </tr>
-                      }
-                      {history.amount != null &&
-                      <tr>
+                      )}
+                      {history.amount != null && (
+                        <tr>
                           <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                           <td className="font-bold">{history.amount}</td>
                         </tr>
-                      }
-                      {history.sweepTxHash &&
-                      <tr>
+                      )}
+                      {history.sweepTxHash && (
+                        <tr>
                           <td className="text-surface-500">Sweep Tx Hash</td>
                           <td>
                             <div className="flex items-center">
-                              <code className="text-surface-800 mr-2 text-xs break-all">
-                                {history.sweepTxHash}
-                              </code>
+                              <code className="text-surface-800 mr-2 text-xs break-all">{history.sweepTxHash}</code>
                               <Button
-
-                              onClick={() => handleCopy(history.sweepTxHash)}
-                              title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary" className="shrink-0">
-                              
+                                onClick={() => handleCopy(history.sweepTxHash)}
+                                title={t('actions.copy', { defaultValue: 'Copy' })}
+                                size="icon-sm"
+                                variant="text-secondary"
+                                className="shrink-0"
+                              >
                                 <i className="bx bx-copy"></i>
                               </Button>
                             </div>
                           </td>
                         </tr>
-                      }
+                      )}
                     </tbody>
                   </Table>
                 </div>
@@ -206,13 +208,18 @@ export default function TempWalletHistoryDetail() {
             <div className="md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0"><i className="bx bx-time-five mr-2"></i>{t('admin.detail.timestamps', { defaultValue: 'Timestamps' })}</h5>
+                  <h5 className="mb-0">
+                    <i className="bx bx-time-five mr-2"></i>
+                    {t('admin.detail.timestamps', { defaultValue: 'Timestamps' })}
+                  </h5>
                 </div>
                 <div className="p-5">
                   <Table responsive={false} className="mb-0">
                     <tbody>
                       <tr>
-                        <td className="text-surface-500 w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                        <td className="text-surface-500 w-2/5">
+                          {t('admin.detail.created', { defaultValue: 'Created' })}
+                        </td>
                         <td>{fmtDate(history.createdAt)}</td>
                       </tr>
                       <tr>
@@ -235,22 +242,25 @@ export default function TempWalletHistoryDetail() {
                         <td className="text-surface-500">Released At</td>
                         <td>{fmtDate(history.releasedAt)}</td>
                       </tr>
-                      {history.failedAt &&
-                      <tr>
+                      {history.failedAt && (
+                        <tr>
                           <td className="text-surface-500">Failed At</td>
                           <td className="text-danger">{fmtDate(history.failedAt)}</td>
                         </tr>
-                      }
+                      )}
                     </tbody>
                   </Table>
                 </div>
               </Card>
 
               {/* Failure Reason */}
-              {history.failureReason &&
-              <Card className="mb-4">
+              {history.failureReason && (
+                <Card className="mb-4">
                   <div className="px-5 py-4 border-b border-surface-200">
-                    <h5 className="mb-0 text-danger"><i className="bx bx-error mr-2"></i>{t('admin.detail.failureReason', { defaultValue: 'Failure Reason' })}</h5>
+                    <h5 className="mb-0 text-danger">
+                      <i className="bx bx-error mr-2"></i>
+                      {t('admin.detail.failureReason', { defaultValue: 'Failure Reason' })}
+                    </h5>
                   </div>
                   <div className="p-5">
                     <pre className="mb-0 text-danger whitespace-pre-wrap break-all text-[0.85rem]">
@@ -258,13 +268,16 @@ export default function TempWalletHistoryDetail() {
                     </pre>
                   </div>
                 </Card>
-              }
+              )}
 
               {/* Metadata */}
-              {history.metadata && Object.keys(history.metadata).length > 0 &&
-              <Card className="mb-4">
+              {history.metadata && Object.keys(history.metadata).length > 0 && (
+                <Card className="mb-4">
                   <div className="px-5 py-4 border-b border-surface-200">
-                    <h5 className="mb-0"><i className="bx bx-code-alt mr-2"></i>{t('admin.detail.metadata', { defaultValue: 'Metadata' })}</h5>
+                    <h5 className="mb-0">
+                      <i className="bx bx-code-alt mr-2"></i>
+                      {t('admin.detail.metadata', { defaultValue: 'Metadata' })}
+                    </h5>
                   </div>
                   <div className="p-5">
                     <pre className="mb-0 whitespace-pre-wrap break-all text-[0.8rem] max-h-[300px] overflow-auto">
@@ -272,11 +285,11 @@ export default function TempWalletHistoryDetail() {
                     </pre>
                   </div>
                 </Card>
-              }
+              )}
             </div>
           </div>
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

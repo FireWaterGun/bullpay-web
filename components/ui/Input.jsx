@@ -28,7 +28,9 @@ function Input(props) {
         error ? 'input-error' : '',
         Tag === 'textarea' ? 'resize-y min-h-[calc(1.375em+1.086rem+2px)]' : '',
         className,
-      ].filter(Boolean).join(' ')
+      ]
+        .filter(Boolean)
+        .join(' ')
 
   return <Tag className={cls} {...rest} />
 }

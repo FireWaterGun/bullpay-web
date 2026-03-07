@@ -32,8 +32,8 @@ const SKIP = new Set(['node_modules', '.next', 'build', 'dist', 'out', '.git'])
 
 // ─── Severity ───────────────────────────────────────────────────────────────
 
-const ERROR = 'error'     // blocks commit
-const WARN  = 'warn'      // advisory
+const ERROR = 'error' // blocks commit
+const WARN = 'warn' // advisory
 
 // ─── Rules ──────────────────────────────────────────────────────────────────
 
@@ -46,12 +46,12 @@ const WARN  = 'warn'      // advisory
  * `context`  — function(line, allLines, idx) → bool. Extra filter beyond regex.
  */
 const RULES = [
-
   // ── 1. Manual input group spans (must use InputGroup + InputAddon) ──────
   {
     id: 'no-manual-input-addon',
     severity: ERROR,
-    pattern: /className="[^"]*flex items-center[^"]*(?:bg-surface-100|border-surface-300)[^"]*(?:rounded-[lr]-lg|text-sm)/,
+    pattern:
+      /className="[^"]*flex items-center[^"]*(?:bg-surface-100|border-surface-300)[^"]*(?:rounded-[lr]-lg|text-sm)/,
     message: 'Manual input addon <span>. Use <InputGroup> + <InputAddon> or <InputIcon> instead.',
     fixHint: 'Import { InputGroup, InputAddon } from "@/components/ui" and wrap Input + Addon.',
     exclude: /components\/ui\//,
@@ -63,7 +63,8 @@ const RULES = [
     severity: WARN,
     // Matches close buttons that have bx-x but NOT the standard class set
     pattern: /className="[^"]*(?:text-surface-400)[^"]*hover:text-surface-(?:600|700)[^"]*"/,
-    message: 'Non-standard close button color. Standard: "cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none".',
+    message:
+      'Non-standard close button color. Standard: "cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none".',
     fixHint: 'Replace with: className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"',
     // Exclude non-button contexts (icon buttons for collapse, navigation etc.)
     context: (line) => /bx.bx-x/.test(line),
@@ -101,7 +102,8 @@ const RULES = [
   {
     id: 'bootstrap-class',
     severity: ERROR,
-    pattern: /className="[^"]*\b(?:btn-primary|btn-secondary|btn-danger|btn-success|btn-outline|btn-close|btn-sm|btn-lg|card-body|card-header|card-footer|modal-dialog|modal-content|modal-header|modal-body|modal-footer|form-control|form-select|form-check|form-label|form-group|input-group-text|dropdown-menu|dropdown-item|dropdown-toggle|nav-tabs|nav-link|spinner-border|progress-bar|container-fluid|d-flex|d-none|d-block|fw-bold|fw-semibold|fw-normal|rounded-circle|text-muted|text-body|bg-light)\b/,
+    pattern:
+      /className="[^"]*\b(?:btn-primary|btn-secondary|btn-danger|btn-success|btn-outline|btn-close|btn-sm|btn-lg|card-body|card-header|card-footer|modal-dialog|modal-content|modal-header|modal-body|modal-footer|form-control|form-select|form-check|form-label|form-group|input-group-text|dropdown-menu|dropdown-item|dropdown-toggle|nav-tabs|nav-link|spinner-border|progress-bar|container-fluid|d-flex|d-none|d-block|fw-bold|fw-semibold|fw-normal|rounded-circle|text-muted|text-body|bg-light)\b/,
     message: 'Bootstrap class detected. Use Tailwind equivalent or UI component.',
     fixHint: 'Replace Bootstrap class with Tailwind utility or the matching UI component from @/components/ui.',
     // Ignore comments
@@ -205,7 +207,7 @@ const RULES = [
     id: 'missing-use-client',
     severity: WARN,
     pattern: /\b(?:useState|useEffect|useCallback|useRef|useMemo|useReducer)\b/,
-    message: 'React hook used but file may be missing \'use client\' directive.',
+    message: "React hook used but file may be missing 'use client' directive.",
     context: (line, allLines, idx) => {
       // Only fire once per file, on the first hook usage
       if (idx > 0) {
@@ -372,10 +374,10 @@ function printFindings(findings) {
   for (const [file, items] of Object.entries(byFile)) {
     console.log(`${COLORS.bold}${file}${COLORS.reset}`)
     for (const item of items) {
-      const sev = item.severity === ERROR
-        ? `${COLORS.red}error${COLORS.reset}`
-        : `${COLORS.yellow}warn${COLORS.reset}`
-      console.log(`  ${COLORS.dim}L${item.line}${COLORS.reset}  ${sev}  ${item.message}  ${COLORS.dim}(${item.rule})${COLORS.reset}`)
+      const sev = item.severity === ERROR ? `${COLORS.red}error${COLORS.reset}` : `${COLORS.yellow}warn${COLORS.reset}`
+      console.log(
+        `  ${COLORS.dim}L${item.line}${COLORS.reset}  ${sev}  ${item.message}  ${COLORS.dim}(${item.rule})${COLORS.reset}`
+      )
       if (VERBOSE) {
         console.log(`        ${COLORS.dim}${item.source}${COLORS.reset}`)
       }
@@ -432,7 +434,9 @@ async function main() {
     }
   }
 
-  console.log(`${COLORS.dim}Scanned ${fileCount} JSX/TSX files + ${cssFileCount} CSS files (${RULES.length} rules)${COLORS.reset}`)
+  console.log(
+    `${COLORS.dim}Scanned ${fileCount} JSX/TSX files + ${cssFileCount} CSS files (${RULES.length} rules)${COLORS.reset}`
+  )
 
   printFindings(allFindings)
 
@@ -443,8 +447,8 @@ async function main() {
   if (allFindings.length > 0) {
     console.log(
       `${COLORS.bold}Summary:${COLORS.reset} ` +
-      `${errors.length ? `${COLORS.red}${errors.length} error(s)${COLORS.reset}` : '0 errors'}, ` +
-      `${warns.length ? `${COLORS.yellow}${warns.length} warning(s)${COLORS.reset}` : '0 warnings'}`
+        `${errors.length ? `${COLORS.red}${errors.length} error(s)${COLORS.reset}` : '0 errors'}, ` +
+        `${warns.length ? `${COLORS.yellow}${warns.length} warning(s)${COLORS.reset}` : '0 warnings'}`
     )
     console.log(`${COLORS.dim}Run with --verbose for source context, --fix-hint for suggestions.${COLORS.reset}\n`)
   }

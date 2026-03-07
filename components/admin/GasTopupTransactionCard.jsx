@@ -1,12 +1,12 @@
-'use client';
+'use client'
 
-import { useDateFormat } from '@/hooks/useDateFormat';
+import { useDateFormat } from '@/hooks/useDateFormat'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
-import Table from '../ui/Table';
+import Table from '../ui/Table'
 
 export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t }) {
-  const { fmtDate } = useDateFormat();
+  const { fmtDate } = useDateFormat()
   return (
     <>
       <Card className="mb-4">
@@ -22,109 +22,117 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
               <tr>
                 <td className="text-surface-500 w-2/5">{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</td>
                 <td>
-                  {topup.txHash ?
+                  {topup.txHash ? (
                     <>
                       <code className="break-words text-xs">{topup.txHash}</code>
                       <div className="flex gap-1 mt-2">
-                        {explorerUrl &&
-                        <Button variant="outline-primary" size="sm"
-                        href={`${explorerUrl}/tx/${topup.txHash}`}
-                        target="_blank"
-                        rel="noopener noreferrer">
-                          
-                          
-                            <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                        {explorerUrl && (
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            href={`${explorerUrl}/tx/${topup.txHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <i className="bx bx-link-external mr-1"></i>
+                            {t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </Button>
-                        }
-                        <Button
-
-                          onClick={() => onCopy(topup.txHash)} variant="outline-secondary" size="sm">
-                          
-                          <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                        )}
+                        <Button onClick={() => onCopy(topup.txHash)} variant="outline-secondary" size="sm">
+                          <i className="bx bx-copy mr-1"></i>
+                          {t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </Button>
                       </div>
-                    </> :
-
+                    </>
+                  ) : (
                     <span className="text-surface-500">-</span>
-                    }
+                  )}
                 </td>
               </tr>
-              {topup.blockNumber &&
+              {topup.blockNumber && (
                 <tr>
-                  <td className="text-surface-500">{t('admin.gasTopup.blockNumber', { defaultValue: 'Block Number' })}</td>
+                  <td className="text-surface-500">
+                    {t('admin.gasTopup.blockNumber', { defaultValue: 'Block Number' })}
+                  </td>
                   <td>{topup.blockNumber}</td>
                 </tr>
-                }
-              {topup.gasUsedRaw &&
+              )}
+              {topup.gasUsedRaw && (
                 <tr>
                   <td className="text-surface-500">{t('admin.gasTopup.gasUsed', { defaultValue: 'Gas Used' })}</td>
-                  <td><code className="text-[0.8rem]">{topup.gasUsedRaw}</code></td>
+                  <td>
+                    <code className="text-[0.8rem]">{topup.gasUsedRaw}</code>
+                  </td>
                 </tr>
-                }
-              {topup.gasPriceRaw &&
+              )}
+              {topup.gasPriceRaw && (
                 <tr>
                   <td className="text-surface-500">{t('admin.gasTopup.gasPrice', { defaultValue: 'Gas Price' })}</td>
-                  <td><code className="text-[0.8rem]">{topup.gasPriceRaw}</code></td>
+                  <td>
+                    <code className="text-[0.8rem]">{topup.gasPriceRaw}</code>
+                  </td>
                 </tr>
-                }
+              )}
               <tr>
-                <td className="text-surface-500">{t('admin.gasTopup.fromAddress', { defaultValue: 'From Address' })}</td>
+                <td className="text-surface-500">
+                  {t('admin.gasTopup.fromAddress', { defaultValue: 'From Address' })}
+                </td>
                 <td>
-                  {topup.fromAddress ?
+                  {topup.fromAddress ? (
                     <>
                       <code className="break-words text-xs">{topup.fromAddress}</code>
                       <div className="flex gap-1 mt-2">
-                        {explorerUrl &&
-                        <Button variant="outline-primary" size="sm"
-                        href={`${explorerUrl}/address/${topup.fromAddress}`}
-                        target="_blank"
-                        rel="noopener noreferrer">
-                          
-                          
-                            <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                        {explorerUrl && (
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            href={`${explorerUrl}/address/${topup.fromAddress}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <i className="bx bx-link-external mr-1"></i>
+                            {t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </Button>
-                        }
-                        <Button
-
-                          onClick={() => onCopy(topup.fromAddress)} variant="outline-secondary" size="sm">
-                          
-                          <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                        )}
+                        <Button onClick={() => onCopy(topup.fromAddress)} variant="outline-secondary" size="sm">
+                          <i className="bx bx-copy mr-1"></i>
+                          {t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </Button>
                       </div>
-                    </> :
-
+                    </>
+                  ) : (
                     <span className="text-surface-500">N/A</span>
-                    }
+                  )}
                 </td>
               </tr>
               <tr>
                 <td className="text-surface-500">{t('admin.gasTopup.toAddress', { defaultValue: 'To Address' })}</td>
                 <td>
-                  {topup.toAddress ?
+                  {topup.toAddress ? (
                     <>
                       <code className="break-words text-xs">{topup.toAddress}</code>
                       <div className="flex gap-1 mt-2">
-                        {explorerUrl &&
-                        <Button variant="outline-primary" size="sm"
-                        href={`${explorerUrl}/address/${topup.toAddress}`}
-                        target="_blank"
-                        rel="noopener noreferrer">
-                          
-                          
-                            <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                        {explorerUrl && (
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            href={`${explorerUrl}/address/${topup.toAddress}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <i className="bx bx-link-external mr-1"></i>
+                            {t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                           </Button>
-                        }
-                        <Button
-
-                          onClick={() => onCopy(topup.toAddress)} variant="outline-secondary" size="sm">
-                          
-                          <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                        )}
+                        <Button onClick={() => onCopy(topup.toAddress)} variant="outline-secondary" size="sm">
+                          <i className="bx bx-copy mr-1"></i>
+                          {t('admin.detail.copy', { defaultValue: 'Copy' })}
                         </Button>
                       </div>
-                    </> :
-
+                    </>
+                  ) : (
                     <span className="text-surface-500">N/A</span>
-                    }
+                  )}
                 </td>
               </tr>
             </tbody>
@@ -146,28 +154,30 @@ export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t 
                 <td className="text-surface-500 w-2/5">{t('admin.gasTopup.created', { defaultValue: 'Created' })}</td>
                 <td>{fmtDate(topup.createdAt)}</td>
               </tr>
-              {topup.processingStartedAt &&
+              {topup.processingStartedAt && (
                 <tr>
-                  <td className="text-surface-500">{t('admin.gasTopup.processingStartedAt', { defaultValue: 'Processing Started' })}</td>
+                  <td className="text-surface-500">
+                    {t('admin.gasTopup.processingStartedAt', { defaultValue: 'Processing Started' })}
+                  </td>
                   <td>{fmtDate(topup.processingStartedAt)}</td>
                 </tr>
-                }
-              {topup.completedAt &&
+              )}
+              {topup.completedAt && (
                 <tr>
                   <td className="text-surface-500">{t('admin.gasTopup.completedAt', { defaultValue: 'Completed' })}</td>
                   <td>{fmtDate(topup.completedAt)}</td>
                 </tr>
-                }
-              {topup.updatedAt &&
+              )}
+              {topup.updatedAt && (
                 <tr>
                   <td className="text-surface-500">{t('admin.gasTopup.updated', { defaultValue: 'Updated' })}</td>
                   <td>{fmtDate(topup.updatedAt)}</td>
                 </tr>
-                }
+              )}
             </tbody>
           </Table>
         </div>
       </Card>
-    </>);
-
+    </>
+  )
 }

@@ -20,9 +20,7 @@ const PUBLIC_PATHS = [
 const ADMIN_PREFIX = '/admin'
 
 function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(p)
-  )
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p))
 }
 
 function isAdminRole(userCookie: string | undefined): boolean {
@@ -81,7 +79,5 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // Match all paths except static files and Next.js internals
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|assets/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|assets/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)'],
 }

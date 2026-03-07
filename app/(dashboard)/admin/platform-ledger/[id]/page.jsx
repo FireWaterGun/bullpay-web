@@ -1,84 +1,96 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { useAuth } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { useToast } from '@/app/providers';
-import { getPlatformLedgerEntry } from '@/lib/api/admin';
-import { formatUsd } from '@/lib/utils/format';
-import { useDateFormat } from '@/hooks/useDateFormat';
-import CoinImg from '@/components/CoinImg';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import { logger } from '@/lib/utils/logger';
-import PageSpinner from '@/components/PageSpinner';
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useAuth } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useToast } from '@/app/providers'
+import { getPlatformLedgerEntry } from '@/lib/api/admin'
+import { formatUsd } from '@/lib/utils/format'
+import { useDateFormat } from '@/hooks/useDateFormat'
+import CoinImg from '@/components/CoinImg'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { logger } from '@/lib/utils/logger'
+import PageSpinner from '@/components/PageSpinner'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import Table from '@/components/ui/Table';
+import Table from '@/components/ui/Table'
 
 export default function PlatformLedgerDetail() {
-  const { fmtDateTime } = useDateFormat();
-  const { t } = useAdminTranslation();
-  const { token } = useAuth();
-  const toast = useToast();
-  const router = useRouter();
-  const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [entry, setEntry] = useState(null);
+  const { fmtDateTime } = useDateFormat()
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const toast = useToast()
+  const router = useRouter()
+  const { id } = useParams()
+  const [loading, setLoading] = useState(true)
+  const [entry, setEntry] = useState(null)
 
   const loadEntry = useCallback(async () => {
     try {
-      setLoading(true);
-      const data = await getPlatformLedgerEntry(token, parseInt(id));
-      setEntry(data);
+      setLoading(true)
+      const data = await getPlatformLedgerEntry(token, parseInt(id))
+      setEntry(data)
     } catch (error) {
-      logger.error('Failed to load platform ledger entry:', error);
-      toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entry' }));
+      logger.error('Failed to load platform ledger entry:', error)
+      toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entry' }))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [token, id, toast, t]);
+  }, [token, id, toast, t])
 
   useEffect(() => {
-    loadEntry();
-  }, [loadEntry]);
+    loadEntry()
+  }, [loadEntry])
 
   function formatAmount(val) {
-    if (!val && val !== 0) return '0';
-    let str = String(val);
+    if (!val && val !== 0) return '0'
+    let str = String(val)
     if (str.includes('.')) {
-      str = str.replace(/0+$/, '').replace(/\.$/, '');
+      str = str.replace(/0+$/, '').replace(/\.$/, '')
     }
-    return str || '0';
+    return str || '0'
   }
 
-
   function stateBadge(state) {
-    if (state === 'settled') return <Badge color="success" label>Settled</Badge>;
-    if (state === 'committed') return <Badge color="info" label>Committed</Badge>;
-    if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>;
-    return <span className="text-surface-500">{state || 'N/A'}</span>;
+    if (state === 'settled')
+      return (
+        <Badge color="success" label>
+          Settled
+        </Badge>
+      )
+    if (state === 'committed')
+      return (
+        <Badge color="info" label>
+          Committed
+        </Badge>
+      )
+    if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>
+    return <span className="text-surface-500">{state || 'N/A'}</span>
   }
 
   async function handleCopy(text) {
-    const ok = await copyText(text);
-    if (ok) {toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }));}else
-    {toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }));}
+    const ok = await copyText(text)
+    if (ok) {
+      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
+    } else {
+      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
+    }
   }
 
   const entryCodeLabels = {
-    'WF': 'Withdrawal Fee',
-    'FR': 'Fee Refund',
-    'SG': 'Sweep Gas Topup',
-    'SC': 'Sweep Gas Cost',
-    'WG': 'Withdrawal Gas',
-    'XI': 'Internal Transfer In',
-    'XO': 'Internal Transfer Out'
-  };
+    WF: 'Withdrawal Fee',
+    FR: 'Fee Refund',
+    SG: 'Sweep Gas Topup',
+    SC: 'Sweep Gas Cost',
+    WG: 'Withdrawal Gas',
+    XI: 'Internal Transfer In',
+    XO: 'Internal Transfer Out',
+  }
 
   if (loading) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   if (!entry) {
@@ -86,35 +98,34 @@ export default function PlatformLedgerDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-surface-500 mt-2">{t('admin.platformLedger.notFound', { defaultValue: 'Platform ledger entry not found' })}</p>
-          <Button onClick={() => router.back()}>
-            {t('actions.back', { defaultValue: 'Back' })}
-          </Button>
+          <p className="text-surface-500 mt-2">
+            {t('admin.platformLedger.notFound', { defaultValue: 'Platform ledger entry not found' })}
+          </p>
+          <Button onClick={() => router.back()}>{t('actions.back', { defaultValue: 'Back' })}</Button>
         </div>
-      </div>);
-
+      </div>
+    )
   }
 
-  const isCredit = entry.entryType === 'credit';
-  const isReversed = entry.state === 'reversed';
+  const isCredit = entry.entryType === 'credit'
+  const isReversed = entry.state === 'reversed'
 
   // Parse metadata
-  let metadata = {};
+  let metadata = {}
   try {
-    metadata = typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {};
-  } catch (e) {/* ignore */}
+    metadata = typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
+  } catch (e) {
+    /* ignore */
+  }
 
-  const explorerUrl = entry.explorerUrl || null;
+  const explorerUrl = entry.explorerUrl || null
 
   return (
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           {/* Back Button */}
-          <Button
-            onClick={() => router.back()} variant="outline-secondary" className="mb-3">
-
-            
+          <Button onClick={() => router.back()} variant="outline-secondary" className="mb-3">
             <i className="bx bx-arrow-back mr-2"></i>
             {t('actions.back', { defaultValue: 'Back' })}
           </Button>
@@ -124,17 +135,11 @@ export default function PlatformLedgerDetail() {
             <div className="p-5">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
-                  {entry.coinSymbol &&
-                  <CoinImg
-                    symbol={entry.coinSymbol}
-                    networkSymbol={entry.networkSymbol}
-                    size={48} />
-
-                  }
+                  {entry.coinSymbol && (
+                    <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />
+                  )}
                   <div>
-                    <h4 className="mb-1">
-                      Platform Ledger Entry #{entry.id}
-                    </h4>
+                    <h4 className="mb-1">Platform Ledger Entry #{entry.id}</h4>
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
                         {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
@@ -143,25 +148,20 @@ export default function PlatformLedgerDetail() {
                         <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
                         {isCredit ? 'Credit' : 'Debit'}
                       </Badge>
-                      {entry.entryCode &&
-                      <Badge color="secondary">
-                          {entryCodeLabels[entry.entryCode] || entry.entryCode}
-                        </Badge>
-                      }
+                      {entry.entryCode && (
+                        <Badge color="secondary">{entryCodeLabels[entry.entryCode] || entry.entryCode}</Badge>
+                      )}
                       {stateBadge(entry.state)}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className={`text-2xl font-bold ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
-                    {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
+                    {isReversed ? '' : isCredit ? '+' : '-'}
+                    {formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
                   </div>
-                  <div className="text-surface-500">
-                    {formatUsd(entry.amountUsd)}
-                  </div>
-                  {entry.networkName &&
-                  <small className="text-surface-500">{entry.networkName}</small>
-                  }
+                  <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
+                  {entry.networkName && <small className="text-surface-500">{entry.networkName}</small>}
                 </div>
               </div>
             </div>
@@ -196,7 +196,12 @@ export default function PlatformLedgerDetail() {
                         <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
                         <td>
                           <div className="flex items-center">
-                            <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={24} className="mr-3" />
+                            <CoinImg
+                              symbol={entry.coinSymbol}
+                              networkSymbol={entry.networkSymbol}
+                              size={24}
+                              className="mr-3"
+                            />
                             <span className="font-medium">{entry.coinSymbol || '-'}</span>
                             {entry.networkName && <span className="text-surface-500 ml-1">({entry.networkName})</span>}
                           </div>
@@ -206,15 +211,18 @@ export default function PlatformLedgerDetail() {
                         <td className="text-surface-500">Entry Code</td>
                         <td>
                           <span className="font-medium">{entry.entryCode || '-'}</span>
-                          {entry.entryCode && entryCodeLabels[entry.entryCode] &&
-                          <span className="text-surface-500 ml-1">- {entryCodeLabels[entry.entryCode]}</span>
-                          }
+                          {entry.entryCode && entryCodeLabels[entry.entryCode] && (
+                            <span className="text-surface-500 ml-1">- {entryCodeLabels[entry.entryCode]}</span>
+                          )}
                         </td>
                       </tr>
                       <tr>
                         <td className="text-surface-500">Entry Type</td>
                         <td>
-                          <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
+                          <Badge
+                            color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'}
+                            label
+                          >
                             {isCredit ? 'Credit' : 'Debit'}
                           </Badge>
                         </td>
@@ -226,8 +234,11 @@ export default function PlatformLedgerDetail() {
                       <tr>
                         <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
                         <td>
-                          <span className={`font-medium ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
-                            {isReversed ? '' : isCredit ? '+' : '-'}{formatAmount(entry.amount)} {entry.coinSymbol}
+                          <span
+                            className={`font-medium ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}
+                          >
+                            {isReversed ? '' : isCredit ? '+' : '-'}
+                            {formatAmount(entry.amount)} {entry.coinSymbol}
                           </span>
                         </td>
                       </tr>
@@ -239,12 +250,12 @@ export default function PlatformLedgerDetail() {
                         <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
                         <td>{fmtDateTime(entry.createdAt)}</td>
                       </tr>
-                      {entry.updatedAt &&
-                      <tr>
+                      {entry.updatedAt && (
+                        <tr>
                           <td className="text-surface-500">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
                           <td>{fmtDateTime(entry.updatedAt)}</td>
                         </tr>
-                      }
+                      )}
                     </tbody>
                   </Table>
                 </div>
@@ -253,8 +264,8 @@ export default function PlatformLedgerDetail() {
 
             {/* Transaction & Metadata */}
             <div className="md:col-span-6">
-              {entry.txHash &&
-              <Card className="mb-4">
+              {entry.txHash && (
+                <Card className="mb-4">
                   <div className="px-5 py-4 border-b border-surface-200">
                     <h5 className="mb-0">
                       <i className="bx bx-link mr-2"></i>
@@ -265,7 +276,9 @@ export default function PlatformLedgerDetail() {
                     <Table responsive={false}>
                       <tbody>
                         <tr>
-                          <td className="text-surface-500 w-[30%]">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
+                          <td className="text-surface-500 w-[30%]">
+                            {t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}
+                          </td>
                           <td>
                             <div className="flex items-center">
                               <code className="mr-2 break-all">{entry.txHash}</code>
@@ -277,17 +290,18 @@ export default function PlatformLedgerDetail() {
                               >
                                 <i className="bx bx-copy"></i>
                               </Button>
-                              {explorerUrl &&
-                            <Button variant="text-secondary" size="icon"
-                            href={`${explorerUrl}/tx/${entry.txHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-
-                            title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}>
-                              
+                              {explorerUrl && (
+                                <Button
+                                  variant="text-secondary"
+                                  size="icon"
+                                  href={`${explorerUrl}/tx/${entry.txHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
+                                >
                                   <i className="bx bx-link-external"></i>
                                 </Button>
-                            }
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -295,10 +309,10 @@ export default function PlatformLedgerDetail() {
                     </Table>
                   </div>
                 </Card>
-              }
+              )}
 
-              {metadata && Object.keys(metadata).length > 0 &&
-              <Card className="mb-4">
+              {metadata && Object.keys(metadata).length > 0 && (
+                <Card className="mb-4">
                   <div className="px-5 py-4 border-b border-surface-200">
                     <h5 className="mb-0">
                       <i className="bx bx-code-alt mr-2"></i>
@@ -311,11 +325,11 @@ export default function PlatformLedgerDetail() {
                     </pre>
                   </div>
                 </Card>
-              }
+              )}
             </div>
           </div>
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

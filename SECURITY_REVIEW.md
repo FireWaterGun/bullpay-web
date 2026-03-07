@@ -20,7 +20,9 @@
     try {
       const parsed = new URL(url, window.location.origin)
       return parsed.origin === window.location.origin || ALLOWED_DOMAINS.includes(parsed.hostname)
-    } catch { return false }
+    } catch {
+      return false
+    }
   }
   // ใช้ก่อน redirect
   if (invoice.successUrl && isSafeRedirect(invoice.successUrl)) {
@@ -112,8 +114,10 @@
 - **Detail:** ไม่มี CSP header หรือ meta tag
 - **Fix:**
   ```html
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.yourdomain.com wss://ws.yourdomain.com;">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.yourdomain.com wss://ws.yourdomain.com;"
+  />
   ```
 
 ---
@@ -241,10 +245,10 @@
 
 ## Priority Matrix
 
-| Priority | Issues | Action |
-|----------|--------|--------|
-| **ทำทันที** | #1 Open Redirect, #10 Pusher forceTLS | Fix ง่าย, impact สูง |
-| **สำคัญมาก** | #4 escapeValue, #12 CSP, #9 Mask credentials | Frontend-only fix |
-| **วางแผนทำ** | #2 #3 JWT/Cookie, #6 2FA, #14 Session | ต้องเปลี่ยน backend |
-| **ตรวจ Backend** | #5 RBAC, #7 CORS, #8 CSRF, #13 Rate limit | Frontend ทำได้แค่ส่วนหนึ่ง |
-| **Nice to have** | #23 Idle logout, #25 Source maps, #17 Clipboard clear | Low risk |
+| Priority         | Issues                                                | Action                     |
+| ---------------- | ----------------------------------------------------- | -------------------------- |
+| **ทำทันที**      | #1 Open Redirect, #10 Pusher forceTLS                 | Fix ง่าย, impact สูง       |
+| **สำคัญมาก**     | #4 escapeValue, #12 CSP, #9 Mask credentials          | Frontend-only fix          |
+| **วางแผนทำ**     | #2 #3 JWT/Cookie, #6 2FA, #14 Session                 | ต้องเปลี่ยน backend        |
+| **ตรวจ Backend** | #5 RBAC, #7 CORS, #8 CSRF, #13 Rate limit             | Frontend ทำได้แค่ส่วนหนึ่ง |
+| **Nice to have** | #23 Idle logout, #25 Source maps, #17 Clipboard clear | Low risk                   |

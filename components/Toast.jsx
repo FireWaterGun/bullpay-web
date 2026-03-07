@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 const TOAST_TYPES = {
   success: {
@@ -39,7 +39,7 @@ const TOAST_TYPES = {
     progress: 'bg-info-500',
     icon: 'bx-info-circle',
   },
-};
+}
 
 const DEFAULT_TYPE = {
   card: 'bg-primary-50 border-primary-200/60 dark:bg-raised dark:border-primary-500/30',
@@ -49,36 +49,36 @@ const DEFAULT_TYPE = {
   close: 'text-primary-300 hover:text-primary-500 dark:text-primary-700 dark:hover:text-primary-400',
   progress: 'bg-primary-500',
   icon: 'bx-bell',
-};
+}
 
 const TYPE_LABELS = {
   success: 'Success',
   error: 'Error',
   warning: 'Warning',
   info: 'Info',
-};
+}
 
 export function Toast({ message, type = 'success', duration = 3000, onClose }) {
-  const [isExiting, setIsExiting] = useState(false);
-  const s = TOAST_TYPES[type] || DEFAULT_TYPE;
+  const [isExiting, setIsExiting] = useState(false)
+  const s = TOAST_TYPES[type] || DEFAULT_TYPE
 
   useEffect(() => {
-    if (!duration) return;
+    if (!duration) return
     const timer = setTimeout(() => {
-      setIsExiting(true);
-      setTimeout(() => onClose?.(), 400);
-    }, duration);
-    return () => clearTimeout(timer);
-  }, [duration, onClose]);
+      setIsExiting(true)
+      setTimeout(() => onClose?.(), 400)
+    }, duration)
+    return () => clearTimeout(timer)
+  }, [duration, onClose])
 
   const handleClose = () => {
-    setIsExiting(true);
-    setTimeout(() => onClose?.(), 400);
-  };
+    setIsExiting(true)
+    setTimeout(() => onClose?.(), 400)
+  }
 
-  const isString = typeof message === 'string';
-  const title = isString ? (TYPE_LABELS[type] || 'Notification') : (message?.title || 'Notification');
-  const body = isString ? message : message?.body;
+  const isString = typeof message === 'string'
+  const title = isString ? TYPE_LABELS[type] || 'Notification' : message?.title || 'Notification'
+  const body = isString ? message : message?.body
 
   return (
     <div
@@ -114,7 +114,7 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 const TOAST_CSS = `
@@ -133,10 +133,10 @@ const TOAST_CSS = `
 .toast-enter { animation: toastSlideIn 0.3s ease-out forwards; }
 .toast-exit { animation: toastSlideOut 0.3s ease-in forwards; }
 .toast-progress { animation: toastProgress linear forwards; }
-`;
+`
 
 export function ToastContainer({ toasts, onRemove }) {
-  if (toasts.length === 0) return null;
+  if (toasts.length === 0) return null
 
   return (
     <>
@@ -153,5 +153,5 @@ export function ToastContainer({ toasts, onRemove }) {
         ))}
       </div>
     </>
-  );
+  )
 }

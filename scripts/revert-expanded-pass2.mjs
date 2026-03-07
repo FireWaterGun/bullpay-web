@@ -13,9 +13,18 @@ const DRY_RUN = process.argv.includes('--dry-run')
 // ─── Additional button expansions missed in first pass ───
 const REPLACEMENTS = [
   // btn-outline-* patterns (with leading "btn " or "btn btn " prefix)
-  ['btn border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white', 'btn btn-outline-warning'],
-  ['btn border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white', 'btn btn-outline-success'],
-  ['btn border border-info-500 text-info-500 bg-transparent hover:bg-info-500 hover:text-white', 'btn btn-outline-info'],
+  [
+    'btn border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white',
+    'btn btn-outline-warning',
+  ],
+  [
+    'btn border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white',
+    'btn btn-outline-success',
+  ],
+  [
+    'btn border border-info-500 text-info-500 bg-transparent hover:bg-info-500 hover:text-white',
+    'btn btn-outline-info',
+  ],
   // btn-secondary expanded
   ['btn bg-surface-200 text-surface-700 hover:bg-surface-300', 'btn btn-secondary'],
   // btn-warning expanded (solid)
@@ -26,7 +35,7 @@ const rawFiles = execSync("find app components -type f \\( -name '*.jsx' -o -nam
   cwd: process.cwd(),
   encoding: 'utf-8',
 }).trim()
-const files = rawFiles ? rawFiles.split('\n').map(f => path.resolve(process.cwd(), f)) : []
+const files = rawFiles ? rawFiles.split('\n').map((f) => path.resolve(process.cwd(), f)) : []
 
 let totalFilesChanged = 0
 let totalReplacements = 0

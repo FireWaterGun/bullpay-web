@@ -1,21 +1,21 @@
-'use client';
+'use client'
 
-import CoinImg from '@/components/CoinImg';
-import { formatUsd } from '@/lib/utils/format';
-import RefreshButton from '@/components/RefreshButton';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import CoinImg from '@/components/CoinImg'
+import { formatUsd } from '@/lib/utils/format'
+import RefreshButton from '@/components/RefreshButton'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import Badge from '../ui/Badge'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Table from '../ui/Table'
 
 function formatAmount(val) {
-  if (!val && val !== 0) return '0';
-  let str = String(val);
+  if (!val && val !== 0) return '0'
+  let str = String(val)
   if (str.includes('.')) {
-    str = str.replace(/0+$/, '').replace(/\.$/, '');
+    str = str.replace(/0+$/, '').replace(/\.$/, '')
   }
-  return str || '0';
+  return str || '0'
 }
 
 export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, onCopy }) {
@@ -36,8 +36,8 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
         </div>
       </div>
       <div className="p-5">
-        {wallet &&
-        <div className="grid grid-cols-12 gap-x-6 gap-3 mb-3">
+        {wallet && (
+          <div className="grid grid-cols-12 gap-x-6 gap-3 mb-3">
             <div className="md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-id-card mr-1"></i>Wallet ID
@@ -48,56 +48,59 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-category mr-1"></i>Purpose
               </small>
-              <Badge color="info" label className="capitalize">{wallet.purpose || 'N/A'}</Badge>
+              <Badge color="info" label className="capitalize">
+                {wallet.purpose || 'N/A'}
+              </Badge>
             </div>
             <div className="md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-chip mr-1"></i>Type
               </small>
-              {wallet.walletType === 'hot' ?
-            <Badge color="warning" label>
+              {wallet.walletType === 'hot' ? (
+                <Badge color="warning" label>
                   <i className="bx bxs-hot mr-1"></i>Hot
-                </Badge> :
-
-            <Badge color="info" label>
+                </Badge>
+              ) : (
+                <Badge color="info" label>
                   <i className="bx bx-shield mr-1"></i>Cold
                 </Badge>
-            }
+              )}
             </div>
             <div className="col-span-12">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-wallet mr-1"></i>Address
               </small>
               <div className="flex items-center gap-2">
-                <code className="text-primary text-[0.875rem] break-all">
-                  {wallet.address || 'N/A'}
-                </code>
-                {wallet.address &&
-              <Button
-                onClick={(e) => onCopy(wallet.address, e)}
-
-                title={t('actions.copy', { defaultValue: 'Copy' })} size="icon-sm" variant="text-secondary">
-                
+                <code className="text-primary text-[0.875rem] break-all">{wallet.address || 'N/A'}</code>
+                {wallet.address && (
+                  <Button
+                    onClick={(e) => onCopy(wallet.address, e)}
+                    title={t('actions.copy', { defaultValue: 'Copy' })}
+                    size="icon-sm"
+                    variant="text-secondary"
+                  >
                     <i className="bx bx-copy text-[1rem]"></i>
                   </Button>
-              }
+                )}
               </div>
             </div>
             <div className="md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-check-circle mr-1"></i>Status
               </small>
-              {wallet.status === 'active' ?
-            <Badge color="success" label>{t('admin.detail.active', { defaultValue: 'Active' })}</Badge> :
-
-            <Badge color="secondary">{wallet.status || 'N/A'}</Badge>
-            }
+              {wallet.status === 'active' ? (
+                <Badge color="success" label>
+                  {t('admin.detail.active', { defaultValue: 'Active' })}
+                </Badge>
+              ) : (
+                <Badge color="secondary">{wallet.status || 'N/A'}</Badge>
+              )}
             </div>
           </div>
-        }
+        )}
 
-        {assets.length > 0 &&
-        <>
+        {assets.length > 0 && (
+          <>
             <hr className="my-3" />
             <h6 className="mb-3">
               <i className="bx bx-coin-stack mr-1"></i>
@@ -114,11 +117,16 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                   </tr>
                 </thead>
                 <tbody>
-                  {assets.map((asset) =>
-                <tr key={`${asset.coinSymbol}-${asset.networkSymbol}`}>
+                  {assets.map((asset) => (
+                    <tr key={`${asset.coinSymbol}-${asset.networkSymbol}`}>
                       <td>
                         <div className="flex items-center">
-                          <CoinImg symbol={asset.coinSymbol} networkSymbol={asset.networkSymbol} size={24} className="mr-3" />
+                          <CoinImg
+                            symbol={asset.coinSymbol}
+                            networkSymbol={asset.networkSymbol}
+                            size={24}
+                            className="mr-3"
+                          />
                           <span className="font-medium">{asset.coinSymbol || '-'}</span>
                         </div>
                       </td>
@@ -132,13 +140,13 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                         {asset.fiatValue ? formatUsd(asset.fiatValue.amount) : '-'}
                       </td>
                     </tr>
-                )}
+                  ))}
                 </tbody>
               </Table>
             </div>
           </>
-        }
+        )}
       </div>
-    </Card>);
-
+    </Card>
+  )
 }

@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { getPublicInvoice, getPublicInvoiceStatus, getPublicPayment, getPublicPaymentStatus, selectPaymentNetwork } from '@/lib/api/invoices'
+import {
+  getPublicInvoice,
+  getPublicInvoiceStatus,
+  getPublicPayment,
+  getPublicPaymentStatus,
+  selectPaymentNetwork,
+} from '@/lib/api/invoices'
 import { useInvoiceEvents } from '@/hooks/useInvoiceEvents'
 import { playNotificationSound } from '@/lib/utils/notification'
 import { useToast } from '@/app/providers'
@@ -53,9 +59,7 @@ export default function useInvoicePayment() {
       merchantName: data.merchantName,
       symbol: data.coinSymbol,
       coin: data.coinSymbol ? { symbol: data.coinSymbol, name: data.coinSymbol } : undefined,
-      network: data.networkSymbol
-        ? { symbol: data.networkSymbol, name: data.networkName || data.networkSymbol }
-        : null,
+      network: data.networkSymbol ? { symbol: data.networkSymbol, name: data.networkName || data.networkSymbol } : null,
       networkName: data.networkName || data.networkSymbol || '',
       successUrl: data.successUrl,
       fiatAmount: data.fiatAmount,
@@ -64,94 +68,112 @@ export default function useInvoicePayment() {
   }, [])
 
   // Load payment data (pay_ prefix)
-  const loadPayment = useCallback(async (initial = false) => {
-    if (!publicCode) return
-    if (initial) setLoading(true)
-    setError('')
-    setErrorCode('')
-    try {
-      if (initial) {
-        const data = await getPublicPayment(publicCode)
-        setPaymentData(data)
-        setInvoice(mapPaymentToInvoice(data))
-      } else {
-        const statusData = await getPublicPaymentStatus(publicCode)
-        setInvoice(prev => prev ? {
-          ...prev,
-          status: (statusData.status || '').toLowerCase(),
-          paidAt: statusData.paidAt || prev.paidAt,
-          successUrl: statusData.successUrl || prev.successUrl,
-        } : prev)
-        setPaymentData(prev => prev ? {
-          ...prev,
-          status: statusData.status,
-          paidAt: statusData.paidAt,
-        } : prev)
-      }
-    } catch (e) {
-      if (e?.name === 'AbortError') return
-      setError(e?.message || 'Failed to load payment')
-    } finally {
-      if (initial) setLoading(false)
-    }
-  }, [publicCode, mapPaymentToInvoice])
-
-  const loadInvoice = useCallback(async (initial = false) => {
-    if (!publicCode) return
-    if (initial) setLoading(true)
-    setError('')
-    setErrorCode('')
-    try {
-      if (initial) {
-        if (abortRef.current) abortRef.current.abort()
-        const controller = new AbortController()
-        abortRef.current = controller
-
-        const { invoice: inv, qr: qrData } = await getPublicInvoice(publicCode)
-
-        const mapped = {
-          id: inv.invoiceId ?? inv.id,
-          invoiceId: inv.invoiceId ?? inv.id,
-          publicCode: inv.publicCode,
-          status: (inv.status || '').toLowerCase(),
-          expiryAt: inv.expiresAt || inv.expiryAt,
-          amount: qrData?.amount ?? inv.amount,
-          description: inv.description,
-          paymentAddress: qrData?.address || inv.paymentAddress,
-          createdAt: inv.createdAt || inv.created_at,
-          paidAmount: inv.paidAmount || inv.paid_amount,
-          paidAt: inv.paidAt || inv.paid_at,
-          decimals: inv.decimals,
-          coin: inv.coin,
-          network: inv.network,
-          symbol: qrData?.symbol || inv.coin?.symbol || inv.symbol,
-          networkName: qrData?.network || inv.network?.name || inv.network,
+  const loadPayment = useCallback(
+    async (initial = false) => {
+      if (!publicCode) return
+      if (initial) setLoading(true)
+      setError('')
+      setErrorCode('')
+      try {
+        if (initial) {
+          const data = await getPublicPayment(publicCode)
+          setPaymentData(data)
+          setInvoice(mapPaymentToInvoice(data))
+        } else {
+          const statusData = await getPublicPaymentStatus(publicCode)
+          setInvoice((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  status: (statusData.status || '').toLowerCase(),
+                  paidAt: statusData.paidAt || prev.paidAt,
+                  successUrl: statusData.successUrl || prev.successUrl,
+                }
+              : prev
+          )
+          setPaymentData((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  status: statusData.status,
+                  paidAt: statusData.paidAt,
+                }
+              : prev
+          )
         }
-        setInvoice(mapped)
-        setQr(qrData)
-      } else {
-        const statusData = await getPublicInvoiceStatus(publicCode)
-        setInvoice(prev => prev ? {
-          ...prev,
-          status: (statusData.status || '').toLowerCase(),
-          paidAt: statusData.paidAt || prev.paidAt,
-          paidAmount: statusData.amountReceived || prev.paidAmount,
-          expiryAt: statusData.expiresAt || prev.expiryAt,
-        } : prev)
+      } catch (e) {
+        if (e?.name === 'AbortError') return
+        setError(e?.message || 'Failed to load payment')
+      } finally {
+        if (initial) setLoading(false)
       }
-    } catch (e) {
-      if (e?.name === 'AbortError') return
-      if (e?.code === 'BIZ_1200') {
-        setErrorCode(e.code)
-        setError(e.message || 'Invoice cancelled')
-        setInvoice(prev => prev ? { ...prev, status: 'cancelled' } : null)
-      } else {
-        setError(e?.message || 'Failed to load invoice')
+    },
+    [publicCode, mapPaymentToInvoice]
+  )
+
+  const loadInvoice = useCallback(
+    async (initial = false) => {
+      if (!publicCode) return
+      if (initial) setLoading(true)
+      setError('')
+      setErrorCode('')
+      try {
+        if (initial) {
+          if (abortRef.current) abortRef.current.abort()
+          const controller = new AbortController()
+          abortRef.current = controller
+
+          const { invoice: inv, qr: qrData } = await getPublicInvoice(publicCode)
+
+          const mapped = {
+            id: inv.invoiceId ?? inv.id,
+            invoiceId: inv.invoiceId ?? inv.id,
+            publicCode: inv.publicCode,
+            status: (inv.status || '').toLowerCase(),
+            expiryAt: inv.expiresAt || inv.expiryAt,
+            amount: qrData?.amount ?? inv.amount,
+            description: inv.description,
+            paymentAddress: qrData?.address || inv.paymentAddress,
+            createdAt: inv.createdAt || inv.created_at,
+            paidAmount: inv.paidAmount || inv.paid_amount,
+            paidAt: inv.paidAt || inv.paid_at,
+            decimals: inv.decimals,
+            coin: inv.coin,
+            network: inv.network,
+            symbol: qrData?.symbol || inv.coin?.symbol || inv.symbol,
+            networkName: qrData?.network || inv.network?.name || inv.network,
+          }
+          setInvoice(mapped)
+          setQr(qrData)
+        } else {
+          const statusData = await getPublicInvoiceStatus(publicCode)
+          setInvoice((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  status: (statusData.status || '').toLowerCase(),
+                  paidAt: statusData.paidAt || prev.paidAt,
+                  paidAmount: statusData.amountReceived || prev.paidAmount,
+                  expiryAt: statusData.expiresAt || prev.expiryAt,
+                }
+              : prev
+          )
+        }
+      } catch (e) {
+        if (e?.name === 'AbortError') return
+        if (e?.code === 'BIZ_1200') {
+          setErrorCode(e.code)
+          setError(e.message || 'Invoice cancelled')
+          setInvoice((prev) => (prev ? { ...prev, status: 'cancelled' } : null))
+        } else {
+          setError(e?.message || 'Failed to load invoice')
+        }
+      } finally {
+        if (initial) setLoading(false)
       }
-    } finally {
-      if (initial) setLoading(false)
-    }
-  }, [publicCode])
+    },
+    [publicCode]
+  )
 
   useEffect(() => {
     if (isPaymentMode) {
@@ -194,9 +216,9 @@ export default function useInvoicePayment() {
       playNotificationSound('success')
       toast.success({
         title: t('payment.paymentReceived') || 'Payment Received',
-        body: data.body || t('payment.completedSub') || 'Payment has been received'
+        body: data.body || t('payment.completedSub') || 'Payment has been received',
       })
-      setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+      setInvoice((prev) => (prev ? { ...prev, status: 'paid' } : prev))
       setTimeout(() => loadInvoice(false), 1000)
     },
     onStatusChanged: (data) => {
@@ -204,18 +226,18 @@ export default function useInvoicePayment() {
         playNotificationSound('success')
         toast.success({
           title: t('payment.paymentReceived') || 'Invoice Paid',
-          body: data.body || t('payment.completedSub') || 'Invoice has been paid successfully'
+          body: data.body || t('payment.completedSub') || 'Invoice has been paid successfully',
         })
-        setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+        setInvoice((prev) => (prev ? { ...prev, status: 'paid' } : prev))
       } else if (data.status) {
-        setInvoice(prev => prev ? { ...prev, status: data.status } : prev)
+        setInvoice((prev) => (prev ? { ...prev, status: data.status } : prev))
       }
       setTimeout(() => loadInvoice(false), 1000)
     },
     onUpdated: (data) => {
       toast.info({
         title: data.title || t('payment.invoiceUpdated') || 'Invoice Updated',
-        body: data.body || t('payment.invoiceUpdated') || 'Invoice has been updated'
+        body: data.body || t('payment.invoiceUpdated') || 'Invoice has been updated',
       })
       setTimeout(() => loadInvoice(false), 1000)
     },
@@ -223,11 +245,11 @@ export default function useInvoicePayment() {
       playNotificationSound('success')
       toast.success({
         title: data.title || t('payment.paymentReceived') || 'Payment Completed',
-        body: data.message || t('payment.completedSub') || 'Payment has been completed successfully'
+        body: data.message || t('payment.completedSub') || 'Payment has been completed successfully',
       })
-      setInvoice(prev => prev ? { ...prev, status: 'paid' } : prev)
+      setInvoice((prev) => (prev ? { ...prev, status: 'paid' } : prev))
       setTimeout(() => loadInvoice(false), 1000)
-    }
+    },
   })
 
   useEffect(() => {
@@ -241,11 +263,17 @@ export default function useInvoicePayment() {
   const networkSym = (invoice?.network?.symbol || '').toUpperCase()
   const year = new Date().getFullYear()
 
-  const expiryMs = useMemo(() => invoice?.expiryAt ? new Date(String(invoice.expiryAt)).getTime() : undefined, [invoice?.expiryAt])
+  const expiryMs = useMemo(
+    () => (invoice?.expiryAt ? new Date(String(invoice.expiryAt)).getTime() : undefined),
+    [invoice?.expiryAt]
+  )
   const remainingMs = expiryMs ? Math.max(0, expiryMs - now) : undefined
   const isExpired = expiryMs ? remainingMs === 0 : false
 
-  const isPaid = invoice?.status === 'paid' || invoice?.status === 'completed' || (Number(invoice?.paidAmount) || 0) >= (Number(invoice?.amount) || 0)
+  const isPaid =
+    invoice?.status === 'paid' ||
+    invoice?.status === 'completed' ||
+    (Number(invoice?.paidAmount) || 0) >= (Number(invoice?.amount) || 0)
   const hasPartial = !isPaid && (Number(invoice?.paidAmount) || 0) > 0
   const currentStep = isPaid ? 3 : hasPartial ? 2 : 1
 
@@ -271,13 +299,12 @@ export default function useInvoicePayment() {
 
   const rawStatus = (invoice?.status || '').toLowerCase()
   const normalizedStatus = rawStatus === 'waiting' ? 'pending' : rawStatus === 'completed' ? 'paid' : rawStatus
-  const uiStatus = errorCode === 'BIZ_1200'
-    ? 'cancelled'
-    : isExpired && !isPaid
-      ? 'expired'
-      : normalizedStatus
+  const uiStatus = errorCode === 'BIZ_1200' ? 'cancelled' : isExpired && !isPaid ? 'expired' : normalizedStatus
 
-  const paymentValue = useMemo(() => qr?.address || invoice?.paymentAddress || '', [qr?.address, invoice?.paymentAddress])
+  const paymentValue = useMemo(
+    () => qr?.address || invoice?.paymentAddress || '',
+    [qr?.address, invoice?.paymentAddress]
+  )
 
   const isExpiredUnpaid = isExpired && !isPaid
 
@@ -286,7 +313,7 @@ export default function useInvoicePayment() {
       await copyToClipboard(invoice?.paymentAddress || '')
       setCopied(true)
       setTimeout(() => setCopied(false), 1200)
-    } catch { }
+    } catch {}
   }
 
   const handleCopyAmount = async () => {
@@ -296,7 +323,7 @@ export default function useInvoicePayment() {
       await copyToClipboard(val)
       setCopiedAmt(true)
       setTimeout(() => setCopiedAmt(false), 1200)
-    } catch { }
+    } catch {}
   }
 
   const handleConfirmNetwork = async () => {
@@ -315,30 +342,50 @@ export default function useInvoicePayment() {
   }
 
   return {
-    invoice, qr, loading, error, errorCode, paymentData,
-    isPaymentMode, needsNetworkSelection,
-    selectedNetwork, setSelectedNetwork, selectingNetwork, handleConfirmNetwork,
-    coinSym, networkName, networkSym, year,
-    remainingMs, isPaid, isExpiredUnpaid, currentStep, uiStatus,
-    paymentValue, copied, copiedAmt, handleCopy, handleCopyAmount,
+    invoice,
+    qr,
+    loading,
+    error,
+    errorCode,
+    paymentData,
+    isPaymentMode,
+    needsNetworkSelection,
+    selectedNetwork,
+    setSelectedNetwork,
+    selectingNetwork,
+    handleConfirmNetwork,
+    coinSym,
+    networkName,
+    networkSym,
+    year,
+    remainingMs,
+    isPaid,
+    isExpiredUnpaid,
+    currentStep,
+    uiStatus,
+    paymentValue,
+    copied,
+    copiedAmt,
+    handleCopy,
+    handleCopyAmount,
     redirectCountdown,
   }
 }
 
 export function statusClass(s) {
-  const v = (s || "").toLowerCase()
-  if (v === "paid") return "bg-success"
-  if (v === "pending") return "bg-warning"
-  if (v === "expired") return "bg-danger"
-  return "bg-secondary"
+  const v = (s || '').toLowerCase()
+  if (v === 'paid') return 'bg-success'
+  if (v === 'pending') return 'bg-warning'
+  if (v === 'expired') return 'bg-danger'
+  return 'bg-secondary'
 }
 
 export function formatDuration(ms) {
-  if (ms === undefined) return "-"
+  if (ms === undefined) return '-'
   const total = Math.floor(ms / 1000)
   const h = Math.floor(total / 3600)
   const m = Math.floor((total % 3600) / 60)
   const s = total % 60
-  const pad = (n) => String(n).padStart(2, "0")
+  const pad = (n) => String(n).padStart(2, '0')
   return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`
 }

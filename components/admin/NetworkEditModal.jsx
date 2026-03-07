@@ -87,7 +87,12 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
 
   function validateUrl(url) {
     if (!url || !url.trim()) return true
-    try { new URL(url); return true } catch { return false }
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
   }
 
   function validate() {
@@ -99,15 +104,19 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
     }
     if (formData.chainId !== '' && formData.chainId !== null && formData.chainId !== undefined) {
       const n = parseInt(formData.chainId)
-      if (isNaN(n) || n <= 0) errors.chainId = t('crypto.chainIdPositive', { defaultValue: 'Must be a positive integer' })
+      if (isNaN(n) || n <= 0)
+        errors.chainId = t('crypto.chainIdPositive', { defaultValue: 'Must be a positive integer' })
     }
     if (formData.confirmationBlocks !== '' && formData.confirmationBlocks !== null) {
       const n = parseInt(formData.confirmationBlocks)
-      if (isNaN(n) || n < 1) errors.confirmationBlocks = t('crypto.confirmBlocksMin', { defaultValue: 'Must be at least 1' })
-      else if (n > 1000) errors.confirmationBlocks = t('crypto.confirmBlocksMax', { defaultValue: 'Must be at most 1000' })
+      if (isNaN(n) || n < 1)
+        errors.confirmationBlocks = t('crypto.confirmBlocksMin', { defaultValue: 'Must be at least 1' })
+      else if (n > 1000)
+        errors.confirmationBlocks = t('crypto.confirmBlocksMax', { defaultValue: 'Must be at most 1000' })
     }
     if (!validateUrl(formData.rpcUrl)) errors.rpcUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
-    if (!validateUrl(formData.explorerUrl)) errors.explorerUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
+    if (!validateUrl(formData.explorerUrl))
+      errors.explorerUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
     if (!validateUrl(formData.apiUrl)) errors.apiUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
     return errors
   }
@@ -138,7 +147,10 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={saving ? undefined : onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={saving ? undefined : onClose}
+    >
       <div className="w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="bg-card rounded-xl shadow-xl flex flex-col max-h-[90vh]">
           {/* Header */}
@@ -167,7 +179,8 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
               <>
                 {error && (
                   <Alert role="alert" className="mb-4">
-                    <i className="bx bx-error-circle mr-2"></i>{error}
+                    <i className="bx bx-error-circle mr-2"></i>
+                    {error}
                   </Alert>
                 )}
 
@@ -175,10 +188,14 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                   <div className="grid grid-cols-2 gap-4">
                     {/* Symbol (read-only) */}
                     <div>
-                      <Label htmlFor="modal-net-symbol">
-                        {t('crypto.symbol', { defaultValue: 'Symbol' })}
-                      </Label>
-                      <Input id="modal-net-symbol" name="symbol" value={formData.symbol} disabled className="uppercase" />
+                      <Label htmlFor="modal-net-symbol">{t('crypto.symbol', { defaultValue: 'Symbol' })}</Label>
+                      <Input
+                        id="modal-net-symbol"
+                        name="symbol"
+                        value={formData.symbol}
+                        disabled
+                        className="uppercase"
+                      />
                     </div>
 
                     {/* Type (read-only) */}
@@ -192,7 +209,8 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                     {/* Name */}
                     <div>
                       <Label htmlFor="modal-net-name">
-                        {t('crypto.networkName', { defaultValue: 'Network Name' })} <span className="text-danger">*</span>
+                        {t('crypto.networkName', { defaultValue: 'Network Name' })}{' '}
+                        <span className="text-danger">*</span>
                       </Label>
                       <Input
                         id="modal-net-name"
@@ -209,9 +227,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
 
                     {/* Status */}
                     <div>
-                      <Label htmlFor="modal-net-status">
-                        {t('invoices.statusCol', { defaultValue: 'Status' })}
-                      </Label>
+                      <Label htmlFor="modal-net-status">{t('invoices.statusCol', { defaultValue: 'Status' })}</Label>
                       <Select id="modal-net-status" name="status" value={formData.status} onChange={handleChange}>
                         <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>
                         <option value="inactive">{t('crypto.inactive', { defaultValue: 'Inactive' })}</option>
@@ -222,9 +238,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
 
                     {/* Chain ID */}
                     <div>
-                      <Label htmlFor="modal-net-chainId">
-                        {t('crypto.chainId', { defaultValue: 'Chain ID' })}
-                      </Label>
+                      <Label htmlFor="modal-net-chainId">{t('crypto.chainId', { defaultValue: 'Chain ID' })}</Label>
                       <Input
                         id="modal-net-chainId"
                         type="number"
@@ -242,7 +256,8 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                     {/* Confirmation Blocks */}
                     <div>
                       <Label htmlFor="modal-net-confirmBlocks">
-                        {t('crypto.confirmationBlocks', { defaultValue: 'Confirmation Blocks' })} <span className="text-danger">*</span>
+                        {t('crypto.confirmationBlocks', { defaultValue: 'Confirmation Blocks' })}{' '}
+                        <span className="text-danger">*</span>
                       </Label>
                       <Input
                         id="modal-net-confirmBlocks"
@@ -255,14 +270,14 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.confirmationBlocks}
                         error={!!fieldErrors.confirmationBlocks}
                       />
-                      {fieldErrors.confirmationBlocks && <p className="mt-1 text-sm text-danger-500">{fieldErrors.confirmationBlocks}</p>}
+                      {fieldErrors.confirmationBlocks && (
+                        <p className="mt-1 text-sm text-danger-500">{fieldErrors.confirmationBlocks}</p>
+                      )}
                     </div>
 
                     {/* RPC URL */}
                     <div className="col-span-2">
-                      <Label htmlFor="modal-net-rpcUrl">
-                        {t('crypto.rpcUrl', { defaultValue: 'RPC URL' })}
-                      </Label>
+                      <Label htmlFor="modal-net-rpcUrl">{t('crypto.rpcUrl', { defaultValue: 'RPC URL' })}</Label>
                       <Input
                         id="modal-net-rpcUrl"
                         type="url"
@@ -291,14 +306,14 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.explorerUrl}
                         error={!!fieldErrors.explorerUrl}
                       />
-                      {fieldErrors.explorerUrl && <p className="mt-1 text-sm text-danger-500">{fieldErrors.explorerUrl}</p>}
+                      {fieldErrors.explorerUrl && (
+                        <p className="mt-1 text-sm text-danger-500">{fieldErrors.explorerUrl}</p>
+                      )}
                     </div>
 
                     {/* API URL */}
                     <div className="col-span-2">
-                      <Label htmlFor="modal-net-apiUrl">
-                        {t('crypto.apiUrl', { defaultValue: 'API URL' })}
-                      </Label>
+                      <Label htmlFor="modal-net-apiUrl">{t('crypto.apiUrl', { defaultValue: 'API URL' })}</Label>
                       <Input
                         id="modal-net-apiUrl"
                         type="url"

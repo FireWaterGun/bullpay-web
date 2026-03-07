@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Palette — Confluent Style</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0e1028;
+        color: #fff;
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #ff4d8d, #ff69a0, #ffb6d9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .subtitle {
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 48px;
+        font-size: 0.95rem;
+      }
+
+      /* ── Section ── */
+      .section {
+        margin-bottom: 48px;
+      }
+
+      .section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 16px;
+      }
+
+      /* ── Color Swatches ── */
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+      }
+
+      .swatch {
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .swatch:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      .swatch-color {
+        height: 100px;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .swatch-color::after {
+        content: 'Click to copy';
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.2s;
+        font-size: 0.75rem;
+        color: #fff;
+      }
+
+      .swatch-color:hover::after {
+        opacity: 1;
+      }
+
+      .swatch-info {
+        padding: 12px;
+      }
+
+      .swatch-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .swatch-hex {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.45);
+        font-family: 'SF Mono', 'Fira Code', monospace;
+      }
+
+      /* ── Gradient Bar ── */
+      .gradient-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .gradient-card {
+        border-radius: 12px;
+        height: 120px;
+        display: flex;
+        align-items: flex-end;
+        padding: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .gradient-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 4px 10px;
+        border-radius: 6px;
+        backdrop-filter: blur(4px);
+      }
+
+      .gradient-css {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        position: absolute;
+        top: 12px;
+        left: 16px;
+      }
+
+      /* ── Preview Section ── */
+      .preview-card {
+        border-radius: 16px;
+        overflow: hidden;
+        background: linear-gradient(145deg, #0e1028, #1a1f3d);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 48px;
+        text-align: center;
+      }
+
+      .preview-card h2 {
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+      }
+
+      .preview-card p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        margin-bottom: 28px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+      }
+
+      .btn-primary {
+        display: inline-block;
+        padding: 12px 32px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ff4d8d, #e91e6c);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(255, 77, 141, 0.35);
+      }
+
+      .btn-outline {
+        display: inline-block;
+        padding: 12px 32px;
+        border-radius: 8px;
+        background: transparent;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        margin-left: 12px;
+        transition: border-color 0.15s;
+      }
+
+      .btn-outline:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* ── Usage Table ── */
+      .usage-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      .usage-table th {
+        text-align: left;
+        padding: 10px 16px;
+        color: rgba(255, 255, 255, 0.4);
+        font-weight: 500;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .usage-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .usage-table .color-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 8px;
+      }
+
+      .usage-table code {
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.8rem;
+        color: #ff69a0;
+        background: rgba(255, 77, 141, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+
+      /* ── Toast ── */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: #ff4d8d;
+        color: #fff;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        opacity: 0;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Confluent-Style Color Palette</h1>
+      <p class="subtitle">Dark navy + hot pink/magenta accent — extracted from Confluent eBook design</p>
+
+      <!-- ── Primary Colors ── -->
+      <div class="section">
+        <div class="section-title">Primary Colors</div>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-color" style="background: #0e1028" onclick="copyColor('#0E1028')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Navy Deep</div>
+              <div class="swatch-hex">#0E1028</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #141836" onclick="copyColor('#141836')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Navy Mid</div>
+              <div class="swatch-hex">#141836</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #1a1f3d" onclick="copyColor('#1A1F3D')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Navy Light</div>
+              <div class="swatch-hex">#1A1F3D</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #252b4a" onclick="copyColor('#252B4A')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Navy Surface</div>
+              <div class="swatch-hex">#252B4A</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Accent Colors ── -->
+      <div class="section">
+        <div class="section-title">Accent / Magenta</div>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-color" style="background: #e91e6c" onclick="copyColor('#E91E6C')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Magenta Dark</div>
+              <div class="swatch-hex">#E91E6C</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #ff4d8d" onclick="copyColor('#FF4D8D')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Hot Pink</div>
+              <div class="swatch-hex">#FF4D8D</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #ff69a0" onclick="copyColor('#FF69A0')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Pink Mid</div>
+              <div class="swatch-hex">#FF69A0</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #ffb6d9" onclick="copyColor('#FFB6D9')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Pink Light</div>
+              <div class="swatch-hex">#FFB6D9</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Supporting Colors ── -->
+      <div class="section">
+        <div class="section-title">Supporting Colors</div>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-color" style="background: #ffffff" onclick="copyColor('#FFFFFF')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">White</div>
+              <div class="swatch-hex">#FFFFFF</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div
+              class="swatch-color"
+              style="background: rgba(255, 255, 255, 0.6)"
+              onclick="copyColor('rgba(255,255,255,0.6)')"
+            ></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Text Secondary</div>
+              <div class="swatch-hex">rgba(255,255,255,0.6)</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div
+              class="swatch-color"
+              style="background: rgba(255, 255, 255, 0.15)"
+              onclick="copyColor('rgba(255,255,255,0.15)')"
+            ></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Border</div>
+              <div class="swatch-hex">rgba(255,255,255,0.15)</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: #6c63ff" onclick="copyColor('#6C63FF')"></div>
+            <div class="swatch-info">
+              <div class="swatch-name">Purple Accent</div>
+              <div class="swatch-hex">#6C63FF</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Gradients ── -->
+      <div class="section">
+        <div class="section-title">Gradients</div>
+        <div class="gradient-row">
+          <div class="gradient-card" style="background: linear-gradient(135deg, #ff4d8d, #6c63ff)">
+            <span class="gradient-css">linear-gradient(135deg, #FF4D8D, #6C63FF)</span>
+            <span class="gradient-label">Pink → Purple</span>
+          </div>
+          <div class="gradient-card" style="background: linear-gradient(135deg, #e91e6c, #ff69a0)">
+            <span class="gradient-css">linear-gradient(135deg, #E91E6C, #FF69A0)</span>
+            <span class="gradient-label">Magenta → Pink</span>
+          </div>
+          <div class="gradient-card" style="background: linear-gradient(180deg, #0e1028, #1a1f3d)">
+            <span class="gradient-css">linear-gradient(180deg, #0E1028, #1A1F3D)</span>
+            <span class="gradient-label">Navy Gradient</span>
+          </div>
+          <div class="gradient-card" style="background: linear-gradient(135deg, #ff4d8d, #ffb6d9, #6c63ff)">
+            <span class="gradient-css">linear-gradient(135deg, #FF4D8D, #FFB6D9, #6C63FF)</span>
+            <span class="gradient-label">Full Spectrum</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Preview ── -->
+      <div class="section">
+        <div class="section-title">Preview — Landing Hero</div>
+        <div class="preview-card">
+          <h2
+            style="
+              background: linear-gradient(135deg, #ff4d8d, #ffb6d9);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+          >
+            Secure Crypto Payments
+          </h2>
+          <p>
+            Accept cryptocurrency payments with enterprise-grade security. Fast settlements with real-time monitoring.
+          </p>
+          <div>
+            <button class="btn-primary">Get Started</button>
+            <button class="btn-outline">Learn More</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Usage Guide ── -->
+      <div class="section">
+        <div class="section-title">Usage Guide — CSS Variables</div>
+        <table class="usage-table">
+          <thead>
+            <tr>
+              <th>Element</th>
+              <th>Color</th>
+              <th>CSS Variable</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="color-dot" style="background: #0e1028"></span>Background</td>
+              <td>#0E1028</td>
+              <td><code>--bg-primary</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: #1a1f3d"></span>Card / Surface</td>
+              <td>#1A1F3D</td>
+              <td><code>--bg-surface</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: #252b4a"></span>Card Elevated</td>
+              <td>#252B4A</td>
+              <td><code>--bg-elevated</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: #ff4d8d"></span>Primary Accent</td>
+              <td>#FF4D8D</td>
+              <td><code>--accent-primary</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: #e91e6c"></span>Button Hover</td>
+              <td>#E91E6C</td>
+              <td><code>--accent-dark</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: #ffb6d9"></span>Highlight / Badge</td>
+              <td>#FFB6D9</td>
+              <td><code>--accent-light</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: #6c63ff"></span>Secondary Accent</td>
+              <td>#6C63FF</td>
+              <td><code>--accent-secondary</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: #ffffff"></span>Text Primary</td>
+              <td>#FFFFFF</td>
+              <td><code>--text-primary</code></td>
+            </tr>
+            <tr>
+              <td><span class="color-dot" style="background: rgba(255, 255, 255, 0.6)"></span>Text Secondary</td>
+              <td>rgba(255,255,255,0.6)</td>
+              <td><code>--text-secondary</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Copied!</div>
+
+    <script>
+      function copyColor(color) {
+        navigator.clipboard.writeText(color).then(() => {
+          const toast = document.getElementById('toast')
+          toast.textContent = `Copied ${color}`
+          toast.classList.add('show')
+          setTimeout(() => toast.classList.remove('show'), 1500)
+        })
+      }
+    </script>
+  </body>
+</html>

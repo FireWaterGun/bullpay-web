@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
-import RefreshButton from '@/components/RefreshButton';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
+import RefreshButton from '@/components/RefreshButton'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import CoinNetworkFilterDropdown from '@/components/ui/CoinNetworkFilterDropdown'
@@ -26,9 +26,9 @@ export default function WithdrawalTxFilters({
   setEndDateFilter,
   onApply,
   onReset,
-  onRefresh
+  onRefresh,
 }) {
-  const { t } = useAdminTranslation();
+  const { t } = useAdminTranslation()
 
   return (
     <Card className="mb-4">
@@ -53,7 +53,9 @@ export default function WithdrawalTxFilters({
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
               <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
-              <option value="waiting_for_gas">{t('status.waiting_for_gas', { defaultValue: 'Waiting for Gas' })}</option>
+              <option value="waiting_for_gas">
+                {t('status.waiting_for_gas', { defaultValue: 'Waiting for Gas' })}
+              </option>
               <option value="processing">{t('status.processing', { defaultValue: 'Processing' })}</option>
               <option value="completed">{t('status.completed', { defaultValue: 'Completed' })}</option>
               <option value="failed">{t('status.failed', { defaultValue: 'Failed' })}</option>
@@ -62,31 +64,42 @@ export default function WithdrawalTxFilters({
           </div>
           <div className="md:col-span-3 sm:col-span-6">
             <Label>{t('filter.userId', { defaultValue: 'User ID' })}</Label>
-            <Input type="number" placeholder={t('filter.userId', { defaultValue: 'User ID' })} value={userIdFilter} onChange={(e) => setUserIdFilter(e.target.value)} />
+            <Input
+              type="number"
+              placeholder={t('filter.userId', { defaultValue: 'User ID' })}
+              value={userIdFilter}
+              onChange={(e) => setUserIdFilter(e.target.value)}
+            />
           </div>
           <div className="md:col-span-3 sm:col-span-6">
             <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
             <CoinNetworkFilterDropdown
               coinNetworks={coinNetworks}
               value={coinNetworkIdFilter}
-              onChange={setCoinNetworkIdFilter} />
+              onChange={setCoinNetworkIdFilter}
+            />
           </div>
           <div className="md:col-span-3 sm:col-span-6">
             <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
-            <Input type="text" placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })} value={searchFilter} onChange={(e) => setSearchFilter(e.target.value)} />
+            <Input
+              type="text"
+              placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })}
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+            />
           </div>
           <div className="md:col-span-3 sm:col-span-6">
             <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
-            <LocaleDateRangePicker className="w-full"
-            startDate={startDateFilter}
-            endDate={endDateFilter}
-            onChangeStart={setStartDateFilter}
-            onChangeEnd={setEndDateFilter}
-            locale={locale}
-            placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
-            t={t} />
-
-            
+            <LocaleDateRangePicker
+              className="w-full"
+              startDate={startDateFilter}
+              endDate={endDateFilter}
+              onChangeStart={setStartDateFilter}
+              onChangeEnd={setEndDateFilter}
+              locale={locale}
+              placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
+              t={t}
+            />
           </div>
         </div>
         <div className="flex gap-2 mt-3">
@@ -100,6 +113,6 @@ export default function WithdrawalTxFilters({
           </Button>
         </div>
       </div>
-    </Card>);
-
+    </Card>
+  )
 }

@@ -29,11 +29,11 @@ export default function LocaleDateRangePicker({
 }) {
   const [open, setOpen] = useState(false)
   const [viewYear, setViewYear] = useState(() => {
-    if (startDate) return new Date(`${startDate  }T00:00:00`).getFullYear()
+    if (startDate) return new Date(`${startDate}T00:00:00`).getFullYear()
     return new Date().getFullYear()
   })
   const [viewMonth, setViewMonth] = useState(() => {
-    if (startDate) return new Date(`${startDate  }T00:00:00`).getMonth()
+    if (startDate) return new Date(`${startDate}T00:00:00`).getMonth()
     return new Date().getMonth()
   })
 
@@ -61,7 +61,7 @@ export default function LocaleDateRangePicker({
   // Sync view when props change externally
   useEffect(() => {
     if (startDate) {
-      const d = new Date(`${startDate  }T00:00:00`)
+      const d = new Date(`${startDate}T00:00:00`)
       setViewYear(d.getFullYear())
       setViewMonth(d.getMonth())
     }
@@ -74,7 +74,7 @@ export default function LocaleDateRangePicker({
       setPickPhase(null)
       setHoverDate(null)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   // Locale formatting
@@ -94,7 +94,7 @@ export default function LocaleDateRangePicker({
 
   function fmtShort(dateStr) {
     if (!dateStr) return ''
-    const d = new Date(`${dateStr  }T00:00:00`)
+    const d = new Date(`${dateStr}T00:00:00`)
     return d.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
   }
 
@@ -102,7 +102,7 @@ export default function LocaleDateRangePicker({
     if (startDate && endDate) return `${fmtShort(startDate)}  —  ${fmtShort(endDate)}`
     if (startDate) return fmtShort(startDate)
     return ''
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, locale])
 
   // Calendar grid
@@ -135,12 +135,20 @@ export default function LocaleDateRangePicker({
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
 
   function prevMonth() {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1) }
-    else {setViewMonth((m) => m - 1)}
+    if (viewMonth === 0) {
+      setViewMonth(11)
+      setViewYear((y) => y - 1)
+    } else {
+      setViewMonth((m) => m - 1)
+    }
   }
   function nextMonth() {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1) }
-    else {setViewMonth((m) => m + 1)}
+    if (viewMonth === 11) {
+      setViewMonth(0)
+      setViewYear((y) => y + 1)
+    } else {
+      setViewMonth((m) => m + 1)
+    }
   }
 
   function handleDayClick(dateStr) {
@@ -150,7 +158,8 @@ export default function LocaleDateRangePicker({
       setPickPhase('start')
       setHoverDate(null)
     } else {
-      let s = tempStart, e = dateStr
+      let s = tempStart,
+        e = dateStr
       if (s > e) [s, e] = [e, s]
       onChangeStart(s)
       onChangeEnd(e)
@@ -209,9 +218,14 @@ export default function LocaleDateRangePicker({
 
   const clearLabel = t ? t('datePicker.clear', { defaultValue: 'Clear' }) : 'Clear'
   const todayLabel = t ? t('datePicker.today', { defaultValue: 'Today' }) : 'Today'
-  const pickHint = pickPhase === 'start'
-    ? (t ? t('datePicker.pickEndDate', { defaultValue: 'Select end date' }) : 'Select end date')
-    : (t ? t('datePicker.pickStartDate', { defaultValue: 'Select start date' }) : 'Select start date')
+  const pickHint =
+    pickPhase === 'start'
+      ? t
+        ? t('datePicker.pickEndDate', { defaultValue: 'Select end date' })
+        : 'Select end date'
+      : t
+        ? t('datePicker.pickStartDate', { defaultValue: 'Select start date' })
+        : 'Select start date'
 
   return (
     <div ref={wrapperRef} className={`relative inline-block ${className}`}>
@@ -234,11 +248,19 @@ export default function LocaleDateRangePicker({
 
           {/* Header: prev / month-year / next */}
           <div className="flex items-center justify-between mb-2">
-            <button type="button" onClick={prevMonth} className="flex items-center justify-center w-7 h-7 rounded text-surface-600 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors cursor-pointer">
+            <button
+              type="button"
+              onClick={prevMonth}
+              className="flex items-center justify-center w-7 h-7 rounded text-surface-600 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors cursor-pointer"
+            >
               <i className="bx bx-chevron-left text-xl"></i>
             </button>
             <span className="font-semibold text-sm text-surface-900">{monthYearLabel}</span>
-            <button type="button" onClick={nextMonth} className="flex items-center justify-center w-7 h-7 rounded text-surface-600 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors cursor-pointer">
+            <button
+              type="button"
+              onClick={nextMonth}
+              className="flex items-center justify-center w-7 h-7 rounded text-surface-600 hover:bg-surface-100 dark:hover:bg-white/8 transition-colors cursor-pointer"
+            >
               <i className="bx bx-chevron-right text-xl"></i>
             </button>
           </div>
@@ -246,14 +268,17 @@ export default function LocaleDateRangePicker({
           {/* Weekday headers */}
           <div className="grid grid-cols-7 text-center mb-1">
             {weekDayHeaders.map((h, i) => (
-              <div key={i} className="text-xs font-semibold text-surface-500 py-0.5">{h}</div>
+              <div key={i} className="text-xs font-semibold text-surface-500 py-0.5">
+                {h}
+              </div>
             ))}
           </div>
 
           {/* Days grid */}
           <div className="grid grid-cols-7 text-center">
             {calendarDays.map((item, i) => {
-              const isDisabled = item.current && item.date && ((minDate && item.date < minDate) || (maxDate && item.date > maxDate))
+              const isDisabled =
+                item.current && item.date && ((minDate && item.date < minDate) || (maxDate && item.date > maxDate))
               const isClickable = item.current && item.date && !isDisabled
               const inRange = isInRange(item.date)
               const rangeStart = isRangeStart(item.date)
@@ -270,7 +295,8 @@ export default function LocaleDateRangePicker({
               } else if (!item.current || isDisabled) {
                 cls += 'text-surface-300 rounded-md '
               } else if (isTodayCell) {
-                cls += 'text-primary-600 dark:text-primary-400 font-semibold rounded-md hover:bg-surface-100 dark:hover:bg-white/8 '
+                cls +=
+                  'text-primary-600 dark:text-primary-400 font-semibold rounded-md hover:bg-surface-100 dark:hover:bg-white/8 '
               } else {
                 cls += 'text-surface-900 rounded-md hover:bg-surface-100 dark:hover:bg-white/8 '
               }
@@ -281,8 +307,12 @@ export default function LocaleDateRangePicker({
                   key={item.date || `empty-${i}`}
                   className={cls}
                   onClick={() => isClickable && handleDayClick(item.date)}
-                  onMouseEnter={() => { if (isClickable && pickPhase === 'start') setHoverDate(item.date) }}
-                  onMouseLeave={() => { if (pickPhase === 'start') setHoverDate(null) }}
+                  onMouseEnter={() => {
+                    if (isClickable && pickPhase === 'start') setHoverDate(item.date)
+                  }}
+                  onMouseLeave={() => {
+                    if (pickPhase === 'start') setHoverDate(null)
+                  }}
                 >
                   {item.day}
                 </div>
@@ -292,10 +322,18 @@ export default function LocaleDateRangePicker({
 
           {/* Footer: Clear / Today */}
           <div className="flex justify-between mt-2 pt-2 border-t border-surface-200">
-            <button type="button" onClick={handleClear} className="text-xs text-surface-500 hover:text-surface-700 transition-colors cursor-pointer">
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-xs text-surface-500 hover:text-surface-700 transition-colors cursor-pointer"
+            >
               {clearLabel}
             </button>
-            <button type="button" onClick={handleToday} className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors cursor-pointer">
+            <button
+              type="button"
+              onClick={handleToday}
+              className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors cursor-pointer"
+            >
               {todayLabel}
             </button>
           </div>

@@ -5,15 +5,16 @@
  *
  * Returns `true` on success, `false` on failure.
  */
-export async function copyToClipboard(
-  text: string,
-  options?: { autoClearMs?: number },
-): Promise<boolean> {
+export async function copyToClipboard(text: string, options?: { autoClearMs?: number }): Promise<boolean> {
   try {
     if (navigator?.clipboard?.writeText) {
       await navigator.clipboard.writeText(text)
       if (options?.autoClearMs) {
-        setTimeout(() => { try { navigator.clipboard.writeText('') } catch {} }, options.autoClearMs)
+        setTimeout(() => {
+          try {
+            navigator.clipboard.writeText('')
+          } catch {}
+        }, options.autoClearMs)
       }
       return true
     }

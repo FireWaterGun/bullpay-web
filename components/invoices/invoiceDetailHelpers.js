@@ -34,5 +34,7 @@ export function statusBadgeClass(status) {
 
 export function formatStatusLabel(status) {
   if (!status) return 'N/A'
-  return String(status).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  return String(status)
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
 }

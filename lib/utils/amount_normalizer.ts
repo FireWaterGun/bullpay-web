@@ -172,13 +172,7 @@ export class AmountNormalizer {
     }
 
     // Polygon
-    if (
-      coin === 'MATIC' ||
-      coin === 'POL' ||
-      network === 'POLYGON' ||
-      network === 'MATIC' ||
-      network === 'POL'
-    ) {
+    if (coin === 'MATIC' || coin === 'POL' || network === 'POLYGON' || network === 'MATIC' || network === 'POL') {
       return 'POLYGON'
     }
 
@@ -302,12 +296,7 @@ export class AmountNormalizer {
    * AmountNormalizer.multiply("1.5", "2", "ETH", 18)
    * // Returns: "3.0"
    */
-  static multiply(
-    amount: string,
-    multiplier: number | string,
-    chain: SupportedChain,
-    decimals: number
-  ): string {
+  static multiply(amount: string, multiplier: number | string, chain: SupportedChain, decimals: number): string {
     const amountRaw = BigInt(this.toRaw(amount, chain, decimals))
 
     // Convert multiplier to BigInt with fixed precision (6 decimals)
@@ -355,12 +344,7 @@ export class AmountNormalizer {
    * AmountNormalizer.multiplyDecimals("100", "0.000025", "ETH", 18)
    * // Returns: "0.0025"
    */
-  static multiplyDecimals(
-    amountA: string,
-    amountB: string,
-    chain: SupportedChain,
-    decimals: number
-  ): string {
+  static multiplyDecimals(amountA: string, amountB: string, chain: SupportedChain, decimals: number): string {
     const aRaw = BigInt(this.toRaw(amountA, chain, decimals))
     const bRaw = BigInt(this.toRaw(amountB, chain, decimals))
 
@@ -636,9 +620,7 @@ export class AmountNormalizer {
 
     // Check precision
     if (fractionalPart.length > decimals) {
-      throw new Error(
-        `Amount ${amount} exceeds ${decimals} decimal places (has ${fractionalPart.length})`
-      )
+      throw new Error(`Amount ${amount} exceeds ${decimals} decimal places (has ${fractionalPart.length})`)
     }
 
     // Pad fractional part

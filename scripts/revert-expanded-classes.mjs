@@ -22,8 +22,14 @@ const DRY_RUN = process.argv.includes('--dry-run')
 // ORDER MATTERS: longer/more specific patterns first to avoid partial matches
 const REPLACEMENTS = [
   // Button variants (most specific first)
-  ['btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white', 'btn-outline-primary'],
-  ['btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white', 'btn-outline-danger'],
+  [
+    'btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white',
+    'btn-outline-primary',
+  ],
+  [
+    'btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white',
+    'btn-outline-danger',
+  ],
   ['btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100', 'btn-outline-secondary'],
   ['btn bg-transparent text-primary-600 hover:bg-primary-50 shadow-none', 'btn-text-primary'],
   ['btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none', 'btn-text-secondary'],
@@ -47,7 +53,7 @@ const rawFiles = execSync("find app components -type f \\( -name '*.jsx' -o -nam
   cwd: process.cwd(),
   encoding: 'utf-8',
 }).trim()
-const files = rawFiles ? rawFiles.split('\n').map(f => path.resolve(process.cwd(), f)) : []
+const files = rawFiles ? rawFiles.split('\n').map((f) => path.resolve(process.cwd(), f)) : []
 
 let totalFilesChanged = 0
 let totalReplacements = 0

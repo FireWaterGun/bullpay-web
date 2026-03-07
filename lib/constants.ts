@@ -7,8 +7,7 @@ export const ADMIN_ROLES = ['super_admin', 'admin', 'support_agent'] as const
 export const USER_ROLES = ['regular_user', 'business_user'] as const
 
 // ── API ──
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3339'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3339'
 
 // ── Pusher ──
 export const PUSHER_APP_KEY = process.env.NEXT_PUBLIC_PUSHER_APP_KEY || ''

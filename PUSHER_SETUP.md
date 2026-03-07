@@ -33,12 +33,14 @@ VITE_PUSHER_CLUSTER=ap1
 ### 3. Pusher/Soketi Options
 
 #### Option A: Use Pusher Cloud (Recommended for production)
+
 1. Sign up at https://pusher.com
 2. Create a new app
 3. Copy your app key and cluster
 4. Set `VITE_PUSHER_APP_KEY` and `VITE_PUSHER_CLUSTER`
 
 #### Option B: Use Soketi (Self-hosted, free)
+
 1. Install Soketi: https://docs.soketi.app/
 2. Run Soketi locally or on your server
 3. Configure environment variables:
@@ -62,11 +64,13 @@ Your backend needs to send Pusher events when invoice data changes.
 ### Event Names
 
 #### Invoice-specific events (channel: `invoice.{invoiceId}`)
+
 - `payment.received` - Triggered when a payment is received
 - `invoice.status.changed` - Triggered when invoice status changes
 - `invoice.updated` - Triggered when invoice data is updated
 
 #### User-specific events (channel: `user.{userId}.invoices`)
+
 - `invoice.created` - Triggered when a new invoice is created
 - `invoice.updated` - Triggered when any invoice is updated
 - `payment.received` - Triggered when payment is received on any invoice
@@ -86,6 +90,7 @@ The backend sends events with the following structure:
 ```
 
 **Fields:**
+
 - `title` - Notification title (e.g., "✅ Invoice Paid")
 - `body` - Notification message
 - `type` - Event type (`invoice_completed`, `invoice_created`, etc.)
@@ -96,15 +101,15 @@ The backend sends events with the following structure:
 ### Example Backend Code (Node.js)
 
 ```javascript
-const Pusher = require('pusher');
+const Pusher = require('pusher')
 
 const pusher = new Pusher({
   appId: 'your-app-id',
   key: 'your-app-key',
   secret: 'your-app-secret',
   cluster: 'ap1',
-  useTLS: true
-});
+  useTLS: true,
+})
 
 // When payment is received
 async function notifyPaymentReceived(invoice) {
@@ -114,14 +119,14 @@ async function notifyPaymentReceived(invoice) {
     type: 'invoice_completed',
     invoiceId: String(invoice.id),
     status: 'paid',
-    sentAt: new Date().toISOString()
-  };
+    sentAt: new Date().toISOString(),
+  }
 
   // Notify invoice-specific channel
-  await pusher.trigger(`invoice.${invoice.id}`, 'invoice.status.changed', eventData);
+  await pusher.trigger(`invoice.${invoice.id}`, 'invoice.status.changed', eventData)
 
   // Notify user channel
-  await pusher.trigger(`user.${invoice.userId}.invoices`, 'payment.received', eventData);
+  await pusher.trigger(`user.${invoice.userId}.invoices`, 'payment.received', eventData)
 }
 
 // When invoice status changes
@@ -132,10 +137,10 @@ async function notifyStatusChanged(invoice, newStatus) {
     type: `invoice_${newStatus}`,
     invoiceId: String(invoice.id),
     status: newStatus,
-    sentAt: new Date().toISOString()
-  };
+    sentAt: new Date().toISOString(),
+  }
 
-  await pusher.trigger(`invoice.${invoice.id}`, 'invoice.status.changed', eventData);
+  await pusher.trigger(`invoice.${invoice.id}`, 'invoice.status.changed', eventData)
 }
 
 // When invoice is updated
@@ -145,11 +150,11 @@ async function notifyInvoiceUpdated(invoice) {
     body: `Invoice #${invoice.invoiceNumber || invoice.id} has been updated`,
     type: 'invoice_updated',
     invoiceId: String(invoice.id),
-    sentAt: new Date().toISOString()
-  };
+    sentAt: new Date().toISOString(),
+  }
 
-  await pusher.trigger(`invoice.${invoice.id}`, 'invoice.updated', eventData);
-  await pusher.trigger(`user.${invoice.userId}.invoices`, 'invoice.updated', eventData);
+  await pusher.trigger(`invoice.${invoice.id}`, 'invoice.updated', eventData)
+  await pusher.trigger(`user.${invoice.userId}.invoices`, 'invoice.updated', eventData)
 }
 ```
 
@@ -158,16 +163,19 @@ async function notifyInvoiceUpdated(invoice) {
 The integration is already set up in the following pages:
 
 ### InvoicePayment (`/pay/:id`)
+
 - Subscribes to invoice-specific events
 - Auto-refreshes when payment is received
 - Plays success sound on payment
 
 ### InvoiceDetail (`/app/invoices/:id`)
+
 - Subscribes to invoice-specific events
 - Shows browser notification on payment
 - Auto-refreshes invoice data
 
 ### InvoiceList (`/app/invoices`)
+
 - Subscribes to user-specific events
 - Updates list when invoices change
 - Shows notifications for new payments
@@ -185,6 +193,7 @@ Edit the component and remove `notifyPaymentReceived()` and `notifyInvoiceUpdate
 ### Change Sound Type
 
 Available sound types in `playNotificationSound(type)`:
+
 - `'success'` - Pleasant ascending tone (default for payments)
 - `'info'` - Single tone
 - `'warning'` - Two tones
@@ -193,28 +202,33 @@ Available sound types in `playNotificationSound(type)`:
 ## Troubleshooting
 
 ### Pusher not connecting
+
 1. Check that `VITE_PUSHER_APP_KEY` is set correctly
 2. Check browser console for connection errors
 3. Verify your Pusher app is active
 
 ### Events not received
+
 1. Verify backend is sending events to correct channels
 2. Check that invoice IDs match between frontend and backend
 3. Check browser console for subscription logs
 
 ### No sound notifications
+
 1. Check browser audio permissions
 2. Ensure user has interacted with the page (browsers block auto-play audio)
 
 ## Testing
 
 You can test Pusher events using the Pusher Debug Console:
+
 1. Go to your Pusher dashboard
 2. Select your app
 3. Go to "Debug Console"
 4. Manually trigger events to test
 
 Or use the Pusher Event Creator:
+
 ```bash
 curl -X POST "https://api-{cluster}.pusher.com/apps/{app_id}/events" \
   -H "Content-Type: application/json" \

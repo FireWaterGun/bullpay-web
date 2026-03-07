@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -11,70 +11,70 @@ import { getSweeps, forceSweep } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { useCoins } from '@/hooks/useCoins'
-import SweepTransactionFilters from '@/components/admin/SweepTransactionFilters';
-import SweepTransactionTable from '@/components/admin/SweepTransactionTable';
+import SweepTransactionFilters from '@/components/admin/SweepTransactionFilters'
+import SweepTransactionTable from '@/components/admin/SweepTransactionTable'
 import { logger } from '@/lib/utils/logger'
-import RefreshButton from '@/components/RefreshButton';
-import PageSpinner from '@/components/PageSpinner';
+import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function SweepTransactions() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth();
-  const toast = useToast();
-  const searchParams = useNextSearchParams();
-  const router = useRouter();
+  const { token } = useAuth()
+  const toast = useToast()
+  const searchParams = useNextSearchParams()
+  const router = useRouter()
 
-  const locale = useLocale();
+  const locale = useLocale()
 
-  const initStatus = searchParams.get('status') || '';
-  const initUserId = searchParams.get('userId') || '';
-  const initCoinNetworkId = searchParams.get('coinNetworkId') || '';
-  const initStartDate = searchParams.get('startDate') || '';
-  const initEndDate = searchParams.get('endDate') || '';
-  const initSortBy = searchParams.get('sortBy') || '';
-  const initSortOrder = searchParams.get('sortOrder') || '';
-  const initPage = parseInt(searchParams.get('page')) || 1;
+  const initStatus = searchParams.get('status') || ''
+  const initUserId = searchParams.get('userId') || ''
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
+  const initStartDate = searchParams.get('startDate') || ''
+  const initEndDate = searchParams.get('endDate') || ''
+  const initSortBy = searchParams.get('sortBy') || ''
+  const initSortOrder = searchParams.get('sortOrder') || ''
+  const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false);
-  const [sweeps, setSweeps] = useState([]);
-  const [pagination, setPagination] = useState(null);
-  const [currentPage, setCurrentPage] = useState(initPage);
-  const [retryingId, setRetryingId] = useState(null);
-  const { coins: coinNetworks } = useCoins();
+  const [loading, setLoading] = useState(false)
+  const [sweeps, setSweeps] = useState([])
+  const [pagination, setPagination] = useState(null)
+  const [currentPage, setCurrentPage] = useState(initPage)
+  const [retryingId, setRetryingId] = useState(null)
+  const { coins: coinNetworks } = useCoins()
 
-  const [statusFilter, setStatusFilter] = useState(initStatus);
-  const [userIdFilter, setUserIdFilter] = useState(initUserId);
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId);
-  const [startDateFilter, setStartDateFilter] = useState(initStartDate);
-  const [endDateFilter, setEndDateFilter] = useState(initEndDate);
-  const [sortByFilter, setSortByFilter] = useState(initSortBy);
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder);
+  const [statusFilter, setStatusFilter] = useState(initStatus)
+  const [userIdFilter, setUserIdFilter] = useState(initUserId)
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
+  const [startDateFilter, setStartDateFilter] = useState(initStartDate)
+  const [endDateFilter, setEndDateFilter] = useState(initEndDate)
+  const [sortByFilter, setSortByFilter] = useState(initSortBy)
+  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
-    const f = {};
-    if (initStatus) f.status = initStatus;
-    if (initUserId) f.userId = Number(initUserId);
-    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId);
-    if (initStartDate) f.startDate = initStartDate;
-    if (initEndDate) f.endDate = initEndDate;
-    if (initSortBy) f.sortBy = initSortBy;
-    if (initSortOrder) f.sortOrder = initSortOrder;
-    return f;
-  });
+    const f = {}
+    if (initStatus) f.status = initStatus
+    if (initUserId) f.userId = Number(initUserId)
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
+    if (initStartDate) f.startDate = initStartDate
+    if (initEndDate) f.endDate = initEndDate
+    if (initSortBy) f.sortBy = initSortBy
+    if (initSortOrder) f.sortOrder = initSortOrder
+    return f
+  })
 
   const loadSweeps = useCallback(async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       const data = await getSweeps(token, {
         page: currentPage,
         limit: 20,
-        ...appliedFilters
-      });
-      setSweeps(data.sweeps || data.items || []);
+        ...appliedFilters,
+      })
+      setSweeps(data.sweeps || data.items || [])
 
-      const meta = data.meta || data.pagination;
+      const meta = data.meta || data.pagination
       if (meta) {
         setPagination({
           page: meta.currentPage || meta.page || currentPage,
@@ -82,28 +82,31 @@ export default function SweepTransactions() {
           total: meta.total || 0,
           totalPages: meta.lastPage || meta.totalPages || 1,
           hasPrev: meta.previousPageUrl !== null || (meta.currentPage || meta.page || 1) > 1,
-          hasNext: meta.nextPageUrl !== null || (meta.currentPage || meta.page || 1) < (meta.lastPage || meta.totalPages || 1)
-        });
+          hasNext:
+            meta.nextPageUrl !== null || (meta.currentPage || meta.page || 1) < (meta.lastPage || meta.totalPages || 1),
+        })
       } else {
-        setPagination(null);
+        setPagination(null)
       }
     } catch (error) {
-      logger.error('Failed to load sweep transactions:', error);
-      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }));
+      logger.error('Failed to load sweep transactions:', error)
+      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [token, currentPage, appliedFilters, toast, t]);
+  }, [token, currentPage, appliedFilters, toast, t])
 
   useEffect(() => {
-    loadSweeps();
-  }, [loadSweeps]);
+    loadSweeps()
+  }, [loadSweeps])
 
   function syncSearchParams(filters, page) {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => {if (v !== undefined && v !== '') params.set(k, v);});
-    if (page > 1) params.set('page', page);
-    window.history.replaceState(null, '', `?${params.toString()}`);
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') params.set(k, v)
+    })
+    if (page > 1) params.set('page', page)
+    window.history.replaceState(null, '', `?${params.toString()}`)
   }
 
   function applyFilters() {
@@ -114,65 +117,65 @@ export default function SweepTransactions() {
       startDate: startDateFilter || undefined,
       endDate: endDateFilter || undefined,
       sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined
-    };
-    setAppliedFilters(f);
-    setCurrentPage(1);
-    syncSearchParams(f, 1);
+      sortOrder: sortOrderFilter || undefined,
+    }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
   }
 
   function resetFilters() {
-    setStatusFilter('');
-    setUserIdFilter('');
-    setCoinNetworkIdFilter('');
-    setStartDateFilter('');
-    setEndDateFilter('');
-    setSortByFilter('');
-    setSortOrderFilter('');
-    setAppliedFilters({});
-    setCurrentPage(1);
-    window.history.replaceState(null, '', window.location.pathname);
+    setStatusFilter('')
+    setUserIdFilter('')
+    setCoinNetworkIdFilter('')
+    setStartDateFilter('')
+    setEndDateFilter('')
+    setSortByFilter('')
+    setSortOrderFilter('')
+    setAppliedFilters({})
+    setCurrentPage(1)
+    window.history.replaceState(null, '', window.location.pathname)
   }
 
   async function handleRetry(sweepId) {
     try {
-      setRetryingId(sweepId);
-      await forceSweep(token, sweepId);
-      toast.success(t('admin.sweep.retrySuccess', { defaultValue: 'Sweep retry initiated successfully' }));
-      loadSweeps();
+      setRetryingId(sweepId)
+      await forceSweep(token, sweepId)
+      toast.success(t('admin.sweep.retrySuccess', { defaultValue: 'Sweep retry initiated successfully' }))
+      loadSweeps()
     } catch (error) {
-      logger.error('Failed to retry sweep:', error);
-      toast.error(t('admin.sweep.retryError', { defaultValue: 'Failed to retry sweep' }));
+      logger.error('Failed to retry sweep:', error)
+      toast.error(t('admin.sweep.retryError', { defaultValue: 'Failed to retry sweep' }))
     } finally {
-      setRetryingId(null);
+      setRetryingId(null)
     }
   }
 
   function formatAmount(amountRaw, decimals, coinSymbol, networkSymbol) {
-    if (!amountRaw || !decimals) return '0';
+    if (!amountRaw || !decimals) return '0'
 
     try {
-      const chain = AmountNormalizer.detectChain(coinSymbol || '', networkSymbol || '');
-      return AmountNormalizer.fromRaw(amountRaw.toString(), chain, decimals);
+      const chain = AmountNormalizer.detectChain(coinSymbol || '', networkSymbol || '')
+      return AmountNormalizer.fromRaw(amountRaw.toString(), chain, decimals)
     } catch (error) {
-      logger.error('Failed to format amount:', error);
-      const amount = Number(amountRaw) / Math.pow(10, decimals);
-      return amount.toString();
+      logger.error('Failed to format amount:', error)
+      const amount = Number(amountRaw) / Math.pow(10, decimals)
+      return amount.toString()
     }
   }
 
   async function handleCopy(text) {
-    const ok = await copyText(text);
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
   function handlePageChange(page) {
-    setCurrentPage(page);
-    syncSearchParams(appliedFilters, page);
+    setCurrentPage(page)
+    syncSearchParams(appliedFilters, page)
   }
 
   if (loading && sweeps.length === 0) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   return (
@@ -188,26 +191,35 @@ export default function SweepTransactions() {
                     {t('admin.sweep.transactions', { defaultValue: 'Sweeps' })}
                   </h4>
                   <p className="text-surface-500 mb-0">
-                    {t('admin.sweep.transactionsDesc', { defaultValue: 'View all sweep transactions and their status' })}
+                    {t('admin.sweep.transactionsDesc', {
+                      defaultValue: 'View all sweep transactions and their status',
+                    })}
                   </p>
                 </div>
                 <RefreshButton onClick={loadSweeps} loading={loading} />
               </div>
             </div>
             <SweepTransactionFilters
-              statusFilter={statusFilter} setStatusFilter={setStatusFilter}
-              userIdFilter={userIdFilter} setUserIdFilter={setUserIdFilter}
-              coinNetworkIdFilter={coinNetworkIdFilter} setCoinNetworkIdFilter={setCoinNetworkIdFilter}
-              startDateFilter={startDateFilter} setStartDateFilter={setStartDateFilter}
-              endDateFilter={endDateFilter} setEndDateFilter={setEndDateFilter}
-              sortByFilter={sortByFilter} setSortByFilter={setSortByFilter}
-              sortOrderFilter={sortOrderFilter} setSortOrderFilter={setSortOrderFilter}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              userIdFilter={userIdFilter}
+              setUserIdFilter={setUserIdFilter}
+              coinNetworkIdFilter={coinNetworkIdFilter}
+              setCoinNetworkIdFilter={setCoinNetworkIdFilter}
+              startDateFilter={startDateFilter}
+              setStartDateFilter={setStartDateFilter}
+              endDateFilter={endDateFilter}
+              setEndDateFilter={setEndDateFilter}
+              sortByFilter={sortByFilter}
+              setSortByFilter={setSortByFilter}
+              sortOrderFilter={sortOrderFilter}
+              setSortOrderFilter={setSortOrderFilter}
               coinNetworks={coinNetworks}
               locale={locale}
               loading={loading}
               onApply={applyFilters}
-              onReset={resetFilters} />
-            
+              onReset={resetFilters}
+            />
           </Card>
 
           <SweepTransactionTable
@@ -220,10 +232,10 @@ export default function SweepTransactions() {
             statusBadgeClass={(s) => getStatusBadgeClass(s, 'sweep')}
             onNavigate={(id) => router.push(`/admin/sweeps/${id}`)}
             onRetry={handleRetry}
-            onPageChange={handlePageChange} />
-          
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

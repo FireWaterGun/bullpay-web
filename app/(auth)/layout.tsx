@@ -2,11 +2,7 @@
  * Auth layout — centered, no sidebar.
  */
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="auth-page">
       {/* Background decorations */}
@@ -17,9 +13,7 @@ export default function AuthLayout({
         <div className="auth-grid"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-[460px]">
-        {children}
-      </div>
+      <div className="relative z-10 w-full max-w-[460px]">{children}</div>
     </div>
   )
 }

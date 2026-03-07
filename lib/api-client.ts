@@ -35,10 +35,7 @@ interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
   skipAuthRedirect?: boolean
 }
 
-export async function apiFetch<T = unknown>(
-  path: string,
-  options: ApiFetchOptions = {}
-): Promise<T> {
+export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   const { token, body, skipAuthRedirect, ...fetchOptions } = options
 
   const headers: Record<string, string> = {
@@ -133,8 +130,8 @@ export async function apiFetch<T = unknown>(
  *   import { cookies } from 'next/headers'
  *   const token = getTokenFromCookies(await cookies())
  */
-export function getTokenFromCookies(
-  cookieStore: { get: (name: string) => { value: string } | undefined }
-): string | null {
+export function getTokenFromCookies(cookieStore: {
+  get: (name: string) => { value: string } | undefined
+}): string | null {
   return cookieStore.get('bullpay_token')?.value || null
 }

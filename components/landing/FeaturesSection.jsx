@@ -37,7 +37,9 @@ export default function FeaturesSection() {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
         <div className="py-10 px-6 rounded-2xl sm:py-12 sm:px-8 sm:rounded-[20px] lg:py-20 lg:px-16 lg:rounded-3xl bg-surface-200">
           <div className="text-center mb-5">
-            <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-surface-900 tracking-[-0.025em] leading-[1.15] mb-3">Why businesses choose us</h2>
+            <h2 className="text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] font-extrabold text-surface-900 tracking-[-0.025em] leading-[1.15] mb-3">
+              Why businesses choose us
+            </h2>
             <p className="text-surface-500 text-[1.1rem] leading-[1.6] mb-0 text-surface-600">
               Everything you need to accept crypto at scale
             </p>
@@ -47,7 +49,10 @@ export default function FeaturesSection() {
             {FEATURES.map((f) => (
               <div key={f.title}>
                 <div className="bg-card rounded-[20px] p-7 sm:rounded-2xl sm:p-9 h-full transition-transform duration-200 hover:-translate-y-0.5">
-                  <div className="w-12 h-12 rounded-[14px] flex items-center justify-center text-[1.3rem] mb-5" style={{ background: f.bg, color: f.color }}>
+                  <div
+                    className="w-12 h-12 rounded-[14px] flex items-center justify-center text-[1.3rem] mb-5"
+                    style={{ background: f.bg, color: f.color }}
+                  >
                     <i className={`bx ${f.icon}`}></i>
                   </div>
                   <h5 className="font-bold mb-2 text-surface-900 text-[1.05rem]">{f.title}</h5>

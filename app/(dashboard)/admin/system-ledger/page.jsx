@@ -1,93 +1,95 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams as useNextSearchParams } from 'next/navigation';
-import { useAuth } from '@/app/providers';
+import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams as useNextSearchParams } from 'next/navigation'
+import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useLocale } from '@/hooks/useLocale';
-import { useToast } from '@/app/providers';
-import { getSystemLedgerEntries } from '@/lib/api/admin';
-import { useCoins } from '@/hooks/useCoins';
-import SystemLedgerFilters from '@/components/ledger/SystemLedgerFilters';
-import SystemLedgerTable from '@/components/ledger/SystemLedgerTable';
-import { logger } from '@/lib/utils/logger';
-import RefreshButton from '@/components/RefreshButton';
-import PageSpinner from '@/components/PageSpinner';
+import { useLocale } from '@/hooks/useLocale'
+import { useToast } from '@/app/providers'
+import { getSystemLedgerEntries } from '@/lib/api/admin'
+import { useCoins } from '@/hooks/useCoins'
+import SystemLedgerFilters from '@/components/ledger/SystemLedgerFilters'
+import SystemLedgerTable from '@/components/ledger/SystemLedgerTable'
+import { logger } from '@/lib/utils/logger'
+import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
 
 export default function SystemLedgerList() {
-  const { t } = useAdminTranslation();
-  const { token } = useAuth();
-  const toast = useToast();
-  const searchParams = useNextSearchParams();
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const toast = useToast()
+  const searchParams = useNextSearchParams()
 
-  const locale = useLocale();
+  const locale = useLocale()
 
-  const initType = searchParams.get('type') || '';
-  const initWalletId = searchParams.get('walletId') || '';
-  const initCoinNetworkId = searchParams.get('coinNetworkId') || '';
-  const initEntryCode = searchParams.get('entryCode') || '';
-  const initState = searchParams.get('state') || '';
-  const initTxHash = searchParams.get('txHash') || '';
-  const initStartDate = searchParams.get('startDate') || '';
-  const initEndDate = searchParams.get('endDate') || '';
-  const initPage = parseInt(searchParams.get('page')) || 1;
+  const initType = searchParams.get('type') || ''
+  const initWalletId = searchParams.get('walletId') || ''
+  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
+  const initEntryCode = searchParams.get('entryCode') || ''
+  const initState = searchParams.get('state') || ''
+  const initTxHash = searchParams.get('txHash') || ''
+  const initStartDate = searchParams.get('startDate') || ''
+  const initEndDate = searchParams.get('endDate') || ''
+  const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false);
-  const [entries, setEntries] = useState([]);
-  const [pagination, setPagination] = useState(null);
-  const [currentPage, setCurrentPage] = useState(initPage);
-  const { coins: coinNetworks } = useCoins();
+  const [loading, setLoading] = useState(false)
+  const [entries, setEntries] = useState([])
+  const [pagination, setPagination] = useState(null)
+  const [currentPage, setCurrentPage] = useState(initPage)
+  const { coins: coinNetworks } = useCoins()
 
-  const [typeFilter, setTypeFilter] = useState(initType);
-  const [walletIdFilter, setWalletIdFilter] = useState(initWalletId);
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId);
-  const [entryCodeFilter, setEntryCodeFilter] = useState(initEntryCode);
-  const [stateFilter, setStateFilter] = useState(initState);
-  const [txHashFilter, setTxHashFilter] = useState(initTxHash);
-  const [startDateFilter, setStartDateFilter] = useState(initStartDate);
-  const [endDateFilter, setEndDateFilter] = useState(initEndDate);
+  const [typeFilter, setTypeFilter] = useState(initType)
+  const [walletIdFilter, setWalletIdFilter] = useState(initWalletId)
+  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
+  const [entryCodeFilter, setEntryCodeFilter] = useState(initEntryCode)
+  const [stateFilter, setStateFilter] = useState(initState)
+  const [txHashFilter, setTxHashFilter] = useState(initTxHash)
+  const [startDateFilter, setStartDateFilter] = useState(initStartDate)
+  const [endDateFilter, setEndDateFilter] = useState(initEndDate)
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
-    const f = {};
-    if (initType) f.type = initType;
-    if (initWalletId) f.walletId = Number(initWalletId);
-    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId);
-    if (initEntryCode) f.entryCode = initEntryCode;
-    if (initState) f.state = initState;
-    if (initTxHash) f.txHash = initTxHash;
-    if (initStartDate) f.startDate = initStartDate;
-    if (initEndDate) f.endDate = initEndDate;
-    return f;
-  });
+    const f = {}
+    if (initType) f.type = initType
+    if (initWalletId) f.walletId = Number(initWalletId)
+    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
+    if (initEntryCode) f.entryCode = initEntryCode
+    if (initState) f.state = initState
+    if (initTxHash) f.txHash = initTxHash
+    if (initStartDate) f.startDate = initStartDate
+    if (initEndDate) f.endDate = initEndDate
+    return f
+  })
 
   const loadEntries = useCallback(async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       const data = await getSystemLedgerEntries(token, {
         page: currentPage,
         limit: 20,
-        ...appliedFilters
-      });
-      setEntries(data.items || []);
-      setPagination(data.pagination || null);
+        ...appliedFilters,
+      })
+      setEntries(data.items || [])
+      setPagination(data.pagination || null)
     } catch (error) {
-      logger.error('Failed to load system ledger entries:', error);
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }));
+      logger.error('Failed to load system ledger entries:', error)
+      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [token, currentPage, appliedFilters, toast, t]);
+  }, [token, currentPage, appliedFilters, toast, t])
 
   useEffect(() => {
-    loadEntries();
-  }, [loadEntries]);
+    loadEntries()
+  }, [loadEntries])
 
   function syncSearchParams(filters, page) {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => {if (v !== undefined && v !== '') params.set(k, v);});
-    if (page > 1) params.set('page', page);
-    window.history.replaceState(null, '', `?${params.toString()}`);
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') params.set(k, v)
+    })
+    if (page > 1) params.set('page', page)
+    window.history.replaceState(null, '', `?${params.toString()}`)
   }
 
   function applyFilters() {
@@ -99,29 +101,29 @@ export default function SystemLedgerList() {
       state: stateFilter || undefined,
       txHash: txHashFilter || undefined,
       startDate: startDateFilter || undefined,
-      endDate: endDateFilter || undefined
-    };
-    setAppliedFilters(f);
-    setCurrentPage(1);
-    syncSearchParams(f, 1);
+      endDate: endDateFilter || undefined,
+    }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
   }
 
   function resetFilters() {
-    setTypeFilter('');
-    setWalletIdFilter('');
-    setCoinNetworkIdFilter('');
-    setEntryCodeFilter('');
-    setStateFilter('');
-    setTxHashFilter('');
-    setStartDateFilter('');
-    setEndDateFilter('');
-    setAppliedFilters({});
-    setCurrentPage(1);
-    window.history.replaceState(null, '', window.location.pathname);
+    setTypeFilter('')
+    setWalletIdFilter('')
+    setCoinNetworkIdFilter('')
+    setEntryCodeFilter('')
+    setStateFilter('')
+    setTxHashFilter('')
+    setStartDateFilter('')
+    setEndDateFilter('')
+    setAppliedFilters({})
+    setCurrentPage(1)
+    window.history.replaceState(null, '', window.location.pathname)
   }
 
   if (loading && entries.length === 0) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   return (
@@ -165,8 +167,8 @@ export default function SystemLedgerList() {
                 endDateFilter={endDateFilter}
                 setEndDateFilter={setEndDateFilter}
                 onApply={applyFilters}
-                onReset={resetFilters} />
-              
+                onReset={resetFilters}
+              />
             </div>
           </Card>
 
@@ -177,10 +179,10 @@ export default function SystemLedgerList() {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             syncSearchParams={syncSearchParams}
-            appliedFilters={appliedFilters} />
-          
+            appliedFilters={appliedFilters}
+          />
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

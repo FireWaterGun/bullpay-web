@@ -9,13 +9,19 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
         <div className="rounded-full bg-surface-100 dark:bg-dark-elevated flex items-center justify-center mb-3 w-16 h-16">
           <i className="bx bx-line-chart text-3xl"></i>
         </div>
-        <span className="font-medium text-surface-900">{t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}</span>
-        <span className="text-surface-500 text-sm mt-1">{t ? t('userDashboard.noDataSub', { defaultValue: 'Select a date range with transactions' }) : 'Select a date range with transactions'}</span>
+        <span className="font-medium text-surface-900">
+          {t ? t('userDashboard.noDataAvailable', { defaultValue: 'No data available' }) : 'No data available'}
+        </span>
+        <span className="text-surface-500 text-sm mt-1">
+          {t
+            ? t('userDashboard.noDataSub', { defaultValue: 'Select a date range with transactions' })
+            : 'Select a date range with transactions'}
+        </span>
       </div>
     )
   }
 
-  const allValues = data.flatMap(d => [d.deposit || 0, d.withdrawal || 0, d.netFlow || 0])
+  const allValues = data.flatMap((d) => [d.deposit || 0, d.withdrawal || 0, d.netFlow || 0])
   const rawMax = Math.max(...allValues, 0)
   const rawMin = Math.min(...allValues, 0)
 
@@ -25,10 +31,15 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
     const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
     const nice = roughStep / mag
     let step
-    if (nice <= 1.5) { step = Number(mag); }
-    else if (nice <= 3) { step = 2 * mag; }
-    else if (nice <= 7) { step = 5 * mag; }
-    else { step = 10 * mag; }
+    if (nice <= 1.5) {
+      step = Number(mag)
+    } else if (nice <= 3) {
+      step = 2 * mag
+    } else if (nice <= 7) {
+      step = 5 * mag
+    } else {
+      step = 10 * mag
+    }
     const niceMin = Math.floor(min / step) * step
     const niceMax = Math.ceil(max / step) * step
     const labels = []
@@ -78,7 +89,8 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
           {/* Y-axis */}
           <div className="shrink-0 relative" style={{ width: yAxisW, height: chartH }}>
             {yScale.labels.map((v) => (
-              <div className="absolute right-[8px] text-[0.72rem] text-surface-500 whitespace-nowrap"
+              <div
+                className="absolute right-[8px] text-[0.72rem] text-surface-500 whitespace-nowrap"
                 key={`y-${v}`}
                 style={{ top: yPos(v) - 8 }}
               >
@@ -90,9 +102,16 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
           <div className="relative flex-1" style={{ minWidth: barAreaW, height: chartH }}>
             {/* Grid lines */}
             {yScale.labels.map((v) => (
-              <div className="absolute left-[0px] right-[0px]"
+              <div
+                className="absolute left-[0px] right-[0px]"
                 key={`grid-${v}`}
-                style={{ top: yPos(v), borderTop: v === 0 ? '1.5px solid var(--color-surface-500, #6b7280)' : '1px dashed var(--color-surface-200, #e5e7eb)' }}
+                style={{
+                  top: yPos(v),
+                  borderTop:
+                    v === 0
+                      ? '1.5px solid var(--color-surface-500, #6b7280)'
+                      : '1px dashed var(--color-surface-200, #e5e7eb)',
+                }}
               />
             ))}
             {/* Bars + line */}
@@ -118,24 +137,67 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
 
                 return (
                   <g key={item.date || i}>
-                    <rect x={cx - barW - 1} y={depTop} width={barW} height={depH} rx={2} fill="var(--color-primary-600, #2563eb)">
-                      <title>{t ? t('userDashboard.chartDeposit', { value: formatUsd(dep), defaultValue: `Deposit: ${formatUsd(dep)}` }) : `Deposit: ${formatUsd(dep)}`}</title>
+                    <rect
+                      x={cx - barW - 1}
+                      y={depTop}
+                      width={barW}
+                      height={depH}
+                      rx={2}
+                      fill="var(--color-primary-600, #2563eb)"
+                    >
+                      <title>
+                        {t
+                          ? t('userDashboard.chartDeposit', {
+                              value: formatUsd(dep),
+                              defaultValue: `Deposit: ${formatUsd(dep)}`,
+                            })
+                          : `Deposit: ${formatUsd(dep)}`}
+                      </title>
                     </rect>
                     <rect x={cx + 1} y={wthTop} width={barW} height={wthH} rx={2} fill="url(#withdrawalPattern)">
-                      <title>{t ? t('userDashboard.chartWithdrawal', { value: formatUsd(wth), defaultValue: `Withdrawal: ${formatUsd(wth)}` }) : `Withdrawal: ${formatUsd(wth)}`}</title>
+                      <title>
+                        {t
+                          ? t('userDashboard.chartWithdrawal', {
+                              value: formatUsd(wth),
+                              defaultValue: `Withdrawal: ${formatUsd(wth)}`,
+                            })
+                          : `Withdrawal: ${formatUsd(wth)}`}
+                      </title>
                     </rect>
                   </g>
                 )
               })}
               {/* Net flow line (smooth curve) */}
-              <path d={netFlowPath} fill="none" stroke="var(--color-info-500)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d={netFlowPath}
+                fill="none"
+                stroke="var(--color-info-500)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
               {/* Net flow dots */}
               {data.map((item, i) => {
                 const cx = i * barGroupW + barGroupW / 2
                 const cy = yPos(item.netFlow || 0)
                 return (
-                  <circle key={`dot-${item.date || i}`} cx={cx} cy={cy} r={3} fill="var(--color-info-500)" className="stroke-card" strokeWidth="1.5">
-                    <title>{t ? t('userDashboard.chartNetFlow', { value: formatUsd(item.netFlow || 0), defaultValue: `Net Flow: ${formatUsd(item.netFlow || 0)}` }) : `Net Flow: ${formatUsd(item.netFlow || 0)}`}</title>
+                  <circle
+                    key={`dot-${item.date || i}`}
+                    cx={cx}
+                    cy={cy}
+                    r={3}
+                    fill="var(--color-info-500)"
+                    className="stroke-card"
+                    strokeWidth="1.5"
+                  >
+                    <title>
+                      {t
+                        ? t('userDashboard.chartNetFlow', {
+                            value: formatUsd(item.netFlow || 0),
+                            defaultValue: `Net Flow: ${formatUsd(item.netFlow || 0)}`,
+                          })
+                        : `Net Flow: ${formatUsd(item.netFlow || 0)}`}
+                    </title>
                   </circle>
                 )
               })}
@@ -148,11 +210,20 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
               <small>{t ? t('userDashboard.deposits', { defaultValue: 'Deposit' }) : 'Deposit'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0" style={{ background: 'repeating-conic-gradient(var(--color-surface-400) 0% 25%, var(--color-surface-500) 0% 50%) 50%/6px 6px' }}></span>
+              <span
+                className="w-3.5 h-3.5 rounded-[3px] inline-block shrink-0"
+                style={{
+                  background:
+                    'repeating-conic-gradient(var(--color-surface-400) 0% 25%, var(--color-surface-500) 0% 50%) 50%/6px 6px',
+                }}
+              ></span>
               <small>{t ? t('userDashboard.withdrawals', { defaultValue: 'Withdrawal' }) : 'Withdrawal'}</small>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-4 inline-block shrink-0" style={{ borderBottom: '2px solid var(--color-info-500)' }}></span>
+              <span
+                className="w-4 inline-block shrink-0"
+                style={{ borderBottom: '2px solid var(--color-info-500)' }}
+              ></span>
               <small>{t ? t('userDashboard.netFlow', { defaultValue: 'Net Flow' }) : 'Net Flow'}</small>
             </div>
           </div>
@@ -162,7 +233,9 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
           {data.map((item) => (
             <div className="text-center shrink-0" key={`x-${item.date}`} style={{ width: barGroupW }}>
               <small className="text-surface-500 text-[0.72rem]">
-                {item.date ? new Date(`${item.date  }T00:00:00`).toLocaleDateString(locale, { month: 'short', day: 'numeric' }) : ''}
+                {item.date
+                  ? new Date(`${item.date}T00:00:00`).toLocaleDateString(locale, { month: 'short', day: 'numeric' })
+                  : ''}
               </small>
             </div>
           ))}
@@ -174,19 +247,26 @@ function DailyTrendChart({ data, meta, height = 300, locale = 'en-US', t }) {
           <div className="flex flex-wrap gap-3 items-center">
             <div>
               <i className="bx bx-calendar text-primary-600 mr-1"></i>
-              <small className="font-medium">{meta.totalDays || 0} {t ? t('userDashboard.daysTotal', { defaultValue: 'days total' }) : 'days total'}</small>
+              <small className="font-medium">
+                {meta.totalDays || 0} {t ? t('userDashboard.daysTotal', { defaultValue: 'days total' }) : 'days total'}
+              </small>
               <small className="text-surface-500 mx-1">&bull;</small>
-              <small>{meta.daysWithData || 0} {t ? t('userDashboard.daysWithData', { defaultValue: 'days with data' }) : 'days with data'}</small>
+              <small>
+                {meta.daysWithData || 0}{' '}
+                {t ? t('userDashboard.daysWithData', { defaultValue: 'days with data' }) : 'days with data'}
+              </small>
             </div>
             <div>
               <small className="text-success-500">
                 <i className="bx bx-up-arrow-alt"></i>
-                {meta.daysPositiveFlow || 0} {t ? t('userDashboard.daysPositiveFlow', { defaultValue: 'days positive flow' }) : 'days positive flow'}
+                {meta.daysPositiveFlow || 0}{' '}
+                {t ? t('userDashboard.daysPositiveFlow', { defaultValue: 'days positive flow' }) : 'days positive flow'}
               </small>
               <small className="text-surface-500 mx-1">&bull;</small>
               <small className="text-danger-500">
                 <i className="bx bx-down-arrow-alt"></i>
-                {meta.daysNegativeFlow || 0} {t ? t('userDashboard.daysNegative', { defaultValue: 'days negative' }) : 'days negative'}
+                {meta.daysNegativeFlow || 0}{' '}
+                {t ? t('userDashboard.daysNegative', { defaultValue: 'days negative' }) : 'days negative'}
               </small>
             </div>
           </div>

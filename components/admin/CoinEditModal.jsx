@@ -87,7 +87,11 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
       errors.name = t('crypto.nameTooLong', { defaultValue: 'Name must be max 30 characters' })
     }
     if (formData.logoUrl) {
-      try { new URL(formData.logoUrl) } catch { errors.logoUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' }) }
+      try {
+        new URL(formData.logoUrl)
+      } catch {
+        errors.logoUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
+      }
     }
     return errors
   }
@@ -125,7 +129,10 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={saving ? undefined : onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={saving ? undefined : onClose}
+    >
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="bg-card rounded-xl shadow-xl">
           {/* Header */}
@@ -154,23 +161,25 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
               <>
                 {error && (
                   <Alert role="alert" className="mb-4">
-                    <i className="bx bx-error-circle mr-2"></i>{error}
+                    <i className="bx bx-error-circle mr-2"></i>
+                    {error}
                   </Alert>
                 )}
 
                 <form onSubmit={handleSubmit} id="coin-edit-form" noValidate>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="modal-symbol">
-                        {t('crypto.symbol', { defaultValue: 'Symbol' })}
-                      </Label>
+                      <Label htmlFor="modal-symbol">{t('crypto.symbol', { defaultValue: 'Symbol' })}</Label>
                       <Input id="modal-symbol" name="symbol" value={formData.symbol} disabled className="uppercase" />
                     </div>
                     <div>
-                      <Label htmlFor="modal-type">
-                        {t('crypto.type', { defaultValue: 'Type' })}
-                      </Label>
-                      <Input id="modal-type" name="type" value={formData.type === 'native' ? 'Native' : 'Token'} disabled />
+                      <Label htmlFor="modal-type">{t('crypto.type', { defaultValue: 'Type' })}</Label>
+                      <Input
+                        id="modal-type"
+                        name="type"
+                        value={formData.type === 'native' ? 'Native' : 'Token'}
+                        disabled
+                      />
                     </div>
                     <div>
                       <Label htmlFor="modal-name">
@@ -189,18 +198,14 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
                       {fieldErrors.name && <p className="mt-1 text-sm text-danger-500">{fieldErrors.name}</p>}
                     </div>
                     <div>
-                      <Label htmlFor="modal-status">
-                        {t('invoices.statusCol', { defaultValue: 'Status' })}
-                      </Label>
+                      <Label htmlFor="modal-status">{t('invoices.statusCol', { defaultValue: 'Status' })}</Label>
                       <Select id="modal-status" name="status" value={formData.status} onChange={handleChange}>
                         <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>
                         <option value="inactive">{t('crypto.inactive', { defaultValue: 'Inactive' })}</option>
                       </Select>
                     </div>
                     <div className="col-span-2">
-                      <Label htmlFor="modal-logoUrl">
-                        {t('crypto.logoUrl', { defaultValue: 'Logo URL' })}
-                      </Label>
+                      <Label htmlFor="modal-logoUrl">{t('crypto.logoUrl', { defaultValue: 'Logo URL' })}</Label>
                       <Input
                         id="modal-logoUrl"
                         name="logoUrl"

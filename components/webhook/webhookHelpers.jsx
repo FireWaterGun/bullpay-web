@@ -21,18 +21,20 @@ const BADGE_COLORS = {
 
 /** Success / Failed badge */
 export function successBadge(val, t) {
-  if (val === true || val === 1)
-    {return (
+  if (val === true || val === 1) {
+    return (
       <span className={`${badgeBase} ${BADGE_COLORS.success}`}>
         {t('webhookLog.success', { defaultValue: 'Success' })}
       </span>
-    )}
-  if (val === false || val === 0)
-    {return (
+    )
+  }
+  if (val === false || val === 0) {
+    return (
       <span className={`${badgeBase} ${BADGE_COLORS.danger}`}>
         {t('webhookLog.failed', { defaultValue: 'Failed' })}
       </span>
-    )}
+    )
+  }
   return '-'
 }
 

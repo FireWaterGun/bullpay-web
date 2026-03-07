@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
@@ -8,12 +8,12 @@ import { useToast } from '@/app/providers'
 import { getGasTopupById } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { formatCoinAmount } from '@/lib/utils/format'
-import CoinImg from '@/components/CoinImg';
+import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import GasTopupDetailsCard from '@/components/admin/GasTopupDetailsCard';
-import GasTopupTransactionCard from '@/components/admin/GasTopupTransactionCard';
+import GasTopupDetailsCard from '@/components/admin/GasTopupDetailsCard'
+import GasTopupTransactionCard from '@/components/admin/GasTopupTransactionCard'
 import { logger } from '@/lib/utils/logger'
-import PageSpinner from '@/components/PageSpinner';
+import PageSpinner from '@/components/PageSpinner'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -22,48 +22,48 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function GasTopupDetail() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth();
-  const toast = useToast();
-  const router = useRouter();
-  const { id } = useParams();
+  const { token } = useAuth()
+  const toast = useToast()
+  const router = useRouter()
+  const { id } = useParams()
 
-  const [loading, setLoading] = useState(true);
-  const [topup, setTopup] = useState(null);
+  const [loading, setLoading] = useState(true)
+  const [topup, setTopup] = useState(null)
 
   const loadTopup = useCallback(async () => {
     try {
-      setLoading(true);
-      const data = await getGasTopupById(token, Number(id));
-      setTopup(data);
+      setLoading(true)
+      const data = await getGasTopupById(token, Number(id))
+      setTopup(data)
     } catch (error) {
-      logger.error('Failed to load gas topup:', error);
-      toast.error(t('admin.gasTopup.loadDetailError', { defaultValue: 'Failed to load gas topup details' }));
+      logger.error('Failed to load gas topup:', error)
+      toast.error(t('admin.gasTopup.loadDetailError', { defaultValue: 'Failed to load gas topup details' }))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }, [token, id, toast, t])
 
   useEffect(() => {
-    loadTopup();
-  }, [loadTopup]);
+    loadTopup()
+  }, [loadTopup])
 
   function formatAmount(amountRaw, decimals = 18) {
-    if (!amountRaw) return '0';
+    if (!amountRaw) return '0'
     try {
-      const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals);
-      return formatCoinAmount(value);
+      const value = AmountNormalizer.fromRawSimple(amountRaw.toString(), decimals)
+      return formatCoinAmount(value)
     } catch (e) {
-      return amountRaw.toString();
+      return amountRaw.toString()
     }
   }
 
   async function handleCopy(text) {
-    const ok = await copyText(text);
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }));
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
   if (loading) {
-    return <PageSpinner />;
+    return <PageSpinner />
   }
 
   if (!topup) {
@@ -71,36 +71,35 @@ export default function GasTopupDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-surface-500 mt-2">{t('admin.gasTopup.notFound', { defaultValue: 'Gas topup not found' })}</p>
-          <Button onClick={() => router.back()}>
-            {t('actions.back', { defaultValue: 'Back' })}
-          </Button>
+          <p className="text-surface-500 mt-2">
+            {t('admin.gasTopup.notFound', { defaultValue: 'Gas topup not found' })}
+          </p>
+          <Button onClick={() => router.back()}>{t('actions.back', { defaultValue: 'Back' })}</Button>
         </div>
-      </div>);
-
+      </div>
+    )
   }
 
-  let metadata = {};
+  let metadata = {}
   try {
-    metadata = typeof topup.metadata === 'string' ? JSON.parse(topup.metadata) : topup.metadata || {};
-  } catch (e) {/* ignore */}
+    metadata = typeof topup.metadata === 'string' ? JSON.parse(topup.metadata) : topup.metadata || {}
+  } catch (e) {
+    /* ignore */
+  }
 
-  const coinSymbol = (topup.coinNetwork?.coin?.symbol || topup.coinSymbol || metadata.tokenSymbol || '').toUpperCase();
-  const networkSymbol = (topup.coinNetwork?.network?.symbol || topup.networkSymbol || '').toUpperCase();
-  const networkName = topup.coinNetwork?.network?.name || topup.networkName || metadata.networkName || '';
-  const explorerUrl = topup.coinNetwork?.network?.explorerUrl || topup.explorerUrl || null;
-  const decimals = topup.coinNetwork?.decimals || topup.decimals || 18;
+  const coinSymbol = (topup.coinNetwork?.coin?.symbol || topup.coinSymbol || metadata.tokenSymbol || '').toUpperCase()
+  const networkSymbol = (topup.coinNetwork?.network?.symbol || topup.networkSymbol || '').toUpperCase()
+  const networkName = topup.coinNetwork?.network?.name || topup.networkName || metadata.networkName || ''
+  const explorerUrl = topup.coinNetwork?.network?.explorerUrl || topup.explorerUrl || null
+  const decimals = topup.coinNetwork?.decimals || topup.decimals || 18
 
-  const failureReason = topup.failureReason || metadata.failureReason || topup.errorMessage || null;
+  const failureReason = topup.failureReason || metadata.failureReason || topup.errorMessage || null
 
   return (
     <div className="grow py-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <Button
-            onClick={() => router.back()} variant="outline-secondary" className="mb-3">
-
-            
+          <Button onClick={() => router.back()} variant="outline-secondary" className="mb-3">
             <i className="bx bx-arrow-back mr-2"></i>
             {t('actions.back', { defaultValue: 'Back' })}
           </Button>
@@ -109,13 +108,7 @@ export default function GasTopupDetail() {
             <div className="p-5">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
-                  {coinSymbol &&
-                  <CoinImg
-                    symbol={coinSymbol}
-                    networkSymbol={networkSymbol}
-                    size={48} />
-
-                  }
+                  {coinSymbol && <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} />}
                   <div>
                     <h4 className="mb-1">
                       {t('admin.gasTopup.detailTitle', { id: topup.id, defaultValue: 'Gas Topup #{{id}}' })}
@@ -124,16 +117,8 @@ export default function GasTopupDetail() {
                       <span className={getStatusBadgeClass(topup.status, 'gasTopup')}>
                         {String(topup.status || '').toUpperCase()}
                       </span>
-                      {coinSymbol &&
-                      <Badge color="secondary">
-                          {coinSymbol}
-                        </Badge>
-                      }
-                      {networkName &&
-                      <Badge color="secondary">
-                          {networkName}
-                        </Badge>
-                      }
+                      {coinSymbol && <Badge color="secondary">{coinSymbol}</Badge>}
+                      {networkName && <Badge color="secondary">{networkName}</Badge>}
                     </div>
                   </div>
                 </div>
@@ -142,7 +127,9 @@ export default function GasTopupDetail() {
                     {formatAmount(topup.topupGasRaw || topup.amountRaw || topup.amount, decimals)}{' '}
                     <span className="text-[0.75em] font-normal">ETH</span>
                   </div>
-                  <small className="text-surface-500">{t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}</small>
+                  <small className="text-surface-500">
+                    {t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}
+                  </small>
                 </div>
               </div>
             </div>
@@ -158,22 +145,17 @@ export default function GasTopupDetail() {
                 decimals={decimals}
                 formatAmount={formatAmount}
                 statusBadgeClass={(s) => getStatusBadgeClass(s, 'gasTopup')}
-                t={t} />
-              
+                t={t}
+              />
             </div>
 
             <div className="md:col-span-6">
-              <GasTopupTransactionCard
-                topup={topup}
-                explorerUrl={explorerUrl}
-                onCopy={handleCopy}
-                t={t} />
-              
+              <GasTopupTransactionCard topup={topup} explorerUrl={explorerUrl} onCopy={handleCopy} t={t} />
             </div>
           </div>
 
-          {metadata && Object.keys(metadata).length > 0 &&
-          <Card className="mb-4">
+          {metadata && Object.keys(metadata).length > 0 && (
+            <Card className="mb-4">
               <div className="px-5 py-4 border-b border-surface-200">
                 <h5 className="mb-0">
                   <i className="bx bx-info-circle mr-2"></i>
@@ -183,51 +165,63 @@ export default function GasTopupDetail() {
               <div className="p-5">
                 <Table>
                   <tbody>
-                    {metadata.tokenSymbol &&
-                    <tr>
-                        <td className="text-surface-500 w-2/5">{t('admin.gasTopup.tokenSymbol', { defaultValue: 'Token Symbol' })}</td>
+                    {metadata.tokenSymbol && (
+                      <tr>
+                        <td className="text-surface-500 w-2/5">
+                          {t('admin.gasTopup.tokenSymbol', { defaultValue: 'Token Symbol' })}
+                        </td>
                         <td>{metadata.tokenSymbol}</td>
                       </tr>
-                    }
-                    {metadata.tokenContractAddress &&
-                    <tr>
-                        <td className="text-surface-500">{t('admin.gasTopup.tokenContract', { defaultValue: 'Token Contract' })}</td>
+                    )}
+                    {metadata.tokenContractAddress && (
+                      <tr>
+                        <td className="text-surface-500">
+                          {t('admin.gasTopup.tokenContract', { defaultValue: 'Token Contract' })}
+                        </td>
                         <td>
                           <code className="break-words text-xs">{metadata.tokenContractAddress}</code>
-                          {explorerUrl &&
-                        <Button variant="text-secondary" size="icon" className="rounded-full ml-1"
-                        href={`${explorerUrl}/address/${metadata.tokenContractAddress}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-
-                        title={t('admin.gasTopup.viewOnExplorer', { defaultValue: 'View on explorer' })}>
-                          
+                          {explorerUrl && (
+                            <Button
+                              variant="text-secondary"
+                              size="icon"
+                              className="rounded-full ml-1"
+                              href={`${explorerUrl}/address/${metadata.tokenContractAddress}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={t('admin.gasTopup.viewOnExplorer', { defaultValue: 'View on explorer' })}
+                            >
                               <i className="bx bx-link-external"></i>
                             </Button>
-                        }
+                          )}
                         </td>
                       </tr>
-                    }
-                    {metadata.networkName &&
-                    <tr>
-                        <td className="text-surface-500">{t('admin.gasTopup.networkName', { defaultValue: 'Network Name' })}</td>
+                    )}
+                    {metadata.networkName && (
+                      <tr>
+                        <td className="text-surface-500">
+                          {t('admin.gasTopup.networkName', { defaultValue: 'Network Name' })}
+                        </td>
                         <td>{metadata.networkName}</td>
                       </tr>
-                    }
-                    {metadata.createdByTask &&
-                    <tr>
-                        <td className="text-surface-500">{t('admin.gasTopup.createdByTask', { defaultValue: 'Created By' })}</td>
-                        <td><code>{metadata.createdByTask}</code></td>
+                    )}
+                    {metadata.createdByTask && (
+                      <tr>
+                        <td className="text-surface-500">
+                          {t('admin.gasTopup.createdByTask', { defaultValue: 'Created By' })}
+                        </td>
+                        <td>
+                          <code>{metadata.createdByTask}</code>
+                        </td>
                       </tr>
-                    }
+                    )}
                   </tbody>
                 </Table>
               </div>
             </Card>
-          }
+          )}
 
-          {failureReason &&
-          <Card className="mb-4">
+          {failureReason && (
+            <Card className="mb-4">
               <div className="px-5 py-4 border-b border-surface-200">
                 <h5 className="mb-0 text-danger">
                   <i className="bx bx-error mr-2"></i>
@@ -235,14 +229,12 @@ export default function GasTopupDetail() {
                 </h5>
               </div>
               <div className="p-5">
-                <pre className="mb-0 text-danger whitespace-pre-wrap break-all text-[0.85rem]">
-                  {failureReason}
-                </pre>
+                <pre className="mb-0 text-danger whitespace-pre-wrap break-all text-[0.85rem]">{failureReason}</pre>
               </div>
             </Card>
-          }
+          )}
         </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

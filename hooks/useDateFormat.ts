@@ -32,15 +32,9 @@ export function useDateFormat() {
   const locale = LOCALE_MAP[i18n.language] || i18n.language || undefined
   const timeZone = user?.timezone || undefined // undefined = browser default
 
-  const opts = useMemo(
-    () => ({ locale, timeZone }),
-    [locale, timeZone]
-  )
+  const opts = useMemo(() => ({ locale, timeZone }), [locale, timeZone])
 
-  const fmtDate = useCallback(
-    (value: string | number | Date | null | undefined) => formatDate(value, opts),
-    [opts]
-  )
+  const fmtDate = useCallback((value: string | number | Date | null | undefined) => formatDate(value, opts), [opts])
 
   const fmtDateTime = useCallback(
     (value: string | number | Date | null | undefined) => formatDateTime(value, opts),

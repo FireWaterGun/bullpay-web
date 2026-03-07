@@ -1,16 +1,19 @@
 # Pusher Private Channel Authentication Setup
 
 ## Overview
+
 This application uses Pusher **private channels** for secure real-time communications. Private channels require server-side authentication to ensure only authorized users can subscribe.
 
 ## Why Private Channels?
 
 **Security Issues with Public Channels:**
+
 - ❌ Anyone can subscribe to `user.123.invoices` and see user data
 - ❌ No authentication or authorization
 - ❌ Data leakage risk
 
 **Benefits of Private Channels:**
+
 - ✅ Server validates each subscription attempt
 - ✅ Only authenticated users can subscribe to their own channels
 - ✅ Prevents unauthorized access to sensitive data
@@ -32,6 +35,7 @@ private-invoice.abc-123
 ### 1. Create Auth Endpoint
 
 Create an endpoint at `/api/pusher/auth` that:
+
 1. Validates user authentication (JWT, session, etc.)
 2. Authorizes channel access
 3. Returns Pusher auth signature
@@ -54,17 +58,17 @@ const pusher = new Pusher({
 const authenticateUser = (req, res, next) => {
   // Example: Check JWT token, session, etc.
   const token = req.headers.authorization?.replace('Bearer ', '');
-  
+
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  
+
   // Verify token and attach user to request
   const user = verifyToken(token);
   if (!user) {
     return res.status(401).json({ error: 'Invalid token' });
   }
-  
+
   req.user = user;
   next();
 };
@@ -79,7 +83,7 @@ router.post('/api/pusher/auth', authenticateUser, (req, res) => {
   if (channel.startsWith('private-user.')) {
     // Extract userId from channel name
     const channelUserId = channel.match(/private-user\.(\d+)\./)?.[1];
-    
+
     // Only allow users to subscribe to their own channels
     if (channelUserId !== userId.toString()) {
       return res.status(403).json({ error: 'Forbidden' });
@@ -87,7 +91,7 @@ router.post('/api/pusher/auth', authenticateUser, (req, res) => {
   } else if (channel.startsWith('private-invoice.')) {
     // Extract invoiceId from channel name
     const invoiceId = channel.replace('private-invoice.', '');
-    
+
     // Check if user owns or has access to this invoice
     const hasAccess = await checkInvoiceAccess(userId, invoiceId);
     if (!hasAccess) {
@@ -124,13 +128,13 @@ class PusherController extends Controller
         // Authorization logic
         if (str_starts_with($channelName, 'private-user.')) {
             $channelUserId = (int) explode('.', $channelName)[1];
-            
+
             if ($channelUserId !== $userId) {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
         } elseif (str_starts_with($channelName, 'private-invoice.')) {
             $invoiceId = str_replace('private-invoice.', '', $channelName);
-            
+
             if (!$this->checkInvoiceAccess($userId, $invoiceId)) {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
@@ -157,16 +161,16 @@ Add authentication token to Pusher config:
 
 ```javascript
 // src/context/PusherContext.jsx
-const token = getAuthToken(); // Get from your auth context
+const token = getAuthToken() // Get from your auth context
 
 const pusherConfig = {
   // ... other config
   auth: {
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  }
-};
+      Authorization: `Bearer ${token}`,
+    },
+  },
+}
 ```
 
 ### 3. Environment Variables
@@ -187,6 +191,7 @@ PUSHER_CLUSTER=ap1
 ## Testing
 
 ### 1. Test Authentication
+
 ```bash
 curl -X POST http://localhost:3000/api/pusher/auth \
   -H "Authorization: Bearer YOUR_TOKEN" \
@@ -198,6 +203,7 @@ curl -X POST http://localhost:3000/api/pusher/auth \
 ```
 
 Should return:
+
 ```json
 {
   "auth": "your_app_key:signature"
@@ -205,19 +211,22 @@ Should return:
 ```
 
 ### 2. Test Subscription
+
 Open browser console and watch for:
+
 ```
 [PusherContext] ✅ Pusher connected successfully!
 ✅ Subscribed to private-user.5.invoices
 ```
 
 ### 3. Test Broadcasting (Backend)
+
 ```javascript
 // Node.js
 pusher.trigger('private-user.5.invoices', 'invoice.created', {
   id: 'inv-123',
-  amount: 100
-});
+  amount: 100,
+})
 ```
 
 ```php
@@ -237,14 +246,17 @@ If migrating from public channels:
 ## Troubleshooting
 
 **401 Unauthorized:**
+
 - Check auth token is valid
 - Verify Authorization header is sent
 
 **403 Forbidden:**
+
 - Check authorization logic
 - Ensure user has access to the channel
 
 **Subscription Failed:**
+
 - Check auth endpoint URL is correct
 - Verify CORS settings
 - Check network tab for auth requests

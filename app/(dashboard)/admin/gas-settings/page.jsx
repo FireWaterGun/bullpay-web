@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useToast } from '@/app/providers';
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { getSettings, upsertSetting } from '@/lib/api/admin';
-import { logger } from '@/lib/utils/logger';
+import { useState, useEffect, useCallback } from 'react'
+import { useAuth, useToast } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { getSettings, upsertSetting } from '@/lib/api/admin'
+import { logger } from '@/lib/utils/logger'
 import Spinner from '@/components/ui/Spinner'
-import GasPriceTab from '@/components/admin/gas-settings/GasPriceTab';
-import GasLimitTab from '@/components/admin/gas-settings/GasLimitTab';
-import GasTopupTab from '@/components/admin/gas-settings/GasTopupTab';
-import GasEditModal from '@/components/admin/gas-settings/GasEditModal';
+import GasPriceTab from '@/components/admin/gas-settings/GasPriceTab'
+import GasLimitTab from '@/components/admin/gas-settings/GasLimitTab'
+import GasTopupTab from '@/components/admin/gas-settings/GasTopupTab'
+import GasEditModal from '@/components/admin/gas-settings/GasEditModal'
 
 // ─── Constants ───────────────────────────────────────────────
 
@@ -17,240 +17,265 @@ const TABS = [
   { key: 'gasPrice', icon: 'bx-gas-pump', labelKey: 'admin.gasSettings.tabGasPrice', defaultLabel: 'Gas Price' },
   { key: 'gasLimit', icon: 'bx-tachometer', labelKey: 'admin.gasSettings.tabGasLimit', defaultLabel: 'Gas Limit' },
   { key: 'gasTopup', icon: 'bx-coin-stack', labelKey: 'admin.gasSettings.tabGasTopup', defaultLabel: 'Gas Topup' },
-];
+]
 
-const OPERATIONS = ['withdrawal', 'sweep', 'topup'];
+const OPERATIONS = ['withdrawal', 'sweep', 'topup']
 
 // ─── Component ───────────────────────────────────────────────
 
 export default function GasSettingsPage() {
-  const { t } = useAdminTranslation();
-  const { token } = useAuth();
-  const toast = useToast();
+  const { t } = useAdminTranslation()
+  const { token } = useAuth()
+  const toast = useToast()
 
-  const [activeTab, setActiveTab] = useState('gasPrice');
-  const [loading, setLoading] = useState(true);
-  const [settingsMap, setSettingsMap] = useState({});
+  const [activeTab, setActiveTab] = useState('gasPrice')
+  const [loading, setLoading] = useState(true)
+  const [settingsMap, setSettingsMap] = useState({})
 
   // Edit modal state
-  const [editModal, setEditModal] = useState(null);
-  const [editForm, setEditForm] = useState({});
-  const [formErrors, setFormErrors] = useState({});
-  const [saving, setSaving] = useState(false);
+  const [editModal, setEditModal] = useState(null)
+  const [editForm, setEditForm] = useState({})
+  const [formErrors, setFormErrors] = useState({})
+  const [saving, setSaving] = useState(false)
 
   // Escape key to close modal
   useEffect(() => {
-    if (!editModal) return;
-    const handler = (e) => { if (e.key === 'Escape' && !saving) setEditModal(null); };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [editModal, saving]);
+    if (!editModal) return
+    const handler = (e) => {
+      if (e.key === 'Escape' && !saving) setEditModal(null)
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [editModal, saving])
 
   // ─── Data Loading ────────────────────────────────────────
 
   const loadSettings = useCallback(async () => {
-    if (!token) return;
+    if (!token) return
     try {
       const [gasPriceRes, gasLimitRes, gasTopupRes] = await Promise.all([
         getSettings(token, { category: 'gas_price', limit: 100 }),
         getSettings(token, { category: 'gas_limit', limit: 100 }),
         getSettings(token, { category: 'gas_topup', limit: 100 }),
-      ]);
+      ])
 
-      const map = {};
-      const allItems = [
-        ...(gasPriceRes?.items || []),
-        ...(gasLimitRes?.items || []),
-        ...(gasTopupRes?.items || []),
-      ];
+      const map = {}
+      const allItems = [...(gasPriceRes?.items || []), ...(gasLimitRes?.items || []), ...(gasTopupRes?.items || [])]
       for (const item of allItems) {
-        const key = item.keyName || item.key_name;
-        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? '';
+        const key = item.keyName || item.key_name
+        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? ''
       }
-      setSettingsMap(map);
+      setSettingsMap(map)
     } catch (error) {
-      logger.error('Failed to load gas settings:', error);
-      toast.error(t('admin.gasSettings.loadError', { defaultValue: 'Failed to load gas settings' }));
+      logger.error('Failed to load gas settings:', error)
+      toast.error(t('admin.gasSettings.loadError', { defaultValue: 'Failed to load gas settings' }))
     }
-  }, [token, t, toast]);
+  }, [token, t, toast])
 
   useEffect(() => {
     async function init() {
-      setLoading(true);
-      await loadSettings();
-      setLoading(false);
+      setLoading(true)
+      await loadSettings()
+      setLoading(false)
     }
-    init();
-  }, [loadSettings]);
+    init()
+  }, [loadSettings])
 
   // ─── Helpers ─────────────────────────────────────────────
 
   function getVal(key, fallback = '—') {
-    const v = settingsMap[key];
-    return v !== undefined && v !== '' ? v : fallback;
+    const v = settingsMap[key]
+    return v !== undefined && v !== '' ? v : fallback
   }
 
   function updateField(field, value) {
-    setEditForm((f) => ({ ...f, [field]: value }));
+    setEditForm((f) => ({ ...f, [field]: value }))
     setFormErrors((e) => {
-      if (!e[field]) return e;
-      const next = { ...e };
-      delete next[field];
-      return next;
-    });
+      if (!e[field]) return e
+      const next = { ...e }
+      delete next[field]
+      return next
+    })
   }
 
   function validateNumber(value, { min, max, integer, fieldLabel } = {}) {
-    if (value === '' || value === undefined) return null;
-    const n = Number(value);
-    if (isNaN(n) || value.toString().trim() === '') return t('admin.gasSettings.errNotANumber', { defaultValue: '{{field}} must be a valid number', field: fieldLabel || 'Value' });
-    if (integer && !Number.isInteger(n)) return t('admin.gasSettings.errMustBeInteger', { defaultValue: '{{field}} must be an integer', field: fieldLabel || 'Value' });
-    if (min !== undefined && n < min) return t('admin.gasSettings.errMin', { defaultValue: '{{field}} must be at least {{min}}', field: fieldLabel || 'Value', min });
-    if (max !== undefined && n > max) return t('admin.gasSettings.errMax', { defaultValue: '{{field}} cannot exceed {{max}}', field: fieldLabel || 'Value', max });
-    return null;
+    if (value === '' || value === undefined) return null
+    const n = Number(value)
+    if (isNaN(n) || value.toString().trim() === '')
+      return t('admin.gasSettings.errNotANumber', {
+        defaultValue: '{{field}} must be a valid number',
+        field: fieldLabel || 'Value',
+      })
+    if (integer && !Number.isInteger(n))
+      return t('admin.gasSettings.errMustBeInteger', {
+        defaultValue: '{{field}} must be an integer',
+        field: fieldLabel || 'Value',
+      })
+    if (min !== undefined && n < min)
+      return t('admin.gasSettings.errMin', {
+        defaultValue: '{{field}} must be at least {{min}}',
+        field: fieldLabel || 'Value',
+        min,
+      })
+    if (max !== undefined && n > max)
+      return t('admin.gasSettings.errMax', {
+        defaultValue: '{{field}} cannot exceed {{max}}',
+        field: fieldLabel || 'Value',
+        max,
+      })
+    return null
   }
 
   // ─── Open Edit Modals ────────────────────────────────────
 
   function openGasPriceEdit(network) {
-    const net = network.key;
-    const form = { maxGasPriceGwei: getVal(`gas_price.${net}.max_gas_price_gwei`, '') };
+    const net = network.key
+    const form = { maxGasPriceGwei: getVal(`gas_price.${net}.max_gas_price_gwei`, '') }
     for (const op of OPERATIONS) {
-      form[`${op}Base`] = getVal(`gas_price.${net}.${op}.base_multiplier`, '');
+      form[`${op}Base`] = getVal(`gas_price.${net}.${op}.base_multiplier`, '')
       if (network.type === 'eip1559') {
-        form[`${op}Priority`] = getVal(`gas_price.${net}.${op}.priority_multiplier`, '');
+        form[`${op}Priority`] = getVal(`gas_price.${net}.${op}.priority_multiplier`, '')
       }
     }
-    setEditForm(form);
-    setFormErrors({});
-    setEditModal({ tab: 'gasPrice', network });
+    setEditForm(form)
+    setFormErrors({})
+    setEditModal({ tab: 'gasPrice', network })
   }
 
   function openGasLimitEdit(network) {
-    setEditForm({ multiplier: getVal(`gas_limit.${network.key}.multiplier`, '') });
-    setFormErrors({});
-    setEditModal({ tab: 'gasLimit', network });
+    setEditForm({ multiplier: getVal(`gas_limit.${network.key}.multiplier`, '') })
+    setFormErrors({})
+    setEditModal({ tab: 'gasLimit', network })
   }
 
   function openGasTopupEdit(network) {
-    setEditForm({ maxTopupAmount: getVal(`gas_topup.${network.key}.max_topup_amount`, '') });
-    setFormErrors({});
-    setEditModal({ tab: 'gasTopup', network });
+    setEditForm({ maxTopupAmount: getVal(`gas_topup.${network.key}.max_topup_amount`, '') })
+    setFormErrors({})
+    setEditModal({ tab: 'gasTopup', network })
   }
 
   // ─── Save Handlers ──────────────────────────────────────
 
   async function saveSetting(keyName, value) {
-    await upsertSetting(token, { keyName, value: String(value) });
+    await upsertSetting(token, { keyName, value: String(value) })
   }
 
   async function handleSaveGasPrice() {
-    const net = editModal.network.key;
-    const isEip1559 = editModal.network.type === 'eip1559';
+    const net = editModal.network.key
+    const isEip1559 = editModal.network.type === 'eip1559'
 
-    const errors = {};
-    const e1 = validateNumber(editForm.maxGasPriceGwei, { min: 0, max: 100000, fieldLabel: 'Max Gas Price' });
-    if (e1) errors.maxGasPriceGwei = e1;
+    const errors = {}
+    const e1 = validateNumber(editForm.maxGasPriceGwei, { min: 0, max: 100000, fieldLabel: 'Max Gas Price' })
+    if (e1) errors.maxGasPriceGwei = e1
     for (const op of OPERATIONS) {
-      const eBase = validateNumber(editForm[`${op}Base`], { min: 1, max: 100, fieldLabel: 'Base Multiplier' });
-      if (eBase) errors[`${op}Base`] = eBase;
+      const eBase = validateNumber(editForm[`${op}Base`], { min: 1, max: 100, fieldLabel: 'Base Multiplier' })
+      if (eBase) errors[`${op}Base`] = eBase
       if (isEip1559) {
-        const ePri = validateNumber(editForm[`${op}Priority`], { min: 1, max: 100, fieldLabel: 'Priority Multiplier' });
-        if (ePri) errors[`${op}Priority`] = ePri;
+        const ePri = validateNumber(editForm[`${op}Priority`], { min: 1, max: 100, fieldLabel: 'Priority Multiplier' })
+        if (ePri) errors[`${op}Priority`] = ePri
       }
     }
-    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return
+    }
 
     try {
-      setSaving(true);
-      const updates = [];
-      const mapUpdates = {};
+      setSaving(true)
+      const updates = []
+      const mapUpdates = {}
 
-      const maxGwei = editForm.maxGasPriceGwei;
+      const maxGwei = editForm.maxGasPriceGwei
       if (maxGwei !== '') {
-        const key = `gas_price.${net}.max_gas_price_gwei`;
-        updates.push(saveSetting(key, maxGwei));
-        mapUpdates[key] = String(maxGwei);
+        const key = `gas_price.${net}.max_gas_price_gwei`
+        updates.push(saveSetting(key, maxGwei))
+        mapUpdates[key] = String(maxGwei)
       }
 
       for (const op of OPERATIONS) {
-        const baseVal = editForm[`${op}Base`];
+        const baseVal = editForm[`${op}Base`]
         if (baseVal !== '') {
-          const key = `gas_price.${net}.${op}.base_multiplier`;
-          updates.push(saveSetting(key, baseVal));
-          mapUpdates[key] = String(baseVal);
+          const key = `gas_price.${net}.${op}.base_multiplier`
+          updates.push(saveSetting(key, baseVal))
+          mapUpdates[key] = String(baseVal)
         }
         if (isEip1559) {
-          const priVal = editForm[`${op}Priority`];
+          const priVal = editForm[`${op}Priority`]
           if (priVal !== '') {
-            const key = `gas_price.${net}.${op}.priority_multiplier`;
-            updates.push(saveSetting(key, priVal));
-            mapUpdates[key] = String(priVal);
+            const key = `gas_price.${net}.${op}.priority_multiplier`
+            updates.push(saveSetting(key, priVal))
+            mapUpdates[key] = String(priVal)
           }
         }
       }
 
-      if (updates.length === 0) return;
-      await Promise.all(updates);
-      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }));
-      setEditModal(null);
-      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }));
+      if (updates.length === 0) return
+      await Promise.all(updates)
+      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }))
+      setEditModal(null)
+      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {
-      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }));
+      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }))
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
   }
 
   async function handleSaveGasLimit() {
-    const val = editForm.multiplier;
-    if (val === '' || val === undefined) return;
-    const errors = {};
-    const e1 = validateNumber(val, { min: 1, max: 100, fieldLabel: 'Multiplier' });
-    if (e1) errors.multiplier = e1;
-    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+    const val = editForm.multiplier
+    if (val === '' || val === undefined) return
+    const errors = {}
+    const e1 = validateNumber(val, { min: 1, max: 100, fieldLabel: 'Multiplier' })
+    if (e1) errors.multiplier = e1
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return
+    }
 
-    const key = `gas_limit.${editModal.network.key}.multiplier`;
+    const key = `gas_limit.${editModal.network.key}.multiplier`
     try {
-      setSaving(true);
-      await saveSetting(key, val);
-      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }));
-      setEditModal(null);
-      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }));
+      setSaving(true)
+      await saveSetting(key, val)
+      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }))
+      setEditModal(null)
+      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {
-      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }));
+      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }))
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
   }
 
   async function handleSaveGasTopup() {
-    const val = editForm.maxTopupAmount;
-    if (val === '' || val === undefined) return;
-    const errors = {};
-    const e1 = validateNumber(val, { min: 0, fieldLabel: 'Max Topup Amount' });
-    if (e1) errors.maxTopupAmount = e1;
-    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+    const val = editForm.maxTopupAmount
+    if (val === '' || val === undefined) return
+    const errors = {}
+    const e1 = validateNumber(val, { min: 0, fieldLabel: 'Max Topup Amount' })
+    if (e1) errors.maxTopupAmount = e1
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return
+    }
 
-    const key = `gas_topup.${editModal.network.key}.max_topup_amount`;
+    const key = `gas_topup.${editModal.network.key}.max_topup_amount`
     try {
-      setSaving(true);
-      await saveSetting(key, val);
-      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }));
-      setEditModal(null);
-      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }));
+      setSaving(true)
+      await saveSetting(key, val)
+      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }))
+      setEditModal(null)
+      toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {
-      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }));
+      toast.error(error?.message || t('admin.gasSettings.saveError', { defaultValue: 'Failed to save settings' }))
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
   }
 
   function handleSave() {
-    if (!editModal) return;
-    if (editModal.tab === 'gasPrice') return handleSaveGasPrice();
-    if (editModal.tab === 'gasLimit') return handleSaveGasLimit();
-    if (editModal.tab === 'gasTopup') return handleSaveGasTopup();
+    if (!editModal) return
+    if (editModal.tab === 'gasPrice') return handleSaveGasPrice()
+    if (editModal.tab === 'gasLimit') return handleSaveGasLimit()
+    if (editModal.tab === 'gasTopup') return handleSaveGasTopup()
   }
 
   // ─── Render ──────────────────────────────────────────────
@@ -262,7 +287,7 @@ export default function GasSettingsPage() {
           <Spinner role="status" className="text-primary" />
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -275,7 +300,9 @@ export default function GasSettingsPage() {
             {t('admin.gasSettings.title', { defaultValue: 'Gas Settings' })}
           </h4>
           <p className="text-surface-500 mb-0">
-            {t('admin.gasSettings.subtitle', { defaultValue: 'Configure gas price multipliers, gas limit buffers, and topup amounts per network' })}
+            {t('admin.gasSettings.subtitle', {
+              defaultValue: 'Configure gas price multipliers, gas limit buffers, and topup amounts per network',
+            })}
           </p>
         </div>
       </div>
@@ -318,5 +345,5 @@ export default function GasSettingsPage() {
         />
       )}
     </div>
-  );
+  )
 }

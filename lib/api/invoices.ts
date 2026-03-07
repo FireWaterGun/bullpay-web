@@ -52,7 +52,8 @@ export async function listInvoices(params: ListInvoicesParams = {}, token?: stri
   if (q) qs.set('q', q)
   if (status) qs.set('status', status)
   if (currency) qs.set('currency', currency)
-  if (coinNetworkId !== undefined && coinNetworkId !== null && `${coinNetworkId}` !== '') qs.set('coinNetworkId', String(coinNetworkId))
+  if (coinNetworkId !== undefined && coinNetworkId !== null && `${coinNetworkId}` !== '')
+    qs.set('coinNetworkId', String(coinNetworkId))
   if (minAmount !== undefined && minAmount !== null && `${minAmount}` !== '') qs.set('minAmount', String(minAmount))
   if (maxAmount !== undefined && maxAmount !== null && `${maxAmount}` !== '') qs.set('maxAmount', String(maxAmount))
   if (dateFrom) qs.set('dateFrom', dateFrom)
@@ -218,10 +219,7 @@ export async function getPublicPaymentStatus(paymentId: string): Promise<PublicP
 // Select network for a payment (no auth required)
 // POST /api/v1/pay/:paymentId/select-network
 // ---------------------------------------------
-export async function selectPaymentNetwork(
-  paymentId: string,
-  networkSymbol: string
-): Promise<PublicPaymentResult> {
+export async function selectPaymentNetwork(paymentId: string, networkSymbol: string): Promise<PublicPaymentResult> {
   if (!paymentId) throw new Error('Missing payment ID')
   if (!networkSymbol) throw new Error('Missing network symbol')
   return apiFetch<PublicPaymentResult>(`/api/v1/pay/${encodeURIComponent(paymentId)}/select-network`, {

@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useAdminTranslation } from '@/hooks/useAdminTranslation';
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import Button from '../ui/Button'
 import Spinner from '../ui/Spinner'
 
@@ -15,58 +15,69 @@ import Spinner from '../ui/Spinner'
  * @param {Function} props.onClose - Called when the modal should close
  */
 export default function SweepDeleteModal({ show, loading, target, onConfirm, onClose }) {
-  const { t } = useAdminTranslation();
+  const { t } = useAdminTranslation()
 
-  if (!show) return null;
+  if (!show) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" tabIndex="-1" onClick={() => !loading && onClose()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      tabIndex="-1"
+      onClick={() => !loading && onClose()}
+    >
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
-          <div className="bg-card rounded-xl shadow-xl">
-            <div className="flex items-center justify-between p-5 border-b border-surface-200">
-              <h5 className="text-lg font-semibold text-surface-800">
-                {t('admin.sweep.confirmDelete', { defaultValue: 'Confirm Delete' })}
-              </h5>
-              <button type="button" className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none" onClick={onClose} disabled={loading}><i className="bx bx-x"></i></button>
-            </div>
-            <div className="p-5">
-              <p className="mb-0">
-                {target.type === 'coin' ?
-                t('admin.sweep.deleteCoinConfirm', { defaultValue: `Are you sure you want to delete override for ${target.id}?`, id: target.id }) :
-                t('admin.sweep.deleteNetworkConfirm', { defaultValue: `Are you sure you want to delete override for network ${target.id}?`, id: target.id })
-                }
-              </p>
-            </div>
-            <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
-              <Button
-                type="button"
-
-                onClick={onClose}
-                disabled={loading} className="bg-surface-200 text-surface-700 hover:bg-surface-300">
-                
-                {t('actions.cancel', { defaultValue: 'Cancel' })}
-              </Button>
-              <Button
-                type="button"
-
-                onClick={onConfirm}
-                disabled={loading} variant="danger">
-                
-                {loading ?
-                <>
-                    <Spinner className="w-4 h-4 mr-2" />
-                    {t('actions.deleting', { defaultValue: 'Deleting...' })}
-                  </> :
-
-                <>
-                    <i className="bx bx-trash mr-1"></i>
-                    {t('actions.delete', { defaultValue: 'Delete' })}
-                  </>
-                }
-              </Button>
-            </div>
+        <div className="bg-card rounded-xl shadow-xl">
+          <div className="flex items-center justify-between p-5 border-b border-surface-200">
+            <h5 className="text-lg font-semibold text-surface-800">
+              {t('admin.sweep.confirmDelete', { defaultValue: 'Confirm Delete' })}
+            </h5>
+            <button
+              type="button"
+              className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
+              onClick={onClose}
+              disabled={loading}
+            >
+              <i className="bx bx-x"></i>
+            </button>
           </div>
+          <div className="p-5">
+            <p className="mb-0">
+              {target.type === 'coin'
+                ? t('admin.sweep.deleteCoinConfirm', {
+                    defaultValue: `Are you sure you want to delete override for ${target.id}?`,
+                    id: target.id,
+                  })
+                : t('admin.sweep.deleteNetworkConfirm', {
+                    defaultValue: `Are you sure you want to delete override for network ${target.id}?`,
+                    id: target.id,
+                  })}
+            </p>
+          </div>
+          <div className="flex items-center justify-end gap-2 p-5 border-t border-surface-200">
+            <Button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="bg-surface-200 text-surface-700 hover:bg-surface-300"
+            >
+              {t('actions.cancel', { defaultValue: 'Cancel' })}
+            </Button>
+            <Button type="button" onClick={onConfirm} disabled={loading} variant="danger">
+              {loading ? (
+                <>
+                  <Spinner className="w-4 h-4 mr-2" />
+                  {t('actions.deleting', { defaultValue: 'Deleting...' })}
+                </>
+              ) : (
+                <>
+                  <i className="bx bx-trash mr-1"></i>
+                  {t('actions.delete', { defaultValue: 'Delete' })}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>);
-
+    </div>
+  )
 }

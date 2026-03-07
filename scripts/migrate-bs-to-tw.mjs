@@ -105,14 +105,14 @@ const CLASS_MAP = {
   'min-vh-100': 'min-h-screen',
 
   // Visibility
-  'visible': 'visible',
-  'invisible': 'invisible',
+  visible: 'visible',
+  invisible: 'invisible',
 
   // Misc
-  'small': 'text-sm',
-  'lead': 'text-lg',
+  small: 'text-sm',
+  lead: 'text-lg',
   'img-fluid': 'max-w-full h-auto',
-  'clearfix': 'after:clear-both after:block after:content-[""]',
+  clearfix: 'after:clear-both after:block after:content-[""]',
 
   // Spacing: margin (me = margin-end = mr, ms = margin-start = ml)
   'me-0': 'mr-0',
@@ -209,7 +209,7 @@ const CLASS_MAP = {
   'g-5': 'gap-5',
 
   // Bootstrap grid → Tailwind grid/flex
-  'row': 'grid grid-cols-12 gap-x-6',
+  row: 'grid grid-cols-12 gap-x-6',
   'col-12': 'col-span-12',
   'col-6': 'col-span-6',
   'col-auto': 'col-auto',
@@ -248,7 +248,7 @@ const CLASS_MAP = {
   'spinner-border-sm': 'w-4 h-4',
 
   // Table
-  'table': 'w-full',
+  table: 'w-full',
   'table-hover': '',
   'table-borderless': '',
   'table-sm': 'text-sm',
@@ -268,7 +268,8 @@ const CLASS_MAP = {
   'form-switch': 'relative inline-flex items-center',
   'form-switch-lg': 'relative inline-flex items-center scale-125',
   'input-group': 'flex items-stretch',
-  'input-group-text': 'flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg',
+  'input-group-text':
+    'flex items-center px-3 bg-surface-100 border border-surface-300 text-surface-600 text-sm rounded-l-lg',
   'input-group-merge': 'flex items-stretch',
   'input-group-sm': 'flex items-stretch text-sm',
   'invalid-feedback': 'text-xs text-danger-500 mt-1',
@@ -284,12 +285,16 @@ const CLASS_MAP = {
   'btn-text-secondary': 'btn bg-transparent text-surface-600 hover:bg-surface-100 shadow-none',
   'btn-text-primary': 'btn bg-transparent text-primary-600 hover:bg-primary-50 shadow-none',
   'btn-label-secondary': 'btn bg-surface-100 text-surface-700 hover:bg-surface-200 shadow-none',
-  'btn-outline-primary': 'btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white',
+  'btn-outline-primary':
+    'btn border border-primary-600 text-primary-600 bg-transparent hover:bg-primary-600 hover:text-white',
   'btn-outline-secondary': 'btn border border-surface-300 text-surface-600 bg-transparent hover:bg-surface-100',
-  'btn-outline-danger': 'btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white',
-  'btn-outline-warning': 'btn border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white',
+  'btn-outline-danger':
+    'btn border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white',
+  'btn-outline-warning':
+    'btn border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white',
   'btn-outline-info': 'btn border border-info-500 text-info-500 bg-transparent hover:bg-info-500 hover:text-white',
-  'btn-outline-success': 'btn border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white',
+  'btn-outline-success':
+    'btn border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white',
 
   // Badge / Label
   'bg-label-primary': 'bg-primary-50 text-primary-600',
@@ -314,7 +319,7 @@ const CLASS_MAP = {
   'card-footer': 'px-5 py-3 border-t border-surface-200',
 
   // Modal
-  'modal': 'fixed inset-0 z-50 flex items-center justify-center',
+  modal: 'fixed inset-0 z-50 flex items-center justify-center',
   'modal-dialog': 'w-full max-w-lg mx-4',
   'modal-dialog-centered': '',
   'modal-content': 'bg-white rounded-xl shadow-xl',
@@ -335,15 +340,16 @@ const CLASS_MAP = {
   'nav-align-top': '',
   'nav-tabs': 'flex border-b border-surface-200 gap-1',
   'nav-item': '',
-  'nav-link': 'px-4 py-2 text-sm font-medium text-surface-500 hover:text-surface-700 border-b-2 border-transparent hover:border-surface-300',
+  'nav-link':
+    'px-4 py-2 text-sm font-medium text-surface-500 hover:text-surface-700 border-b-2 border-transparent hover:border-surface-300',
 
   // Pagination
   'page-item': 'inline-flex',
   'page-link': 'px-3 py-1.5 text-sm border border-surface-300 text-surface-600 hover:bg-surface-50 rounded',
 
   // Bootstrap show/fade (remove - handled by React state)
-  'show': '',
-  'fade': '',
+  show: '',
+  fade: '',
 }
 
 // ─── Regex-based replacements for dynamic patterns ───
@@ -361,7 +367,13 @@ function walkDir(dir, exts = ['.jsx', '.tsx']) {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry)
     const stat = statSync(full)
-    if (stat.isDirectory() && !entry.startsWith('.') && entry !== 'node_modules' && entry !== '.next' && entry !== 'build') {
+    if (
+      stat.isDirectory() &&
+      !entry.startsWith('.') &&
+      entry !== 'node_modules' &&
+      entry !== '.next' &&
+      entry !== 'build'
+    ) {
       files = files.concat(walkDir(full, exts))
     } else if (stat.isFile() && exts.includes(extname(full))) {
       files.push(full)
@@ -380,7 +392,7 @@ function replaceClasses(content) {
     (match, prefix, classes, suffix) => {
       const newClasses = classes
         .split(/\s+/)
-        .map(cls => {
+        .map((cls) => {
           if (cls === '') return cls
           // Check direct mapping
           if (CLASS_MAP[cls] !== undefined) {
@@ -389,30 +401,27 @@ function replaceClasses(content) {
           }
           return cls
         })
-        .filter(cls => cls !== '') // Remove empty strings (from removed classes)
+        .filter((cls) => cls !== '') // Remove empty strings (from removed classes)
         .join(' ')
       return prefix + newClasses + suffix
     }
   )
 
   // Also handle className={`...${...}...`} template literals
-  let result = newContent.replace(
-    /(className\s*=\s*\{`)([\s\S]*?)(`\})/g,
-    (match, prefix, templateContent, suffix) => {
-      // Only replace static text parts (not ${...} expressions)
-      const newTemplate = templateContent.replace(
-        /(?<!\$\{[^}]*)(\b)(d-flex|d-inline-flex|d-block|d-inline-block|d-inline|d-none|d-grid|align-items-center|align-items-start|align-items-end|align-items-stretch|justify-content-between|justify-content-center|justify-content-end|justify-content-start|flex-grow-1|flex-grow-0|flex-shrink-0|flex-shrink-1|flex-wrap|flex-nowrap|flex-column|flex-row|flex-fill|fw-medium|fw-semibold|fw-bold|fw-normal|fw-light|text-uppercase|text-lowercase|text-capitalize|text-truncate|text-decoration-none|text-nowrap|text-break|rounded-pill|rounded-circle|shadow-none|small|container-xxl|container-p-y|me-[0-5]|me-auto|ms-[0-5]|ms-auto|mb-[0-5]|mt-[0-6]|mt-auto|mx-[0-4]|mx-auto|my-[0-4]|pe-[0-5]|ps-[0-5]|pt-[0-5]|pb-[0-5]|px-[0-5]|py-[0-5]|p-[0-5]|g-[0-5]|row|col-12|col-6|col-auto|col-sm-[0-9]+|col-md-[0-9]+|col-lg-[0-9]+|col-xl-[0-9]+|spinner-border|spinner-border-sm|form-control|form-control-sm|form-select|form-select-sm|form-text|form-check|form-check-input|form-check-label|form-switch|form-switch-lg|input-group|input-group-text|input-group-merge|input-group-sm|invalid-feedback|btn-close|btn-group|btn-xs|btn-secondary|btn-warning|btn-link|btn-ghost|btn-text-secondary|btn-text-primary|btn-label-secondary|btn-outline-primary|btn-outline-secondary|btn-outline-danger|btn-outline-warning|btn-outline-info|btn-outline-success|bg-label-primary|bg-label-secondary|bg-label-success|bg-label-danger|bg-label-warning|bg-label-info|alert-danger|alert-warning|alert-success|alert-primary|alert-info|alert-heading|card-body|card-header|card-title|card-footer|modal-dialog-centered|modal-dialog|modal-content|modal-header|modal-title|modal-body|modal-footer|modal-backdrop|modal-lg|modal|dropdown-toggle|dropdown-menu-end|dropdown-menu|dropdown-item|nav-align-top|nav-tabs|nav-item|nav-link|page-item|page-link|table-responsive|table-hover|table-borderless|table-sm|table-light|show|fade)(\b)/g,
-        (m, boundary, cls, endBoundary) => {
-          if (CLASS_MAP[cls] !== undefined) {
-            changed = true
-            return boundary + CLASS_MAP[cls] + endBoundary
-          }
-          return m
+  let result = newContent.replace(/(className\s*=\s*\{`)([\s\S]*?)(`\})/g, (match, prefix, templateContent, suffix) => {
+    // Only replace static text parts (not ${...} expressions)
+    const newTemplate = templateContent.replace(
+      /(?<!\$\{[^}]*)(\b)(d-flex|d-inline-flex|d-block|d-inline-block|d-inline|d-none|d-grid|align-items-center|align-items-start|align-items-end|align-items-stretch|justify-content-between|justify-content-center|justify-content-end|justify-content-start|flex-grow-1|flex-grow-0|flex-shrink-0|flex-shrink-1|flex-wrap|flex-nowrap|flex-column|flex-row|flex-fill|fw-medium|fw-semibold|fw-bold|fw-normal|fw-light|text-uppercase|text-lowercase|text-capitalize|text-truncate|text-decoration-none|text-nowrap|text-break|rounded-pill|rounded-circle|shadow-none|small|container-xxl|container-p-y|me-[0-5]|me-auto|ms-[0-5]|ms-auto|mb-[0-5]|mt-[0-6]|mt-auto|mx-[0-4]|mx-auto|my-[0-4]|pe-[0-5]|ps-[0-5]|pt-[0-5]|pb-[0-5]|px-[0-5]|py-[0-5]|p-[0-5]|g-[0-5]|row|col-12|col-6|col-auto|col-sm-[0-9]+|col-md-[0-9]+|col-lg-[0-9]+|col-xl-[0-9]+|spinner-border|spinner-border-sm|form-control|form-control-sm|form-select|form-select-sm|form-text|form-check|form-check-input|form-check-label|form-switch|form-switch-lg|input-group|input-group-text|input-group-merge|input-group-sm|invalid-feedback|btn-close|btn-group|btn-xs|btn-secondary|btn-warning|btn-link|btn-ghost|btn-text-secondary|btn-text-primary|btn-label-secondary|btn-outline-primary|btn-outline-secondary|btn-outline-danger|btn-outline-warning|btn-outline-info|btn-outline-success|bg-label-primary|bg-label-secondary|bg-label-success|bg-label-danger|bg-label-warning|bg-label-info|alert-danger|alert-warning|alert-success|alert-primary|alert-info|alert-heading|card-body|card-header|card-title|card-footer|modal-dialog-centered|modal-dialog|modal-content|modal-header|modal-title|modal-body|modal-footer|modal-backdrop|modal-lg|modal|dropdown-toggle|dropdown-menu-end|dropdown-menu|dropdown-item|nav-align-top|nav-tabs|nav-item|nav-link|page-item|page-link|table-responsive|table-hover|table-borderless|table-sm|table-light|show|fade)(\b)/g,
+      (m, boundary, cls, endBoundary) => {
+        if (CLASS_MAP[cls] !== undefined) {
+          changed = true
+          return boundary + CLASS_MAP[cls] + endBoundary
         }
-      )
-      return prefix + newTemplate + suffix
-    }
-  )
+        return m
+      }
+    )
+    return prefix + newTemplate + suffix
+  })
 
   // Apply regex patterns (data-bs-* removal etc.)
   for (const { regex, replace } of REGEX_PATTERNS) {

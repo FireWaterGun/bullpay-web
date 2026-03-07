@@ -3,6 +3,6 @@ export default function AuthLoading() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
       <Spinner className="text-primary-600" />
-    </div>);
-
+    </div>
+  )
 }
