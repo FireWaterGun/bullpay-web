@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { getSystemStatus } from '@/lib/api/system'
 import { usePusher } from '@/app/providers'
 import { formatDateTime } from '@/lib/utils/format'
-import { Spinner } from '../../components/ui'
 
 const CHANNEL = 'system-maintenance'
 const EVENT = 'maintenance-status-changed'
@@ -30,31 +29,41 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '24px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: '#0e1028',
     position: 'relative',
     overflow: 'hidden',
   },
-  /* floating blurred circles for depth */
-  blob1: {
+  /* radial glow orbs — matches landing-dark hero */
+  glow1: {
     position: 'absolute',
-    width: 400,
-    height: 400,
+    width: 700,
+    height: 700,
     borderRadius: '50%',
-    background: 'rgba(255,255,255,0.08)',
-    top: '-10%',
-    left: '-8%',
-    filter: 'blur(60px)',
+    background: 'radial-gradient(circle, rgba(255, 77, 141, 0.18) 0%, transparent 70%)',
+    filter: 'blur(80px)',
+    top: '-200px',
+    right: '-100px',
     pointerEvents: 'none',
   },
-  blob2: {
+  glow2: {
     position: 'absolute',
-    width: 300,
-    height: 300,
+    width: 500,
+    height: 500,
     borderRadius: '50%',
-    background: 'rgba(255,255,255,0.06)',
-    bottom: '-5%',
-    right: '-6%',
-    filter: 'blur(50px)',
+    background: 'radial-gradient(circle, rgba(108, 99, 255, 0.15) 0%, transparent 70%)',
+    filter: 'blur(80px)',
+    bottom: '-100px',
+    left: '-60px',
+    pointerEvents: 'none',
+  },
+  grid: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage:
+      'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+    backgroundSize: '64px 64px',
+    maskImage: 'radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent)',
+    WebkitMaskImage: 'radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent)',
     pointerEvents: 'none',
   },
   card: {
@@ -72,12 +81,12 @@ const styles = {
     width: 96,
     height: 96,
     borderRadius: '50%',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: '#4361ee',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     margin: '0 auto 24px',
-    boxShadow: '0 8px 32px rgba(102,126,234,0.35)',
+    boxShadow: '0 8px 32px rgba(67,97,238,0.35)',
   },
   iconSvg: {
     width: 44,
@@ -104,8 +113,8 @@ const styles = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 8,
-    background: 'linear-gradient(135deg, #f0f4ff 0%, #e8ecfb 100%)',
-    border: '1px solid rgba(102,126,234,0.15)',
+    background: 'linear-gradient(135deg, #eef1ff 0%, #e4e9fd 100%)',
+    border: '1px solid rgba(67,97,238,0.15)',
     borderRadius: 12,
     padding: '10px 18px',
     marginBottom: 28,
@@ -115,45 +124,21 @@ const styles = {
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
-  /* circular countdown ring */
-  countdownWrap: {
+  autoCheck: {
+    marginTop: 24,
+    fontSize: '0.82rem',
+    color: 'rgba(255,255,255,0.45)',
+    zIndex: 1,
     position: 'relative',
-    width: 64,
-    height: 64,
-    margin: '0 auto 12px',
-  },
-  countdownText: {
-    position: 'absolute',
-    inset: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '1.1rem',
-    fontWeight: 600,
-    color: '#667eea',
-  },
-  checkButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '10px 28px',
-    borderRadius: 12,
-    border: '2px solid #667eea',
-    background: 'transparent',
-    color: '#667eea',
-    fontWeight: 600,
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-  },
-  checkButtonHover: {
-    background: '#667eea',
-    color: '#fff',
+    gap: 6,
   },
   footer: {
-    marginTop: 32,
+    marginTop: 12,
     fontSize: '0.82rem',
-    color: 'rgba(255,255,255,0.7)',
+    color: 'rgba(255,255,255,0.35)',
     zIndex: 1,
     position: 'relative',
   },
@@ -165,11 +150,12 @@ const styles = {
     marginBottom: 32,
   },
   brandIcon: {
-    fontSize: 28,
-    color: '#667eea',
+    fontSize: '1.75rem',
+    marginRight: 8,
+    color: '#4361ee',
   },
   brandText: {
-    fontSize: 20,
+    fontSize: '1.5rem',
     fontWeight: 700,
     letterSpacing: '-0.02em',
   },
@@ -178,8 +164,8 @@ const styles = {
 /* Keyframes injected once via <style> tag */
 const KEYFRAMES = `
 @keyframes maintenance-pulse {
-  0%, 100% { box-shadow: 0 8px 32px rgba(102,126,234,0.35); }
-  50% { box-shadow: 0 8px 48px rgba(102,126,234,0.55); }
+  0%, 100% { box-shadow: 0 8px 32px rgba(67,97,238,0.35); }
+  50% { box-shadow: 0 8px 48px rgba(67,97,238,0.55); }
 }
 @keyframes maintenance-float {
   0%, 100% { transform: translateY(0px); }
@@ -189,41 +175,11 @@ const KEYFRAMES = `
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-`
-
-/* SVG circular progress ring */
-function CountdownRing({ seconds, total }) {
-  const radius = 26
-  const circumference = 2 * Math.PI * radius
-  const progress = (seconds / total) * circumference
-
-  return (
-    <svg className="-rotate-90" width="64" height="64" viewBox="0 0 64 64">
-      {/* background ring */}
-      <circle cx="32" cy="32" r={radius} fill="none" stroke="#e2e8f0" strokeWidth="4" />
-      {/* progress ring */}
-      <circle
-        cx="32"
-        cy="32"
-        r={radius}
-        fill="none"
-        stroke="url(#countdown-gradient)"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={circumference - progress}
-        style={{ transition: 'stroke-dashoffset 1s linear' }}
-      />
-
-      <defs>
-        <linearGradient id="countdown-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#667eea" />
-          <stop offset="100%" stopColor="#764ba2" />
-        </linearGradient>
-      </defs>
-    </svg>
-  )
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
+`
 
 export default function MaintenancePage() {
   const { t, i18n } = useTranslation('common')
@@ -233,9 +189,7 @@ export default function MaintenancePage() {
     message: null,
     estimatedEnd: null,
   })
-  const [checking, setChecking] = useState(false)
   const [countdown, setCountdown] = useState(POLL_INTERVAL)
-  const [btnHover, setBtnHover] = useState(false)
 
   // Inject keyframes once
   useEffect(() => {
@@ -279,7 +233,6 @@ export default function MaintenancePage() {
 
   // Check if maintenance has ended
   const checkStatus = useCallback(async () => {
-    setChecking(true)
     try {
       const status = await getSystemStatus()
       if (!status.maintenance) {
@@ -296,8 +249,7 @@ export default function MaintenancePage() {
     } catch {
       // API still down, stay on maintenance page
     } finally {
-      setChecking(false)
-      setCountdown(POLL_INTERVAL) // reset countdown
+      setCountdown(POLL_INTERVAL)
     }
   }, [])
 
@@ -347,7 +299,6 @@ export default function MaintenancePage() {
     const timer = setInterval(() => {
       setCountdown((prev) => (prev > 0 ? prev - 1 : 0))
     }, 1000)
-
     return () => clearInterval(timer)
   }, [])
 
@@ -369,9 +320,10 @@ export default function MaintenancePage() {
 
   return (
     <div style={styles.page}>
-      {/* Decorative background blobs */}
-      <div style={styles.blob1} />
-      <div style={styles.blob2} />
+      {/* Decorative background — landing-dark style */}
+      <div style={{ ...styles.glow1, animation: 'glow-pulse 6s ease-in-out infinite' }} />
+      <div style={{ ...styles.glow2, animation: 'glow-pulse 8s ease-in-out infinite 2s' }} />
+      <div style={styles.grid} />
 
       <div style={styles.card}>
         <div className="text-center" style={{ padding: '48px 36px 40px' }}>
@@ -380,7 +332,7 @@ export default function MaintenancePage() {
             <i className="bx bxs-wallet-alt" style={styles.brandIcon}></i>
             <span style={styles.brandText}>
               <span className="text-surface-700">BULL</span>
-              <span className="text-[#667eea]">PAY</span>
+              <span style={{ color: '#4361ee' }}>PAY</span>
             </span>
           </div>
 
@@ -410,10 +362,7 @@ export default function MaintenancePage() {
           <h2 style={styles.title}>{t('maintenance.title', { defaultValue: 'System Maintenance' })}</h2>
 
           {/* Decorative divider */}
-          <div
-            className="w-12 h-[3px] rounded-sm"
-            style={{ background: 'linear-gradient(90deg, #667eea, #764ba2)', margin: '12px auto 20px' }}
-          />
+          <div className="w-12 h-[3px] rounded-sm" style={{ background: '#4361ee', margin: '12px auto 20px' }} />
 
           {/* Message */}
           <p style={styles.message}>
@@ -426,7 +375,7 @@ export default function MaintenancePage() {
           {/* Estimated End */}
           {formattedEstimatedEnd && (
             <div style={styles.estimatedBadge}>
-              <i className="bx bx-time-five text-[#667eea] text-[18px]"></i>
+              <i className="bx bx-time-five text-[#4361ee] text-[18px]"></i>
               <span style={{ lineHeight: 1.5 }}>
                 {t('maintenance.estimatedEnd', { defaultValue: 'Estimated recovery' })}:{' '}
                 <strong className="text-surface-700" style={{ whiteSpace: 'nowrap' }}>
@@ -435,49 +384,17 @@ export default function MaintenancePage() {
               </span>
             </div>
           )}
-
-          {/* Circular countdown + check button */}
-          <div style={styles.countdownWrap}>
-            <CountdownRing seconds={countdown} total={POLL_INTERVAL} />
-            <div style={styles.countdownText}>{countdown}</div>
-          </div>
-
-          <p className="text-[0.8rem] text-surface-400 mb-5">
-            {t('maintenance.autoCheck', { defaultValue: 'Auto-checking in {seconds}s' }).replace(
-              '{seconds}',
-              String(countdown)
-            )}
-          </p>
-
-          <button
-            type="button"
-            style={{
-              ...styles.checkButton,
-              ...(btnHover ? styles.checkButtonHover : {}),
-              ...(checking ? { opacity: 0.7, pointerEvents: 'none' } : {}),
-            }}
-            onClick={checkStatus}
-            onMouseEnter={() => setBtnHover(true)}
-            onMouseLeave={() => setBtnHover(false)}
-            disabled={checking}
-          >
-            {checking ? (
-              <>
-                <Spinner role="status" aria-hidden="true" className="w-4 h-4" />
-
-                {t('maintenance.checking', { defaultValue: 'Checking...' })}
-              </>
-            ) : (
-              <>
-                <i className="bx bx-refresh text-[18px]"></i>
-                {t('maintenance.checkNow', { defaultValue: 'Check Now' })}
-              </>
-            )}
-          </button>
         </div>
       </div>
 
       {/* Footer */}
+      <p style={styles.autoCheck}>
+        <i className="bx bx-loader-alt" style={{ animation: 'maintenance-spin 1.5s linear infinite' }} />{' '}
+        {t('maintenance.autoCheck', { defaultValue: 'Auto-checking in {seconds}s' }).replace(
+          '{seconds}',
+          String(countdown)
+        )}
+      </p>
       <p style={styles.footer}>&copy; {new Date().getFullYear()} BullPay</p>
     </div>
   )
