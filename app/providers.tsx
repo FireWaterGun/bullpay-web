@@ -6,6 +6,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, ty
 import { apiFetch } from '@/lib/api-client'
 import { ADMIN_ROLES, AUTH_COOKIE_NAME } from '@/lib/constants'
 import { ToastContainer } from '@/components/Toast'
+import NavigationProgress from '@/components/NavigationProgress'
 import useIdleLogout from '@/hooks/useIdleLogout'
 
 // ═══════════════════════════════════════════
@@ -390,7 +391,10 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>
       <ToastProvider>
-        <PusherProvider>{children}</PusherProvider>
+        <PusherProvider>
+          <NavigationProgress />
+          {children}
+        </PusherProvider>
       </ToastProvider>
     </AuthProvider>
   )

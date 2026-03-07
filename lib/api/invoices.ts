@@ -52,8 +52,9 @@ export async function listInvoices(params: ListInvoicesParams = {}, token?: stri
   if (q) qs.set('q', q)
   if (status) qs.set('status', status)
   if (currency) qs.set('currency', currency)
-  if (coinNetworkId !== undefined && coinNetworkId !== null && `${coinNetworkId}` !== '')
-    {qs.set('coinNetworkId', String(coinNetworkId))}
+  if (coinNetworkId !== undefined && coinNetworkId !== null && `${coinNetworkId}` !== '') {
+    qs.set('coinNetworkId', String(coinNetworkId))
+  }
   if (minAmount !== undefined && minAmount !== null && `${minAmount}` !== '') qs.set('minAmount', String(minAmount))
   if (maxAmount !== undefined && maxAmount !== null && `${maxAmount}` !== '') qs.set('maxAmount', String(maxAmount))
   if (dateFrom) qs.set('dateFrom', dateFrom)

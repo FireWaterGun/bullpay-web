@@ -3,7 +3,7 @@
 import { useAuth, usePusher } from '@/app/providers'
 import type { NavigationItem, NavigationSection } from '@/app/providers'
 import { useRouter } from 'next/navigation'
-import React, { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import React, { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { THEME_STORAGE_KEY, LANG_STORAGE_KEY, SIDEBAR_COLLAPSED_KEY, API_BASE_URL } from '@/lib/constants'
 import { initAudioContext } from '@/lib/utils/notification'
@@ -396,17 +396,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Content */}
-        <div className="flex-1 px-4 sm:px-6 py-4">
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center py-12">
-                <Spinner size="lg" className="text-primary-600" />
-              </div>
-            }
-          >
-            {children}
-          </Suspense>
-        </div>
+        <div className="flex-1 px-4 sm:px-6 py-4">{children}</div>
 
         {/* Footer */}
         <footer className="px-6 py-3 text-center text-sm text-surface-400">

@@ -183,40 +183,39 @@ export default function PlatformLedgerList() {
       {/* Filters */}
       <Card className="mb-4">
         <PlatformLedgerFilterPanel
-              accountTypeFilter={accountTypeFilter}
-              setAccountTypeFilter={setAccountTypeFilter}
-              entryTypeFilter={entryTypeFilter}
-              setEntryTypeFilter={setEntryTypeFilter}
-              entryCodeFilter={entryCodeFilter}
-              setEntryCodeFilter={setEntryCodeFilter}
-              stateFilter={stateFilter}
-              setStateFilter={setStateFilter}
-              coinNetworkIdFilter={coinNetworkIdFilter}
-              setCoinNetworkIdFilter={setCoinNetworkIdFilter}
-              txHashFilter={txHashFilter}
-              setTxHashFilter={setTxHashFilter}
-              startDateFilter={startDateFilter}
-              setStartDateFilter={setStartDateFilter}
-              endDateFilter={endDateFilter}
-              setEndDateFilter={setEndDateFilter}
-              coinNetworks={coinNetworks}
-              locale={locale}
-              loading={loading}
-              onApply={applyFilters}
-              onReset={resetFilters}
-            />
-        </Card>
+          accountTypeFilter={accountTypeFilter}
+          setAccountTypeFilter={setAccountTypeFilter}
+          entryTypeFilter={entryTypeFilter}
+          setEntryTypeFilter={setEntryTypeFilter}
+          entryCodeFilter={entryCodeFilter}
+          setEntryCodeFilter={setEntryCodeFilter}
+          stateFilter={stateFilter}
+          setStateFilter={setStateFilter}
+          coinNetworkIdFilter={coinNetworkIdFilter}
+          setCoinNetworkIdFilter={setCoinNetworkIdFilter}
+          txHashFilter={txHashFilter}
+          setTxHashFilter={setTxHashFilter}
+          startDateFilter={startDateFilter}
+          setStartDateFilter={setStartDateFilter}
+          endDateFilter={endDateFilter}
+          setEndDateFilter={setEndDateFilter}
+          coinNetworks={coinNetworks}
+          locale={locale}
+          loading={loading}
+          onApply={applyFilters}
+          onReset={resetFilters}
+        />
+      </Card>
 
-        <PlatformLedgerTable
-            entries={entries}
-            pagination={pagination}
-            loading={loading}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            syncSearchParams={syncSearchParams}
-            appliedFilters={appliedFilters}
-          />
-
+      <PlatformLedgerTable
+        entries={entries}
+        pagination={pagination}
+        loading={loading}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        syncSearchParams={syncSearchParams}
+        appliedFilters={appliedFilters}
+      />
 
       {showAdjustModal && (
         <AdjustmentModal t={t} onClose={() => setShowAdjustModal(false)} onSuccess={handleAdjustmentResult} />

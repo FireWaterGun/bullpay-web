@@ -54,18 +54,20 @@ export default function PlatformLedgerDetail() {
   }
 
   function stateBadge(state) {
-    if (state === 'settled')
-      {return (
+    if (state === 'settled') {
+      return (
         <Badge color="success" label>
           Settled
         </Badge>
-      )}
-    if (state === 'committed')
-      {return (
+      )
+    }
+    if (state === 'committed') {
+      return (
         <Badge color="info" label>
           Committed
         </Badge>
-      )}
+      )
+    }
     if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>
     return <span className="text-surface-500">{state || 'N/A'}</span>
   }
@@ -133,9 +135,7 @@ export default function PlatformLedgerDetail() {
         <div className="p-5">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              {entry.coinSymbol && (
-                <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />
-              )}
+              {entry.coinSymbol && <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />}
               <div>
                 <h4 className="mb-1">Platform Ledger Entry #{entry.id}</h4>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -175,157 +175,152 @@ export default function PlatformLedgerDetail() {
                 Details
               </h5>
             </div>
-                <div className="p-5">
-                  <Table responsive={false}>
-                    <tbody>
-                      <tr>
-                        <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
-                        <td className="font-medium">{entry.id}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">Account Type</td>
-                        <td>
-                          <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
-                            {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
-                          </Badge>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
-                        <td>
-                          <div className="flex items-center">
-                            <CoinImg
-                              symbol={entry.coinSymbol}
-                              networkSymbol={entry.networkSymbol}
-                              size={24}
-                              className="mr-3"
-                            />
-                            <span className="font-medium">{entry.coinSymbol || '-'}</span>
-                            {entry.networkName && <span className="text-surface-500 ml-1">({entry.networkName})</span>}
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">Entry Code</td>
-                        <td>
-                          <span className="font-medium">{entry.entryCode || '-'}</span>
-                          {entry.entryCode && entryCodeLabels[entry.entryCode] && (
-                            <span className="text-surface-500 ml-1">- {entryCodeLabels[entry.entryCode]}</span>
-                          )}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">Entry Type</td>
-                        <td>
-                          <Badge
-                            color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'}
-                            label
-                          >
-                            {isCredit ? 'Credit' : 'Debit'}
-                          </Badge>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">{t('admin.detail.state', { defaultValue: 'State' })}</td>
-                        <td>{stateBadge(entry.state)}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
-                        <td>
-                          <span
-                            className={`font-medium ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}
-                          >
-                            {isReversed ? '' : isCredit ? '+' : '-'}
-                            {formatAmount(entry.amount)} {entry.coinSymbol}
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">USD Value</td>
-                        <td className="font-medium">{formatUsd(entry.amountUsd)}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
-                        <td>{fmtDateTime(entry.createdAt)}</td>
-                      </tr>
-                      {entry.updatedAt && (
-                        <tr>
-                          <td className="text-surface-500">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
-                          <td>{fmtDateTime(entry.updatedAt)}</td>
-                        </tr>
+            <div className="p-5">
+              <Table responsive={false}>
+                <tbody>
+                  <tr>
+                    <td className="text-surface-500 w-2/5">{t('admin.detail.id', { defaultValue: 'ID' })}</td>
+                    <td className="font-medium">{entry.id}</td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">Account Type</td>
+                    <td>
+                      <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
+                        {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
+                      </Badge>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">{t('admin.detail.coin', { defaultValue: 'Coin' })}</td>
+                    <td>
+                      <div className="flex items-center">
+                        <CoinImg
+                          symbol={entry.coinSymbol}
+                          networkSymbol={entry.networkSymbol}
+                          size={24}
+                          className="mr-3"
+                        />
+                        <span className="font-medium">{entry.coinSymbol || '-'}</span>
+                        {entry.networkName && <span className="text-surface-500 ml-1">({entry.networkName})</span>}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">Entry Code</td>
+                    <td>
+                      <span className="font-medium">{entry.entryCode || '-'}</span>
+                      {entry.entryCode && entryCodeLabels[entry.entryCode] && (
+                        <span className="text-surface-500 ml-1">- {entryCodeLabels[entry.entryCode]}</span>
                       )}
-                    </tbody>
-                  </Table>
-                </div>
-              </Card>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">Entry Type</td>
+                    <td>
+                      <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
+                        {isCredit ? 'Credit' : 'Debit'}
+                      </Badge>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">{t('admin.detail.state', { defaultValue: 'State' })}</td>
+                    <td>{stateBadge(entry.state)}</td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">{t('admin.detail.amount', { defaultValue: 'Amount' })}</td>
+                    <td>
+                      <span className={`font-medium ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
+                        {isReversed ? '' : isCredit ? '+' : '-'}
+                        {formatAmount(entry.amount)} {entry.coinSymbol}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">USD Value</td>
+                    <td className="font-medium">{formatUsd(entry.amountUsd)}</td>
+                  </tr>
+                  <tr>
+                    <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+                    <td>{fmtDateTime(entry.createdAt)}</td>
+                  </tr>
+                  {entry.updatedAt && (
+                    <tr>
+                      <td className="text-surface-500">{t('admin.detail.updated', { defaultValue: 'Updated' })}</td>
+                      <td>{fmtDateTime(entry.updatedAt)}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
             </div>
+          </Card>
+        </div>
 
-            {/* Transaction & Metadata */}
-            <div className="md:col-span-6 col-span-12">
-              {entry.txHash && (
-                <Card className="mb-4">
-                  <div className="px-5 py-4 border-b border-surface-200">
-                    <h5 className="mb-0">
-                      <i className="bx bx-link mr-2 text-primary"></i>
-                      Transaction
-                    </h5>
-                  </div>
-                  <div className="p-5">
-                    <Table responsive={false}>
-                      <tbody>
-                        <tr>
-                          <td className="text-surface-500 w-[30%]">
-                            {t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}
-                          </td>
-                          <td>
-                            <div className="flex items-center">
-                              <code className="mr-2 break-all">{entry.txHash}</code>
-                              <Button
-                                onClick={() => handleCopy(entry.txHash)}
-                                title={t('actions.copy', { defaultValue: 'Copy' })}
-                                size="icon-sm"
-                                variant="text-secondary"
-                              >
-                                <i className="bx bx-copy"></i>
-                              </Button>
-                              {explorerUrl && (
-                                <Button
-                                  variant="text-secondary"
-                                  size="icon-sm"
-                                  href={`${explorerUrl}/tx/${entry.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
-                                >
-                                  <i className="bx bx-link-external"></i>
-                                </Button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </div>
-                </Card>
-              )}
+        {/* Transaction & Metadata */}
+        <div className="md:col-span-6 col-span-12">
+          {entry.txHash && (
+            <Card className="mb-4">
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h5 className="mb-0">
+                  <i className="bx bx-link mr-2 text-primary"></i>
+                  Transaction
+                </h5>
+              </div>
+              <div className="p-5">
+                <Table responsive={false}>
+                  <tbody>
+                    <tr>
+                      <td className="text-surface-500 w-[30%]">
+                        {t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}
+                      </td>
+                      <td>
+                        <div className="flex items-center">
+                          <code className="mr-2 break-all">{entry.txHash}</code>
+                          <Button
+                            onClick={() => handleCopy(entry.txHash)}
+                            title={t('actions.copy', { defaultValue: 'Copy' })}
+                            size="icon-sm"
+                            variant="text-secondary"
+                          >
+                            <i className="bx bx-copy"></i>
+                          </Button>
+                          {explorerUrl && (
+                            <Button
+                              variant="text-secondary"
+                              size="icon-sm"
+                              href={`${explorerUrl}/tx/${entry.txHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
+                            >
+                              <i className="bx bx-link-external"></i>
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            </Card>
+          )}
 
-              {metadata && Object.keys(metadata).length > 0 && (
-                <Card className="mb-4">
-                  <div className="px-5 py-4 border-b border-surface-200">
-                    <h5 className="mb-0">
-                      <i className="bx bx-code-alt mr-2 text-primary"></i>
-                      Metadata
-                    </h5>
-                  </div>
-                  <div className="p-5">
-                    <pre className="bg-lighter p-3 rounded text-[0.85rem] max-h-[400px] overflow-auto">
-                      {JSON.stringify(metadata, null, 2)}
-                    </pre>
-                  </div>
-                </Card>
-              )}
-            </div>
-          </div>
+          {metadata && Object.keys(metadata).length > 0 && (
+            <Card className="mb-4">
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h5 className="mb-0">
+                  <i className="bx bx-code-alt mr-2 text-primary"></i>
+                  Metadata
+                </h5>
+              </div>
+              <div className="p-5">
+                <pre className="bg-lighter p-3 rounded text-[0.85rem] max-h-[400px] overflow-auto">
+                  {JSON.stringify(metadata, null, 2)}
+                </pre>
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

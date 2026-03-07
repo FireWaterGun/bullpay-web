@@ -568,7 +568,9 @@ html.theme-switching *::after {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  transition: width 0.3s, transform 0.3s;
+  transition:
+    width 0.3s,
+    transform 0.3s;
   overflow: visible;
 }
 

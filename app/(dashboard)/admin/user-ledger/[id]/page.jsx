@@ -54,24 +54,27 @@ export default function UserLedgerDetail() {
   }
 
   function stateBadge(state) {
-    if (state === 'settled')
-      {return (
+    if (state === 'settled') {
+      return (
         <Badge color="success" label>
           Settled
         </Badge>
-      )}
-    if (state === 'committed')
-      {return (
+      )
+    }
+    if (state === 'committed') {
+      return (
         <Badge color="info" label>
           Committed
         </Badge>
-      )}
-    if (state === 'pending')
-      {return (
+      )
+    }
+    if (state === 'pending') {
+      return (
         <Badge color="warning" label>
           {t('status.pending', { defaultValue: 'Pending' })}
         </Badge>
-      )}
+      )
+    }
     if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>
     return <span className="text-surface-500">{state || 'N/A'}</span>
   }

@@ -71,8 +71,9 @@ function VerifyEmailContent() {
   const isInvalidToken = useMemo(() => {
     if (status !== 'error') return false
     const m = (message || '').toLowerCase()
-    if (errorCode && ['INVALID_TOKEN', 'BIZ_1202', 'TOKEN_INVALID'].includes(String(errorCode).toUpperCase()))
-      {return true}
+    if (errorCode && ['INVALID_TOKEN', 'BIZ_1202', 'TOKEN_INVALID'].includes(String(errorCode).toUpperCase())) {
+      return true
+    }
     return (
       (m.includes('invalid') && (m.includes('token') || m.includes('verification'))) ||
       m.includes('invalid verification token')

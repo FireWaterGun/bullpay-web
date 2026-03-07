@@ -20,7 +20,13 @@ export default function RevenueSummaryCard({ title, value, change, changeLabel, 
               <div className="flex items-center">
                 <h4
                   className={`mb-0 mr-2${
-                    { success: ' text-success', danger: ' text-danger', warning: ' text-warning', info: ' text-info', primary: ' text-primary' }[valueColor] || ''
+                    {
+                      success: ' text-success',
+                      danger: ' text-danger',
+                      warning: ' text-warning',
+                      info: ' text-info',
+                      primary: ' text-primary',
+                    }[valueColor] || ''
                   }`}
                 >
                   {value}
