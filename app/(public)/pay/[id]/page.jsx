@@ -61,6 +61,8 @@ export default function InvoicePaymentV2() {
     handleCopy,
     handleCopyAmount,
     redirectCountdown,
+    isEstimate,
+    rateRefreshIn,
   } = useInvoicePayment()
 
   return (
@@ -180,6 +182,26 @@ export default function InvoicePaymentV2() {
                     <div className="p-4 md:p-5">
                       {needsNetworkSelection ? (
                         <div>
+                          {/* Merchant Name */}
+                          {invoice.merchantName && (
+                            <div className="flex items-center gap-2 mb-3 pb-3" style={{ borderBottom: '1px solid var(--color-surface-200)' }}>
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                                style={{ background: 'color-mix(in srgb, var(--color-primary-600) 10%, transparent)' }}
+                              >
+                                <i className="bx bx-store text-primary-600 text-[16px]"></i>
+                              </div>
+                              <div>
+                                <div className="text-[0.58rem] text-surface-400 uppercase tracking-[1px] font-semibold">
+                                  {t('payment.payingTo', { defaultValue: 'Paying to' })}
+                                </div>
+                                <div className="text-[0.9rem] font-bold text-surface-900">
+                                  {invoice.merchantName}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           {/* Amount card */}
                           <div
                             className="text-center rounded-lg mb-4 relative overflow-hidden py-[28px] px-[16px]"
@@ -199,7 +221,9 @@ export default function InvoicePaymentV2() {
                             ></div>
                             <div className="relative z-[1]">
                               <div className="text-[0.65rem] font-semibold uppercase tracking-[2px] text-white/55 mb-3">
-                                {t('invoices.amount', { defaultValue: 'Amount' })}
+                                {isEstimate
+                                  ? t('payment.estimatedAmount', { defaultValue: 'Estimated Amount' })
+                                  : t('invoices.amount', { defaultValue: 'Amount' })}
                               </div>
                               <div className="flex items-baseline justify-center gap-1.5">
                                 <span className="text-[2.25rem] font-bold tracking-[-1px] text-white leading-[1]">
@@ -211,6 +235,17 @@ export default function InvoicePaymentV2() {
                                 <div className="text-[0.8rem] text-white/50 mt-2">
                                   ≈ ${invoice.fiatAmount || paymentData?.fiatAmount}{' '}
                                   {invoice.fiatCurrency || paymentData?.fiatCurrency || 'USD'}
+                                </div>
+                              )}
+                              {isEstimate && (
+                                <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[0.7rem] text-white/40">
+                                  <i className="bx bx-refresh text-[14px]"></i>
+                                  <span>
+                                    {t('payment.rateRefreshesIn', {
+                                      seconds: rateRefreshIn,
+                                      defaultValue: `Rate refreshes in ${rateRefreshIn}s`,
+                                    })}
+                                  </span>
                                 </div>
                               )}
                             </div>

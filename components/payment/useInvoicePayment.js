@@ -43,6 +43,12 @@ export default function useInvoicePayment() {
   const needsNetworkSelection = isPaymentMode && paymentData && !paymentData.networkSymbol
   const [redirectCountdown, setRedirectCountdown] = useState(null)
 
+  // Rate refresh for fiat-originated hosted payments (estimate mode)
+  const RATE_REFRESH_INTERVAL = 30 // seconds
+  const [isEstimate, setIsEstimate] = useState(false)
+  const [rateRefreshIn, setRateRefreshIn] = useState(RATE_REFRESH_INTERVAL)
+  const rateRefreshRef = useRef(null)
+
   // Map payment API data to invoice-like structure for shared UI
   const mapPaymentToInvoice = useCallback((data) => {
     return {
@@ -79,6 +85,7 @@ export default function useInvoicePayment() {
           const data = await getPublicPayment(publicCode)
           setPaymentData(data)
           setInvoice(mapPaymentToInvoice(data))
+          setIsEstimate(!!data.isEstimate)
         } else {
           const statusData = await getPublicPaymentStatus(publicCode)
           setInvoice((prev) =>
@@ -258,6 +265,31 @@ export default function useInvoicePayment() {
     return () => clearInterval(iv)
   }, [])
 
+  // Rate refresh countdown for fiat estimate payments (30s cycle)
+  useEffect(() => {
+    if (!isEstimate || !needsNetworkSelection) {
+      if (rateRefreshRef.current) clearInterval(rateRefreshRef.current)
+      return
+    }
+    setRateRefreshIn(RATE_REFRESH_INTERVAL)
+    rateRefreshRef.current = setInterval(async () => {
+      setRateRefreshIn((prev) => {
+        if (prev <= 1) {
+          // Re-fetch payment data with fresh rate
+          getPublicPayment(publicCode).then((data) => {
+            setPaymentData(data)
+            setInvoice(mapPaymentToInvoice(data))
+          }).catch(() => {})
+          return RATE_REFRESH_INTERVAL
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => {
+      if (rateRefreshRef.current) clearInterval(rateRefreshRef.current)
+    }
+  }, [isEstimate, needsNetworkSelection, publicCode, mapPaymentToInvoice])
+
   // Derived state
   const coinSym = (invoice?.coin?.symbol || invoice?.symbol || qr?.symbol || '').toUpperCase()
   const networkName = invoice?.network?.name || invoice?.networkName || qr?.network || ''
@@ -355,6 +387,7 @@ export default function useInvoicePayment() {
       setPaymentData(data)
       setInvoice(mapPaymentToInvoice(data))
       setSelectedNetwork(null)
+      setIsEstimate(false) // Rate is now locked
     } catch (e) {
       setError(e?.message || 'Failed to select network')
     } finally {
@@ -393,6 +426,8 @@ export default function useInvoicePayment() {
     handleCopy,
     handleCopyAmount,
     redirectCountdown,
+    isEstimate,
+    rateRefreshIn,
   }
 }
 

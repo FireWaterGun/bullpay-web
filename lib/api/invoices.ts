@@ -190,6 +190,10 @@ export interface PublicPaymentResult {
   cancelUrl?: string
   availableNetworks: PublicPaymentNetwork[]
   paymentAddress?: string
+  isEstimate?: boolean
+  exchangeRate?: string | null
+  fiatAmount?: string | null
+  fiatCurrency?: string | null
   [key: string]: any
 }
 
