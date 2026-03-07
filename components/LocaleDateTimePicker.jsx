@@ -3,14 +3,76 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { inputClass } from './ui'
 
+/* ── Timezone helpers ── */
+
+/** Decompose a Date (or ISO string) into { year, month, day, hour, minute } in the given IANA timezone. */
+function decompose(date, tz) {
+  const d = typeof date === 'string' ? new Date(date) : date
+  if (!d || isNaN(d.getTime())) return null
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+    .formatToParts(d)
+    .reduce((acc, p) => {
+      if (p.type !== 'literal') acc[p.type] = p.value
+      return acc
+    }, {})
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month), // 1-12
+    day: Number(parts.day),
+    hour: Number(parts.hour === '24' ? 0 : parts.hour),
+    minute: Number(parts.minute),
+    dateStr: `${parts.year}-${parts.month}-${parts.day}`, // YYYY-MM-DD
+  }
+}
+
+/** Build an ISO string from a YYYY-MM-DD date + hour + minute in the given timezone. */
+function composeISO(dateStr, h, m, tz) {
+  const hh = String(h).padStart(2, '0')
+  const mm = String(m).padStart(2, '0')
+  // Create a date in JavaScript (browser local), then adjust
+  // Use a reliable approach: build a formatter that shows the offset, then manually calculate
+  const guess = new Date(`${dateStr}T${hh}:${mm}:00`)
+  // Get the offset of the target timezone at this rough timestamp
+  const tzDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(guess)
+  // Parse what the formatter returns for this timestamp
+  const [datePart, timePart] = tzDate.split(', ')
+  const [fy, fmo, fd] = datePart.split('-').map(Number)
+  const [fh, fmi, fs] = timePart.split(':').map(Number)
+  // Calculate the offset between what we want and what the timezone shows
+  const wanted = new Date(
+    Date.UTC(Number(dateStr.slice(0, 4)), Number(dateStr.slice(5, 7)) - 1, Number(dateStr.slice(8, 10)), h, m, 0)
+  )
+  const shown = new Date(Date.UTC(fy, fmo - 1, fd, fh === 24 ? 0 : fh, fmi, fs || 0))
+  const offsetMs = shown.getTime() - wanted.getTime()
+  // The real UTC time is: wanted - offset applied
+  return new Date(wanted.getTime() - offsetMs).toISOString()
+}
+
 /**
- * A locale-aware date + time picker that combines calendar and time in one dropdown.
- * Renders a styled input trigger with a calendar + time selectors.
+ * A locale-aware, timezone-aware date + time picker.
  *
  * Props:
- *  - value: string (ISO 8601 or YYYY-MM-DDTHH:mm) — empty string = no selection
+ *  - value: string (ISO 8601) — empty string = no selection
  *  - onChange: (isoStr: string) => void  — '' when cleared
  *  - locale: string (e.g. 'th-TH', 'en-US', 'zh-CN')
+ *  - timezone: string (IANA e.g. 'Asia/Bangkok', 'UTC') — defaults to browser tz
  *  - placeholder: string
  *  - className: string (applied to the wrapper)
  *  - t: i18next translate function (optional, for Clear/Now labels)
@@ -20,28 +82,28 @@ export default function LocaleDateTimePicker({
   value,
   onChange,
   locale = 'en-US',
+  timezone,
   placeholder = '',
   className = '',
   t,
   minDate,
   maxDate,
 }) {
-  // Parse value into date and time parts
-  const parsedDate = value ? value.slice(0, 10) : ''
-  const parsedTime = value ? value.slice(11, 16) || '00:00' : '00:00'
+  // Resolve timezone — fallback to browser default
+  const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+
+  // Parse value into date and time parts IN the user's timezone
+  const parsed = useMemo(() => (value ? decompose(value, tz) : null), [value, tz])
+  const parsedDateStr = parsed?.dateStr || ''
+  const parsedHour = parsed?.hour ?? 0
+  const parsedMinute = parsed?.minute ?? 0
 
   const [open, setOpen] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(parsedDate)
-  const [hour, setHour] = useState(() => (parsedTime ? parseInt(parsedTime.split(':')[0], 10) : 0))
-  const [minute, setMinute] = useState(() => (parsedTime ? parseInt(parsedTime.split(':')[1], 10) : 0))
-  const [viewYear, setViewYear] = useState(() => {
-    if (parsedDate) return new Date(`${parsedDate}T00:00:00`).getFullYear()
-    return new Date().getFullYear()
-  })
-  const [viewMonth, setViewMonth] = useState(() => {
-    if (parsedDate) return new Date(`${parsedDate}T00:00:00`).getMonth()
-    return new Date().getMonth()
-  })
+  const [selectedDate, setSelectedDate] = useState(parsedDateStr)
+  const [hour, setHour] = useState(() => parsedHour)
+  const [minute, setMinute] = useState(() => parsedMinute)
+  const [viewYear, setViewYear] = useState(() => parsed?.year ?? new Date().getFullYear())
+  const [viewMonth, setViewMonth] = useState(() => (parsed ? parsed.month - 1 : new Date().getMonth()))
   const wrapperRef = useRef(null)
   const hourRef = useRef(null)
   const minuteRef = useRef(null)
@@ -58,19 +120,17 @@ export default function LocaleDateTimePicker({
 
   // Sync internal state when value prop changes externally
   useEffect(() => {
-    const d = value ? value.slice(0, 10) : ''
-    const tm = value ? value.slice(11, 16) || '00:00' : '00:00'
+    const p = value ? decompose(value, tz) : null
     queueMicrotask(() => {
-      setSelectedDate(d)
-      setHour(parseInt(tm.split(':')[0], 10))
-      setMinute(parseInt(tm.split(':')[1], 10))
-      if (d) {
-        const dt = new Date(`${d}T00:00:00`)
-        setViewYear(dt.getFullYear())
-        setViewMonth(dt.getMonth())
+      setSelectedDate(p?.dateStr || '')
+      setHour(p?.hour ?? 0)
+      setMinute(p?.minute ?? 0)
+      if (p) {
+        setViewYear(p.year)
+        setViewMonth(p.month - 1)
       }
     })
-  }, [value])
+  }, [value, tz])
 
   // Scroll hour/minute lists to selection when dropdown opens
   useEffect(() => {
@@ -81,18 +141,16 @@ export default function LocaleDateTimePicker({
     })
   }, [open])
 
-  // Emit combined ISO string
+  // Emit combined ISO string (timezone-aware)
   const emit = useCallback(
     (date, h, m) => {
       if (!date) {
         onChange('')
         return
       }
-      const hh = String(h).padStart(2, '0')
-      const mm = String(m).padStart(2, '0')
-      onChange(new Date(`${date}T${hh}:${mm}`).toISOString())
+      onChange(composeISO(date, h, m, tz))
     },
-    [onChange]
+    [onChange, tz]
   )
 
   // Locale-aware formatting
@@ -116,8 +174,12 @@ export default function LocaleDateTimePicker({
     const datePart = d.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
     const hh = String(hour).padStart(2, '0')
     const mm = String(minute).padStart(2, '0')
-    return `${datePart}  ${hh}:${mm}`
-  }, [selectedDate, hour, minute, locale])
+    // Short timezone label e.g. "ICT", "UTC"
+    const tzLabel = new Intl.DateTimeFormat(locale, { timeZone: tz, timeZoneName: 'short' })
+      .formatToParts(new Date())
+      .find((p) => p.type === 'timeZoneName')?.value
+    return `${datePart}  ${hh}:${mm}${tzLabel ? ` (${tzLabel})` : ''}`
+  }, [selectedDate, hour, minute, locale, tz])
 
   // Calendar grid
   const calendarDays = useMemo(() => {
@@ -145,8 +207,8 @@ export default function LocaleDateTimePicker({
     return days
   }, [viewYear, viewMonth])
 
-  const today = new Date()
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  const nowInTz = useMemo(() => decompose(new Date(), tz), [tz])
+  const todayStr = nowInTz ? nowInTz.dateStr : ''
 
   function prevMonth() {
     if (viewMonth === 0) {
@@ -184,16 +246,14 @@ export default function LocaleDateTimePicker({
     setOpen(false)
   }
   function handleNow() {
-    const now = new Date()
-    const d = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-    const h = now.getHours()
-    const m = now.getMinutes()
-    setSelectedDate(d)
-    setHour(h)
-    setMinute(m)
-    setViewYear(now.getFullYear())
-    setViewMonth(now.getMonth())
-    emit(d, h, m)
+    const now = decompose(new Date(), tz)
+    if (!now) return
+    setSelectedDate(now.dateStr)
+    setHour(now.hour)
+    setMinute(now.minute)
+    setViewYear(now.year)
+    setViewMonth(now.month - 1)
+    emit(now.dateStr, now.hour, now.minute)
     setOpen(false)
   }
   function handleConfirm() {

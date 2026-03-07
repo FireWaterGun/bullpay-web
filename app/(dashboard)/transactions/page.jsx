@@ -89,7 +89,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
 
 export default function TransactionsPage() {
   const { t, i18n } = useTranslation()
-  const { token } = useAuth()
+  const { token, user } = useAuth()
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
@@ -226,6 +226,7 @@ export default function TransactionsPage() {
                 value={customFrom}
                 onChange={setCustomFrom}
                 locale={locale}
+                timezone={user?.timezone}
                 placeholder={t('filter.from', { defaultValue: 'From' })}
                 t={t}
                 maxDate={customTo ? customTo : undefined}
@@ -244,6 +245,7 @@ export default function TransactionsPage() {
                 value={customTo}
                 onChange={setCustomTo}
                 locale={locale}
+                timezone={user?.timezone}
                 placeholder={t('filter.to', { defaultValue: 'To' })}
                 t={t}
                 minDate={customFrom ? customFrom : undefined}

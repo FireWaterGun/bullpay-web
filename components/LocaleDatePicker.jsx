@@ -3,14 +3,30 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { inputClass } from './ui'
 
+/** Get today's YYYY-MM-DD in a given IANA timezone */
+function todayInTz(tz) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .formatToParts(new Date())
+    .reduce((acc, p) => {
+      if (p.type !== 'literal') acc[p.type] = p.value
+      return acc
+    }, {})
+  return `${parts.year}-${parts.month}-${parts.day}`
+}
+
 /**
- * A locale-aware date picker that replaces native <input type="date">.
- * Renders a styled input trigger with a calendar dropdown.
+ * A locale-aware, timezone-aware date picker.
  *
  * Props:
  *  - value: string (YYYY-MM-DD)
  *  - onChange: (dateStr: string) => void
  *  - locale: string (e.g. 'th-TH', 'en-US', 'zh-CN')
+ *  - timezone: string (IANA e.g. 'Asia/Bangkok') — used for "today" highlight
  *  - placeholder: string
  *  - className: string (applied to the wrapper)
  *  - t: i18next translate function (optional, for Clear/Today labels)
@@ -20,12 +36,14 @@ export default function LocaleDatePicker({
   value,
   onChange,
   locale = 'en-US',
+  timezone,
   placeholder = '',
   className = '',
   t,
   minDate,
   maxDate,
 }) {
+  const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
   const [open, setOpen] = useState(false)
   const [viewYear, setViewYear] = useState(() => {
     if (value) return new Date(`${value}T00:00:00`).getFullYear()
@@ -105,8 +123,7 @@ export default function LocaleDatePicker({
     return days
   }, [viewYear, viewMonth])
 
-  const today = new Date()
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  const todayStr = useMemo(() => todayInTz(tz), [tz])
 
   function prevMonth() {
     if (viewMonth === 0) {
@@ -134,8 +151,9 @@ export default function LocaleDatePicker({
   }
   function handleToday() {
     onChange(todayStr)
-    setViewYear(today.getFullYear())
-    setViewMonth(today.getMonth())
+    const [y, m] = todayStr.split('-').map(Number)
+    setViewYear(y)
+    setViewMonth(m - 1)
     setOpen(false)
   }
 

@@ -32,7 +32,7 @@ function hasReportData(report) {
 
 export default function IncomeStatement() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const toast = useToast()
 
   const locale = useLocale()
@@ -131,6 +131,7 @@ export default function IncomeStatement() {
                         value={customFrom}
                         onChange={setCustomFrom}
                         locale={locale}
+                        timezone={user?.timezone}
                         placeholder={t('filter.from', { defaultValue: 'From' })}
                         t={t}
                         maxDate={customTo ? customTo : undefined}
@@ -150,6 +151,7 @@ export default function IncomeStatement() {
                         value={customTo}
                         onChange={setCustomTo}
                         locale={locale}
+                        timezone={user?.timezone}
                         placeholder={t('filter.to', { defaultValue: 'To' })}
                         t={t}
                         minDate={customFrom ? customFrom : undefined}

@@ -214,7 +214,7 @@ function TipsCard({ t }) {
 export default function AdminMaintenancePage() {
   const { t } = useAdminTranslation()
   const locale = useLocale()
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const toast = useToast()
   const toastRef = useRef(toast)
   toastRef.current = toast
@@ -505,6 +505,7 @@ export default function AdminMaintenancePage() {
                   value={estimatedEnd}
                   onChange={(v) => setEstimatedEnd(v)}
                   locale={locale}
+                  timezone={user?.timezone}
                   placeholder={t('admin.maintenance.selectDateTime', { defaultValue: 'Select date & time' })}
                   t={t}
                   className="w-full"

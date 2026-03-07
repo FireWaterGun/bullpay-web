@@ -64,7 +64,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
 
 export default function UserTransactionsDashboard() {
   const { t, i18n } = useTranslation()
-  const { token } = useAuth()
+  const { token, user } = useAuth()
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
@@ -161,6 +161,7 @@ export default function UserTransactionsDashboard() {
         <div className="ml-auto">
           <DateFilterBar
             locale={locale}
+            timezone={user?.timezone}
             t={t}
             datePreset={datePreset}
             onPresetChange={setDatePreset}

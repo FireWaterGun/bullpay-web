@@ -25,6 +25,7 @@ import { getDateRange } from '@/lib/utils/dateRange'
  */
 export default function DateFilterBar({
   locale = 'en-US',
+  timezone,
   t,
   datePreset,
   onPresetChange,
@@ -124,6 +125,7 @@ export default function DateFilterBar({
               value={customFrom}
               onChange={onCustomFromChange}
               locale={locale}
+              timezone={timezone}
               placeholder={t('filter.from', { defaultValue: 'From' })}
               t={t}
               maxDate={customTo || undefined}
@@ -142,6 +144,7 @@ export default function DateFilterBar({
               value={customTo}
               onChange={onCustomToChange}
               locale={locale}
+              timezone={timezone}
               placeholder={t('filter.to', { defaultValue: 'To' })}
               t={t}
               minDate={customFrom || undefined}

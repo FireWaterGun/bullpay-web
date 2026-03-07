@@ -22,7 +22,7 @@ const formatPercent = formatPercentShared
 
 export default function AdminDashboardPage() {
   const { t } = useAdminTranslation()
-  const { token, hasPermission, navigation } = useAuth()
+  const { token, user, hasPermission, navigation } = useAuth()
   const router = useRouter()
 
   // Redirect if user doesn't have revenue dashboard permission
@@ -130,6 +130,7 @@ export default function AdminDashboardPage() {
         <div className="ml-auto">
           <DateFilterBar
             locale={locale}
+            timezone={user?.timezone}
             t={t}
             datePreset={datePreset}
             onPresetChange={setDatePreset}
