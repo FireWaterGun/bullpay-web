@@ -6,15 +6,12 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
 import { getIncomeStatement } from '@/lib/api/admin'
-import LocaleDatePicker from '@/components/LocaleDatePicker'
-import { getDateRange } from '@/components/ledger/incomeStatementUtils'
+import { getDateRange } from '@/lib/utils/dateRange'
+import DateFilterBar from '@/components/dashboard/DateFilterBar'
 import IncomeStatementReport from '@/components/ledger/IncomeStatementReport'
 import { logger } from '@/lib/utils/logger'
 import CardEmptyState from '@/components/CardEmptyState'
-import Badge from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import { Select } from '@/components/ui/Input'
 
 function hasReportData(report) {
   if (!report) return false
@@ -57,15 +54,6 @@ export default function IncomeStatement() {
   const fromDate = dateRange.from
   const toDate = dateRange.to
 
-  const dateRangeLabel = useMemo(() => {
-    const { from, to } = dateRange
-    if (from === to) return from
-    const fromD = new Date(`${from}T00:00:00`)
-    const toD = new Date(`${to}T00:00:00`)
-    const fmt = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
-    return `${fmt(fromD)} - ${fmt(toD)}`
-  }, [dateRange, locale])
-
   const loadReport = useCallback(async () => {
     if (!fromDate || !toDate) {
       toast.error(t('admin.incomeStatement.datesRequired', { defaultValue: 'From and To dates are required' }))
@@ -106,79 +94,20 @@ export default function IncomeStatement() {
                   <i className="bx bx-line-chart text-primary mr-2"></i>
                   {t('admin.incomeStatement.title', { defaultValue: 'Income Statement' })}
                 </h4>
-                <div className="flex gap-2 flex-wrap items-center ml-auto">
-                  <Badge color="secondary" className="text-base font-normal px-3 py-2">
-                    {dateRangeLabel}
-                  </Badge>
-                  {!showCustom ? (
-                    <>
-                      <Select value={datePreset} onChange={(e) => setDatePreset(e.target.value)} className="w-auto">
-                        <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
-                        <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
-                        <option value="last7days">{t('filter.last7days', { defaultValue: 'Last 7 Days' })}</option>
-                        <option value="last30days">{t('filter.last30days', { defaultValue: 'Last 30 Days' })}</option>
-                        <option value="thisMonth">{t('filter.thisMonth', { defaultValue: 'This Month' })}</option>
-                        <option value="lastMonth">{t('filter.lastMonth', { defaultValue: 'Last Month' })}</option>
-                      </Select>
-                      <Button onClick={() => setShowCustom(true)} variant="outline-secondary">
-                        <i className="bx bx-calendar mr-1"></i>
-                        {t('filter.custom', { defaultValue: 'Custom' })}
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <LocaleDatePicker
-                        value={customFrom}
-                        onChange={setCustomFrom}
-                        locale={locale}
-                        timezone={user?.timezone}
-                        placeholder={t('filter.from', { defaultValue: 'From' })}
-                        t={t}
-                        maxDate={customTo ? customTo : undefined}
-                        minDate={
-                          customTo
-                            ? (() => {
-                                const d = new Date(`${customTo}T00:00:00`)
-                                d.setMonth(d.getMonth() - 2)
-                                return d.toISOString().split('T')[0]
-                              })()
-                            : undefined
-                        }
-                      />
-
-                      <span className="self-center">–</span>
-                      <LocaleDatePicker
-                        value={customTo}
-                        onChange={setCustomTo}
-                        locale={locale}
-                        timezone={user?.timezone}
-                        placeholder={t('filter.to', { defaultValue: 'To' })}
-                        t={t}
-                        minDate={customFrom ? customFrom : undefined}
-                        maxDate={
-                          customFrom
-                            ? (() => {
-                                const d = new Date(`${customFrom}T00:00:00`)
-                                d.setMonth(d.getMonth() + 2)
-                                return d.toISOString().split('T')[0]
-                              })()
-                            : undefined
-                        }
-                      />
-
-                      <Button
-                        onClick={() => {
-                          setShowCustom(false)
-                          setCustomFrom('')
-                          setCustomTo('')
-                        }}
-                        variant="outline-secondary"
-                      >
-                        <i className="bx bx-reset mr-1"></i>
-                        {t('filter.reset', { defaultValue: 'Reset' })}
-                      </Button>
-                    </>
-                  )}
+                <div className="ml-auto">
+                  <DateFilterBar
+                    locale={locale}
+                    timezone={user?.timezone}
+                    t={t}
+                    datePreset={datePreset}
+                    onPresetChange={setDatePreset}
+                    customFrom={customFrom}
+                    onCustomFromChange={setCustomFrom}
+                    customTo={customTo}
+                    onCustomToChange={setCustomTo}
+                    showCustom={showCustom}
+                    onShowCustomChange={setShowCustom}
+                  />
                 </div>
               </div>
             </div>

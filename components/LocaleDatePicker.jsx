@@ -39,6 +39,7 @@ export default function LocaleDatePicker({
   timezone,
   placeholder = '',
   className = '',
+  compact = false,
   t,
   minDate,
   maxDate,
@@ -54,6 +55,7 @@ export default function LocaleDatePicker({
     return new Date().getMonth()
   })
   const wrapperRef = useRef(null)
+  const [alignRight, setAlignRight] = useState(false)
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -63,6 +65,15 @@ export default function LocaleDatePicker({
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  // Check if dropdown would overflow viewport and flip alignment
+  useEffect(() => {
+    if (!open || !wrapperRef.current) return
+    const rect = wrapperRef.current.getBoundingClientRect()
+    const dropdownWidth = 280
+    const willOverflow = rect.left + dropdownWidth > window.innerWidth - 16
+    setAlignRight(willOverflow)
   }, [open])
 
   // Sync view to value when it changes externally
@@ -164,16 +175,18 @@ export default function LocaleDatePicker({
     <div ref={wrapperRef} className={`relative inline-block ${className}`}>
       {/* Trigger */}
       <div
-        className={`${inputClass()} flex items-center gap-1 cursor-pointer min-w-[130px] select-none`}
+        className={`${compact ? 'px-2.5 py-1.5 text-[13px] rounded-lg border border-surface-300 bg-surface-50 dark:bg-white/[0.04] dark:border-surface-200 transition-[border-color,box-shadow] cursor-pointer' : inputClass()} flex items-center gap-1 cursor-pointer ${compact ? 'min-w-[110px]' : 'min-w-[130px]'} select-none`}
         onClick={() => setOpen(!open)}
       >
         <span className={`flex-1 ${displayValue ? '' : 'text-surface-400'}`}>{displayValue || placeholder}</span>
-        <i className="bx bx-calendar text-base opacity-50"></i>
+        <i className={`bx bx-calendar ${compact ? 'text-sm' : 'text-base'} opacity-50`}></i>
       </div>
 
       {/* Calendar dropdown */}
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-[min(280px,calc(100vw-2rem))] rounded-lg border border-surface-200 bg-card p-3 shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:bg-dark-elevated dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+        <div
+          className={`absolute top-full z-50 mt-1 w-[min(280px,calc(100vw-2rem))] rounded-lg border border-surface-200 bg-card p-3 shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:bg-dark-elevated dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] ${alignRight ? 'right-0' : 'left-0'}`}
+        >
           {/* Header: prev / month-year / next */}
           <div className="flex items-center justify-between mb-2">
             <button
