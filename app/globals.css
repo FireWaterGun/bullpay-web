@@ -295,6 +295,11 @@ html.theme-switching *::after {
   .input-group > button {
     @apply !rounded-none !border-none !shadow-none shrink-0;
   }
+  /* Strip background from icons & buttons inside InputGroup — keep flat appearance */
+  .input-group > .input-icon,
+  .input-group > button {
+    @apply !bg-transparent;
+  }
 
   /* Icon slot inside InputGroup */
   .input-icon {

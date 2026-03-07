@@ -43,7 +43,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             {t('merchant.apiKey', { defaultValue: 'API Key' })}
           </Label>
           <InputGroup>
-            <InputIcon className="bg-surface-100 dark:bg-dark-elevated">
+            <InputIcon>
               <i className="bx bx-key text-[0.9rem]"></i>
             </InputIcon>
             <Input type="text" value={displayKey} readOnly className="font-mono text-[0.85rem] tracking-[0.02em]" />
@@ -62,7 +62,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
                       ? t('merchant.hide', { defaultValue: 'Hide' })
                       : t('merchant.reveal', { defaultValue: 'Reveal' })
                   }
-                  variant="outline-secondary"
+                  variant="text-secondary"
                   size="icon"
                 >
                   <i className={`bx ${showApiKey ? 'bx-hide' : 'bx-show'}`}></i>
@@ -74,7 +74,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
                   }}
                   title={t('actions.copy', { defaultValue: 'Copy' })}
                   aria-label={t('actions.copy', { defaultValue: 'Copy' })}
-                  variant="outline-secondary"
+                  variant="text-secondary"
                   size="icon"
                 >
                   <i className="bx bx-copy"></i>
@@ -97,7 +97,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             {t('merchant.apiSecret', { defaultValue: 'API Secret' })}
           </Label>
           <InputGroup>
-            <InputIcon className="bg-surface-100 dark:bg-dark-elevated">
+            <InputIcon>
               <i className="bx bx-shield text-[0.9rem]"></i>
             </InputIcon>
             <Input
@@ -107,7 +107,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
               className="font-mono text-[0.85rem] tracking-[0.02em]"
             />
 
-            <InputIcon className="text-sm bg-surface-100 dark:bg-dark-elevated">
+            <InputIcon className="text-sm">
               <i className="bx bx-lock-alt mr-1 text-xs"></i>
               {t('merchant.secretMasked', { defaultValue: 'masked' })}
             </InputIcon>
