@@ -128,7 +128,15 @@
     "refunded": "Refunded",
     "unconfirmed": "Unconfirmed",
     "processing": "Processing",
-    "waiting_for_gas": "Waiting for Gas"
+    "waiting_for_gas": "Waiting for Gas",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "active": "Active",
+    "used": "Used",
+    "pooled": "Pooled",
+    "assigned": "Assigned",
+    "sweeped": "Sweeped",
+    "disabled": "Disabled"
   },
   "actions": {
     "filters": "Filters",
@@ -374,6 +382,8 @@
     "withdrawErrorMsg": "Failed to process withdrawal request.",
     "withdrawalsList": "Withdrawal List",
     "noWithdrawals": "No withdrawals",
+    "noWithdrawalsSub": "Your withdrawal history will appear here",
+    "withdrawalsDesc": "Track your withdrawal transactions",
     "col": {
       "coin": "Coin",
       "current": "Current amount",
@@ -453,6 +463,7 @@
     "all": "All",
     "status": "Status",
     "id": "ID",
+    "createdAt": "Created At",
     "showLess": "Show Less",
     "optional": "Optional",
     "save": "Save"
@@ -485,6 +496,8 @@
     "colAddress": "Address",
     "colActions": "Actions",
     "none": "No wallets",
+    "noneSub": "Add a withdrawal address to get started",
+    "addressDesc": "Manage your saved withdrawal addresses",
     "label": "Label",
     "labelPlaceholder": "e.g., My Binance Wallet",
     "memo": "Memo (Optional)",
@@ -925,7 +938,9 @@
     "toAddress": "To Address",
     "transactions": "Withdrawal",
     "transactionsDesc": "View all withdrawal transactions and their status",
-    "txHash": "Tx Hash"
+    "txHash": "Tx Hash",
+    "walletAddresses": "Wallet Addresses",
+    "walletAddressesDesc": "Manage user withdrawal wallet addresses"
   },
   "maintenance": {
     "title": "Under Maintenance",

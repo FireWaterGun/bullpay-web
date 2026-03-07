@@ -23,15 +23,15 @@ function formatAmount(val) {
 }
 
 const ACCOUNT_BADGE = {
-  revenue: { color: 'success', label: 'Revenue' },
-  expense: { color: 'danger', label: 'Expense' },
-  adjustment: { color: 'info', label: 'Adjustment' },
+  revenue: 'success',
+  expense: 'danger',
+  adjustment: 'info',
 }
 
 const STATE_BADGE = {
-  settled: { color: 'success', label: 'Settled' },
-  committed: { color: 'warning', label: 'Committed' },
-  reversed: { color: 'secondary', label: 'Reversed' },
+  settled: 'success',
+  committed: 'warning',
+  reversed: 'secondary',
 }
 
 export default function PlatformLedgerTable({
@@ -57,16 +57,16 @@ export default function PlatformLedgerTable({
       <Table>
         <thead>
           <tr className="whitespace-nowrap">
-            <th>ID</th>
-            <th>Account</th>
-            <th>Type</th>
-            <th>Coin</th>
-            <th>Code</th>
-            <th>State</th>
-            <th className="text-right">Amount</th>
-            <th className="text-right">USD</th>
-            <th>Tx Hash</th>
-            <th>Created</th>
+            <th>{t('admin.platformLedger.colId', { defaultValue: 'ID' })}</th>
+            <th>{t('admin.platformLedger.colAccount', { defaultValue: 'Account' })}</th>
+            <th>{t('admin.platformLedger.colType', { defaultValue: 'Type' })}</th>
+            <th>{t('admin.platformLedger.colCoin', { defaultValue: 'Coin' })}</th>
+            <th>{t('admin.platformLedger.colCode', { defaultValue: 'Code' })}</th>
+            <th>{t('admin.platformLedger.colState', { defaultValue: 'State' })}</th>
+            <th className="text-right">{t('admin.platformLedger.colAmount', { defaultValue: 'Amount' })}</th>
+            <th className="text-right">{t('admin.platformLedger.colUsd', { defaultValue: 'USD' })}</th>
+            <th>{t('admin.platformLedger.colTxHash', { defaultValue: 'Tx Hash' })}</th>
+            <th>{t('admin.platformLedger.colCreated', { defaultValue: 'Created' })}</th>
             <th></th>
           </tr>
         </thead>
@@ -92,20 +92,20 @@ export default function PlatformLedgerTable({
                   </td>
                   <td>
                     {(() => {
-                      const account = ACCOUNT_BADGE[entry.accountType]
-                      return account ? (
-                        <Badge color={account.color} label>
-                          {account.label}
+                      const accountColor = ACCOUNT_BADGE[entry.accountType]
+                      return accountColor ? (
+                        <Badge color={accountColor} label>
+                          {t(`admin.platformLedger.${entry.accountType}`, { defaultValue: entry.accountType })}
                         </Badge>
                       ) : (
-                        <span className="text-surface-500">{entry.accountType || 'N/A'}</span>
+                        <span className="text-surface-500">{entry.accountType || '-'}</span>
                       )
                     })()}
                   </td>
                   <td>
                     <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                       <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
-                      {isCredit ? 'Credit' : 'Debit'}
+                      {isCredit ? t('admin.platformLedger.credit', { defaultValue: 'Credit' }) : t('admin.platformLedger.debit', { defaultValue: 'Debit' })}
                     </Badge>
                   </td>
                   <td className="whitespace-nowrap">
@@ -132,13 +132,13 @@ export default function PlatformLedgerTable({
                   </td>
                   <td>
                     {(() => {
-                      const state = STATE_BADGE[entry.state]
-                      return state ? (
-                        <Badge color={state.color} label>
-                          {state.label}
+                      const stateColor = STATE_BADGE[entry.state]
+                      return stateColor ? (
+                        <Badge color={stateColor} label>
+                          {t(`admin.platformLedger.${entry.state}`, { defaultValue: entry.state })}
                         </Badge>
                       ) : (
-                        <span className="text-surface-500">{entry.state || 'N/A'}</span>
+                        <span className="text-surface-500">{entry.state || '-'}</span>
                       )
                     })()}
                   </td>

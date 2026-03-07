@@ -209,16 +209,8 @@ export default function UserBalanceListPage() {
                   <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">
-                      {t('filter.ascending', {
-                        defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }),
-                      })}
-                    </option>
-                    <option value="desc">
-                      {t('filter.descending', {
-                        defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }),
-                      })}
-                    </option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
                   </Select>
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">

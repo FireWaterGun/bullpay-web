@@ -26,9 +26,9 @@ function formatGroupLabel(groupKey) {
 }
 
 function sourceBadge(source) {
-  if (source === 'granted') return { color: 'success', label: 'granted' }
-  if (source === 'denied') return { color: 'danger', label: 'denied' }
-  return { color: 'secondary', label: 'default' }
+  if (source === 'granted') return { color: 'success', labelKey: 'granted' }
+  if (source === 'denied') return { color: 'danger', labelKey: 'denied' }
+  return { color: 'secondary', labelKey: 'default' }
 }
 
 function getPermAction(permName) {
@@ -99,7 +99,7 @@ export default function PermissionGroupCard({
                     <div className="flex items-center gap-2 flex-wrap">
                       <code className="text-[0.8rem]">{p.permission}</code>
                       <Badge color={badge.color} label className="text-[0.6rem]">
-                        {badge.label}
+                        {t(`admin.roles.${badge.labelKey}`, { defaultValue: badge.labelKey.charAt(0).toUpperCase() + badge.labelKey.slice(1) })}
                       </Badge>
                       {isOverridden && (
                         <Badge color="warning" label className="text-[0.6rem]">

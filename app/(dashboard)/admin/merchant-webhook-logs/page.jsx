@@ -20,23 +20,23 @@ import { Input, Label, Select } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 
-const EVENT_OPTIONS = [
-  { value: 'payment.completed', label: 'Completed' },
-  { value: 'payment.expired', label: 'Expired' },
-  { value: 'payment.cancelled', label: 'Cancelled' },
-  { value: 'payment.failed', label: 'Failed' },
-]
-
-const SORT_BY_OPTIONS = [
-  { value: 'created_at', label: 'Created At' },
-  { value: 'duration_ms', label: 'Duration' },
-  { value: 'http_status', label: 'HTTP Status' },
-  { value: 'attempt', label: 'Attempt' },
+const EVENT_VALUES = [
+  { value: 'payment.completed', key: 'completed', defaultLabel: 'Completed' },
+  { value: 'payment.expired', key: 'expired', defaultLabel: 'Expired' },
+  { value: 'payment.cancelled', key: 'cancelled', defaultLabel: 'Cancelled' },
+  { value: 'payment.failed', key: 'failed', defaultLabel: 'Failed' },
 ]
 
 export default function MerchantWebhookLogList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+
+  const SORT_BY_OPTIONS = [
+    { value: 'created_at', label: t('admin.webhookLog.createdAt', { defaultValue: 'Created At' }) },
+    { value: 'duration_ms', label: t('admin.webhookLog.duration', { defaultValue: 'Duration' }) },
+    { value: 'http_status', label: t('admin.webhookLog.httpStatus', { defaultValue: 'HTTP Status' }) },
+    { value: 'attempt', label: t('admin.webhookLog.attempt', { defaultValue: 'Attempt' }) },
+  ]
   const { token } = useAuth()
   const toast = useToast()
 
@@ -110,8 +110,8 @@ export default function MerchantWebhookLogList() {
   }
 
   function successText(val) {
-    if (val === true || val === 1) return 'Success'
-    if (val === false || val === 0) return 'Failed'
+    if (val === true || val === 1) return t('admin.detail.success', { defaultValue: 'Success' })
+    if (val === false || val === 0) return t('status.failed', { defaultValue: 'Failed' })
     return '-'
   }
 
@@ -124,10 +124,10 @@ export default function MerchantWebhookLogList() {
       'payment.failed': 'danger',
     }
     const color = colorMap[event] || 'info'
-    const label = EVENT_OPTIONS.find((o) => o.value === event)?.label || event
+    const match = EVENT_VALUES.find((o) => o.value === event)
     return (
       <Badge color={color} label>
-        {label}
+        {match ? t(`admin.webhookLog.${match.key}`, { defaultValue: match.defaultLabel }) : event}
       </Badge>
     )
   }
@@ -152,9 +152,9 @@ export default function MerchantWebhookLogList() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-broadcast mr-2"></i>
-                    Merchant Webhook Logs
+                    {t('admin.webhookLog.title', { defaultValue: 'Merchant Webhook Logs' })}
                   </h4>
-                  <p className="text-surface-500 mb-0">View and monitor webhook delivery attempts to merchants</p>
+                  <p className="text-surface-500 mb-0">{t('admin.webhookLog.description', { defaultValue: 'View and monitor webhook delivery attempts to merchants' })}</p>
                 </div>
                 <RefreshButton onClick={loadLogs} loading={loading} />
               </div>
@@ -185,9 +185,9 @@ export default function MerchantWebhookLogList() {
                   <Label>{t('admin.detail.event', { defaultValue: 'Event' })}</Label>
                   <Select value={eventFilter} onChange={(e) => setEventFilter(e.target.value)}>
                     <option value="">{t('filter.allEvents', { defaultValue: 'All Events' })}</option>
-                    {EVENT_OPTIONS.map((ev) => (
+                    {EVENT_VALUES.map((ev) => (
                       <option key={ev.value} value={ev.value}>
-                        {ev.label}
+                        {t(`admin.webhookLog.${ev.key}`, { defaultValue: ev.defaultLabel })}
                       </option>
                     ))}
                   </Select>
@@ -195,7 +195,7 @@ export default function MerchantWebhookLogList() {
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.detail.status', { defaultValue: 'Status' })}</Label>
                   <Select value={successFilter} onChange={(e) => setSuccessFilter(e.target.value)}>
-                    <option value="">All</option>
+                    <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
                     <option value="true">{t('admin.detail.success', { defaultValue: 'Success' })}</option>
                     <option value="false">{t('status.failed', { defaultValue: 'Failed' })}</option>
                   </Select>
@@ -228,16 +228,8 @@ export default function MerchantWebhookLogList() {
                   <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">
-                      {t('filter.ascending', {
-                        defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }),
-                      })}
-                    </option>
-                    <option value="desc">
-                      {t('filter.descending', {
-                        defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }),
-                      })}
-                    </option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
                   </Select>
                 </div>
               </div>
@@ -260,13 +252,13 @@ export default function MerchantWebhookLogList() {
               <thead>
                 <tr className="whitespace-nowrap">
                   <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
-                  <th className="text-center">Merchant</th>
-                  <th className="text-center">Payment</th>
+                  <th className="text-center">{t('admin.webhookLog.merchant', { defaultValue: 'Merchant' })}</th>
+                  <th className="text-center">{t('admin.webhookLog.payment', { defaultValue: 'Payment' })}</th>
                   <th>{t('admin.detail.event', { defaultValue: 'Event' })}</th>
-                  <th className="text-center">HTTP</th>
+                  <th className="text-center">{t('admin.webhookLog.http', { defaultValue: 'HTTP' })}</th>
                   <th className="text-center">{t('admin.detail.success', { defaultValue: 'Success' })}</th>
-                  <th className="text-right">Duration</th>
-                  <th className="text-center">Attempt</th>
+                  <th className="text-right">{t('admin.webhookLog.duration', { defaultValue: 'Duration' })}</th>
+                  <th className="text-center">{t('admin.webhookLog.attempt', { defaultValue: 'Attempt' })}</th>
                   <th>{t('admin.detail.callbackUrl', { defaultValue: 'Callback URL' })}</th>
                   <th>{t('admin.detail.error', { defaultValue: 'Error' })}</th>
                   <th>{t('admin.detail.created', { defaultValue: 'Created' })}</th>

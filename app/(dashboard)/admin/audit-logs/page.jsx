@@ -20,30 +20,30 @@ import { Input, Label, Select } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 
-const ACTION_OPTIONS = [
-  { value: 'list_sweeps', label: 'List Sweeps' },
-  { value: 'retry_sweep', label: 'Retry Sweep' },
-  { value: 'view_webhook_log', label: 'View Webhook Log' },
-  { value: 'list_webhook_logs', label: 'List Webhook Logs' },
-  { value: 'retry_webhook', label: 'Retry Webhook' },
-  { value: 'list_audit_logs', label: 'List Audit Logs' },
-  { value: 'view_audit_log', label: 'View Audit Log' },
+const ACTION_VALUES = [
+  { value: 'list_sweeps', key: 'listSweeps', defaultLabel: 'List Sweeps' },
+  { value: 'retry_sweep', key: 'retrySweep', defaultLabel: 'Retry Sweep' },
+  { value: 'view_webhook_log', key: 'viewWebhookLog', defaultLabel: 'View Webhook Log' },
+  { value: 'list_webhook_logs', key: 'listWebhookLogs', defaultLabel: 'List Webhook Logs' },
+  { value: 'retry_webhook', key: 'retryWebhook', defaultLabel: 'Retry Webhook' },
+  { value: 'list_audit_logs', key: 'listAuditLogs', defaultLabel: 'List Audit Logs' },
+  { value: 'view_audit_log', key: 'viewAuditLog', defaultLabel: 'View Audit Log' },
 ]
 
-const RESOURCE_TYPE_OPTIONS = [
-  { value: 'sweep', label: 'Sweep' },
-  { value: 'merchant_webhook_log', label: 'Merchant Webhook Log' },
-  { value: 'system_audit_log', label: 'System Audit Log' },
-]
-
-const SORT_BY_OPTIONS = [
-  { value: 'created_at', label: 'Created At' },
-  { value: 'action', label: 'Action' },
+const RESOURCE_TYPE_VALUES = [
+  { value: 'sweep', key: 'sweep', defaultLabel: 'Sweep' },
+  { value: 'merchant_webhook_log', key: 'merchantWebhookLog', defaultLabel: 'Merchant Webhook Log' },
+  { value: 'system_audit_log', key: 'systemAuditLog', defaultLabel: 'System Audit Log' },
 ]
 
 export default function AuditLogList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+
+  const SORT_BY_OPTIONS = [
+    { value: 'created_at', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
+    { value: 'action', label: t('admin.auditLog.action', { defaultValue: 'Action' }) },
+  ]
   const { token } = useAuth()
   const toast = useToast()
 
@@ -128,17 +128,18 @@ export default function AuditLogList() {
       view_audit_log: 'secondary',
     }
     const color = colorMap[action] || 'primary'
-    const label = ACTION_OPTIONS.find((o) => o.value === action)?.label || action
+    const label = ACTION_VALUES.find((o) => o.value === action)
     return (
       <Badge color={color} label>
-        {label}
+        {label ? t(`admin.auditLog.${label.key}`, { defaultValue: label.defaultLabel }) : action}
       </Badge>
     )
   }
 
   function resourceTypeText(type) {
     if (!type) return '-'
-    return RESOURCE_TYPE_OPTIONS.find((o) => o.value === type)?.label || type
+    const match = RESOURCE_TYPE_VALUES.find((o) => o.value === type)
+    return match ? t(`admin.auditLog.${match.key}`, { defaultValue: match.defaultLabel }) : type
   }
 
   if (loading && logs.length === 0) {
@@ -156,9 +157,9 @@ export default function AuditLogList() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-history mr-2"></i>
-                    Audit Logs
+                    {t('admin.auditLog.title', { defaultValue: 'Audit Logs' })}
                   </h4>
-                  <p className="text-surface-500 mb-0">Track admin actions and system events</p>
+                  <p className="text-surface-500 mb-0">{t('admin.auditLog.description', { defaultValue: 'Track admin actions and system events' })}</p>
                 </div>
                 <RefreshButton onClick={loadLogs} loading={loading} />
               </div>
@@ -180,9 +181,9 @@ export default function AuditLogList() {
                   <Label>{t('admin.detail.action', { defaultValue: 'Action' })}</Label>
                   <Select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)}>
                     <option value="">{t('filter.allActions', { defaultValue: 'All Actions' })}</option>
-                    {ACTION_OPTIONS.map((o) => (
+                    {ACTION_VALUES.map((o) => (
                       <option key={o.value} value={o.value}>
-                        {o.label}
+                        {t(`admin.auditLog.${o.key}`, { defaultValue: o.defaultLabel })}
                       </option>
                     ))}
                   </Select>
@@ -191,9 +192,9 @@ export default function AuditLogList() {
                   <Label>{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</Label>
                   <Select value={resourceTypeFilter} onChange={(e) => setResourceTypeFilter(e.target.value)}>
                     <option value="">{t('filter.allTypes', { defaultValue: 'All Types' })}</option>
-                    {RESOURCE_TYPE_OPTIONS.map((o) => (
+                    {RESOURCE_TYPE_VALUES.map((o) => (
                       <option key={o.value} value={o.value}>
-                        {o.label}
+                        {t(`admin.auditLog.${o.key}`, { defaultValue: o.defaultLabel })}
                       </option>
                     ))}
                   </Select>
@@ -235,16 +236,8 @@ export default function AuditLogList() {
                   <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">
-                      {t('filter.ascending', {
-                        defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }),
-                      })}
-                    </option>
-                    <option value="desc">
-                      {t('filter.descending', {
-                        defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }),
-                      })}
-                    </option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
                   </Select>
                 </div>
               </div>
@@ -267,11 +260,11 @@ export default function AuditLogList() {
               <thead>
                 <tr className="whitespace-nowrap">
                   <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
-                  <th className="text-center">User</th>
+                  <th className="text-center">{t('admin.auditLog.user', { defaultValue: 'User' })}</th>
                   <th>{t('admin.detail.action', { defaultValue: 'Action' })}</th>
                   <th>{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</th>
-                  <th className="text-center">Resource ID</th>
-                  <th>IP Address</th>
+                  <th className="text-center">{t('admin.auditLog.resourceId', { defaultValue: 'Resource ID' })}</th>
+                  <th>{t('admin.auditLog.ipAddress', { defaultValue: 'IP Address' })}</th>
                   <th>{t('admin.detail.created', { defaultValue: 'Created' })}</th>
                   <th></th>
                 </tr>

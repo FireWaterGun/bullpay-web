@@ -184,7 +184,7 @@ export default function TempWalletList() {
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     {WALLET_STATUS_OPTIONS.map((s) => (
                       <option key={s} value={s}>
-                        {s.charAt(0).toUpperCase() + s.slice(1)}
+                        {t(`status.${s}`, { defaultValue: s.charAt(0).toUpperCase() + s.slice(1) })}
                       </option>
                     ))}
                   </Select>
@@ -222,22 +222,10 @@ export default function TempWalletList() {
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     <option value="asc">
-                      {t('filter.ascending', {
-                        defaultValue: t('admin.detail.ascending', {
-                          defaultValue: t('admin.detail.ascending', {
-                            defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }),
-                          }),
-                        }),
-                      })}
+                      {t('filter.ascending', { defaultValue: 'Ascending' })}
                     </option>
                     <option value="desc">
-                      {t('filter.descending', {
-                        defaultValue: t('admin.detail.descending', {
-                          defaultValue: t('admin.detail.descending', {
-                            defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }),
-                          }),
-                        }),
-                      })}
+                      {t('filter.descending', { defaultValue: 'Descending' })}
                     </option>
                   </Select>
                 </div>
@@ -269,16 +257,10 @@ export default function TempWalletList() {
                   <th className="text-center">{t('admin.tempWallets.reuseCount', { defaultValue: 'Reuse' })}</th>
                   <th className="text-right">{t('admin.tempWallets.totalReceived', { defaultValue: 'Received' })}</th>
                   <th className="text-right">{t('admin.tempWallets.totalSwept', { defaultValue: 'Swept' })}</th>
-                  <th className="text-right">Last Sweep Amt</th>
-                  <th className="text-right">Leftover Native</th>
-                  <th className="text-right">Leftover Token</th>
-                  <th>
-                    {t('admin.tempWallets.lastAssigned', {
-                      defaultValue: t('admin.tempWallet.lastAssigned', {
-                        defaultValue: t('admin.tempWallet.lastAssigned', { defaultValue: 'Last Assigned' }),
-                      }),
-                    })}
-                  </th>
+                  <th className="text-right">{t('admin.tempWallets.lastSweepAmt', { defaultValue: 'Last Sweep Amt' })}</th>
+                  <th className="text-right">{t('admin.tempWallets.leftoverNative', { defaultValue: 'Leftover Native' })}</th>
+                  <th className="text-right">{t('admin.tempWallets.leftoverToken', { defaultValue: 'Leftover Token' })}</th>
+                  <th>{t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' })}</th>
                   <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
                   <th>{t('table.created', { defaultValue: 'Created' })}</th>
                   <th></th>
@@ -340,11 +322,11 @@ export default function TempWalletList() {
                       </td>
                       <td className="whitespace-nowrap text-center">
                         <span className={getStatusBadgeClass(w.status, 'tempWallet')}>
-                          {String(w.status || '').toUpperCase()}
+                          {t(`status.${w.status}`, { defaultValue: w.status || '-' })}
                         </span>
                         {w.isExpired && (
                           <Badge color="danger" label className="ml-1 text-[0.6rem]">
-                            EXPIRED
+                            {t('status.expired', { defaultValue: 'Expired' })}
                           </Badge>
                         )}
                       </td>
