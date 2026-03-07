@@ -2,7 +2,9 @@
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { statusBadgeClass } from '@/components/admin/merchantListHelpers';
-import { Alert, Button, Spinner } from '../ui';
+import Alert from '../ui/Alert'
+import Button from '../ui/Button'
+import Spinner from '../ui/Spinner'
 
 export default function MerchantConfirmModal({
   merchant,

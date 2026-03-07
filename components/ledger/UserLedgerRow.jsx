@@ -5,7 +5,8 @@ import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import { formatAmount, stateBadge } from '@/components/ledger/ledgerUtils';
 import { useDateFormat } from '@/hooks/useDateFormat';
-import { Badge, Button } from '@/components/ui';
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
 
 export default function UserLedgerRow({ entry, t }) {
   const router = useRouter();

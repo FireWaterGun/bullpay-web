@@ -6,7 +6,9 @@ import { useAuth } from '@/app/providers';
 import { upsertSetting } from '@/lib/api/admin';
 import { useToast } from '@/app/providers';
 import { logger } from '@/lib/utils/logger';
-import { Button, Input, Label, Spinner } from '../../ui'
+import Button from '../../ui/Button'
+import { Input, Label } from '../../ui/Input'
+import Spinner from '../../ui/Spinner'
 import Table from '@/components/ui/Table'
 
 export default function AutoApproveForm({ autoApprove, setAutoApprove }) {

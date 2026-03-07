@@ -8,7 +8,9 @@ import { formatAmount } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Card, Pagination, Table } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table'
 import { useState } from 'react';
 
 const statusBadge = {

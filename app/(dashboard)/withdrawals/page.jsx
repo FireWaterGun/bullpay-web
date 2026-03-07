@@ -13,7 +13,9 @@ import { formatStatusLabel, WITHDRAWAL_STATUSES } from '@/components/balance/wit
 import RefreshButton from '@/components/RefreshButton';
 import CardEmptyState from '@/components/CardEmptyState';
 import PageSpinner from '@/components/PageSpinner';
-import { Card, Spinner, Button } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
+import Button from '@/components/ui/Button'
 
 export default function WithdrawalsPage() {
   const { t } = useTranslation();

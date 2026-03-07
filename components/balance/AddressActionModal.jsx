@@ -1,5 +1,7 @@
 'use client';
-import { Button, Input, Label, Spinner } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import { Input, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function AddressActionModal({
   selectedAddress,

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import ConfirmModal from '@/components/ConfirmModal';
 import { copyToClipboard } from '@/lib/utils/clipboard';
-import { Button } from '@/components/ui'
+import Button from '@/components/ui/Button'
 
 export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address, networkName, t }) {
   const [copied, setCopied] = useState(false);

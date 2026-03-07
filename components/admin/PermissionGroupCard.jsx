@@ -1,7 +1,10 @@
 'use client';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Badge, Button, Card, Spinner } from '../ui';
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import Spinner from '../ui/Spinner'
 
 const GROUP_ICONS = {
   dashboard: 'bx-tachometer',

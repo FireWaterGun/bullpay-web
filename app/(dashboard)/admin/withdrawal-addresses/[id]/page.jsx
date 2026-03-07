@@ -10,16 +10,18 @@ import {
   flagWithdrawalAddress,
   unflagWithdrawalAddress,
   forceVerifyWithdrawalAddress,
-  deleteWithdrawalAddress } from
-'@/lib/api/admin';
+  deleteWithdrawalAddress
+} from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
-import { useDateFormat } from '@/hooks/useDateFormat'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
+import { useDateFormat } from '@/hooks/useDateFormat';
 import AddressActionModal from '@/components/balance/AddressActionModal';
-import { logger } from '@/lib/utils/logger'
+import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card } from '@/components/ui'
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 import Table from '@/components/ui/Table'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 

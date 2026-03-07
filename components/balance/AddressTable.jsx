@@ -5,7 +5,10 @@ import CoinImg from '@/components/CoinImg';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { addressStatusBadgeClass } from './withdrawalHelpers';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Card, Pagination, Table } from '@/components/ui'
+import Badge from '@/components/ui/Badge'
+import Card from '@/components/ui/Card'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table'
 import ActionMenu from '@/components/ui/ActionMenu'
 
 function statusLabel(s) {

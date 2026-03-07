@@ -15,7 +15,10 @@ import { formatCoinAmount } from '@/lib/utils/format';
 import CoinImg from '@/components/CoinImg';
 import WithdrawFeeBreakdown from '@/components/balance/WithdrawFeeBreakdown';
 import { SuccessModalWrapper, ErrorModalWrapper } from '@/components/balance/WithdrawRequestModals';
-import { Button, Card, Input, Label, Spinner } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 
 export default function WithdrawRequest() {

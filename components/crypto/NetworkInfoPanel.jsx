@@ -2,7 +2,8 @@
 
 import { useTranslation } from 'react-i18next';
 import { useDateFormat } from '@/hooks/useDateFormat';
-import { Badge, Card } from '../ui';
+import Badge from '../ui/Badge'
+import Card from '../ui/Card'
 
 /**
  * Read-only info sidebar panel shown in edit mode.

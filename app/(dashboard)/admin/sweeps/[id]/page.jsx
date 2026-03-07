@@ -14,7 +14,9 @@ import SweepMetadataCard from '@/components/admin/SweepMetadataCard';
 import SweepTransactionCard, { SweepTimestampsCard } from '@/components/admin/SweepTransactionCard';
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card } from '@/components/ui'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 

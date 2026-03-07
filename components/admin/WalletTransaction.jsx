@@ -14,7 +14,9 @@ import WalletInfoCard from '@/components/admin/WalletInfoCard';
 import WalletLedgerTable from '@/components/admin/WalletLedgerTable';
 import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card, Input, Label, Select } from '../ui';
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import { Input, Label, Select } from '../ui/Input'
 import Pagination from '@/components/ui/Pagination'
 
 export default function WalletTransaction() {

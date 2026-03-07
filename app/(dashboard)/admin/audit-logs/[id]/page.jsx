@@ -11,7 +11,10 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Alert, Badge, Card, Button } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 import Table from '@/components/ui/Table';
 
 export default function AuditLogDetail() {

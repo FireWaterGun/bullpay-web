@@ -17,7 +17,10 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, CoinNetworkFilterDropdown, Input, Label, Select } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import CoinNetworkFilterDropdown from '@/components/ui/CoinNetworkFilterDropdown'
+import { Input, Label, Select } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 

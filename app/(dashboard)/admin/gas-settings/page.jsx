@@ -5,7 +5,7 @@ import { useAuth, useToast } from '@/app/providers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { getSettings, upsertSetting } from '@/lib/api/admin';
 import { logger } from '@/lib/utils/logger';
-import { Spinner } from '@/components/ui';
+import Spinner from '@/components/ui/Spinner'
 import GasPriceTab from '@/components/admin/gas-settings/GasPriceTab';
 import GasLimitTab from '@/components/admin/gas-settings/GasLimitTab';
 import GasTopupTab from '@/components/admin/gas-settings/GasTopupTab';

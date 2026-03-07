@@ -2,7 +2,8 @@
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Badge, Button } from '../../ui'
+import Badge from '../../ui/Badge'
+import Button from '../../ui/Button'
 import Table from '@/components/ui/Table'
 
 function FeeTypeBadge({ config }) {

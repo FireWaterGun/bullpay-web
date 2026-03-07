@@ -8,7 +8,9 @@ import { useCoins } from '@/hooks/useCoins';
 import { createWallet } from '@/lib/api/wallets';
 import CoinImg from '@/components/CoinImg';
 import { getNetworkLabel } from '@/components/balance/withdrawalHelpers';
-import { Button, Card, Input, Label } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
 
 
 export default function WalletNewAddressPage() {

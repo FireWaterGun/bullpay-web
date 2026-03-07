@@ -12,7 +12,9 @@ import RevenueBarChart from '@/components/admin/RevenueBarChart';
 import { RevenueByCoinTable, RevenueVolumeSummary } from '@/components/admin/RevenueByCoinTable';
 import DateFilterBar from '@/components/dashboard/DateFilterBar';
 import { logger } from '@/lib/utils/logger';
-import { Alert, Card, Spinner } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
 import { getDateRange } from '@/lib/utils/dateRange'
 
 const formatCurrency = formatUsdAuto;

@@ -7,7 +7,11 @@ import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card, Pagination, Table } from '../ui';
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import Pagination from '../ui/Pagination'
+import Table from '../ui/Table'
 
 function formatAmount(val) {
   if (!val && val !== 0) return '0';

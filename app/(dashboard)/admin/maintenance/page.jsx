@@ -7,7 +7,13 @@ import { getSettingByKey, upsertSetting } from '@/lib/api/admin'
 import { getSystemStatus } from '@/lib/api/system'
 import { logger } from '@/lib/utils/logger'
 import ConfirmModal from '@/components/ConfirmModal'
-import { Alert, Badge, Button, Card, CardHeader, CardBody, Input, Label, Spinner, Table } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card, { CardHeader, CardBody } from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
+import Table from '@/components/ui/Table'
 
 /* ── Constants ── */
 

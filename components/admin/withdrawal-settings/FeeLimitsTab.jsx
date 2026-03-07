@@ -1,6 +1,10 @@
 import CoinImg from '@/components/CoinImg';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Badge, Button, Card, Input, Spinner } from '@/components/ui';
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 import Table from '@/components/ui/Table';
 import Pagination from '@/components/ui/Pagination';
 import { formatAmount } from '@/lib/utils/settingsFormatters';

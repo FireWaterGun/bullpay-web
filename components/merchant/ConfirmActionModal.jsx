@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Button, Input, InputGroup, Label, Spinner } from '../ui';
+import Button from '../ui/Button'
+import { Input, InputGroup, Label } from '../ui/Input'
+import Spinner from '../ui/Spinner'
 
 export default function ConfirmActionModal({ action, loading, is2FAEnabled, onConfirm, onClose, error, t }) {
   const [password, setPassword] = useState('');

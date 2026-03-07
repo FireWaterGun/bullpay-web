@@ -3,7 +3,8 @@
 import { formatUsdAuto, formatPercent as formatPercentShared } from '@/lib/utils/format';
 import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Card, Spinner } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
 import Table from '@/components/ui/Table';
 
 const formatCurrency = formatUsdAuto;

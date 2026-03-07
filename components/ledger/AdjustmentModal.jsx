@@ -5,7 +5,11 @@ import { useAuth } from '@/app/providers';
 import { getSystemWalletStats, adjustSystemBalance } from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
 import { logger } from '@/lib/utils/logger';
-import { Alert, Badge, Button, Input, InputGroup, InputAddon, Label, Select, Spinner } from '../ui';
+import Alert from '../ui/Alert'
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import { Input, InputGroup, InputAddon, Label, Select } from '../ui/Input'
+import Spinner from '../ui/Spinner'
 
 /**
  * AdjustmentModal — Manual system balance adjustment (XI/XO)

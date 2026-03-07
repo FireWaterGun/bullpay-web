@@ -2,7 +2,9 @@
 
 import { formatRoleLabel } from '@/lib/utils/roles';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Alert, Button, Spinner } from '../ui'
+import Alert from '../ui/Alert'
+import Button from '../ui/Button'
+import Spinner from '../ui/Spinner'
 
 export default function ResetOverridesModal({ role, overridesCount, actionLoading, onReset, onClose }) {
   const { t } = useAdminTranslation();

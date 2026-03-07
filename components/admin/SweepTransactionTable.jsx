@@ -5,7 +5,9 @@ import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, Spinner } from '../ui';
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import Spinner from '../ui/Spinner'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 

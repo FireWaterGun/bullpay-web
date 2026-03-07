@@ -1,4 +1,6 @@
-import { Badge, Button, Card } from '@/components/ui';
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
 import { formatMs } from '@/lib/utils/settingsFormatters';
 
 export default function RbfGlobalTab({ t, getVal, openGlobalEdit }) {

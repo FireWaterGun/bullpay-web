@@ -10,7 +10,10 @@ import CoinImg from '@/components/CoinImg';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Card, Input, Spinner, Button } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
+import Button from '@/components/ui/Button'
 
 export default function BalancePage() {
   const { t } = useTranslation();

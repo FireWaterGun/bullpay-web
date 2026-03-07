@@ -2,7 +2,8 @@
 
 import { formatRoleLabel } from '@/lib/utils/roles';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Button, Input, Label } from '../ui';
+import Button from '../ui/Button'
+import { Input, Label } from '../ui/Input'
 
 export default function PermissionActionModal({ action, role, permission, reason, onPermissionChange, onReasonChange, onSubmit, onClose, disabled }) {
   const { t } = useAdminTranslation();

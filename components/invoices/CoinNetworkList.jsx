@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import CoinImg, { NetworkIcon } from '@/components/CoinImg';
-import { Input } from '@/components/ui'
+import { Input } from '@/components/ui/Input'
 
 const EMPTY_COINS = [];
 

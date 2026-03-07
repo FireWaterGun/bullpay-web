@@ -4,7 +4,9 @@ import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import RefreshButton from '@/components/RefreshButton';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Badge, Button, Card } from '../ui'
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 import Table from '../ui/Table'
 
 function formatAmount(val) {

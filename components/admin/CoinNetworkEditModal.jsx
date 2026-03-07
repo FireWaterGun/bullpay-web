@@ -6,7 +6,11 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getCoinNetworkById, updateCoinNetwork } from '@/lib/api/admin'
 import { logger } from '@/lib/utils/logger'
 import CoinImg from '@/components/CoinImg'
-import { Alert, Badge, Button, Select, Label, Spinner } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import { Select, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function CoinNetworkEditModal({ coinNetworkId, onClose, onSaved }) {
   const { token } = useAuth()

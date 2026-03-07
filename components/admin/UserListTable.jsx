@@ -5,7 +5,9 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card } from '../ui'
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 import ActionMenu from '../ui/ActionMenu'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';

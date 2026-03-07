@@ -1,4 +1,9 @@
-import { Alert, Badge, Button, Card, Input, InputGroup, InputAddon, Label, Spinner } from '@/components/ui';
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, InputGroup, InputAddon, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 const TABS = [
   { key: 'gasPrice', icon: 'bx-gas-pump' },

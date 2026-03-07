@@ -1,7 +1,9 @@
 'use client';
 
 import { formatChange } from '@/lib/utils/format';
-import { AvatarInitial, bgLabelClass, Card } from '@/components/ui'
+import AvatarInitial from '@/components/ui/AvatarInitial'
+import { bgLabelClass } from '@/components/ui/Badge'
+import Card from '@/components/ui/Card'
 
 export default function RevenueSummaryCard({ title, value, change, changeLabel, icon, color = 'primary', valueColor }) {
   const isPositive = change >= 0;

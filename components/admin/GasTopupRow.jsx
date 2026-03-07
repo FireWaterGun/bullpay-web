@@ -3,7 +3,7 @@
 import CoinImg from '@/components/CoinImg';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { formatGasAmount, statusBadgeClass } from '@/components/admin/gasTopupHelpers';
-import { Button } from '../ui'
+import Button from '../ui/Button'
 
 export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
   const { fmtDate } = useDateFormat();

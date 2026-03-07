@@ -9,7 +9,9 @@ import { StatCard, DailyTrendCard } from '@/components/admin/DashboardCards';
 import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Badge, Button, Card } from '../ui'
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 import Table from '../ui/Table'
 
 export default function Dashboard() {

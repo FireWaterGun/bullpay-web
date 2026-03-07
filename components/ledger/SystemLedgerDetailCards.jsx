@@ -1,7 +1,9 @@
 'use client';
 
 import { useDateFormat } from '@/hooks/useDateFormat';
-import { Badge, Button, Card } from '../ui';
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 
 /**
  * Transaction card — reservation, related ID, tx hash, invoice, sweep, note.

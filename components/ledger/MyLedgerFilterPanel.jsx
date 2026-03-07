@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import CoinImg from '@/components/CoinImg';
-import { Button, Input, Label, Select, inputClass } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import { Input, Label, Select, inputClass } from '@/components/ui/Input'
 
 export default function MyLedgerFilterPanel({
   entryCodeFilter, setEntryCodeFilter,

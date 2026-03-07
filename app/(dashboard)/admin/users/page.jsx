@@ -11,8 +11,8 @@ import {
   changeUserRole,
   resetUserPassword,
   disableUser2FA,
-  createUser } from
-'@/lib/api/admin';
+  createUser
+} from '@/lib/api/admin';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { formatRoleLabel } from '@/lib/utils/roles';
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
@@ -22,7 +22,10 @@ import CreateUserModal from '@/components/admin/CreateUserModal';
 import { STATUS_OPTIONS, ROLE_OPTIONS } from '@/components/admin/userListHelpers';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
-import { Button, Card, Input, Label, Select, Spinner } from '@/components/ui'
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import { Input, Label, Select } from '@/components/ui/Input';
+import Spinner from '@/components/ui/Spinner';
 
 export default function AdminUsersPage() {
   const { t } = useAdminTranslation();

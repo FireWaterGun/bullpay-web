@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import CountdownTimer from './CountdownTimer';
-import { Button, Card } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
 
 export default function InvoiceDetailActions({ invoice, explorer }) {
   const { t } = useTranslation();

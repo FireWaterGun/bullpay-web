@@ -10,7 +10,10 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, Input, Label, Select, Pagination } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label, Select } from '@/components/ui/Input'
+import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 import { EVENT_OPTIONS, successBadge, eventBadge, httpStatusBadge } from '@/components/webhook/webhookHelpers'
 

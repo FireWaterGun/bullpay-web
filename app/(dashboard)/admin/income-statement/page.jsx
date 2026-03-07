@@ -11,7 +11,10 @@ import { getDateRange } from '@/components/ledger/incomeStatementUtils';
 import IncomeStatementReport from '@/components/ledger/IncomeStatementReport';
 import { logger } from '@/lib/utils/logger';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Badge, Button, Card, Select } from '@/components/ui'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Select } from '@/components/ui/Input'
 
 function hasReportData(report) {
   if (!report) return false;

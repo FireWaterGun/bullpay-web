@@ -1,5 +1,6 @@
 'use client';
-import { Badge, Card } from '../ui'
+import Badge from '../ui/Badge'
+import Card from '../ui/Card'
 import Table from '../ui/Table'
 
 export default function SweepMetadataCard({ metadata }) {

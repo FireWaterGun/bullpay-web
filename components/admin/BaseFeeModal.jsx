@@ -1,7 +1,9 @@
 'use client';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Button, Input, Label, Spinner } from '../ui'
+import Button from '../ui/Button'
+import { Input, Label } from '../ui/Input'
+import Spinner from '../ui/Spinner'
 
 export default function BaseFeeModal({ form, editing, loading, onFormChange, onSave, onClose }) {
   const { t } = useAdminTranslation();

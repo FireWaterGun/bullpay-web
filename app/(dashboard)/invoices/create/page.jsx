@@ -8,7 +8,9 @@ import { useRouter } from 'next/navigation';
 import { useCoins } from '@/hooks/useCoins';
 import CoinNetworkSelector from '@/components/invoices/CoinNetworkSelector';
 import AmountInput, { MAX_DEPOSIT } from '@/components/invoices/AmountInput';
-import { Button, Card, Input, Label } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
 
 export default function InvoiceCreatePage() {
   const { t } = useTranslation();

@@ -12,7 +12,9 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Badge, Button, Card } from '../ui'
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 import Table from '../ui/Table'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 

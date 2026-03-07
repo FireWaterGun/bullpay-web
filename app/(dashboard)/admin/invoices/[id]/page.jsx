@@ -16,7 +16,10 @@ import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTa
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Alert, Badge, Button, Card } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table';
 
 export default function AdminInvoiceDetail() {

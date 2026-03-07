@@ -12,7 +12,10 @@ import { useToast } from '@/app/providers';
 import NetworkFormFields from '@/components/crypto/NetworkFormFields';
 import NetworkInfoPanel from '@/components/crypto/NetworkInfoPanel';
 import { validateAndBuildPayload } from '@/components/crypto/networkFormValidation';
-import { Alert, Button, Card, Spinner } from '@/components/ui';
+import Alert from '@/components/ui/Alert'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
 
 export default function NetworkForm() {
   const { t } = useAdminTranslation();

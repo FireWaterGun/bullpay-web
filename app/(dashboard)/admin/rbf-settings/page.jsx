@@ -5,7 +5,7 @@ import { useAuth, useToast } from '@/app/providers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { getSettings, upsertSetting } from '@/lib/api/admin';
 import { logger } from '@/lib/utils/logger';
-import { Spinner } from '@/components/ui'
+import Spinner from '@/components/ui/Spinner'
 import RbfGlobalTab from '@/components/admin/rbf-settings/RbfGlobalTab';
 import RbfNetworkTab from '@/components/admin/rbf-settings/RbfNetworkTab';
 import RbfEditModal from '@/components/admin/rbf-settings/RbfEditModal';

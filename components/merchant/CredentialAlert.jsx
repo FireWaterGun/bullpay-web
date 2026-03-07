@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import { Button, Input, InputGroup, Label } from '../ui'
+import Button from '../ui/Button'
+import { Input, InputGroup, Label } from '../ui/Input'
 
 export default function CredentialAlert({ credentials, warning, onDismiss, t }) {
   const [copiedKey, setCopiedKey] = useState(false);

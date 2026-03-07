@@ -10,7 +10,11 @@ import { getCoinById, createCoin, updateCoin, deleteCoin } from '@/lib/api/admin
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false });
 const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false });
 import { useToast } from '@/app/providers';
-import { Alert, Button, Card, Input, Label, Select, Spinner } from '@/components/ui';
+import Alert from '@/components/ui/Alert'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label, Select } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function CoinForm() {
   const { t } = useAdminTranslation();

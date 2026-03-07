@@ -1,5 +1,5 @@
 'use client';
-import { Badge, badgeBase } from '@/components/ui'
+import Badge, { badgeBase } from '@/components/ui/Badge'
 
 /**
  * Shared constants and helpers for ledger detail views.

@@ -10,7 +10,8 @@ import TransactionByCoinTable from '@/components/dashboard/TransactionByCoinTabl
 import DateFilterBar from '@/components/dashboard/DateFilterBar';
 import RefreshButton from '@/components/RefreshButton';
 import { logger } from '@/lib/utils/logger';
-import { Card, Spinner } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
 import { getDateRange } from '@/lib/utils/dateRange'
 
 const colorMap = {

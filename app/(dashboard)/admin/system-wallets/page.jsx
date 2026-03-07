@@ -12,7 +12,11 @@ import CoinImg from '@/components/CoinImg';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 import { logger } from '@/lib/utils/logger';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Alert, Badge, Button, Card, Spinner } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
 import Table from '@/components/ui/Table';
 
 export default function SystemBalance() {

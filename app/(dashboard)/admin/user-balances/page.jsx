@@ -12,7 +12,10 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, Input, Label, Select, badgeBase } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label, Select } from '@/components/ui/Input'
+import { badgeBase } from '@/components/ui/Badge'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 

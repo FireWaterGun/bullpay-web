@@ -1,7 +1,8 @@
 'use client';
 
 import { formatUsdAuto as formatUsd, formatPercent } from '@/lib/utils/format';
-import { Badge, Card } from '../ui'
+import Badge from '../ui/Badge'
+import Card from '../ui/Card'
 
 /**
  * Helper: returns color-related classname and style props based on a numeric value.

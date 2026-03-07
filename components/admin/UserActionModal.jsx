@@ -3,7 +3,10 @@
 import { formatRoleLabel } from '@/lib/utils/roles';
 import { STATUS_OPTIONS, ROLE_OPTIONS, statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Alert, Button, Input, Label, Select, Spinner } from '../ui';
+import Alert from '../ui/Alert'
+import Button from '../ui/Button'
+import { Input, Label, Select } from '../ui/Input'
+import Spinner from '../ui/Spinner'
 
 export default function UserActionModal({
   t,

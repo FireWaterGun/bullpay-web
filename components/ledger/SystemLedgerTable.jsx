@@ -8,7 +8,11 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
 import Link from 'next/link';
-import { Badge, Button, Card, Pagination, Table } from '../ui';
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import Pagination from '../ui/Pagination'
+import Table from '../ui/Table'
 
 function parseMetadata(entry) {
   try {

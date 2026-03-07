@@ -11,7 +11,9 @@ import CoinImg from '@/components/CoinImg';
 import RefreshButton from '@/components/RefreshButton';
 import CardEmptyState from '@/components/CardEmptyState';
 import { getNetworkLabel } from '@/components/balance/withdrawalHelpers';
-import { Card, Spinner, Button } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
+import Button from '@/components/ui/Button'
 
 /* ── Inline action menu ── */
 function ActionMenu({ coinNetworkId, t }) {

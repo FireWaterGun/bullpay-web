@@ -8,7 +8,11 @@ import { getCoins } from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
 import CoinEditModal from '@/components/admin/CoinEditModal';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 
@@ -38,7 +42,7 @@ function CoinRow({ coin, t, onEdit }) {
           : <Badge color="secondary">{coin.status}</Badge>}
       </td>
       <td className="text-center align-middle">
-        <button onClick={() => onEdit(coin.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
+        <button type="button" onClick={() => onEdit(coin.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
           <i className="bx bx-edit text-primary text-xl"></i>
         </button>
       </td>

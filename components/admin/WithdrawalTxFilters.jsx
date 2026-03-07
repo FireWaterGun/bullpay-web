@@ -3,7 +3,10 @@
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
 import RefreshButton from '@/components/RefreshButton';
-import { Button, Card, CoinNetworkFilterDropdown, Input, Label, Select } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import CoinNetworkFilterDropdown from '@/components/ui/CoinNetworkFilterDropdown'
+import { Input, Label, Select } from '@/components/ui/Input'
 
 export default function WithdrawalTxFilters({
   locale,

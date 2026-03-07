@@ -5,7 +5,9 @@ import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Button, Card, Pagination } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 
 export default function WithdrawalTxTable({

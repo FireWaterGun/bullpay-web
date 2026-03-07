@@ -2,7 +2,10 @@
 
 import { useEffect, useRef } from 'react';
 import CoinImg from '@/components/CoinImg';
-import { Badge, Button, Input, Label, Spinner } from '@/components/ui';
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import { Input, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t }) {
   const coinSymbol = cn.coin?.symbol || '?';

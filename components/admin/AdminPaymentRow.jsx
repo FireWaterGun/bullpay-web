@@ -4,7 +4,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg';
-import { Button } from '../ui'
+import Button from '../ui/Button'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function AdminPaymentRow({ payment, onCopy }) {

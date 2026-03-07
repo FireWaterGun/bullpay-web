@@ -8,7 +8,11 @@ import { useAuth } from '@/app/providers';
 import { getNetworks } from '@/lib/api/admin';
 import TableEmptyState from '@/components/TableEmptyState';
 import NetworkEditModal from '@/components/admin/NetworkEditModal';
-import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
+import Alert from '@/components/ui/Alert'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';
 
@@ -129,7 +133,7 @@ function NetworkRow({ network, imageInfo, t, onEdit }) {
       </td>
       <td className="text-center align-middle">{getStatusBadge(network.status, t)}</td>
       <td className="text-center align-middle">
-        <button onClick={() => onEdit(network.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
+        <button type="button" onClick={() => onEdit(network.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
           <i className="bx bx-edit text-primary text-xl"></i>
         </button>
       </td>

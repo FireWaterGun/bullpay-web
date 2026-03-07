@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import CoinImg from '@/components/CoinImg';
 import { NetworkIcon } from '@/components/CoinImg';
 import { formatDuration } from '@/components/payment/useInvoicePayment';
-import { Button, Spinner } from '../ui'
+import Button from '../ui/Button'
+import Spinner from '../ui/Spinner'
 
 export default function NetworkSelectionPanel({
   paymentData, selectedNetwork, setSelectedNetwork, selectingNetwork,

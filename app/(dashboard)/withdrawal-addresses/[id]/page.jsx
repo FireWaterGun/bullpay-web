@@ -13,7 +13,8 @@ import AddressActionModal from '@/components/balance/AddressActionModal';
 import AddressAuditLog from '@/components/balance/AddressAuditLog';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
 
 export default function WithdrawalAddressDetailPage() {
   const params = useParams();

@@ -13,7 +13,10 @@ import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card, CoinNetworkFilterDropdown, Input, Label, Select } from '../ui'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import CoinNetworkFilterDropdown from '../ui/CoinNetworkFilterDropdown'
+import { Input, Label, Select } from '../ui/Input'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';

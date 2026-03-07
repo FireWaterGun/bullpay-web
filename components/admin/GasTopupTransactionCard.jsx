@@ -1,7 +1,8 @@
 'use client';
 
 import { useDateFormat } from '@/hooks/useDateFormat';
-import { Button, Card } from '../ui'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 import Table from '../ui/Table';
 
 export default function GasTopupTransactionCard({ topup, explorerUrl, onCopy, t }) {

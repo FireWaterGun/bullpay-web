@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
-import { Button, Card, Input, InputGroup, InputIcon, Label } from '../ui'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import { Input, InputGroup, InputIcon, Label } from '../ui/Input'
 
 export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, onRegenerate, toast, t }) {
   const [showApiKey, setShowApiKey] = useState(false);

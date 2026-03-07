@@ -2,7 +2,7 @@
 
 import { formatCoinAmount } from '@/lib/utils/format';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Card } from '../ui'
+import Card from '../ui/Card'
 
 const COLOR_MAP = {
   primary: { rgb: '59, 130, 246', var: 'var(--color-primary-600)' },

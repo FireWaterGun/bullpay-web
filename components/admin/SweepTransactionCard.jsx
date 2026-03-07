@@ -3,7 +3,8 @@
 import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Button, Card } from '../ui'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 import Table from '../ui/Table';
 
 function AddressRow({ label, address, explorerUrl, onCopy }) {

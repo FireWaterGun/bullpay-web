@@ -17,7 +17,9 @@ import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
 import Pagination from '@/components/ui/Pagination';
-import { Button, Card, Input, Label, Select } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label, Select } from '@/components/ui/Input'
 import Table from '@/components/ui/Table';
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 

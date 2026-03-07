@@ -10,7 +10,8 @@ import InvoiceFilterPanel from '@/components/invoices/InvoiceFilterPanel';
 import InvoiceTable from '@/components/invoices/InvoiceTable';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Card, Button } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 export default function InvoiceList() {
   const { t, i18n } = useTranslation();

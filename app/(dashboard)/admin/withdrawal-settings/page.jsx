@@ -10,7 +10,11 @@ import BaseFeeTab from '@/components/admin/withdrawal-settings/BaseFeeTab';
 import FeeLimitsTab from '@/components/admin/withdrawal-settings/FeeLimitsTab';
 import SettingModal from '@/components/admin/withdrawal-settings/SettingModal';
 import CoinNetworkEditModal from '@/components/admin/withdrawal-settings/CoinNetworkEditModal';
-import { AvatarInitial, Badge, bgLabelClass, Card, Input, Label, Spinner } from '@/components/ui';
+import AvatarInitial from '@/components/ui/AvatarInitial'
+import Badge, { bgLabelClass } from '@/components/ui/Badge'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 const TABS = [
 { key: 'policy', icon: 'bx-shield-quarter', labelKey: 'admin.withdrawalSettings.tabPolicy', defaultLabel: 'Policy' },

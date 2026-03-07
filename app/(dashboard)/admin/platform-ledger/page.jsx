@@ -13,7 +13,8 @@ import AdjustmentModal from '@/components/ledger/AdjustmentModal';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Button, Card, CardHeader } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import Card, { CardHeader } from '@/components/ui/Card'
 
 export default function PlatformLedgerList() {
   const { t } = useAdminTranslation();

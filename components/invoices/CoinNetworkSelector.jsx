@@ -2,7 +2,7 @@
 
 import { useTranslation } from 'react-i18next';
 import CoinImg, { NetworkIcon } from '@/components/CoinImg';
-import { Card } from '@/components/ui'
+import Card from '@/components/ui/Card'
 
 const NETWORK_LABELS = {
   1: 'Bitcoin',

@@ -5,7 +5,9 @@ import useCoinNetworkForm from '@/hooks/useCoinNetworkForm';
 import CoinSelector from '@/components/crypto/CoinSelector';
 import NetworkSelector from '@/components/crypto/NetworkSelector';
 import ConfigurationForm from '@/components/crypto/ConfigurationForm';
-import { Alert, Spinner, Button } from '@/components/ui';
+import Alert from '@/components/ui/Alert'
+import Spinner from '@/components/ui/Spinner'
+import Button from '@/components/ui/Button'
 
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false });
 const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false });

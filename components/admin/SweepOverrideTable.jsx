@@ -2,7 +2,7 @@
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import CardEmptyState from '@/components/CardEmptyState';
-import { Button } from '../ui'
+import Button from '../ui/Button'
 import Table from '../ui/Table'
 
 /**

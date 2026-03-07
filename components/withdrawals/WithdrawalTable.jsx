@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import TableEmptyState from '@/components/TableEmptyState'
-import { Pagination, Table } from '@/components/ui'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table'
 import {
   formatAmount,
   getNetworkLabel,

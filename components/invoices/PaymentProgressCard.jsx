@@ -1,5 +1,5 @@
 'use client';
-import { Card } from '@/components/ui'
+import Card from '@/components/ui/Card'
 
 export default function PaymentProgressCard({ invoice, t }) {
   const status = String(invoice?.status || '').toLowerCase();

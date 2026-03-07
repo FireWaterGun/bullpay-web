@@ -11,7 +11,9 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import TableEmptyState from '@/components/TableEmptyState';
-import { AvatarInitial, Badge, bgLabelClass, Card } from '@/components/ui';
+import AvatarInitial from '@/components/ui/AvatarInitial'
+import Badge, { bgLabelClass } from '@/components/ui/Badge'
+import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table';
 
 /* Tailwind JIT can't resolve dynamic `bg-${color}` — map to real classes */

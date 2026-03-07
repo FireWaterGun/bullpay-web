@@ -1,7 +1,9 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Button } from '../ui';
+import Badge from '../ui/Badge'
+import Card from '../ui/Card'
+import Button from '../ui/Button'
 
 export default function NetworkSelector({ networks, formData, setFormData, isEdit }) {
   const { t } = useTranslation();

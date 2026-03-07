@@ -10,7 +10,8 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Card, Button } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 import { eventBadge, httpStatusBadge, successBadge } from '@/components/webhook/webhookHelpers';
 
 

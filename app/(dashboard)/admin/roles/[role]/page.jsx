@@ -11,8 +11,8 @@ import {
   grantRolePermission,
   denyRolePermission,
   deleteRolePermissionOverride,
-  resetRolePermissionOverrides } from
-'@/lib/api/admin';
+  resetRolePermissionOverrides
+} from '@/lib/api/admin';
 import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles';
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import SummaryCard from '@/components/admin/RevenueSummaryCard';
@@ -23,7 +23,11 @@ import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
 import CardEmptyState from '@/components/CardEmptyState';
-import { AvatarInitial, Badge, bgLabelClass, Button, Card, Input, InputGroup, InputAddon, InputIcon, Select } from '@/components/ui';
+import AvatarInitial from '@/components/ui/AvatarInitial';
+import Badge, { bgLabelClass } from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import { Input, InputGroup, InputAddon, InputIcon, Select } from '@/components/ui/Input';
 
 export default function RolePermissions() {
   const { token, user } = useAuth();

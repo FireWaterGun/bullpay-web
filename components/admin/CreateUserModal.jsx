@@ -2,7 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import { formatRoleLabel } from '@/lib/utils/roles';
-import { Alert, Button, Input, Label, Select, Spinner } from '../ui'
+import Alert from '../ui/Alert'
+import Button from '../ui/Button'
+import { Input, Label, Select } from '../ui/Input'
+import Spinner from '../ui/Spinner'
 
 /**
  * Roles creatable per caller role — mirrors server-side getCreatableRoles().

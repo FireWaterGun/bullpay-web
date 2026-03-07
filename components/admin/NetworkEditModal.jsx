@@ -6,7 +6,10 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getNetworkById, updateNetwork } from '@/lib/api/admin'
 import { validateAndBuildPayload } from '@/components/crypto/networkFormValidation'
 import { logger } from '@/lib/utils/logger'
-import { Alert, Button, Input, Label, Select, Spinner } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Button from '@/components/ui/Button'
+import { Input, Label, Select } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function NetworkEditModal({ networkId, onClose, onSaved }) {
   const { token } = useAuth()

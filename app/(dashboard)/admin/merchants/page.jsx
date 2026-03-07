@@ -12,7 +12,11 @@ import MerchantConfirmModal from '@/components/admin/MerchantConfirmModal';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Badge, Button, Card, Label, Select, Spinner } from '@/components/ui'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Label, Select } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 import ActionMenu from '@/components/ui/ActionMenu'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table';

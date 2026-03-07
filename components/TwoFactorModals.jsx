@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { disable2FA } from "@/lib/api/twoFactor";
-import { Button, Input, InputGroup, InputIcon, Spinner } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import { Input, InputGroup, InputIcon } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export { Setup2FAModal } from "./Setup2FAModal";
 

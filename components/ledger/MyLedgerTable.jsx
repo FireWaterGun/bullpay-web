@@ -8,7 +8,9 @@ import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { formatAmount, getEntryCodeLabel, userStateBadge } from '@/components/ledger/ledgerUtils';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Card, Pagination, Table } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import Pagination from '@/components/ui/Pagination'
+import Table from '@/components/ui/Table'
 
 export default function MyLedgerTable({
   entries,

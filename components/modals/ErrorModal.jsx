@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { Button } from '../ui'
+import Button from '../ui/Button'
 
 export default function ErrorModal({
   show,

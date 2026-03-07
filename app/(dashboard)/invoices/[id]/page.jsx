@@ -13,7 +13,8 @@ import { statusClass } from '@/components/invoices/invoiceDetailHelpers';
 import InvoicePaymentsTable from '@/components/invoices/InvoicePaymentsTable';
 import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions';
 import RefreshButton from '@/components/RefreshButton';
-import { Card, Label } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import { Label } from '@/components/ui/Input'
 
 export default function InvoiceDetailPage() {
   const { fmtDateTime } = useDateFormat();

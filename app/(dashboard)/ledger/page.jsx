@@ -12,7 +12,7 @@ import MyLedgerTable from '@/components/ledger/MyLedgerTable';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Card } from '@/components/ui'
+import Card from '@/components/ui/Card'
 
 export default function MyLedgerList() {
   return <Suspense><MyLedgerListContent /></Suspense>;

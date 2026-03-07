@@ -2,7 +2,8 @@
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker';
-import { Button, Input, Label, Select } from '../ui'
+import Button from '../ui/Button'
+import { Input, Label, Select } from '../ui/Input'
 
 export default function AdminPaymentFilters({
   locale,

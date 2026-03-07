@@ -6,7 +6,10 @@ import { useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getCoinById, updateCoin } from '@/lib/api/admin'
 import { logger } from '@/lib/utils/logger'
-import { Alert, Button, Input, Label, Select, Spinner } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Button from '@/components/ui/Button'
+import { Input, Label, Select } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function CoinEditModal({ coinId, onClose, onSaved }) {
   const { token } = useAuth()

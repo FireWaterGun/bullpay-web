@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import { useToast } from '@/app/providers';
 import { registerMerchant } from '@/lib/api/merchant';
-import { Button, Card, Input, InputGroup, InputIcon, Label, Spinner } from '../ui'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import { Input, InputGroup, InputIcon, Label } from '../ui/Input'
+import Spinner from '../ui/Spinner'
 
 export default function RegisterForm({ onRegistered, token, t }) {
   const toast = useToast();

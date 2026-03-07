@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Button, Spinner } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Spinner from '@/components/ui/Spinner'
 
 export default function SettingModal({ title, onClose, onSave, saving, children, t }) {
   const onCloseRef = useRef(onClose);

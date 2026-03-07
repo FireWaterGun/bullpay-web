@@ -1,5 +1,7 @@
 import AutoApproveForm from '@/components/admin/withdrawal-policy/AutoApproveForm';
-import { Badge, Button, Card } from '@/components/ui';
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
 
 export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, onEditMaxPending }) {
   return (

@@ -13,7 +13,10 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
 import RefreshButton from '@/components/RefreshButton'
 import CardEmptyState from '@/components/CardEmptyState'
-import { Card, Button, Spinner, Table } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
+import Spinner from '@/components/ui/Spinner'
+import Table from '@/components/ui/Table'
 
 function ActionMenu({ wallet, onEdit, onDelete }) {
   const [open, setOpen] = useState(false)

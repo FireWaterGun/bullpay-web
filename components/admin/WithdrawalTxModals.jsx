@@ -1,7 +1,10 @@
 'use client';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Button, Card, Input, Label, Spinner } from '@/components/ui';
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function WithdrawalTxModals({
   showApproveModal,

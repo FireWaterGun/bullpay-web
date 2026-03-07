@@ -1,7 +1,9 @@
 'use client';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Button, Input, Label, Select, Spinner } from '../ui'
+import Button from '../ui/Button'
+import { Input, Label, Select } from '../ui/Input'
+import Spinner from '../ui/Spinner'
 
 /**
  * Form fields for the network create/edit form.

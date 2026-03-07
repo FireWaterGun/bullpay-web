@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { Input, Label } from '@/components/ui';
+import { Input, Label } from '@/components/ui/Input'
 
 export const MAX_DEPOSIT = 1000000;
 

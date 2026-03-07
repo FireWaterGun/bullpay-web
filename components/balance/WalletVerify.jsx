@@ -6,7 +6,9 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
 import { verifyWalletAddress } from '@/lib/api/wallets';
-import { Card, Spinner, Button } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
+import Button from '@/components/ui/Button'
 
 export default function WalletVerify() {
   return <Suspense><WalletVerifyContent /></Suspense>;

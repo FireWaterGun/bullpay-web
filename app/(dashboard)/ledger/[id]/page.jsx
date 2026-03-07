@@ -13,7 +13,8 @@ import CoinImg from '@/components/CoinImg';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
 import { logger } from '@/lib/utils/logger';
 import PageSpinner from '@/components/PageSpinner';
-import { Card, Button } from '@/components/ui';
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 export default function MyLedgerDetail() {
   const { t } = useTranslation();

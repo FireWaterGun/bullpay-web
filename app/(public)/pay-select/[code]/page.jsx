@@ -7,7 +7,8 @@ import { getPublicInvoice } from '@/lib/api/invoices';
 import { useCoins } from '@/hooks/useCoins';
 
 import CoinNetworkList from '@/components/payment/CoinNetworkList';
-import { Input, Spinner } from '@/components/ui'
+import { Input } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 const STABLECOINS = ['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FDUSD'];
 

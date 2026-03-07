@@ -1,7 +1,8 @@
 'use client';
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation';
-import { Button, Spinner } from '../../ui'
+import Button from '../../ui/Button'
+import Spinner from '../../ui/Spinner'
 
 export default function DeleteConfirmModal({ loading, onConfirm, onClose }) {
   const { t } = useAdminTranslation();

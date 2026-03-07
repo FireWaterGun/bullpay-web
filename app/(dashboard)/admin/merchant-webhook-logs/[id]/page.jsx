@@ -11,7 +11,11 @@ import { useDateFormat } from '@/hooks/useDateFormat';
 import { logger } from '@/lib/utils/logger';
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Alert, Badge, bgLabelClass, Button, Card, Spinner } from '@/components/ui'
+import Alert from '@/components/ui/Alert'
+import Badge, { bgLabelClass } from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
 import Table from '@/components/ui/Table';
 
 const EVENT_OPTIONS = [

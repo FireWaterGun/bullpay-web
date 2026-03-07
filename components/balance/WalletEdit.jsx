@@ -6,7 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth, useToast } from '@/app/providers';
 import { getWallet, updateWallet, deleteWallet } from '@/lib/api/wallets';
 import ConfirmModal from '@/components/ConfirmModal';
-import { Button, Card, Input, Label, Spinner } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, Label } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 export default function WalletEdit() {
   const params = useParams();

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import CoinImg from '@/components/CoinImg';
-import { inputClass } from '@/components/ui';
+import { inputClass } from '@/components/ui/Input'
 
 /**
  * A React-state-managed coin/network filter dropdown.

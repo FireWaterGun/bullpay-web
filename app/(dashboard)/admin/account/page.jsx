@@ -12,7 +12,11 @@ import { changePasswordSchema } from '@/lib/validations/change-password';
 import { logger } from '@/lib/utils/logger';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import { COMMON_TIMEZONES } from '@/lib/constants';
-import { Badge, Button, Card, Input, InputGroup, InputIcon, Label, Select, Spinner } from '@/components/ui';
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, InputGroup, InputIcon, Label, Select } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 const Setup2FAModal = dynamic(() => import('@/components/TwoFactorModals').then((m) => m.Setup2FAModal), { ssr: false });
 const Disable2FAModal = dynamic(() => import('@/components/TwoFactorModals').then((m) => m.Disable2FAModal), { ssr: false });

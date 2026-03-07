@@ -16,7 +16,7 @@ import SweepTransactionTable from '@/components/admin/SweepTransactionTable';
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton';
 import PageSpinner from '@/components/PageSpinner';
-import { Card } from '@/components/ui'
+import Card from '@/components/ui/Card'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function SweepTransactions() {

@@ -5,7 +5,9 @@ import Image from 'next/image';
 import { useTranslation } from "react-i18next";
 import { setup2FA, enable2FA } from "@/lib/api/twoFactor";
 import { copyToClipboard } from "@/lib/utils/clipboard";
-import { Button, Input, InputGroup, Spinner } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import { Input, InputGroup } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 
 const RATE_LIMIT_KEY = '2fa_rate_limit_until';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import CoinImg from '@/components/CoinImg';
-import { Card } from '../ui'
+import Card from '../ui/Card'
 import Table from '../ui/Table'
 
 export default function GasTopupDetailsCard({

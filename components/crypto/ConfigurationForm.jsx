@@ -1,7 +1,10 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { Badge, Button, Card, Input, Label, Select } from '../ui'
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
+import { Input, Label, Select } from '../ui/Input'
 
 export default function ConfigurationForm({ formData, handleChange, handleSubmit, loading, isEdit, onCancel }) {
   const { t } = useTranslation();

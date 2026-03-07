@@ -4,7 +4,9 @@ import { useMemo } from 'react';
 import CoinImg from '@/components/CoinImg';
 import { formatUsd } from '@/lib/utils/format';
 import TableEmptyState from '@/components/TableEmptyState';
-import { Card, Spinner, Table } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import Spinner from '@/components/ui/Spinner'
+import Table from '@/components/ui/Table'
 
 function TransactionByCoinTable({ byCoinData, loading, t }) {
   const byCoinTotals = useMemo(() => {

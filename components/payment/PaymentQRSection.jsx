@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { QRCodeSVG as QRCode } from 'qrcode.react';
 import CoinImg from '@/components/CoinImg';
 import { formatAmount } from '@/lib/utils/format';
-import { Button } from '../ui'
+import Button from '../ui/Button'
 
 export default function PaymentQRSection({
   invoice, coinSym, networkName, paymentValue,

@@ -9,7 +9,7 @@ import { formatAmount } from '@/lib/utils/format';
 import NetworkSelectionPanel from '@/components/payment/NetworkSelectionPanel';
 const PaymentQRSection = dynamic(() => import('@/components/payment/PaymentQRSection'), { ssr: false });
 import PaymentProgressSteps from '@/components/payment/PaymentProgressSteps';
-import { Spinner } from '@/components/ui'
+import Spinner from '@/components/ui/Spinner'
 
 function statusLabel(s, t) {
   switch ((s || "").toLowerCase()) {

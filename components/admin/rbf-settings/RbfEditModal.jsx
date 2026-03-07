@@ -1,4 +1,8 @@
-import { Badge, Button, Card, Input, InputGroup, InputAddon, Label, Select, Spinner } from '@/components/ui';
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { Input, InputGroup, InputAddon, Label, Select } from '@/components/ui/Input'
+import Spinner from '@/components/ui/Spinner'
 import { formatMs, formatRatio } from '@/lib/utils/settingsFormatters';
 
 export default function RbfEditModal({

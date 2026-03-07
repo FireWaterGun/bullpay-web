@@ -1,7 +1,9 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { Alert, Button, Spinner } from '../ui'
+import Alert from '../ui/Alert'
+import Button from '../ui/Button'
+import Spinner from '../ui/Spinner'
 
 /**
  * Reusable Delete Confirmation Modal

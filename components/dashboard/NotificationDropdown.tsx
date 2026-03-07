@@ -13,7 +13,7 @@ import {
   formatNotificationTime } from
 '@/lib/api/notifications';
 import { logger } from '@/lib/utils/logger';
-import { Spinner } from '../ui'
+import Spinner from '@/components/ui/Spinner'
 
 interface NotificationDropdownProps {
   refreshRef: React.MutableRefObject<(() => void) | null>;
