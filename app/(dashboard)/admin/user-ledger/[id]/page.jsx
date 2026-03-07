@@ -263,7 +263,7 @@ export default function UserLedgerDetail() {
                       <tr>
                         <td className="text-surface-500">Amount (Raw)</td>
                         <td>
-                          <code className="text-[0.8rem]">{entry.amountRaw || 'N/A'}</code>
+                          <code className="text-[0.8rem] break-all">{entry.amountRaw || 'N/A'}</code>
                         </td>
                       </tr>
                       <tr>

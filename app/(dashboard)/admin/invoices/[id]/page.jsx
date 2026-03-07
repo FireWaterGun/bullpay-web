@@ -78,7 +78,7 @@ export default function AdminInvoiceDetail() {
           <div className="mb-4">
             <Button variant="label-secondary" href="/admin/invoices">
               <i className="bx bx-arrow-back mr-1"></i>
-              Back to Invoices
+              {t('admin.invoiceDetail.backToInvoices', { defaultValue: 'Back to Invoices' })}
             </Button>
           </div>
 
@@ -90,7 +90,7 @@ export default function AdminInvoiceDetail() {
                   <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={40} />
                   <div>
                     <h4 className="mb-0">
-                      Invoice #{invoice.id}
+                      {t('admin.invoiceDetail.invoice', { defaultValue: 'Invoice' })} #{invoice.id}
                       {invoice.invoiceNumber && (
                         <small className="text-surface-500 ml-2">({invoice.invoiceNumber})</small>
                       )}
@@ -101,7 +101,7 @@ export default function AdminInvoiceDetail() {
                       </span>
                       <span className="text-surface-500">•</span>
                       <span className="text-surface-500">
-                        {coinSymbol} on {networkName || networkSymbol}
+                        {coinSymbol} · {networkName || networkSymbol}
                       </span>
                     </div>
                   </div>
@@ -116,7 +116,7 @@ export default function AdminInvoiceDetail() {
             <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0">Invoice Details</h5>
+                  <h5 className="mb-0">{t('admin.invoiceDetail.invoiceDetails', { defaultValue: 'Invoice Details' })}</h5>
                 </div>
                 <div className="p-5">
                   <Table responsive={false} className="mb-0">
@@ -126,11 +126,11 @@ export default function AdminInvoiceDetail() {
                         <td className="font-medium">{invoice.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Invoice Number</td>
+                        <td className="text-surface-500">{t('admin.detail.invoiceNumber', { defaultValue: 'Invoice Number' })}</td>
                         <td className="font-medium">{invoice.invoiceNumber || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Public Code</td>
+                        <td className="text-surface-500">{t('admin.detail.publicCode', { defaultValue: 'Public Code' })}</td>
                         <td className="font-medium">{invoice.publicCode || '-'}</td>
                       </tr>
                       <tr>
@@ -148,18 +148,18 @@ export default function AdminInvoiceDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Paid Amount</td>
+                        <td className="text-surface-500">{t('admin.detail.paidAmount', { defaultValue: 'Paid Amount' })}</td>
                         <td className="font-medium">
                           {formatAmount(invoice.paidAmount)} {coinSymbol}
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Remaining</td>
+                        <td className="text-surface-500">{t('admin.detail.remaining', { defaultValue: 'Remaining' })}</td>
                         <td className="font-medium">
                           {formatAmount(invoice.remainingAmount)} {coinSymbol}
                           {invoice.isFullyPaid && (
                             <Badge color="success" label className="ml-2">
-                              Fully Paid
+                              {t('admin.detail.fullyPaid', { defaultValue: 'Fully Paid' })}
                             </Badge>
                           )}
                         </td>
@@ -174,7 +174,7 @@ export default function AdminInvoiceDetail() {
                       )}
                       {invoice.usdRate && (
                         <tr>
-                          <td className="text-surface-500">USD Rate</td>
+                          <td className="text-surface-500">{t('admin.detail.usdRate', { defaultValue: 'USD Rate' })}</td>
                           <td>
                             ${formatAmount(invoice.usdRate)}
                             {invoice.rateSource && (
@@ -201,12 +201,12 @@ export default function AdminInvoiceDetail() {
                         <td>{fmtDate(invoice.createdAt || invoice.created_at)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Expires</td>
+                        <td className="text-surface-500">{t('admin.detail.expiresAt', { defaultValue: 'Expires' })}</td>
                         <td>{fmtDate(invoice.expiryAt || invoice.expiry_at)}</td>
                       </tr>
                       {invoice.paidAt && (
                         <tr>
-                          <td className="text-surface-500">Paid At</td>
+                          <td className="text-surface-500">{t('admin.detail.paidAt', { defaultValue: 'Paid At' })}</td>
                           <td>{fmtDate(invoice.paidAt || invoice.paid_at)}</td>
                         </tr>
                       )}
@@ -219,7 +219,7 @@ export default function AdminInvoiceDetail() {
             <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0">User & Address</h5>
+                  <h5 className="mb-0">{t('admin.detail.userAddress', { defaultValue: 'User & Address' })}</h5>
                 </div>
                 <div className="p-5">
                   <Table responsive={false} className="mb-0">
@@ -238,12 +238,12 @@ export default function AdminInvoiceDetail() {
                       )}
                       {invoice.merchantId && (
                         <tr>
-                          <td className="text-surface-500">Merchant ID</td>
+                          <td className="text-surface-500">{t('admin.invoiceDetail.merchantId', { defaultValue: 'Merchant ID' })}</td>
                           <td className="font-medium">{invoice.merchantId}</td>
                         </tr>
                       )}
                       <tr>
-                        <td className="text-surface-500">Payment Address</td>
+                        <td className="text-surface-500">{t('admin.detail.paymentAddress', { defaultValue: 'Payment Address' })}</td>
                         <td>
                           {invoice.paymentAddress ? (
                             <div className="flex items-center">
@@ -265,13 +265,13 @@ export default function AdminInvoiceDetail() {
                       </tr>
                       {invoice.memo && (
                         <tr>
-                          <td className="text-surface-500">Memo</td>
+                          <td className="text-surface-500">{t('admin.detail.memo', { defaultValue: 'Memo' })}</td>
                           <td>{invoice.memo}</td>
                         </tr>
                       )}
                       {invoice.description && (
                         <tr>
-                          <td className="text-surface-500">Description</td>
+                          <td className="text-surface-500">{t('admin.detail.description', { defaultValue: 'Description' })}</td>
                           <td>{invoice.description}</td>
                         </tr>
                       )}

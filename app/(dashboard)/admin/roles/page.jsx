@@ -126,9 +126,9 @@ export default function AdminRoles() {
             <tr>
               <th>{t('admin.roles.role', { defaultValue: 'Role' })}</th>
               <th className="text-center">{t('admin.roles.level', { defaultValue: 'Level' })}</th>
-              <th>{t('admin.roles.description', { defaultValue: 'Description' })}</th>
+              <th className="hidden md:table-cell">{t('admin.roles.description', { defaultValue: 'Description' })}</th>
               <th className="text-right">{t('admin.roles.users', { defaultValue: 'Users' })}</th>
-              <th>{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</th>
+              <th className="hidden sm:table-cell">{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</th>
               <th className="text-center">{t('invoices.actions', { defaultValue: 'Actions' })}</th>
             </tr>
           </thead>
@@ -169,13 +169,13 @@ export default function AdminRoles() {
                         L{level}
                       </Badge>
                     </td>
-                    <td>
+                    <td className="hidden md:table-cell">
                       <span className="text-surface-500 text-[0.85rem]">{description || '—'}</span>
                     </td>
                     <td className="text-right">
                       <span className="font-semibold">{rs.count}</span>
                     </td>
-                    <td>
+                    <td className="hidden sm:table-cell">
                       <div className="flex items-center gap-2 min-w-[120px]">
                         <div className="h-[6px] grow rounded-full bg-surface-200 overflow-hidden">
                           <div

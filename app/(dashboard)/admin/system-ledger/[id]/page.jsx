@@ -13,6 +13,7 @@ import {
   formatAmount,
   stateBadge,
   entryCodeLabels,
+  getSystemEntryCodeLabel,
   getPurposeLabel,
   parseMetadata,
 } from '@/components/ledger/ledgerUtils'
@@ -80,7 +81,7 @@ export default function SystemLedgerDetail() {
   const isCredit = entry.entryType === 'credit'
   const isReversed = entry.state === 'reversed'
   const metadata = parseMetadata(entry)
-  const purposeLabel = getPurposeLabel(metadata)
+  const purposeLabel = getPurposeLabel(metadata, t)
   const explorerUrl = entry.explorerUrl || null
 
   return (
@@ -103,17 +104,17 @@ export default function SystemLedgerDetail() {
                   )}
                   <div>
                     <h4 className="mb-1">
-                      {t('admin.ledger.systemLedgerEntry', { defaultValue: 'System Ledger Entry' })} #{entry.id}
+                      {t('admin.systemLedger.detailTitle', { defaultValue: 'System Ledger Entry #{{id}}', id: entry.id })}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'} label>
                         <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
-                        {isCredit ? 'Credit' : 'Debit'}
+                        {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
                       </Badge>
                       {entry.entryCode && (
-                        <Badge color="secondary">{entryCodeLabels[entry.entryCode] || entry.entryCode}</Badge>
+                        <Badge color="secondary">{getSystemEntryCodeLabel(entry.entryCode, t)}</Badge>
                       )}
-                      {stateBadge(entry.state)}
+                      {stateBadge(entry.state, t)}
                     </div>
                   </div>
                 </div>
@@ -180,24 +181,24 @@ export default function SystemLedgerDetail() {
                             color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'}
                             label
                           >
-                            {isCredit ? 'Credit' : 'Debit'}
+                            {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
                           </Badge>
                         </td>
                       </tr>
                       {entry.entryCode && (
                         <tr>
-                          <td className="text-surface-500">Entry Code</td>
+                          <td className="text-surface-500">{t('admin.detail.entryCode', { defaultValue: 'Entry Code' })}</td>
                           <td>
                             <code>{entry.entryCode}</code>
                             <span className="text-surface-500 ml-2">
-                              ({entryCodeLabels[entry.entryCode] || entry.entryCode})
+                              ({getSystemEntryCodeLabel(entry.entryCode, t)})
                             </span>
                           </td>
                         </tr>
                       )}
                       <tr>
                         <td className="text-surface-500">{t('admin.ledger.state', { defaultValue: 'State' })}</td>
-                        <td>{stateBadge(entry.state)}</td>
+                        <td>{stateBadge(entry.state, t)}</td>
                       </tr>
                       <tr>
                         <td className="text-surface-500">{t('admin.ledger.amount', { defaultValue: 'Amount' })}</td>
@@ -209,24 +210,24 @@ export default function SystemLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Amount (Raw)</td>
+                        <td className="text-surface-500">{t('admin.detail.amountRaw', { defaultValue: 'Amount (Raw)' })}</td>
                         <td>
                           <code className="text-[0.8rem]">{entry.amountRaw || 'N/A'}</code>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">USD Value</td>
+                        <td className="text-surface-500">{t('admin.detail.usdValue', { defaultValue: 'USD Value' })}</td>
                         <td>{formatUsd(entry.amountUsd)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">USD Rate</td>
+                        <td className="text-surface-500">{t('admin.detail.usdRate', { defaultValue: 'USD Rate' })}</td>
                         <td>
                           {entry.usdRate ? formatUsd(entry.usdRate) : 'N/A'}
                           {entry.rateSource && <small className="text-surface-500 ml-1">({entry.rateSource})</small>}
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Decimals</td>
+                        <td className="text-surface-500">{t('admin.detail.decimals', { defaultValue: 'Decimals' })}</td>
                         <td>{entry.decimals ?? 'N/A'}</td>
                       </tr>
                       {purposeLabel && (

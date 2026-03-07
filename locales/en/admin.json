@@ -726,7 +726,30 @@
     "codeSC": "SC - Sweep Gas Cost",
     "codeWG": "WG - Withdrawal Gas",
     "codeXI": "XI - Internal Transfer In",
-    "codeXO": "XO - Internal Transfer Out"
+    "codeXO": "XO - Internal Transfer Out",
+    "detailTitle": "Platform Ledger Entry #{{id}}",
+    "code_WF": "Withdrawal Fee",
+    "code_FR": "Fee Refund",
+    "code_SG": "Sweep Gas Topup",
+    "code_SC": "Sweep Gas Cost",
+    "code_WG": "Withdrawal Gas",
+    "code_XI": "Internal Transfer In",
+    "code_XO": "Internal Transfer Out"
+  },
+  "systemLedger": {
+    "detailTitle": "System Ledger Entry #{{id}}",
+    "code_SP": "Settlement Payment",
+    "code_SC": "Sweep Cost",
+    "code_SG": "Sweep Gas",
+    "code_WD": "Withdrawal",
+    "code_DP": "Deposit",
+    "code_FE": "Fee",
+    "code_AJ": "Adjustment",
+    "purpose_payment_received": "Payment Received",
+    "purpose_merchant_credit": "Merchant Credit",
+    "purpose_native_coin_sweep_cost": "Sweep Cost",
+    "purpose_gas_topup_for_token_sweep": "Gas Top-up",
+    "purpose_token_sweep_cost": "Token Sweep Cost"
   },
   "adjustment": {
     "title": "Balance Adjustment (XI / XO)",
@@ -879,7 +902,14 @@
     "event": "Event",
     "reason": "Reason",
     "selectDateRange": "Select date range",
-    "updatedAt": "Updated At"
+    "updatedAt": "Updated At",
+    "invoiceId": "Invoice ID",
+    "usageCount": "Usage Count",
+    "totalWithdrawn": "Total Withdrawn",
+    "verified": "Verified",
+    "flagged": "Flagged",
+    "accountType_revenue": "Revenue",
+    "accountType_expense": "Expense"
   },
   "roles": {
     "title": "Roles & Permissions",
@@ -1095,7 +1125,35 @@
     "metadata": "Metadata",
     "loadDetailError": "Failed to load temp wallet",
     "loadHistoriesError": "Failed to load temp wallet histories",
-    "loadHistoryError": "Failed to load history"
+    "loadHistoryError": "Failed to load history",
+    "backToTempWallets": "Back to Temp Wallets",
+    "title": "Temp Wallet",
+    "expiresIn": "Expires in {{minutes}}m",
+    "wallet": "Wallet"
+  },
+  "tempWalletHistories": {
+    "title": "Temp Wallet Histories",
+    "description": "Monitor wallet usage history (read-only)",
+    "tempWalletId": "Temp Wallet ID",
+    "walletId": "Wallet ID",
+    "firstDeposit": "First Deposit",
+    "swept": "Swept",
+    "released": "Released",
+    "noHistories": "No histories found",
+    "sortBy_createdAt": "Created At",
+    "sortBy_firstDepositAt": "First Deposit",
+    "sortBy_sweptAt": "Swept At",
+    "sortBy_releasedAt": "Released At"
+  },
+  "tempWalletHistory": {
+    "notFound": "History not found",
+    "backToHistories": "Back to Histories",
+    "title": "Usage History",
+    "tempWalletId": "Temp Wallet ID",
+    "assignedAt": "Assigned At",
+    "sweptAt": "Swept At",
+    "releasedAt": "Released At",
+    "failedAt": "Failed At"
   },
   "sweepDetail": {
     "notFound": "Sweep transaction not found",
@@ -1114,7 +1172,17 @@
     "decimals": "Decimals",
     "reservationId": "Reservation ID",
     "systemWalletId": "System Wallet ID",
-    "retrySweep": "Retry sweep"
+    "retrySweep": "Retry sweep",
+    "gasFee": "Gas Fee",
+    "networkFeeRaw": "Network Fee (Raw)",
+    "networkFeeUsd": "Network Fee (USD)",
+    "lastAttempt": "Last Attempt",
+    "failedAt": "Failed At",
+    "strategy": "Strategy",
+    "paymentCount": "Payment Count",
+    "paymentIds": "Payment IDs",
+    "ledgerEntryIds": "Ledger Entry IDs",
+    "job": "Job"
   },
   "invoiceDetail": {
     "notFound": "Invoice not found",
@@ -1133,7 +1201,12 @@
     "userAddress": "User & Address",
     "paymentAddress": "Payment Address",
     "memo": "Memo",
-    "description": "Description"
+    "description": "Description",
+    "invoice": "Invoice",
+    "backToInvoices": "Back to Invoices",
+    "merchantId": "Merchant ID",
+    "payments": "Payments",
+    "noPayments": "No payments recorded for this invoice"
   },
   "paymentDetail": {
     "notFound": "Payment not found",

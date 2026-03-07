@@ -429,6 +429,9 @@
     "pooled": "รอจัดสรร",
     "assigned": "จัดสรรแล้ว",
     "sweeped": "กวาดแล้ว",
+    "deposited": "ฝากแล้ว",
+    "swept": "กวาดแล้ว",
+    "released": "ปล่อยแล้ว",
     "disabled": "ปิดใช้งาน"
   },
   "pagination": {

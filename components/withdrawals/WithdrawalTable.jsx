@@ -3,13 +3,13 @@
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
+import { formatCoinAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import TableEmptyState from '@/components/TableEmptyState'
 import Button from '@/components/ui/Button'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 import {
-  formatAmount,
   getNetworkLabel,
   statusBadgeClass,
   formatStatusLabel,
@@ -21,16 +21,16 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
 
   return (
     <>
-      <Table>
+      <Table className="!w-auto">
         <thead>
           <tr className="whitespace-nowrap">
             <th>{t('common.id', { defaultValue: 'ID' })}</th>
             <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
-            <th>{t('balance.amount', { defaultValue: 'Amount' })}</th>
-            <th>{t('balance.fee', { defaultValue: 'Fee' })}</th>
+            <th className="text-right">{t('balance.amount', { defaultValue: 'Amount' })}</th>
+            <th className="text-right">{t('balance.fee', { defaultValue: 'Fee' })}</th>
             <th>{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
             <th>{t('common.status', { defaultValue: 'Status' })}</th>
-            <th className="text-right">{t('common.createdAt', { defaultValue: 'Created at' })}</th>
+            <th>{t('common.createdAt', { defaultValue: 'Created at' })}</th>
             <th className="text-center">{t('actions.action', { defaultValue: 'Action' })}</th>
           </tr>
         </thead>
@@ -52,7 +52,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
 
               return (
                 <tr key={it.id}>
-                  <td>
+                  <td className="whitespace-nowrap">
                     <Link
                       href={`/withdrawals/${it.id}`}
                       className="font-mono font-semibold text-primary-600 no-underline hover:underline"
@@ -69,18 +69,15 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                       </div>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap font-medium text-surface-900">
-                    {Number(it.amount) || it.amount} {sym}
+                  <td className="whitespace-nowrap text-right font-medium text-surface-900">
+                    {formatCoinAmount(it.amount)} {sym}
                   </td>
-                  <td className="whitespace-nowrap text-surface-500">
-                    {formatAmount(
-                      it.totalFeeRaw || it.totalFee || it.feeRaw || it.fee,
-                      it.decimals || coin?.decimals || 18
-                    )}
+                  <td className="whitespace-nowrap text-right text-surface-500">
+                    {formatCoinAmount(it.totalFee || it.fee)} {sym}
                   </td>
-                  <td>
-                    <span className="font-mono block truncate max-w-[200px] text-surface-700" title={it.toAddress}>
-                      {it.toAddress}
+                  <td className="whitespace-nowrap">
+                    <span className="font-mono text-surface-700 text-[13px]">
+                      {it.toAddress || '-'}
                     </span>
                   </td>
                   <td className="whitespace-nowrap">
@@ -90,7 +87,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                       })}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap text-right text-surface-500 text-xs">{fmtDate(it.createdAt)}</td>
+                  <td className="whitespace-nowrap text-surface-500 text-xs">{fmtDate(it.createdAt)}</td>
                   <td className="text-center">
                     <Button
                       variant="text-secondary"

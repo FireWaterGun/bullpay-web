@@ -38,28 +38,28 @@ export default function MerchantConfirmModal({ merchant, action, loading, onConf
           </div>
           <div className="p-5">
             <div className="rounded p-3 mb-3 bg-surface-100 border border-surface-200">
-              <div className="grid grid-cols-12 gap-x-6 gap-2">
-                <div className="col-span-6">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div>
                   <small className="text-surface-500 block">Merchant ID</small>
                   <strong>{merchant.id}</strong>
                 </div>
-                <div className="col-span-6">
+                <div className="min-w-0">
                   <small className="text-surface-500 block">
                     {t('admin.merchants.name', { defaultValue: 'Name' })}
                   </small>
-                  <strong>{merchant.name || '-'}</strong>
+                  <strong className="block truncate">{merchant.name || '-'}</strong>
                 </div>
-                <div className="col-span-6">
+                <div>
                   <small className="text-surface-500 block">{t('table.status', { defaultValue: 'Status' })}</small>
                   <span className={statusBadgeClass(merchant.status)}>
                     {String(merchant.status || '').toUpperCase()}
                   </span>
                 </div>
-                <div className="col-span-6">
+                <div className="min-w-0">
                   <small className="text-surface-500 block">
                     {t('admin.merchants.email', { defaultValue: 'Email' })}
                   </small>
-                  <span>{merchant.email || '-'}</span>
+                  <span className="block truncate">{merchant.email || '-'}</span>
                 </div>
               </div>
             </div>

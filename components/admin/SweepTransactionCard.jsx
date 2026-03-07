@@ -7,7 +7,7 @@ import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Table from '../ui/Table'
 
-function AddressRow({ label, address, explorerUrl, onCopy }) {
+function AddressRow({ label, address, explorerUrl, onCopy, t }) {
   return (
     <tr>
       <td className="text-surface-500">{label}</td>
@@ -24,11 +24,11 @@ function AddressRow({ label, address, explorerUrl, onCopy }) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="bx bx-link-external mr-1"></i>Explorer
+                  <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                 </Button>
               )}
               <Button onClick={() => onCopy(address)} variant="outline-secondary" size="sm">
-                <i className="bx bx-copy mr-1"></i>Copy
+                <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
               </Button>
             </div>
           </>
@@ -48,7 +48,7 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
       <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
           <i className="bx bx-link mr-2"></i>
-          Transaction
+          {t('admin.detail.transaction', { defaultValue: 'Transaction' })}
         </h5>
       </div>
       <div className="p-5">
@@ -69,11 +69,11 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <i className="bx bx-link-external mr-1"></i>Explorer
+                          <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                         </Button>
                       )}
                       <Button onClick={() => onCopy(sweep.txHash)} variant="outline-secondary" size="sm">
-                        <i className="bx bx-copy mr-1"></i>Copy
+                        <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
                       </Button>
                     </div>
                   </>
@@ -90,26 +90,26 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
             )}
             {sweep.gasFee && (
               <tr>
-                <td className="text-surface-500">Gas Fee</td>
+                <td className="text-surface-500">{t('admin.sweepDetail.gasFee', { defaultValue: 'Gas Fee' })}</td>
                 <td>{sweep.gasFee}</td>
               </tr>
             )}
             {sweep.networkFeeRaw && (
               <tr>
-                <td className="text-surface-500">Network Fee (Raw)</td>
+                <td className="text-surface-500">{t('admin.sweepDetail.networkFeeRaw', { defaultValue: 'Network Fee (Raw)' })}</td>
                 <td>
-                  <code className="text-[0.8rem]">{sweep.networkFeeRaw}</code>
+                  <code className="text-[0.8rem] break-all">{sweep.networkFeeRaw}</code>
                 </td>
               </tr>
             )}
             {sweep.networkFeeUsd && (
               <tr>
-                <td className="text-surface-500">Network Fee (USD)</td>
+                <td className="text-surface-500">{t('admin.sweepDetail.networkFeeUsd', { defaultValue: 'Network Fee (USD)' })}</td>
                 <td>{formatUsd(sweep.networkFeeUsd)}</td>
               </tr>
             )}
-            <AddressRow label="From Address" address={sweep.fromAddress} explorerUrl={explorerUrl} onCopy={onCopy} />
-            <AddressRow label="To Address" address={sweep.toAddress} explorerUrl={explorerUrl} onCopy={onCopy} />
+            <AddressRow label={t('admin.detail.fromAddress', { defaultValue: 'From Address' })} address={sweep.fromAddress} explorerUrl={explorerUrl} onCopy={onCopy} t={t} />
+            <AddressRow label={t('admin.detail.toAddress', { defaultValue: 'To Address' })} address={sweep.toAddress} explorerUrl={explorerUrl} onCopy={onCopy} t={t} />
           </tbody>
         </Table>
       </div>
@@ -119,12 +119,13 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
 
 export function SweepTimestampsCard({ sweep, metadata }) {
   const { t } = useAdminTranslation()
+  const { fmtDate } = useDateFormat()
   return (
     <Card className="mb-4">
       <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
           <i className="bx bx-time mr-2"></i>
-          Timestamps
+          {t('admin.detail.timestamps', { defaultValue: 'Timestamps' })}
         </h5>
       </div>
       <div className="p-5">
@@ -148,13 +149,13 @@ export function SweepTimestampsCard({ sweep, metadata }) {
             )}
             {metadata.lastAttemptAt && (
               <tr>
-                <td className="text-surface-500">Last Attempt</td>
+                <td className="text-surface-500">{t('admin.sweepDetail.lastAttempt', { defaultValue: 'Last Attempt' })}</td>
                 <td>{fmtDate(metadata.lastAttemptAt)}</td>
               </tr>
             )}
             {metadata.failedAt && (
               <tr>
-                <td className="text-surface-500">Failed At</td>
+                <td className="text-surface-500">{t('admin.sweepDetail.failedAt', { defaultValue: 'Failed At' })}</td>
                 <td className="text-danger">{fmtDate(metadata.failedAt)}</td>
               </tr>
             )}

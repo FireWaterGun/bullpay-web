@@ -57,18 +57,18 @@ export default function PlatformLedgerDetail() {
     if (state === 'settled') {
       return (
         <Badge color="success" label>
-          Settled
+          {t('admin.detail.settled', { defaultValue: 'Settled' })}
         </Badge>
       )
     }
     if (state === 'committed') {
       return (
         <Badge color="info" label>
-          Committed
+          {t('admin.detail.committed', { defaultValue: 'Committed' })}
         </Badge>
       )
     }
-    if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>
+    if (state === 'reversed') return <Badge color="secondary">{t('admin.detail.reversed', { defaultValue: 'Reversed' })}</Badge>
     return <span className="text-surface-500">{state || 'N/A'}</span>
   }
 
@@ -82,13 +82,13 @@ export default function PlatformLedgerDetail() {
   }
 
   const entryCodeLabels = {
-    WF: 'Withdrawal Fee',
-    FR: 'Fee Refund',
-    SG: 'Sweep Gas Topup',
-    SC: 'Sweep Gas Cost',
-    WG: 'Withdrawal Gas',
-    XI: 'Internal Transfer In',
-    XO: 'Internal Transfer Out',
+    WF: t('admin.platformLedger.code_WF', { defaultValue: 'Withdrawal Fee' }),
+    FR: t('admin.platformLedger.code_FR', { defaultValue: 'Fee Refund' }),
+    SG: t('admin.platformLedger.code_SG', { defaultValue: 'Sweep Gas Topup' }),
+    SC: t('admin.platformLedger.code_SC', { defaultValue: 'Sweep Gas Cost' }),
+    WG: t('admin.platformLedger.code_WG', { defaultValue: 'Withdrawal Gas' }),
+    XI: t('admin.platformLedger.code_XI', { defaultValue: 'Internal Transfer In' }),
+    XO: t('admin.platformLedger.code_XO', { defaultValue: 'Internal Transfer Out' }),
   }
 
   if (loading) {
@@ -137,14 +137,14 @@ export default function PlatformLedgerDetail() {
             <div className="flex items-center gap-3">
               {entry.coinSymbol && <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />}
               <div>
-                <h4 className="mb-1">Platform Ledger Entry #{entry.id}</h4>
+                <h4 className="mb-1">{t('admin.platformLedger.detailTitle', { defaultValue: 'Platform Ledger Entry #{{id}}', id: entry.id })}</h4>
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
-                    {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
+                    {entry.accountType === 'revenue' ? t('admin.detail.accountType_revenue', { defaultValue: 'Revenue' }) : t('admin.detail.accountType_expense', { defaultValue: 'Expense' })}
                   </Badge>
                   <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                     <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
-                    {isCredit ? 'Credit' : 'Debit'}
+                    {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
                   </Badge>
                   {entry.entryCode && (
                     <Badge color="secondary">{entryCodeLabels[entry.entryCode] || entry.entryCode}</Badge>
@@ -172,7 +172,7 @@ export default function PlatformLedgerDetail() {
             <div className="px-5 py-4 border-b border-surface-200">
               <h5 className="mb-0">
                 <i className="bx bx-detail mr-2 text-primary"></i>
-                Details
+                {t('admin.detail.details', { defaultValue: 'Details' })}
               </h5>
             </div>
             <div className="p-5">
@@ -183,10 +183,10 @@ export default function PlatformLedgerDetail() {
                     <td className="font-medium">{entry.id}</td>
                   </tr>
                   <tr>
-                    <td className="text-surface-500">Account Type</td>
+                    <td className="text-surface-500">{t('admin.detail.accountType', { defaultValue: 'Account Type' })}</td>
                     <td>
                       <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
-                        {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
+                        {entry.accountType === 'revenue' ? t('admin.detail.accountType_revenue', { defaultValue: 'Revenue' }) : t('admin.detail.accountType_expense', { defaultValue: 'Expense' })}
                       </Badge>
                     </td>
                   </tr>
@@ -206,7 +206,7 @@ export default function PlatformLedgerDetail() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="text-surface-500">Entry Code</td>
+                    <td className="text-surface-500">{t('admin.detail.entryCode', { defaultValue: 'Entry Code' })}</td>
                     <td>
                       <span className="font-medium">{entry.entryCode || '-'}</span>
                       {entry.entryCode && entryCodeLabels[entry.entryCode] && (
@@ -215,10 +215,10 @@ export default function PlatformLedgerDetail() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="text-surface-500">Entry Type</td>
+                    <td className="text-surface-500">{t('admin.detail.entryType', { defaultValue: 'Entry Type' })}</td>
                     <td>
                       <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
-                        {isCredit ? 'Credit' : 'Debit'}
+                        {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
                       </Badge>
                     </td>
                   </tr>
@@ -236,7 +236,7 @@ export default function PlatformLedgerDetail() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="text-surface-500">USD Value</td>
+                    <td className="text-surface-500">{t('admin.detail.usdValue', { defaultValue: 'USD Value' })}</td>
                     <td className="font-medium">{formatUsd(entry.amountUsd)}</td>
                   </tr>
                   <tr>
@@ -262,7 +262,7 @@ export default function PlatformLedgerDetail() {
               <div className="px-5 py-4 border-b border-surface-200">
                 <h5 className="mb-0">
                   <i className="bx bx-link mr-2 text-primary"></i>
-                  Transaction
+                  {t('admin.detail.transaction', { defaultValue: 'Transaction' })}
                 </h5>
               </div>
               <div className="p-5">
@@ -309,7 +309,7 @@ export default function PlatformLedgerDetail() {
               <div className="px-5 py-4 border-b border-surface-200">
                 <h5 className="mb-0">
                   <i className="bx bx-code-alt mr-2 text-primary"></i>
-                  Metadata
+                  {t('admin.detail.metadata', { defaultValue: 'Metadata' })}
                 </h5>
               </div>
               <div className="p-5">

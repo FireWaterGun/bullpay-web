@@ -768,7 +768,30 @@
     "codeSC": "SC - ต้นทุนแก๊สกวาด",
     "codeWG": "WG - แก๊สถอน",
     "codeXI": "XI - โอนเข้าภายใน",
-    "codeXO": "XO - โอนออกภายใน"
+    "codeXO": "XO - โอนออกภายใน",
+    "detailTitle": "รายการบัญชีแพลตฟอร์ม #{{id}}",
+    "code_WF": "ค่าธรรมเนียมถอน",
+    "code_FR": "คืนค่าธรรมเนียม",
+    "code_SG": "เติมแก๊สกวาด",
+    "code_SC": "ต้นทุนแก๊สกวาด",
+    "code_WG": "แก๊สถอน",
+    "code_XI": "โอนเข้าภายใน",
+    "code_XO": "โอนออกภายใน"
+  },
+  "systemLedger": {
+    "detailTitle": "รายการบัญชีระบบ #{{id}}",
+    "code_SP": "ชำระเงินตัดยอด",
+    "code_SC": "ต้นทุนกวาด",
+    "code_SG": "แก๊สกวาด",
+    "code_WD": "ถอนเงิน",
+    "code_DP": "ฝากเงิน",
+    "code_FE": "ค่าธรรมเนียม",
+    "code_AJ": "ปรับยอด",
+    "purpose_payment_received": "รับชำระเงิน",
+    "purpose_merchant_credit": "เครดิตร้านค้า",
+    "purpose_native_coin_sweep_cost": "ต้นทุนกวาด",
+    "purpose_gas_topup_for_token_sweep": "เติมแก๊ส",
+    "purpose_token_sweep_cost": "ต้นทุนกวาดโทเค็น"
   },
   "adjustment": {
     "title": "ปรับยอดคงเหลือ (XI / XO)",
@@ -923,8 +946,15 @@
     "error": "ข้อผิดพลาด",
     "event": "เหตุการณ์",
     "reason": "เหตุผล",
-    "selectDateRange": "Select date range",
-    "updatedAt": "อัปเดตเมื่อ"
+    "selectDateRange": "เลือกช่วงวันที่",
+    "updatedAt": "อัปเดตเมื่อ",
+    "invoiceId": "ID ใบแจ้งหนี้",
+    "usageCount": "จำนวนครั้งที่ใช้",
+    "totalWithdrawn": "ถอนทั้งหมด",
+    "verified": "ยืนยันแล้ว",
+    "flagged": "ถูกตั้งค่าสถานะ",
+    "accountType_revenue": "รายรับ",
+    "accountType_expense": "ค่าใช้จ่าย"
   },
   "roles": {
     "title": "บทบาท & สิทธิ์",
@@ -1140,7 +1170,35 @@
     "metadata": "ข้อมูลเพิ่มเติม",
     "loadDetailError": "ไม่สามารถโหลดกระเป๋าชั่วคราว",
     "loadHistoriesError": "ไม่สามารถโหลดประวัติกระเป๋าชั่วคราว",
-    "loadHistoryError": "ไม่สามารถโหลดประวัติ"
+    "loadHistoryError": "ไม่สามารถโหลดประวัติ",
+    "backToTempWallets": "กลับไปกระเป๋าชั่วคราว",
+    "title": "กระเป๋าชั่วคราว",
+    "expiresIn": "หมดอายุใน {{minutes}} นาที",
+    "wallet": "กระเป๋า"
+  },
+  "tempWalletHistories": {
+    "title": "ประวัติกระเป๋าชั่วคราว",
+    "description": "ตรวจสอบประวัติการใช้กระเป๋า (อ่านอย่างเดียว)",
+    "tempWalletId": "ID กระเป๋าชั่วคราว",
+    "walletId": "ID กระเป๋า",
+    "firstDeposit": "ฝากครั้งแรก",
+    "swept": "กวาดแล้ว",
+    "released": "ปล่อยแล้ว",
+    "noHistories": "ไม่พบประวัติ",
+    "sortBy_createdAt": "สร้างเมื่อ",
+    "sortBy_firstDepositAt": "ฝากครั้งแรก",
+    "sortBy_sweptAt": "กวาดเมื่อ",
+    "sortBy_releasedAt": "ปล่อยเมื่อ"
+  },
+  "tempWalletHistory": {
+    "notFound": "ไม่พบประวัติ",
+    "backToHistories": "กลับไปประวัติ",
+    "title": "ประวัติการใช้งาน",
+    "tempWalletId": "ID กระเป๋าชั่วคราว",
+    "assignedAt": "กำหนดเมื่อ",
+    "sweptAt": "กวาดเมื่อ",
+    "releasedAt": "ปล่อยเมื่อ",
+    "failedAt": "ล้มเหลวเมื่อ"
   },
   "sweepDetail": {
     "notFound": "ไม่พบธุรกรรมกวาด",
@@ -1159,7 +1217,17 @@
     "decimals": "ทศนิยม",
     "reservationId": "ID การจอง",
     "systemWalletId": "ID กระเป๋าระบบ",
-    "retrySweep": "Retry sweep"
+    "retrySweep": "ลองกวาดอีกครั้ง",
+    "gasFee": "ค่าแก๊ส",
+    "networkFeeRaw": "ค่าธรรมเนียมเครือข่าย (Raw)",
+    "networkFeeUsd": "ค่าธรรมเนียมเครือข่าย (USD)",
+    "lastAttempt": "พยายามล่าสุด",
+    "failedAt": "ล้มเหลวเมื่อ",
+    "strategy": "กลยุทธ์",
+    "paymentCount": "จำนวนการชำระ",
+    "paymentIds": "ID การชำระ",
+    "ledgerEntryIds": "ID รายการบัญชี",
+    "job": "งาน"
   },
   "invoiceDetail": {
     "notFound": "ไม่พบใบแจ้งหนี้",
@@ -1178,7 +1246,12 @@
     "userAddress": "ผู้ใช้ & ที่อยู่",
     "paymentAddress": "ที่อยู่รับชำระ",
     "memo": "บันทึก",
-    "description": "คำอธิบาย"
+    "description": "คำอธิบาย",
+    "invoice": "ใบแจ้งหนี้",
+    "backToInvoices": "กลับไปใบแจ้งหนี้",
+    "merchantId": "ID ร้านค้า",
+    "payments": "การชำระเงิน",
+    "noPayments": "ไม่พบรายการชำระเงินสำหรับใบแจ้งหนี้นี้"
   },
   "paymentDetail": {
     "notFound": "ไม่พบการชำระเงิน",

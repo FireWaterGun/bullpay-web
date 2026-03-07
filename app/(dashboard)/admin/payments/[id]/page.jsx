@@ -81,7 +81,7 @@ export default function AdminPaymentDetail() {
           <div className="mb-4">
             <Button variant="label-secondary" href="/admin/payments">
               <i className="bx bx-arrow-back mr-1"></i>
-              Back to Payments
+              {t('admin.paymentDetail.backToList', { defaultValue: 'Back to Payments' })}
             </Button>
           </div>
 
@@ -92,14 +92,14 @@ export default function AdminPaymentDetail() {
                 <div className="flex items-center gap-3">
                   <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={40} />
                   <div>
-                    <h4 className="mb-0">Payment #{payment.id}</h4>
+                    <h4 className="mb-0">{t('admin.paymentDetail.detailTitle', { defaultValue: 'Payment #{{id}}', id: payment.id })}</h4>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={getStatusBadgeClass(payment.status, 'payment')}>
                         {String(payment.status || '').toUpperCase()}
                       </span>
                       <span className="text-surface-500">•</span>
                       <span className="text-surface-500">
-                        {coinSymbol} on {networkName || networkSymbol}
+                        {coinSymbol} · {networkName || networkSymbol}
                       </span>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export default function AdminPaymentDetail() {
             <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0">Payment Details</h5>
+                  <h5 className="mb-0">{t('admin.paymentDetail.paymentDetails', { defaultValue: 'Payment Details' })}</h5>
                 </div>
                 <div className="p-5">
                   <div className="overflow-x-auto">
@@ -125,7 +125,7 @@ export default function AdminPaymentDetail() {
                           <td className="font-medium">{payment.id}</td>
                         </tr>
                         <tr>
-                          <td className="text-surface-500">Invoice ID</td>
+                          <td className="text-surface-500">{t('admin.paymentDetail.invoiceId', { defaultValue: 'Invoice ID' })}</td>
                           <td>
                             {payment.invoiceId ? (
                               <Button
@@ -156,7 +156,7 @@ export default function AdminPaymentDetail() {
                           </td>
                         </tr>
                         <tr>
-                          <td className="text-surface-500">Actual Amount</td>
+                          <td className="text-surface-500">{t('admin.paymentDetail.actualAmount', { defaultValue: 'Actual Amount' })}</td>
                           <td className="font-medium">
                             {formatAmount(payment.actualAmount)} {coinSymbol}
                           </td>
@@ -171,7 +171,7 @@ export default function AdminPaymentDetail() {
                         )}
                         {payment.usdRate && (
                           <tr>
-                            <td className="text-surface-500">USD Rate</td>
+                            <td className="text-surface-500">{t('admin.detail.usdRate', { defaultValue: 'USD Rate' })}</td>
                             <td>
                               ${formatAmount(payment.usdRate)}
                               {payment.rateSource && (
@@ -200,13 +200,13 @@ export default function AdminPaymentDetail() {
                           <td>
                             {payment.confirmations != null ? payment.confirmations : '-'}
                             {payment.requiredConfirmations != null && (
-                              <small className="text-surface-500"> / {payment.requiredConfirmations} required</small>
+                              <small className="text-surface-500"> / {payment.requiredConfirmations} {t('admin.paymentDetail.required', { defaultValue: 'required' })}</small>
                             )}
                           </td>
                         </tr>
                         {payment.currencyType && (
                           <tr>
-                            <td className="text-surface-500">Currency Type</td>
+                            <td className="text-surface-500">{t('admin.paymentDetail.currencyType', { defaultValue: 'Currency Type' })}</td>
                             <td>{payment.currencyType}</td>
                           </tr>
                         )}
@@ -216,19 +216,19 @@ export default function AdminPaymentDetail() {
                         </tr>
                         {payment.detectedAt && (
                           <tr>
-                            <td className="text-surface-500">Detected At</td>
+                            <td className="text-surface-500">{t('admin.paymentDetail.detectedAt', { defaultValue: 'Detected At' })}</td>
                             <td>{fmtDate(payment.detectedAt)}</td>
                           </tr>
                         )}
                         {payment.confirmedAt && (
                           <tr>
-                            <td className="text-surface-500">Confirmed At</td>
+                            <td className="text-surface-500">{t('admin.paymentDetail.confirmedAt', { defaultValue: 'Confirmed At' })}</td>
                             <td>{fmtDate(payment.confirmedAt)}</td>
                           </tr>
                         )}
                         {payment.completedAt && (
                           <tr>
-                            <td className="text-surface-500">Completed At</td>
+                            <td className="text-surface-500">{t('admin.paymentDetail.completedAt', { defaultValue: 'Completed At' })}</td>
                             <td>{fmtDate(payment.completedAt)}</td>
                           </tr>
                         )}
@@ -242,7 +242,7 @@ export default function AdminPaymentDetail() {
             <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0">Transaction Info</h5>
+                  <h5 className="mb-0">{t('admin.paymentDetail.transactionInfo', { defaultValue: 'Transaction Info' })}</h5>
                 </div>
                 <div className="p-5">
                   <div className="overflow-x-auto">

@@ -214,7 +214,7 @@ export default function WalletNewAddressPage() {
                 required
               />
             </div>
-            <div className="col-span-12 md:col-span-2">
+            <div className="col-span-full">
               <Label>{t('wallet.memo', { defaultValue: 'Memo (Optional)' })}</Label>
               <Input
                 placeholder={t('wallet.memoPlaceholder', { defaultValue: 'Optional memo text' })}

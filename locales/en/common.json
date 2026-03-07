@@ -136,6 +136,9 @@
     "pooled": "Pooled",
     "assigned": "Assigned",
     "sweeped": "Sweeped",
+    "deposited": "Deposited",
+    "swept": "Swept",
+    "released": "Released",
     "disabled": "Disabled"
   },
   "actions": {
