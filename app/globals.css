@@ -936,8 +936,11 @@ li.bp-active-item::after {
 
 /* Active open toggle in dark */
 [data-theme="dark"] .bp-menu-link.bp-active-toggle {
-  background: rgba(230, 230, 241, 0.08) !important;
-  color: var(--color-surface-600) !important;
+  background: var(--color-primary-600) !important;
+  color: #fff !important;
+}
+[data-theme="dark"] .bp-menu-link.bp-active-toggle .bp-menu-icon {
+  color: #fff !important;
 }
 
 /* Sub dots in dark */
@@ -949,13 +952,13 @@ li.bp-active-item::after {
 }
 [data-theme="dark"] .bp-submenu > li > .bp-menu-link.bp-active::before {
   background-color: var(--color-primary-400);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-400) 15%, transparent);
 }
 
 /* Submenu active in dark */
 [data-theme="dark"] .bp-submenu .bp-menu-link.bp-active {
   background: transparent !important;
-  color: var(--color-surface-800) !important;
+  color: var(--color-primary-300) !important;
   box-shadow: none;
 }
 
