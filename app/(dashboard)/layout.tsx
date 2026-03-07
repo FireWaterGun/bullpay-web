@@ -396,7 +396,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Content */}
-        <div className="flex-1 px-4 sm:px-6 py-4">{children}</div>
+        <div className="flex-1 px-4 sm:px-6 pt-4 pb-4">{children}</div>
 
         {/* Footer */}
         <footer className="px-6 py-3 text-center text-sm text-surface-400">

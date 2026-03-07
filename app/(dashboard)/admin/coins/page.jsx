@@ -119,7 +119,7 @@ export default function CoinList() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div>

@@ -54,7 +54,7 @@ export default function AdminAccountPage() {
   const is2FAEnabled = twoFAStatus?.enabled && twoFAStatus?.verified
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* §1 Profile Hero */}
       <ProfileHeroCard
         user={user}

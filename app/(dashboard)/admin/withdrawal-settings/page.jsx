@@ -306,7 +306,7 @@ export default function WithdrawalSettingsPage() {
   const alertThreshold = dbSettings['withdrawal.base_fee.alert_threshold'] || '0.2'
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>

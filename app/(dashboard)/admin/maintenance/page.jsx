@@ -407,7 +407,7 @@ export default function AdminMaintenancePage() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* Page header */}
       <div className="mb-4">
         <h4 className="mb-1 text-surface-900">

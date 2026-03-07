@@ -68,9 +68,9 @@ export default function NavbarContent({
   return (
     <div className="flex items-center justify-end flex-1 gap-1">
       {/* Balance */}
-      <div className="flex items-center gap-2 px-3 py-1.5 text-surface-700">
+      <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 text-surface-700">
         <i className="bx bxs-wallet-alt text-primary-600 dark:text-primary-400 text-xl"></i>
-        <span className="hidden md:inline text-[15px] font-medium">{formatUsd(fiatBalance.amount)}</span>
+        <span className="text-[13px] sm:text-[15px] font-medium">{formatUsd(fiatBalance.amount)}</span>
       </div>
 
       {/* Language Dropdown */}

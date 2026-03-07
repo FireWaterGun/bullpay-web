@@ -97,7 +97,7 @@ export default function PlatformLedgerDetail() {
 
   if (!entry) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
           <p className="text-surface-500 mt-2">
@@ -123,7 +123,7 @@ export default function PlatformLedgerDetail() {
   const explorerUrl = entry.explorerUrl || null
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* Back Button */}
       <Button onClick={() => router.back()} variant="outline-secondary" className="mb-3">
         <i className="bx bx-arrow-back mr-2"></i>

@@ -192,7 +192,7 @@ export default function WithdrawalAddressDetail() {
 
   if (!address) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[4rem] opacity-30"></i>
           <h5 className="text-surface-500 mt-3">
@@ -212,7 +212,7 @@ export default function WithdrawalAddressDetail() {
   const isVerified = !!address.isVerified
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Button variant="outline-secondary" className="mb-3" href="/admin/withdrawal-addresses">

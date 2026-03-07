@@ -59,7 +59,7 @@ export default function AdminInvoiceDetail() {
 
   if (!invoice) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <Alert variant="warning">{t('admin.invoiceDetail.notFound', { defaultValue: 'Invoice not found' })}</Alert>
       </div>
     )
@@ -71,7 +71,7 @@ export default function AdminInvoiceDetail() {
   const payments = invoice.payments || []
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           {/* Back button */}

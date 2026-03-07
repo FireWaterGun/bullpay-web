@@ -173,7 +173,7 @@ export default function CoinForm() {
 
   if (loading && isEdit) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <div className="text-center py-6">
           <Spinner role="status" className="text-primary" />
         </div>
@@ -182,7 +182,7 @@ export default function CoinForm() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* Header */}
       <div className="flex items-center mb-4">
         <Button variant="outline-secondary" size="icon" className="mr-3" href="/admin/coins">

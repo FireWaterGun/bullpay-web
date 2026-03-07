@@ -120,7 +120,7 @@ export default function AdminMerchantsPage() {
 
   if (loading && merchants.length === 0) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <div className="text-center py-5">
           <Spinner role="status" className="text-primary" />
           <p className="mt-3 text-surface-500">{t('invoices.loading', { defaultValue: 'Loading...' })}</p>
@@ -130,7 +130,7 @@ export default function AdminMerchantsPage() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Card className="mb-4">

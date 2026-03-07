@@ -286,7 +286,7 @@ export default function GasSettingsPage() {
 
   if (loading) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <div className="flex justify-center items-center py-5">
           <Spinner role="status" className="text-primary" />
         </div>
@@ -295,7 +295,7 @@ export default function GasSettingsPage() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div>

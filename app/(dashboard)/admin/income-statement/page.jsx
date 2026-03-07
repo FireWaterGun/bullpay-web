@@ -95,7 +95,7 @@ export default function IncomeStatement() {
   }, [token, fromDate, toDate, coinNetworkId, loadReport])
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           {/* Header */}

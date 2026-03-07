@@ -98,7 +98,7 @@ export default function AdminRoles() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <Card>
         {/* Header */}
         <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center flex-wrap gap-3">

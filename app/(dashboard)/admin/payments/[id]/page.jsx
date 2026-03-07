@@ -57,7 +57,7 @@ export default function AdminPaymentDetail() {
 
   if (!payment) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <Alert variant="warning">{t('admin.paymentDetail.notFound', { defaultValue: 'Payment not found' })}</Alert>
       </div>
     )
@@ -74,7 +74,7 @@ export default function AdminPaymentDetail() {
   const explorerUrl = payment.explorerUrl || payment.network?.explorerUrl || payment.invoice?.network?.explorerUrl || ''
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           {/* Back button */}

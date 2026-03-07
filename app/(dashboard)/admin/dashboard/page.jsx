@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
   )
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="flex flex-wrap items-center mb-4 gap-3">
         <h4 className="mb-0">
           <i className="bx bx-bar-chart-alt-2 text-primary-600 mr-2"></i>

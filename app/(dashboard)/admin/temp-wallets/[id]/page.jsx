@@ -57,7 +57,7 @@ export default function TempWalletDetail() {
 
   if (!wallet) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
           <p className="text-surface-500 mt-2">Temp wallet not found</p>
@@ -73,7 +73,7 @@ export default function TempWalletDetail() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Button variant="outline-secondary" className="mb-3" href="/admin/temp-wallets">

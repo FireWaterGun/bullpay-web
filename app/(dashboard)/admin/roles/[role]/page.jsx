@@ -259,7 +259,7 @@ export default function RolePermissions() {
 
   if (accessDenied) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <Card>
           <div className="p-5 text-center py-5">
             <i className="bx bx-lock-alt text-danger text-[3rem]"></i>
@@ -278,7 +278,7 @@ export default function RolePermissions() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       {/* Breadcrumb */}
       <nav aria-label="breadcrumb" className="mb-3">
         <ol className="flex items-center gap-1 text-sm mb-0">

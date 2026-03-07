@@ -60,7 +60,7 @@ export default function SystemBalance() {
 
   if (loading) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <div className="text-center py-6">
           <Spinner role="status" className="text-primary" />
         </div>
@@ -70,7 +70,7 @@ export default function SystemBalance() {
 
   if (error) {
     return (
-      <div className="grow py-6">
+      <div className="grow pb-6">
         <Alert role="alert">
           <i className="bx bx-error-circle mr-2"></i>
           {error}
@@ -80,7 +80,7 @@ export default function SystemBalance() {
   }
 
   return (
-    <div className="grow py-6">
+    <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           {/* System Balance Card */}
