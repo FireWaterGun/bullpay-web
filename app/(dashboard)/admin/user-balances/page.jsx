@@ -143,16 +143,15 @@ export default function UserBalanceListPage() {
                 <RefreshButton onClick={() => {loadUsers();loadSummary();}} loading={loading} />
               </div>
             </div>
+            {summary &&
+            <div className="grid grid-cols-12 gap-x-6 gap-4 p-5">
+                <SummaryCard title={t('admin.userBalance.totalUsers', { defaultValue: 'Total Users' })} value={summary.totalUsers ?? 0} icon="bx-group" color="primary" />
+                <SummaryCard title={t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' })} value={`$${summary.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
+                <SummaryCard title={t('admin.userBalance.averageUsd', { defaultValue: 'Average (USD)' })} value={`$${summary.averageValueUsd ?? '0.00'}`} icon="bx-bar-chart-alt-2" color="info" />
+                <SummaryCard title={t('admin.userBalance.withBalance', { defaultValue: 'With Balance' })} value={summary.totalUsersWithBalance ?? summary.usersWithBalance ?? 0} icon="bx-user-check" color="warning" />
+              </div>
+            }
           </Card>
-
-          {summary &&
-          <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
-              <SummaryCard title={t('admin.userBalance.totalUsers', { defaultValue: 'Total Users' })} value={summary.totalUsers ?? 0} icon="bx-group" color="primary" />
-              <SummaryCard title={t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' })} value={`$${summary.totalValueUsd ?? '0.00'}`} icon="bx-dollar-circle" color="success" />
-              <SummaryCard title={t('admin.userBalance.averageUsd', { defaultValue: 'Average (USD)' })} value={`$${summary.averageValueUsd ?? '0.00'}`} icon="bx-bar-chart-alt-2" color="info" />
-              <SummaryCard title={t('admin.userBalance.withBalance', { defaultValue: 'With Balance' })} value={summary.totalUsersWithBalance ?? summary.usersWithBalance ?? 0} icon="bx-user-check" color="warning" />
-            </div>
-          }
 
           <Card className="mb-4">
             <div className="p-5">
