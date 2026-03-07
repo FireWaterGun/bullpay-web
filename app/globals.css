@@ -138,6 +138,14 @@
   --breakpoint-xl: 1200px;
 }
 
+/* ── Suppress transitions during theme switch ── */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition-duration: 0s !important;
+}
+
 /* ── Dark mode surface palette override ──
    Makes text-surface-*, bg-surface-*, border-surface-* auto-switch.
    No need for dark:text-white, dark:text-dark-text, dark:border-dark-border etc. */
@@ -217,10 +225,10 @@
 
   /* Base for <input> and <select> */
   .input-base {
-    @apply block w-full transition-all;
+    @apply block w-full transition-[border-color,box-shadow];
     @apply px-[0.9375rem] py-[0.543rem];
     @apply text-base font-normal leading-[1.375];
-    @apply text-surface-800 bg-surface-50;
+    @apply text-surface-800 bg-surface-50 dark:bg-white/[0.04];
     @apply border border-surface-300 rounded-input;
     @apply placeholder:text-surface-400 placeholder:opacity-100;
     @apply hover:not-focus:not-disabled:not-read-only:border-surface-500;
@@ -241,7 +249,7 @@
 
   /* Native <select> additions */
   .select-base {
-    @apply appearance-none cursor-pointer pr-[2.625rem] bg-surface-50;
+    @apply appearance-none cursor-pointer pr-[2.625rem] bg-surface-50 dark:bg-white/[0.04];
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22' fill='none'%3e%3cpath d='M10.9999 12.0743L15.5374 7.53676L16.8336 8.83292L10.9999 14.6666L5.16626 8.83292L6.46243 7.53676L10.9999 12.0743Z' fill='%2322303e' fill-opacity='0.9'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 0.9375rem center;
@@ -259,7 +267,7 @@
   /* InputGroup wrapper */
   .input-group {
     @apply relative flex items-stretch w-full;
-    @apply border rounded-input bg-surface-50;
+    @apply border rounded-input bg-surface-50 dark:bg-white/[0.04];
     @apply transition-[border-color,box-shadow];
     @apply border-surface-300 hover:border-surface-500;
     @apply focus-within:border-primary-600 focus-within:shadow-input-focus focus-within:hover:border-primary-600;

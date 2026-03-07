@@ -109,7 +109,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
+    const el = document.documentElement
+    el.classList.add('theme-switching')
+    el.setAttribute('data-theme', theme)
+    // Re-enable transitions after one animation frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.classList.remove('theme-switching')
+      })
+    })
     try {
       localStorage.setItem(THEME_STORAGE_KEY, theme)
     } catch {}
