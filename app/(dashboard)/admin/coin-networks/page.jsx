@@ -114,14 +114,14 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit }) {
       </td>
 
       <td className="text-center align-middle">
-        <button
-          type="button"
-          onClick={() => onEdit(coinNetwork.id)}
+        <Button
           title={t('actions.edit', { defaultValue: 'Edit' })}
-          className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
+          onClick={() => onEdit(coinNetwork.id)}
+          variant="text-secondary"
+          size="icon-sm"
         >
-          <i className="bx bx-edit text-primary text-xl"></i>
-        </button>
+          <i className="bx bx-edit text-[1rem]"></i>
+        </Button>
       </td>
     </tr>
   )
@@ -202,20 +202,21 @@ export default function SupportedCrypto() {
 
   return (
     <div className="grow py-6">
-      <Card className="mb-4">
-        <div className="px-5 py-4 border-b border-surface-200">
-          <div className="flex justify-between items-center flex-wrap gap-3">
-            <div>
-              <h4 className="mb-1">
-                <i className="bx bx-link mr-2"></i>
-                {t('nav.coinNetworks', { defaultValue: 'Coin Networks' })}
-              </h4>
-              <p className="text-surface-500 mb-0">
-                {t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}
-              </p>
-            </div>
-          </div>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h4 className="mb-1">
+            <i className="bx bx-link mr-2 text-primary"></i>
+            {t('nav.coinNetworks', { defaultValue: 'Coin Networks' })}
+          </h4>
+          <p className="text-surface-500 mb-0">
+            {t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}
+          </p>
         </div>
+      </div>
+
+      {/* Filters */}
+      <Card className="mb-4">
         <div className="p-5">
           <div className="flex flex-wrap gap-3 items-end">
             <div className="w-full sm:w-auto sm:min-w-[280px] sm:flex-1 sm:max-w-sm">
