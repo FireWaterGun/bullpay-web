@@ -111,6 +111,9 @@ const styles = {
     marginBottom: 28,
     fontSize: '0.875rem',
     color: '#4a5568',
+    textAlign: 'center',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   /* circular countdown ring */
   countdownWrap: {
@@ -424,9 +427,11 @@ export default function MaintenancePage() {
           {formattedEstimatedEnd && (
             <div style={styles.estimatedBadge}>
               <i className="bx bx-time-five text-[#667eea] text-[18px]"></i>
-              <span>
+              <span style={{ lineHeight: 1.5 }}>
                 {t('maintenance.estimatedEnd', { defaultValue: 'Estimated recovery' })}:{' '}
-                <strong className="text-surface-700">{formattedEstimatedEnd}</strong>
+                <strong className="text-surface-700" style={{ whiteSpace: 'nowrap' }}>
+                  {formattedEstimatedEnd}
+                </strong>
               </span>
             </div>
           )}
