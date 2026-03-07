@@ -1,0 +1,229 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { useAuth } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { getCoinById, updateCoin } from '@/lib/api/admin'
+import { logger } from '@/lib/utils/logger'
+import { Alert, Button, Input, Label, Select, Spinner } from '@/components/ui'
+
+export default function CoinEditModal({ coinId, onClose, onSaved }) {
+  const { token } = useAuth()
+  const toast = useToast()
+  const { t } = useAdminTranslation()
+
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [formData, setFormData] = useState({
+    type: 'native',
+    symbol: '',
+    name: '',
+    decimals: 8,
+    logoUrl: '',
+    status: 'active',
+  })
+
+  const loadCoin = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const coin = await getCoinById(token, coinId)
+      if (coin) {
+        setFormData({
+          type: coin.type || 'native',
+          symbol: coin.symbol || '',
+          name: coin.name || '',
+          decimals: coin.decimals || 8,
+          logoUrl: coin.logoUrl || '',
+          status: coin.status || 'active',
+        })
+      } else {
+        setError('Coin not found')
+      }
+    } catch (e) {
+      logger.error('Failed to load coin:', e)
+      setError(e?.message || 'Failed to load coin')
+    } finally {
+      setLoading(false)
+    }
+  }, [token, coinId])
+
+  useEffect(() => {
+    if (coinId) loadCoin()
+  }, [coinId, loadCoin])
+
+  // Close on Escape
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === 'Escape' && !saving) onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose, saving])
+
+  function handleChange(e) {
+    const { name, value } = e.target
+    let v = value
+    if (name === 'symbol') v = value.toUpperCase()
+    if (name === 'decimals' && value !== '') {
+      const num = parseInt(value)
+      if (num < 0 || num > 18) return
+    }
+    setFormData((prev) => ({ ...prev, [name]: v }))
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+
+    try {
+      if (formData.decimals !== '' && formData.decimals !== null && formData.decimals !== undefined) {
+        const decimals = parseInt(formData.decimals)
+        if (decimals < 0 || decimals > 18) {
+          throw new Error(t('crypto.decimalsRangeError', { defaultValue: 'Decimals must be between 0 and 18' }))
+        }
+      }
+
+      if (formData.logoUrl) {
+        try { new URL(formData.logoUrl) } catch { throw new Error('Logo URL must be a valid URL') }
+      }
+
+      await updateCoin(token, coinId, {
+        name: formData.name,
+        symbol: formData.symbol.toUpperCase(),
+        decimals: parseInt(formData.decimals),
+        type: formData.type,
+        logoUrl: formData.logoUrl || undefined,
+        status: formData.status || 'active',
+      })
+
+      toast.success(t('crypto.coinUpdateSuccess', { defaultValue: 'Coin updated successfully' }))
+      onSaved?.()
+      onClose()
+    } catch (e) {
+      logger.error('Failed to update coin:', e)
+      setError(e?.message || 'Failed to update coin')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={saving ? undefined : onClose}>
+      <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-card rounded-xl shadow-xl">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200">
+            <h5 className="text-lg font-semibold">
+              {t('crypto.editCoin', { defaultValue: 'Edit Coin' })}
+              {formData.symbol && <span className="text-primary ml-2">{formData.symbol}</span>}
+            </h5>
+            <button
+              type="button"
+              className="cursor-pointer text-surface-500 hover:text-surface-700 text-xl leading-none"
+              onClick={onClose}
+              disabled={saving}
+            >
+              <i className="bx bx-x"></i>
+            </button>
+          </div>
+
+          {/* Body */}
+          <div className="p-5">
+            {loading ? (
+              <div className="text-center py-8">
+                <Spinner className="text-primary" />
+              </div>
+            ) : (
+              <>
+                {error && (
+                  <Alert role="alert" className="mb-4">
+                    <i className="bx bx-error-circle mr-2"></i>{error}
+                  </Alert>
+                )}
+
+                <form onSubmit={handleSubmit} id="coin-edit-form">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="modal-symbol">
+                        {t('crypto.symbol', { defaultValue: 'Symbol' })}
+                      </Label>
+                      <Input id="modal-symbol" name="symbol" value={formData.symbol} disabled className="uppercase" />
+                    </div>
+                    <div>
+                      <Label htmlFor="modal-type">
+                        {t('crypto.type', { defaultValue: 'Type' })}
+                      </Label>
+                      <Input id="modal-type" name="type" value={formData.type === 'native' ? 'Native' : 'Token'} disabled />
+                    </div>
+                    <div>
+                      <Label htmlFor="modal-name">
+                        {t('crypto.coinName', { defaultValue: 'Name' })} <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        id="modal-name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Bitcoin"
+                        maxLength={30}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="modal-status">
+                        {t('invoices.statusCol', { defaultValue: 'Status' })}
+                      </Label>
+                      <Select id="modal-status" name="status" value={formData.status} onChange={handleChange}>
+                        <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>
+                        <option value="inactive">{t('crypto.inactive', { defaultValue: 'Inactive' })}</option>
+                      </Select>
+                    </div>
+                    <div className="col-span-2">
+                      <Label htmlFor="modal-logoUrl">
+                        {t('crypto.logoUrl', { defaultValue: 'Logo URL' })}
+                      </Label>
+                      <Input
+                        id="modal-logoUrl"
+                        name="logoUrl"
+                        type="url"
+                        value={formData.logoUrl}
+                        onChange={handleChange}
+                        placeholder="https://example.com/logo.png"
+                      />
+                    </div>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+
+          {/* Footer */}
+          {!loading && (
+            <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-surface-200">
+              <Button variant="label-secondary" onClick={onClose} disabled={saving}>
+                {t('actions.cancel', { defaultValue: 'Cancel' })}
+              </Button>
+              <Button type="submit" form="coin-edit-form" disabled={saving}>
+                {saving ? (
+                  <>
+                    <Spinner className="w-4 h-4 mr-2" />
+                    {t('actions.saving', { defaultValue: 'Saving...' })}
+                  </>
+                ) : (
+                  <>
+                    <i className="bx bx-save mr-2"></i>
+                    {t('actions.update', { defaultValue: 'Update' })}
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

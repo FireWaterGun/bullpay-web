@@ -83,15 +83,15 @@ function NetworkIcon({ network, imageInfo }) {
       <NextImage
         src={imageInfo.url}
         alt={network.symbol || network.name}
-        width={40} height={40}
+        width={28} height={28}
         unoptimized
-        className="mr-3 object-contain"
+        className="mr-2 object-contain"
       />
     );
   }
   return (
     <div
-      className="mr-3 rounded-full flex items-center justify-center font-bold w-10 h-10 text-white text-xs"
+      className="mr-2 rounded-full flex items-center justify-center font-bold w-7 h-7 text-white text-[0.6rem]"
       style={{ background: `linear-gradient(135deg, ${getNetworkColor(network.symbol)} 0%, ${getNetworkColor(network.symbol, true)} 100%)`, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
       title={network.name}
     >
@@ -203,10 +203,10 @@ export default function NetworkList() {
 
   return (
     <div className="grow py-6">
-      <Card>
+      <Card className="mb-4">
         <div className="px-5 py-4 border-b border-surface-200">
           {/* Header */}
-          <div className="flex justify-between items-center flex-wrap gap-3 mb-3">
+          <div className="flex justify-between items-center flex-wrap gap-3">
             <div>
               <h4 className="mb-1">
                 <i className="bx bx-globe mr-2"></i>
@@ -215,19 +215,17 @@ export default function NetworkList() {
               <p className="text-surface-500 mb-0">{t('crypto.manageNetworksList', { defaultValue: 'Manage blockchain networks' })}</p>
             </div>
           </div>
-
-          {/* Filters */}
+        </div>
+        <div className="p-5">
           <div className="flex flex-wrap gap-3 items-end">
             <div className="w-full sm:w-auto sm:min-w-[280px] sm:flex-1 sm:max-w-sm">
               <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
               <Input
                 type="text"
-
                 placeholder={t('crypto.searchNetworks', { defaultValue: 'Search by name or chain ID...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()} />
-              
             </div>
             <div className="flex gap-2 shrink-0">
               <Button onClick={handleApplyFilter} disabled={loading}>
@@ -241,7 +239,9 @@ export default function NetworkList() {
             </div>
           </div>
         </div>
+      </Card>
 
+      <Card>
         {/* Error Alert */}
         {error &&
         <div className="p-5">

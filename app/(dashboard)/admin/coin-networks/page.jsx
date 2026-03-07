@@ -6,6 +6,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { useAuth, useToast } from '@/app/providers';
 import { getCoinNetworks } from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
+import CoinNetworkEditModal from '@/components/admin/CoinNetworkEditModal';
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard';
 import TableEmptyState from '@/components/TableEmptyState';
 import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
@@ -53,7 +54,7 @@ function getStatusBadge(status, t) {
   };
 }
 
-function CoinNetworkRow({ coinNetwork, t, onCopyContract }) {
+function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit }) {
   const statusBadge = getStatusBadge(coinNetwork.status, t);
 
   return (
@@ -64,8 +65,8 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract }) {
             coin={coinNetwork.coin}
             symbol={coinNetwork.coin?.symbol}
             networkSymbol={coinNetwork.network?.symbol}
-            size={40}
-            className="mr-3"
+            size={28}
+            className="mr-2"
             showFallback
           />
           <div>
@@ -109,13 +110,13 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract }) {
       </td>
 
       <td className="text-center align-middle">
-        <a
-          href={`/admin/coin-networks/${coinNetwork.id}`}
+        <button
+          onClick={() => onEdit(coinNetwork.id)}
           title={t('actions.edit', { defaultValue: 'Edit' })}
-          className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
+          className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors"
         >
           <i className="bx bx-edit text-primary text-xl"></i>
-        </a>
+        </button>
       </td>
     </tr>
   );
@@ -131,6 +132,7 @@ export default function SupportedCrypto() {
   const [searchQuery, setSearchQuery] = useState('');
   const [draftSearch, setDraftSearch] = useState('');
   const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
+  const [editCoinNetworkId, setEditCoinNetworkId] = useState(null);
 
   const loadCoinNetworks = useCallback(async ({ page = 1, limit = DEFAULT_PAGINATION.limit, search = '' } = {}) => {
     if (!token) return;
@@ -192,9 +194,9 @@ export default function SupportedCrypto() {
 
   return (
     <div className="grow py-6">
-      <Card>
+      <Card className="mb-4">
         <div className="px-5 py-4 border-b border-surface-200">
-          <div className="flex justify-between items-center flex-wrap gap-3 mb-3">
+          <div className="flex justify-between items-center flex-wrap gap-3">
             <div>
               <h4 className="mb-1">
                 <i className="bx bx-link mr-2"></i>
@@ -203,8 +205,8 @@ export default function SupportedCrypto() {
               <p className="text-surface-500 mb-0">{t('crypto.manageCoinNetworks', { defaultValue: 'Manage coin-network pairs' })}</p>
             </div>
           </div>
-
-          {/* Filters */}
+        </div>
+        <div className="p-5">
           <div className="flex flex-wrap gap-3 items-end">
             <div className="w-full sm:w-auto sm:min-w-[280px] sm:flex-1 sm:max-w-sm">
               <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
@@ -228,7 +230,9 @@ export default function SupportedCrypto() {
             </div>
           </div>
         </div>
+      </Card>
 
+      <Card>
         {/* Error Alert */}
         {error && (
           <div className="p-5">
@@ -266,6 +270,7 @@ export default function SupportedCrypto() {
                   coinNetwork={coinNetwork}
                   t={t}
                   onCopyContract={handleCopyContract}
+                  onEdit={setEditCoinNetworkId}
                 />
               ))
             )}
@@ -279,6 +284,14 @@ export default function SupportedCrypto() {
           </div>
         )}
       </Card>
+
+      {editCoinNetworkId && (
+        <CoinNetworkEditModal
+          coinNetworkId={editCoinNetworkId}
+          onClose={() => setEditCoinNetworkId(null)}
+          onSaved={() => loadCoinNetworks({ page: pagination.page, limit: pagination.limit, search: searchQuery })}
+        />
+      )}
     </div>
   );
 }

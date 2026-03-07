@@ -6,6 +6,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation';
 import { useAuth } from '@/app/providers';
 import { getCoins } from '@/lib/api/admin';
 import CoinImg from '@/components/CoinImg';
+import CoinEditModal from '@/components/admin/CoinEditModal';
 import TableEmptyState from '@/components/TableEmptyState';
 import { Alert, Badge, Button, Card, Input, Label } from '@/components/ui';
 import Pagination from '@/components/ui/Pagination'
@@ -13,12 +14,12 @@ import Table from '@/components/ui/Table';
 
 const DEFAULT_PAGINATION = { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false };
 
-function CoinRow({ coin, t }) {
+function CoinRow({ coin, t, onEdit }) {
   return (
     <tr>
       <td className="align-middle">
         <div className="flex items-center">
-          <CoinImg symbol={coin.symbol} logoUrl={coin.logoUrl} size={40} className="mr-3" showFallback />
+          <CoinImg symbol={coin.symbol} logoUrl={coin.logoUrl} size={28} className="mr-2" showFallback />
           <div>
             <div className="font-medium">{coin.name || 'N/A'}</div>
           </div>
@@ -37,9 +38,9 @@ function CoinRow({ coin, t }) {
           : <Badge color="secondary">{coin.status}</Badge>}
       </td>
       <td className="text-center align-middle">
-        <a href={`/admin/coins/${coin.id}`} title={t('actions.edit', { defaultValue: 'Edit' })} className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
+        <button onClick={() => onEdit(coin.id)} title={t('actions.edit', { defaultValue: 'Edit' })} className="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 transition-colors">
           <i className="bx bx-edit text-primary text-xl"></i>
-        </a>
+        </button>
       </td>
     </tr>
   );
@@ -54,6 +55,7 @@ export default function CoinList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [draftSearch, setDraftSearch] = useState('');
   const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
+  const [editCoinId, setEditCoinId] = useState(null);
 
   const loadCoins = useCallback(async ({ page = 1, limit = 10, search = '' } = {}) => {
     setLoading(true);
@@ -95,9 +97,9 @@ export default function CoinList() {
 
   return (
     <div className="grow py-6">
-      <Card>
+      <Card className="mb-4">
         <div className="px-5 py-4 border-b border-surface-200">
-          <div className="flex justify-between items-center flex-wrap gap-3 mb-3">
+          <div className="flex justify-between items-center flex-wrap gap-3">
             <div>
               <h4 className="mb-1">
                 <i className="bx bx-coin mr-2"></i>
@@ -106,19 +108,17 @@ export default function CoinList() {
               <p className="text-surface-500 mb-0">{t('crypto.manageCoinsList', { defaultValue: 'Manage cryptocurrency coins' })}</p>
             </div>
           </div>
-          
-          {/* Filters */}
+        </div>
+        <div className="p-5">
           <div className="flex flex-wrap gap-3 items-end">
             <div className="w-full sm:w-auto sm:min-w-[280px] sm:flex-1 sm:max-w-sm">
               <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
               <Input
                 type="text"
-
                 placeholder={t('crypto.searchCoins', { defaultValue: 'Search by name or symbol...' })}
                 value={draftSearch}
                 onChange={(e) => setDraftSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()} />
-              
             </div>
             <div className="flex gap-2 shrink-0">
               <Button onClick={handleApplyFilter} disabled={loading}>
@@ -132,7 +132,9 @@ export default function CoinList() {
             </div>
           </div>
         </div>
+      </Card>
 
+      <Card>
         {/* Error Alert */}
         {error &&
         <div className="p-5">
@@ -165,7 +167,7 @@ export default function CoinList() {
                 t('crypto.noCoins', { defaultValue: 'No coins found' })
                 } /> :
 
-              coins.map((coin) => <CoinRow key={coin.id} coin={coin} t={t} />)
+              coins.map((coin) => <CoinRow key={coin.id} coin={coin} t={t} onEdit={setEditCoinId} />)
               }
             </tbody>
           </Table>
@@ -175,6 +177,14 @@ export default function CoinList() {
           <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="px-5 py-3 border-t border-surface-200 mt-0" />
         }
       </Card>
+
+      {editCoinId && (
+        <CoinEditModal
+          coinId={editCoinId}
+          onClose={() => setEditCoinId(null)}
+          onSaved={() => loadCoins({ page: pagination.page, limit: pagination.limit, search: searchQuery })}
+        />
+      )}
     </div>);
 
 }
