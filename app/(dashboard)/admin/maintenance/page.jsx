@@ -13,7 +13,7 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card, { CardHeader, CardBody } from '@/components/ui/Card'
 import { Input, Label } from '@/components/ui/Input'
-import LocaleDatePicker from '@/components/LocaleDatePicker'
+import LocaleDateTimePicker from '@/components/LocaleDateTimePicker'
 import Spinner from '@/components/ui/Spinner'
 import Table from '@/components/ui/Table'
 
@@ -501,36 +501,14 @@ export default function AdminMaintenancePage() {
               {/* Estimated End */}
               <div className="mb-4">
                 <Label>{t('admin.maintenance.estimatedEnd', { defaultValue: 'Estimated End Time' })}</Label>
-                <div className="grid grid-cols-12 gap-x-6 gap-2">
-                  <div className="col-span-12 sm:col-span-7">
-                    <LocaleDatePicker
-                      value={estimatedEnd ? estimatedEnd.slice(0, 10) : ''}
-                      onChange={(d) => {
-                        if (!d) {
-                          setEstimatedEnd('')
-                          return
-                        }
-                        const time = estimatedEnd ? estimatedEnd.slice(11, 16) : '00:00'
-                        setEstimatedEnd(new Date(`${d}T${time}`).toISOString())
-                      }}
-                      locale={locale}
-                      placeholder={t('admin.maintenance.selectDate', { defaultValue: 'Select date' })}
-                      t={t}
-                    />
-                  </div>
-                  <div className="col-span-12 sm:col-span-5">
-                    <Input
-                      type="time"
-                      value={estimatedEnd ? estimatedEnd.slice(11, 16) : ''}
-                      disabled={!estimatedEnd}
-                      onChange={(e) => {
-                        const time = e.target.value
-                        if (!time || !estimatedEnd) return
-                        setEstimatedEnd(new Date(`${estimatedEnd.slice(0, 10)}T${time}`).toISOString())
-                      }}
-                    />
-                  </div>
-                </div>
+                <LocaleDateTimePicker
+                  value={estimatedEnd}
+                  onChange={(v) => setEstimatedEnd(v)}
+                  locale={locale}
+                  placeholder={t('admin.maintenance.selectDateTime', { defaultValue: 'Select date & time' })}
+                  t={t}
+                  className="w-full"
+                />
                 <HintText>
                   {t('admin.maintenance.estimatedEndHelp', {
                     defaultValue: 'Leave empty if unknown. Shown to users and in Retry-After header.',
