@@ -35,13 +35,15 @@ function decompose(date, tz) {
 
 /** Build an ISO string from a YYYY-MM-DD date + hour + minute in the given timezone. */
 function composeISO(dateStr, h, m, tz) {
-  const hh = String(h).padStart(2, '0')
-  const mm = String(m).padStart(2, '0')
-  // Create a date in JavaScript (browser local), then adjust
-  // Use a reliable approach: build a formatter that shows the offset, then manually calculate
-  const guess = new Date(`${dateStr}T${hh}:${mm}:00`)
-  // Get the offset of the target timezone at this rough timestamp
-  const tzDate = new Intl.DateTimeFormat('en-CA', {
+  const y = Number(dateStr.slice(0, 4))
+  const mo = Number(dateStr.slice(5, 7)) - 1
+  const d = Number(dateStr.slice(8, 10))
+
+  // 1. Treat the desired date+time as if it were UTC
+  const guessUtc = Date.UTC(y, mo, d, h, m, 0)
+
+  // 2. Format that UTC instant in the target timezone to see what it "looks like" there
+  const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: tz,
     year: 'numeric',
     month: '2-digit',
@@ -50,19 +52,28 @@ function composeISO(dateStr, h, m, tz) {
     minute: '2-digit',
     second: '2-digit',
     hour12: false,
-  }).format(guess)
-  // Parse what the formatter returns for this timestamp
-  const [datePart, timePart] = tzDate.split(', ')
-  const [fy, fmo, fd] = datePart.split('-').map(Number)
-  const [fh, fmi, fs] = timePart.split(':').map(Number)
-  // Calculate the offset between what we want and what the timezone shows
-  const wanted = new Date(
-    Date.UTC(Number(dateStr.slice(0, 4)), Number(dateStr.slice(5, 7)) - 1, Number(dateStr.slice(8, 10)), h, m, 0)
+  })
+    .formatToParts(new Date(guessUtc))
+    .reduce((acc, p) => {
+      if (p.type !== 'literal') acc[p.type] = p.value
+      return acc
+    }, {})
+
+  const shownH = parts.hour === '24' ? 0 : Number(parts.hour)
+  const shownUtc = Date.UTC(
+    Number(parts.year),
+    Number(parts.month) - 1,
+    Number(parts.day),
+    shownH,
+    Number(parts.minute),
+    0
   )
-  const shown = new Date(Date.UTC(fy, fmo - 1, fd, fh === 24 ? 0 : fh, fmi, fs || 0))
-  const offsetMs = shown.getTime() - wanted.getTime()
-  // The real UTC time is: wanted - offset applied
-  return new Date(wanted.getTime() - offsetMs).toISOString()
+
+  // 3. The difference = timezone offset at this moment
+  const offsetMs = shownUtc - guessUtc
+
+  // 4. Real UTC = desired-as-utc minus offset
+  return new Date(guessUtc - offsetMs).toISOString()
 }
 
 /**
