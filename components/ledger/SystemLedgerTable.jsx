@@ -7,6 +7,7 @@ import { formatUsd } from '@/lib/utils/format';
 import { useDateFormat } from '@/hooks/useDateFormat';
 import CoinImg from '@/components/CoinImg';
 import TableEmptyState from '@/components/TableEmptyState';
+import Link from 'next/link';
 import { Badge, Button, Card, Pagination, Table } from '../ui';
 
 function parseMetadata(entry) {
@@ -179,14 +180,14 @@ export default function SystemLedgerTable({
                         <span className="whitespace-nowrap">{fmtDate(entry.createdAt)}</span>
                       </td>
                       <td>
-                        <Button variant="outline-primary" size="icon-sm"
+                        <Link
                       href={`/admin/system-ledger/${entry.id}`}
-
+                      className="btn-outline-primary btn-icon-sm"
                       onClick={(e) => e.stopPropagation()}
                       title={t('actions.view', { defaultValue: 'View' })}>
                         
                           <i className="bx bx-show"></i>
-                        </Button>
+                        </Link>
                       </td>
                     </tr>);
 
