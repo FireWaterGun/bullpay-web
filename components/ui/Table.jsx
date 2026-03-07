@@ -13,6 +13,7 @@ export default function Table({ responsive = true, className = '', children, ...
     '[&_th]:font-semibold [&_th]:text-surface-500 [&_th]:text-[0.8125rem] [&_th]:tracking-[0.2px]',
     '[&_th]:px-5 [&_th]:py-[0.782rem]',
     '[&_thead_th]:border-b [&_thead_th]:border-surface-200',
+    '[&_thead_th]:border-t [&_thead_th]:border-t-surface-200',
     // td
     '[&>:not(caption)>*>*]:px-5 [&>:not(caption)>*>*]:py-[0.782rem]',
     '[&>:not(caption)>*>*]:text-surface-700',
