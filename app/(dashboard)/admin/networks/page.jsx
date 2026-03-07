@@ -114,17 +114,17 @@ function NetworkIcon({ network, imageInfo }) {
 
 function getStatusBadge(status, t) {
   if (status === 'active')
-    return (
+    {return (
       <Badge color="success" label>
         {t('admin.active', { defaultValue: 'Active' })}
       </Badge>
-    )
+    )}
   if (status === 'maintenance')
-    return (
+    {return (
       <Badge color="warning" label>
         {t('crypto.maintenance', { defaultValue: 'Maintenance' })}
       </Badge>
-    )
+    )}
   return (
     <Badge color="secondary" label>
       {t('crypto.inactive', { defaultValue: 'Inactive' })}

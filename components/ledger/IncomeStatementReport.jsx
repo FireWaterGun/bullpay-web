@@ -10,7 +10,7 @@ import Card from '../ui/Card'
 function valueColor(value) {
   const n = parseFloat(value)
   if (n === 0)
-    return { cls: 'text-surface-500', bgStyle: 'rgba(168,170,174,0.1)', cssColor: 'var(--color-surface-500)' }
+    {return { cls: 'text-surface-500', bgStyle: 'rgba(168,170,174,0.1)', cssColor: 'var(--color-surface-500)' }}
   if (n > 0) return { cls: 'text-success', bgStyle: 'rgba(40, 199, 111, 0.1)', cssColor: 'var(--color-green-500)' }
   return { cls: 'text-danger', bgStyle: 'rgba(234, 84, 85, 0.1)', cssColor: 'var(--color-red-500)' }
 }

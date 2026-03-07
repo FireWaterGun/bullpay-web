@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -59,7 +60,7 @@ export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
               <tr key={net.key}>
                 <td>
                   <div className="flex items-center gap-2.5">
-                    <img src={net.icon} alt={net.symbol} className="w-7 h-7 rounded-full shrink-0" />
+                    <Image src={net.icon} alt={net.symbol} width={28} height={28} className="rounded-full shrink-0" />
                     <div>
                       <strong>{net.name}</strong>
                       <div className="text-surface-500 text-xs">{net.symbol}</div>

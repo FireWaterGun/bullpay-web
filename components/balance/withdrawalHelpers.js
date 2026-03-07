@@ -48,7 +48,7 @@ export function formatAddressStatus(s, t) {
   const v = String(s || '').toLowerCase()
   if (t) {
     if (v === 'pending_verification')
-      return t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })
+      {return t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })}
     if (v === 'active') return t('wallet.status.active', { defaultValue: 'Active' })
     if (v === 'suspended') return t('wallet.status.suspended', { defaultValue: 'Suspended' })
     if (v === 'deleted') return t('wallet.status.deleted', { defaultValue: 'Deleted' })
@@ -60,11 +60,11 @@ export function addressStatusBadgeClass(s) {
   const base = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium'
   const v = String(s || '').toLowerCase()
   if (v === 'pending_verification')
-    return `${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`
+    {return `${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`}
   if (v === 'active') return `${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400`
   if (v === 'suspended') return `${base} bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400`
   if (v === 'deleted')
-    return `${base} bg-surface-100 text-surface-600 dark:bg-dark-elevated dark:text-dark-text-secondary`
+    {return `${base} bg-surface-100 text-surface-600 dark:bg-dark-elevated dark:text-dark-text-secondary`}
   return `${base} bg-surface-100 text-surface-600 dark:bg-dark-elevated dark:text-dark-text-secondary`
 }
 
@@ -74,13 +74,13 @@ export function statusBadgeClass(s) {
   if (v === 'PENDING') return `${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`
   if (v === 'WAITING_FOR_GAS') return `${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`
   if (v === 'PROCESSING' || v === 'APPROVED')
-    return `${base} bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400`
+    {return `${base} bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400`}
   if (v === 'COMPLETED' || v === 'SUCCESS')
-    return `${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400`
+    {return `${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400`}
   if (v === 'FAILED' || v === 'REJECTED' || v === 'ERROR')
-    return `${base} bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400`
+    {return `${base} bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400`}
   if (v === 'CANCELLED' || v === 'CANCELED')
-    return `${base} bg-surface-100 text-surface-600 dark:bg-dark-elevated dark:text-dark-text-secondary`
+    {return `${base} bg-surface-100 text-surface-600 dark:bg-dark-elevated dark:text-dark-text-secondary`}
   return `${base} bg-surface-100 text-surface-600 dark:bg-dark-elevated dark:text-dark-text-secondary`
 }
 

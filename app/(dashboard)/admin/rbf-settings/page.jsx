@@ -90,27 +90,27 @@ export default function RbfSettingsPage() {
     if (value === '' || value === undefined) return null
     const n = Number(value)
     if (isNaN(n) || value.toString().trim() === '')
-      return t('admin.rbfSettings.errNotANumber', {
+      {return t('admin.rbfSettings.errNotANumber', {
         defaultValue: '{{field}} must be a valid number',
         field: fieldLabel || 'Value',
-      })
+      })}
     if (integer && !Number.isInteger(n))
-      return t('admin.rbfSettings.errMustBeInteger', {
+      {return t('admin.rbfSettings.errMustBeInteger', {
         defaultValue: '{{field}} must be an integer',
         field: fieldLabel || 'Value',
-      })
+      })}
     if (min !== undefined && n < min)
-      return t('admin.rbfSettings.errMin', {
+      {return t('admin.rbfSettings.errMin', {
         defaultValue: '{{field}} must be at least {{min}}',
         field: fieldLabel || 'Value',
         min,
-      })
+      })}
     if (max !== undefined && n > max)
-      return t('admin.rbfSettings.errMax', {
+      {return t('admin.rbfSettings.errMax', {
         defaultValue: '{{field}} cannot exceed {{max}}',
         field: fieldLabel || 'Value',
         max,
-      })
+      })}
     return null
   }
 

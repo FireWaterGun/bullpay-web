@@ -55,17 +55,17 @@ export default function PlatformLedgerDetail() {
 
   function stateBadge(state) {
     if (state === 'settled')
-      return (
+      {return (
         <Badge color="success" label>
           Settled
         </Badge>
-      )
+      )}
     if (state === 'committed')
-      return (
+      {return (
         <Badge color="info" label>
           Committed
         </Badge>
-      )
+      )}
     if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>
     return <span className="text-surface-500">{state || 'N/A'}</span>
   }

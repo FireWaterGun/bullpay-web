@@ -102,27 +102,27 @@ export default function GasSettingsPage() {
     if (value === '' || value === undefined) return null
     const n = Number(value)
     if (isNaN(n) || value.toString().trim() === '')
-      return t('admin.gasSettings.errNotANumber', {
+      {return t('admin.gasSettings.errNotANumber', {
         defaultValue: '{{field}} must be a valid number',
         field: fieldLabel || 'Value',
-      })
+      })}
     if (integer && !Number.isInteger(n))
-      return t('admin.gasSettings.errMustBeInteger', {
+      {return t('admin.gasSettings.errMustBeInteger', {
         defaultValue: '{{field}} must be an integer',
         field: fieldLabel || 'Value',
-      })
+      })}
     if (min !== undefined && n < min)
-      return t('admin.gasSettings.errMin', {
+      {return t('admin.gasSettings.errMin', {
         defaultValue: '{{field}} must be at least {{min}}',
         field: fieldLabel || 'Value',
         min,
-      })
+      })}
     if (max !== undefined && n > max)
-      return t('admin.gasSettings.errMax', {
+      {return t('admin.gasSettings.errMax', {
         defaultValue: '{{field}} cannot exceed {{max}}',
         field: fieldLabel || 'Value',
         max,
-      })
+      })}
     return null
   }
 

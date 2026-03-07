@@ -41,9 +41,9 @@ function statusMeta(status, t) {
   const s = String(status || '').toLowerCase()
   if (s === 'active') return { ...statusColors.active, label: t('merchant.status.active', { defaultValue: 'Active' }) }
   if (s === 'suspended')
-    return { ...statusColors.suspended, label: t('merchant.status.suspended', { defaultValue: 'Suspended' }) }
+    {return { ...statusColors.suspended, label: t('merchant.status.suspended', { defaultValue: 'Suspended' }) }}
   if (s === 'pending')
-    return { ...statusColors.pending, label: t('merchant.status.pending', { defaultValue: 'Pending' }) }
+    {return { ...statusColors.pending, label: t('merchant.status.pending', { defaultValue: 'Pending' }) }}
   return {
     bg: 'bg-surface-100 dark:bg-dark-elevated',
     text: 'text-surface-600 dark:text-surface-400',

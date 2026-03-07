@@ -105,18 +105,18 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
     if (formData.chainId !== '' && formData.chainId !== null && formData.chainId !== undefined) {
       const n = parseInt(formData.chainId)
       if (isNaN(n) || n <= 0)
-        errors.chainId = t('crypto.chainIdPositive', { defaultValue: 'Must be a positive integer' })
+        {errors.chainId = t('crypto.chainIdPositive', { defaultValue: 'Must be a positive integer' })}
     }
     if (formData.confirmationBlocks !== '' && formData.confirmationBlocks !== null) {
       const n = parseInt(formData.confirmationBlocks)
       if (isNaN(n) || n < 1)
-        errors.confirmationBlocks = t('crypto.confirmBlocksMin', { defaultValue: 'Must be at least 1' })
+        {errors.confirmationBlocks = t('crypto.confirmBlocksMin', { defaultValue: 'Must be at least 1' })}
       else if (n > 1000)
-        errors.confirmationBlocks = t('crypto.confirmBlocksMax', { defaultValue: 'Must be at most 1000' })
+        {errors.confirmationBlocks = t('crypto.confirmBlocksMax', { defaultValue: 'Must be at most 1000' })}
     }
     if (!validateUrl(formData.rpcUrl)) errors.rpcUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
     if (!validateUrl(formData.explorerUrl))
-      errors.explorerUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
+      {errors.explorerUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })}
     if (!validateUrl(formData.apiUrl)) errors.apiUrl = t('crypto.invalidUrl', { defaultValue: 'Must be a valid URL' })
     return errors
   }

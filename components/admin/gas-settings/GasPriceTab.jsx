@@ -1,16 +1,52 @@
+import Image from 'next/image'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 
 const NETWORKS = [
-  { key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/eth.svg' },
-  { key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC', nativeCoin: 'BNB', type: 'legacy', icon: '/assets/img/coins/bsc.svg' },
+  {
+    key: 'eth',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    nativeCoin: 'ETH',
+    type: 'eip1559',
+    icon: '/assets/img/coins/eth.svg',
+  },
+  {
+    key: 'bsc',
+    name: 'BNB Smart Chain',
+    symbol: 'BSC',
+    nativeCoin: 'BNB',
+    type: 'legacy',
+    icon: '/assets/img/coins/bsc.svg',
+  },
   { key: 'pol', name: 'Polygon', symbol: 'POL', nativeCoin: 'POL', type: 'eip1559', icon: '/assets/img/coins/pol.svg' },
-  { key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/arbitrum.svg' },
-  { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/optimism.svg' },
+  {
+    key: 'arbitrum',
+    name: 'Arbitrum',
+    symbol: 'ARBITRUM',
+    nativeCoin: 'ETH',
+    type: 'eip1559',
+    icon: '/assets/img/coins/arbitrum.svg',
+  },
+  {
+    key: 'optimism',
+    name: 'Optimism',
+    symbol: 'OPTIMISM',
+    nativeCoin: 'ETH',
+    type: 'eip1559',
+    icon: '/assets/img/coins/optimism.svg',
+  },
   { key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/base.svg' },
-  { key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559', icon: '/assets/img/coins/avax.svg' },
+  {
+    key: 'avax',
+    name: 'Avalanche',
+    symbol: 'AVAX',
+    nativeCoin: 'AVAX',
+    type: 'eip1559',
+    icon: '/assets/img/coins/avax.svg',
+  },
 ]
 
 const OPERATIONS = ['withdrawal', 'sweep', 'topup']
@@ -51,7 +87,7 @@ export default function GasPriceTab({ t, getVal, onEdit }) {
               <tr key={net.key}>
                 <td>
                   <div className="flex items-center gap-2.5">
-                    <img src={net.icon} alt={net.symbol} className="w-7 h-7 rounded-full shrink-0" />
+                    <Image src={net.icon} alt={net.symbol} width={28} height={28} className="rounded-full shrink-0" />
                     <div>
                       <strong>{net.name}</strong>
                       <div className="flex items-center gap-1 mt-0.5">
