@@ -16,13 +16,13 @@ function valueColor(value) {
   return { cls: 'text-danger', bgStyle: 'rgba(234, 84, 85, 0.1)', cssColor: 'var(--color-red-500)' }
 }
 
-function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
+function RevenueCard({ revenueItems, deductionItems, netRevenue, t }) {
   return (
     <div className="col-span-12 md:col-span-6 mb-4">
       <Card className="h-full">
         <div className="px-5 py-4 border-b border-surface-200 flex items-center">
           <i className="bx bx-trending-up text-success mr-2 text-2xl"></i>
-          <h5 className="mb-0">REVENUE</h5>
+          <h5 className="mb-0">{t?.('admin.incomeStatement.revenue', { defaultValue: 'REVENUE' }) || 'REVENUE'}</h5>
         </div>
         <div className="p-5">
           <table className="w-full mb-0">
@@ -44,7 +44,7 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
                 <>
                   <tr>
                     <td colSpan="2" className="pb-0 pt-2">
-                      <small className="text-surface-500 font-semibold">DEDUCTIONS</small>
+                      <small className="text-surface-500 font-semibold">{t?.('admin.incomeStatement.deductions', { defaultValue: 'DEDUCTIONS' }) || 'DEDUCTIONS'}</small>
                     </td>
                   </tr>
                   {deductionItems.map((item, i) => (
@@ -64,7 +64,7 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
               )}
 
               <tr style={{ borderTop: '2px solid var(--color-surface-200)' }}>
-                <td className="font-bold">Net Revenue</td>
+                <td className="font-bold">{t?.('admin.incomeStatement.netRevenue', { defaultValue: 'Net Revenue' }) || 'Net Revenue'}</td>
                 <td className={`text-right font-bold text-xl ${valueColor(netRevenue).cls} whitespace-nowrap`}>
                   {formatUsd(netRevenue)}
                 </td>
@@ -77,13 +77,13 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
   )
 }
 
-function ExpensesCard({ expenseItems, totalExpenses }) {
+function ExpensesCard({ expenseItems, totalExpenses, t }) {
   return (
     <div className="col-span-12 md:col-span-6 mb-4">
       <Card className="h-full">
         <div className="px-5 py-4 border-b border-surface-200 flex items-center">
           <i className="bx bx-trending-down text-danger mr-2 text-2xl"></i>
-          <h5 className="mb-0">EXPENSES</h5>
+          <h5 className="mb-0">{t?.('admin.incomeStatement.expenses', { defaultValue: 'EXPENSES' }) || 'EXPENSES'}</h5>
         </div>
         <div className="p-5">
           <table className="w-full mb-0">
@@ -100,7 +100,7 @@ function ExpensesCard({ expenseItems, totalExpenses }) {
                 </tr>
               ))}
               <tr style={{ borderTop: '2px solid var(--color-surface-200)' }}>
-                <td className="font-bold">Total Expenses</td>
+                <td className="font-bold">{t?.('admin.incomeStatement.totalExpenses', { defaultValue: 'Total Expenses' }) || 'Total Expenses'}</td>
                 <td className={`text-right font-bold text-xl ${valueColor(totalExpenses).cls} whitespace-nowrap`}>
                   ({formatUsd(totalExpenses)})
                 </td>
@@ -113,7 +113,7 @@ function ExpensesCard({ expenseItems, totalExpenses }) {
   )
 }
 
-function OperatingIncomeCard({ operatingIncome, profitMargin }) {
+function OperatingIncomeCard({ operatingIncome, profitMargin, t }) {
   const oi = valueColor(operatingIncome)
   const pm = valueColor(profitMargin)
   return (
@@ -129,7 +129,7 @@ function OperatingIncomeCard({ operatingIncome, profitMargin }) {
                 ></i>
               </div>
               <div>
-                <h6 className="text-surface-500 mb-1">OPERATING INCOME</h6>
+                <h6 className="text-surface-500 mb-1">{t?.('admin.incomeStatement.operatingIncome', { defaultValue: 'OPERATING INCOME' }) || 'OPERATING INCOME'}</h6>
                 <h2 className={`mb-0 font-bold ${oi.cls}`}>{formatUsd(operatingIncome)}</h2>
               </div>
             </div>
@@ -144,14 +144,14 @@ function OperatingIncomeCard({ operatingIncome, profitMargin }) {
   )
 }
 
-function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
+function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment, t }) {
   if (adjustIncrease.length === 0 && adjustDecrease.length === 0) return null
   return (
     <Card className="mb-4">
       <div className="px-5 py-4 border-b border-surface-200 flex items-center">
         <i className="bx bx-transfer-alt text-info mr-2 text-2xl"></i>
         <h5 className="mb-0">
-          ADJUSTMENTS <small className="text-surface-500 font-normal">(Non-operating)</small>
+          {t?.('admin.incomeStatement.adjustments', { defaultValue: 'ADJUSTMENTS' }) || 'ADJUSTMENTS'} <small className="text-surface-500 font-normal">({t?.('admin.incomeStatement.nonOperating', { defaultValue: 'Non-operating' }) || 'Non-operating'})</small>
         </h5>
       </div>
       <div className="p-5">
@@ -161,7 +161,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
               <>
                 <tr>
                   <td colSpan="2" className="pb-0 pt-0">
-                    <small className="text-surface-500 font-semibold">INCREASES</small>
+                    <small className="text-surface-500 font-semibold">{t?.('admin.incomeStatement.increases', { defaultValue: 'INCREASES' }) || 'INCREASES'}</small>
                   </td>
                 </tr>
                 {adjustIncrease.map((item, i) => (
@@ -171,7 +171,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
                         {item.code}
                       </Badge>
                       <span>{item.name || item.code}</span>
-                      <small className="text-surface-500 ml-2">({item.entries || 0} entries)</small>
+                      <small className="text-surface-500 ml-2">({item.entries || 0} {t?.('admin.incomeStatement.entries', { defaultValue: 'entries' }) || 'entries'})</small>
                     </td>
                     <td className="text-right font-medium text-success whitespace-nowrap">
                       +{formatUsd(item.amountUsd)}
@@ -184,7 +184,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
               <>
                 <tr>
                   <td colSpan="2" className="pb-0 pt-2">
-                    <small className="text-surface-500 font-semibold">DECREASES</small>
+                    <small className="text-surface-500 font-semibold">{t?.('admin.incomeStatement.decreases', { defaultValue: 'DECREASES' }) || 'DECREASES'}</small>
                   </td>
                 </tr>
                 {adjustDecrease.map((item, i) => (
@@ -194,7 +194,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
                         {item.code}
                       </Badge>
                       <span>{item.name || item.code}</span>
-                      <small className="text-surface-500 ml-2">({item.entries || 0} entries)</small>
+                      <small className="text-surface-500 ml-2">({item.entries || 0} {t?.('admin.incomeStatement.entries', { defaultValue: 'entries' }) || 'entries'})</small>
                     </td>
                     <td className="text-right font-medium text-danger whitespace-nowrap">
                       ({formatUsd(item.amountUsd)})
@@ -204,7 +204,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
               </>
             )}
             <tr style={{ borderTop: '2px solid var(--color-surface-200)' }}>
-              <td className="font-bold">Net Adjustment</td>
+              <td className="font-bold">{t?.('admin.incomeStatement.netAdjustment', { defaultValue: 'Net Adjustment' }) || 'Net Adjustment'}</td>
               <td className={`text-right font-bold text-xl ${valueColor(netAdjustment).cls} whitespace-nowrap`}>
                 {parseFloat(netAdjustment) > 0 ? '+' : ''}
                 {formatUsd(netAdjustment)}
@@ -217,7 +217,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment }) {
   )
 }
 
-function NetIncomeCard({ netIncome }) {
+function NetIncomeCard({ netIncome, t }) {
   const ni = valueColor(netIncome)
   return (
     <Card className="mb-4">
@@ -230,7 +230,7 @@ function NetIncomeCard({ netIncome }) {
             ></i>
           </div>
           <div>
-            <h6 className="text-surface-500 mb-1">NET INCOME</h6>
+            <h6 className="text-surface-500 mb-1">{t?.('admin.incomeStatement.netIncome', { defaultValue: 'NET INCOME' }) || 'NET INCOME'}</h6>
             <h2 className={`mb-0 font-bold ${ni.cls}`}>{formatUsd(netIncome)}</h2>
           </div>
         </div>
@@ -261,7 +261,7 @@ function CountsCard({ allItems }) {
  * Renders the full income statement report body (revenue, expenses, operating
  * income, adjustments, net income, and counts).
  */
-export default function IncomeStatementReport({ report }) {
+export default function IncomeStatementReport({ report, t }) {
   // Extract report data safely (matches actual API response structure)
   const revenue = report?.revenue || {}
   const expenses = report?.expenses || {}
@@ -286,15 +286,15 @@ export default function IncomeStatementReport({ report }) {
   return (
     <>
       <div className="grid grid-cols-12 gap-x-6">
-        <RevenueCard revenueItems={revenueItems} deductionItems={deductionItems} netRevenue={netRevenue} />
-        <ExpensesCard expenseItems={expenseItems} totalExpenses={totalExpenses} />
+        <RevenueCard revenueItems={revenueItems} deductionItems={deductionItems} netRevenue={netRevenue} t={t} />
+        <ExpensesCard expenseItems={expenseItems} totalExpenses={totalExpenses} t={t} />
       </div>
 
-      <OperatingIncomeCard operatingIncome={operatingIncome} profitMargin={profitMargin} />
+      <OperatingIncomeCard operatingIncome={operatingIncome} profitMargin={profitMargin} t={t} />
 
-      <AdjustmentsCard adjustIncrease={adjustIncrease} adjustDecrease={adjustDecrease} netAdjustment={netAdjustment} />
+      <AdjustmentsCard adjustIncrease={adjustIncrease} adjustDecrease={adjustDecrease} netAdjustment={netAdjustment} t={t} />
 
-      <NetIncomeCard netIncome={netIncome} />
+      <NetIncomeCard netIncome={netIncome} t={t} />
 
       <CountsCard allItems={allItems} />
     </>

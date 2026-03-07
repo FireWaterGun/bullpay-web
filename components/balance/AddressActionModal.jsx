@@ -14,6 +14,7 @@ export default function AddressActionModal({
   actionLoading,
   onAction,
   onClose,
+  t,
 }) {
   return (
     <div
@@ -40,15 +41,15 @@ export default function AddressActionModal({
             <div className="py-2 px-3">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <small className="text-surface-500 block">Address ID</small>
+                  <small className="text-surface-500 block">{t('admin.withdrawalAddress.addressId', { defaultValue: 'Address ID' })}</small>
                   <strong>#{selectedAddress.id}</strong>
                 </div>
                 <div>
-                  <small className="text-surface-500 block">User ID</small>
+                  <small className="text-surface-500 block">{t('admin.detail.userId', { defaultValue: 'User ID' })}</small>
                   <strong>{selectedAddress.userId}</strong>
                 </div>
                 <div className="col-span-2">
-                  <small className="text-surface-500 block">Address</small>
+                  <small className="text-surface-500 block">{t('admin.detail.address', { defaultValue: 'Address' })}</small>
                   <code className="text-[0.8rem] break-all">{selectedAddress.address}</code>
                 </div>
               </div>
@@ -62,24 +63,24 @@ export default function AddressActionModal({
             >
               <i className="bx bx-error-circle mr-2 text-xl"></i>
               <div>
-                This action is <strong>irreversible</strong>. The address will be permanently deleted.
+                {t('admin.withdrawalAddress.deleteWarning', { defaultValue: 'This action is irreversible. The address will be permanently deleted.' })}
               </div>
             </div>
           )}
 
           <div className="mb-3">
             <Label>
-              Reason <span className="text-danger-500">*</span>
+              {t('admin.withdrawalAddress.reason', { defaultValue: 'Reason' })} <span className="text-danger-500">*</span>
             </Label>
             <Input
               rows="3"
-              placeholder="Enter reason (minimum 10 characters)..."
+              placeholder={t('admin.withdrawalAddress.reasonPlaceholder', { defaultValue: 'Enter reason (minimum 10 characters)...' })}
               value={actionReason}
               onChange={(e) => setActionReason(e.target.value)}
               disabled={actionLoading}
               className="w-full"
             ></Input>
-            <small className="text-surface-500">{actionReason.trim().length}/500 characters</small>
+            <small className="text-surface-500">{actionReason.trim().length}/500 {t('admin.withdrawalAddress.characters', { defaultValue: 'characters' })}</small>
           </div>
 
           {actionType === 'forceVerify' && (
@@ -92,13 +93,13 @@ export default function AddressActionModal({
                 disabled={actionLoading}
               />
 
-              <span className="text-sm">Skip lock period</span>
+              <span className="text-sm">{t('admin.withdrawalAddress.skipLockPeriod', { defaultValue: 'Skip lock period' })}</span>
             </label>
           )}
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-200">
           <Button type="button" onClick={onClose} disabled={actionLoading} variant="outline-secondary">
-            Cancel
+            {t('actions.cancel', { defaultValue: 'Cancel' })}
           </Button>
           <Button
             type="button"
@@ -109,7 +110,7 @@ export default function AddressActionModal({
             {actionLoading ? (
               <>
                 <Spinner className="w-4 h-4 mr-1" />
-                Processing...
+                {t('common.processing', { defaultValue: 'Processing...' })}
               </>
             ) : (
               <>

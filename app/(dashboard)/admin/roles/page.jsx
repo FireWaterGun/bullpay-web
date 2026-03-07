@@ -146,7 +146,7 @@ export default function AdminRoles() {
                 const color = ROLE_COLOR[roleKey] || 'secondary'
                 const icon = ROLE_ICON[roleKey] || 'bx-user'
                 const level = ROLE_LEVEL[roleKey] || 0
-                const description = ROLE_DESCRIPTION[roleKey] || ''
+                const description = t(`admin.roles.roleDesc.${roleKey}`, { defaultValue: ROLE_DESCRIPTION[roleKey] || '' })
                 const rs = getRoleStats(roleKey)
 
                 return (

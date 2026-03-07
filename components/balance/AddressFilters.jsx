@@ -45,18 +45,18 @@ export default function AddressFilters({
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>Status</Label>
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="">All</option>
-              <option value="pending_verification">Pending Verification</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-              <option value="deleted">Deleted</option>
+              <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
+              <option value="pending_verification">{t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })}</option>
+              <option value="active">{t('wallet.status.active', { defaultValue: 'Active' })}</option>
+              <option value="suspended">{t('wallet.status.suspended', { defaultValue: 'Suspended' })}</option>
+              <option value="deleted">{t('wallet.status.deleted', { defaultValue: 'Deleted' })}</option>
             </Select>
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>User ID</Label>
             <Input
               type="number"
-              placeholder="User ID"
+              placeholder={t('filter.userId', { defaultValue: 'User ID' })}
               value={userIdFilter}
               onChange={(e) => setUserIdFilter(e.target.value)}
             />
@@ -72,17 +72,17 @@ export default function AddressFilters({
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>Flagged</Label>
             <Select value={isFlaggedFilter} onChange={(e) => setIsFlaggedFilter(e.target.value)}>
-              <option value="">All</option>
-              <option value="true">Flagged</option>
-              <option value="false">Not Flagged</option>
+              <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
+              <option value="true">{t('admin.withdrawalAddress.flagged', { defaultValue: 'Flagged' })}</option>
+              <option value="false">{t('admin.withdrawalAddress.notFlagged', { defaultValue: 'Not Flagged' })}</option>
             </Select>
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>Verified</Label>
             <Select value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
-              <option value="">All</option>
-              <option value="true">Verified</option>
-              <option value="false">Not Verified</option>
+              <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
+              <option value="true">{t('admin.withdrawalAddress.verified', { defaultValue: 'Verified' })}</option>
+              <option value="false">{t('admin.withdrawalAddress.notVerified', { defaultValue: 'Not Verified' })}</option>
             </Select>
           </div>
         </div>

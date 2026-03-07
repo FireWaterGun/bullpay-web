@@ -55,13 +55,13 @@ export default function PlatformLedgerFilterPanel({
           <Label>{t('admin.platformLedger.entryCode', { defaultValue: 'Entry Code' })}</Label>
           <Select value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-            <option value="WF">WF - Withdrawal Fee</option>
-            <option value="FR">FR - Fee Refund</option>
-            <option value="SG">SG - Sweep Gas Topup</option>
-            <option value="SC">SC - Sweep Gas Cost</option>
-            <option value="WG">WG - Withdrawal Gas</option>
-            <option value="XI">XI - Internal Transfer In</option>
-            <option value="XO">XO - Internal Transfer Out</option>
+            <option value="WF">{t('admin.platformLedger.codeWF', { defaultValue: 'WF - Withdrawal Fee' })}</option>
+            <option value="FR">{t('admin.platformLedger.codeFR', { defaultValue: 'FR - Fee Refund' })}</option>
+            <option value="SG">{t('admin.platformLedger.codeSG', { defaultValue: 'SG - Sweep Gas Topup' })}</option>
+            <option value="SC">{t('admin.platformLedger.codeSC', { defaultValue: 'SC - Sweep Gas Cost' })}</option>
+            <option value="WG">{t('admin.platformLedger.codeWG', { defaultValue: 'WG - Withdrawal Gas' })}</option>
+            <option value="XI">{t('admin.platformLedger.codeXI', { defaultValue: 'XI - Internal Transfer In' })}</option>
+            <option value="XO">{t('admin.platformLedger.codeXO', { defaultValue: 'XO - Internal Transfer Out' })}</option>
           </Select>
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">

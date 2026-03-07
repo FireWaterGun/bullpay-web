@@ -69,7 +69,7 @@ export default function WithdrawalTxTable({
                 <td>
                   <span className="text-surface-500">
                     {(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() ||
-                      'N/A'}
+                      '-'}
                   </span>
                 </td>
                 <td className="whitespace-nowrap">
@@ -139,7 +139,7 @@ export default function WithdrawalTxTable({
                 </td>
                 <td className="text-center whitespace-nowrap">
                   <span className={statusBadgeClass(withdrawal.status)}>
-                    {String(withdrawal.status || '').toUpperCase()}
+                    {t(`status.${String(withdrawal.status || '').toLowerCase()}`, { defaultValue: String(withdrawal.status || '').toUpperCase() })}
                   </span>
                 </td>
                 <td className="text-center">
@@ -186,7 +186,7 @@ export default function WithdrawalTxTable({
                 </td>
                 <td>
                   <div className="flex items-center">
-                    <span className="mr-2 whitespace-nowrap">{withdrawal.fromAddress || 'N/A'}</span>
+                    <span className="mr-2 whitespace-nowrap">{withdrawal.fromAddress || '-'}</span>
                     {withdrawal.fromAddress && (
                       <Button
                         onClick={() => onCopy(withdrawal.fromAddress)}
@@ -201,7 +201,7 @@ export default function WithdrawalTxTable({
                 </td>
                 <td>
                   <div className="flex items-center">
-                    <span className="mr-2 whitespace-nowrap">{withdrawal.toAddress || 'N/A'}</span>
+                    <span className="mr-2 whitespace-nowrap">{withdrawal.toAddress || '-'}</span>
                     {withdrawal.toAddress && (
                       <Button
                         onClick={() => onCopy(withdrawal.toAddress)}

@@ -59,7 +59,7 @@ export default function WithdrawalTxModals({
                       </div>
                       <div className="col-span-6">
                         <small className="text-surface-500 block">{t('admin.user', { defaultValue: 'User' })}</small>
-                        <strong>{selectedWithdrawal.user?.email || 'N/A'}</strong>
+                        <strong>{selectedWithdrawal.user?.email || '-'}</strong>
                       </div>
                       <div className="col-span-6">
                         <small className="text-surface-500 block">
@@ -160,7 +160,7 @@ export default function WithdrawalTxModals({
                       </div>
                       <div className="col-span-6">
                         <small className="text-surface-500 block">{t('admin.user', { defaultValue: 'User' })}</small>
-                        <strong>{selectedWithdrawal.user?.email || 'N/A'}</strong>
+                        <strong>{selectedWithdrawal.user?.email || '-'}</strong>
                       </div>
                       <div className="col-span-6">
                         <small className="text-surface-500 block">

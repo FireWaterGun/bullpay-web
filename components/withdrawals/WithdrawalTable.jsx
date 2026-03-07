@@ -24,7 +24,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
       <Table>
         <thead>
           <tr className="whitespace-nowrap">
-            <th>ID</th>
+            <th>{t('common.id', { defaultValue: 'ID' })}</th>
             <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
             <th>{t('balance.amount', { defaultValue: 'Amount' })}</th>
             <th>{t('balance.fee', { defaultValue: 'Fee' })}</th>
@@ -85,7 +85,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                   </td>
                   <td className="whitespace-nowrap">
                     <span className={statusBadgeClass(it.status)}>
-                      {formatStatusLabel(String(it.status || '').toUpperCase())}
+                      {t(`status.${String(it.status || '').toLowerCase()}`, { defaultValue: formatStatusLabel(String(it.status || '').toUpperCase()) })}
                     </span>
                   </td>
                   <td className="whitespace-nowrap text-right text-surface-500 text-xs">{fmtDate(it.createdAt)}</td>
