@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getSystemStatus } from '@/lib/api/system'
 import { usePusher } from '@/app/providers'
-import { useDateFormat } from '@/hooks/useDateFormat'
+import { formatDateTime } from '@/lib/utils/format'
 import { Spinner } from '../../components/ui'
 
 const CHANNEL = 'system-maintenance'
@@ -223,8 +223,7 @@ function CountdownRing({ seconds, total }) {
 }
 
 export default function MaintenancePage() {
-  const { t } = useTranslation('common')
-  const { fmtDateTime } = useDateFormat()
+  const { t, i18n } = useTranslation('common')
   const { subscribe, unsubscribe, isConnected } = usePusher() || {}
   const channelRef = useRef(null)
   const [info, setInfo] = useState({
@@ -351,7 +350,19 @@ export default function MaintenancePage() {
 
   const displayMessage = info.message
 
-  const formattedEstimatedEnd = info.estimatedEnd ? fmtDateTime(info.estimatedEnd) : null
+  // Format estimated end in browser timezone with tz label (e.g. "Mar 8, 2026, 11:07 PM (ICT)")
+  const formattedEstimatedEnd = (() => {
+    if (!info.estimatedEnd) return null
+    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const localeMap = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
+    const locale = localeMap[i18n.language] || i18n.language || undefined
+    const dateStr = formatDateTime(info.estimatedEnd, { locale, timeZone: browserTz })
+    // Get short tz label e.g. "ICT", "EST"
+    const tzLabel = new Intl.DateTimeFormat(locale, { timeZone: browserTz, timeZoneName: 'short' })
+      .formatToParts(new Date(info.estimatedEnd))
+      .find((p) => p.type === 'timeZoneName')?.value
+    return tzLabel ? `${dateStr} (${tzLabel})` : dateStr
+  })()
 
   return (
     <div style={styles.page}>
