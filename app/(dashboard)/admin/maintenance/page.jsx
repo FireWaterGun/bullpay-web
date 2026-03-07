@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useLocale } from '@/hooks/useLocale'
 import { getSettingByKey, upsertSetting } from '@/lib/api/admin'
 import { getSystemStatus } from '@/lib/api/system'
 import { logger } from '@/lib/utils/logger'
@@ -12,6 +13,7 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card, { CardHeader, CardBody } from '@/components/ui/Card'
 import { Input, Label } from '@/components/ui/Input'
+import LocaleDatePicker from '@/components/LocaleDatePicker'
 import Spinner from '@/components/ui/Spinner'
 import Table from '@/components/ui/Table'
 
@@ -211,6 +213,7 @@ function TipsCard({ t }) {
 
 export default function AdminMaintenancePage() {
   const { t } = useAdminTranslation()
+  const locale = useLocale()
   const { token } = useAuth()
   const toast = useToast()
   const toastRef = useRef(toast)
@@ -499,12 +502,10 @@ export default function AdminMaintenancePage() {
               <div className="mb-4">
                 <Label>{t('admin.maintenance.estimatedEnd', { defaultValue: 'Estimated End Time' })}</Label>
                 <div className="grid grid-cols-12 gap-x-6 gap-2">
-                  <div className="col-span-7">
-                    <Input
-                      type="date"
+                  <div className="col-span-12 sm:col-span-7">
+                    <LocaleDatePicker
                       value={estimatedEnd ? estimatedEnd.slice(0, 10) : ''}
-                      onChange={(e) => {
-                        const d = e.target.value
+                      onChange={(d) => {
                         if (!d) {
                           setEstimatedEnd('')
                           return
@@ -512,9 +513,12 @@ export default function AdminMaintenancePage() {
                         const time = estimatedEnd ? estimatedEnd.slice(11, 16) : '00:00'
                         setEstimatedEnd(new Date(`${d}T${time}`).toISOString())
                       }}
+                      locale={locale}
+                      placeholder={t('admin.maintenance.selectDate', { defaultValue: 'Select date' })}
+                      t={t}
                     />
                   </div>
-                  <div className="col-span-5">
+                  <div className="col-span-12 sm:col-span-5">
                     <Input
                       type="time"
                       value={estimatedEnd ? estimatedEnd.slice(11, 16) : ''}
