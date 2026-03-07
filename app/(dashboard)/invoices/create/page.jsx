@@ -247,7 +247,7 @@ export default function InvoiceCreatePage() {
                   <small className="text-surface-500 text-xs">{t('invoices.expiryHoursRange')}</small>
                 )}
               </div>
-              <div className="sm:col-span-2 md:col-span-1">
+              <div className="col-span-12 sm:col-span-2 md:col-span-1">
                 <Label>{t('invoices.description')}</Label>
                 <Input
                   placeholder={t('invoices.descriptionPlaceholder', { defaultValue: 'Description' })}
@@ -255,7 +255,7 @@ export default function InvoiceCreatePage() {
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
-              <div className="sm:col-span-2 md:col-span-3">
+              <div className="col-span-12 sm:col-span-2 md:col-span-3">
                 <Label>{t('invoices.note')}</Label>
                 <Input
                   placeholder={t('invoices.memoPlaceholder', { defaultValue: 'Memo' })}

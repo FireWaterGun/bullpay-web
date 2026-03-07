@@ -3,7 +3,7 @@
 import { useAuth, usePusher } from '@/app/providers'
 import type { NavigationItem, NavigationSection } from '@/app/providers'
 import { useRouter } from 'next/navigation'
-import React, { Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import React, { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { THEME_STORAGE_KEY, LANG_STORAGE_KEY, SIDEBAR_COLLAPSED_KEY, API_BASE_URL } from '@/lib/constants'
 import { initAudioContext } from '@/lib/utils/notification'
@@ -141,12 +141,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     } catch {}
   }, [language, i18n])
 
-  // ── Close mobile menu on route change ──
-  useEffect(() => {
-    if (mobileOpen) {
-      queueMicrotask(() => setMobileOpen(false))
-    }
-  }, [children, mobileOpen])
+  // ── Close mobile sidebar immediately on link click ──
+  const closeMobileMenu = useCallback(() => {
+    if (!isXlUp()) setMobileOpen(false)
+  }, [])
 
   // ── Toggle sidebar ──
   const toggleMenu = (e?: React.MouseEvent) => {
@@ -333,7 +331,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Menu */}
-        <nav className="bp-sidebar-scroll">
+        <nav
+          className="bp-sidebar-scroll"
+          onClick={(e) => {
+            const anchor = (e.target as HTMLElement).closest('a[href]:not([href="#"])')
+            if (anchor) closeMobileMenu()
+          }}
+        >
           <ul className="list-none p-0 m-0 py-2">{renderMenus()}</ul>
         </nav>
 

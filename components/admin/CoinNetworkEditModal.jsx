@@ -153,7 +153,7 @@ export default function CoinNetworkEditModal({ coinNetworkId, onClose, onSaved }
                 )}
 
                 <form onSubmit={handleSubmit} id="coin-network-edit-form">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="modal-cn-status">
                         {t('crypto.status', { defaultValue: 'Status' })} <span className="text-danger">*</span>

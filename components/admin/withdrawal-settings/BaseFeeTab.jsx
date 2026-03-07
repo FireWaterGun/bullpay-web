@@ -15,7 +15,7 @@ export default function BaseFeeTab({
 }) {
   return (
     <div className="grid grid-cols-12 gap-x-6">
-      <div className="lg:col-span-8">
+      <div className="col-span-12 lg:col-span-8">
         {/* Auto-Update Toggle */}
         <Card className="mb-4">
           <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
@@ -172,7 +172,7 @@ export default function BaseFeeTab({
       </div>
 
       {/* Sidebar */}
-      <div className="lg:col-span-4">
+      <div className="col-span-12 lg:col-span-4">
         <Card className="mb-3">
           <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h6 className="text-lg font-semibold text-surface-800 mb-0">

@@ -110,7 +110,7 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 z-50 mt-1 min-w-[360px] max-w-[calc(100vw-2rem)] bg-raised border border-surface-200 rounded-lg shadow-lg">
+        <div className="fixed inset-x-3 top-[72px] z-50 sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-1 sm:w-[360px] bg-raised border border-surface-200 rounded-lg shadow-lg">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-surface-200">
             <h6 className="text-sm font-semibold text-surface-900">

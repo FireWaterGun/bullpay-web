@@ -198,7 +198,7 @@ export default function WalletBalancePage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-3 sm:gap-5">
                       {Number.isFinite(usdVal) && (
                         <span className="text-surface-400 text-sm hidden sm:block">
                           {formatCoinAmount(usdVal, 2)} USD

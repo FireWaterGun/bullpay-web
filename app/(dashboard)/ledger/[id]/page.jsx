@@ -119,7 +119,7 @@ export default function MyLedgerDetail() {
               {t('userLedger.details', { defaultValue: 'Details' })}
             </h5>
           </div>
-          <div className="p-6">
+          <div className="p-6 overflow-x-auto">
             <table className="w-full text-sm">
               <tbody>
                 <tr>
@@ -197,7 +197,7 @@ export default function MyLedgerDetail() {
                   {t('userLedger.transaction', { defaultValue: 'Transaction' })}
                 </h5>
               </div>
-              <div className="p-6">
+              <div className="p-6 overflow-x-auto">
                 <table className="w-full text-sm">
                   <tbody>
                     <tr>
@@ -243,7 +243,7 @@ export default function MyLedgerDetail() {
                 {t('userLedger.timestamps', { defaultValue: 'Timestamps' })}
               </h5>
             </div>
-            <div className="p-6">
+            <div className="p-6 overflow-x-auto">
               <table className="w-full text-sm">
                 <tbody>
                   <tr>

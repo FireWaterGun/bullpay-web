@@ -322,7 +322,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                       defaultValue: 'Enter the 6-digit code from your authenticator app to verify setup',
                     })}
                   </p>
-                  <div className="flex justify-center gap-2 mb-3" onPaste={handlePaste}>
+                  <div className="flex justify-center gap-1.5 sm:gap-2 mb-3" onPaste={handlePaste}>
                     {[0, 1, 2, 3, 4, 5].map((i) => (
                       <Input
                         key={`digit-${i}`}
@@ -337,7 +337,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
                         onKeyDown={(e) => handleKeyDown(i, e)}
                         autoFocus={i === 0}
                         disabled={countdown > 0}
-                        className="text-center font-bold w-[45px] h-[50px] text-[20px]"
+                        className="text-center font-bold w-10 h-11 text-lg sm:w-[45px] sm:h-[50px] sm:text-[20px]"
                       />
                     ))}
                   </div>
@@ -357,7 +357,7 @@ export function Setup2FAModal({ show, onClose, onSuccess, token }) {
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-surface-200 flex items-center">
+        <div className="px-6 py-4 border-t border-surface-200 flex flex-wrap items-center gap-2">
           {step > 1 && (
             <Button type="button" onClick={() => setStep((s) => s - 1)} disabled={loading} variant="outline-secondary">
               <i className="bx bx-chevron-left mr-1"></i>

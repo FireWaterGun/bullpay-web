@@ -150,7 +150,7 @@ export default function AdminMerchantsPage() {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.status', { defaultValue: 'Status' })}</Label>
                   <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>

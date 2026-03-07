@@ -134,7 +134,7 @@ export default function SweepDetail() {
           </Card>
 
           <div className="grid grid-cols-12 gap-x-6">
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
@@ -246,7 +246,7 @@ export default function SweepDetail() {
               <SweepMetadataCard metadata={metadata} />
             </div>
 
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <SweepTransactionCard sweep={sweep} explorerUrl={explorerUrl} onCopy={handleCopy} />
               <SweepTimestampsCard sweep={sweep} metadata={metadata} />
             </div>

@@ -61,7 +61,7 @@ export default function OverrideFormModal({ modalType, editingKey, formData, set
                   maxLength={20}
                 />
               </div>
-              <div className="md:col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <Label>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</Label>
                 <Input
                   type="text"
@@ -76,7 +76,7 @@ export default function OverrideFormModal({ modalType, editingKey, formData, set
                 />
               </div>
               {modalType === 'coinNetwork' && (
-                <div className="md:col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <Label>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</Label>
                   <Input
                     type="text"
@@ -103,7 +103,7 @@ export default function OverrideFormModal({ modalType, editingKey, formData, set
               </div>
               {formData.feeType === 'percentage' && (
                 <>
-                  <div className="md:col-span-4">
+                  <div className="col-span-12 md:col-span-4">
                     <Label>{t('admin.withdrawal.feePercentage', { defaultValue: 'Fee %' })}</Label>
                     <Input
                       type="text"
@@ -117,7 +117,7 @@ export default function OverrideFormModal({ modalType, editingKey, formData, set
                       maxLength={20}
                     />
                   </div>
-                  <div className="md:col-span-4">
+                  <div className="col-span-12 md:col-span-4">
                     <Label>{t('admin.withdrawal.feeMin', { defaultValue: 'Min Fee' })}</Label>
                     <Input
                       type="text"
@@ -131,7 +131,7 @@ export default function OverrideFormModal({ modalType, editingKey, formData, set
                       maxLength={20}
                     />
                   </div>
-                  <div className="md:col-span-4">
+                  <div className="col-span-12 md:col-span-4">
                     <Label>{t('admin.withdrawal.feeMax', { defaultValue: 'Max Fee' })}</Label>
                     <Input
                       type="text"

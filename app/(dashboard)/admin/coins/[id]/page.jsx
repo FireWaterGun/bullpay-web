@@ -219,7 +219,7 @@ export default function CoinForm() {
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-12 gap-x-6 gap-4">
                   {/* Symbol */}
-                  <div className="md:col-span-6">
+                  <div className="col-span-12 md:col-span-6">
                     <Label htmlFor="symbol">
                       {t('crypto.symbol', { defaultValue: 'Symbol' })} <span className="text-danger">*</span>
                     </Label>
@@ -243,7 +243,7 @@ export default function CoinForm() {
                   </div>
 
                   {/* Name */}
-                  <div className="md:col-span-6">
+                  <div className="col-span-12 md:col-span-6">
                     <Label htmlFor="name">
                       {t('crypto.coinName', { defaultValue: 'Name' })} <span className="text-danger">*</span>
                     </Label>
@@ -264,7 +264,7 @@ export default function CoinForm() {
                   </div>
 
                   {/* Type */}
-                  <div className="md:col-span-6">
+                  <div className="col-span-12 md:col-span-6">
                     <Label htmlFor="type">
                       {t('crypto.type', { defaultValue: 'Type' })} <span className="text-danger">*</span>
                     </Label>
@@ -285,7 +285,7 @@ export default function CoinForm() {
                   </div>
 
                   {/* Decimals */}
-                  <div className="md:col-span-6">
+                  <div className="col-span-12 md:col-span-6">
                     <Label htmlFor="decimals">
                       {t('crypto.decimals', { defaultValue: 'Decimals' })} <span className="text-danger">*</span>
                     </Label>
@@ -307,7 +307,7 @@ export default function CoinForm() {
                   </div>
 
                   {/* Status */}
-                  <div className="md:col-span-6">
+                  <div className="col-span-12 md:col-span-6">
                     <Label htmlFor="status">{t('invoices.statusCol')}</Label>
                     <Select id="status" name="status" value={formData.status} onChange={handleChange}>
                       <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>

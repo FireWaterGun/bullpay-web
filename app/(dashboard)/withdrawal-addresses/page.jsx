@@ -117,7 +117,7 @@ function WithdrawalAddressesContent() {
       />
 
       <div className="bg-card rounded-xl shadow-sm border border-surface-100">
-        <div className="p-5">
+        <div className="py-4 sm:py-5">
           {loading && addresses.length === 0 ? (
             <div className="flex justify-center py-10">
               <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
@@ -127,7 +127,7 @@ function WithdrawalAddressesContent() {
           )}
 
           {pagination && pagination.total > 20 && (
-            <div className="flex justify-between items-center mt-4">
+            <div className="flex justify-between items-center mt-4 px-4 sm:px-0">
               <span className="text-sm text-surface-400">
                 {t('common.page', { defaultValue: 'Page' })} {page} / {totalPages}
               </span>

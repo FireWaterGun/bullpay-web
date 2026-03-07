@@ -371,7 +371,7 @@ export default function RolePermissions() {
       <Card className="mb-4">
         <div className="p-5 py-3">
           <div className="grid grid-cols-12 gap-x-6 gap-3 items-center">
-            <div className="md:col-span-5">
+            <div className="col-span-12 md:col-span-5">
               <InputGroup>
                 <InputAddon>
                   <i className="bx bx-search"></i>
@@ -390,7 +390,7 @@ export default function RolePermissions() {
                 )}
               </InputGroup>
             </div>
-            <div className="md:col-span-3">
+            <div className="col-span-12 md:col-span-3">
               <Select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                 <option value="all">
                   {t('admin.roles.all', { defaultValue: 'All' })} ({permissions.length})
@@ -412,7 +412,7 @@ export default function RolePermissions() {
                 </option>
               </Select>
             </div>
-            <div className="md:col-span-4 flex items-center justify-end gap-2">
+            <div className="col-span-12 md:col-span-4 flex items-center justify-end gap-2">
               <small className="text-surface-500 mr-2">
                 {filteredPermissions.length} / {permissions.length} · {groupCount}{' '}
                 {t('admin.roles.groups', { defaultValue: 'groups' })}

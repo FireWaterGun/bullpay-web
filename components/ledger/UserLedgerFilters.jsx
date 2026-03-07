@@ -32,7 +32,7 @@ export default function UserLedgerFilters({
   return (
     <div className="p-5">
       <div className="grid grid-cols-12 gap-x-6 gap-3">
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.entryType', { defaultValue: 'Entry Type' })}</Label>
           <Select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
@@ -40,7 +40,7 @@ export default function UserLedgerFilters({
             <option value="debit">{t('filter.debit', { defaultValue: 'Debit' })}</option>
           </Select>
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.entryCode', { defaultValue: 'Entry Code' })}</Label>
           <Select value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
@@ -53,7 +53,7 @@ export default function UserLedgerFilters({
             <option value="XO">XO - Internal Out</option>
           </Select>
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.state', { defaultValue: 'State' })}</Label>
           <Select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
@@ -62,7 +62,7 @@ export default function UserLedgerFilters({
             <option value="reversed">{t('filter.reversed', { defaultValue: 'Reversed' })}</option>
           </Select>
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.userId', { defaultValue: 'User ID' })}</Label>
           <Input
             type="number"
@@ -71,7 +71,7 @@ export default function UserLedgerFilters({
             onChange={(e) => setUserIdFilter(e.target.value)}
           />
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
           <CoinNetworkFilterDropdown
             coinNetworks={coinNetworks}
@@ -79,7 +79,7 @@ export default function UserLedgerFilters({
             onChange={setCoinNetworkIdFilter}
           />
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.txHash', { defaultValue: 'Tx Hash' })}</Label>
           <Input
             type="text"
@@ -88,7 +88,7 @@ export default function UserLedgerFilters({
             onChange={(e) => setTxHashFilter(e.target.value)}
           />
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
           <LocaleDateRangePicker
             className="w-full"

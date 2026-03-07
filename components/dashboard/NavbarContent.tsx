@@ -138,7 +138,7 @@ export default function NavbarContent({
           )}
         </button>
         {userOpen && (
-          <div className="absolute right-0 z-50 mt-1 min-w-[220px] bg-raised border border-surface-200 rounded-lg shadow-lg py-1">
+          <div className="absolute right-0 z-50 mt-1 w-[220px] max-w-[calc(100vw-2rem)] bg-raised border border-surface-200 rounded-lg shadow-lg py-1">
             {/* User info header */}
             <div className="px-4 py-3 border-b border-surface-200">
               <div className="flex items-center gap-3">

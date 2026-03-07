@@ -113,7 +113,7 @@ export default function WebhookLogDetailPage() {
               {t('webhookLog.webhookDetails', { defaultValue: 'Webhook Details' })}
             </h5>
           </div>
-          <div className="p-6">
+          <div className="p-6 overflow-x-auto">
             <table className="w-full text-sm">
               <tbody>
                 <tr>
@@ -154,7 +154,7 @@ export default function WebhookLogDetailPage() {
               {t('webhookLog.deliveryInfo', { defaultValue: 'Delivery Info' })}
             </h5>
           </div>
-          <div className="p-6">
+          <div className="p-6 overflow-x-auto">
             <table className="w-full text-sm">
               <tbody>
                 <tr>

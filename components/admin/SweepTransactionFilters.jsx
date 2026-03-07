@@ -32,7 +32,7 @@ export default function SweepTransactionFilters({
   return (
     <div className="p-5">
       <div className="grid grid-cols-12 gap-x-6 gap-3">
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.status', { defaultValue: 'Status' })}</Label>
           <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
             <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
@@ -43,7 +43,7 @@ export default function SweepTransactionFilters({
             <option value="cancelled">{t('status.cancelled', { defaultValue: 'Cancelled' })}</option>
           </Select>
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.userId', { defaultValue: 'User ID' })}</Label>
           <Input
             type="number"
@@ -52,7 +52,7 @@ export default function SweepTransactionFilters({
             onChange={(e) => setUserIdFilter(e.target.value)}
           />
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
           <CoinNetworkFilterDropdown
             coinNetworks={coinNetworks}
@@ -60,7 +60,7 @@ export default function SweepTransactionFilters({
             onChange={setCoinNetworkIdFilter}
           />
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
           <LocaleDateRangePicker
             className="w-full"
@@ -73,7 +73,7 @@ export default function SweepTransactionFilters({
             t={t}
           />
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
           <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
             <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
@@ -82,7 +82,7 @@ export default function SweepTransactionFilters({
             <option value="completed_at">{t('filter.completedAt', { defaultValue: 'Completed At' })}</option>
           </Select>
         </div>
-        <div className="md:col-span-3 sm:col-span-6">
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
           <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
             <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>

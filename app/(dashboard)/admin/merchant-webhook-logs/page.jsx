@@ -163,7 +163,7 @@ export default function MerchantWebhookLogList() {
             {/* Filters */}
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>Merchant ID</Label>
                   <Input
                     type="number"
@@ -172,7 +172,7 @@ export default function MerchantWebhookLogList() {
                     onChange={(e) => setMerchantIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>Payment ID</Label>
                   <Input
                     type="number"
@@ -181,7 +181,7 @@ export default function MerchantWebhookLogList() {
                     onChange={(e) => setPaymentIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.detail.event', { defaultValue: 'Event' })}</Label>
                   <Select value={eventFilter} onChange={(e) => setEventFilter(e.target.value)}>
                     <option value="">{t('filter.allEvents', { defaultValue: 'All Events' })}</option>
@@ -192,7 +192,7 @@ export default function MerchantWebhookLogList() {
                     ))}
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.detail.status', { defaultValue: 'Status' })}</Label>
                   <Select value={successFilter} onChange={(e) => setSuccessFilter(e.target.value)}>
                     <option value="">All</option>
@@ -200,7 +200,7 @@ export default function MerchantWebhookLogList() {
                     <option value="false">{t('status.failed', { defaultValue: 'Failed' })}</option>
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
                   <LocaleDateRangePicker
                     className="w-full"
@@ -213,7 +213,7 @@ export default function MerchantWebhookLogList() {
                     t={t}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
                   <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
@@ -224,7 +224,7 @@ export default function MerchantWebhookLogList() {
                     ))}
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>

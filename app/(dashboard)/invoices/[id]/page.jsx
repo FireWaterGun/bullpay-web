@@ -113,7 +113,7 @@ export default function InvoiceDetailPage() {
 
                 <hr className="my-5 border-surface-200" />
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <Label>{t('invoices.chain') || 'Chain'}</Label>
                     <div className="font-medium text-surface-500">{networkSym || 'N/A'}</div>

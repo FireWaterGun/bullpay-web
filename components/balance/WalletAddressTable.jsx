@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import CoinImg from '@/components/CoinImg'
+import CoinImg, { NetworkIcon } from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import { getNetworkLabel, formatAddressStatus, addressStatusBadgeClass } from './withdrawalHelpers'
 import Table from '@/components/ui/Table'
@@ -43,10 +43,13 @@ export default function WalletAddressTable({ walletItems, cnById }) {
           return (
             <tr key={w.id || idx}>
               <td>
-                <span className="text-surface-500"></span>
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <NetworkIcon networkSymbol={networkSym} size={20} />
+                  <span className="text-surface-700 font-medium">{networkName || '-'}</span>
+                </div>
               </td>
               <td>
-                <div className="flex items-center">
+                <div className="flex items-center whitespace-nowrap">
                   <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} className="mr-3" showFallback />
                   <div>
                     <div>{coinSym}</div>
@@ -55,13 +58,13 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                 </div>
               </td>
               <td>
-                <span className="truncate inline-block max-w-[200px]" title={label}>
+                <span className="whitespace-nowrap" title={label}>
                   {label}
                 </span>
               </td>
               <td>
                 <div className="flex items-start">
-                  <span className="font-mono break-all">{addr}</span>
+                  <span className="font-mono break-all min-w-[120px]">{addr}</span>
                   <button
                     type="button"
                     className="ml-2 shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-surface-200 text-surface-500 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer"
@@ -85,7 +88,9 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                 </div>
               </td>
               <td>
-                <span className={addressStatusBadgeClass(w.status)}>{formatAddressStatus(w.status, t)}</span>
+                <span className={`whitespace-nowrap ${addressStatusBadgeClass(w.status)}`}>
+                  {formatAddressStatus(w.status, t)}
+                </span>
               </td>
             </tr>
           )

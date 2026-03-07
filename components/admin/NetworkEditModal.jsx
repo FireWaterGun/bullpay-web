@@ -185,7 +185,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                 )}
 
                 <form onSubmit={handleSubmit} id="network-edit-form" noValidate>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Symbol (read-only) */}
                     <div>
                       <Label htmlFor="modal-net-symbol">{t('crypto.symbol', { defaultValue: 'Symbol' })}</Label>

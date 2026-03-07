@@ -108,7 +108,7 @@ export default function SweepOverrideFormModal({
                   </small>
                 )}
               </div>
-              <div className="md:col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <Label>{t('admin.sweep.minBalance', { defaultValue: 'Min Balance' })}</Label>
                 <Input
                   type="text"
@@ -118,7 +118,7 @@ export default function SweepOverrideFormModal({
                   maxLength={20}
                 />
               </div>
-              <div className="md:col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <Label>{t('admin.sweep.gasBuffer', { defaultValue: 'Gas Buffer' })}</Label>
                 <Input
                   type="text"

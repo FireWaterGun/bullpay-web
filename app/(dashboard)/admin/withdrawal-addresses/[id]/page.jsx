@@ -240,7 +240,7 @@ export default function WithdrawalAddressDetail() {
           </Card>
 
           <div className="grid grid-cols-12 gap-x-6">
-            <div className="lg:col-span-8">
+            <div className="col-span-12 lg:col-span-8">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
@@ -249,21 +249,21 @@ export default function WithdrawalAddressDetail() {
                 </div>
                 <div className="p-5">
                   <div className="grid grid-cols-12 gap-x-6 gap-3">
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">Address ID</small>
                       <span className="font-semibold">{address.id}</span>
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">
                         {t('admin.detail.userId', { defaultValue: 'User ID' })}
                       </small>
                       <span className="font-semibold">{address.userId}</span>
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">Label</small>
                       <span>{address.label ? address.label : <span className="text-surface-500">—</span>}</span>
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">
                         {t('admin.detail.coinNetwork', { defaultValue: 'Coin / Network' })}
                       </small>
@@ -291,28 +291,28 @@ export default function WithdrawalAddressDetail() {
                         )}
                       </div>
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">
                         {t('admin.detail.created', { defaultValue: 'Created' })}
                       </small>
                       <span>{fmtDate(address.createdAt)}</span>
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">
                         {t('admin.detail.updated', { defaultValue: 'Updated' })}
                       </small>
                       <span>{fmtDate(address.updatedAt)}</span>
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">Usage Count</small>
                       <span className="font-semibold">{address.usageCount ?? 0}</span>
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="col-span-12 sm:col-span-6">
                       <small className="text-surface-500 block mb-1">Total Withdrawn</small>
                       <span className="font-semibold">{address.totalWithdrawn || '0'}</span>
                     </div>
                     {address.lockUntil && (
-                      <div className="sm:col-span-6">
+                      <div className="col-span-12 sm:col-span-6">
                         <small className="text-surface-500 block mb-1">Lock Until</small>
                         <span>{fmtDate(address.lockUntil)}</span>
                         {address.isLocked && (
@@ -329,7 +329,7 @@ export default function WithdrawalAddressDetail() {
               <AddressAuditLogTable auditLogs={address.auditLogs} />
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="col-span-12 lg:col-span-4">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">

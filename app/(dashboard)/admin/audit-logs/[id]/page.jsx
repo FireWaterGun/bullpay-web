@@ -136,7 +136,7 @@ export default function AuditLogDetail() {
 
           <div className="grid grid-cols-12 gap-x-6">
             {/* Left: Audit Info */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Audit Info</h5>
@@ -167,7 +167,7 @@ export default function AuditLogDetail() {
             </div>
 
             {/* Right: Resource & Request Info */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Resource & Request Info</h5>

@@ -31,7 +31,7 @@ function handleMouseLeave(e) {
 
 export function StatCard({ icon, color, value, label }) {
   return (
-    <div className="lg:col-span-3 md:col-span-6">
+    <div className="col-span-12 md:col-span-6 lg:col-span-3">
       <Card style={cardStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="h-full">
         <div className="p-5">
           <div className="flex items-center mb-3">

@@ -113,7 +113,7 @@ export default function AdminInvoiceDetail() {
 
           {/* Invoice Details */}
           <div className="grid grid-cols-12 gap-x-6">
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Invoice Details</h5>
@@ -216,7 +216,7 @@ export default function AdminInvoiceDetail() {
               </Card>
             </div>
 
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">User & Address</h5>

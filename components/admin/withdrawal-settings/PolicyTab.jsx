@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card'
 export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, onEditMaxPending }) {
   return (
     <div className="grid grid-cols-12 gap-x-6">
-      <div className="lg:col-span-8">
+      <div className="col-span-12 lg:col-span-8">
         {/* Auto-Approve Section */}
         <Card className="mb-4">
           <div className="p-5">
@@ -48,7 +48,7 @@ export default function PolicyTab({ t, autoApprove, setAutoApprove, maxPending, 
       </div>
 
       {/* Sidebar */}
-      <div className="lg:col-span-4">
+      <div className="col-span-12 lg:col-span-4">
         <Card className="mb-3">
           <div className="px-5 py-4 border-b border-surface-200 dark:border-surface-300">
             <h6 className="text-lg font-semibold text-surface-800 mb-0">

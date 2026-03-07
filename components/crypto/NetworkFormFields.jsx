@@ -14,7 +14,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
   return (
     <div className="grid grid-cols-12 gap-x-6 gap-4">
       {/* Name */}
-      <div className="md:col-span-6">
+      <div className="col-span-12 md:col-span-6">
         <Label htmlFor="name">
           {t('crypto.networkName', { defaultValue: 'Network Name' })} <span className="text-danger">*</span>
         </Label>
@@ -33,7 +33,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Symbol */}
-      <div className="md:col-span-6">
+      <div className="col-span-12 md:col-span-6">
         <Label htmlFor="symbol">
           {t('crypto.symbol', { defaultValue: 'Symbol' })} <span className="text-danger">*</span>
         </Label>
@@ -57,7 +57,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Type */}
-      <div className="md:col-span-6">
+      <div className="col-span-12 md:col-span-6">
         <Label htmlFor="type">
           {t('crypto.networkType', { defaultValue: 'Network Type' })} <span className="text-danger">*</span>
         </Label>
@@ -74,7 +74,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Chain ID */}
-      <div className="md:col-span-6">
+      <div className="col-span-12 md:col-span-6">
         <Label htmlFor="chainId">{t('crypto.chainId', { defaultValue: 'Chain ID' })}</Label>
         <Input
           type="number"
@@ -92,7 +92,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Confirmation Blocks */}
-      <div className="md:col-span-6">
+      <div className="col-span-12 md:col-span-6">
         <Label htmlFor="confirmationBlocks">
           {t('crypto.confirmationBlocks', { defaultValue: 'Confirmation Blocks' })}{' '}
           <span className="text-danger">*</span>
@@ -165,7 +165,7 @@ export default function NetworkFormFields({ formData, handleChange, isEdit, load
       </div>
 
       {/* Status */}
-      <div className="md:col-span-6">
+      <div className="col-span-12 md:col-span-6">
         <Label htmlFor="status">{t('invoices.statusCol')}</Label>
         <Select id="status" name="status" value={formData.status} onChange={handleChange}>
           <option value="active">{t('admin.active', { defaultValue: 'Active' })}</option>

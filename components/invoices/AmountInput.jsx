@@ -79,7 +79,7 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
   }
 
   return (
-    <div className="sm:col-span-6 md:col-span-4">
+    <div className="col-span-12 sm:col-span-6 md:col-span-4">
       <Label>{t('invoices.amount')} *</Label>
       <Input
         type="number"

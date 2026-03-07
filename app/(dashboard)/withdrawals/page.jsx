@@ -120,7 +120,7 @@ export default function WithdrawalsPage() {
             {t('balance.newAddress', { defaultValue: 'New Address' })}
           </Button>
         </div>
-        <div className="p-6">
+        <div className="py-4 sm:py-6">
           {walletError && (
             <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm">
               {walletError}

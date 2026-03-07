@@ -9,15 +9,16 @@ import Card from '../ui/Card'
  */
 function valueColor(value) {
   const n = parseFloat(value)
-  if (n === 0)
-    {return { cls: 'text-surface-500', bgStyle: 'rgba(168,170,174,0.1)', cssColor: 'var(--color-surface-500)' }}
+  if (n === 0) {
+    return { cls: 'text-surface-500', bgStyle: 'rgba(168,170,174,0.1)', cssColor: 'var(--color-surface-500)' }
+  }
   if (n > 0) return { cls: 'text-success', bgStyle: 'rgba(40, 199, 111, 0.1)', cssColor: 'var(--color-green-500)' }
   return { cls: 'text-danger', bgStyle: 'rgba(234, 84, 85, 0.1)', cssColor: 'var(--color-red-500)' }
 }
 
 function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
   return (
-    <div className="md:col-span-6 mb-4">
+    <div className="col-span-12 md:col-span-6 mb-4">
       <Card className="h-full">
         <div className="px-5 py-4 border-b border-surface-200 flex items-center">
           <i className="bx bx-trending-up text-success mr-2 text-2xl"></i>
@@ -78,7 +79,7 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue }) {
 
 function ExpensesCard({ expenseItems, totalExpenses }) {
   return (
-    <div className="md:col-span-6 mb-4">
+    <div className="col-span-12 md:col-span-6 mb-4">
       <Card className="h-full">
         <div className="px-5 py-4 border-b border-surface-200 flex items-center">
           <i className="bx bx-trending-down text-danger mr-2 text-2xl"></i>
@@ -119,7 +120,7 @@ function OperatingIncomeCard({ operatingIncome, profitMargin }) {
     <Card className="mb-4">
       <div className="p-5">
         <div className="grid grid-cols-12 gap-x-6 items-center">
-          <div className="md:col-span-6">
+          <div className="col-span-12 md:col-span-6">
             <div className="flex items-center gap-3">
               <div className="rounded-lg p-3" style={{ backgroundColor: oi.bgStyle }}>
                 <i
@@ -133,7 +134,7 @@ function OperatingIncomeCard({ operatingIncome, profitMargin }) {
               </div>
             </div>
           </div>
-          <div className="md:col-span-6 md:text-right mt-3 md:mt-0">
+          <div className="col-span-12 md:col-span-6 md:text-right mt-3 md:mt-0">
             <h6 className="text-surface-500 mb-1">Profit Margin</h6>
             <h2 className={`mb-0 font-bold ${pm.cls}`}>{formatPercent(profitMargin)}</h2>
           </div>

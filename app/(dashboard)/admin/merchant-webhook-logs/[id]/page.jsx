@@ -181,7 +181,7 @@ export default function MerchantWebhookLogDetail() {
 
           <div className="grid grid-cols-12 gap-x-6">
             {/* Left: Webhook Details */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Webhook Details</h5>
@@ -230,7 +230,7 @@ export default function MerchantWebhookLogDetail() {
             </div>
 
             {/* Right: Response Info */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">Response Info</h5>

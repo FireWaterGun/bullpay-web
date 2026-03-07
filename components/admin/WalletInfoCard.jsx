@@ -38,13 +38,13 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
       <div className="p-5">
         {wallet && (
           <div className="grid grid-cols-12 gap-x-6 gap-3 mb-3">
-            <div className="md:col-span-4">
+            <div className="col-span-12 md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-id-card mr-1"></i>Wallet ID
               </small>
               <span className="font-semibold">{wallet.id}</span>
             </div>
-            <div className="md:col-span-4">
+            <div className="col-span-12 md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-category mr-1"></i>Purpose
               </small>
@@ -52,7 +52,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                 {wallet.purpose || 'N/A'}
               </Badge>
             </div>
-            <div className="md:col-span-4">
+            <div className="col-span-12 md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-chip mr-1"></i>Type
               </small>
@@ -84,7 +84,7 @@ export default function WalletInfoCard({ wallet, assets, t, loading, onRefresh, 
                 )}
               </div>
             </div>
-            <div className="md:col-span-4">
+            <div className="col-span-12 md:col-span-4">
               <small className="text-surface-500 block mb-1">
                 <i className="bx bx-check-circle mr-1"></i>Status
               </small>

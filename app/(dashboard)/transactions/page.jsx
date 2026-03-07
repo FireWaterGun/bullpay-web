@@ -65,7 +65,9 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
       <div className="flex items-start justify-between">
         <div className="min-w-0">
           <p className="text-sm text-surface-500 mb-1">{title}</p>
-          <p className={`text-2xl font-bold mb-0 ${valueColor ? `text-${valueColor}-600` : 'text-surface-900'}`}>
+          <p
+            className={`text-2xl font-bold mb-0 ${{ success: 'text-success-600', danger: 'text-danger-600', warning: 'text-warning-600', info: 'text-info-600', primary: 'text-primary-600' }[valueColor] || 'text-surface-900'}`}
+          >
             {value}
           </p>
           {change !== undefined && change !== null && !isNaN(numChange) && (
@@ -284,7 +286,7 @@ export default function TransactionsPage() {
           <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
           <SummaryCard
             title={t('userDashboard.deposits', { defaultValue: 'Deposits' })}
             value={formatCurrencyPlain(current.totalDepositUsd)}

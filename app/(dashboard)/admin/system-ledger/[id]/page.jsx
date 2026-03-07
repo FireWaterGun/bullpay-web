@@ -131,7 +131,7 @@ export default function SystemLedgerDetail() {
 
           <div className="grid grid-cols-12 gap-x-6">
             {/* Entry Details */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
@@ -242,7 +242,7 @@ export default function SystemLedgerDetail() {
             </div>
 
             {/* Transaction, Timestamps & Metadata */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TransactionCard entry={entry} metadata={metadata} explorerUrl={explorerUrl} onCopy={handleCopy} />
               <TimestampsCard entry={entry} />
               <MetadataCard metadata={metadata} />

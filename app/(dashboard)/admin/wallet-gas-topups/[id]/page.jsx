@@ -136,7 +136,7 @@ export default function GasTopupDetail() {
           </Card>
 
           <div className="grid grid-cols-12 gap-x-6">
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <GasTopupDetailsCard
                 topup={topup}
                 coinSymbol={coinSymbol}
@@ -149,7 +149,7 @@ export default function GasTopupDetail() {
               />
             </div>
 
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <GasTopupTransactionCard topup={topup} explorerUrl={explorerUrl} onCopy={handleCopy} t={t} />
             </div>
           </div>

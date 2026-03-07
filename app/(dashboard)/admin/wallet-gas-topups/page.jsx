@@ -163,7 +163,7 @@ export default function GasTopups() {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className="md:col-span-2 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('common.status', { defaultValue: 'Status' })}</Label>
                   <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('common.all', { defaultValue: 'All' })}</option>
@@ -174,7 +174,7 @@ export default function GasTopups() {
                     <option value="skipped">{t('admin.gasTopup.skipped', { defaultValue: 'Skipped' })}</option>
                   </Select>
                 </div>
-                <div className="md:col-span-2 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('admin.gasTopup.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
                   <CoinNetworkFilterDropdown
                     coinNetworks={coinNetworks}
@@ -183,7 +183,7 @@ export default function GasTopups() {
                     allLabel={t('common.all', { defaultValue: 'All' })}
                   />
                 </div>
-                <div className="md:col-span-2 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</Label>
                   <Input
                     type="number"
@@ -192,7 +192,7 @@ export default function GasTopups() {
                     onChange={(e) => setSweepIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-2 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</Label>
                   <Input
                     type="text"
@@ -201,7 +201,7 @@ export default function GasTopups() {
                     onChange={(e) => setTxHashFilter(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
                   <LocaleDateRangePicker
                     className="w-full"

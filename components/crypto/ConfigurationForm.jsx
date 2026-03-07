@@ -20,7 +20,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
       <div className="p-5">
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-12 gap-x-6 gap-4">
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Label>{t('crypto.contractAddress', { defaultValue: 'Contract Address' })}</Label>
               <Input
                 type="text"
@@ -38,7 +38,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
             </div>
 
             {/* Decimals */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Label>{t('crypto.decimals', { defaultValue: 'Decimals' })}</Label>
               <Input
                 type="number"
@@ -59,7 +59,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
               </small>
             </div>
 
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <Label>
                 {t('crypto.status', { defaultValue: 'Status' })} <span className="text-danger">*</span>
               </Label>
@@ -81,7 +81,7 @@ export default function ConfigurationForm({ formData, handleChange, handleSubmit
             </div>
 
             {/* Withdraw Toggle */}
-            <div className="md:col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <div className="flex items-center justify-between p-3 border rounded">
                 <div>
                   <h6 className="mb-1">{t('crypto.withdrawEnabled', { defaultValue: 'Withdraw Enabled' })}</h6>

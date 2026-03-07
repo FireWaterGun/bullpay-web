@@ -212,7 +212,7 @@ export default function WalletCreate() {
                 required
               />
             </div>
-            <div className="md:col-span-2">
+            <div className="col-span-12 md:col-span-2">
               <Label>{t('wallet.memo', { defaultValue: 'Memo (Optional)' })}</Label>
               <Input
                 placeholder={t('wallet.memoPlaceholder', { defaultValue: 'Optional memo text' })}

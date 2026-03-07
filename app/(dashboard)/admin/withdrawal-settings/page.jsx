@@ -526,7 +526,7 @@ export default function WithdrawalSettingsPage() {
 
 function StatusCard({ icon, color, label, value, sub, active }) {
   return (
-    <div className="sm:col-span-6 xl:col-span-3">
+    <div className="col-span-12 sm:col-span-6 xl:col-span-3">
       <Card className="h-full">
         <div className="p-5">
           <div className="flex items-center gap-3">

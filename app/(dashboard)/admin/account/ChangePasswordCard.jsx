@@ -101,7 +101,7 @@ export default function ChangePasswordCard({ token, is2FAEnabled, logout, toast,
       <div className="p-5">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="grid grid-cols-12 gap-x-6">
-            <div className="md:col-span-8">
+            <div className="col-span-12 md:col-span-8">
               {/* Current Password */}
               <PasswordField
                 id="currentPassword"

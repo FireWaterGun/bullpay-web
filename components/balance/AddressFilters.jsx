@@ -42,7 +42,7 @@ export default function AddressFilters({
       </div>
       <div className="p-5">
         <div className="grid grid-cols-12 gap-x-6 gap-3">
-          <div className="md:col-span-2 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>Status</Label>
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">All</option>
@@ -52,7 +52,7 @@ export default function AddressFilters({
               <option value="deleted">Deleted</option>
             </Select>
           </div>
-          <div className="md:col-span-2 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>User ID</Label>
             <Input
               type="number"
@@ -61,7 +61,7 @@ export default function AddressFilters({
               onChange={(e) => setUserIdFilter(e.target.value)}
             />
           </div>
-          <div className="md:col-span-3 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-3">
             <Label>Coin / Network</Label>
             <CoinNetworkFilterDropdown
               coinNetworks={coinNetworks}
@@ -69,7 +69,7 @@ export default function AddressFilters({
               onChange={setCoinNetworkIdFilter}
             />
           </div>
-          <div className="md:col-span-2 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>Flagged</Label>
             <Select value={isFlaggedFilter} onChange={(e) => setIsFlaggedFilter(e.target.value)}>
               <option value="">All</option>
@@ -77,7 +77,7 @@ export default function AddressFilters({
               <option value="false">Not Flagged</option>
             </Select>
           </div>
-          <div className="md:col-span-2 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-2">
             <Label>Verified</Label>
             <Select value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
               <option value="">All</option>

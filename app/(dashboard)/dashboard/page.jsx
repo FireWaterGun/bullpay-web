@@ -36,7 +36,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
     valueColor === 'success' ? 'text-success-500' : valueColor === 'danger' ? 'text-danger-500' : 'text-surface-900'
 
   return (
-    <div className="col-span-6 xl:col-span-3">
+    <div className="col-span-12 sm:col-span-6 xl:col-span-3">
       <Card className="h-full">
         <div className="p-6">
           <div className="flex items-start justify-between">

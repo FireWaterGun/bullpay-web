@@ -177,7 +177,7 @@ export default function WalletTransaction() {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.entryType', { defaultValue: 'Entry Type' })}</Label>
                   <Select value={entryTypeFilter} onChange={(e) => setEntryTypeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
@@ -185,7 +185,7 @@ export default function WalletTransaction() {
                     <option value="debit">{t('admin.detail.debit', { defaultValue: 'Debit' })}</option>
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.entryCode', { defaultValue: 'Entry Code' })}</Label>
                   <Select value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
@@ -199,7 +199,7 @@ export default function WalletTransaction() {
                     <option value="XO">XO - Internal Out</option>
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.state', { defaultValue: 'State' })}</Label>
                   <Select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
@@ -208,7 +208,7 @@ export default function WalletTransaction() {
                     <option value="reversed">Reversed</option>
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.txHash', { defaultValue: 'Tx Hash' })}</Label>
                   <Input
                     type="text"
@@ -217,7 +217,7 @@ export default function WalletTransaction() {
                     onChange={(e) => setTxHashFilter(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
                   <LocaleDateRangePicker
                     className="w-full"

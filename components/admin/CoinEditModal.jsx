@@ -167,7 +167,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
                 )}
 
                 <form onSubmit={handleSubmit} id="coin-edit-form" noValidate>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="modal-symbol">{t('crypto.symbol', { defaultValue: 'Symbol' })}</Label>
                       <Input id="modal-symbol" name="symbol" value={formData.symbol} disabled className="uppercase" />

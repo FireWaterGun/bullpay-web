@@ -88,7 +88,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid grid-cols-12 gap-x-6 gap-4">
-            <div className="lg:col-span-8">
+            <div className="col-span-12 lg:col-span-8">
               <Card>
                 <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
                   <h5 className="mb-0">{t('admin.dashboard.byCurrency', { defaultValue: 'Volume by Currency' })}</h5>
@@ -133,7 +133,7 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="col-span-12 lg:col-span-4">
               <Card>
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">{t('admin.dashboard.topUsers', { defaultValue: 'Top Users' })}</h5>

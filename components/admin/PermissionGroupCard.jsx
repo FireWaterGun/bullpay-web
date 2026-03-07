@@ -58,7 +58,9 @@ export default function PermissionGroupCard({
         <div className="flex items-center justify-between">
           <h6 className="mb-0 flex items-center gap-2">
             <i className={`bx ${isCollapsed ? 'bx-chevron-right' : 'bx-chevron-down'} text-surface-500`}></i>
-            <i className={`bx ${groupIcon} text-${color}`}></i>
+            <i
+              className={`bx ${groupIcon} ${{ primary: 'text-primary', danger: 'text-danger', warning: 'text-warning', info: 'text-info', success: 'text-success', secondary: 'text-secondary' }[color] || 'text-primary'}`}
+            ></i>
             {formatGroupLabel(group)}
           </h6>
           <div className="flex items-center gap-2">

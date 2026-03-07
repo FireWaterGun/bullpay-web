@@ -94,7 +94,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
 
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 {/* Min Withdraw */}
-                <div className="md:col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <Label>{t('admin.withdrawalSettings.minWithdraw', { defaultValue: 'Min Withdraw Amount' })}</Label>
                   <Input
                     type="text"
@@ -105,7 +105,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
                 </div>
 
                 {/* Max Withdraw */}
-                <div className="md:col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <Label>{t('admin.withdrawalSettings.maxWithdraw', { defaultValue: 'Max Withdraw Amount' })}</Label>
                   <Input
                     type="text"
@@ -116,7 +116,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
                 </div>
 
                 {/* Fee Base (read-only) */}
-                <div className="md:col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <Label>
                     {t('admin.withdrawalSettings.feeBase', { defaultValue: 'Fee Base' })}
                     <Badge color="info" label className="ml-2 text-[0.65rem]">
@@ -130,7 +130,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
                 </div>
 
                 {/* Fee Percent */}
-                <div className="md:col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <Label>{t('admin.withdrawalSettings.feePercent', { defaultValue: 'Fee Percent (%)' })}</Label>
                   <Input
                     type="text"
@@ -146,7 +146,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
                 </div>
 
                 {/* Daily Limit USD */}
-                <div className="md:col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <Label>
                     {t('admin.withdrawalSettings.dailyLimitUsd', { defaultValue: 'Daily Withdraw Limit (USD)' })}
                   </Label>

@@ -167,7 +167,7 @@ export default function AuditLogList() {
             {/* Filters */}
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.detail.userId', { defaultValue: 'User ID' })}</Label>
                   <Input
                     type="number"
@@ -176,7 +176,7 @@ export default function AuditLogList() {
                     onChange={(e) => setUserIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.detail.action', { defaultValue: 'Action' })}</Label>
                   <Select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)}>
                     <option value="">{t('filter.allActions', { defaultValue: 'All Actions' })}</option>
@@ -187,7 +187,7 @@ export default function AuditLogList() {
                     ))}
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</Label>
                   <Select value={resourceTypeFilter} onChange={(e) => setResourceTypeFilter(e.target.value)}>
                     <option value="">{t('filter.allTypes', { defaultValue: 'All Types' })}</option>
@@ -198,7 +198,7 @@ export default function AuditLogList() {
                     ))}
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.auditLog.resourceId', { defaultValue: 'Resource ID' })}</Label>
                   <Input
                     type="text"
@@ -207,7 +207,7 @@ export default function AuditLogList() {
                     onChange={(e) => setResourceIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
                   <LocaleDateRangePicker
                     className="w-full"
@@ -220,7 +220,7 @@ export default function AuditLogList() {
                     t={t}
                   />
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
                   <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
@@ -231,7 +231,7 @@ export default function AuditLogList() {
                     ))}
                   </Select>
                 </div>
-                <div className="md:col-span-3 sm:col-span-6">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>

@@ -280,7 +280,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
               </div>
 
               {/* Website URL */}
-              <div className="md:col-span-2">
+              <div className="col-span-12 md:col-span-2">
                 <Label className="font-semibold text-sm">
                   {t('merchant.websiteUrl', { defaultValue: 'Website URL' })}
                 </Label>
@@ -300,7 +300,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
               </div>
 
               {/* Description */}
-              <div className="md:col-span-2">
+              <div className="col-span-12 md:col-span-2">
                 <Label className="font-semibold text-sm">
                   {t('merchant.description', { defaultValue: 'Description' })}
                 </Label>
@@ -315,7 +315,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
               </div>
 
               {/* Webhook Callback URL */}
-              <div className="md:col-span-2">
+              <div className="col-span-12 md:col-span-2">
                 <Label className="font-semibold text-sm">
                   {t('merchant.callbackUrl', { defaultValue: 'Webhook Callback URL' })}
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-100 dark:bg-dark-elevated text-surface-500 ml-2">

@@ -48,7 +48,7 @@ export default function WithdrawalTxFilters({
       </div>
       <div className="p-5">
         <div className="grid grid-cols-12 gap-x-6 gap-3">
-          <div className="md:col-span-3 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-3">
             <Label>{t('filter.status', { defaultValue: 'Status' })}</Label>
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
@@ -62,7 +62,7 @@ export default function WithdrawalTxFilters({
               <option value="cancelled">{t('status.cancelled', { defaultValue: 'Cancelled' })}</option>
             </Select>
           </div>
-          <div className="md:col-span-3 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-3">
             <Label>{t('filter.userId', { defaultValue: 'User ID' })}</Label>
             <Input
               type="number"
@@ -71,7 +71,7 @@ export default function WithdrawalTxFilters({
               onChange={(e) => setUserIdFilter(e.target.value)}
             />
           </div>
-          <div className="md:col-span-3 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-3">
             <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
             <CoinNetworkFilterDropdown
               coinNetworks={coinNetworks}
@@ -79,7 +79,7 @@ export default function WithdrawalTxFilters({
               onChange={setCoinNetworkIdFilter}
             />
           </div>
-          <div className="md:col-span-3 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-3">
             <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
             <Input
               type="text"
@@ -88,7 +88,7 @@ export default function WithdrawalTxFilters({
               onChange={(e) => setSearchFilter(e.target.value)}
             />
           </div>
-          <div className="md:col-span-3 sm:col-span-6">
+          <div className="col-span-12 sm:col-span-6 md:col-span-3">
             <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
             <LocaleDateRangePicker
               className="w-full"

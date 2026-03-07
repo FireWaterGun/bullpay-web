@@ -42,9 +42,20 @@ export default function ActionMenu({
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return
     const rect = triggerRef.current.getBoundingClientRect()
+    const menuWidth = 160 // min-w-[160px]
+    let left = align === 'right' ? rect.right : rect.left
+    // Clamp to viewport boundaries
+    if (align === 'right') {
+      const rightEdge = window.innerWidth - left
+      if (rightEdge + menuWidth > window.innerWidth) {
+        left = menuWidth
+      }
+    } else if (left + menuWidth > window.innerWidth - 8) {
+      left = window.innerWidth - menuWidth - 8
+    }
     setPos({
       top: rect.bottom + 4,
-      left: align === 'right' ? rect.right : rect.left,
+      left,
     })
   }, [align])
 
