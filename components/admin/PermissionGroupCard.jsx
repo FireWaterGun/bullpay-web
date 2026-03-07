@@ -99,7 +99,9 @@ export default function PermissionGroupCard({
                     <div className="flex items-center gap-2 flex-wrap">
                       <code className="text-[0.8rem]">{p.permission}</code>
                       <Badge color={badge.color} label className="text-[0.6rem]">
-                        {t(`admin.roles.${badge.labelKey}`, { defaultValue: badge.labelKey.charAt(0).toUpperCase() + badge.labelKey.slice(1) })}
+                        {t(`admin.roles.${badge.labelKey}`, {
+                          defaultValue: badge.labelKey.charAt(0).toUpperCase() + badge.labelKey.slice(1),
+                        })}
                       </Badge>
                       {isOverridden && (
                         <Badge color="warning" label className="text-[0.6rem]">

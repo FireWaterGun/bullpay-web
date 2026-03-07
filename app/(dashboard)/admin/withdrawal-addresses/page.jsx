@@ -137,13 +137,33 @@ export default function WithdrawalAddresses() {
   function getActionConfig() {
     switch (actionType) {
       case 'flag':
-        return { title: t('admin.withdrawalAddress.flagTitle', { defaultValue: 'Flag Address' }), btnVariant: 'warning', btnLabel: t('admin.withdrawalAddress.flag', { defaultValue: 'Flag' }), icon: 'bx-flag' }
+        return {
+          title: t('admin.withdrawalAddress.flagTitle', { defaultValue: 'Flag Address' }),
+          btnVariant: 'warning',
+          btnLabel: t('admin.withdrawalAddress.flag', { defaultValue: 'Flag' }),
+          icon: 'bx-flag',
+        }
       case 'unflag':
-        return { title: t('admin.withdrawalAddress.unflagTitle', { defaultValue: 'Remove Flag' }), btnVariant: 'success', btnLabel: t('admin.withdrawalAddress.unflag', { defaultValue: 'Unflag' }), icon: 'bx-check-circle' }
+        return {
+          title: t('admin.withdrawalAddress.unflagTitle', { defaultValue: 'Remove Flag' }),
+          btnVariant: 'success',
+          btnLabel: t('admin.withdrawalAddress.unflag', { defaultValue: 'Unflag' }),
+          icon: 'bx-check-circle',
+        }
       case 'forceVerify':
-        return { title: t('admin.withdrawalAddress.forceVerifyTitle', { defaultValue: 'Force Verify' }), btnVariant: 'info', btnLabel: t('admin.withdrawalAddress.verify', { defaultValue: 'Verify' }), icon: 'bx-shield-quarter' }
+        return {
+          title: t('admin.withdrawalAddress.forceVerifyTitle', { defaultValue: 'Force Verify' }),
+          btnVariant: 'info',
+          btnLabel: t('admin.withdrawalAddress.verify', { defaultValue: 'Verify' }),
+          icon: 'bx-shield-quarter',
+        }
       case 'delete':
-        return { title: t('admin.withdrawalAddress.deleteTitle', { defaultValue: 'Permanent Delete' }), btnVariant: 'danger', btnLabel: t('admin.withdrawalAddress.deletePermanently', { defaultValue: 'Delete Permanently' }), icon: 'bx-trash' }
+        return {
+          title: t('admin.withdrawalAddress.deleteTitle', { defaultValue: 'Permanent Delete' }),
+          btnVariant: 'danger',
+          btnLabel: t('admin.withdrawalAddress.deletePermanently', { defaultValue: 'Delete Permanently' }),
+          icon: 'bx-trash',
+        }
       default:
         return { title: '', btnVariant: 'primary', btnLabel: '', icon: '' }
     }

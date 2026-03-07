@@ -46,7 +46,9 @@ export default function AddressFilters({
             <Label>Status</Label>
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-              <option value="pending_verification">{t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })}</option>
+              <option value="pending_verification">
+                {t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })}
+              </option>
               <option value="active">{t('wallet.status.active', { defaultValue: 'Active' })}</option>
               <option value="suspended">{t('wallet.status.suspended', { defaultValue: 'Suspended' })}</option>
               <option value="deleted">{t('wallet.status.deleted', { defaultValue: 'Deleted' })}</option>
@@ -82,7 +84,9 @@ export default function AddressFilters({
             <Select value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
               <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
               <option value="true">{t('admin.withdrawalAddress.verified', { defaultValue: 'Verified' })}</option>
-              <option value="false">{t('admin.withdrawalAddress.notVerified', { defaultValue: 'Not Verified' })}</option>
+              <option value="false">
+                {t('admin.withdrawalAddress.notVerified', { defaultValue: 'Not Verified' })}
+              </option>
             </Select>
           </div>
         </div>

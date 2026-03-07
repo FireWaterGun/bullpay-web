@@ -159,7 +159,9 @@ export default function AuditLogList() {
                     <i className="bx bx-history mr-2"></i>
                     {t('admin.auditLog.title', { defaultValue: 'Audit Logs' })}
                   </h4>
-                  <p className="text-surface-500 mb-0">{t('admin.auditLog.description', { defaultValue: 'Track admin actions and system events' })}</p>
+                  <p className="text-surface-500 mb-0">
+                    {t('admin.auditLog.description', { defaultValue: 'Track admin actions and system events' })}
+                  </p>
                 </div>
                 <RefreshButton onClick={loadLogs} loading={loading} />
               </div>

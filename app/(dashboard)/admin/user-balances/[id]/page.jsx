@@ -53,7 +53,9 @@ export default function UserBalanceDetailPage() {
       <div className="grow pb-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-surface-500 mt-2">{t('admin.userBalance.notFound', { defaultValue: 'User balance not found' })}</p>
+          <p className="text-surface-500 mt-2">
+            {t('admin.userBalance.notFound', { defaultValue: 'User balance not found' })}
+          </p>
           <Button
             onClick={() => router.back()}
             className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
@@ -72,7 +74,8 @@ export default function UserBalanceDetailPage() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Button variant="outline-secondary" className="mb-3" href="/admin/user-balances">
-            <i className="bx bx-arrow-back mr-2"></i>{t('admin.userBalance.backToList', { defaultValue: 'Back to User Balances' })}
+            <i className="bx bx-arrow-back mr-2"></i>
+            {t('admin.userBalance.backToList', { defaultValue: 'Back to User Balances' })}
           </Button>
 
           <Card className="mb-4">
@@ -84,7 +87,9 @@ export default function UserBalanceDetailPage() {
                     {t('admin.userBalance.detailTitle', { id: userId, defaultValue: 'User #{{id}} Balances' })}
                   </h4>
                   {data.valuedAt && (
-                    <span className="text-surface-500 text-[0.8rem]">{t('admin.userBalance.valuedAt', { defaultValue: 'Valued at' })} {fmtDate(data.valuedAt)}</span>
+                    <span className="text-surface-500 text-[0.8rem]">
+                      {t('admin.userBalance.valuedAt', { defaultValue: 'Valued at' })} {fmtDate(data.valuedAt)}
+                    </span>
                   )}
                 </div>
                 <RefreshButton onClick={loadDetail} loading={loading} />
@@ -116,7 +121,10 @@ export default function UserBalanceDetailPage() {
             </div>
             {assets.length === 0 ? (
               <div className="p-5">
-                <CardEmptyState icon="bx-coin-stack" message={t('admin.userBalance.noAssets', { defaultValue: 'No assets found for this user' })} />
+                <CardEmptyState
+                  icon="bx-coin-stack"
+                  message={t('admin.userBalance.noAssets', { defaultValue: 'No assets found for this user' })}
+                />
               </div>
             ) : (
               <Table>
@@ -125,7 +133,9 @@ export default function UserBalanceDetailPage() {
                     <th>{t('admin.detail.coin', { defaultValue: 'Coin' })}</th>
                     <th>{t('admin.detail.network', { defaultValue: 'Network' })}</th>
                     <th className="text-right">{t('admin.userBalance.confirmed', { defaultValue: 'Confirmed' })}</th>
-                    <th className="text-right">{t('admin.userBalance.unconfirmed', { defaultValue: 'Unconfirmed' })}</th>
+                    <th className="text-right">
+                      {t('admin.userBalance.unconfirmed', { defaultValue: 'Unconfirmed' })}
+                    </th>
                     <th className="text-right">{t('admin.userBalance.locked', { defaultValue: 'Locked' })}</th>
                     <th className="text-right">{t('admin.userBalance.available', { defaultValue: 'Available' })}</th>
                     <th className="text-right">{t('admin.userBalance.total', { defaultValue: 'Total' })}</th>
@@ -148,7 +158,9 @@ export default function UserBalanceDetailPage() {
                             <div>
                               <div className="font-semibold text-[0.85rem]">{coinSym}</div>
                               <div className="text-surface-500 text-[0.7rem]">
-                                {asset.coin?.type === 'native' ? t('admin.detail.native', { defaultValue: 'Native' }) : t('admin.detail.token', { defaultValue: 'Token' })}
+                                {asset.coin?.type === 'native'
+                                  ? t('admin.detail.native', { defaultValue: 'Native' })
+                                  : t('admin.detail.token', { defaultValue: 'Token' })}
                               </div>
                             </div>
                           </div>
@@ -163,7 +175,8 @@ export default function UserBalanceDetailPage() {
                                 rel="noopener noreferrer"
                                 className="text-surface-500 text-[0.7rem]"
                               >
-                                {t('admin.detail.explorer', { defaultValue: 'Explorer' })} <i className="bx bx-link-external text-[0.65rem]"></i>
+                                {t('admin.detail.explorer', { defaultValue: 'Explorer' })}{' '}
+                                <i className="bx bx-link-external text-[0.65rem]"></i>
                               </a>
                             )}
                           </div>

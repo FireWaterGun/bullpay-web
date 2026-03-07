@@ -68,8 +68,7 @@ export default function WithdrawalTxTable({
                 </td>
                 <td>
                   <span className="text-surface-500">
-                    {(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() ||
-                      '-'}
+                    {(withdrawal.network?.symbol || withdrawal.coinNetwork?.network?.symbol || '').toUpperCase() || '-'}
                   </span>
                 </td>
                 <td className="whitespace-nowrap">
@@ -139,7 +138,9 @@ export default function WithdrawalTxTable({
                 </td>
                 <td className="text-center whitespace-nowrap">
                   <span className={statusBadgeClass(withdrawal.status)}>
-                    {t(`status.${String(withdrawal.status || '').toLowerCase()}`, { defaultValue: String(withdrawal.status || '').toUpperCase() })}
+                    {t(`status.${String(withdrawal.status || '').toLowerCase()}`, {
+                      defaultValue: String(withdrawal.status || '').toUpperCase(),
+                    })}
                   </span>
                 </td>
                 <td className="text-center">

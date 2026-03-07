@@ -85,7 +85,9 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                   </td>
                   <td className="whitespace-nowrap">
                     <span className={statusBadgeClass(it.status)}>
-                      {t(`status.${String(it.status || '').toLowerCase()}`, { defaultValue: formatStatusLabel(String(it.status || '').toUpperCase()) })}
+                      {t(`status.${String(it.status || '').toLowerCase()}`, {
+                        defaultValue: formatStatusLabel(String(it.status || '').toUpperCase()),
+                      })}
                     </span>
                   </td>
                   <td className="whitespace-nowrap text-right text-surface-500 text-xs">{fmtDate(it.createdAt)}</td>

@@ -105,7 +105,9 @@ export default function PlatformLedgerTable({
                   <td>
                     <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                       <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
-                      {isCredit ? t('admin.platformLedger.credit', { defaultValue: 'Credit' }) : t('admin.platformLedger.debit', { defaultValue: 'Debit' })}
+                      {isCredit
+                        ? t('admin.platformLedger.credit', { defaultValue: 'Credit' })
+                        : t('admin.platformLedger.debit', { defaultValue: 'Debit' })}
                     </Badge>
                   </td>
                   <td className="whitespace-nowrap">

@@ -154,7 +154,11 @@ export default function MerchantWebhookLogList() {
                     <i className="bx bx-broadcast mr-2"></i>
                     {t('admin.webhookLog.title', { defaultValue: 'Merchant Webhook Logs' })}
                   </h4>
-                  <p className="text-surface-500 mb-0">{t('admin.webhookLog.description', { defaultValue: 'View and monitor webhook delivery attempts to merchants' })}</p>
+                  <p className="text-surface-500 mb-0">
+                    {t('admin.webhookLog.description', {
+                      defaultValue: 'View and monitor webhook delivery attempts to merchants',
+                    })}
+                  </p>
                 </div>
                 <RefreshButton onClick={loadLogs} loading={loading} />
               </div>

@@ -221,12 +221,8 @@ export default function TempWalletList() {
                   <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
                   <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">
-                      {t('filter.ascending', { defaultValue: 'Ascending' })}
-                    </option>
-                    <option value="desc">
-                      {t('filter.descending', { defaultValue: 'Descending' })}
-                    </option>
+                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
+                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
                   </Select>
                 </div>
               </div>
@@ -257,9 +253,15 @@ export default function TempWalletList() {
                   <th className="text-center">{t('admin.tempWallets.reuseCount', { defaultValue: 'Reuse' })}</th>
                   <th className="text-right">{t('admin.tempWallets.totalReceived', { defaultValue: 'Received' })}</th>
                   <th className="text-right">{t('admin.tempWallets.totalSwept', { defaultValue: 'Swept' })}</th>
-                  <th className="text-right">{t('admin.tempWallets.lastSweepAmt', { defaultValue: 'Last Sweep Amt' })}</th>
-                  <th className="text-right">{t('admin.tempWallets.leftoverNative', { defaultValue: 'Leftover Native' })}</th>
-                  <th className="text-right">{t('admin.tempWallets.leftoverToken', { defaultValue: 'Leftover Token' })}</th>
+                  <th className="text-right">
+                    {t('admin.tempWallets.lastSweepAmt', { defaultValue: 'Last Sweep Amt' })}
+                  </th>
+                  <th className="text-right">
+                    {t('admin.tempWallets.leftoverNative', { defaultValue: 'Leftover Native' })}
+                  </th>
+                  <th className="text-right">
+                    {t('admin.tempWallets.leftoverToken', { defaultValue: 'Leftover Token' })}
+                  </th>
                   <th>{t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' })}</th>
                   <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
                   <th>{t('table.created', { defaultValue: 'Created' })}</th>

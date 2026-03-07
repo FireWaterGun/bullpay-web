@@ -15,11 +15,14 @@ function statusLabel(s, t) {
   const v = String(s || '').toLowerCase()
   if (t) {
     if (v === 'active') return t('wallet.status.active', { defaultValue: 'Active' })
-    if (v === 'pending_verification') return t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })
+    if (v === 'pending_verification')
+      return t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })
     if (v === 'suspended') return t('wallet.status.suspended', { defaultValue: 'Suspended' })
     if (v === 'deleted') return t('wallet.status.deleted', { defaultValue: 'Deleted' })
   }
-  return String(s || '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  return String(s || '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 export default function AddressTable({
@@ -58,7 +61,11 @@ export default function AddressTable({
         </thead>
         <tbody>
           {addresses.length === 0 ? (
-            <TableEmptyState colSpan={12} icon="bx-map-pin" message={t('admin.withdrawalAddress.noAddresses', { defaultValue: 'No withdrawal addresses found' })} />
+            <TableEmptyState
+              colSpan={12}
+              icon="bx-map-pin"
+              message={t('admin.withdrawalAddress.noAddresses', { defaultValue: 'No withdrawal addresses found' })}
+            />
           ) : (
             addresses.map((addr) => {
               const coinSymbol = (addr.coinSymbol || '').toUpperCase()
@@ -119,7 +126,8 @@ export default function AddressTable({
                   <td className="text-center">
                     {isFlagged ? (
                       <Badge color="warning" label>
-                        <i className="bx bx-flag mr-1"></i>{t('admin.withdrawalAddress.flagged', { defaultValue: 'Flagged' })}
+                        <i className="bx bx-flag mr-1"></i>
+                        {t('admin.withdrawalAddress.flagged', { defaultValue: 'Flagged' })}
                       </Badge>
                     ) : (
                       <span className="text-surface-500">&mdash;</span>

@@ -60,8 +60,12 @@ export default function PlatformLedgerFilterPanel({
             <option value="SG">{t('admin.platformLedger.codeSG', { defaultValue: 'SG - Sweep Gas Topup' })}</option>
             <option value="SC">{t('admin.platformLedger.codeSC', { defaultValue: 'SC - Sweep Gas Cost' })}</option>
             <option value="WG">{t('admin.platformLedger.codeWG', { defaultValue: 'WG - Withdrawal Gas' })}</option>
-            <option value="XI">{t('admin.platformLedger.codeXI', { defaultValue: 'XI - Internal Transfer In' })}</option>
-            <option value="XO">{t('admin.platformLedger.codeXO', { defaultValue: 'XO - Internal Transfer Out' })}</option>
+            <option value="XI">
+              {t('admin.platformLedger.codeXI', { defaultValue: 'XI - Internal Transfer In' })}
+            </option>
+            <option value="XO">
+              {t('admin.platformLedger.codeXO', { defaultValue: 'XO - Internal Transfer Out' })}
+            </option>
           </Select>
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">
