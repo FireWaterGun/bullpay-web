@@ -98,7 +98,7 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
               <tr>
                 <td className="text-surface-500">{t('admin.sweepDetail.networkFeeRaw', { defaultValue: 'Network Fee (Raw)' })}</td>
                 <td>
-                  <code className="text-[0.8rem]">{sweep.networkFeeRaw}</code>
+                  <code className="text-[0.8rem] break-all">{sweep.networkFeeRaw}</code>
                 </td>
               </tr>
             )}

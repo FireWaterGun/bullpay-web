@@ -200,7 +200,7 @@ export default function SweepDetail() {
                       <tr>
                         <td className="text-surface-500">{t('admin.sweepDetail.amountRaw', { defaultValue: 'Amount (Raw)' })}</td>
                         <td>
-                          <code className="text-[0.8rem]">{sweep.amountRaw || 'N/A'}</code>
+                          <code className="text-[0.8rem] break-all">{sweep.amountRaw || 'N/A'}</code>
                         </td>
                       </tr>
                       {sweep.amountUsd && (

@@ -437,6 +437,7 @@ export default function WithdrawalAddressDetail() {
           actionLoading={actionLoading}
           onAction={handleAction}
           onClose={() => setShowActionModal(false)}
+          t={t}
         />
       )}
     </div>

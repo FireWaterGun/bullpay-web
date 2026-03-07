@@ -20,12 +20,16 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
         </h5>
       </div>
       <div className="p-5">
-        <table className="w-full">
+        <table className="w-full table-fixed">
+          <colgroup>
+            <col className="w-[30%]" />
+            <col className="w-[70%]" />
+          </colgroup>
           <tbody>
             {entry.reservationId && (
               <tr>
-                <td className="text-surface-500 w-2/5">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
-                <td>
+                <td className="text-surface-500 align-top">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
+                <td className="break-all">
                   <code>{entry.reservationId}</code>
                 </td>
               </tr>
@@ -38,10 +42,10 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
             )}
             {entry.txHash && (
               <tr>
-                <td className="text-surface-500">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
+                <td className="text-surface-500 align-top">{t('admin.detail.txHash', { defaultValue: 'Tx Hash' })}</td>
                 <td>
-                  <code className="break-words text-xs">{entry.txHash}</code>
-                  <div className="flex gap-1 mt-2">
+                  <code className="break-all text-xs">{entry.txHash}</code>
+                  <div className="flex flex-wrap gap-1 mt-2">
                     {explorerUrl && (
                       <Button
                         variant="outline-primary"
@@ -85,7 +89,7 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
             {metadata?.note && (
               <tr>
                 <td className="text-surface-500">{t('admin.detail.note', { defaultValue: 'Note' })}</td>
-                <td className="text-surface-500 text-[0.85rem]">{metadata.note}</td>
+                <td className="text-surface-500 text-[0.85rem] break-words">{metadata.note}</td>
               </tr>
             )}
           </tbody>
@@ -110,10 +114,14 @@ export function TimestampsCard({ entry }) {
         </h5>
       </div>
       <div className="p-5">
-        <table className="w-full">
+        <table className="w-full table-fixed">
+          <colgroup>
+            <col className="w-[30%]" />
+            <col className="w-[70%]" />
+          </colgroup>
           <tbody>
             <tr>
-              <td className="text-surface-500 w-2/5">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
+              <td className="text-surface-500">{t('admin.detail.created', { defaultValue: 'Created' })}</td>
               <td>{fmtDateTime(entry.createdAt)}</td>
             </tr>
             {entry.committedAt && (
@@ -164,7 +172,7 @@ export function MetadataCard({ metadata }) {
       </div>
       <div className="p-5">
         <pre
-          className="mb-0 p-3 rounded text-[0.8rem] max-h-[300px] overflow-auto bg-surface-100"
+          className="mb-0 p-3 rounded text-[0.8rem] max-h-[300px] overflow-auto bg-surface-100 whitespace-pre-wrap break-all"
           style={{ border: '1px solid var(--color-surface-200)' }}
         >
           {JSON.stringify(metadata, null, 2)}

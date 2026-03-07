@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import { NetworkIcon } from '@/components/CoinImg'
@@ -28,6 +29,8 @@ function statusLabel(s, t) {
 
 export default function InvoicePaymentV2() {
   const { t } = useTranslation()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
   const {
     invoice,
     loading,
@@ -59,7 +62,7 @@ export default function InvoicePaymentV2() {
 
   return (
     <div
-      className="min-h-screen relative overflow-x-hidden"
+      className="min-h-screen relative overflow-x-hidden flex flex-col"
       style={{ background: 'linear-gradient(180deg, var(--color-surface-0, #fff) 0%, var(--color-surface-100) 100%)' }}
     >
       {/* Subtle Background */}
@@ -96,9 +99,9 @@ export default function InvoicePaymentV2() {
       `}</style>
 
       {/* Main Content */}
-      <div className="grow flex items-center py-4 pt-5">
+      <div className="grow flex items-center justify-center py-4 pt-5">
         <div className="container">
-          {loading ? (
+          {!mounted || loading ? (
             <div className="text-center">
               <Spinner role="status" size="lg" className="text-white" />
             </div>
@@ -108,14 +111,14 @@ export default function InvoicePaymentV2() {
                 <div className="mb-4">
                   <i className="bx bx-block text-[64px] text-surface-500"></i>
                 </div>
-                <h4 className="mb-3">{t('invoices.cancelled') || 'Cancelled'}</h4>
-                <p className="text-surface-500">
+                <h4 className="mb-3" suppressHydrationWarning>{t('invoices.cancelled') || 'Cancelled'}</h4>
+                <p className="text-surface-500" suppressHydrationWarning>
                   {t('payment.cancelledMessage') || 'This invoice has been cancelled.'}
                 </p>
               </div>
             </div>
           ) : !invoice ? (
-            <div className="text-center text-white">{t('invoices.notFound') || 'Not found'}</div>
+            <div className="text-center text-white" suppressHydrationWarning>{t('invoices.notFound') || 'Not found'}</div>
           ) : (
             <div className="flex justify-center relative z-[1]">
               <div className="w-11/12 sm:w-8/12 md:w-7/12 lg:w-4/12">
@@ -496,8 +499,8 @@ export default function InvoicePaymentV2() {
       </div>
 
       {/* Footer */}
-      <footer className="py-2 relative z-[1]">
-        <div className="container text-center">
+      {mounted && (
+        <footer className="py-2 relative z-[1] text-center">
           <div className="mb-2 text-surface-500 text-xs tracking-[1px] font-semibold">
             {t('common.poweredBy', { defaultValue: 'Powered by' })}
           </div>
@@ -505,8 +508,8 @@ export default function InvoicePaymentV2() {
           <div className="text-surface-500 text-xs">
             {t('common.copyright', { year }) || `© ${year} · All rights reserved`}
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   )
 }
