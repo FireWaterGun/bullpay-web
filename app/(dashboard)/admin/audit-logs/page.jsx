@@ -21,19 +21,65 @@ import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 
 const ACTION_VALUES = [
-  { value: 'list_sweeps', key: 'listSweeps', defaultLabel: 'List Sweeps' },
+  // Invoice
+  { value: 'cancel_invoice', key: 'cancelInvoice', defaultLabel: 'Cancel Invoice' },
+  { value: 'expire_invoice', key: 'expireInvoice', defaultLabel: 'Expire Invoice' },
+  // Sweep
   { value: 'retry_sweep', key: 'retrySweep', defaultLabel: 'Retry Sweep' },
-  { value: 'view_webhook_log', key: 'viewWebhookLog', defaultLabel: 'View Webhook Log' },
-  { value: 'list_webhook_logs', key: 'listWebhookLogs', defaultLabel: 'List Webhook Logs' },
+  // Withdrawal
+  { value: 'WITHDRAWAL_APPROVE', key: 'withdrawalApprove', defaultLabel: 'Withdrawal Approve' },
+  { value: 'WITHDRAWAL_REJECT', key: 'withdrawalReject', defaultLabel: 'Withdrawal Reject' },
+  { value: 'WITHDRAWAL_RECHECK', key: 'withdrawalRecheck', defaultLabel: 'Withdrawal Recheck' },
+  // Withdrawal Address
+  { value: 'WITHDRAWAL_ADDRESS_FLAG', key: 'withdrawalAddressFlag', defaultLabel: 'Flag Address' },
+  { value: 'WITHDRAWAL_ADDRESS_UNFLAG', key: 'withdrawalAddressUnflag', defaultLabel: 'Unflag Address' },
+  {
+    value: 'WITHDRAWAL_ADDRESS_FORCE_VERIFY',
+    key: 'withdrawalAddressForceVerify',
+    defaultLabel: 'Force Verify Address',
+  },
+  { value: 'WITHDRAWAL_ADDRESS_PERMANENT_DELETE', key: 'withdrawalAddressDelete', defaultLabel: 'Delete Address' },
+  // User
+  { value: 'USER_CREATED', key: 'userCreated', defaultLabel: 'User Created' },
+  { value: 'USER_STATUS_CHANGE', key: 'userStatusChange', defaultLabel: 'User Status Change' },
+  { value: 'USER_ROLE_CHANGE', key: 'userRoleChange', defaultLabel: 'User Role Change' },
+  { value: 'USER_PASSWORD_RESET', key: 'userPasswordReset', defaultLabel: 'User Password Reset' },
+  { value: 'USER_2FA_DISABLED', key: 'user2faDisabled', defaultLabel: 'User 2FA Disabled' },
+  // Merchant
+  { value: 'MERCHANT_ACTIVATE', key: 'merchantActivate', defaultLabel: 'Merchant Activate' },
+  { value: 'MERCHANT_SUSPEND', key: 'merchantSuspend', defaultLabel: 'Merchant Suspend' },
   { value: 'retry_webhook', key: 'retryWebhook', defaultLabel: 'Retry Webhook' },
-  { value: 'list_audit_logs', key: 'listAuditLogs', defaultLabel: 'List Audit Logs' },
-  { value: 'view_audit_log', key: 'viewAuditLog', defaultLabel: 'View Audit Log' },
+  // Coin / Network
+  { value: 'COIN_CREATE', key: 'coinCreate', defaultLabel: 'Coin Create' },
+  { value: 'COIN_UPDATE', key: 'coinUpdate', defaultLabel: 'Coin Update' },
+  { value: 'NETWORK_CREATE', key: 'networkCreate', defaultLabel: 'Network Create' },
+  { value: 'NETWORK_UPDATE', key: 'networkUpdate', defaultLabel: 'Network Update' },
+  { value: 'COIN_NETWORK_CREATE', key: 'coinNetworkCreate', defaultLabel: 'Coin Network Create' },
+  { value: 'COIN_NETWORK_UPDATE', key: 'coinNetworkUpdate', defaultLabel: 'Coin Network Update' },
+  // Settings / Permissions
+  { value: 'SETTING_UPDATE', key: 'settingUpdate', defaultLabel: 'Setting Update' },
+  { value: 'ROLE_PERMISSION_GRANT', key: 'rolePermGrant', defaultLabel: 'Permission Grant' },
+  { value: 'ROLE_PERMISSION_DENY', key: 'rolePermDeny', defaultLabel: 'Permission Deny' },
+  { value: 'ROLE_PERMISSION_REVERT', key: 'rolePermRevert', defaultLabel: 'Permission Revert' },
+  { value: 'ROLE_PERMISSIONS_RESET', key: 'rolePermReset', defaultLabel: 'Permissions Reset' },
+  // Balance
+  { value: 'SYSTEM_BALANCE_ADJUST', key: 'sysBalanceAdjust', defaultLabel: 'Balance Adjustment' },
 ]
 
 const RESOURCE_TYPE_VALUES = [
+  { value: 'invoice', key: 'invoice', defaultLabel: 'Invoice' },
   { value: 'sweep', key: 'sweep', defaultLabel: 'Sweep' },
-  { value: 'merchant_webhook_log', key: 'merchantWebhookLog', defaultLabel: 'Merchant Webhook Log' },
-  { value: 'system_audit_log', key: 'systemAuditLog', defaultLabel: 'System Audit Log' },
+  { value: 'withdrawal', key: 'withdrawal', defaultLabel: 'Withdrawal' },
+  { value: 'withdrawal_address', key: 'withdrawalAddress', defaultLabel: 'Withdrawal Address' },
+  { value: 'user', key: 'user', defaultLabel: 'User' },
+  { value: 'merchant', key: 'merchant', defaultLabel: 'Merchant' },
+  { value: 'merchant_payment', key: 'merchantPayment', defaultLabel: 'Merchant Payment' },
+  { value: 'coin', key: 'coin', defaultLabel: 'Coin' },
+  { value: 'network', key: 'network', defaultLabel: 'Network' },
+  { value: 'coin_network', key: 'coinNetwork', defaultLabel: 'Coin Network' },
+  { value: 'setting', key: 'setting', defaultLabel: 'Setting' },
+  { value: 'role_permissions', key: 'rolePermissions', defaultLabel: 'Role Permissions' },
+  { value: 'system_wallet', key: 'systemWallet', defaultLabel: 'System Wallet' },
 ]
 
 export default function AuditLogList() {
