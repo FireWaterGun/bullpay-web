@@ -246,7 +246,7 @@ export default function AdminUsersPage() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Card className="mb-4">
-            <div className="p-5">
+            <div className="px-5 py-4 border-b border-surface-200">
               <div className="flex justify-between items-center flex-wrap gap-2">
                 <div>
                   <h4 className="mb-1">
@@ -266,9 +266,6 @@ export default function AdminUsersPage() {
                 </div>
               </div>
             </div>
-          </Card>
-
-          <Card className="mb-4">
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="md:col-span-3 sm:col-span-6">

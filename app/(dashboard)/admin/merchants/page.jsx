@@ -117,7 +117,7 @@ export default function AdminMerchantsPage() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Card className="mb-4">
-            <div className="p-5">
+            <div className="px-5 py-4 border-b border-surface-200">
               <div className="flex justify-between items-center flex-wrap gap-2">
                 <div>
                   <h4 className="mb-1"><i className="bx bx-store mr-2"></i>{t('admin.merchants.title', { defaultValue: 'Merchants' })}</h4>
@@ -126,9 +126,6 @@ export default function AdminMerchantsPage() {
                 <RefreshButton onClick={loadMerchants} loading={loading} />
               </div>
             </div>
-          </Card>
-
-          <Card className="mb-4">
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="md:col-span-3 sm:col-span-6">
