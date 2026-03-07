@@ -910,8 +910,13 @@
     "error": "错误",
     "event": "事件",
     "reason": "原因",
-    "selectDateRange": "Select date range",
-    "updatedAt": "更新时间"
+    "selectDateRange": "选择日期范围",
+    "updatedAt": "更新时间",
+    "invoiceId": "发票ID",
+    "usageCount": "使用次数",
+    "totalWithdrawn": "总提款",
+    "verified": "已验证",
+    "flagged": "已标记"
   },
   "roles": {
     "title": "角色与权限",
@@ -1127,7 +1132,35 @@
     "metadata": "元数据",
     "loadDetailError": "加载临时钱包失败",
     "loadHistoriesError": "加载临时钱包历史记录失败",
-    "loadHistoryError": "加载历史记录失败"
+    "loadHistoryError": "加载历史记录失败",
+    "backToTempWallets": "返回临时钱包",
+    "title": "临时钱包",
+    "expiresIn": "{{minutes}}分钟后过期",
+    "wallet": "钱包"
+  },
+  "tempWalletHistories": {
+    "title": "临时钱包历史",
+    "description": "监控钱包使用历史（只读）",
+    "tempWalletId": "临时钱包ID",
+    "walletId": "钱包ID",
+    "firstDeposit": "首次存入",
+    "swept": "已归集",
+    "released": "已释放",
+    "noHistories": "未找到历史记录",
+    "sortBy_createdAt": "创建时间",
+    "sortBy_firstDepositAt": "首次存入",
+    "sortBy_sweptAt": "归集时间",
+    "sortBy_releasedAt": "释放时间"
+  },
+  "tempWalletHistory": {
+    "notFound": "未找到历史记录",
+    "backToHistories": "返回历史记录",
+    "title": "使用历史",
+    "tempWalletId": "临时钱包ID",
+    "assignedAt": "分配时间",
+    "sweptAt": "归集时间",
+    "releasedAt": "释放时间",
+    "failedAt": "失败时间"
   },
   "sweepDetail": {
     "notFound": "未找到归集交易",
@@ -1146,7 +1179,17 @@
     "decimals": "小数位",
     "reservationId": "预留ID",
     "systemWalletId": "系统钱包ID",
-    "retrySweep": "Retry sweep"
+    "retrySweep": "重试归集",
+    "gasFee": "Gas费",
+    "networkFeeRaw": "网络费 (Raw)",
+    "networkFeeUsd": "网络费 (USD)",
+    "lastAttempt": "最后尝试",
+    "failedAt": "失败时间",
+    "strategy": "策略",
+    "paymentCount": "支付数量",
+    "paymentIds": "支付ID",
+    "ledgerEntryIds": "账本条目ID",
+    "job": "任务"
   },
   "invoiceDetail": {
     "notFound": "未找到发票",
@@ -1165,7 +1208,12 @@
     "userAddress": "用户 & 地址",
     "paymentAddress": "收款地址",
     "memo": "备注",
-    "description": "描述"
+    "description": "描述",
+    "invoice": "发票",
+    "backToInvoices": "返回发票列表",
+    "merchantId": "商户ID",
+    "payments": "支付记录",
+    "noPayments": "此发票没有支付记录"
   },
   "paymentDetail": {
     "notFound": "未找到支付记录",

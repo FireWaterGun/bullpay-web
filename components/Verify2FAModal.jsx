@@ -145,7 +145,7 @@ export default function Verify2FAModal({ show, onClose, onSuccess, title, descri
                   onChange={(e) => handleCodeChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   autoFocus={i === 0}
-                  className="text-center font-bold w-9 h-10 text-base sm:w-10 sm:h-[45px] sm:text-[18px]"
+                  className="text-center font-bold w-10 h-11 !px-0 text-lg sm:w-11 sm:h-12 sm:text-xl"
                 />
               ))}
             </div>

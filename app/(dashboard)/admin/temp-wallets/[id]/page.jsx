@@ -60,12 +60,12 @@ export default function TempWalletDetail() {
       <div className="grow pb-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-surface-500 mt-2">Temp wallet not found</p>
+          <p className="text-surface-500 mt-2">{t('admin.tempWallet.notFound', { defaultValue: 'Temp wallet not found' })}</p>
           <Button
             onClick={() => router.back()}
             className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
           >
-            Back
+            {t('actions.back', { defaultValue: 'Back' })}
           </Button>
         </div>
       </div>
@@ -77,7 +77,7 @@ export default function TempWalletDetail() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Button variant="outline-secondary" className="mb-3" href="/admin/temp-wallets">
-            <i className="bx bx-arrow-back mr-2"></i>Back to Temp Wallets
+            <i className="bx bx-arrow-back mr-2"></i>{t('admin.tempWallet.backToTempWallets', { defaultValue: 'Back to Temp Wallets' })}
           </Button>
 
           {/* Header Card */}
@@ -87,7 +87,7 @@ export default function TempWalletDetail() {
                 <div>
                   <h4 className="mb-1">
                     <i className="bx bx-wallet mr-2"></i>
-                    Temp Wallet #{wallet.id}
+                    {t('admin.tempWallet.title', { defaultValue: 'Temp Wallet' })} #{wallet.id}
                   </h4>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={getStatusBadgeClass(wallet.status, 'tempWallet')}>
@@ -95,7 +95,7 @@ export default function TempWalletDetail() {
                     </span>
                     {wallet.isExpired && (
                       <Badge color="danger" label>
-                        EXPIRED
+                        {t('status.expired', { defaultValue: 'Expired' }).toUpperCase()}
                       </Badge>
                     )}
                     {wallet.coinSymbol && (
@@ -104,13 +104,13 @@ export default function TempWalletDetail() {
                         {wallet.coinSymbol} · {wallet.networkSymbol}
                       </Badge>
                     )}
-                    {wallet.invoiceId && <Badge color="secondary">Invoice #{wallet.invoiceId}</Badge>}
+                    {wallet.invoiceId && <Badge color="secondary">{`${t('admin.invoiceDetail.invoice', { defaultValue: 'Invoice' })} #${wallet.invoiceId}`}</Badge>}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline-info" href={`/admin/temp-wallet-histories?tempWalletId=${wallet.id}`}>
                     <i className="bx bx-history mr-1"></i>
-                    View Histories
+                    {t('admin.tempWallet.viewHistories', { defaultValue: 'View Histories' })}
                   </Button>
                   <RefreshButton onClick={loadWallet} loading={loading} />
                 </div>
@@ -124,7 +124,7 @@ export default function TempWalletDetail() {
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
-                    <i className="bx bx-detail mr-2"></i>Wallet Details
+                    <i className="bx bx-detail mr-2"></i>{t('admin.tempWallet.walletDetails', { defaultValue: 'Wallet Details' })}
                   </h5>
                 </div>
                 <div className="p-5">
@@ -142,13 +142,13 @@ export default function TempWalletDetail() {
                           </span>
                           {wallet.isExpired && (
                             <Badge color="danger" label className="ml-1">
-                              EXPIRED
+                              {t('status.expired', { defaultValue: 'Expired' }).toUpperCase()}
                             </Badge>
                           )}
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Invoice ID</td>
+                        <td className="text-surface-500">{t('admin.detail.invoiceId', { defaultValue: 'Invoice ID' })}</td>
                         <td>
                           {wallet.invoiceId ? (
                             <Link href={`/admin/invoices/${wallet.invoiceId}`} className="font-medium text-primary">
@@ -171,14 +171,14 @@ export default function TempWalletDetail() {
                             <div>
                               <span className="font-semibold">{wallet.coinSymbol || '-'}</span>
                               <span className="text-surface-500 ml-1 text-[0.8rem]">
-                                on {wallet.networkName || wallet.networkSymbol || '-'}
+                                · {wallet.networkName || wallet.networkSymbol || '-'}
                               </span>
                             </div>
                           </div>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Decimals</td>
+                        <td className="text-surface-500">{t('admin.detail.decimals', { defaultValue: 'Decimals' })}</td>
                         <td className="font-medium">{wallet.decimals ?? '-'}</td>
                       </tr>
                       <tr>
@@ -216,18 +216,18 @@ export default function TempWalletDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Reuse Count</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.reuseCount', { defaultValue: 'Reuse Count' })}</td>
                         <td className="font-medium">{wallet.reuseCount ?? 0}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Total Received</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.totalReceived', { defaultValue: 'Total Received' })}</td>
                         <td>
                           <span className="font-medium">{wallet.totalReceivedAmount || '0'}</span>
                           <span className="text-surface-500 ml-1 text-xs">{wallet.coinSymbol}</span>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Total Swept</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.totalSwept', { defaultValue: 'Total Swept' })}</td>
                         <td>
                           <span className="font-medium">{wallet.totalSweptAmount || '0'}</span>
                           <span className="text-surface-500 ml-1 text-xs">{wallet.coinSymbol}</span>
@@ -245,7 +245,7 @@ export default function TempWalletDetail() {
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
-                    <i className="bx bx-flag mr-2"></i>Flags
+                    <i className="bx bx-flag mr-2"></i>{t('admin.tempWallet.flags', { defaultValue: 'Flags' })}
                   </h5>
                 </div>
                 <div className="p-5">
@@ -253,19 +253,19 @@ export default function TempWalletDetail() {
                     {wallet.isReusable != null &&
                       (wallet.isReusable ? (
                         <Badge color="success" label>
-                          Reusable
+                          {t('admin.tempWallet.reusable', { defaultValue: 'Reusable' })}
                         </Badge>
                       ) : (
-                        <Badge color="secondary">Not Reusable</Badge>
+                        <Badge color="secondary">{t('admin.tempWallet.notReusable', { defaultValue: 'Not Reusable' })}</Badge>
                       ))}
                     {wallet.isAssigned && (
                       <Badge color="info" label>
-                        Assigned
+                        {t('admin.tempWallet.assigned', { defaultValue: 'Assigned' })}
                       </Badge>
                     )}
                     {wallet.isAvailable && (
                       <Badge color="success" label>
-                        Available
+                        {t('admin.tempWallet.available', { defaultValue: 'Available' })}
                       </Badge>
                     )}
                     {wallet.isExpired && (
@@ -275,17 +275,17 @@ export default function TempWalletDetail() {
                     )}
                     {wallet.hasBeenUsed && (
                       <Badge color="warning" label>
-                        Has Been Used
+                        {t('admin.tempWallet.hasBeenUsed', { defaultValue: 'Has Been Used' })}
                       </Badge>
                     )}
                     {wallet.needsSweeping && (
                       <Badge color="primary" label>
-                        Needs Sweeping
+                        {t('admin.tempWallet.needsSweeping', { defaultValue: 'Needs Sweeping' })}
                       </Badge>
                     )}
                     {wallet.timeToExpiry != null && (
                       <Badge color="warning" label>
-                        Expires in {Math.floor(wallet.timeToExpiry / 60000)}m
+                        {t('admin.tempWallet.expiresIn', { defaultValue: 'Expires in {{minutes}}m', minutes: Math.floor(wallet.timeToExpiry / 60000) })}
                       </Badge>
                     )}
                   </div>
@@ -314,27 +314,27 @@ export default function TempWalletDetail() {
                         <td>{fmtDate(wallet.updatedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Expires</td>
+                        <td className="text-surface-500">{t('admin.detail.expiresAt', { defaultValue: 'Expires' })}</td>
                         <td>{fmtDate(wallet.expiresAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">First Used</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.firstUsed', { defaultValue: 'First Used' })}</td>
                         <td>{fmtDate(wallet.firstUsedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Last Assigned</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.lastAssigned', { defaultValue: 'Last Assigned' })}</td>
                         <td>{fmtDate(wallet.lastAssignedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Last Released</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.lastReleased', { defaultValue: 'Last Released' })}</td>
                         <td>{fmtDate(wallet.lastReleasedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Last Checked</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.lastChecked', { defaultValue: 'Last Checked' })}</td>
                         <td>{fmtDate(wallet.lastCheckedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">Last Sweep</td>
+                        <td className="text-surface-500">{t('admin.tempWallet.lastSweep', { defaultValue: 'Last Sweep' })}</td>
                         <td>{fmtDate(wallet.lastSweepAt)}</td>
                       </tr>
                     </tbody>
@@ -347,7 +347,7 @@ export default function TempWalletDetail() {
                 <Card className="mb-4">
                   <div className="px-5 py-4 border-b border-surface-200">
                     <h5 className="mb-0">
-                      <i className="bx bx-transfer mr-2"></i>Sweep Info
+                      <i className="bx bx-transfer mr-2"></i>{t('admin.tempWallet.sweepInfo', { defaultValue: 'Sweep Info' })}
                     </h5>
                   </div>
                   <div className="p-5">
@@ -355,7 +355,7 @@ export default function TempWalletDetail() {
                       <tbody>
                         {wallet.lastSweepTxHash && (
                           <tr>
-                            <td className="text-surface-500 w-2/5">Sweep Tx Hash</td>
+                            <td className="text-surface-500 w-2/5">{t('admin.tempWallet.sweepTxHash', { defaultValue: 'Sweep Tx Hash' })}</td>
                             <td>
                               <div className="flex items-center">
                                 <code className="text-surface-800 mr-2 text-xs break-all">
@@ -376,7 +376,7 @@ export default function TempWalletDetail() {
                         )}
                         {(wallet.lastSweepAmount || wallet.lastSweepAmountRaw) && (
                           <tr>
-                            <td className="text-surface-500">Sweep Amount</td>
+                            <td className="text-surface-500">{t('admin.tempWallet.sweepAmount', { defaultValue: 'Sweep Amount' })}</td>
                             <td>
                               <span className="font-medium">{wallet.lastSweepAmount || wallet.lastSweepAmountRaw}</span>
                               <span className="text-surface-500 ml-1 text-xs">{wallet.coinSymbol}</span>
@@ -385,7 +385,7 @@ export default function TempWalletDetail() {
                         )}
                         {wallet.lastTxHash && (
                           <tr>
-                            <td className="text-surface-500">Last Tx Hash</td>
+                            <td className="text-surface-500">{t('admin.tempWallet.lastTxHash', { defaultValue: 'Last Tx Hash' })}</td>
                             <td>
                               <div className="flex items-center">
                                 <code className="text-surface-800 mr-2 text-xs break-all">{wallet.lastTxHash}</code>
@@ -404,13 +404,13 @@ export default function TempWalletDetail() {
                         )}
                         {wallet.lastBlockNumber && (
                           <tr>
-                            <td className="text-surface-500">Last Block Number</td>
+                            <td className="text-surface-500">{t('admin.tempWallet.lastBlockNumber', { defaultValue: 'Last Block Number' })}</td>
                             <td className="font-medium">{wallet.lastBlockNumber}</td>
                           </tr>
                         )}
                         {(wallet.lastLeftoverTokenAmount || wallet.lastLeftoverTokenRaw) && (
                           <tr>
-                            <td className="text-surface-500">Leftover Token</td>
+                            <td className="text-surface-500">{t('admin.tempWallet.leftoverToken', { defaultValue: 'Leftover Token' })}</td>
                             <td>
                               <span className="font-medium">
                                 {wallet.lastLeftoverTokenAmount || wallet.lastLeftoverTokenRaw}
@@ -421,7 +421,7 @@ export default function TempWalletDetail() {
                         )}
                         {(wallet.lastLeftoverNativeAmount || wallet.lastLeftoverNativeRaw) && (
                           <tr>
-                            <td className="text-surface-500">Leftover Native</td>
+                            <td className="text-surface-500">{t('admin.tempWallet.leftoverNative', { defaultValue: 'Leftover Native' })}</td>
                             <td>
                               <span className="font-medium">
                                 {wallet.lastLeftoverNativeAmount || wallet.lastLeftoverNativeRaw}
@@ -431,13 +431,13 @@ export default function TempWalletDetail() {
                         )}
                         {wallet.lastReason && (
                           <tr>
-                            <td className="text-surface-500">Last Reason</td>
+                            <td className="text-surface-500">{t('admin.tempWallet.lastReason', { defaultValue: 'Last Reason' })}</td>
                             <td>{wallet.lastReason}</td>
                           </tr>
                         )}
                         {wallet.lastSource && (
                           <tr>
-                            <td className="text-surface-500">Last Source</td>
+                            <td className="text-surface-500">{t('admin.tempWallet.lastSource', { defaultValue: 'Last Source' })}</td>
                             <td>{wallet.lastSource}</td>
                           </tr>
                         )}

@@ -173,7 +173,7 @@ export default function TempWalletHistoryList() {
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
                     {HISTORY_STATUS_OPTIONS.map((s) => (
                       <option key={s} value={s}>
-                        {s.charAt(0).toUpperCase() + s.slice(1)}
+                        {t(`status.${s}`, { defaultValue: s.charAt(0).toUpperCase() + s.slice(1) })}
                       </option>
                     ))}
                   </Select>
@@ -210,7 +210,7 @@ export default function TempWalletHistoryList() {
                     <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
                     {SORT_BY_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>
-                        {o.label}
+                        {t(`admin.tempWalletHistories.sortBy_${o.value}`, { defaultValue: o.label })}
                       </option>
                     ))}
                   </Select>

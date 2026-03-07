@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import CoinImg, { NetworkIcon } from '@/components/CoinImg'
+import CoinImg from '@/components/CoinImg'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import { getNetworkLabel, formatAddressStatus, addressStatusBadgeClass } from './withdrawalHelpers'
 import Table from '@/components/ui/Table'
@@ -21,14 +21,13 @@ export default function WalletAddressTable({ walletItems, cnById }) {
   }
 
   return (
-    <Table>
+    <Table className="!w-auto">
       <thead>
         <tr className="whitespace-nowrap">
-          <th style={{ width: '12%' }}>{t('wallet.colChain', { defaultValue: 'Chain' })}</th>
-          <th className="w-[22%]">{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
-          <th className="w-[15%]">{t('wallet.label', { defaultValue: 'Label' })}</th>
+          <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
+          <th>{t('wallet.label', { defaultValue: 'Label' })}</th>
           <th>{t('wallet.colAddress', { defaultValue: 'Address' })}</th>
-          <th style={{ width: '12%' }}>{t('common.status', { defaultValue: 'Status' })}</th>
+          <th>{t('common.status', { defaultValue: 'Status' })}</th>
         </tr>
       </thead>
       <tbody>
@@ -42,32 +41,26 @@ export default function WalletAddressTable({ walletItems, cnById }) {
           const label = w.label || '-'
           return (
             <tr key={w.id || idx}>
-              <td>
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  <NetworkIcon networkSymbol={networkSym} size={20} />
-                  <span className="text-surface-700 font-medium">{networkName || '-'}</span>
-                </div>
-              </td>
-              <td>
-                <div className="flex items-center whitespace-nowrap">
-                  <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} className="mr-3" showFallback />
+              <td className="whitespace-nowrap">
+                <div className="flex items-center gap-3">
+                  <CoinImg coin={coin} symbol={coinSym} networkSymbol={networkSym} showFallback />
                   <div>
-                    <div>{coinSym}</div>
+                    <div className="font-medium text-surface-900">{coinSym}</div>
                     <small className="text-surface-500">{networkName}</small>
                   </div>
                 </div>
               </td>
-              <td>
-                <span className="whitespace-nowrap" title={label}>
-                  {label}
-                </span>
+              <td className="whitespace-nowrap">
+                <span title={label}>{label}</span>
               </td>
-              <td>
-                <div className="flex items-start">
-                  <span className="font-mono break-all min-w-[120px]">{addr}</span>
+              <td className="whitespace-nowrap">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-surface-700 text-[13px]">
+                    {addr}
+                  </span>
                   <button
                     type="button"
-                    className="ml-2 shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-surface-200 text-surface-500 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer"
+                    className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-surface-200 text-surface-500 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer"
                     onClick={() => copyAddress(addr, w.id || idx)}
                     disabled={!w.address}
                     aria-label={
@@ -87,8 +80,8 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                   </button>
                 </div>
               </td>
-              <td>
-                <span className={`whitespace-nowrap ${addressStatusBadgeClass(w.status)}`}>
+              <td className="whitespace-nowrap">
+                <span className={addressStatusBadgeClass(w.status)}>
                   {formatAddressStatus(w.status, t)}
                 </span>
               </td>

@@ -21,12 +21,12 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
       <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
           <i className="bx bx-transfer mr-2"></i>
-          Payments ({payments.length})
+          {t('admin.invoiceDetail.payments', { defaultValue: 'Payments' })} ({payments.length})
         </h5>
       </div>
       {payments.length === 0 ? (
         <div className="p-5">
-          <CardEmptyState icon="bx-credit-card" message="No payments recorded for this invoice" />
+          <CardEmptyState icon="bx-credit-card" message={t('admin.invoiceDetail.noPayments', { defaultValue: 'No payments recorded for this invoice' })} />
         </div>
       ) : (
         <Table className="min-w-[900px]">

@@ -136,6 +136,9 @@
     "pooled": "待分配",
     "assigned": "已分配",
     "sweeped": "已归集",
+    "deposited": "已存入",
+    "swept": "已归集",
+    "released": "已释放",
     "disabled": "已禁用"
   },
   "actions": {

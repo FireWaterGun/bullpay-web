@@ -71,7 +71,7 @@ export default function SweepDetail() {
       <div className="grow pb-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-surface-500 mt-2">Sweep transaction not found</p>
+          <p className="text-surface-500 mt-2">{t('admin.sweepDetail.notFound', { defaultValue: 'Sweep transaction not found' })}</p>
           <Button onClick={() => router.back()}>{t('actions.back', { defaultValue: 'Back' })}</Button>
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function SweepDetail() {
                 <div className="flex items-center gap-3">
                   {coinSymbol && <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} />}
                   <div>
-                    <h4 className="mb-1">Sweep Transaction #{sweep.id}</h4>
+                    <h4 className="mb-1">{t('admin.sweepDetail.detailTitle', { defaultValue: 'Sweep Transaction #{{id}}', id: sweep.id })}</h4>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={getStatusBadgeClass(sweep.status, 'sweep')}>
                         {String(sweep.status || '').toUpperCase()}
@@ -139,7 +139,7 @@ export default function SweepDetail() {
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
                     <i className="bx bx-detail mr-2"></i>
-                    Details
+                    {t('admin.sweepDetail.details', { defaultValue: 'Details' })}
                   </h5>
                 </div>
                 <div className="p-5">
@@ -191,27 +191,27 @@ export default function SweepDetail() {
                       </tr>
                       {sweep.actualAmount && (
                         <tr>
-                          <td className="text-surface-500">Actual Amount</td>
+                          <td className="text-surface-500">{t('admin.sweepDetail.actualAmount', { defaultValue: 'Actual Amount' })}</td>
                           <td>
                             <span className="font-medium">{sweep.actualAmount}</span>
                           </td>
                         </tr>
                       )}
                       <tr>
-                        <td className="text-surface-500">Amount (Raw)</td>
+                        <td className="text-surface-500">{t('admin.sweepDetail.amountRaw', { defaultValue: 'Amount (Raw)' })}</td>
                         <td>
                           <code className="text-[0.8rem]">{sweep.amountRaw || 'N/A'}</code>
                         </td>
                       </tr>
                       {sweep.amountUsd && (
                         <tr>
-                          <td className="text-surface-500">USD Value</td>
+                          <td className="text-surface-500">{t('admin.sweepDetail.usdValue', { defaultValue: 'USD Value' })}</td>
                           <td>{formatUsd(sweep.amountUsd)}</td>
                         </tr>
                       )}
                       {sweep.usdRate && (
                         <tr>
-                          <td className="text-surface-500">USD Rate</td>
+                          <td className="text-surface-500">{t('admin.sweepDetail.usdRate', { defaultValue: 'USD Rate' })}</td>
                           <td>
                             {formatUsd(sweep.usdRate)}
                             {sweep.rateSource && <small className="text-surface-500 ml-1">({sweep.rateSource})</small>}
@@ -219,7 +219,7 @@ export default function SweepDetail() {
                         </tr>
                       )}
                       <tr>
-                        <td className="text-surface-500">Decimals</td>
+                        <td className="text-surface-500">{t('admin.sweepDetail.decimals', { defaultValue: 'Decimals' })}</td>
                         <td>{sweep.decimals ?? 'N/A'}</td>
                       </tr>
                       {sweep.reservationId && (
@@ -234,7 +234,7 @@ export default function SweepDetail() {
                       )}
                       {sweep.systemWalletId && (
                         <tr>
-                          <td className="text-surface-500">System Wallet ID</td>
+                          <td className="text-surface-500">{t('admin.sweepDetail.systemWalletId', { defaultValue: 'System Wallet ID' })}</td>
                           <td>{sweep.systemWalletId}</td>
                         </tr>
                       )}
@@ -257,7 +257,7 @@ export default function SweepDetail() {
               <div className="px-5 py-4 border-b border-surface-200">
                 <h5 className="mb-0 text-danger">
                   <i className="bx bx-error mr-2"></i>
-                  Failure Reason
+                  {t('admin.detail.failureReason', { defaultValue: 'Failure Reason' })}
                 </h5>
               </div>
               <div className="p-5">
