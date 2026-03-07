@@ -1,13 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { formatAmount, getEntryCodeLabel, userStateBadge } from '@/components/ledger/ledgerUtils'
 import TableEmptyState from '@/components/TableEmptyState'
+import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
@@ -116,14 +116,15 @@ export default function MyLedgerTable({
                     <span className="whitespace-nowrap">{fmtDate(entry.createdAt)}</span>
                   </td>
                   <td>
-                    <Link
+                    <Button
+                      variant="text-secondary"
+                      size="icon-sm"
                       href={`/ledger/${entry.id}`}
-                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-primary-300 text-primary-600 hover:bg-primary-50 dark:border-primary-700 dark:text-primary-400 dark:hover:bg-primary-900/30"
                       onClick={(e) => e.stopPropagation()}
                       title={t('actions.view', { defaultValue: 'View' })}
                     >
-                      <i className="bx bx-show"></i>
-                    </Link>
+                      <i className="bx bx-show text-[1rem]"></i>
+                    </Button>
                   </td>
                 </tr>
               )

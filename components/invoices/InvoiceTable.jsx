@@ -1,13 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard } from '@/lib/utils/clipboard'
 import TableEmptyState from '@/components/TableEmptyState'
+import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
@@ -118,23 +118,25 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange 
                   </td>
                   <td>
                     <div className="flex gap-1 justify-end">
-                      <Link
+                      <Button
+                        variant="text-secondary"
+                        size="icon-sm"
                         href={`/invoices/${it.id}`}
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-primary-300 text-primary-600 hover:bg-primary-50 dark:border-primary-700 dark:text-primary-400 dark:hover:bg-primary-900/30"
                         onClick={(e) => e.stopPropagation()}
                         title={t('actions.view', { defaultValue: 'View' })}
                       >
-                        <i className="bx bx-show" />
-                      </Link>
+                        <i className="bx bx-show text-[1rem]" />
+                      </Button>
                       {it.publicCode && (
-                        <Link
+                        <Button
+                          variant="text-secondary"
+                          size="icon-sm"
                           href={`/pay/${it.publicCode}`}
-                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-200 text-surface-600 hover:bg-surface-50 dark:hover:bg-white/6"
                           onClick={(e) => e.stopPropagation()}
                           title={t('actions.viewPayment', { defaultValue: 'Payment Page' })}
                         >
-                          <i className="bx bx-qr" />
-                        </Link>
+                          <i className="bx bx-qr text-[1rem]" />
+                        </Button>
                       )}
                     </div>
                   </td>

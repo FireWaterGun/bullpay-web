@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import TableEmptyState from '@/components/TableEmptyState'
+import Button from '@/components/ui/Button'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 import {
@@ -89,13 +90,14 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                   </td>
                   <td className="whitespace-nowrap text-right text-surface-500 text-xs">{fmtDate(it.createdAt)}</td>
                   <td className="text-center">
-                    <Link
+                    <Button
+                      variant="text-secondary"
+                      size="icon-sm"
                       href={`/withdrawals/${it.id}`}
-                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-primary-300 text-primary-600 hover:bg-primary-50 dark:border-primary-700 dark:text-primary-400 dark:hover:bg-primary-900/30 transition-colors"
                       title={t('actions.view', { defaultValue: 'View' })}
                     >
-                      <i className="bx bx-show text-sm"></i>
-                    </Link>
+                      <i className="bx bx-show text-[1rem]"></i>
+                    </Button>
                   </td>
                 </tr>
               )

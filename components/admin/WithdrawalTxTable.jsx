@@ -170,14 +170,13 @@ export default function WithdrawalTxTable({
                       {(withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl) && (
                         <Button
                           variant="text-secondary"
-                          size="icon"
-                          className="rounded-full"
+                          size="icon-sm"
                           href={`${withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl}/tx/${withdrawal.txHash}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                         >
-                          <i className="bx bx-link-external text-xl"></i>
+                          <i className="bx bx-link-external text-[1rem]"></i>
                         </Button>
                       )}
                     </div>

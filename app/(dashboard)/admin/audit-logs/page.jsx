@@ -299,8 +299,7 @@ export default function AuditLogList() {
                       <td>
                         <Button
                           variant="text-secondary"
-                          size="icon"
-                          className="rounded-full"
+                          size="icon-sm"
                           href={`/admin/audit-logs/${log.id}`}
                           title={t('admin.detail.viewDetails', { defaultValue: 'View details' })}
                         >

@@ -122,61 +122,59 @@ export default function PlatformLedgerDetail() {
 
   return (
     <div className="grow py-6">
-      <div className="grid grid-cols-12 gap-x-6">
-        <div className="col-span-12">
-          {/* Back Button */}
-          <Button onClick={() => router.back()} variant="outline-secondary" className="mb-3">
-            <i className="bx bx-arrow-back mr-2"></i>
-            {t('actions.back', { defaultValue: 'Back' })}
-          </Button>
+      {/* Back Button */}
+      <Button onClick={() => router.back()} variant="outline-secondary" className="mb-3">
+        <i className="bx bx-arrow-back mr-2"></i>
+        {t('actions.back', { defaultValue: 'Back' })}
+      </Button>
 
-          {/* Header */}
-          <Card className="mb-4">
-            <div className="p-5">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-3">
-                  {entry.coinSymbol && (
-                    <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />
+      {/* Header */}
+      <Card className="mb-4">
+        <div className="p-5">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              {entry.coinSymbol && (
+                <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />
+              )}
+              <div>
+                <h4 className="mb-1">Platform Ledger Entry #{entry.id}</h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
+                    {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
+                  </Badge>
+                  <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
+                    <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
+                    {isCredit ? 'Credit' : 'Debit'}
+                  </Badge>
+                  {entry.entryCode && (
+                    <Badge color="secondary">{entryCodeLabels[entry.entryCode] || entry.entryCode}</Badge>
                   )}
-                  <div>
-                    <h4 className="mb-1">Platform Ledger Entry #{entry.id}</h4>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
-                        {entry.accountType === 'revenue' ? 'Revenue' : 'Expense'}
-                      </Badge>
-                      <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
-                        <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
-                        {isCredit ? 'Credit' : 'Debit'}
-                      </Badge>
-                      {entry.entryCode && (
-                        <Badge color="secondary">{entryCodeLabels[entry.entryCode] || entry.entryCode}</Badge>
-                      )}
-                      {stateBadge(entry.state)}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className={`text-2xl font-bold ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
-                    {isReversed ? '' : isCredit ? '+' : '-'}
-                    {formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
-                  </div>
-                  <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
-                  {entry.networkName && <small className="text-surface-500">{entry.networkName}</small>}
+                  {stateBadge(entry.state)}
                 </div>
               </div>
             </div>
-          </Card>
+            <div className="text-right">
+              <div className={`text-2xl font-bold ${isReversed ? '' : isCredit ? 'text-success' : 'text-danger'}`}>
+                {isReversed ? '' : isCredit ? '+' : '-'}
+                {formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
+              </div>
+              <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
+              {entry.networkName && <small className="text-surface-500">{entry.networkName}</small>}
+            </div>
+          </div>
+        </div>
+      </Card>
 
-          <div className="grid grid-cols-12 gap-x-6">
-            {/* Entry Details */}
-            <div className="md:col-span-6">
-              <Card className="mb-4">
-                <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0">
-                    <i className="bx bx-detail mr-2"></i>
-                    Details
-                  </h5>
-                </div>
+      <div className="grid grid-cols-12 gap-x-6">
+        {/* Entry Details */}
+        <div className="md:col-span-6 col-span-12">
+          <Card className="mb-4">
+            <div className="px-5 py-4 border-b border-surface-200">
+              <h5 className="mb-0">
+                <i className="bx bx-detail mr-2 text-primary"></i>
+                Details
+              </h5>
+            </div>
                 <div className="p-5">
                   <Table responsive={false}>
                     <tbody>
@@ -263,12 +261,12 @@ export default function PlatformLedgerDetail() {
             </div>
 
             {/* Transaction & Metadata */}
-            <div className="md:col-span-6">
+            <div className="md:col-span-6 col-span-12">
               {entry.txHash && (
                 <Card className="mb-4">
                   <div className="px-5 py-4 border-b border-surface-200">
                     <h5 className="mb-0">
-                      <i className="bx bx-link mr-2"></i>
+                      <i className="bx bx-link mr-2 text-primary"></i>
                       Transaction
                     </h5>
                   </div>
@@ -293,7 +291,7 @@ export default function PlatformLedgerDetail() {
                               {explorerUrl && (
                                 <Button
                                   variant="text-secondary"
-                                  size="icon"
+                                  size="icon-sm"
                                   href={`${explorerUrl}/tx/${entry.txHash}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
@@ -315,7 +313,7 @@ export default function PlatformLedgerDetail() {
                 <Card className="mb-4">
                   <div className="px-5 py-4 border-b border-surface-200">
                     <h5 className="mb-0">
-                      <i className="bx bx-code-alt mr-2"></i>
+                      <i className="bx bx-code-alt mr-2 text-primary"></i>
                       Metadata
                     </h5>
                   </div>
@@ -328,8 +326,6 @@ export default function PlatformLedgerDetail() {
               )}
             </div>
           </div>
-        </div>
-      </div>
     </div>
   )
 }

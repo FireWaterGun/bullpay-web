@@ -304,11 +304,11 @@ export default function AdminInvoiceList() {
                         <td>
                           <Button
                             variant="text-secondary"
-                            size="icon"
+                            size="icon-sm"
                             href={`/admin/invoices/${invoice.id}`}
                             title={t('admin.detail.viewDetail', { defaultValue: 'View detail' })}
                           >
-                            <i className="bx bx-show text-xl"></i>
+                            <i className="bx bx-show text-[1rem]"></i>
                           </Button>
                         </td>
                       </tr>

@@ -324,23 +324,23 @@ export default function SystemBalance() {
                         <td className="text-center">
                           <Button
                             variant="text-secondary"
-                            size="icon"
+                            size="icon-sm"
                             className="mr-1"
                             href={`/admin/system-ledger?walletId=${wallet.systemWallet?.id}`}
                             title={t('actions.view', { defaultValue: 'View' })}
                           >
-                            <i className="bx bx-receipt text-xl"></i>
+                            <i className="bx bx-receipt text-[1rem]"></i>
                           </Button>
                           {wallet.systemWallet?.coinNetwork?.network?.explorerUrl && wallet.systemWallet?.address && (
                             <Button
                               variant="text-secondary"
-                              size="icon"
+                              size="icon-sm"
                               href={`${wallet.systemWallet.coinNetwork.network.explorerUrl}/address/${wallet.systemWallet.address}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               title={t('invoices.viewOnExplorer')}
                             >
-                              <i className="bx bx-link-external text-xl"></i>
+                              <i className="bx bx-link-external text-[1rem]"></i>
                             </Button>
                           )}
                         </td>

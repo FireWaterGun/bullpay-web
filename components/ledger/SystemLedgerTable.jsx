@@ -189,11 +189,11 @@ export default function SystemLedgerTable({
                   <td>
                     <Link
                       href={`/admin/system-ledger/${entry.id}`}
-                      className="btn-outline-primary btn-icon-sm"
+                      className="btn-base btn-text-secondary btn-icon-sm"
                       onClick={(e) => e.stopPropagation()}
                       title={t('actions.view', { defaultValue: 'View' })}
                     >
-                      <i className="bx bx-show"></i>
+                      <i className="bx bx-show text-[1rem]"></i>
                     </Link>
                   </td>
                 </tr>

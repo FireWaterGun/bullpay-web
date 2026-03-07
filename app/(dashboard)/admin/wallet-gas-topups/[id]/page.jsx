@@ -183,8 +183,8 @@ export default function GasTopupDetail() {
                           {explorerUrl && (
                             <Button
                               variant="text-secondary"
-                              size="icon"
-                              className="rounded-full ml-1"
+                              size="icon-sm"
+                              className="ml-1"
                               href={`${explorerUrl}/address/${metadata.tokenContractAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"

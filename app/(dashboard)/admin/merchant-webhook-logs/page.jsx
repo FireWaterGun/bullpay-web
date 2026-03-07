@@ -316,8 +316,7 @@ export default function MerchantWebhookLogList() {
                       <td>
                         <Button
                           variant="text-secondary"
-                          size="icon"
-                          className="rounded-full"
+                          size="icon-sm"
                           href={`/admin/merchant-webhook-logs/${log.id}`}
                           title={t('admin.detail.viewDetails', { defaultValue: 'View details' })}
                         >

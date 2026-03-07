@@ -199,8 +199,8 @@ export default function TempWalletDetail() {
                               {wallet.explorerUrl && (
                                 <Button
                                   variant="text-primary"
-                                  size="icon"
-                                  className="rounded-full shrink-0"
+                                  size="icon-sm"
+                                  className="shrink-0"
                                   href={`${wallet.explorerUrl}/address/${wallet.address}`}
                                   target="_blank"
                                   rel="noopener noreferrer"

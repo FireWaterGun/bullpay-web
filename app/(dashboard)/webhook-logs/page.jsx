@@ -259,8 +259,7 @@ export default function WebhookLogsPage() {
                   <td>
                     <Button
                       variant="text-secondary"
-                      size="icon"
-                      className="rounded-full"
+                      size="icon-sm"
                       href={`/webhook-logs/${log.id}`}
                       title={t('webhookLog.viewDetails', { defaultValue: 'View details' })}
                     >

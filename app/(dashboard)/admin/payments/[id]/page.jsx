@@ -263,8 +263,8 @@ export default function AdminPaymentDetail() {
                                 {explorerUrl && (
                                   <Button
                                     variant="text-secondary"
-                                    size="icon"
-                                    className="rounded-full shrink-0"
+                                    size="icon-sm"
+                                    className="shrink-0"
                                     href={`${explorerUrl}/tx/${payment.txHash}`}
                                     target="_blank"
                                     rel="noopener noreferrer"

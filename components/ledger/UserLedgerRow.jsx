@@ -84,13 +84,13 @@ export default function UserLedgerRow({ entry, t }) {
       </td>
       <td>
         <Button
-          variant="outline-primary"
-          size="icon"
+          variant="text-secondary"
+          size="icon-sm"
           href={`/admin/user-ledger/${entry.id}`}
           onClick={(e) => e.stopPropagation()}
           title={t('actions.view', { defaultValue: 'View' })}
         >
-          <i className="bx bx-show"></i>
+          <i className="bx bx-show text-[1rem]"></i>
         </Button>
       </td>
     </tr>

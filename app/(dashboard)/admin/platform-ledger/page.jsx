@@ -14,7 +14,7 @@ import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Button from '@/components/ui/Button'
-import Card, { CardHeader } from '@/components/ui/Card'
+import Card from '@/components/ui/Card'
 
 export default function PlatformLedgerList() {
   const { t } = useAdminTranslation()
@@ -158,30 +158,31 @@ export default function PlatformLedgerList() {
 
   return (
     <div className="grow py-6">
-      <div className="grid grid-cols-12 gap-x-6">
-        <div className="col-span-12">
-          <Card className="mb-4">
-            <CardHeader className="flex justify-between items-center flex-wrap gap-3">
-              <div>
-                <h4 className="mb-1 text-surface-900">
-                  <i className="bx bx-book-open mr-2"></i>
-                  {t('admin.platformLedger.title', { defaultValue: 'Revenue & Expenses' })}
-                </h4>
-                <p className="text-surface-500 text-sm mb-0">
-                  {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {isSuperAdmin && (
-                  <Button onClick={() => setShowAdjustModal(true)}>
-                    <i className="bx bx-transfer-alt mr-1"></i>
-                    {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
-                  </Button>
-                )}
-                <RefreshButton onClick={loadEntries} loading={loading} />
-              </div>
-            </CardHeader>
-            <PlatformLedgerFilterPanel
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h4 className="mb-1">
+            <i className="bx bx-book-open mr-2 text-primary"></i>
+            {t('admin.platformLedger.title', { defaultValue: 'Revenue & Expenses' })}
+          </h4>
+          <p className="text-surface-500 mb-0">
+            {t('admin.platformLedger.description', { defaultValue: 'View all revenue and expense entries' })}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {isSuperAdmin && (
+            <Button onClick={() => setShowAdjustModal(true)}>
+              <i className="bx bx-transfer-alt mr-1"></i>
+              {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
+            </Button>
+          )}
+          <RefreshButton onClick={loadEntries} loading={loading} />
+        </div>
+      </div>
+
+      {/* Filters */}
+      <Card className="mb-4">
+        <PlatformLedgerFilterPanel
               accountTypeFilter={accountTypeFilter}
               setAccountTypeFilter={setAccountTypeFilter}
               entryTypeFilter={entryTypeFilter}
@@ -204,9 +205,9 @@ export default function PlatformLedgerList() {
               onApply={applyFilters}
               onReset={resetFilters}
             />
-          </Card>
+        </Card>
 
-          <PlatformLedgerTable
+        <PlatformLedgerTable
             entries={entries}
             pagination={pagination}
             loading={loading}
@@ -215,8 +216,7 @@ export default function PlatformLedgerList() {
             syncSearchParams={syncSearchParams}
             appliedFilters={appliedFilters}
           />
-        </div>
-      </div>
+
 
       {showAdjustModal && (
         <AdjustmentModal t={t} onClose={() => setShowAdjustModal(false)} onSuccess={handleAdjustmentResult} />

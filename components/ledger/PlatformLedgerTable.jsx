@@ -180,13 +180,13 @@ export default function PlatformLedgerTable({
                   </td>
                   <td>
                     <Button
-                      variant="outline-primary"
+                      variant="text-secondary"
                       size="icon-sm"
                       href={`/admin/platform-ledger/${entry.id}`}
                       onClick={(e) => e.stopPropagation()}
                       title={t('actions.view', { defaultValue: 'View' })}
                     >
-                      <i className="bx bx-show"></i>
+                      <i className="bx bx-show text-[1rem]"></i>
                     </Button>
                   </td>
                 </tr>
