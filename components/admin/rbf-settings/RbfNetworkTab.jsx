@@ -5,13 +5,13 @@ import Table from '@/components/ui/Table'
 import { formatMs, formatPercent, formatUsd } from '@/lib/utils/settingsFormatters'
 
 const NETWORKS = [
-  { key: 'eth', name: 'Ethereum', symbol: 'ETH' },
-  { key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC' },
-  { key: 'pol', name: 'Polygon', symbol: 'POL' },
-  { key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM' },
-  { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM' },
-  { key: 'base', name: 'Base', symbol: 'BASE' },
-  { key: 'avax', name: 'Avalanche', symbol: 'AVAX' },
+  { key: 'eth', name: 'Ethereum', symbol: 'ETH', icon: '/assets/img/coins/eth.svg' },
+  { key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC', icon: '/assets/img/coins/bsc.svg' },
+  { key: 'pol', name: 'Polygon', symbol: 'POL', icon: '/assets/img/coins/pol.svg' },
+  { key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM', icon: '/assets/img/coins/arbitrum.svg' },
+  { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', icon: '/assets/img/coins/optimism.svg' },
+  { key: 'base', name: 'Base', symbol: 'BASE', icon: '/assets/img/coins/base.svg' },
+  { key: 'avax', name: 'Avalanche', symbol: 'AVAX', icon: '/assets/img/coins/avax.svg' },
 ]
 
 export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
@@ -58,8 +58,13 @@ export default function RbfNetworkTab({ t, getVal, openNetworkEdit }) {
             return (
               <tr key={net.key}>
                 <td>
-                  <strong>{net.name}</strong>
-                  <div className="text-surface-500 text-xs">{net.symbol}</div>
+                  <div className="flex items-center gap-2.5">
+                    <img src={net.icon} alt={net.symbol} className="w-7 h-7 rounded-full shrink-0" />
+                    <div>
+                      <strong>{net.name}</strong>
+                      <div className="text-surface-500 text-xs">{net.symbol}</div>
+                    </div>
+                  </div>
                 </td>
                 <td className="text-center">
                   <Badge

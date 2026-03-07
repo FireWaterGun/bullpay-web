@@ -4,13 +4,13 @@ import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 
 const NETWORKS = [
-  { key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC', nativeCoin: 'BNB', type: 'legacy' },
-  { key: 'pol', name: 'Polygon', symbol: 'POL', nativeCoin: 'POL', type: 'eip1559' },
-  { key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559' },
-  { key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559' },
+  { key: 'eth', name: 'Ethereum', symbol: 'ETH', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/eth.svg' },
+  { key: 'bsc', name: 'BNB Smart Chain', symbol: 'BSC', nativeCoin: 'BNB', type: 'legacy', icon: '/assets/img/coins/bsc.svg' },
+  { key: 'pol', name: 'Polygon', symbol: 'POL', nativeCoin: 'POL', type: 'eip1559', icon: '/assets/img/coins/pol.svg' },
+  { key: 'arbitrum', name: 'Arbitrum', symbol: 'ARBITRUM', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/arbitrum.svg' },
+  { key: 'optimism', name: 'Optimism', symbol: 'OPTIMISM', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/optimism.svg' },
+  { key: 'base', name: 'Base', symbol: 'BASE', nativeCoin: 'ETH', type: 'eip1559', icon: '/assets/img/coins/base.svg' },
+  { key: 'avax', name: 'Avalanche', symbol: 'AVAX', nativeCoin: 'AVAX', type: 'eip1559', icon: '/assets/img/coins/avax.svg' },
 ]
 
 export default function GasTopupTab({ t, getVal, onEdit }) {
@@ -46,8 +46,13 @@ export default function GasTopupTab({ t, getVal, onEdit }) {
             return (
               <tr key={net.key}>
                 <td>
-                  <strong>{net.name}</strong>
-                  <div className="text-surface-500 text-xs">{net.symbol}</div>
+                  <div className="flex items-center gap-2.5">
+                    <img src={net.icon} alt={net.symbol} className="w-7 h-7 rounded-full shrink-0" />
+                    <div>
+                      <strong>{net.name}</strong>
+                      <div className="text-surface-500 text-xs">{net.symbol}</div>
+                    </div>
+                  </div>
                 </td>
                 <td className="text-center">
                   <span className="font-semibold">{amount}</span>
