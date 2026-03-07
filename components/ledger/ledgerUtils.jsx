@@ -15,6 +15,12 @@ export const entryCodeLabels = {
   AJ: 'Adjustment',
 }
 
+/** Get translated entry code label (system ledger) */
+export function getSystemEntryCodeLabel(code, t) {
+  if (!t) return entryCodeLabels[code] || code
+  return t(`admin.systemLedger.code_${code}`, { defaultValue: entryCodeLabels[code] || code })
+}
+
 /** User-facing entry code labels (user ledger) */
 export const USER_ENTRY_CODE_LABELS = {
   DP: 'Deposit',
@@ -71,34 +77,38 @@ export function formatAmount(val) {
   return str || '0'
 }
 
-export function stateBadge(state) {
+export function stateBadge(state, t) {
   if (state === 'settled') {
     return (
       <Badge color="success" label>
-        Settled
+        {t ? t('admin.detail.settled', { defaultValue: 'Settled' }) : 'Settled'}
       </Badge>
     )
   }
   if (state === 'committed') {
     return (
       <Badge color="info" label>
-        Committed
+        {t ? t('admin.detail.committed', { defaultValue: 'Committed' }) : 'Committed'}
       </Badge>
     )
   }
   if (state === 'pending') {
     return (
       <Badge color="warning" label>
-        Pending
+        {t ? t('admin.detail.pending', { defaultValue: 'Pending' }) : 'Pending'}
       </Badge>
     )
   }
-  if (state === 'reversed') return <Badge color="secondary">Reversed</Badge>
+  if (state === 'reversed') return <Badge color="secondary">{t ? t('admin.detail.reversed', { defaultValue: 'Reversed' }) : 'Reversed'}</Badge>
   return <span className="text-surface-500">{state || 'N/A'}</span>
 }
 
-export function getPurposeLabel(metadata) {
-  return purposeMap[metadata.purpose] || purposeMap[metadata.type] || metadata.purpose || metadata.type || null
+export function getPurposeLabel(metadata, t) {
+  const key = metadata.purpose || metadata.type || null
+  if (!key) return null
+  const fallback = purposeMap[key] || key
+  if (!t) return fallback
+  return t(`admin.systemLedger.purpose_${key}`, { defaultValue: fallback })
 }
 
 /**

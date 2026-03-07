@@ -758,7 +758,30 @@
     "codeSC": "SC - 归集Gas成本",
     "codeWG": "WG - 提现Gas",
     "codeXI": "XI - 内部转入",
-    "codeXO": "XO - 内部转出"
+    "codeXO": "XO - 内部转出",
+    "detailTitle": "平台账本条目 #{{id}}",
+    "code_WF": "提现手续费",
+    "code_FR": "手续费退还",
+    "code_SG": "归集Gas充值",
+    "code_SC": "归集Gas成本",
+    "code_WG": "提现Gas",
+    "code_XI": "内部转入",
+    "code_XO": "内部转出"
+  },
+  "systemLedger": {
+    "detailTitle": "系统账本条目 #{{id}}",
+    "code_SP": "结算付款",
+    "code_SC": "归集成本",
+    "code_SG": "归集Gas",
+    "code_WD": "提现",
+    "code_DP": "存款",
+    "code_FE": "手续费",
+    "code_AJ": "调整",
+    "purpose_payment_received": "收到付款",
+    "purpose_merchant_credit": "商户贷记",
+    "purpose_native_coin_sweep_cost": "归集成本",
+    "purpose_gas_topup_for_token_sweep": "Gas充值",
+    "purpose_token_sweep_cost": "代币归集成本"
   },
   "adjustment": {
     "title": "余额调整 (XI / XO)",
@@ -916,7 +939,9 @@
     "usageCount": "使用次数",
     "totalWithdrawn": "总提款",
     "verified": "已验证",
-    "flagged": "已标记"
+    "flagged": "已标记",
+    "accountType_revenue": "收入",
+    "accountType_expense": "支出"
   },
   "roles": {
     "title": "角色与权限",

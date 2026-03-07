@@ -736,6 +736,21 @@
     "code_XI": "Internal Transfer In",
     "code_XO": "Internal Transfer Out"
   },
+  "systemLedger": {
+    "detailTitle": "System Ledger Entry #{{id}}",
+    "code_SP": "Settlement Payment",
+    "code_SC": "Sweep Cost",
+    "code_SG": "Sweep Gas",
+    "code_WD": "Withdrawal",
+    "code_DP": "Deposit",
+    "code_FE": "Fee",
+    "code_AJ": "Adjustment",
+    "purpose_payment_received": "Payment Received",
+    "purpose_merchant_credit": "Merchant Credit",
+    "purpose_native_coin_sweep_cost": "Sweep Cost",
+    "purpose_gas_topup_for_token_sweep": "Gas Top-up",
+    "purpose_token_sweep_cost": "Token Sweep Cost"
+  },
   "adjustment": {
     "title": "Balance Adjustment (XI / XO)",
     "button": "Adjustment (XI/XO)",

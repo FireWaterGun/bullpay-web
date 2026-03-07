@@ -768,7 +768,30 @@
     "codeSC": "SC - ต้นทุนแก๊สกวาด",
     "codeWG": "WG - แก๊สถอน",
     "codeXI": "XI - โอนเข้าภายใน",
-    "codeXO": "XO - โอนออกภายใน"
+    "codeXO": "XO - โอนออกภายใน",
+    "detailTitle": "รายการบัญชีแพลตฟอร์ม #{{id}}",
+    "code_WF": "ค่าธรรมเนียมถอน",
+    "code_FR": "คืนค่าธรรมเนียม",
+    "code_SG": "เติมแก๊สกวาด",
+    "code_SC": "ต้นทุนแก๊สกวาด",
+    "code_WG": "แก๊สถอน",
+    "code_XI": "โอนเข้าภายใน",
+    "code_XO": "โอนออกภายใน"
+  },
+  "systemLedger": {
+    "detailTitle": "รายการบัญชีระบบ #{{id}}",
+    "code_SP": "ชำระเงินตัดยอด",
+    "code_SC": "ต้นทุนกวาด",
+    "code_SG": "แก๊สกวาด",
+    "code_WD": "ถอนเงิน",
+    "code_DP": "ฝากเงิน",
+    "code_FE": "ค่าธรรมเนียม",
+    "code_AJ": "ปรับยอด",
+    "purpose_payment_received": "รับชำระเงิน",
+    "purpose_merchant_credit": "เครดิตร้านค้า",
+    "purpose_native_coin_sweep_cost": "ต้นทุนกวาด",
+    "purpose_gas_topup_for_token_sweep": "เติมแก๊ส",
+    "purpose_token_sweep_cost": "ต้นทุนกวาดโทเค็น"
   },
   "adjustment": {
     "title": "ปรับยอดคงเหลือ (XI / XO)",
@@ -929,7 +952,9 @@
     "usageCount": "จำนวนครั้งที่ใช้",
     "totalWithdrawn": "ถอนทั้งหมด",
     "verified": "ยืนยันแล้ว",
-    "flagged": "ถูกตั้งค่าสถานะ"
+    "flagged": "ถูกตั้งค่าสถานะ",
+    "accountType_revenue": "รายรับ",
+    "accountType_expense": "ค่าใช้จ่าย"
   },
   "roles": {
     "title": "บทบาท & สิทธิ์",
