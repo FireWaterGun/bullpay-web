@@ -26,7 +26,10 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
       </div>
       {payments.length === 0 ? (
         <div className="p-5">
-          <CardEmptyState icon="bx-credit-card" message={t('admin.invoiceDetail.noPayments', { defaultValue: 'No payments recorded for this invoice' })} />
+          <CardEmptyState
+            icon="bx-credit-card"
+            message={t('admin.invoiceDetail.noPayments', { defaultValue: 'No payments recorded for this invoice' })}
+          />
         </div>
       ) : (
         <Table className="min-w-[900px]">

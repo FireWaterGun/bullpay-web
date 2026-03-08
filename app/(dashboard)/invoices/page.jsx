@@ -151,10 +151,6 @@ export default function InvoiceList() {
           setStartDateFilter={setStartDateFilter}
           endDateFilter={endDateFilter}
           setEndDateFilter={setEndDateFilter}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
           locale={locale}
           loading={loading}
           onApply={applyFilters}
@@ -182,6 +178,14 @@ export default function InvoiceList() {
         }}
         loading={loading}
         onPageChange={setPage}
+        sortBy={appliedFilters.sortBy}
+        sortOrder={appliedFilters.sortOrder}
+        onSort={(field, order) => {
+          setSortBy(field)
+          setSortOrder(order)
+          setPage(1)
+          setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
+        }}
       />
     </>
   )

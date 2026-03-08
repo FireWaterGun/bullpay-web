@@ -24,11 +24,13 @@ function AddressRow({ label, address, explorerUrl, onCopy, t }) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                  <i className="bx bx-link-external mr-1"></i>
+                  {t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                 </Button>
               )}
               <Button onClick={() => onCopy(address)} variant="outline-secondary" size="sm">
-                <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                <i className="bx bx-copy mr-1"></i>
+                {t('admin.detail.copy', { defaultValue: 'Copy' })}
               </Button>
             </div>
           </>
@@ -69,11 +71,13 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <i className="bx bx-link-external mr-1"></i>{t('admin.detail.explorer', { defaultValue: 'Explorer' })}
+                          <i className="bx bx-link-external mr-1"></i>
+                          {t('admin.detail.explorer', { defaultValue: 'Explorer' })}
                         </Button>
                       )}
                       <Button onClick={() => onCopy(sweep.txHash)} variant="outline-secondary" size="sm">
-                        <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                        <i className="bx bx-copy mr-1"></i>
+                        {t('admin.detail.copy', { defaultValue: 'Copy' })}
                       </Button>
                     </div>
                   </>
@@ -96,7 +100,9 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
             )}
             {sweep.networkFeeRaw && (
               <tr>
-                <td className="text-surface-500">{t('admin.sweepDetail.networkFeeRaw', { defaultValue: 'Network Fee (Raw)' })}</td>
+                <td className="text-surface-500">
+                  {t('admin.sweepDetail.networkFeeRaw', { defaultValue: 'Network Fee (Raw)' })}
+                </td>
                 <td>
                   <code className="text-[0.8rem] break-all">{sweep.networkFeeRaw}</code>
                 </td>
@@ -104,12 +110,26 @@ export default function SweepTransactionCard({ sweep, explorerUrl, onCopy }) {
             )}
             {sweep.networkFeeUsd && (
               <tr>
-                <td className="text-surface-500">{t('admin.sweepDetail.networkFeeUsd', { defaultValue: 'Network Fee (USD)' })}</td>
+                <td className="text-surface-500">
+                  {t('admin.sweepDetail.networkFeeUsd', { defaultValue: 'Network Fee (USD)' })}
+                </td>
                 <td>{formatUsd(sweep.networkFeeUsd)}</td>
               </tr>
             )}
-            <AddressRow label={t('admin.detail.fromAddress', { defaultValue: 'From Address' })} address={sweep.fromAddress} explorerUrl={explorerUrl} onCopy={onCopy} t={t} />
-            <AddressRow label={t('admin.detail.toAddress', { defaultValue: 'To Address' })} address={sweep.toAddress} explorerUrl={explorerUrl} onCopy={onCopy} t={t} />
+            <AddressRow
+              label={t('admin.detail.fromAddress', { defaultValue: 'From Address' })}
+              address={sweep.fromAddress}
+              explorerUrl={explorerUrl}
+              onCopy={onCopy}
+              t={t}
+            />
+            <AddressRow
+              label={t('admin.detail.toAddress', { defaultValue: 'To Address' })}
+              address={sweep.toAddress}
+              explorerUrl={explorerUrl}
+              onCopy={onCopy}
+              t={t}
+            />
           </tbody>
         </Table>
       </div>
@@ -149,7 +169,9 @@ export function SweepTimestampsCard({ sweep, metadata }) {
             )}
             {metadata.lastAttemptAt && (
               <tr>
-                <td className="text-surface-500">{t('admin.sweepDetail.lastAttempt', { defaultValue: 'Last Attempt' })}</td>
+                <td className="text-surface-500">
+                  {t('admin.sweepDetail.lastAttempt', { defaultValue: 'Last Attempt' })}
+                </td>
                 <td>{fmtDate(metadata.lastAttemptAt)}</td>
               </tr>
             )}

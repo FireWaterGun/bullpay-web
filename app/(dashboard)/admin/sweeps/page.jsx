@@ -31,10 +31,12 @@ export default function SweepTransactions() {
   const initStatus = searchParams.get('status') || ''
   const initUserId = searchParams.get('userId') || ''
   const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
+  const initFromAddress = searchParams.get('fromAddress') || ''
   const initStartDate = searchParams.get('startDate') || ''
   const initEndDate = searchParams.get('endDate') || ''
   const initSortBy = searchParams.get('sortBy') || ''
-  const initSortOrder = searchParams.get('sortOrder') || ''
+  const rawSortOrder = searchParams.get('sortOrder') || ''
+  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [loading, setLoading] = useState(false)
@@ -47,22 +49,33 @@ export default function SweepTransactions() {
   const [statusFilter, setStatusFilter] = useState(initStatus)
   const [userIdFilter, setUserIdFilter] = useState(initUserId)
   const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
+  const [fromAddressFilter, setFromAddressFilter] = useState(initFromAddress)
   const [startDateFilter, setStartDateFilter] = useState(initStartDate)
   const [endDateFilter, setEndDateFilter] = useState(initEndDate)
-  const [sortByFilter, setSortByFilter] = useState(initSortBy)
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
+  const [sortBy, setSortBy] = useState(initSortBy)
+  const [sortOrder, setSortOrder] = useState(initSortOrder)
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
     const f = {}
     if (initStatus) f.status = initStatus
     if (initUserId) f.userId = Number(initUserId)
     if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
+    if (initFromAddress) f.fromAddress = initFromAddress
     if (initStartDate) f.startDate = initStartDate
     if (initEndDate) f.endDate = initEndDate
     if (initSortBy) f.sortBy = initSortBy
     if (initSortOrder) f.sortOrder = initSortOrder
     return f
   })
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    const f = { ...appliedFilters, sortBy: field, sortOrder: order }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
+  }
 
   const loadSweeps = useCallback(async () => {
     try {
@@ -114,10 +127,11 @@ export default function SweepTransactions() {
       status: statusFilter || undefined,
       userId: userIdFilter ? Number(userIdFilter) : undefined,
       coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
+      fromAddress: fromAddressFilter || undefined,
       startDate: startDateFilter || undefined,
       endDate: endDateFilter || undefined,
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
     }
     setAppliedFilters(f)
     setCurrentPage(1)
@@ -128,10 +142,11 @@ export default function SweepTransactions() {
     setStatusFilter('')
     setUserIdFilter('')
     setCoinNetworkIdFilter('')
+    setFromAddressFilter('')
     setStartDateFilter('')
     setEndDateFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
+    setSortBy('')
+    setSortOrder('')
     setAppliedFilters({})
     setCurrentPage(1)
     window.history.replaceState(null, '', window.location.pathname)
@@ -204,16 +219,14 @@ export default function SweepTransactions() {
               setStatusFilter={setStatusFilter}
               userIdFilter={userIdFilter}
               setUserIdFilter={setUserIdFilter}
+              fromAddressFilter={fromAddressFilter}
+              setFromAddressFilter={setFromAddressFilter}
               coinNetworkIdFilter={coinNetworkIdFilter}
               setCoinNetworkIdFilter={setCoinNetworkIdFilter}
               startDateFilter={startDateFilter}
               setStartDateFilter={setStartDateFilter}
               endDateFilter={endDateFilter}
               setEndDateFilter={setEndDateFilter}
-              sortByFilter={sortByFilter}
-              setSortByFilter={setSortByFilter}
-              sortOrderFilter={sortOrderFilter}
-              setSortOrderFilter={setSortOrderFilter}
               coinNetworks={coinNetworks}
               locale={locale}
               loading={loading}
@@ -233,6 +246,9 @@ export default function SweepTransactions() {
             onNavigate={(id) => router.push(`/admin/sweeps/${id}`)}
             onRetry={handleRetry}
             onPageChange={handlePageChange}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSort={handleSort}
           />
         </div>
       </div>

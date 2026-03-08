@@ -53,12 +53,18 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
   const isClient = typeof window !== 'undefined'
   const url = path.startsWith('http') ? path : isClient ? path : `${API_BASE_URL}${path}`
 
-  const res = await fetch(url, {
-    ...fetchOptions,
-    headers,
-    credentials: 'include',
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  let res: Response
+  try {
+    res = await fetch(url, {
+      ...fetchOptions,
+      headers,
+      credentials: 'include',
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  } catch (networkError) {
+    // Network failure (API down, DNS error, CORS, etc.)
+    throw new ApiError(0, 'NETWORK_ERROR', 'Cannot connect to server. Please check your connection.')
+  }
 
   // Handle 401 — on client, redirect to login
   if (res.status === 401 && !skipAuthRedirect) {

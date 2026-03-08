@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
+import SortableHeader from '@/components/ui/SortableHeader'
 import { useState } from 'react'
 
 const statusBadge = {
@@ -21,7 +22,7 @@ const statusBadge = {
   cancelled: 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400',
 }
 
-export default function InvoiceTable({ items, pagination, loading, onPageChange }) {
+export default function InvoiceTable({ items, pagination, loading, onPageChange, sortBy, sortOrder, onSort }) {
   const { t } = useTranslation()
   const router = useRouter()
   const { fmtDateTime } = useDateFormat()
@@ -47,9 +48,13 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange 
             <th>{t('invoices.invoice', { defaultValue: 'Invoice' })}</th>
             <th>{t('invoices.coin', { defaultValue: 'Coin' })}</th>
             <th className="min-w-[320px]">{t('invoices.paymentAddress', { defaultValue: 'Payment Address' })}</th>
-            <th className="text-right">{t('invoices.amount', { defaultValue: 'Amount' })}</th>
+            <SortableHeader field="amount" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} className="text-right">
+              {t('invoices.amount', { defaultValue: 'Amount' })}
+            </SortableHeader>
             <th>{t('invoices.statusCol', { defaultValue: 'Status' })}</th>
-            <th>{t('invoices.date', { defaultValue: 'Date' })}</th>
+            <SortableHeader field="created_at" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort}>
+              {t('invoices.date', { defaultValue: 'Date' })}
+            </SortableHeader>
             <th></th>
           </tr>
         </thead>
@@ -69,7 +74,12 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange 
               return (
                 <tr key={it.id} className="cursor-pointer" onClick={() => router.push(`/invoices/${it.id}`)}>
                   <td className="whitespace-nowrap">
-                    <span className="font-semibold text-primary-600">{it.publicCode || it.code || it.id}</span>
+                    <div>
+                      <span className="font-semibold text-primary-600">{it.invoiceNumber || it.id}</span>
+                      {it.publicCode && (
+                        <div className="text-xs text-surface-500 font-mono mt-0.5">{it.publicCode}</div>
+                      )}
+                    </div>
                   </td>
                   <td className="whitespace-nowrap">
                     <div className="flex items-center">
@@ -131,7 +141,9 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange 
                         <Button
                           variant="text-secondary"
                           size="icon-sm"
-                          href={`/pay/${it.publicCode}`}
+                          href={`/invoice/${it.publicCode}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
                           title={t('actions.viewPayment', { defaultValue: 'Payment Page' })}
                         >

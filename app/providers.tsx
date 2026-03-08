@@ -2,7 +2,7 @@
 
 import '@/lib/i18n'
 
-import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, type ReactNode } from 'react'
 import { apiFetch } from '@/lib/api-client'
 import { ADMIN_ROLES, AUTH_COOKIE_NAME } from '@/lib/constants'
 import { ToastContainer } from '@/components/Toast'
@@ -205,6 +205,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // ═══════════════════════════════════════════
 // Toast Context
 // ═══════════════════════════════════════════
+//
+// Split into two contexts so that calling toast.error() etc.
+// does NOT re-render every consumer. Only ToastContainer
+// subscribes to the toasts[] state context.
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 type ToastMessage = string | { title?: string; body?: string }
@@ -215,8 +219,7 @@ interface ToastItem {
   message: ToastMessage
 }
 
-interface ToastContextValue {
-  toasts: ToastItem[]
+interface ToastActions {
   toast: (type: ToastType, message: ToastMessage) => void
   removeToast: (id: number) => void
   success: (message: ToastMessage) => void
@@ -225,12 +228,24 @@ interface ToastContextValue {
   info: (message: ToastMessage) => void
 }
 
-const ToastContext = createContext<ToastContextValue | null>(null)
+/** Stable action functions — reference never changes */
+const ToastActionsContext = createContext<ToastActions | null>(null)
 
-export function useToast() {
-  const ctx = useContext(ToastContext)
+/** Toast list state — changes when toasts are added/removed (only ToastContainer subscribes) */
+const ToastStateContext = createContext<{ toasts: ToastItem[]; removeToast: (id: number) => void }>({
+  toasts: [],
+  removeToast: () => {},
+})
+
+export function useToast(): ToastActions {
+  const ctx = useContext(ToastActionsContext)
   if (!ctx) throw new Error('useToast must be used within ToastProvider')
   return ctx
+}
+
+function ToastContainerBridge() {
+  const { toasts, removeToast } = useContext(ToastStateContext)
+  return <ToastContainer toasts={toasts} onRemove={removeToast} />
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -254,11 +269,22 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const warning = useCallback((message: ToastMessage) => toast('warning', message), [toast])
   const info = useCallback((message: ToastMessage) => toast('info', message), [toast])
 
+  // Actions value is stable — all functions are useCallback with [] or [toast] deps
+  const actions = useMemo<ToastActions>(
+    () => ({ toast, removeToast, success, error, warning, info }),
+    [toast, removeToast, success, error, warning, info]
+  )
+
+  // State value changes when toasts change — only ToastContainerBridge subscribes
+  const stateValue = useMemo(() => ({ toasts, removeToast }), [toasts, removeToast])
+
   return (
-    <ToastContext.Provider value={{ toasts, toast, removeToast, success, error, warning, info }}>
-      {children}
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
-    </ToastContext.Provider>
+    <ToastActionsContext.Provider value={actions}>
+      <ToastStateContext.Provider value={stateValue}>
+        {children}
+        <ToastContainerBridge />
+      </ToastStateContext.Provider>
+    </ToastActionsContext.Provider>
   )
 }
 

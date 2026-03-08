@@ -11,6 +11,7 @@ import {
   changeUserRole,
   resetUserPassword,
   disableUser2FA,
+  forceVerifyEmail,
   createUser,
 } from '@/lib/api/admin'
 import { copyToClipboard } from '@/lib/utils/clipboard'
@@ -41,7 +42,8 @@ export default function AdminUsersPage() {
   const initDateFrom = searchParams.get('dateFrom') || ''
   const initDateTo = searchParams.get('dateTo') || ''
   const initSortBy = searchParams.get('sortBy') || ''
-  const initSortOrder = searchParams.get('sortOrder') || ''
+  const rawSortOrder = searchParams.get('sortOrder') || ''
+  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [loading, setLoading] = useState(false)
@@ -54,8 +56,8 @@ export default function AdminUsersPage() {
   const [searchFilter, setSearchFilter] = useState(initSearch)
   const [dateFromFilter, setDateFromFilter] = useState(initDateFrom)
   const [dateToFilter, setDateToFilter] = useState(initDateTo)
-  const [sortByFilter, setSortByFilter] = useState(initSortBy)
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
+  const [sortBy, setSortBy] = useState(initSortBy)
+  const [sortOrder, setSortOrder] = useState(initSortOrder)
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
     const f = {}
@@ -68,6 +70,15 @@ export default function AdminUsersPage() {
     if (initSortOrder) f.sortOrder = initSortOrder
     return f
   })
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    const f = { ...appliedFilters, sortBy: field, sortOrder: order }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
+  }
 
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
@@ -120,8 +131,8 @@ export default function AdminUsersPage() {
       search: searchFilter || undefined,
       dateFrom: dateFromFilter || undefined,
       dateTo: dateToFilter || undefined,
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
     }
     setAppliedFilters(f)
     setCurrentPage(1)
@@ -134,8 +145,8 @@ export default function AdminUsersPage() {
     setSearchFilter('')
     setDateFromFilter('')
     setDateToFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
+    setSortBy('')
+    setSortOrder('')
     setAppliedFilters({})
     setCurrentPage(1)
     syncSearchParams({}, 1)
@@ -220,6 +231,10 @@ export default function AdminUsersPage() {
         case 'disable2FA':
           await disableUser2FA(token, selectedUser.id)
           toast.success(t('admin.users.disable2FASuccess', { defaultValue: '2FA disabled successfully' }))
+          break
+        case 'forceVerifyEmail':
+          await forceVerifyEmail(token, selectedUser.id)
+          toast.success(t('admin.users.verifyEmailSuccess', { defaultValue: 'Email verified successfully' }))
           break
       }
 
@@ -316,16 +331,7 @@ export default function AdminUsersPage() {
                     t={t}
                   />
                 </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-2">
-                  <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
-                  <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="createdAt">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
-                    <option value="lastLoginAt">{t('admin.users.lastLogin', { defaultValue: 'Last Login' })}</option>
-                    <option value="status">{t('filter.status', { defaultValue: 'Status' })}</option>
-                    <option value="role">{t('admin.users.role', { defaultValue: 'Role' })}</option>
-                  </Select>
-                </div>
+
               </div>
               <div className="flex gap-2 mt-3">
                 <Button onClick={applyFilters} disabled={loading}>
@@ -351,6 +357,9 @@ export default function AdminUsersPage() {
             onOpenModal={openModal}
             onPageChange={setCurrentPage}
             onSyncSearchParams={syncSearchParams}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSort={handleSort}
           />
         </div>
       </div>

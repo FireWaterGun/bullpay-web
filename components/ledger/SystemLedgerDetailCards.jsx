@@ -28,7 +28,9 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
           <tbody>
             {entry.reservationId && (
               <tr>
-                <td className="text-surface-500 align-top">{t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}</td>
+                <td className="text-surface-500 align-top">
+                  {t('admin.detail.reservationId', { defaultValue: 'Reservation ID' })}
+                </td>
                 <td className="break-all">
                   <code>{entry.reservationId}</code>
                 </td>
@@ -55,7 +57,8 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <i className="bx bx-link-external mr-1"></i>{t('admin.detail.viewOnExplorer', { defaultValue: 'View on Explorer' })}
+                        <i className="bx bx-link-external mr-1"></i>
+                        {t('admin.detail.viewOnExplorer', { defaultValue: 'View on Explorer' })}
                       </Button>
                     )}
                     <Button
@@ -64,7 +67,8 @@ export function TransactionCard({ entry, metadata, explorerUrl, onCopy }) {
                       size="sm"
                       className="py-[0.2rem] px-[0.5rem] text-xs"
                     >
-                      <i className="bx bx-copy mr-1"></i>{t('admin.detail.copy', { defaultValue: 'Copy' })}
+                      <i className="bx bx-copy mr-1"></i>
+                      {t('admin.detail.copy', { defaultValue: 'Copy' })}
                     </Button>
                   </div>
                 </td>

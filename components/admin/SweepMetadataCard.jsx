@@ -21,7 +21,9 @@ export default function SweepMetadataCard({ metadata }) {
           <tbody>
             {metadata.strategy && (
               <tr>
-                <td className="text-surface-500 w-2/5">{t('admin.sweepDetail.strategy', { defaultValue: 'Strategy' })}</td>
+                <td className="text-surface-500 w-2/5">
+                  {t('admin.sweepDetail.strategy', { defaultValue: 'Strategy' })}
+                </td>
                 <td>{metadata.strategy}</td>
               </tr>
             )}
@@ -40,19 +42,25 @@ export default function SweepMetadataCard({ metadata }) {
             )}
             {metadata.paymentCount != null && (
               <tr>
-                <td className="text-surface-500">{t('admin.sweepDetail.paymentCount', { defaultValue: 'Payment Count' })}</td>
+                <td className="text-surface-500">
+                  {t('admin.sweepDetail.paymentCount', { defaultValue: 'Payment Count' })}
+                </td>
                 <td>{metadata.paymentCount}</td>
               </tr>
             )}
             {metadata.paymentIds && (
               <tr>
-                <td className="text-surface-500">{t('admin.sweepDetail.paymentIds', { defaultValue: 'Payment IDs' })}</td>
+                <td className="text-surface-500">
+                  {t('admin.sweepDetail.paymentIds', { defaultValue: 'Payment IDs' })}
+                </td>
                 <td>{metadata.paymentIds.join(', ')}</td>
               </tr>
             )}
             {metadata.ledgerEntryIds && (
               <tr>
-                <td className="text-surface-500">{t('admin.sweepDetail.ledgerEntryIds', { defaultValue: 'Ledger Entry IDs' })}</td>
+                <td className="text-surface-500">
+                  {t('admin.sweepDetail.ledgerEntryIds', { defaultValue: 'Ledger Entry IDs' })}
+                </td>
                 <td>{metadata.ledgerEntryIds.join(', ')}</td>
               </tr>
             )}

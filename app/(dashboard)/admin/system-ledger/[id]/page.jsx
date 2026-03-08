@@ -104,12 +104,17 @@ export default function SystemLedgerDetail() {
                   )}
                   <div>
                     <h4 className="mb-1">
-                      {t('admin.systemLedger.detailTitle', { defaultValue: 'System Ledger Entry #{{id}}', id: entry.id })}
+                      {t('admin.systemLedger.detailTitle', {
+                        defaultValue: 'System Ledger Entry #{{id}}',
+                        id: entry.id,
+                      })}
                     </h4>
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'} label>
                         <i className={`bx ${isCredit ? 'bx-minus-circle' : 'bx-plus-circle'} mr-1`}></i>
-                        {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
+                        {isCredit
+                          ? t('admin.detail.credit', { defaultValue: 'Credit' })
+                          : t('admin.detail.debit', { defaultValue: 'Debit' })}
                       </Badge>
                       {entry.entryCode && (
                         <Badge color="secondary">{getSystemEntryCodeLabel(entry.entryCode, t)}</Badge>
@@ -181,13 +186,17 @@ export default function SystemLedgerDetail() {
                             color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'danger' : 'success'}
                             label
                           >
-                            {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
+                            {isCredit
+                              ? t('admin.detail.credit', { defaultValue: 'Credit' })
+                              : t('admin.detail.debit', { defaultValue: 'Debit' })}
                           </Badge>
                         </td>
                       </tr>
                       {entry.entryCode && (
                         <tr>
-                          <td className="text-surface-500">{t('admin.detail.entryCode', { defaultValue: 'Entry Code' })}</td>
+                          <td className="text-surface-500">
+                            {t('admin.detail.entryCode', { defaultValue: 'Entry Code' })}
+                          </td>
                           <td>
                             <code>{entry.entryCode}</code>
                             <span className="text-surface-500 ml-2">
@@ -210,13 +219,17 @@ export default function SystemLedgerDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.amountRaw', { defaultValue: 'Amount (Raw)' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.amountRaw', { defaultValue: 'Amount (Raw)' })}
+                        </td>
                         <td>
                           <code className="text-[0.8rem]">{entry.amountRaw || 'N/A'}</code>
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.usdValue', { defaultValue: 'USD Value' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.usdValue', { defaultValue: 'USD Value' })}
+                        </td>
                         <td>{formatUsd(entry.amountUsd)}</td>
                       </tr>
                       <tr>

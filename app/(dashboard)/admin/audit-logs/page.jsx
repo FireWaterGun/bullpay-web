@@ -19,6 +19,7 @@ import Card from '@/components/ui/Card'
 import { Input, Label, Select } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
+import SortableHeader from '@/components/ui/SortableHeader'
 
 const ACTION_VALUES = [
   // Invoice
@@ -86,10 +87,6 @@ export default function AuditLogList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
-  const SORT_BY_OPTIONS = [
-    { value: 'created_at', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
-    { value: 'action', label: t('admin.auditLog.action', { defaultValue: 'Action' }) },
-  ]
   const { token } = useAuth()
   const toast = useToast()
 
@@ -107,11 +104,18 @@ export default function AuditLogList() {
   const [resourceIdFilter, setResourceIdFilter] = useState('')
   const [fromDateFilter, setFromDateFilter] = useState('')
   const [toDateFilter, setToDateFilter] = useState('')
-  const [sortByFilter, setSortByFilter] = useState('')
-  const [sortOrderFilter, setSortOrderFilter] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [sortOrder, setSortOrder] = useState('')
 
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({})
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
+    setCurrentPage(1)
+  }
 
   const loadLogs = useCallback(async () => {
     try {
@@ -143,8 +147,8 @@ export default function AuditLogList() {
       resourceId: resourceIdFilter || undefined,
       fromDate: fromDateFilter || undefined,
       toDate: toDateFilter || undefined,
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
     })
     setCurrentPage(1)
   }
@@ -156,8 +160,8 @@ export default function AuditLogList() {
     setResourceIdFilter('')
     setFromDateFilter('')
     setToDateFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
+    setSortBy('')
+    setSortOrder('')
     setAppliedFilters({})
     setCurrentPage(1)
   }
@@ -220,6 +224,7 @@ export default function AuditLogList() {
                   <Label>{t('admin.detail.userId', { defaultValue: 'User ID' })}</Label>
                   <Input
                     type="number"
+                    min="1"
                     placeholder={t('admin.detail.userId', { defaultValue: 'User ID' })}
                     value={userIdFilter}
                     onChange={(e) => setUserIdFilter(e.target.value)}
@@ -269,25 +274,6 @@ export default function AuditLogList() {
                     t={t}
                   />
                 </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
-                  <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    {SORT_BY_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
-                  <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
-                  </Select>
-                </div>
               </div>
               <div className="flex gap-2 mt-3">
                 <Button onClick={applyFilters} disabled={loading}>
@@ -313,7 +299,7 @@ export default function AuditLogList() {
                   <th>{t('admin.auditLog.resourceType', { defaultValue: 'Resource Type' })}</th>
                   <th className="text-center">{t('admin.auditLog.resourceId', { defaultValue: 'Resource ID' })}</th>
                   <th>{t('admin.auditLog.ipAddress', { defaultValue: 'IP Address' })}</th>
-                  <th>{t('admin.detail.created', { defaultValue: 'Created' })}</th>
+                  <SortableHeader field="created_at" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('admin.detail.created', { defaultValue: 'Created' })}</SortableHeader>
                   <th></th>
                 </tr>
               </thead>

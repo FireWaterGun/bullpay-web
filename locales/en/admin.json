@@ -1206,7 +1206,8 @@
     "backToInvoices": "Back to Invoices",
     "merchantId": "Merchant ID",
     "payments": "Payments",
-    "noPayments": "No payments recorded for this invoice"
+    "noPayments": "No payments recorded for this invoice",
+    "viewPaymentPage": "View payment page"
   },
   "paymentDetail": {
     "notFound": "Payment not found",

@@ -20,10 +20,6 @@ export default function AdminPaymentFilters({
   setFromDateFilter,
   toDateFilter,
   setToDateFilter,
-  sortByFilter,
-  setSortByFilter,
-  sortOrderFilter,
-  setSortOrderFilter,
   onApply,
   onReset,
 }) {
@@ -86,28 +82,6 @@ export default function AdminPaymentFilters({
             placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
             t={t}
           />
-        </div>
-        <div className="col-span-12 sm:col-span-6 md:col-span-3">
-          <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
-          <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-            <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-            <option value="created_at">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
-            <option value="amount_raw">{t('filter.amount', { defaultValue: 'Amount' })}</option>
-            <option value="status">{t('filter.status', { defaultValue: 'Status' })}</option>
-            <option value="confirmations">{t('filter.confirmations', { defaultValue: 'Confirmations' })}</option>
-          </Select>
-        </div>
-        <div className="col-span-12 sm:col-span-6 md:col-span-3">
-          <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
-          <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-            <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-            <option value="asc">
-              {t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}
-            </option>
-            <option value="desc">
-              {t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}
-            </option>
-          </Select>
         </div>
       </div>
       <div className="flex gap-2 mt-3">

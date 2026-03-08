@@ -510,6 +510,7 @@ export async function getSweeps(
     status?: string
     userId?: number
     coinNetworkId?: number
+    fromAddress?: string
     startDate?: string
     endDate?: string
     sortBy?: string
@@ -523,6 +524,7 @@ export async function getSweeps(
   if (params.status) queryParams.append('status', params.status)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.fromAddress) queryParams.append('fromAddress', params.fromAddress)
   if (params.startDate) queryParams.append('startDate', params.startDate)
   if (params.endDate) queryParams.append('endDate', params.endDate)
   if (params.sortBy) queryParams.append('sortBy', params.sortBy)
@@ -790,6 +792,8 @@ export async function getAdminInvoices(
   params: {
     page?: number
     limit?: number
+    invoiceId?: number
+    invoiceNumber?: string
     status?: string
     userId?: number
     merchantId?: number
@@ -804,6 +808,8 @@ export async function getAdminInvoices(
 
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.invoiceId) queryParams.append('invoiceId', String(params.invoiceId))
+  if (params.invoiceNumber) queryParams.append('invoiceNumber', params.invoiceNumber)
   if (params.status) queryParams.append('status', params.status)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.merchantId) queryParams.append('merchantId', String(params.merchantId))
@@ -1173,6 +1179,7 @@ export async function getMerchants(
     page?: number
     limit?: number
     status?: string
+    search?: string
   } = {}
 ) {
   const queryParams = new URLSearchParams()
@@ -1180,6 +1187,7 @@ export async function getMerchants(
   if (params.page) queryParams.append('page', String(params.page))
   if (params.limit) queryParams.append('limit', String(params.limit))
   if (params.status) queryParams.append('status', params.status)
+  if (params.search) queryParams.append('search', params.search)
 
   const queryString = queryParams.toString()
   const url = `/api/v1/admin/merchants${queryString ? `?${queryString}` : ''}`
@@ -1325,6 +1333,16 @@ export async function resetUserPassword(token: string | null, id: number, newPas
  */
 export async function disableUser2FA(token: string | null, id: number) {
   return apiFetch(`/api/v1/admin/users/${id}/disable-2fa`, {
+    method: 'POST',
+    token,
+  })
+}
+
+/**
+ * Force verify user email (Admin only)
+ */
+export async function forceVerifyEmail(token: string | null, id: number) {
+  return apiFetch(`/api/v1/admin/users/${id}/force-verify-email`, {
     method: 'POST',
     token,
   })
@@ -1637,6 +1655,7 @@ export async function getUserBalances(
     sortBy?: string
     sortOrder?: string
     minValueUsd?: number
+    search?: string
   } = {}
 ) {
   const query = new URLSearchParams()
@@ -1645,6 +1664,7 @@ export async function getUserBalances(
   if (params.sortBy) query.set('sortBy', params.sortBy)
   if (params.sortOrder) query.set('sortOrder', params.sortOrder)
   if (params.minValueUsd != null) query.set('minValueUsd', String(params.minValueUsd))
+  if (params.search) query.set('search', params.search)
 
   const qs = query.toString()
   const raw = await apiFetch<any>(`/api/v1/admin/user-balances${qs ? `?${qs}` : ''}`, { token })
@@ -1670,6 +1690,37 @@ export async function getUserBalances(
  */
 export async function getUserBalanceDetail(token: string | null, userId: number | string) {
   return apiFetch(`/api/v1/admin/user-balances/${userId}`, { token })
+}
+
+// ── User Activities ──────────────────────────────────────────
+
+/**
+ * List user activities (Admin only)
+ */
+export async function getUserActivities(
+  token: string | null,
+  params: {
+    page?: number
+    limit?: number
+    userId?: number | string
+    eventType?: string
+    search?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.userId) queryParams.append('userId', String(params.userId))
+  if (params.eventType) queryParams.append('eventType', params.eventType)
+  if (params.search) queryParams.append('search', params.search)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const qs = queryParams.toString()
+  const url = `/api/v1/admin/user-activities${qs ? `?${qs}` : ''}`
+  return apiFetch<any>(url, { token })
 }
 
 // ── System Balance Adjustment ────────────────────────────────────

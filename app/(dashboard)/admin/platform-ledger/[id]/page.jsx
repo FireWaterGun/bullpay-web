@@ -68,7 +68,9 @@ export default function PlatformLedgerDetail() {
         </Badge>
       )
     }
-    if (state === 'reversed') return <Badge color="secondary">{t('admin.detail.reversed', { defaultValue: 'Reversed' })}</Badge>
+    if (state === 'reversed') {
+      return <Badge color="secondary">{t('admin.detail.reversed', { defaultValue: 'Reversed' })}</Badge>
+    }
     return <span className="text-surface-500">{state || 'N/A'}</span>
   }
 
@@ -137,14 +139,23 @@ export default function PlatformLedgerDetail() {
             <div className="flex items-center gap-3">
               {entry.coinSymbol && <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />}
               <div>
-                <h4 className="mb-1">{t('admin.platformLedger.detailTitle', { defaultValue: 'Platform Ledger Entry #{{id}}', id: entry.id })}</h4>
+                <h4 className="mb-1">
+                  {t('admin.platformLedger.detailTitle', {
+                    defaultValue: 'Platform Ledger Entry #{{id}}',
+                    id: entry.id,
+                  })}
+                </h4>
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
-                    {entry.accountType === 'revenue' ? t('admin.detail.accountType_revenue', { defaultValue: 'Revenue' }) : t('admin.detail.accountType_expense', { defaultValue: 'Expense' })}
+                    {entry.accountType === 'revenue'
+                      ? t('admin.detail.accountType_revenue', { defaultValue: 'Revenue' })
+                      : t('admin.detail.accountType_expense', { defaultValue: 'Expense' })}
                   </Badge>
                   <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
                     <i className={`bx ${isCredit ? 'bx-plus-circle' : 'bx-minus-circle'} mr-1`}></i>
-                    {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
+                    {isCredit
+                      ? t('admin.detail.credit', { defaultValue: 'Credit' })
+                      : t('admin.detail.debit', { defaultValue: 'Debit' })}
                   </Badge>
                   {entry.entryCode && (
                     <Badge color="secondary">{entryCodeLabels[entry.entryCode] || entry.entryCode}</Badge>
@@ -183,10 +194,14 @@ export default function PlatformLedgerDetail() {
                     <td className="font-medium">{entry.id}</td>
                   </tr>
                   <tr>
-                    <td className="text-surface-500">{t('admin.detail.accountType', { defaultValue: 'Account Type' })}</td>
+                    <td className="text-surface-500">
+                      {t('admin.detail.accountType', { defaultValue: 'Account Type' })}
+                    </td>
                     <td>
                       <Badge color={entry.accountType === 'revenue' ? 'success' : 'warning'} label>
-                        {entry.accountType === 'revenue' ? t('admin.detail.accountType_revenue', { defaultValue: 'Revenue' }) : t('admin.detail.accountType_expense', { defaultValue: 'Expense' })}
+                        {entry.accountType === 'revenue'
+                          ? t('admin.detail.accountType_revenue', { defaultValue: 'Revenue' })
+                          : t('admin.detail.accountType_expense', { defaultValue: 'Expense' })}
                       </Badge>
                     </td>
                   </tr>
@@ -218,7 +233,9 @@ export default function PlatformLedgerDetail() {
                     <td className="text-surface-500">{t('admin.detail.entryType', { defaultValue: 'Entry Type' })}</td>
                     <td>
                       <Badge color={entry.state === 'reversed' ? 'secondary' : isCredit ? 'success' : 'danger'} label>
-                        {isCredit ? t('admin.detail.credit', { defaultValue: 'Credit' }) : t('admin.detail.debit', { defaultValue: 'Debit' })}
+                        {isCredit
+                          ? t('admin.detail.credit', { defaultValue: 'Credit' })
+                          : t('admin.detail.debit', { defaultValue: 'Debit' })}
                       </Badge>
                     </td>
                   </tr>

@@ -1251,7 +1251,8 @@
     "backToInvoices": "กลับไปใบแจ้งหนี้",
     "merchantId": "ID ร้านค้า",
     "payments": "การชำระเงิน",
-    "noPayments": "ไม่พบรายการชำระเงินสำหรับใบแจ้งหนี้นี้"
+    "noPayments": "ไม่พบรายการชำระเงินสำหรับใบแจ้งหนี้นี้",
+    "viewPaymentPage": "ดูหน้าชำระเงิน"
   },
   "paymentDetail": {
     "notFound": "ไม่พบการชำระเงิน",

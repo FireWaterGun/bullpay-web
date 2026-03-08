@@ -86,7 +86,7 @@ export default function InvoiceDetailPage() {
           </li>
           <li className="text-surface-400">/</li>
           <li className="text-surface-800 dark:text-surface-200 font-medium">
-            {invoice?.publicCode || invoice?.code || `#${id}`}
+            {invoice?.invoiceNumber || `#${id}`}
           </li>
         </ol>
       </nav>
@@ -116,7 +116,7 @@ export default function InvoiceDetailPage() {
               <div className="p-6">
                 <div>
                   <h5 className="font-semibold text-surface-900 mb-1 flex items-center gap-2">
-                    <span>{invoice.publicCode || invoice.code || invoice.id}</span>
+                    <span>{invoice.invoiceNumber || invoice.id}</span>
                     <span
                       className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium capitalize ${statusClass(invoice.status)}`}
                     >
@@ -126,6 +126,11 @@ export default function InvoiceDetailPage() {
                     </span>
                     <RefreshButton onClick={loadInvoice} loading={refreshing} />
                   </h5>
+                  {invoice.publicCode && (
+                    <div className="text-surface-500 text-xs font-mono mt-0.5">
+                      {t('invoices.publicCode', { defaultValue: 'Code' })}: {invoice.publicCode}
+                    </div>
+                  )}
                   <div className="text-surface-500 text-sm">
                     {t('invoices.createdAt') || 'Created'}: {fmtDateTime(invoice.createdAt || invoice.created_at)}
                   </div>

@@ -116,7 +116,9 @@ export default function AdminInvoiceDetail() {
             <div className="col-span-12 md:col-span-6">
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
-                  <h5 className="mb-0">{t('admin.invoiceDetail.invoiceDetails', { defaultValue: 'Invoice Details' })}</h5>
+                  <h5 className="mb-0">
+                    {t('admin.invoiceDetail.invoiceDetails', { defaultValue: 'Invoice Details' })}
+                  </h5>
                 </div>
                 <div className="p-5">
                   <Table responsive={false} className="mb-0">
@@ -126,12 +128,32 @@ export default function AdminInvoiceDetail() {
                         <td className="font-medium">{invoice.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.invoiceNumber', { defaultValue: 'Invoice Number' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.invoiceNumber', { defaultValue: 'Invoice Number' })}
+                        </td>
                         <td className="font-medium">{invoice.invoiceNumber || '-'}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.publicCode', { defaultValue: 'Public Code' })}</td>
-                        <td className="font-medium">{invoice.publicCode || '-'}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.publicCode', { defaultValue: 'Public Code' })}
+                        </td>
+                        <td className="font-medium">
+                          {invoice.publicCode ? (
+                            <span className="flex items-center gap-2">
+                              {invoice.publicCode}
+                              <Button
+                                variant="text-secondary"
+                                size="icon-sm"
+                                href={`/invoice/${invoice.publicCode}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={t('admin.invoiceDetail.viewPaymentPage', { defaultValue: 'View payment page' })}
+                              >
+                                <i className="bx bx-link-external text-base"></i>
+                              </Button>
+                            </span>
+                          ) : '-'}
+                        </td>
                       </tr>
                       <tr>
                         <td className="text-surface-500">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
@@ -148,13 +170,17 @@ export default function AdminInvoiceDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.paidAmount', { defaultValue: 'Paid Amount' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.paidAmount', { defaultValue: 'Paid Amount' })}
+                        </td>
                         <td className="font-medium">
                           {formatAmount(invoice.paidAmount)} {coinSymbol}
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.remaining', { defaultValue: 'Remaining' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.remaining', { defaultValue: 'Remaining' })}
+                        </td>
                         <td className="font-medium">
                           {formatAmount(invoice.remainingAmount)} {coinSymbol}
                           {invoice.isFullyPaid && (
@@ -174,7 +200,9 @@ export default function AdminInvoiceDetail() {
                       )}
                       {invoice.usdRate && (
                         <tr>
-                          <td className="text-surface-500">{t('admin.detail.usdRate', { defaultValue: 'USD Rate' })}</td>
+                          <td className="text-surface-500">
+                            {t('admin.detail.usdRate', { defaultValue: 'USD Rate' })}
+                          </td>
                           <td>
                             ${formatAmount(invoice.usdRate)}
                             {invoice.rateSource && (
@@ -238,12 +266,16 @@ export default function AdminInvoiceDetail() {
                       )}
                       {invoice.merchantId && (
                         <tr>
-                          <td className="text-surface-500">{t('admin.invoiceDetail.merchantId', { defaultValue: 'Merchant ID' })}</td>
+                          <td className="text-surface-500">
+                            {t('admin.invoiceDetail.merchantId', { defaultValue: 'Merchant ID' })}
+                          </td>
                           <td className="font-medium">{invoice.merchantId}</td>
                         </tr>
                       )}
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.paymentAddress', { defaultValue: 'Payment Address' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.paymentAddress', { defaultValue: 'Payment Address' })}
+                        </td>
                         <td>
                           {invoice.paymentAddress ? (
                             <div className="flex items-center">
@@ -271,7 +303,9 @@ export default function AdminInvoiceDetail() {
                       )}
                       {invoice.description && (
                         <tr>
-                          <td className="text-surface-500">{t('admin.detail.description', { defaultValue: 'Description' })}</td>
+                          <td className="text-surface-500">
+                            {t('admin.detail.description', { defaultValue: 'Description' })}
+                          </td>
                           <td>{invoice.description}</td>
                         </tr>
                       )}

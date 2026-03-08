@@ -195,7 +195,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       'admin-ops-payments': 'nav.payments',
       'admin-sweeps': 'nav.sweeps',
       'admin-gas-topups': 'nav.gasTopups',
-      'admin-user-management': 'nav.userMerchant',
+      'admin-user-management': 'nav.users',
       'admin-users': 'nav.users',
       'admin-merchants': 'nav.merchants',
       'admin-roles': 'nav.rolesPermissions',

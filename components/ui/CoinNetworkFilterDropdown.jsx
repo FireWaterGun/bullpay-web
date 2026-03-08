@@ -16,7 +16,9 @@ import { inputClass } from '@/components/ui/Input'
  */
 export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, onChange, allLabel = 'All' }) {
   const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
   const ref = useRef(null)
+  const searchRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -26,7 +28,26 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (open) {
+      setSearch('')
+      // Small delay so the DOM renders before focusing
+      requestAnimationFrame(() => searchRef.current?.focus())
+    }
+  }, [open])
+
   const selected = value ? coinNetworks.find((c) => String(c.id) === String(value)) : null
+
+  const filtered = search.trim()
+    ? coinNetworks.filter((cn) => {
+        const sym = (cn.coin?.symbol || '').toLowerCase()
+        const net = (cn.network?.symbol || '').toLowerCase()
+        const name = (cn.coin?.name || '').toLowerCase()
+        const q = search.trim().toLowerCase()
+        return sym.includes(q) || net.includes(q) || name.includes(q)
+      })
+    : coinNetworks
 
   return (
     <div className="relative" ref={ref}>
@@ -52,39 +73,66 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-card shadow-lg max-h-[280px] overflow-y-auto">
-          <button
-            type="button"
-            className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 text-sm text-surface-500"
-            onClick={() => {
-              onChange('')
-              setOpen(false)
-            }}
-          >
-            {allLabel}
-          </button>
-          <hr className="border-surface-200" />
-          {coinNetworks.map((cn) => {
-            const sym = (cn.coin?.symbol || '').toUpperCase()
-            const net = (cn.network?.symbol || '').toUpperCase()
-            return (
-              <button
-                type="button"
-                key={cn.id}
-                className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 flex items-center gap-2"
-                onClick={() => {
-                  onChange(String(cn.id))
-                  setOpen(false)
-                }}
-              >
-                <CoinImg symbol={sym} networkSymbol={net} size={28} />
-                <div>
-                  <div className="font-semibold text-[0.85rem]">{sym}</div>
-                  <div className="text-surface-500 text-[0.7rem]">{net}</div>
-                </div>
-              </button>
-            )
-          })}
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-surface-200 bg-card shadow-lg flex flex-col max-h-[320px]">
+          {/* Search input */}
+          <div className="p-2 border-b border-surface-200">
+            <div className="relative">
+              <i className="bx bx-search absolute left-2.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm" />
+              <input
+                ref={searchRef}
+                type="text"
+                className="w-full pl-8 pr-3 py-1.5 text-sm rounded-md border border-surface-200 bg-surface-50 dark:bg-white/5 focus:outline-none focus:ring-1 focus:ring-primary-400 placeholder:text-surface-400"
+                placeholder="Search coin or network..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Options */}
+          <div className="overflow-y-auto flex-1">
+            {!search.trim() && (
+              <>
+                <button
+                  type="button"
+                  className="w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 text-sm text-surface-500"
+                  onClick={() => {
+                    onChange('')
+                    setOpen(false)
+                  }}
+                >
+                  {allLabel}
+                </button>
+                <hr className="border-surface-200" />
+              </>
+            )}
+            {filtered.length === 0 ? (
+              <div className="px-3 py-4 text-center text-sm text-surface-400">No results</div>
+            ) : (
+              filtered.map((cn) => {
+                const sym = (cn.coin?.symbol || '').toUpperCase()
+                const net = (cn.network?.symbol || '').toUpperCase()
+                const isSelected = String(cn.id) === String(value)
+                return (
+                  <button
+                    type="button"
+                    key={cn.id}
+                    className={`w-full text-left px-3 py-2 hover:bg-surface-50 dark:hover:bg-white/6 flex items-center gap-2 ${isSelected ? 'bg-primary-50 dark:bg-primary-500/10' : ''}`}
+                    onClick={() => {
+                      onChange(String(cn.id))
+                      setOpen(false)
+                    }}
+                  >
+                    <CoinImg symbol={sym} networkSymbol={net} size={28} />
+                    <div className="min-w-0">
+                      <div className="font-semibold text-[0.85rem]">{sym}</div>
+                      <div className="text-surface-500 text-[0.7rem]">{net}</div>
+                    </div>
+                  </button>
+                )
+              })
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -54,6 +54,13 @@ export default function UserActionModal({
           btnLabel: t('admin.users.disable2FABtn', { defaultValue: 'Disable 2FA' }),
           icon: 'bx-shield-x',
         }
+      case 'forceVerifyEmail':
+        return {
+          title: t('admin.users.forceVerifyEmail', { defaultValue: 'Force Verify Email' }),
+          btnVariant: 'success',
+          btnLabel: t('admin.users.verifyEmailBtn', { defaultValue: 'Verify Email' }),
+          icon: 'bx-envelope',
+        }
       default:
         return { title: '', btnVariant: 'primary', btnLabel: '', icon: '' }
     }
@@ -187,6 +194,16 @@ export default function UserActionModal({
                 {t('admin.users.disable2FAWarning', {
                   defaultValue:
                     'This will disable two-factor authentication for this user. They will need to set it up again.',
+                })}
+              </Alert>
+            )}
+
+            {modalType === 'forceVerifyEmail' && (
+              <Alert role="alert" variant="info" className="py-2 mb-3">
+                <i className="bx bx-info-circle mr-1"></i>
+                {t('admin.users.forceVerifyEmailWarning', {
+                  defaultValue:
+                    'This will mark the email as verified and activate the account if it is pending.',
                 })}
               </Alert>
             )}

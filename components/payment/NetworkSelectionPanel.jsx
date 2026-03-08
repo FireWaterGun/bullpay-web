@@ -3,7 +3,7 @@
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { NetworkIcon } from '@/components/CoinImg'
-import { formatDuration } from '@/components/payment/useInvoicePayment'
+import { formatDuration } from '@/components/payment/usePaymentBase'
 import Button from '../ui/Button'
 import Spinner from '../ui/Spinner'
 

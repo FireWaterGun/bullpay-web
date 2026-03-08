@@ -15,7 +15,7 @@ import TableEmptyState from '@/components/TableEmptyState'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import { Label, Select } from '@/components/ui/Input'
+import { Label, Select, Input } from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
 import ActionMenu from '@/components/ui/ActionMenu'
 import Pagination from '@/components/ui/Pagination'
@@ -29,6 +29,7 @@ export default function AdminMerchantsPage() {
   const searchParams = useNextSearchParams()
 
   const initStatus = searchParams.get('status') || ''
+  const initSearch = searchParams.get('search') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [loading, setLoading] = useState(false)
@@ -38,6 +39,8 @@ export default function AdminMerchantsPage() {
 
   const [statusFilter, setStatusFilter] = useState(initStatus)
   const [appliedStatus, setAppliedStatus] = useState(initStatus)
+  const [searchFilter, setSearchFilter] = useState(initSearch)
+  const [appliedSearch, setAppliedSearch] = useState(initSearch)
 
   const [showModal, setShowModal] = useState(false)
   const [modalAction, setModalAction] = useState('')
@@ -48,7 +51,7 @@ export default function AdminMerchantsPage() {
     if (!token) return
     try {
       setLoading(true)
-      const data = await getMerchants(token, { page: currentPage, limit: 20, status: appliedStatus || undefined })
+      const data = await getMerchants(token, { page: currentPage, limit: 20, status: appliedStatus || undefined, search: appliedSearch || undefined })
       setMerchants(data.items || [])
       setPagination(data.pagination || null)
     } catch (error) {
@@ -57,14 +60,15 @@ export default function AdminMerchantsPage() {
     } finally {
       setLoading(false)
     }
-  }, [token, currentPage, appliedStatus, toast, t])
+  }, [token, currentPage, appliedStatus, appliedSearch, toast, t])
 
   useEffect(() => {
     loadMerchants()
   }, [loadMerchants])
 
-  function syncSearchParams(status, page) {
+  function syncSearchParams(status, page, search) {
     const params = new URLSearchParams()
+    if (search) params.set('search', search)
     if (status) params.set('status', status)
     if (page > 1) params.set('page', page)
     window.history.replaceState(null, '', `?${params.toString()}`)
@@ -72,15 +76,18 @@ export default function AdminMerchantsPage() {
 
   function applyFilters() {
     setAppliedStatus(statusFilter)
+    setAppliedSearch(searchFilter)
     setCurrentPage(1)
-    syncSearchParams(statusFilter, 1)
+    syncSearchParams(statusFilter, 1, searchFilter)
   }
 
   function resetFilters() {
     setStatusFilter('')
     setAppliedStatus('')
+    setSearchFilter('')
+    setAppliedSearch('')
     setCurrentPage(1)
-    syncSearchParams('', 1)
+    syncSearchParams('', 1, '')
   }
 
   function openModal(action, merchant) {
@@ -150,6 +157,16 @@ export default function AdminMerchantsPage() {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="col-span-12 sm:col-span-6 md:col-span-4">
+                  <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
+                  <Input
+                    type="text"
+                    placeholder={t('admin.merchants.searchPlaceholder', { defaultValue: 'Merchant name or email...' })}
+                    value={searchFilter}
+                    onChange={(e) => setSearchFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
+                  />
+                </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('filter.status', { defaultValue: 'Status' })}</Label>
                   <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
@@ -243,7 +260,7 @@ export default function AdminMerchantsPage() {
                           </span>
                         </td>
                         <td className="text-right whitespace-nowrap">
-                          {merchant.commissionRate ? formatCommission(merchant.commissionRate) : '-'}
+                          {merchant.commissionRate != null ? formatCommission(merchant.commissionRate) : '-'}
                         </td>
                         <td className="text-center">
                           {merchant.hasWebhook ? (

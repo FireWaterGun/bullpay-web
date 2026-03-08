@@ -99,7 +99,9 @@ export function stateBadge(state, t) {
       </Badge>
     )
   }
-  if (state === 'reversed') return <Badge color="secondary">{t ? t('admin.detail.reversed', { defaultValue: 'Reversed' }) : 'Reversed'}</Badge>
+  if (state === 'reversed') {
+    return <Badge color="secondary">{t ? t('admin.detail.reversed', { defaultValue: 'Reversed' }) : 'Reversed'}</Badge>
+  }
   return <span className="text-surface-500">{state || 'N/A'}</span>
 }
 

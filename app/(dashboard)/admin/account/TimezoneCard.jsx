@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { updateProfileApi } from '@/lib/api/auth'
 import { COMMON_TIMEZONES } from '@/lib/constants'
 import { logger } from '@/lib/utils/logger'
@@ -14,7 +14,13 @@ import Spinner from '@/components/ui/Spinner'
  */
 export default function TimezoneCard({ token, user, selectedTimezone, setSelectedTimezone, updateUser, toast, t }) {
   const [savingTimezone, setSavingTimezone] = useState(false)
+  const [now, setNow] = useState(() => new Date())
   const timezoneChanged = selectedTimezone !== (user?.timezone || 'UTC')
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const handleSave = async () => {
     setSavingTimezone(true)
@@ -50,7 +56,7 @@ export default function TimezoneCard({ token, user, selectedTimezone, setSelecte
         {/* Live clock preview */}
         <div className="text-center mb-4 py-3 rounded-lg" style={{ background: 'rgba(59, 130, 246, 0.06)' }}>
           <div className="font-bold text-[1.75rem] text-primary tabular-nums tracking-[0.05em]">
-            {new Date().toLocaleString(undefined, {
+            {now.toLocaleString(undefined, {
               timeZone: selectedTimezone,
               hour: '2-digit',
               minute: '2-digit',

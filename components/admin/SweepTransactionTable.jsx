@@ -5,6 +5,7 @@ import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import TableEmptyState from '@/components/TableEmptyState'
+import SortableHeader from '../ui/SortableHeader'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Spinner from '../ui/Spinner'
@@ -22,6 +23,9 @@ export default function SweepTransactionTable({
   onNavigate,
   onRetry,
   onPageChange,
+  sortBy,
+  sortOrder,
+  onSort,
 }) {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
@@ -35,15 +39,15 @@ export default function SweepTransactionTable({
             <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
             <th>{t('admin.chain', { defaultValue: 'Chain' })}</th>
             <th>{t('admin.sweep.coin', { defaultValue: 'Coin' })}</th>
-            <th className="text-right">{t('admin.sweep.amount', { defaultValue: 'Amount' })}</th>
+            <SortableHeader field="amount" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} className="text-right">{t('admin.sweep.amount', { defaultValue: 'Amount' })}</SortableHeader>
             <th className="text-right">{t('admin.sweep.actualAmount', { defaultValue: 'Actual Amount' })}</th>
             <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>
             <th className="text-center">{t('admin.sweep.status', { defaultValue: 'Status' })}</th>
             <th>{t('admin.sweep.txHash', { defaultValue: 'Tx Hash' })}</th>
             <th>{t('admin.sweep.from', { defaultValue: 'From Address' })}</th>
             <th>{t('admin.sweep.to', { defaultValue: 'To Address' })}</th>
-            <th>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</th>
-            <th>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</th>
+            <SortableHeader field="created_at" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort}>{t('admin.sweep.createdAt', { defaultValue: 'Created Date' })}</SortableHeader>
+            <SortableHeader field="completed_at" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort}>{t('admin.sweep.completedAt', { defaultValue: 'Completed Date' })}</SortableHeader>
             <th className="text-center">{t('admin.sweep.actions', { defaultValue: 'Actions' })}</th>
           </tr>
         </thead>
@@ -141,6 +145,7 @@ export default function SweepTransactionTable({
                         href={`${sweep.coinNetwork?.network?.explorerUrl}/tx/${sweep.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                       >
                         <i className="bx bx-link-external text-xl"></i>
@@ -155,7 +160,7 @@ export default function SweepTransactionTable({
                     <span className="mr-2">{sweep.fromAddress || 'N/A'}</span>
                     {sweep.fromAddress && (
                       <Button
-                        onClick={() => handleCopy(sweep.fromAddress)}
+                        onClick={(e) => { e.stopPropagation(); handleCopy(sweep.fromAddress) }}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
@@ -170,7 +175,7 @@ export default function SweepTransactionTable({
                     <span className="mr-2">{sweep.toAddress || 'N/A'}</span>
                     {sweep.toAddress && (
                       <Button
-                        onClick={() => handleCopy(sweep.toAddress)}
+                        onClick={(e) => { e.stopPropagation(); handleCopy(sweep.toAddress) }}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"

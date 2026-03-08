@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Badge from '@/components/ui/Badge'
 import Card from '@/components/ui/Card'
 
@@ -7,6 +8,13 @@ import Card from '@/components/ui/Card'
  * Profile Hero — avatar, name, badges, stats strip.
  */
 export default function ProfileHeroCard({ user, selectedTimezone, is2FAEnabled, twoFALoading, t }) {
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
   return (
     <Card className="mb-4 overflow-hidden">
       {/* Gradient accent bar */}
@@ -76,7 +84,7 @@ export default function ProfileHeroCard({ user, selectedTimezone, is2FAEnabled, 
             icon="bx-time-five"
             bg="bg-info-50 dark:bg-info-500/10 text-info-700 dark:text-info-300"
             label={t('admin.account.statsLocalTime', { defaultValue: 'Local Time' })}
-            value={new Date().toLocaleString(undefined, {
+            value={now.toLocaleString(undefined, {
               timeZone: selectedTimezone,
               hour: '2-digit',
               minute: '2-digit',
@@ -87,7 +95,7 @@ export default function ProfileHeroCard({ user, selectedTimezone, is2FAEnabled, 
             icon="bx-calendar"
             bg="bg-primary-50 text-primary-600"
             label={t('admin.account.statsDate', { defaultValue: 'Date' })}
-            value={new Date().toLocaleDateString(undefined, {
+            value={now.toLocaleDateString(undefined, {
               timeZone: selectedTimezone,
               month: 'short',
               day: 'numeric',

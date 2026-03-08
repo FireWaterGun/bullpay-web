@@ -11,16 +11,14 @@ export default function SweepTransactionFilters({
   setStatusFilter,
   userIdFilter,
   setUserIdFilter,
+  fromAddressFilter,
+  setFromAddressFilter,
   coinNetworkIdFilter,
   setCoinNetworkIdFilter,
   startDateFilter,
   setStartDateFilter,
   endDateFilter,
   setEndDateFilter,
-  sortByFilter,
-  setSortByFilter,
-  sortOrderFilter,
-  setSortOrderFilter,
   coinNetworks,
   locale,
   loading,
@@ -53,6 +51,16 @@ export default function SweepTransactionFilters({
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">
+          <Label>{t('admin.sweep.fromAddress', { defaultValue: 'From Address' })}</Label>
+          <Input
+            type="text"
+            placeholder={t('admin.sweep.fromAddressPlaceholder', { defaultValue: '0x...' })}
+            value={fromAddressFilter}
+            onChange={(e) => setFromAddressFilter(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
+          />
+        </div>
+        <div className="col-span-12 sm:col-span-6 md:col-span-3">
           <Label>{t('filter.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
           <CoinNetworkFilterDropdown
             coinNetworks={coinNetworks}
@@ -72,27 +80,6 @@ export default function SweepTransactionFilters({
             placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
             t={t}
           />
-        </div>
-        <div className="col-span-12 sm:col-span-6 md:col-span-3">
-          <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
-          <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-            <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-            <option value="created_at">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
-            <option value="amount">{t('filter.amount', { defaultValue: 'Amount' })}</option>
-            <option value="completed_at">{t('filter.completedAt', { defaultValue: 'Completed At' })}</option>
-          </Select>
-        </div>
-        <div className="col-span-12 sm:col-span-6 md:col-span-3">
-          <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
-          <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-            <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-            <option value="asc">
-              {t('filter.ascending', { defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }) })}
-            </option>
-            <option value="desc">
-              {t('filter.descending', { defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }) })}
-            </option>
-          </Select>
         </div>
       </div>
       <div className="flex gap-2 mt-3">

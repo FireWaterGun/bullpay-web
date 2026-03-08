@@ -9,11 +9,7 @@ import TableEmptyState from '@/components/TableEmptyState'
 import Button from '@/components/ui/Button'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
-import {
-  getNetworkLabel,
-  statusBadgeClass,
-  formatStatusLabel,
-} from '@/components/balance/withdrawalHelpers'
+import { getNetworkLabel, statusBadgeClass, formatStatusLabel } from '@/components/balance/withdrawalHelpers'
 
 export default function WithdrawalTable({ items, pagination, loading, cnById, onPageChange }) {
   const { t } = useTranslation()
@@ -21,7 +17,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
 
   return (
     <>
-      <Table className="!w-auto">
+      <Table>
         <thead>
           <tr className="whitespace-nowrap">
             <th>{t('common.id', { defaultValue: 'ID' })}</th>
@@ -76,9 +72,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                     {formatCoinAmount(it.totalFee || it.fee)} {sym}
                   </td>
                   <td className="whitespace-nowrap">
-                    <span className="font-mono text-surface-700 text-[13px]">
-                      {it.toAddress || '-'}
-                    </span>
+                    <span className="font-mono text-surface-700 text-[13px]">{it.toAddress || '-'}</span>
                   </td>
                   <td className="whitespace-nowrap">
                     <span className={statusBadgeClass(it.status)}>

@@ -113,7 +113,8 @@
     "allActions": "All Actions",
     "allEvents": "All Events",
     "allTypes": "All Types",
-    "coinNetwork": "Coin / Network"
+    "coinNetwork": "Coin / Network",
+    "invoiceNumber": "Invoice Number"
   },
   "status": {
     "pending": "Pending",
@@ -865,7 +866,10 @@
     "coinNetworkId": "CN ID",
     "email": "Email",
     "name": "Name",
-    "role": "Role"
+    "role": "Role",
+    "invoiceNumber": "Invoice Number",
+    "publicCode": "Public Code",
+    "merchantId": "Merchant ID"
   },
   "userLedger": {
     "title": "Activity",
@@ -964,6 +968,7 @@
     "httpStatus": "HTTP Status",
     "success": "Success",
     "failed": "Failed",
+    "deliveryStatus": "Delivery Status",
     "duration": "Duration",
     "attempt": "Attempt",
     "error": "Error",

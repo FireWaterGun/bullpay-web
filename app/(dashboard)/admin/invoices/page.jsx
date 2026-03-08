@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -21,6 +22,7 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import { Input, Label, Select } from '@/components/ui/Input'
 import Table from '@/components/ui/Table'
+import SortableHeader from '@/components/ui/SortableHeader'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function AdminInvoiceList() {
@@ -28,6 +30,7 @@ export default function AdminInvoiceList() {
   const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
+  const router = useRouter()
 
   const locale = useLocale()
   const [loading, setLoading] = useState(false)
@@ -37,15 +40,24 @@ export default function AdminInvoiceList() {
 
   // Filter states (draft — applied on "Apply")
   const [statusFilter, setStatusFilter] = useState('')
+  const [invoiceIdFilter, setInvoiceIdFilter] = useState('')
+  const [invoiceNumberFilter, setInvoiceNumberFilter] = useState('')
   const [userIdFilter, setUserIdFilter] = useState('')
   const [merchantIdFilter, setMerchantIdFilter] = useState('')
   const [fromDateFilter, setFromDateFilter] = useState('')
   const [toDateFilter, setToDateFilter] = useState('')
-  const [sortByFilter, setSortByFilter] = useState('')
-  const [sortOrderFilter, setSortOrderFilter] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [sortOrder, setSortOrder] = useState('')
 
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({})
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
+    setCurrentPage(1)
+  }
 
   const loadInvoices = useCallback(async () => {
     try {
@@ -71,25 +83,29 @@ export default function AdminInvoiceList() {
 
   function applyFilters() {
     setAppliedFilters({
+      invoiceId: invoiceIdFilter ? Number(invoiceIdFilter) : undefined,
+      invoiceNumber: invoiceNumberFilter || undefined,
       status: statusFilter || undefined,
       userId: userIdFilter ? Number(userIdFilter) : undefined,
       merchantId: merchantIdFilter ? Number(merchantIdFilter) : undefined,
       fromDate: fromDateFilter || undefined,
       toDate: toDateFilter || undefined,
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
     })
     setCurrentPage(1)
   }
 
   function resetFilters() {
     setStatusFilter('')
+    setInvoiceIdFilter('')
+    setInvoiceNumberFilter('')
     setUserIdFilter('')
     setMerchantIdFilter('')
     setFromDateFilter('')
     setToDateFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
+    setSortBy('')
+    setSortOrder('')
     setAppliedFilters({})
     setCurrentPage(1)
   }
@@ -125,7 +141,26 @@ export default function AdminInvoiceList() {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
+                  <Label>{t('filter.invoiceId', { defaultValue: 'Invoice ID' })}</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })}
+                    value={invoiceIdFilter}
+                    onChange={(e) => setInvoiceIdFilter(e.target.value)}
+                  />
+                </div>
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
+                  <Label>{t('filter.invoiceNumber', { defaultValue: 'Invoice Number' })}</Label>
+                  <Input
+                    type="text"
+                    placeholder={t('filter.invoiceNumber', { defaultValue: 'Invoice Number' })}
+                    value={invoiceNumberFilter}
+                    onChange={(e) => setInvoiceNumberFilter(e.target.value)}
+                  />
+                </div>
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('filter.status', { defaultValue: 'Status' })}</Label>
                   <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                     <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
@@ -135,25 +170,27 @@ export default function AdminInvoiceList() {
                     <option value="cancelled">{t('status.cancelled', { defaultValue: 'Cancelled' })}</option>
                   </Select>
                 </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('filter.userId', { defaultValue: 'User ID' })}</Label>
                   <Input
                     type="number"
+                    min="1"
                     placeholder={t('filter.userId', { defaultValue: 'User ID' })}
                     value={userIdFilter}
                     onChange={(e) => setUserIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('filter.merchantId', { defaultValue: 'Merchant ID' })}</Label>
                   <Input
                     type="number"
+                    min="1"
                     placeholder={t('filter.merchantId', { defaultValue: 'Merchant ID' })}
                     value={merchantIdFilter}
                     onChange={(e) => setMerchantIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
+                <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
                   <LocaleDateRangePicker
                     className="w-full"
@@ -165,32 +202,6 @@ export default function AdminInvoiceList() {
                     placeholder={t('filter.dateRangePlaceholder', { defaultValue: 'Select date range' })}
                     t={t}
                   />
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
-                  <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="created_at">{t('filter.createdAt', { defaultValue: 'Created At' })}</option>
-                    <option value="amount">{t('filter.amount', { defaultValue: 'Amount' })}</option>
-                    <option value="expiry_at">{t('filter.expiryAt', { defaultValue: 'Expiry At' })}</option>
-                    <option value="paid_at">{t('filter.paidAt', { defaultValue: 'Paid At' })}</option>
-                  </Select>
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
-                  <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">
-                      {t('filter.ascending', {
-                        defaultValue: t('admin.detail.ascending', { defaultValue: 'Ascending' }),
-                      })}
-                    </option>
-                    <option value="desc">
-                      {t('filter.descending', {
-                        defaultValue: t('admin.detail.descending', { defaultValue: 'Descending' }),
-                      })}
-                    </option>
-                  </Select>
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
@@ -213,21 +224,23 @@ export default function AdminInvoiceList() {
                 <tr className="whitespace-nowrap">
                   <th>{t('table.id', { defaultValue: 'ID' })}</th>
                   <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
-                  <th>{t('table.code', { defaultValue: 'Code' })}</th>
+                  <th className="text-center">{t('table.merchantId', { defaultValue: 'Merchant ID' })}</th>
+                  <th>{t('table.invoiceNumber', { defaultValue: 'Invoice Number' })}</th>
+                  <th>{t('table.publicCode', { defaultValue: 'Public Code' })}</th>
                   <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
-                  <th className="text-right">{t('table.amount', { defaultValue: 'Amount' })}</th>
+                  <SortableHeader field="amount" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-right">{t('table.amount', { defaultValue: 'Amount' })}</SortableHeader>
                   <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>
                   <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
                   <th>{t('table.paymentAddress', { defaultValue: 'Payment Address' })}</th>
-                  <th>{t('table.created', { defaultValue: 'Created' })}</th>
-                  <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
+                  <SortableHeader field="created_at" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('table.created', { defaultValue: 'Created' })}</SortableHeader>
+                  <SortableHeader field="expiry_at" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('table.expires', { defaultValue: 'Expires' })}</SortableHeader>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.length === 0 ? (
                   <TableEmptyState
-                    colSpan={11}
+                    colSpan={13}
                     icon="bx-file"
                     message={t('admin.invoices.noInvoices', { defaultValue: 'No invoices found' })}
                     sub={t('admin.invoices.noInvoicesSub', { defaultValue: 'No invoices match the current filters' })}
@@ -239,17 +252,27 @@ export default function AdminInvoiceList() {
                     const networkName = invoice.network?.name || invoice.networkName || ''
 
                     return (
-                      <tr key={invoice.id}>
+                      <tr
+                        key={invoice.id}
+                        className="cursor-pointer"
+                        onClick={() => router.push(`/admin/invoices/${invoice.id}`)}
+                      >
                         <td>
                           <span className="font-semibold text-primary">{invoice.id}</span>
                         </td>
                         <td className="text-center">
                           <span className="font-medium">{invoice.userId || '-'}</span>
                         </td>
+                        <td className="text-center">
+                          <span className="font-medium">{invoice.merchantId || '-'}</span>
+                        </td>
                         <td className="whitespace-nowrap">
                           <span className="font-medium">
                             {invoice.invoiceNumber || invoice.publicCode || invoice.code || '-'}
                           </span>
+                        </td>
+                        <td className="whitespace-nowrap">
+                          <span className="text-surface-500 text-[0.85rem]">{invoice.publicCode || '-'}</span>
                         </td>
                         <td className="whitespace-nowrap">
                           <div className="flex items-center">
@@ -283,7 +306,7 @@ export default function AdminInvoiceList() {
                             <div className="flex items-center">
                               <span className="mr-2 whitespace-nowrap text-[0.85rem]">{invoice.paymentAddress}</span>
                               <Button
-                                onClick={() => handleCopy(invoice.paymentAddress)}
+                                onClick={(e) => { e.stopPropagation(); handleCopy(invoice.paymentAddress) }}
                                 title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                                 size="icon-sm"
                                 variant="text-secondary"
@@ -301,7 +324,7 @@ export default function AdminInvoiceList() {
                         <td>
                           <span className="whitespace-nowrap">{fmtDate(invoice.expiryAt || invoice.expiry_at)}</span>
                         </td>
-                        <td>
+                        <td onClick={(e) => e.stopPropagation()}>
                           <Button
                             variant="text-secondary"
                             size="icon-sm"

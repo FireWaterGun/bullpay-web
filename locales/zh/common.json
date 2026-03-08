@@ -113,7 +113,8 @@
     "allActions": "所有操作",
     "allEvents": "所有事件",
     "allTypes": "所有类型",
-    "coinNetwork": "币种 / 网络"
+    "coinNetwork": "币种 / 网络",
+    "invoiceNumber": "发票号码"
   },
   "status": {
     "pending": "待处理",
@@ -867,7 +868,10 @@
     "coinNetworkId": "CN ID",
     "email": "邮箱",
     "name": "名称",
-    "role": "角色"
+    "role": "角色",
+    "invoiceNumber": "发票号码",
+    "publicCode": "公开代码",
+    "merchantId": "商户ID"
   },
   "userLedger": {
     "title": "活动记录",
@@ -966,6 +970,7 @@
     "httpStatus": "HTTP 状态",
     "success": "成功",
     "failed": "失败",
+    "deliveryStatus": "发送状态",
     "duration": "时长",
     "attempt": "尝试次数",
     "error": "错误",

@@ -1238,7 +1238,8 @@
     "backToInvoices": "返回发票列表",
     "merchantId": "商户ID",
     "payments": "支付记录",
-    "noPayments": "此发票没有支付记录"
+    "noPayments": "此发票没有支付记录",
+    "viewPaymentPage": "查看支付页面"
   },
   "paymentDetail": {
     "notFound": "未找到支付记录",

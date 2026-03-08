@@ -16,6 +16,7 @@ import TableEmptyState from '@/components/TableEmptyState'
 import Card from '@/components/ui/Card'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
+import SortableHeader from '@/components/ui/SortableHeader'
 
 export default function AdminPaymentList() {
   const { t } = useAdminTranslation()
@@ -35,11 +36,18 @@ export default function AdminPaymentList() {
   const [txHashFilter, setTxHashFilter] = useState('')
   const [fromDateFilter, setFromDateFilter] = useState('')
   const [toDateFilter, setToDateFilter] = useState('')
-  const [sortByFilter, setSortByFilter] = useState('')
-  const [sortOrderFilter, setSortOrderFilter] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [sortOrder, setSortOrder] = useState('')
 
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({})
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
+    setCurrentPage(1)
+  }
 
   const loadPayments = useCallback(async () => {
     try {
@@ -71,8 +79,8 @@ export default function AdminPaymentList() {
       txHash: txHashFilter || undefined,
       fromDate: fromDateFilter || undefined,
       toDate: toDateFilter || undefined,
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
     })
     setCurrentPage(1)
   }
@@ -84,8 +92,8 @@ export default function AdminPaymentList() {
     setTxHashFilter('')
     setFromDateFilter('')
     setToDateFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
+    setSortBy('')
+    setSortOrder('')
     setAppliedFilters({})
     setCurrentPage(1)
   }
@@ -134,10 +142,6 @@ export default function AdminPaymentList() {
               setFromDateFilter={setFromDateFilter}
               toDateFilter={toDateFilter}
               setToDateFilter={setToDateFilter}
-              sortByFilter={sortByFilter}
-              setSortByFilter={setSortByFilter}
-              sortOrderFilter={sortOrderFilter}
-              setSortOrderFilter={setSortOrderFilter}
               onApply={applyFilters}
               onReset={resetFilters}
             />
@@ -152,14 +156,14 @@ export default function AdminPaymentList() {
                   <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
                   <th className="text-center">{t('table.invoiceId', { defaultValue: 'Invoice ID' })}</th>
                   <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
-                  <th className="text-right">{t('table.amount', { defaultValue: 'Amount' })}</th>
+                  <SortableHeader field="amount_raw" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-right">{t('table.amount', { defaultValue: 'Amount' })}</SortableHeader>
                   <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>
                   <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
-                  <th>{t('table.confirmations', { defaultValue: 'Confirmations' })}</th>
+                  <SortableHeader field="confirmations" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('table.confirmations', { defaultValue: 'Confirmations' })}</SortableHeader>
                   <th>{t('table.txHash', { defaultValue: 'Tx Hash' })}</th>
                   <th>{t('table.fromAddress', { defaultValue: 'From Address' })}</th>
                   <th>{t('table.toAddress', { defaultValue: 'To Address' })}</th>
-                  <th>{t('table.created', { defaultValue: 'Created' })}</th>
+                  <SortableHeader field="created_at" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('table.created', { defaultValue: 'Created' })}</SortableHeader>
                   <th>{t('table.confirmed', { defaultValue: 'Confirmed' })}</th>
                   <th></th>
                 </tr>

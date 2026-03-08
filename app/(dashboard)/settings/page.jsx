@@ -58,6 +58,12 @@ export default function SettingsPage() {
     user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
   )
   const [savingTimezone, setSavingTimezone] = useState(false)
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const {
     register,
@@ -218,7 +224,7 @@ export default function SettingsPage() {
               <IconBox icon="bx-time-five" color="info" />
               <div className="min-w-0">
                 <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
-                  {new Date().toLocaleString(undefined, {
+                  {now.toLocaleString(undefined, {
                     timeZone: selectedTimezone,
                     hour: '2-digit',
                     minute: '2-digit',
@@ -235,7 +241,7 @@ export default function SettingsPage() {
               <IconBox icon="bx-calendar" color="primary" />
               <div className="min-w-0">
                 <div className="font-semibold text-surface-900 text-[0.9rem] truncate">
-                  {new Date().toLocaleDateString(undefined, {
+                  {now.toLocaleDateString(undefined, {
                     timeZone: selectedTimezone,
                     month: 'short',
                     day: 'numeric',
@@ -434,7 +440,7 @@ export default function SettingsPage() {
               {/* Clock preview */}
               <div className="text-center mb-4 py-3 rounded-xl bg-primary-50 dark:bg-primary-500/10">
                 <div className="font-bold text-3xl text-primary-600 dark:text-primary-400 tabular-nums tracking-wider">
-                  {new Date().toLocaleString(undefined, {
+                  {now.toLocaleString(undefined, {
                     timeZone: selectedTimezone,
                     hour: '2-digit',
                     minute: '2-digit',

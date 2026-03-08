@@ -15,14 +15,8 @@ import Card from '@/components/ui/Card'
 import { Input, Label, Select } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
+import SortableHeader from '@/components/ui/SortableHeader'
 import { EVENT_OPTIONS, successBadge, eventBadge, httpStatusBadge } from '@/components/webhook/webhookHelpers'
-
-const SORT_BY_OPTIONS = [
-  { value: 'created_at', label: 'Created At' },
-  { value: 'duration_ms', label: 'Duration' },
-  { value: 'http_status', label: 'HTTP Status' },
-  { value: 'attempt', label: 'Attempt' },
-]
 
 export default function WebhookLogsPage() {
   const { fmtDate } = useDateFormat()
@@ -46,11 +40,16 @@ export default function WebhookLogsPage() {
   const [successFilter, setSuccessFilter] = useState('')
   const [fromDateFilter, setFromDateFilter] = useState('')
   const [toDateFilter, setToDateFilter] = useState('')
-  const [sortByFilter, setSortByFilter] = useState('')
-  const [sortOrderFilter, setSortOrderFilter] = useState('')
+
+  // Sort state (applied immediately from table headers)
+  const [sortBy, setSortBy] = useState('created_at')
+  const [sortOrder, setSortOrder] = useState('desc')
 
   // Applied filters (sent to API)
-  const [appliedFilters, setAppliedFilters] = useState({})
+  const [appliedFilters, setAppliedFilters] = useState({
+    sortBy: 'created_at',
+    sortOrder: 'desc',
+  })
 
   const loadLogs = useCallback(async () => {
     try {
@@ -63,27 +62,27 @@ export default function WebhookLogsPage() {
       setLogs(data.items || [])
       setPagination(data.pagination || null)
     } catch (error) {
-      logger.error('Failed to load webhook logs:', error)
-      toast.error(t('webhookLog.loadError', { defaultValue: 'Failed to load webhook logs' }))
+      if (error?.status !== 404) {
+        logger.error('Failed to load webhook logs:', error)
+      }
     } finally {
       setLoading(false)
     }
-  }, [token, currentPage, appliedFilters, toast, t])
+  }, [token, currentPage, appliedFilters, t])
 
   useEffect(() => {
     loadLogs()
   }, [loadLogs])
 
   function applyFilters() {
-    setAppliedFilters({
+    setAppliedFilters((prev) => ({
+      ...prev,
       merchantPaymentId: paymentIdFilter ? Number(paymentIdFilter) : undefined,
       event: eventFilter || undefined,
       success: successFilter || undefined,
       fromDate: fromDateFilter || undefined,
       toDate: toDateFilter || undefined,
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
-    })
+    }))
     setCurrentPage(1)
   }
 
@@ -93,9 +92,16 @@ export default function WebhookLogsPage() {
     setSuccessFilter('')
     setFromDateFilter('')
     setToDateFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
-    setAppliedFilters({})
+    setSortBy('created_at')
+    setSortOrder('desc')
+    setAppliedFilters({ sortBy: 'created_at', sortOrder: 'desc' })
+    setCurrentPage(1)
+  }
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
     setCurrentPage(1)
   }
 
@@ -122,7 +128,7 @@ export default function WebhookLogsPage() {
 
         {/* Filters */}
         <div className="p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <Label>{t('webhookLog.paymentId', { defaultValue: 'Payment ID' })}</Label>
               <Input
@@ -144,7 +150,7 @@ export default function WebhookLogsPage() {
               </Select>
             </div>
             <div>
-              <Label>{t('webhookLog.success', { defaultValue: 'Status' })}</Label>
+              <Label>{t('webhookLog.deliveryStatus', { defaultValue: 'Delivery Status' })}</Label>
               <Select value={successFilter} onChange={(e) => setSuccessFilter(e.target.value)}>
                 <option value="">{t('webhookLog.allStatuses', { defaultValue: 'All Statuses' })}</option>
                 <option value="true">{t('webhookLog.success', { defaultValue: 'Success' })}</option>
@@ -163,25 +169,6 @@ export default function WebhookLogsPage() {
                 placeholder={t('webhookLog.dateRange', { defaultValue: 'Select date range' })}
                 t={t}
               />
-            </div>
-            <div>
-              <Label>{t('webhookLog.sortBy', { defaultValue: 'Sort By' })}</Label>
-              <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-                <option value="">{t('webhookLog.default', { defaultValue: 'Default' })}</option>
-                {SORT_BY_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div>
-              <Label>{t('webhookLog.sortOrder', { defaultValue: 'Sort Order' })}</Label>
-              <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-                <option value="">{t('webhookLog.default', { defaultValue: 'Default' })}</option>
-                <option value="asc">{t('webhookLog.ascending', { defaultValue: 'Ascending' })}</option>
-                <option value="desc">{t('webhookLog.descending', { defaultValue: 'Descending' })}</option>
-              </Select>
             </div>
           </div>
           <div className="flex gap-2 mt-4">
@@ -204,13 +191,21 @@ export default function WebhookLogsPage() {
             <tr className="whitespace-nowrap">
               <th>{t('webhookLog.paymentId', { defaultValue: 'Payment' })}</th>
               <th>{t('webhookLog.event', { defaultValue: 'Event' })}</th>
-              <th className="text-center">{t('webhookLog.httpStatus', { defaultValue: 'HTTP' })}</th>
+              <SortableHeader field="http_status" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">
+                {t('webhookLog.httpStatus', { defaultValue: 'HTTP' })}
+              </SortableHeader>
               <th className="text-center">{t('webhookLog.success', { defaultValue: 'Status' })}</th>
-              <th className="text-right">{t('webhookLog.duration', { defaultValue: 'Duration' })}</th>
-              <th className="text-center">{t('webhookLog.attempt', { defaultValue: 'Attempt' })}</th>
+              <SortableHeader field="duration_ms" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-right">
+                {t('webhookLog.duration', { defaultValue: 'Duration' })}
+              </SortableHeader>
+              <SortableHeader field="attempt" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">
+                {t('webhookLog.attempt', { defaultValue: 'Attempt' })}
+              </SortableHeader>
               <th>{t('webhookLog.callbackUrl', { defaultValue: 'Callback URL' })}</th>
               <th>{t('webhookLog.error', { defaultValue: 'Error' })}</th>
-              <th>{t('webhookLog.created', { defaultValue: 'Created' })}</th>
+              <SortableHeader field="created_at" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>
+                {t('webhookLog.created', { defaultValue: 'Created' })}
+              </SortableHeader>
               <th></th>
             </tr>
           </thead>

@@ -59,7 +59,9 @@ export default function TempWalletHistoryDetail() {
       <div className="grow py-6">
         <div className="text-center py-5">
           <i className="bx bx-error-circle text-[3rem] text-surface-500"></i>
-          <p className="text-surface-500 mt-2">{t('admin.tempWalletHistory.notFound', { defaultValue: 'History not found' })}</p>
+          <p className="text-surface-500 mt-2">
+            {t('admin.tempWalletHistory.notFound', { defaultValue: 'History not found' })}
+          </p>
           <Button onClick={() => router.back()}>{t('actions.back', { defaultValue: 'Back' })}</Button>
         </div>
       </div>
@@ -71,7 +73,8 @@ export default function TempWalletHistoryDetail() {
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
           <Button variant="outline-secondary" className="mb-3" href="/admin/temp-wallet-histories">
-            <i className="bx bx-arrow-back mr-2"></i>{t('admin.tempWalletHistory.backToHistories', { defaultValue: 'Back to Histories' })}
+            <i className="bx bx-arrow-back mr-2"></i>
+            {t('admin.tempWalletHistory.backToHistories', { defaultValue: 'Back to Histories' })}
           </Button>
 
           {/* Header Card */}
@@ -87,8 +90,12 @@ export default function TempWalletHistoryDetail() {
                     <span className={getStatusBadgeClass(history.status, 'tempWalletHistory')}>
                       {String(history.status || '').toUpperCase()}
                     </span>
-                    {history.tempWalletId && <Badge color="secondary">{`${t('admin.tempWallet.wallet', { defaultValue: 'Wallet' })} #${history.tempWalletId}`}</Badge>}
-                    {history.invoiceId && <Badge color="secondary">{`${t('admin.invoiceDetail.invoice', { defaultValue: 'Invoice' })} #${history.invoiceId}`}</Badge>}
+                    {history.tempWalletId && (
+                      <Badge color="secondary">{`${t('admin.tempWallet.wallet', { defaultValue: 'Wallet' })} #${history.tempWalletId}`}</Badge>
+                    )}
+                    {history.invoiceId && (
+                      <Badge color="secondary">{`${t('admin.invoiceDetail.invoice', { defaultValue: 'Invoice' })} #${history.invoiceId}`}</Badge>
+                    )}
                   </div>
                 </div>
                 <RefreshButton onClick={loadHistory} loading={loading} />
@@ -122,7 +129,9 @@ export default function TempWalletHistoryDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.tempWalletHistory.tempWalletId', { defaultValue: 'Temp Wallet ID' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.tempWalletHistory.tempWalletId', { defaultValue: 'Temp Wallet ID' })}
+                        </td>
                         <td>
                           <Link
                             href={`/admin/temp-wallets/${history.tempWalletId}`}
@@ -133,7 +142,9 @@ export default function TempWalletHistoryDetail() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.detail.invoiceId', { defaultValue: 'Invoice ID' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.detail.invoiceId', { defaultValue: 'Invoice ID' })}
+                        </td>
                         <td>
                           {history.invoiceId ? (
                             <Link href={`/admin/invoices/${history.invoiceId}`} className="font-medium text-primary">
@@ -181,7 +192,9 @@ export default function TempWalletHistoryDetail() {
                       )}
                       {history.sweepTxHash && (
                         <tr>
-                          <td className="text-surface-500">{t('admin.tempWallet.sweepTxHash', { defaultValue: 'Sweep Tx Hash' })}</td>
+                          <td className="text-surface-500">
+                            {t('admin.tempWallet.sweepTxHash', { defaultValue: 'Sweep Tx Hash' })}
+                          </td>
                           <td>
                             <div className="flex items-center">
                               <code className="text-surface-800 mr-2 text-xs break-all">{history.sweepTxHash}</code>
@@ -227,24 +240,34 @@ export default function TempWalletHistoryDetail() {
                         <td>{fmtDate(history.updatedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.tempWalletHistory.assignedAt', { defaultValue: 'Assigned At' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.tempWalletHistory.assignedAt', { defaultValue: 'Assigned At' })}
+                        </td>
                         <td>{fmtDate(history.assignedAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.tempWalletHistories.firstDeposit', { defaultValue: 'First Deposit' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.tempWalletHistories.firstDeposit', { defaultValue: 'First Deposit' })}
+                        </td>
                         <td>{fmtDate(history.firstDepositAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.tempWalletHistory.sweptAt', { defaultValue: 'Swept At' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.tempWalletHistory.sweptAt', { defaultValue: 'Swept At' })}
+                        </td>
                         <td>{fmtDate(history.sweptAt)}</td>
                       </tr>
                       <tr>
-                        <td className="text-surface-500">{t('admin.tempWalletHistory.releasedAt', { defaultValue: 'Released At' })}</td>
+                        <td className="text-surface-500">
+                          {t('admin.tempWalletHistory.releasedAt', { defaultValue: 'Released At' })}
+                        </td>
                         <td>{fmtDate(history.releasedAt)}</td>
                       </tr>
                       {history.failedAt && (
                         <tr>
-                          <td className="text-surface-500">{t('admin.tempWalletHistory.failedAt', { defaultValue: 'Failed At' })}</td>
+                          <td className="text-surface-500">
+                            {t('admin.tempWalletHistory.failedAt', { defaultValue: 'Failed At' })}
+                          </td>
                           <td className="text-danger">{fmtDate(history.failedAt)}</td>
                         </tr>
                       )}

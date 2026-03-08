@@ -33,7 +33,14 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
     <div className="mt-4 mb-3 py-4 px-6">
       <div className="flex items-start justify-between relative">
         {/* Connector line */}
-        <div className="absolute left-0 right-0 z-0" style={{ top: size / 2 - 1, paddingLeft: `calc(100% / ${steps.length * 2})`, paddingRight: `calc(100% / ${steps.length * 2})` }}>
+        <div
+          className="absolute left-0 right-0 z-0"
+          style={{
+            top: size / 2 - 1,
+            paddingLeft: `calc(100% / ${steps.length * 2})`,
+            paddingRight: `calc(100% / ${steps.length * 2})`,
+          }}
+        >
           <div className="h-[2px] rounded-full" style={{ background: 'var(--color-surface-200)' }}>
             <div
               className="h-full rounded-full"
@@ -58,25 +65,29 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
 
           const circleStyle = isDone
             ? {
-                width: size, height: size,
+                width: size,
+                height: size,
                 background: '#dcfce7',
                 border: '1.5px solid var(--color-success-400)',
               }
             : isError
               ? {
-                  width: size, height: size,
+                  width: size,
+                  height: size,
                   background: '#fef2f2',
                   border: '1.5px solid var(--color-danger-400)',
                 }
               : isActive
                 ? {
-                    width: size, height: size,
+                    width: size,
+                    height: size,
                     background: 'var(--color-primary-600)',
                     border: '1.5px solid var(--color-primary-600)',
                     boxShadow: '0 0 0 4px color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
                   }
                 : {
-                    width: 10, height: 10,
+                    width: 10,
+                    height: 10,
                     background: 'var(--color-surface-200)',
                     border: '1.5px solid var(--color-surface-300)',
                   }

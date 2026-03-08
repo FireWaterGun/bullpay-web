@@ -14,10 +14,11 @@ import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import { Input, Label, Select } from '@/components/ui/Input'
+import { Input, Label } from '@/components/ui/Input'
 import { badgeBase } from '@/components/ui/Badge'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
+import SortableHeader from '@/components/ui/SortableHeader'
 
 function roleBadgeClass(role) {
   const v = String(role || '').toLowerCase()
@@ -31,19 +32,16 @@ function roleBadgeClass(role) {
 export default function UserBalanceListPage() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
-  const SORT_BY_OPTIONS = [
-    { value: 'totalValueUsd', label: t('admin.userBalance.totalValueUsd', { defaultValue: 'Total Value (USD)' }) },
-    { value: 'totalAssets', label: t('admin.userBalance.totalAssets', { defaultValue: 'Total Assets' }) },
-    { value: 'updatedAt', label: t('admin.detail.updatedAt', { defaultValue: 'Updated At' }) },
-  ]
 
   const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
   const initSortBy = searchParams.get('sortBy') || ''
-  const initSortOrder = searchParams.get('sortOrder') || ''
+  const rawSortOrder = searchParams.get('sortOrder') || ''
+  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initMinValue = searchParams.get('minValueUsd') || ''
+  const initSearch = searchParams.get('search') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [loading, setLoading] = useState(false)
@@ -53,17 +51,28 @@ export default function UserBalanceListPage() {
   const [summary, setSummary] = useState(null)
   const [summaryLoading, setSummaryLoading] = useState(false)
 
-  const [sortByFilter, setSortByFilter] = useState(initSortBy)
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
+  const [sortBy, setSortBy] = useState(initSortBy)
+  const [sortOrder, setSortOrder] = useState(initSortOrder)
   const [minValueFilter, setMinValueFilter] = useState(initMinValue)
+  const [searchFilter, setSearchFilter] = useState(initSearch)
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
     const f = {}
     if (initSortBy) f.sortBy = initSortBy
     if (initSortOrder) f.sortOrder = initSortOrder
     if (initMinValue) f.minValueUsd = Number(initMinValue)
+    if (initSearch) f.search = initSearch
     return f
   })
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    const f = { ...appliedFilters, sortBy: field, sortOrder: order }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
+  }
 
   const loadSummary = useCallback(async () => {
     if (!token) return
@@ -112,9 +121,10 @@ export default function UserBalanceListPage() {
 
   function applyFilters() {
     const f = {
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
       minValueUsd: minValueFilter ? Number(minValueFilter) : undefined,
+      search: searchFilter || undefined,
     }
     setAppliedFilters(f)
     setCurrentPage(1)
@@ -122,9 +132,10 @@ export default function UserBalanceListPage() {
   }
 
   function resetFilters() {
-    setSortByFilter('')
-    setSortOrderFilter('')
+    setSortBy('')
+    setSortOrder('')
     setMinValueFilter('')
+    setSearchFilter('')
     setAppliedFilters({})
     setCurrentPage(1)
     syncSearchParams({}, 1)
@@ -195,23 +206,14 @@ export default function UserBalanceListPage() {
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
-                  <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    {SORT_BY_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
-                  <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
-                  </Select>
+                  <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
+                  <Input
+                    type="text"
+                    placeholder={t('admin.userBalances.searchPlaceholder', { defaultValue: 'Email, name...' })}
+                    value={searchFilter}
+                    onChange={(e) => setSearchFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
+                  />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>{t('admin.userBalances.minValue', { defaultValue: 'Min Value (USD)' })}</Label>
@@ -246,11 +248,11 @@ export default function UserBalanceListPage() {
                   <th>{t('table.email', { defaultValue: 'Email' })}</th>
                   <th>{t('table.name', { defaultValue: 'Name' })}</th>
                   <th className="text-center">{t('table.role', { defaultValue: 'Role' })}</th>
-                  <th className="text-center">{t('admin.userBalances.totalAssets', { defaultValue: 'Assets' })}</th>
-                  <th className="text-right">
+                  <SortableHeader field="totalAssets" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">{t('admin.userBalances.totalAssets', { defaultValue: 'Assets' })}</SortableHeader>
+                  <SortableHeader field="totalValueUsd" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-right">
                     {t('admin.userBalances.totalValueUsd', { defaultValue: 'Value (USD)' })}
-                  </th>
-                  <th>{t('admin.userBalances.valuedAt', { defaultValue: 'Valued At' })}</th>
+                  </SortableHeader>
+                  <SortableHeader field="updatedAt" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('admin.userBalances.valuedAt', { defaultValue: 'Valued At' })}</SortableHeader>
                   <th></th>
                 </tr>
               </thead>

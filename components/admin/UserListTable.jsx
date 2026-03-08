@@ -1,10 +1,12 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { formatRoleLabel } from '@/lib/utils/roles'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import TableEmptyState from '@/components/TableEmptyState'
+import SortableHeader from '../ui/SortableHeader'
 import Badge from '../ui/Badge'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
@@ -23,8 +25,12 @@ export default function UserListTable({
   onOpenModal,
   onPageChange,
   onSyncSearchParams,
+  sortBy,
+  sortOrder,
+  onSort,
 }) {
   const { fmtDate } = useDateFormat()
+  const router = useRouter()
   return (
     <Card>
       <Table>
@@ -35,22 +41,23 @@ export default function UserListTable({
             <th>{t('admin.users.fullName', { defaultValue: 'Full Name' })}</th>
             <th className="text-center">{t('admin.users.role', { defaultValue: 'Role' })}</th>
             <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
+            <th className="text-center">{t('admin.users.emailVerified', { defaultValue: 'Email' })}</th>
             <th className="text-center">{t('admin.users.twoFA', { defaultValue: '2FA' })}</th>
-            <th>{t('admin.users.lastLogin', { defaultValue: 'Last Login' })}</th>
-            <th>{t('table.created', { defaultValue: 'Created' })}</th>
+            <SortableHeader field="lastLoginAt" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort}>{t('admin.users.lastLogin', { defaultValue: 'Last Login' })}</SortableHeader>
+            <SortableHeader field="createdAt" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort}>{t('table.created', { defaultValue: 'Created' })}</SortableHeader>
             <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
           </tr>
         </thead>
         <tbody>
           {users.length === 0 ? (
             <TableEmptyState
-              colSpan={9}
+              colSpan={10}
               icon="bx-user"
               message={t('admin.users.noUsers', { defaultValue: 'No users found' })}
             />
           ) : (
             users.map((user) => (
-              <tr key={user.id}>
+              <tr key={user.id} className="cursor-pointer hover:bg-surface-50 transition-colors" onClick={() => router.push(`/admin/users/${user.id}`)}>
                 <td>
                   <span className="font-semibold text-primary">{user.id}</span>
                 </td>
@@ -81,6 +88,17 @@ export default function UserListTable({
                   <span className={statusBadgeClass(user.status)}>{String(user.status || '').toUpperCase()}</span>
                 </td>
                 <td className="text-center">
+                  {user.emailVerifiedAt ? (
+                    <Badge color="success" label>
+                      <i className="bx bx-check"></i>
+                    </Badge>
+                  ) : (
+                    <Badge color="secondary">
+                      <i className="bx bx-x"></i>
+                    </Badge>
+                  )}
+                </td>
+                <td className="text-center">
                   {user.twoFactorEnabled || user.is2FAEnabled ? (
                     <Badge color="success" label>
                       <i className="bx bx-check"></i>
@@ -93,8 +111,12 @@ export default function UserListTable({
                 </td>
                 <td className="whitespace-nowrap text-[0.85rem]">{fmtDate(user.lastLoginAt)}</td>
                 <td className="whitespace-nowrap text-[0.85rem]">{fmtDate(user.createdAt)}</td>
-                <td className="text-center">
+                <td className="text-center" onClick={(e) => e.stopPropagation()}>
                   <ActionMenu>
+                    <ActionMenu.Item icon="bx-show" onClick={() => router.push(`/admin/users/${user.id}`)}>
+                      {t('admin.userDetail.viewDetail', { defaultValue: 'View Detail' })}
+                    </ActionMenu.Item>
+                    <ActionMenu.Divider />
                     <ActionMenu.Item icon="bx-user-check" onClick={() => onOpenModal('changeStatus', user)}>
                       {t('admin.users.changeStatus', { defaultValue: 'Change Status' })}
                     </ActionMenu.Item>
@@ -108,6 +130,11 @@ export default function UserListTable({
                     {(user.twoFactorEnabled || user.is2FAEnabled) && (
                       <ActionMenu.Item icon="bx-shield-x" danger onClick={() => onOpenModal('disable2FA', user)}>
                         {t('admin.users.disable2FA', { defaultValue: 'Disable 2FA' })}
+                      </ActionMenu.Item>
+                    )}
+                    {!user.emailVerifiedAt && (
+                      <ActionMenu.Item icon="bx-envelope" onClick={() => onOpenModal('forceVerifyEmail', user)}>
+                        {t('admin.users.forceVerifyEmail', { defaultValue: 'Verify Email' })}
                       </ActionMenu.Item>
                     )}
                   </ActionMenu>

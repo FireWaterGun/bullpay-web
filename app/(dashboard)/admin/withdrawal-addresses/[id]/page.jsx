@@ -34,7 +34,8 @@ function AddressAuditLogTable({ auditLogs }) {
     <Card className="mb-4">
       <div className="px-5 py-4 border-b border-surface-200">
         <h5 className="mb-0">
-          <i className="bx bx-history mr-2"></i>{t('admin.withdrawalAddress.auditLog', { defaultValue: 'Audit Log' })}
+          <i className="bx bx-history mr-2"></i>
+          {t('admin.withdrawalAddress.auditLog', { defaultValue: 'Audit Log' })}
         </h5>
       </div>
       <div className="p-0">
@@ -114,7 +115,9 @@ export default function WithdrawalAddressDetail() {
   function statusLabel(s) {
     const v = String(s || '').toLowerCase()
     if (v === 'active') return t('admin.detail.active', { defaultValue: 'Active' })
-    if (v === 'pending_verification') return t('admin.withdrawalAddress.pendingVerification', { defaultValue: 'Pending Verification' })
+    if (v === 'pending_verification') {
+      return t('admin.withdrawalAddress.pendingVerification', { defaultValue: 'Pending Verification' })
+    }
     if (v === 'suspended') return t('admin.withdrawalAddress.suspended', { defaultValue: 'Suspended' })
     if (v === 'deleted') return t('admin.withdrawalAddress.deleted', { defaultValue: 'Deleted' })
     return String(s || 'N/A')
@@ -130,13 +133,33 @@ export default function WithdrawalAddressDetail() {
   function getActionConfig() {
     switch (actionType) {
       case 'flag':
-        return { title: t('admin.withdrawalAddress.flagAddress', { defaultValue: 'Flag Address' }), btnVariant: 'warning', btnLabel: t('admin.withdrawalAddress.flag', { defaultValue: 'Flag' }), icon: 'bx-flag' }
+        return {
+          title: t('admin.withdrawalAddress.flagAddress', { defaultValue: 'Flag Address' }),
+          btnVariant: 'warning',
+          btnLabel: t('admin.withdrawalAddress.flag', { defaultValue: 'Flag' }),
+          icon: 'bx-flag',
+        }
       case 'unflag':
-        return { title: t('admin.withdrawalAddress.removeFlag', { defaultValue: 'Remove Flag' }), btnVariant: 'success', btnLabel: t('admin.withdrawalAddress.unflag', { defaultValue: 'Unflag' }), icon: 'bx-check-circle' }
+        return {
+          title: t('admin.withdrawalAddress.removeFlag', { defaultValue: 'Remove Flag' }),
+          btnVariant: 'success',
+          btnLabel: t('admin.withdrawalAddress.unflag', { defaultValue: 'Unflag' }),
+          icon: 'bx-check-circle',
+        }
       case 'forceVerify':
-        return { title: t('admin.withdrawalAddress.forceVerify', { defaultValue: 'Force Verify' }), btnVariant: 'info', btnLabel: t('admin.withdrawalAddress.verify', { defaultValue: 'Verify' }), icon: 'bx-shield-quarter' }
+        return {
+          title: t('admin.withdrawalAddress.forceVerify', { defaultValue: 'Force Verify' }),
+          btnVariant: 'info',
+          btnLabel: t('admin.withdrawalAddress.verify', { defaultValue: 'Verify' }),
+          icon: 'bx-shield-quarter',
+        }
       case 'delete':
-        return { title: t('admin.withdrawalAddress.permanentDelete', { defaultValue: 'Permanent Delete' }), btnVariant: 'danger', btnLabel: t('admin.withdrawalAddress.deletePermanently', { defaultValue: 'Delete Permanently' }), icon: 'bx-trash' }
+        return {
+          title: t('admin.withdrawalAddress.permanentDelete', { defaultValue: 'Permanent Delete' }),
+          btnVariant: 'danger',
+          btnLabel: t('admin.withdrawalAddress.deletePermanently', { defaultValue: 'Delete Permanently' }),
+          icon: 'bx-trash',
+        }
       default:
         return { title: '', btnVariant: 'primary', btnLabel: '', icon: '' }
     }
@@ -200,7 +223,8 @@ export default function WithdrawalAddressDetail() {
             {t('admin.withdrawalAddress.notFound', { defaultValue: 'Address not found' })}
           </h5>
           <Button className="mt-3" href="/admin/withdrawal-addresses">
-            <i className="bx bx-arrow-back mr-1"></i>{t('admin.withdrawalAddress.backToAddresses', { defaultValue: 'Back to Addresses' })}
+            <i className="bx bx-arrow-back mr-1"></i>
+            {t('admin.withdrawalAddress.backToAddresses', { defaultValue: 'Back to Addresses' })}
           </Button>
         </div>
       </div>
@@ -227,7 +251,9 @@ export default function WithdrawalAddressDetail() {
                 <div className="flex items-center gap-3">
                   <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={40} className="mr-1" />
                   <div>
-                    <h4 className="mb-0">{t('admin.withdrawalAddress.title', { defaultValue: 'Withdrawal Address' })} #{address.id}</h4>
+                    <h4 className="mb-0">
+                      {t('admin.withdrawalAddress.title', { defaultValue: 'Withdrawal Address' })} #{address.id}
+                    </h4>
                     <span className="text-surface-500">
                       {coinSymbol} · {networkSymbol}
                     </span>
@@ -245,13 +271,16 @@ export default function WithdrawalAddressDetail() {
               <Card className="mb-4">
                 <div className="px-5 py-4 border-b border-surface-200">
                   <h5 className="mb-0">
-                    <i className="bx bx-detail mr-2"></i>{t('admin.withdrawalAddress.addressDetails', { defaultValue: 'Address Details' })}
+                    <i className="bx bx-detail mr-2"></i>
+                    {t('admin.withdrawalAddress.addressDetails', { defaultValue: 'Address Details' })}
                   </h5>
                 </div>
                 <div className="p-5">
                   <div className="grid grid-cols-12 gap-x-6 gap-3">
                     <div className="col-span-12 sm:col-span-6">
-                      <small className="text-surface-500 block mb-1">{t('admin.withdrawalAddress.addressId', { defaultValue: 'Address ID' })}</small>
+                      <small className="text-surface-500 block mb-1">
+                        {t('admin.withdrawalAddress.addressId', { defaultValue: 'Address ID' })}
+                      </small>
                       <span className="font-semibold">{address.id}</span>
                     </div>
                     <div className="col-span-12 sm:col-span-6">
@@ -261,7 +290,9 @@ export default function WithdrawalAddressDetail() {
                       <span className="font-semibold">{address.userId}</span>
                     </div>
                     <div className="col-span-12 sm:col-span-6">
-                      <small className="text-surface-500 block mb-1">{t('admin.detail.label', { defaultValue: 'Label' })}</small>
+                      <small className="text-surface-500 block mb-1">
+                        {t('admin.detail.label', { defaultValue: 'Label' })}
+                      </small>
                       <span>{address.label ? address.label : <span className="text-surface-500">—</span>}</span>
                     </div>
                     <div className="col-span-12 sm:col-span-6">
@@ -305,16 +336,22 @@ export default function WithdrawalAddressDetail() {
                       <span>{fmtDate(address.updatedAt)}</span>
                     </div>
                     <div className="col-span-12 sm:col-span-6">
-                      <small className="text-surface-500 block mb-1">{t('admin.detail.usageCount', { defaultValue: 'Usage Count' })}</small>
+                      <small className="text-surface-500 block mb-1">
+                        {t('admin.detail.usageCount', { defaultValue: 'Usage Count' })}
+                      </small>
                       <span className="font-semibold">{address.usageCount ?? 0}</span>
                     </div>
                     <div className="col-span-12 sm:col-span-6">
-                      <small className="text-surface-500 block mb-1">{t('admin.detail.totalWithdrawn', { defaultValue: 'Total Withdrawn' })}</small>
+                      <small className="text-surface-500 block mb-1">
+                        {t('admin.detail.totalWithdrawn', { defaultValue: 'Total Withdrawn' })}
+                      </small>
                       <span className="font-semibold">{address.totalWithdrawn || '0'}</span>
                     </div>
                     {address.lockUntil && (
                       <div className="col-span-12 sm:col-span-6">
-                        <small className="text-surface-500 block mb-1">{t('admin.withdrawalAddress.lockUntil', { defaultValue: 'Lock Until' })}</small>
+                        <small className="text-surface-500 block mb-1">
+                          {t('admin.withdrawalAddress.lockUntil', { defaultValue: 'Lock Until' })}
+                        </small>
                         <span>{fmtDate(address.lockUntil)}</span>
                         {address.isLocked && (
                           <Badge color="warning" label className="ml-2">
@@ -348,30 +385,41 @@ export default function WithdrawalAddressDetail() {
                     </span>
                   </div>
                   <div className="mb-3">
-                    <small className="text-surface-500 block mb-1">{t('admin.detail.verified', { defaultValue: 'Verified' })}</small>
+                    <small className="text-surface-500 block mb-1">
+                      {t('admin.detail.verified', { defaultValue: 'Verified' })}
+                    </small>
                     {isVerified ? (
                       <span className="text-success font-medium">
-                        <i className="bx bx-check-circle mr-1"></i>{t('admin.detail.verified', { defaultValue: 'Verified' })}
+                        <i className="bx bx-check-circle mr-1"></i>
+                        {t('admin.detail.verified', { defaultValue: 'Verified' })}
                       </span>
                     ) : (
                       <span className="text-surface-500">
-                        <i className="bx bx-x-circle mr-1"></i>{t('admin.withdrawalAddress.notVerified', { defaultValue: 'Not Verified' })}
+                        <i className="bx bx-x-circle mr-1"></i>
+                        {t('admin.withdrawalAddress.notVerified', { defaultValue: 'Not Verified' })}
                       </span>
                     )}
                   </div>
                   <div className="mb-3">
-                    <small className="text-surface-500 block mb-1">{t('admin.detail.flagged', { defaultValue: 'Flagged' })}</small>
+                    <small className="text-surface-500 block mb-1">
+                      {t('admin.detail.flagged', { defaultValue: 'Flagged' })}
+                    </small>
                     {isFlagged ? (
                       <span className="text-warning font-medium">
-                        <i className="bx bx-flag mr-1"></i>{t('admin.detail.flagged', { defaultValue: 'Flagged' })}
+                        <i className="bx bx-flag mr-1"></i>
+                        {t('admin.detail.flagged', { defaultValue: 'Flagged' })}
                       </span>
                     ) : (
-                      <span className="text-surface-500">{t('admin.withdrawalAddress.notFlagged', { defaultValue: 'Not Flagged' })}</span>
+                      <span className="text-surface-500">
+                        {t('admin.withdrawalAddress.notFlagged', { defaultValue: 'Not Flagged' })}
+                      </span>
                     )}
                   </div>
                   {address.flaggedReason && (
                     <div className="mb-3">
-                      <small className="text-surface-500 block mb-1">{t('admin.withdrawalAddress.flagReason', { defaultValue: 'Flag Reason' })}</small>
+                      <small className="text-surface-500 block mb-1">
+                        {t('admin.withdrawalAddress.flagReason', { defaultValue: 'Flag Reason' })}
+                      </small>
                       <span className="text-warning text-[0.85rem]">{address.flaggedReason}</span>
                     </div>
                   )}
@@ -392,14 +440,16 @@ export default function WithdrawalAddressDetail() {
                         onClick={() => openActionModal('flag')}
                         className="border border-warning-500 text-warning-500 bg-transparent hover:bg-warning-500 hover:text-white"
                       >
-                        <i className="bx bx-flag mr-2"></i>{t('admin.withdrawalAddress.flagAddress', { defaultValue: 'Flag Address' })}
+                        <i className="bx bx-flag mr-2"></i>
+                        {t('admin.withdrawalAddress.flagAddress', { defaultValue: 'Flag Address' })}
                       </Button>
                     ) : (
                       <Button
                         onClick={() => openActionModal('unflag')}
                         className="border border-success-500 text-success-500 bg-transparent hover:bg-success-500 hover:text-white"
                       >
-                        <i className="bx bx-check-circle mr-2"></i>{t('admin.withdrawalAddress.removeFlag', { defaultValue: 'Remove Flag' })}
+                        <i className="bx bx-check-circle mr-2"></i>
+                        {t('admin.withdrawalAddress.removeFlag', { defaultValue: 'Remove Flag' })}
                       </Button>
                     )}
                     {!isVerified && (
@@ -407,7 +457,8 @@ export default function WithdrawalAddressDetail() {
                         onClick={() => openActionModal('forceVerify')}
                         className="border border-info-500 text-info-500 bg-transparent hover:bg-info-500 hover:text-white"
                       >
-                        <i className="bx bx-shield-quarter mr-2"></i>{t('admin.withdrawalAddress.forceVerify', { defaultValue: 'Force Verify' })}
+                        <i className="bx bx-shield-quarter mr-2"></i>
+                        {t('admin.withdrawalAddress.forceVerify', { defaultValue: 'Force Verify' })}
                       </Button>
                     )}
                     <hr className="my-1" />
@@ -415,7 +466,8 @@ export default function WithdrawalAddressDetail() {
                       onClick={() => openActionModal('delete')}
                       className="border border-danger-500 text-danger-500 bg-transparent hover:bg-danger-500 hover:text-white"
                     >
-                      <i className="bx bx-trash mr-2"></i>{t('admin.withdrawalAddress.deletePermanently', { defaultValue: 'Delete Permanently' })}
+                      <i className="bx bx-trash mr-2"></i>
+                      {t('admin.withdrawalAddress.deletePermanently', { defaultValue: 'Delete Permanently' })}
                     </Button>
                   </div>
                 </Card>

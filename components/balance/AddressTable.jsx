@@ -15,8 +15,9 @@ function statusLabel(s, t) {
   const v = String(s || '').toLowerCase()
   if (t) {
     if (v === 'active') return t('wallet.status.active', { defaultValue: 'Active' })
-    if (v === 'pending_verification')
+    if (v === 'pending_verification') {
       return t('wallet.status.pendingVerification', { defaultValue: 'Pending Verification' })
+    }
     if (v === 'suspended') return t('wallet.status.suspended', { defaultValue: 'Suspended' })
     if (v === 'deleted') return t('wallet.status.deleted', { defaultValue: 'Deleted' })
   }
@@ -157,14 +158,6 @@ export default function AddressTable({
                         >
                           {t('admin.withdrawalAddress.forceVerify', { defaultValue: 'Force Verify' })}
                         </ActionMenu.Item>
-                      )}
-                      {addr.status !== 'deleted' && (
-                        <>
-                          <ActionMenu.Divider />
-                          <ActionMenu.Item icon="bx-trash" danger onClick={() => onOpenActionModal('delete', addr)}>
-                            {t('admin.withdrawalAddress.deletePermanently', { defaultValue: 'Delete Permanently' })}
-                          </ActionMenu.Item>
-                        </>
                       )}
                     </ActionMenu>
                   </td>

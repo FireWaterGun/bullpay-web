@@ -17,8 +17,8 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
 
   const buildPublicUrl = () => {
     if (!invoice?.publicCode) return ''
-    if (typeof window === 'undefined') return `/pay/${invoice.publicCode}`
-    return `${window.location.origin}/pay/${invoice.publicCode}`
+    if (typeof window === 'undefined') return `/invoice/${invoice.publicCode}`
+    return `${window.location.origin}/invoice/${invoice.publicCode}`
   }
 
   const handleOpenPublic = () => {

@@ -4,6 +4,15 @@
 
 @import 'tailwindcss';
 
+/* ── Tailwind v4: restore cursor-pointer on interactive elements ── */
+@layer base {
+  a, button, [role="button"], input[type="button"],
+  input[type="submit"], input[type="reset"], select, summary,
+  [tabindex]:not([tabindex="-1"]), label[for] {
+    cursor: pointer;
+  }
+}
+
 /* ── Dark mode via data-theme attribute ── */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 

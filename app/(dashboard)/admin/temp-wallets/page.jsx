@@ -23,18 +23,13 @@ import { Input, Label, Select } from '@/components/ui/Input'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
+import SortableHeader from '@/components/ui/SortableHeader'
 
 const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
 
 export default function TempWalletList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
-  const SORT_BY_OPTIONS = [
-    { value: 'createdAt', label: t('admin.detail.createdAt', { defaultValue: 'Created At' }) },
-    { value: 'lastAssignedAt', label: t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' }) },
-    { value: 'lastSweepAt', label: t('admin.tempWallet.lastSweep', { defaultValue: 'Last Sweep' }) },
-    { value: 'reuseCount', label: t('admin.tempWallet.reuseCount', { defaultValue: 'Reuse Count' }) },
-  ]
 
   const { token } = useAuth()
   const toast = useToast()
@@ -44,7 +39,8 @@ export default function TempWalletList() {
   const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
   const initAddress = searchParams.get('address') || ''
   const initSortBy = searchParams.get('sortBy') || ''
-  const initSortOrder = searchParams.get('sortOrder') || ''
+  const rawSortOrder = searchParams.get('sortOrder') || ''
+  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [loading, setLoading] = useState(false)
@@ -56,8 +52,8 @@ export default function TempWalletList() {
   const [statusFilter, setStatusFilter] = useState(initStatus)
   const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
   const [addressFilter, setAddressFilter] = useState(initAddress)
-  const [sortByFilter, setSortByFilter] = useState(initSortBy)
-  const [sortOrderFilter, setSortOrderFilter] = useState(initSortOrder)
+  const [sortBy, setSortBy] = useState(initSortBy)
+  const [sortOrder, setSortOrder] = useState(initSortOrder)
 
   const [appliedFilters, setAppliedFilters] = useState(() => {
     const f = {}
@@ -68,6 +64,15 @@ export default function TempWalletList() {
     if (initSortOrder) f.sortOrder = initSortOrder
     return f
   })
+
+  function handleSort(field, order) {
+    setSortBy(field)
+    setSortOrder(order)
+    const f = { ...appliedFilters, sortBy: field, sortOrder: order }
+    setAppliedFilters(f)
+    setCurrentPage(1)
+    syncSearchParams(f, 1)
+  }
 
   const loadWallets = useCallback(async () => {
     if (!token) return
@@ -120,8 +125,8 @@ export default function TempWalletList() {
       status: statusFilter || undefined,
       coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
       address: addressFilter || undefined,
-      sortBy: sortByFilter || undefined,
-      sortOrder: sortOrderFilter || undefined,
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
     }
     setAppliedFilters(f)
     setCurrentPage(1)
@@ -132,8 +137,8 @@ export default function TempWalletList() {
     setStatusFilter('')
     setCoinNetworkIdFilter('')
     setAddressFilter('')
-    setSortByFilter('')
-    setSortOrderFilter('')
+    setSortBy('')
+    setSortOrder('')
     setAppliedFilters({})
     setCurrentPage(1)
     syncSearchParams({}, 1)
@@ -206,25 +211,6 @@ export default function TempWalletList() {
                     onChange={(e) => setAddressFilter(e.target.value)}
                   />
                 </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortBy', { defaultValue: 'Sort By' })}</Label>
-                  <Select value={sortByFilter} onChange={(e) => setSortByFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    {SORT_BY_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.sortOrder', { defaultValue: 'Sort Order' })}</Label>
-                  <Select value={sortOrderFilter} onChange={(e) => setSortOrderFilter(e.target.value)}>
-                    <option value="">{t('filter.default', { defaultValue: 'Default' })}</option>
-                    <option value="asc">{t('filter.ascending', { defaultValue: 'Ascending' })}</option>
-                    <option value="desc">{t('filter.descending', { defaultValue: 'Descending' })}</option>
-                  </Select>
-                </div>
               </div>
               <div className="flex gap-2 mt-3">
                 <Button onClick={applyFilters} disabled={loading}>
@@ -250,7 +236,7 @@ export default function TempWalletList() {
                   <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
                   <th>{t('table.address', { defaultValue: 'Address' })}</th>
                   <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
-                  <th className="text-center">{t('admin.tempWallets.reuseCount', { defaultValue: 'Reuse' })}</th>
+                  <SortableHeader field="reuseCount" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">{t('admin.tempWallets.reuseCount', { defaultValue: 'Reuse' })}</SortableHeader>
                   <th className="text-right">{t('admin.tempWallets.totalReceived', { defaultValue: 'Received' })}</th>
                   <th className="text-right">{t('admin.tempWallets.totalSwept', { defaultValue: 'Swept' })}</th>
                   <th className="text-right">
@@ -262,9 +248,9 @@ export default function TempWalletList() {
                   <th className="text-right">
                     {t('admin.tempWallets.leftoverToken', { defaultValue: 'Leftover Token' })}
                   </th>
-                  <th>{t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' })}</th>
+                  <SortableHeader field="lastAssignedAt" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('admin.tempWallets.lastAssigned', { defaultValue: 'Last Assigned' })}</SortableHeader>
                   <th>{t('table.expires', { defaultValue: 'Expires' })}</th>
-                  <th>{t('table.created', { defaultValue: 'Created' })}</th>
+                  <SortableHeader field="createdAt" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>{t('table.created', { defaultValue: 'Created' })}</SortableHeader>
                   <th></th>
                 </tr>
               </thead>

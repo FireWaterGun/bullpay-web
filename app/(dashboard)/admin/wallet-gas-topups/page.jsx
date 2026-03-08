@@ -187,6 +187,7 @@ export default function GasTopups() {
                   <Label>{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</Label>
                   <Input
                     type="number"
+                    min="1"
                     placeholder={t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}
                     value={sweepIdFilter}
                     onChange={(e) => setSweepIdFilter(e.target.value)}

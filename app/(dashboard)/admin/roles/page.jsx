@@ -128,7 +128,9 @@ export default function AdminRoles() {
               <th className="text-center">{t('admin.roles.level', { defaultValue: 'Level' })}</th>
               <th className="hidden md:table-cell">{t('admin.roles.description', { defaultValue: 'Description' })}</th>
               <th className="text-right">{t('admin.roles.users', { defaultValue: 'Users' })}</th>
-              <th className="hidden sm:table-cell">{t('admin.roles.distribution', { defaultValue: 'Distribution' })}</th>
+              <th className="hidden sm:table-cell">
+                {t('admin.roles.distribution', { defaultValue: 'Distribution' })}
+              </th>
               <th className="text-center">{t('invoices.actions', { defaultValue: 'Actions' })}</th>
             </tr>
           </thead>

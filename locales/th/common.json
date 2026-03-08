@@ -113,7 +113,8 @@
     "allActions": "ทุกการดำเนินการ",
     "allEvents": "ทุกเหตุการณ์",
     "allTypes": "ทุกประเภท",
-    "coinNetwork": "เหรียญ / เครือข่าย"
+    "coinNetwork": "เหรียญ / เครือข่าย",
+    "invoiceNumber": "เลขที่ใบแจ้งหนี้"
   },
   "actions": {
     "filters": "ตัวกรอง",
@@ -873,7 +874,10 @@
     "coinNetworkId": "CN ID",
     "email": "อีเมล",
     "name": "ชื่อ",
-    "role": "บทบาท"
+    "role": "บทบาท",
+    "invoiceNumber": "เลขที่ใบแจ้งหนี้",
+    "publicCode": "รหัสสาธารณะ",
+    "merchantId": "ID ร้านค้า"
   },
   "userLedger": {
     "title": "กิจกรรม",
@@ -972,6 +976,7 @@
     "httpStatus": "สถานะ HTTP",
     "success": "สำเร็จ",
     "failed": "ล้มเหลว",
+    "deliveryStatus": "สถานะการส่ง",
     "duration": "ระยะเวลา",
     "attempt": "ครั้งที่",
     "error": "ข้อผิดพลาด",

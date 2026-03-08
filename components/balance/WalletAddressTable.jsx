@@ -21,7 +21,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
   }
 
   return (
-    <Table className="!w-auto">
+    <Table>
       <thead>
         <tr className="whitespace-nowrap">
           <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>
@@ -55,9 +55,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
               </td>
               <td className="whitespace-nowrap">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-surface-700 text-[13px]">
-                    {addr}
-                  </span>
+                  <span className="font-mono text-surface-700 text-[13px]">{addr}</span>
                   <button
                     type="button"
                     className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded border border-surface-200 text-surface-500 hover:bg-surface-50 dark:hover:bg-white/6 transition-colors cursor-pointer"
@@ -81,9 +79,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
                 </div>
               </td>
               <td className="whitespace-nowrap">
-                <span className={addressStatusBadgeClass(w.status)}>
-                  {formatAddressStatus(w.status, t)}
-                </span>
+                <span className={addressStatusBadgeClass(w.status)}>{formatAddressStatus(w.status, t)}</span>
               </td>
             </tr>
           )
