@@ -216,6 +216,7 @@ export default function WithdrawalTxModals({
                     placeholder={t('withdrawal.rejectReasonPlaceholder', {
                       defaultValue: 'e.g., Suspicious activity detected',
                     })}
+                    maxLength={500}
                     disabled={rejecting}
                     error={rejectReason.trim().length > 0 && rejectReason.trim().length < 10}
                   />
