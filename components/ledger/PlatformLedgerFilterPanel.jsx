@@ -92,6 +92,7 @@ export default function PlatformLedgerFilterPanel({
             placeholder={t('admin.platformLedger.txHash', { defaultValue: 'Tx Hash' })}
             value={txHashFilter}
             onChange={(e) => setTxHashFilter(e.target.value)}
+            maxLength={100}
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">

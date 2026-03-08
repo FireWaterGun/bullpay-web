@@ -288,6 +288,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         value={formData.rpcUrl}
                         onChange={handleChange}
                         placeholder="https://eth.llamarpc.com"
+                        maxLength={500}
                         aria-invalid={!!fieldErrors.rpcUrl}
                         error={!!fieldErrors.rpcUrl}
                       />
@@ -306,6 +307,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         value={formData.explorerUrl}
                         onChange={handleChange}
                         placeholder="https://etherscan.io"
+                        maxLength={500}
                         aria-invalid={!!fieldErrors.explorerUrl}
                         error={!!fieldErrors.explorerUrl}
                       />
@@ -324,6 +326,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         value={formData.apiUrl}
                         onChange={handleChange}
                         placeholder="https://api.etherscan.io/api"
+                        maxLength={500}
                         aria-invalid={!!fieldErrors.apiUrl}
                         error={!!fieldErrors.apiUrl}
                       />

@@ -493,6 +493,7 @@ export default function AdminMaintenancePage() {
                     clearError('messageEn')
                   }}
                   placeholder="System is under maintenance. Please try again later."
+                  maxLength={500}
                   error={errors.messageEn}
                 />
                 <ErrorText>{errors.messageEn}</ErrorText>
@@ -528,6 +529,7 @@ export default function AdminMaintenancePage() {
                     clearError('allowedIps')
                   }}
                   placeholder='["1.2.3.4", "5.6.7.8"]'
+                  maxLength={2000}
                   error={errors.allowedIps}
                 />
                 {errors.allowedIps ? (
