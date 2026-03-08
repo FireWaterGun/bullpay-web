@@ -37,7 +37,7 @@ export default function TimezoneCard({ token, user, selectedTimezone, setSelecte
   }
 
   return (
-    <Card className="mb-4">
+    <Card>
       <div className="px-5 py-4 border-b border-surface-200 flex items-center">
         <span className="inline-flex items-center justify-center rounded bg-info-50 dark:bg-info-500/10 text-info-700 dark:text-info-300 mr-3 shrink-0 w-9 h-9">
           <i className="bx bx-time-five text-[1.1rem]" />
@@ -52,10 +52,10 @@ export default function TimezoneCard({ token, user, selectedTimezone, setSelecte
         </div>
       </div>
 
-      <div className="p-5">
-        {/* Live clock preview */}
-        <div className="text-center mb-4 py-3 rounded-lg" style={{ background: 'rgba(59, 130, 246, 0.06)' }}>
-          <div className="font-bold text-[1.75rem] text-primary tabular-nums tracking-[0.05em]">
+      <div className="px-5 py-3">
+        {/* Live clock — compact inline */}
+        <div className="flex items-center justify-between mb-3 py-2 px-3 rounded-lg" style={{ background: 'rgba(59, 130, 246, 0.06)' }}>
+          <span className="font-bold text-xl text-primary tabular-nums tracking-wider">
             {now.toLocaleString(undefined, {
               timeZone: selectedTimezone,
               hour: '2-digit',
@@ -63,7 +63,7 @@ export default function TimezoneCard({ token, user, selectedTimezone, setSelecte
               second: '2-digit',
               hour12: false,
             })}
-          </div>
+          </span>
           <small className="text-surface-500">{selectedTimezone.replace(/_/g, ' ')}</small>
         </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -56,10 +57,7 @@ export default function UserBalanceDetailPage() {
           <p className="text-surface-500 mt-2">
             {t('admin.userBalance.notFound', { defaultValue: 'User balance not found' })}
           </p>
-          <Button
-            onClick={() => router.back()}
-            className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
-          >
+          <Button href="/admin/user-balances">
             {t('common.back', { defaultValue: 'Back' })}
           </Button>
         </div>
@@ -73,10 +71,10 @@ export default function UserBalanceDetailPage() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <Button variant="outline-secondary" className="mb-3" href="/admin/user-balances">
-            <i className="bx bx-arrow-back mr-2"></i>
-            {t('admin.userBalance.backToList', { defaultValue: 'Back to User Balances' })}
-          </Button>
+          <AdminBreadcrumb items={[
+            { label: t('admin.userBalance.title', { defaultValue: 'User Balances' }), href: '/admin/user-balances', icon: 'bx-wallet' },
+            { label: `#${userId}` },
+          ]} />
 
           <Card className="mb-4">
             <div className="p-5">

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
@@ -22,7 +23,6 @@ export default function PlatformLedgerDetail() {
   const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
-  const router = useRouter()
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
   const [entry, setEntry] = useState(null)
@@ -105,7 +105,7 @@ export default function PlatformLedgerDetail() {
           <p className="text-surface-500 mt-2">
             {t('admin.platformLedger.notFound', { defaultValue: 'Platform ledger entry not found' })}
           </p>
-          <Button onClick={() => router.back()}>{t('actions.back', { defaultValue: 'Back' })}</Button>
+          <Button href="/admin/platform-ledger">{t('actions.back', { defaultValue: 'Back' })}</Button>
         </div>
       </div>
     )
@@ -126,11 +126,10 @@ export default function PlatformLedgerDetail() {
 
   return (
     <div className="grow pb-6">
-      {/* Back Button */}
-      <Button onClick={() => router.back()} variant="outline-secondary" className="mb-3">
-        <i className="bx bx-arrow-back mr-2"></i>
-        {t('actions.back', { defaultValue: 'Back' })}
-      </Button>
+      <AdminBreadcrumb items={[
+        { label: t('admin.platformLedger.title', { defaultValue: 'Platform Ledger' }), href: '/admin/platform-ledger', icon: 'bx-book-open' },
+        { label: `#${entry.id}` },
+      ]} />
 
       {/* Header */}
       <Card className="mb-4">

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
@@ -24,7 +25,6 @@ export default function SweepDetail() {
   const { t } = useAdminTranslation()
   const { token } = useAuth()
   const toast = useToast()
-  const router = useRouter()
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
   const [sweep, setSweep] = useState(null)
@@ -74,7 +74,7 @@ export default function SweepDetail() {
           <p className="text-surface-500 mt-2">
             {t('admin.sweepDetail.notFound', { defaultValue: 'Sweep transaction not found' })}
           </p>
-          <Button onClick={() => router.back()}>{t('actions.back', { defaultValue: 'Back' })}</Button>
+          <Button href="/admin/sweeps">{t('actions.back', { defaultValue: 'Back' })}</Button>
         </div>
       </div>
     )
@@ -98,10 +98,10 @@ export default function SweepDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <Button onClick={() => router.back()} variant="outline-secondary" className="mb-3">
-            <i className="bx bx-arrow-back mr-2"></i>
-            {t('actions.back', { defaultValue: 'Back' })}
-          </Button>
+          <AdminBreadcrumb items={[
+            { label: t('admin.sweeps.title', { defaultValue: 'Sweeps' }), href: '/admin/sweeps', icon: 'bx-transfer' },
+            { label: `#${sweep.id}` },
+          ]} />
 
           <Card className="mb-4">
             <div className="p-5">

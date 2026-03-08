@@ -52,7 +52,7 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
   return (
     <div className="relative" ref={ref}>
       <button
-        className={`${inputClass()} w-full flex items-center justify-between text-left`}
+        className={`${inputClass()} select-base w-full flex items-center text-left`}
         type="button"
         onClick={() => setOpen(!open)}
       >
@@ -69,7 +69,6 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
         ) : (
           <span className="text-surface-500">{allLabel}</span>
         )}
-        <i className={`bx bx-chevron-${open ? 'up' : 'down'} text-surface-400`} />
       </button>
 
       {open && (

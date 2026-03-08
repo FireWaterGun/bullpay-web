@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import useCoinNetworkForm from '@/hooks/useCoinNetworkForm'
 import CoinSelector from '@/components/crypto/CoinSelector'
 import NetworkSelector from '@/components/crypto/NetworkSelector'
@@ -48,23 +49,10 @@ export default function SupportedCryptoForm() {
   return (
     <div className="grow pb-6">
       {/* Header */}
-      <div className="flex items-center mb-4">
-        <Button variant="outline-secondary" size="icon" className="mr-3" href="/admin/coin-networks">
-          <i className="bx bx-arrow-back"></i>
-        </Button>
-        <div>
-          <h4 className="mb-1">
-            {isEdit
-              ? t('crypto.editCoinNetwork', { defaultValue: 'Edit Coin-Network' })
-              : t('crypto.createCoinNetwork', { defaultValue: 'Add Coin-Network' })}
-          </h4>
-          <p className="text-surface-500 mb-0">
-            {isEdit
-              ? t('crypto.editCoinNetworkDesc', { defaultValue: 'Update coin-network configuration' })
-              : t('crypto.createCoinNetworkDesc', { defaultValue: 'Add a new coin-network pair' })}
-          </p>
-        </div>
-      </div>
+      <AdminBreadcrumb items={[
+        { label: t('crypto.coinNetworks', { defaultValue: 'Coin Networks' }), href: '/admin/coin-networks', icon: 'bx-link' },
+        { label: isEdit ? t('crypto.editCoinNetwork', { defaultValue: 'Edit Coin-Network' }) : t('crypto.createCoinNetwork', { defaultValue: 'Add Coin-Network' }) },
+      ]} />
 
       {error && (
         <Alert role="alert" className="mb-4">

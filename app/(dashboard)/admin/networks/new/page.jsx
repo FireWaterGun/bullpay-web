@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 
 import dynamic from 'next/dynamic'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -165,23 +166,10 @@ export default function NetworkForm() {
   return (
     <div className="grow pb-6">
       {/* Header */}
-      <div className="flex items-center mb-4">
-        <Button variant="label-secondary" size="icon" className="mr-3" href="/admin/networks">
-          <i className="bx bx-arrow-back"></i>
-        </Button>
-        <div>
-          <h4 className="mb-1">
-            {isEdit
-              ? t('crypto.editNetwork', { defaultValue: 'Edit Network' })
-              : t('crypto.createNetwork', { defaultValue: 'Create Network' })}
-          </h4>
-          <p className="text-surface-500 mb-0">
-            {isEdit
-              ? t('crypto.editNetworkDesc', { defaultValue: 'Update network information' })
-              : t('crypto.createNetworkDesc', { defaultValue: 'Add a new blockchain network' })}
-          </p>
-        </div>
-      </div>
+      <AdminBreadcrumb items={[
+        { label: t('crypto.networks', { defaultValue: 'Networks' }), href: '/admin/networks', icon: 'bx-globe' },
+        { label: isEdit ? t('crypto.editNetwork', { defaultValue: 'Edit Network' }) : t('crypto.createNetwork', { defaultValue: 'Create Network' }) },
+      ]} />
 
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 xl:col-span-8">

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -23,7 +24,6 @@ export default function TempWalletDetail() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
-  const router = useRouter()
   const { token } = useAuth()
   const toast = useToast()
   const [loading, setLoading] = useState(true)
@@ -63,10 +63,7 @@ export default function TempWalletDetail() {
           <p className="text-surface-500 mt-2">
             {t('admin.tempWallet.notFound', { defaultValue: 'Temp wallet not found' })}
           </p>
-          <Button
-            onClick={() => router.back()}
-            className="bg-transparent text-surface-600 hover:bg-surface-100 shadow-none"
-          >
+          <Button href="/admin/temp-wallets">
             {t('actions.back', { defaultValue: 'Back' })}
           </Button>
         </div>
@@ -78,10 +75,10 @@ export default function TempWalletDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <Button variant="outline-secondary" className="mb-3" href="/admin/temp-wallets">
-            <i className="bx bx-arrow-back mr-2"></i>
-            {t('admin.tempWallet.backToTempWallets', { defaultValue: 'Back to Temp Wallets' })}
-          </Button>
+          <AdminBreadcrumb items={[
+            { label: t('admin.tempWallet.listTitle', { defaultValue: 'Temp Wallets' }), href: '/admin/temp-wallets', icon: 'bx-wallet' },
+            { label: `#${wallet.id}` },
+          ]} />
 
           {/* Header Card */}
           <Card className="mb-4">

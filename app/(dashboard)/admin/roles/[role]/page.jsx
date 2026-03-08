@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
 import {
@@ -268,7 +268,6 @@ export default function RolePermissions() {
               {t('admin.roles.cannotViewHigherRole', { defaultValue: 'You do not have permission to view this role.' })}
             </p>
             <Button onClick={() => router.push('/admin/roles')}>
-              <i className="bx bx-arrow-back mr-1"></i>
               {t('admin.roles.backToRoles', { defaultValue: 'Back to Roles' })}
             </Button>
           </div>
@@ -279,19 +278,10 @@ export default function RolePermissions() {
 
   return (
     <div className="grow pb-6">
-      {/* Breadcrumb */}
-      <nav aria-label="breadcrumb" className="mb-3">
-        <ol className="flex items-center gap-1 text-sm mb-0">
-          <li>
-            <Link href="/admin/roles" className="text-surface-500 hover:text-primary-600 transition-colors">
-              <i className="bx bx-shield-alt-2 mr-1"></i>
-              {t('admin.roles.title', { defaultValue: 'Roles' })}
-            </Link>
-          </li>
-          <li className="text-surface-400">/</li>
-          <li className="text-surface-800 font-medium">{formatRoleLabel(role)}</li>
-        </ol>
-      </nav>
+      <AdminBreadcrumb items={[
+        { label: t('admin.roles.title', { defaultValue: 'Roles' }), href: '/admin/roles', icon: 'bx-shield-alt-2' },
+        { label: formatRoleLabel(role) },
+      ]} />
 
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">

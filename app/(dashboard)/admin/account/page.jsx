@@ -7,7 +7,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { get2FAStatus } from '@/lib/api/twoFactor'
 import { logger } from '@/lib/utils/logger'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import ProfileHeroCard from './ProfileHeroCard'
+import ProfileCard from './ProfileHeroCard'
 import ChangePasswordCard from './ChangePasswordCard'
 import TimezoneCard from './TimezoneCard'
 import SecurityCard from './SecurityCard'
@@ -55,42 +55,48 @@ export default function AdminAccountPage() {
 
   return (
     <div className="grow pb-6">
-      {/* §1 Profile Hero */}
-      <ProfileHeroCard
-        user={user}
-        selectedTimezone={selectedTimezone}
-        is2FAEnabled={is2FAEnabled}
-        twoFALoading={twoFALoading}
-        t={t}
-      />
-
-      {/* §2 Main Content — Two columns on large screens */}
-      <div className="grid grid-cols-12 gap-x-6">
-        {/* Left Column */}
-        <div className="xl:col-span-8 lg:col-span-7 col-span-12">
-          <ChangePasswordCard token={token} is2FAEnabled={is2FAEnabled} logout={logout} toast={toast} t={t} />
-        </div>
-
-        {/* Right Column */}
+      <div className="grid grid-cols-12 gap-6">
+        {/* Left Column — Profile sidebar */}
         <div className="xl:col-span-4 lg:col-span-5 col-span-12">
-          <TimezoneCard
-            token={token}
+          <ProfileCard
             user={user}
             selectedTimezone={selectedTimezone}
-            setSelectedTimezone={setSelectedTimezone}
-            updateUser={updateUser}
-            toast={toast}
-            t={t}
-          />
-          <SecurityCard
             is2FAEnabled={is2FAEnabled}
             twoFALoading={twoFALoading}
-            twoFAStatus={twoFAStatus}
             fmtDate={fmtDate}
-            onSetup={() => setShowSetupModal(true)}
-            onDisable={() => setShowDisableModal(true)}
             t={t}
           />
+        </div>
+
+        {/* Right Column — Settings cards */}
+        <div className="xl:col-span-8 lg:col-span-7 col-span-12 space-y-4">
+          <ChangePasswordCard token={token} is2FAEnabled={is2FAEnabled} logout={logout} toast={toast} t={t} />
+
+          {/* Security + Timezone side-by-side */}
+          <div className="grid grid-cols-12 gap-6">
+            <div className="lg:col-span-6 col-span-12">
+              <SecurityCard
+                is2FAEnabled={is2FAEnabled}
+                twoFALoading={twoFALoading}
+                twoFAStatus={twoFAStatus}
+                fmtDate={fmtDate}
+                onSetup={() => setShowSetupModal(true)}
+                onDisable={() => setShowDisableModal(true)}
+                t={t}
+              />
+            </div>
+            <div className="lg:col-span-6 col-span-12">
+              <TimezoneCard
+                token={token}
+                user={user}
+                selectedTimezone={selectedTimezone}
+                setSelectedTimezone={setSelectedTimezone}
+                updateUser={updateUser}
+                toast={toast}
+                t={t}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

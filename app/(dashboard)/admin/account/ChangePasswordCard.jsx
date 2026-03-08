@@ -83,9 +83,9 @@ export default function ChangePasswordCard({ token, is2FAEnabled, logout, toast,
   }
 
   return (
-    <Card className="mb-4">
+    <Card>
       <div className="px-5 py-4 border-b border-surface-200 flex items-center">
-        <span className="inline-flex items-center justify-center rounded bg-primary-50 text-primary-600 mr-3 shrink-0 w-9 h-9">
+        <span className="inline-flex items-center justify-center rounded bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-300 mr-3 shrink-0 w-9 h-9">
           <i className="bx bx-key text-[1.1rem]" />
         </span>
         <div>
@@ -100,88 +100,84 @@ export default function ChangePasswordCard({ token, is2FAEnabled, logout, toast,
 
       <div className="p-5">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="grid grid-cols-12 gap-x-6">
-            <div className="col-span-12 md:col-span-8">
-              {/* Current Password */}
-              <PasswordField
-                id="currentPassword"
-                label={t('admin.account.currentPassword', { defaultValue: 'Current Password' })}
-                show={showCurrentPassword}
-                onToggle={() => setShowCurrentPassword((v) => !v)}
-                autoComplete="current-password"
-                error={errors.currentPassword}
-                register={register('currentPassword')}
-              />
+          {/* Current Password */}
+          <PasswordField
+            id="currentPassword"
+            label={t('admin.account.currentPassword', { defaultValue: 'Current Password' })}
+            show={showCurrentPassword}
+            onToggle={() => setShowCurrentPassword((v) => !v)}
+            autoComplete="current-password"
+            error={errors.currentPassword}
+            register={register('currentPassword')}
+          />
 
-              {/* New Password */}
-              <PasswordField
-                id="newPassword"
-                label={t('admin.account.newPassword', { defaultValue: 'New Password' })}
-                show={showNewPassword}
-                onToggle={() => setShowNewPassword((v) => !v)}
-                autoComplete="new-password"
-                error={errors.newPassword}
-                register={register('newPassword')}
-                hint={t('admin.account.requirements', {
-                  defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.',
-                })}
-              />
+          {/* New Password */}
+          <PasswordField
+            id="newPassword"
+            label={t('admin.account.newPassword', { defaultValue: 'New Password' })}
+            show={showNewPassword}
+            onToggle={() => setShowNewPassword((v) => !v)}
+            autoComplete="new-password"
+            error={errors.newPassword}
+            register={register('newPassword')}
+            hint={t('admin.account.requirements', {
+              defaultValue: 'Min 8 characters with uppercase, lowercase, number, and special character.',
+            })}
+          />
 
-              {/* Confirm New Password */}
-              <PasswordField
-                id="newPasswordConfirmation"
-                label={t('admin.account.confirmPassword', { defaultValue: 'Confirm New Password' })}
-                show={showConfirmPassword}
-                onToggle={() => setShowConfirmPassword((v) => !v)}
-                autoComplete="new-password"
-                error={errors.newPasswordConfirmation}
-                register={register('newPasswordConfirmation')}
-              />
+          {/* Confirm New Password */}
+          <PasswordField
+            id="newPasswordConfirmation"
+            label={t('admin.account.confirmPassword', { defaultValue: 'Confirm New Password' })}
+            show={showConfirmPassword}
+            onToggle={() => setShowConfirmPassword((v) => !v)}
+            autoComplete="new-password"
+            error={errors.newPasswordConfirmation}
+            register={register('newPasswordConfirmation')}
+          />
 
-              {/* 2FA Code */}
-              {is2FAEnabled && (
-                <div className="mb-3">
-                  <Label htmlFor="totpCode">
-                    <i className="bx bx-shield-quarter mr-1 text-warning" />
-                    {t('admin.account.totpLabel', { defaultValue: '2FA Verification Code' })}
-                  </Label>
-                  <Input
-                    type="text"
-                    id="totpCode"
-                    placeholder="000000"
-                    inputMode="numeric"
-                    maxLength={20}
-                    autoComplete="one-time-code"
-                    {...register('totpCode')}
-                    error={errors.totpCode}
-                  />
-                  {errors.totpCode && (
-                    <div className="text-xs text-danger-500 mt-1 block">{errors.totpCode.message}</div>
-                  )}
-                  <div className="text-xs text-surface-500 mt-1">
-                    {t('admin.account.totpHint', {
-                      defaultValue: 'Enter the code from your authenticator app or a backup code.',
-                    })}
-                  </div>
-                </div>
+          {/* 2FA Code */}
+          {is2FAEnabled && (
+            <div className="mb-3">
+              <Label htmlFor="totpCode">
+                <i className="bx bx-shield-quarter mr-1 text-warning" />
+                {t('admin.account.totpLabel', { defaultValue: '2FA Verification Code' })}
+              </Label>
+              <Input
+                type="text"
+                id="totpCode"
+                placeholder="000000"
+                inputMode="numeric"
+                maxLength={20}
+                autoComplete="one-time-code"
+                {...register('totpCode')}
+                error={errors.totpCode}
+              />
+              {errors.totpCode && (
+                <div className="text-xs text-danger-500 mt-1 block">{errors.totpCode.message}</div>
               )}
-
-              {/* Submit */}
-              <Button type="submit" disabled={changingPassword || !isValid} className="mt-2">
-                {changingPassword ? (
-                  <>
-                    <Spinner className="w-4 h-4 mr-2" />
-                    {t('admin.account.changing', { defaultValue: 'Changing...' })}
-                  </>
-                ) : (
-                  <>
-                    <i className="bx bx-check mr-1" />
-                    {t('admin.account.changeButton', { defaultValue: 'Change Password' })}
-                  </>
-                )}
-              </Button>
+              <div className="text-xs text-surface-500 mt-1">
+                {t('admin.account.totpHint', {
+                  defaultValue: 'Enter the code from your authenticator app or a backup code.',
+                })}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Submit */}
+          <Button type="submit" disabled={changingPassword || !isValid} className="mt-2">
+            {changingPassword ? (
+              <>
+                <Spinner className="w-4 h-4 mr-2" />
+                {t('admin.account.changing', { defaultValue: 'Changing...' })}
+              </>
+            ) : (
+              <>
+                <i className="bx bx-check mr-1" />
+                {t('admin.account.changeButton', { defaultValue: 'Change Password' })}
+              </>
+            )}
+          </Button>
         </form>
       </div>
     </Card>

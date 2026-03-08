@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -104,13 +105,10 @@ export default function AuditLogDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          {/* Back button */}
-          <div className="mb-4">
-            <Button variant="label-secondary" href="/admin/audit-logs">
-              <i className="bx bx-arrow-back mr-1"></i>
-              Back to Audit Logs
-            </Button>
-          </div>
+          <AdminBreadcrumb items={[
+            { label: t('admin.auditLogs.title', { defaultValue: 'Audit Logs' }), href: '/admin/audit-logs', icon: 'bx-history' },
+            { label: `#${log.id}` },
+          ]} />
 
           {/* Header */}
           <Card className="mb-4">

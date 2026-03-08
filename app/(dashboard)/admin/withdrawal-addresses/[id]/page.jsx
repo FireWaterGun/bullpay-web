@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -223,7 +224,6 @@ export default function WithdrawalAddressDetail() {
             {t('admin.withdrawalAddress.notFound', { defaultValue: 'Address not found' })}
           </h5>
           <Button className="mt-3" href="/admin/withdrawal-addresses">
-            <i className="bx bx-arrow-back mr-1"></i>
             {t('admin.withdrawalAddress.backToAddresses', { defaultValue: 'Back to Addresses' })}
           </Button>
         </div>
@@ -240,10 +240,10 @@ export default function WithdrawalAddressDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <Button variant="outline-secondary" className="mb-3" href="/admin/withdrawal-addresses">
-            <i className="bx bx-arrow-back mr-2"></i>
-            {t('actions.back', { defaultValue: 'Back' })}
-          </Button>
+          <AdminBreadcrumb items={[
+            { label: t('admin.withdrawalAddress.listTitle', { defaultValue: 'Withdrawal Addresses' }), href: '/admin/withdrawal-addresses', icon: 'bx-wallet' },
+            { label: `#${address.id}` },
+          ]} />
 
           <Card className="mb-4">
             <div className="px-5 py-4 border-b border-surface-200">

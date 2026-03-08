@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 
 import dynamic from 'next/dynamic'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -184,23 +185,10 @@ export default function CoinForm() {
   return (
     <div className="grow pb-6">
       {/* Header */}
-      <div className="flex items-center mb-4">
-        <Button variant="outline-secondary" size="icon" className="mr-3" href="/admin/coins">
-          <i className="bx bx-arrow-back"></i>
-        </Button>
-        <div>
-          <h4 className="mb-1">
-            {isEdit
-              ? t('crypto.editCoin', { defaultValue: 'Edit Coin' })
-              : t('crypto.createCoin', { defaultValue: 'Create Coin' })}
-          </h4>
-          <p className="text-surface-500 mb-0">
-            {isEdit
-              ? t('crypto.editCoinDesc', { defaultValue: 'Update coin information' })
-              : t('crypto.createCoinDesc', { defaultValue: 'Add a new cryptocurrency' })}
-          </p>
-        </div>
-      </div>
+      <AdminBreadcrumb items={[
+        { label: t('crypto.coins', { defaultValue: 'Coins' }), href: '/admin/coins', icon: 'bx-coin-stack' },
+        { label: isEdit ? t('crypto.editCoin', { defaultValue: 'Edit Coin' }) : t('crypto.createCoin', { defaultValue: 'Create Coin' }) },
+      ]} />
 
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 xl:col-span-8">

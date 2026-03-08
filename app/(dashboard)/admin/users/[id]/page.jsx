@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -166,7 +167,6 @@ export default function AdminUserDetail() {
             {t('admin.userDetail.notFound', { defaultValue: 'User not found' })}
           </p>
           <Button variant="label-secondary" href="/admin/users">
-            <i className="bx bx-arrow-back mr-1"></i>
             {t('admin.userDetail.backToList', { defaultValue: 'Back to Users' })}
           </Button>
         </div>
@@ -180,13 +180,10 @@ export default function AdminUserDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          {/* Back button */}
-          <div className="mb-4">
-            <Button variant="label-secondary" href="/admin/users">
-              <i className="bx bx-arrow-back mr-1"></i>
-              {t('admin.userDetail.backToList', { defaultValue: 'Back to Users' })}
-            </Button>
-          </div>
+          <AdminBreadcrumb items={[
+            { label: t('admin.users.title', { defaultValue: 'Users' }), href: '/admin/users', icon: 'bx-user' },
+            { label: `#${user.id}` },
+          ]} />
 
           {/* User Header */}
           <Card className="mb-4">
