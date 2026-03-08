@@ -75,10 +75,11 @@ export default function ForgotPage() {
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
-              type="text"
+              type="email"
               id="email"
               name="email"
               placeholder="Enter your email"
+              maxLength={254}
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}

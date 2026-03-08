@@ -21,7 +21,7 @@ export default function WalletAddressTable({ walletItems, cnById }) {
   }
 
   return (
-    <Table className="!w-auto">
+    <Table>
       <thead>
         <tr className="whitespace-nowrap">
           <th>{t('wallet.colCoin', { defaultValue: 'Coin' })}</th>

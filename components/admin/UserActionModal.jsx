@@ -84,22 +84,22 @@ export default function UserActionModal({
           </div>
           <div className="p-5">
             <div className="rounded p-3 mb-3 bg-surface-100 border border-surface-200">
-              <div className="grid grid-cols-12 gap-x-6 gap-2">
-                <div className="col-span-6">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div>
                   <small className="text-surface-500 block">
                     {t('admin.detail.userId', { defaultValue: 'User ID' })}
                   </small>
                   <strong>{selectedUser.id}</strong>
                 </div>
-                <div className="col-span-6">
+                <div className="min-w-0">
                   <small className="text-surface-500 block">{t('admin.detail.email', { defaultValue: 'Email' })}</small>
-                  <strong>{selectedUser.email}</strong>
+                  <strong className="block truncate">{selectedUser.email}</strong>
                 </div>
-                <div className="col-span-6">
+                <div>
                   <small className="text-surface-500 block">{t('admin.users.role', { defaultValue: 'Role' })}</small>
                   <span className={roleBadgeClass(selectedUser.role)}>{formatRoleLabel(selectedUser.role)}</span>
                 </div>
-                <div className="col-span-6">
+                <div>
                   <small className="text-surface-500 block">{t('table.status', { defaultValue: 'Status' })}</small>
                   <span className={statusBadgeClass(selectedUser.status)}>
                     {String(selectedUser.status || '').toUpperCase()}

@@ -21,7 +21,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
 
   return (
     <>
-      <Table className="!w-auto">
+      <Table>
         <thead>
           <tr className="whitespace-nowrap">
             <th>{t('common.id', { defaultValue: 'ID' })}</th>

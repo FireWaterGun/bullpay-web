@@ -43,7 +43,7 @@ export default function AddressFilters({
       <div className="p-5">
         <div className="grid grid-cols-12 gap-x-6 gap-3">
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
-            <Label>Status</Label>
+            <Label>{t('admin.detail.status', { defaultValue: 'Status' })}</Label>
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
               <option value="pending_verification">
@@ -55,7 +55,7 @@ export default function AddressFilters({
             </Select>
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
-            <Label>User ID</Label>
+            <Label>{t('admin.detail.userId', { defaultValue: 'User ID' })}</Label>
             <Input
               type="number"
               placeholder={t('filter.userId', { defaultValue: 'User ID' })}
@@ -64,7 +64,7 @@ export default function AddressFilters({
             />
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-3">
-            <Label>Coin / Network</Label>
+            <Label>{t('admin.detail.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
             <CoinNetworkFilterDropdown
               coinNetworks={coinNetworks}
               value={coinNetworkIdFilter}
@@ -72,7 +72,7 @@ export default function AddressFilters({
             />
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
-            <Label>Flagged</Label>
+            <Label>{t('admin.withdrawalAddress.flagged', { defaultValue: 'Flagged' })}</Label>
             <Select value={isFlaggedFilter} onChange={(e) => setIsFlaggedFilter(e.target.value)}>
               <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
               <option value="true">{t('admin.withdrawalAddress.flagged', { defaultValue: 'Flagged' })}</option>
@@ -80,7 +80,7 @@ export default function AddressFilters({
             </Select>
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-2">
-            <Label>Verified</Label>
+            <Label>{t('admin.withdrawalAddress.verified', { defaultValue: 'Verified' })}</Label>
             <Select value={isVerifiedFilter} onChange={(e) => setIsVerifiedFilter(e.target.value)}>
               <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
               <option value="true">{t('admin.withdrawalAddress.verified', { defaultValue: 'Verified' })}</option>
