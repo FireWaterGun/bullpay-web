@@ -550,6 +550,7 @@ export default function MerchantPage() {
                         value={webhookUrl}
                         onChange={(e) => setWebhookUrl(e.target.value)}
                         placeholder="https://example.com/webhooks/payment"
+                        maxLength={500}
                         autoFocus
                       />
                     </InputGroup>
@@ -567,6 +568,7 @@ export default function MerchantPage() {
                         value={webhookPassword}
                         onChange={(e) => setWebhookPassword(e.target.value)}
                         placeholder={t('merchant.passwordPlaceholder', { defaultValue: 'Enter your current password' })}
+                        maxLength={128}
                         disabled={webhookLoading}
                         autoComplete="current-password"
                       />
