@@ -64,6 +64,7 @@ export default function MyLedgerFilterPanel({
             placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })}
             value={txHashFilter}
             onChange={(e) => setTxHashFilter(e.target.value)}
+            maxLength={100}
           />
         </div>
         <div>

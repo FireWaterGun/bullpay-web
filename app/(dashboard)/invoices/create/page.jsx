@@ -252,6 +252,7 @@ export default function InvoiceCreatePage() {
                 <Input
                   placeholder={t('invoices.descriptionPlaceholder', { defaultValue: 'Description' })}
                   value={description}
+                  maxLength={500}
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
@@ -260,6 +261,7 @@ export default function InvoiceCreatePage() {
                 <Input
                   placeholder={t('invoices.memoPlaceholder', { defaultValue: 'Memo' })}
                   value={memo}
+                  maxLength={200}
                   onChange={(e) => setMemo(e.target.value)}
                 />
               </div>
