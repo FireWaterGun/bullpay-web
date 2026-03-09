@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { formatCoinAmount } from '@/lib/utils/format'
@@ -12,6 +12,7 @@ import Table from '@/components/ui/Table'
 import { getNetworkLabel, statusBadgeClass, formatStatusLabel } from '@/components/balance/withdrawalHelpers'
 
 export default function WithdrawalTable({ items, pagination, loading, cnById, onPageChange }) {
+  const router = useRouter()
   const { t } = useTranslation()
   const { fmtDate } = useDateFormat()
 
@@ -47,14 +48,9 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
               const networkName = network?.name || getNetworkLabel({ network }, coin)
 
               return (
-                <tr key={it.id}>
+                <tr key={it.id} className="cursor-pointer" onClick={() => router.push(`/withdrawals/${it.id}`)}>
                   <td className="whitespace-nowrap">
-                    <Link
-                      href={`/withdrawals/${it.id}`}
-                      className="font-mono font-semibold text-primary-600 no-underline hover:underline"
-                    >
-                      {it.id}
-                    </Link>
+                    <span className="font-mono font-semibold text-primary-600">{it.id}</span>
                   </td>
                   <td className="whitespace-nowrap">
                     <div className="flex items-center gap-3">
@@ -82,7 +78,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                     </span>
                   </td>
                   <td className="whitespace-nowrap text-surface-500 text-xs">{fmtDate(it.createdAt)}</td>
-                  <td className="text-center">
+                  <td className="text-center" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="text-secondary"
                       size="icon-sm"
