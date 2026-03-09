@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams as useNextSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams as useNextSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -28,6 +28,7 @@ import SortableHeader from '@/components/ui/SortableHeader'
 const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
 
 export default function TempWalletList() {
+  const router = useRouter()
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
@@ -266,11 +267,11 @@ export default function TempWalletList() {
                   />
                 ) : (
                   wallets.map((w) => (
-                    <tr key={w.id}>
+                    <tr key={w.id} className="cursor-pointer" onClick={() => router.push(`/admin/temp-wallets/${w.id}`)}>
                       <td>
                         <span className="font-semibold text-primary">{w.id}</span>
                       </td>
-                      <td className="text-center">
+                      <td className="text-center" onClick={(e) => e.stopPropagation()}>
                         {w.invoiceId ? (
                           <Link href={`/admin/invoices/${w.invoiceId}`} className="text-primary font-medium">
                             {w.invoiceId}
@@ -291,7 +292,7 @@ export default function TempWalletList() {
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         {w.address ? (
                           <div className="flex items-center">
                             <span className="mr-2 whitespace-nowrap text-[0.85rem]">{w.address}</span>
@@ -345,7 +346,7 @@ export default function TempWalletList() {
                       <td>
                         <span className="whitespace-nowrap">{fmtDate(w.createdAt)}</span>
                       </td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="text-secondary"
                           size="icon-sm"
