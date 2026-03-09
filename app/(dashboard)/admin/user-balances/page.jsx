@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams as useNextSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams as useNextSearchParams } from 'next/navigation'
 
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -30,6 +30,7 @@ function roleBadgeClass(role) {
 }
 
 export default function UserBalanceListPage() {
+  const router = useRouter()
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
@@ -266,7 +267,7 @@ export default function UserBalanceListPage() {
                   />
                 ) : (
                   users.map((u) => (
-                    <tr key={u.userId}>
+                    <tr key={u.userId} className="cursor-pointer" onClick={() => router.push(`/admin/user-balances/${u.userId}`)}>
                       <td>
                         <span className="font-semibold text-primary">{u.userId}</span>
                       </td>
@@ -292,7 +293,7 @@ export default function UserBalanceListPage() {
                       <td>
                         <span className="whitespace-nowrap text-[0.85rem]">{fmtDate(u.valuedAt)}</span>
                       </td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="text-secondary"
                           size="icon-sm"

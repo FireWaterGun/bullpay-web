@@ -30,9 +30,9 @@ const EVENT_VALUES = [
 ]
 
 export default function MerchantWebhookLogList() {
+  const router = useRouter()
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
-  const router = useRouter()
 
   const { token } = useAuth()
   const toast = useToast()
@@ -296,7 +296,7 @@ export default function MerchantWebhookLogList() {
                         )}
                       </td>
                       <td>{fmtDate(log.createdAt)}</td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="text-secondary"
                           size="icon-sm"

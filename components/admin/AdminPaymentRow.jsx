@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -8,6 +9,7 @@ import Button from '../ui/Button'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function AdminPaymentRow({ payment, onCopy }) {
+  const router = useRouter()
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
@@ -22,14 +24,14 @@ export default function AdminPaymentRow({ payment, onCopy }) {
   const explorerUrl = payment.explorerUrl || payment.network?.explorerUrl || payment.invoice?.network?.explorerUrl || ''
 
   return (
-    <tr>
+    <tr className="cursor-pointer" onClick={() => router.push(`/admin/payments/${payment.id}`)}>
       <td>
         <span className="font-semibold text-primary">{payment.id}</span>
       </td>
       <td className="text-center">
         <span className="font-medium">{payment.userId || '-'}</span>
       </td>
-      <td className="text-center">
+      <td className="text-center" onClick={(e) => e.stopPropagation()}>
         {payment.invoiceId ? (
           <Button
             variant="text-primary"
@@ -79,7 +81,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           '-'
         )}
       </td>
-      <td>
+      <td onClick={(e) => e.stopPropagation()}>
         {payment.txHash ? (
           <div className="flex items-center">
             <span className="mr-2 whitespace-nowrap">{payment.txHash}</span>
@@ -101,7 +103,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           <span className="text-surface-500">-</span>
         )}
       </td>
-      <td>
+      <td onClick={(e) => e.stopPropagation()}>
         {payment.fromAddress ? (
           <div className="flex items-center">
             <span className="mr-2 whitespace-nowrap">{payment.fromAddress}</span>
@@ -118,7 +120,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           <span className="text-surface-500">-</span>
         )}
       </td>
-      <td>
+      <td onClick={(e) => e.stopPropagation()}>
         {payment.toAddress ? (
           <div className="flex items-center">
             <span className="mr-2 whitespace-nowrap">{payment.toAddress}</span>
@@ -143,7 +145,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           {payment.confirmedAt ? fmtDate(payment.confirmedAt) : <span className="text-surface-500">-</span>}
         </span>
       </td>
-      <td>
+      <td onClick={(e) => e.stopPropagation()}>
         <Button
           variant="text-secondary"
           size="icon-sm"
