@@ -22,6 +22,14 @@ const statusBadge = {
   cancelled: 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400',
 }
 
+/** Derive display status — show 'expired' if past expiryAt even when DB status is still 'pending'. */
+function effectiveStatus(invoice) {
+  if (invoice.status === 'pending' && invoice.expiryAt && new Date(invoice.expiryAt) < new Date()) {
+    return 'expired'
+  }
+  return invoice.status
+}
+
 export default function InvoiceTable({ items, pagination, loading, onPageChange, sortBy, sortOrder, onSort }) {
   const { t } = useTranslation()
   const router = useRouter()
@@ -71,6 +79,7 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
             items.map((it) => {
               const coinSym = (it.coin?.symbol || '').toUpperCase()
               const netSym = (it.network?.symbol || '').toUpperCase()
+              const displayStatus = effectiveStatus(it)
 
               return (
                 <tr key={it.id} className="cursor-pointer" onClick={() => router.push(`/invoices/${it.id}`)}>
@@ -133,10 +142,10 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                   <td>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                        statusBadge[it.status?.toLowerCase()] || 'bg-surface-100 text-surface-600 dark:bg-dark-elevated'
+                        statusBadge[displayStatus?.toLowerCase()] || 'bg-surface-100 text-surface-600 dark:bg-dark-elevated'
                       }`}
                     >
-                      {it.status ? t(`invoices.${it.status.toLowerCase()}`, { defaultValue: it.status }) : '-'}
+                      {displayStatus ? t(`invoices.${displayStatus.toLowerCase()}`, { defaultValue: displayStatus }) : '-'}
                     </span>
                   </td>
                   <td className="whitespace-nowrap">

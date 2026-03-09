@@ -25,6 +25,15 @@ import Table from '@/components/ui/Table'
 import SortableHeader from '@/components/ui/SortableHeader'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
+/** Derive display status — show 'expired' if past expiryAt even when DB status is still 'pending'. */
+function effectiveStatus(invoice) {
+  if (invoice.status === 'pending' && (invoice.expiryAt || invoice.expiry_at)) {
+    const expiry = new Date(invoice.expiryAt || invoice.expiry_at)
+    if (expiry < new Date()) return 'expired'
+  }
+  return invoice.status
+}
+
 export default function AdminInvoiceList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
@@ -41,7 +50,7 @@ export default function AdminInvoiceList() {
   // Filter states (draft — applied on "Apply")
   const [statusFilter, setStatusFilter] = useState('')
   const [invoiceIdFilter, setInvoiceIdFilter] = useState('')
-  const [invoiceNumberFilter, setInvoiceNumberFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState('')
   const [userIdFilter, setUserIdFilter] = useState('')
   const [merchantIdFilter, setMerchantIdFilter] = useState('')
   const [fromDateFilter, setFromDateFilter] = useState('')
@@ -84,7 +93,7 @@ export default function AdminInvoiceList() {
   function applyFilters() {
     setAppliedFilters({
       invoiceId: invoiceIdFilter ? Number(invoiceIdFilter) : undefined,
-      invoiceNumber: invoiceNumberFilter || undefined,
+      q: searchFilter || undefined,
       status: statusFilter || undefined,
       userId: userIdFilter ? Number(userIdFilter) : undefined,
       merchantId: merchantIdFilter ? Number(merchantIdFilter) : undefined,
@@ -99,7 +108,7 @@ export default function AdminInvoiceList() {
   function resetFilters() {
     setStatusFilter('')
     setInvoiceIdFilter('')
-    setInvoiceNumberFilter('')
+    setSearchFilter('')
     setUserIdFilter('')
     setMerchantIdFilter('')
     setFromDateFilter('')
@@ -151,13 +160,13 @@ export default function AdminInvoiceList() {
                     onChange={(e) => setInvoiceIdFilter(e.target.value)}
                   />
                 </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-2">
-                  <Label>{t('filter.invoiceNumber', { defaultValue: 'Invoice Number' })}</Label>
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
+                  <Label>{t('filter.search', { defaultValue: 'Invoice No. / Payment ID' })}</Label>
                   <Input
                     type="text"
-                    placeholder={t('filter.invoiceNumber', { defaultValue: 'Invoice Number' })}
-                    value={invoiceNumberFilter}
-                    onChange={(e) => setInvoiceNumberFilter(e.target.value)}
+                    placeholder="INV-001, pi_xxx, in_xxx"
+                    value={searchFilter}
+                    onChange={(e) => setSearchFilter(e.target.value)}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">
@@ -224,9 +233,8 @@ export default function AdminInvoiceList() {
                 <tr className="whitespace-nowrap">
                   <th>{t('table.id', { defaultValue: 'ID' })}</th>
                   <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
-                  <th className="text-center">{t('table.merchantId', { defaultValue: 'Merchant ID' })}</th>
+                  <th>{t('table.source', { defaultValue: 'Source' })}</th>
                   <th>{t('table.invoiceNumber', { defaultValue: 'Invoice Number' })}</th>
-                  <th>{t('table.paymentId', { defaultValue: 'Payment ID' })}</th>
                   <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
                   <SortableHeader field="amount" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-right">{t('table.amount', { defaultValue: 'Amount' })}</SortableHeader>
                   <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>
@@ -240,7 +248,7 @@ export default function AdminInvoiceList() {
               <tbody>
                 {invoices.length === 0 ? (
                   <TableEmptyState
-                    colSpan={13}
+                    colSpan={12}
                     icon="bx-file"
                     message={t('admin.invoices.noInvoices', { defaultValue: 'No invoices found' })}
                     sub={t('admin.invoices.noInvoicesSub', { defaultValue: 'No invoices match the current filters' })}
@@ -250,6 +258,7 @@ export default function AdminInvoiceList() {
                     const coinSymbol = (invoice.coin?.symbol || invoice.coinSymbol || '').toUpperCase()
                     const networkSymbol = (invoice.network?.symbol || invoice.networkSymbol || '').toUpperCase()
                     const networkName = invoice.network?.name || invoice.networkName || ''
+                    const displayStatus = effectiveStatus(invoice)
 
                     return (
                       <tr
@@ -263,16 +272,30 @@ export default function AdminInvoiceList() {
                         <td className="text-center">
                           <span className="font-medium">{invoice.userId || '-'}</span>
                         </td>
-                        <td className="text-center">
-                          <span className="font-medium">{invoice.merchantId || '-'}</span>
+                        <td className="whitespace-nowrap">
+                          {invoice.merchantId != null ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
+                              <i className="bx bx-store text-[11px]" />
+                              {t('invoices.merchant', { defaultValue: 'Merchant' })}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-600 dark:bg-dark-elevated">
+                              <i className="bx bx-user text-[11px]" />
+                              {t('invoices.personal', { defaultValue: 'Personal' })}
+                            </span>
+                          )}
                         </td>
                         <td className="whitespace-nowrap">
-                          <span className="font-medium">
-                            {invoice.invoiceNumber || invoice.publicCode || invoice.code || '-'}
-                          </span>
-                        </td>
-                        <td className="whitespace-nowrap">
-                          <span className="text-surface-500 text-[0.85rem]">{invoice.publicCode || '-'}</span>
+                          <div>
+                            <span className="font-medium">
+                              {invoice.invoiceNumber || invoice.publicCode || invoice.code || '-'}
+                            </span>
+                            {invoice.publicCode && (
+                              <div className="text-xs text-surface-500 font-mono mt-0.5">
+                                {invoice.publicCode}
+                              </div>
+                            )}
+                          </div>
                         </td>
                         <td className="whitespace-nowrap">
                           <div className="flex items-center">
@@ -297,8 +320,8 @@ export default function AdminInvoiceList() {
                           )}
                         </td>
                         <td className="whitespace-nowrap text-center">
-                          <span className={getStatusBadgeClass(invoice.status, 'invoice')}>
-                            {String(invoice.status || '').toUpperCase()}
+                          <span className={getStatusBadgeClass(displayStatus, 'invoice')}>
+                            {String(displayStatus || '').toUpperCase()}
                           </span>
                         </td>
                         <td>

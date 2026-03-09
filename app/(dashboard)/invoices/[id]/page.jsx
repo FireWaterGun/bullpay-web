@@ -11,6 +11,14 @@ import { useInvoiceEvents } from '@/hooks/useInvoiceEvents'
 import CoinImg from '@/components/CoinImg'
 import { statusClass } from '@/components/invoices/invoiceDetailHelpers'
 import InvoicePaymentsTable from '@/components/invoices/InvoicePaymentsTable'
+
+/** Derive display status — show 'expired' if past expiryAt even when DB status is still 'pending'. */
+function effectiveStatus(invoice) {
+  if (invoice.status === 'pending' && invoice.expiryAt && new Date(invoice.expiryAt) < new Date()) {
+    return 'expired'
+  }
+  return invoice.status
+}
 import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions'
 import RefreshButton from '@/components/RefreshButton'
 import Card from '@/components/ui/Card'
@@ -110,17 +118,27 @@ export default function InvoiceDetailPage() {
                   <h5 className="font-semibold text-surface-900 mb-1 flex items-center gap-2">
                     <span>{invoice.invoiceNumber || invoice.id}</span>
                     <span
-                      className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium capitalize ${statusClass(invoice.status)}`}
+                      className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium capitalize ${statusClass(effectiveStatus(invoice))}`}
                     >
-                      {invoice.status
-                        ? t(`invoices.${invoice.status.toLowerCase()}`, { defaultValue: invoice.status })
+                      {effectiveStatus(invoice)
+                        ? t(`invoices.${effectiveStatus(invoice).toLowerCase()}`, { defaultValue: effectiveStatus(invoice) })
                         : '-'}
                     </span>
                     <RefreshButton onClick={loadInvoice} loading={refreshing} />
                   </h5>
                   {invoice.publicCode && (
-                    <div className="text-surface-500 text-xs font-mono mt-0.5">
+                    <div className="text-surface-500 text-xs font-mono mt-0.5 flex items-center gap-1">
                       {t('invoices.paymentId', { defaultValue: 'Payment ID' })}: {invoice.publicCode}
+                      <Button
+                        variant="text-secondary"
+                        size="icon-sm"
+                        href={`/pay/${invoice.publicCode}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={t('invoices.viewPaymentPage', { defaultValue: 'View payment page' })}
+                      >
+                        <i className="bx bx-link-external text-sm"></i>
+                      </Button>
                     </div>
                   )}
                   <div className="text-surface-500 text-sm">

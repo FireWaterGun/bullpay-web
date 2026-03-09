@@ -794,6 +794,8 @@ export async function getAdminInvoices(
     limit?: number
     invoiceId?: number
     invoiceNumber?: string
+    publicCode?: string
+    q?: string
     status?: string
     userId?: number
     merchantId?: number
@@ -810,6 +812,8 @@ export async function getAdminInvoices(
   if (params.limit) queryParams.append('limit', String(params.limit))
   if (params.invoiceId) queryParams.append('invoiceId', String(params.invoiceId))
   if (params.invoiceNumber) queryParams.append('invoiceNumber', params.invoiceNumber)
+  if (params.publicCode) queryParams.append('publicCode', params.publicCode)
+  if (params.q) queryParams.append('q', params.q)
   if (params.status) queryParams.append('status', params.status)
   if (params.userId) queryParams.append('userId', String(params.userId))
   if (params.merchantId) queryParams.append('merchantId', String(params.merchantId))
