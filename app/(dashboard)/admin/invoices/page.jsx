@@ -226,7 +226,7 @@ export default function AdminInvoiceList() {
                   <th className="text-center">{t('table.userId', { defaultValue: 'User ID' })}</th>
                   <th className="text-center">{t('table.merchantId', { defaultValue: 'Merchant ID' })}</th>
                   <th>{t('table.invoiceNumber', { defaultValue: 'Invoice Number' })}</th>
-                  <th>{t('table.publicCode', { defaultValue: 'Public Code' })}</th>
+                  <th>{t('table.paymentId', { defaultValue: 'Payment ID' })}</th>
                   <th>{t('table.coin', { defaultValue: 'Coin' })}</th>
                   <SortableHeader field="amount" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-right">{t('table.amount', { defaultValue: 'Amount' })}</SortableHeader>
                   <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>

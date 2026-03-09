@@ -117,7 +117,7 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
         <div className="p-6">
           {invoice.publicCode && (
             <>
-              <small className="text-surface-500 block mb-1">{t('invoices.publicCode') || 'Public Code'}</small>
+              <small className="text-surface-500 block mb-1">{t('invoices.paymentId', { defaultValue: 'Payment ID' })}</small>
               <div className="flex items-center mb-3 gap-2">
                 <code>{invoice.publicCode}</code>
                 <Button

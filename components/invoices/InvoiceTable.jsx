@@ -76,10 +76,10 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                 <tr key={it.id} className="cursor-pointer" onClick={() => router.push(`/invoices/${it.id}`)}>
                   <td className="whitespace-nowrap">
                     <div>
-                      <span className="font-semibold text-primary-600">{it.invoiceNumber || it.id}</span>
-                      {(it.merchantPaymentPublicId || it.publicCode) && (
+                      <span>{it.invoiceNumber || it.id}</span>
+                      {it.publicCode && (
                         <div className="text-xs text-surface-500 font-mono mt-0.5">
-                          {it.merchantPaymentPublicId || it.publicCode}
+                          {it.publicCode}
                         </div>
                       )}
                     </div>
@@ -153,11 +153,11 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                       >
                         <i className="bx bx-show text-[1rem]" />
                       </Button>
-                      {(it.merchantPaymentPublicId || it.publicCode) && (
+                      {it.publicCode && (
                         <Button
                           variant="text-secondary"
                           size="icon-sm"
-                          href={`/pay/${it.merchantPaymentPublicId || it.publicCode}`}
+                          href={`/pay/${it.publicCode}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}

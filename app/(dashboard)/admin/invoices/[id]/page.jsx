@@ -133,7 +133,7 @@ export default function AdminInvoiceDetail() {
                       </tr>
                       <tr>
                         <td className="text-surface-500">
-                          {t('admin.detail.publicCode', { defaultValue: 'Public Code' })}
+                          {t('admin.detail.paymentId', { defaultValue: 'Payment ID' })}
                         </td>
                         <td className="font-medium">
                           {invoice.publicCode ? (

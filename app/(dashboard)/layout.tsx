@@ -268,7 +268,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 <MenuItem
                   key={item.key}
                   to={item.path}
-                  end
                   icon={icon}
                   label={navLabel(item.key, item.label)}
                   badge={itemBadge}

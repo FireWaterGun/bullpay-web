@@ -60,7 +60,7 @@ export default function MyLedgerDetail() {
       <div className="text-center py-12">
         <i className="bx bx-error-circle text-5xl text-surface-400"></i>
         <p className="text-surface-500 mt-2">{t('userLedger.notFound', { defaultValue: 'Ledger entry not found' })}</p>
-        <Button href="/ledger">{t('actions.back', { defaultValue: 'Back' })}</Button>
+        <Button href="/ledger">{t('userLedger.backToList', { defaultValue: 'Back to Ledger' })}</Button>
       </div>
     )
   }
@@ -73,7 +73,7 @@ export default function MyLedgerDetail() {
       {/* Back Button */}
       <Button variant="outline-secondary" className="mb-4 gap-2" href="/ledger">
         <i className="bx bx-arrow-back"></i>
-        {t('actions.back', { defaultValue: 'Back' })}
+        {t('userLedger.backToList', { defaultValue: 'Back to Ledger' })}
       </Button>
 
       {/* Header */}

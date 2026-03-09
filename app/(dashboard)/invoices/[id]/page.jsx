@@ -14,8 +14,8 @@ import InvoicePaymentsTable from '@/components/invoices/InvoicePaymentsTable'
 import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions'
 import RefreshButton from '@/components/RefreshButton'
 import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 import { Label } from '@/components/ui/Input'
-import Link from 'next/link'
 
 export default function InvoiceDetailPage() {
   const { fmtDateTime } = useDateFormat()
@@ -75,21 +75,13 @@ export default function InvoiceDetailPage() {
 
   return (
     <>
-      {/* Breadcrumb */}
-      <nav aria-label="breadcrumb" className="mb-3">
-        <ol className="flex items-center gap-1 text-sm mb-0">
-          <li>
-            <Link href="/invoices" className="text-surface-500 hover:text-primary-600 transition-colors">
-              <i className="bx bx-receipt mr-1"></i>
-              {t('invoices.title', { defaultValue: 'Invoices' })}
-            </Link>
-          </li>
-          <li className="text-surface-400">/</li>
-          <li className="text-surface-800 dark:text-surface-200 font-medium">
-            {invoice?.invoiceNumber || `#${id}`}
-          </li>
-        </ol>
-      </nav>
+      {/* Back button */}
+      <div className="mb-4">
+        <Button variant="outline-secondary" className="gap-1" href="/invoices">
+          <i className="bx bx-arrow-back"></i>
+          {t('invoices.backToList', { defaultValue: 'Back to Invoices' })}
+        </Button>
+      </div>
 
       {error && (
         <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm mb-4">
@@ -128,7 +120,7 @@ export default function InvoiceDetailPage() {
                   </h5>
                   {invoice.publicCode && (
                     <div className="text-surface-500 text-xs font-mono mt-0.5">
-                      {t('invoices.publicCode', { defaultValue: 'Code' })}: {invoice.publicCode}
+                      {t('invoices.paymentId', { defaultValue: 'Payment ID' })}: {invoice.publicCode}
                     </div>
                   )}
                   <div className="text-surface-500 text-sm">

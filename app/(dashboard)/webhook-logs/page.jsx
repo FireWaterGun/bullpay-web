@@ -68,7 +68,7 @@ export default function WebhookLogsPage() {
     } finally {
       setLoading(false)
     }
-  }, [token, currentPage, appliedFilters, t])
+  }, [token, currentPage, appliedFilters])
 
   useEffect(() => {
     loadLogs()

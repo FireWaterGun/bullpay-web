@@ -28,23 +28,27 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Focus search input when dropdown opens
+  // Reset search & focus when dropdown opens
+  const prevOpenRef = useRef(false)
   useEffect(() => {
-    if (open) {
-      setSearch('')
+    if (open && !prevOpenRef.current) {
       // Small delay so the DOM renders before focusing
       requestAnimationFrame(() => searchRef.current?.focus())
     }
+    prevOpenRef.current = open
   }, [open])
+
+  // Clear search text when dropdown closes (computed during render, no setState in effect)
+  const effectiveSearch = open ? search : ''
 
   const selected = value ? coinNetworks.find((c) => String(c.id) === String(value)) : null
 
-  const filtered = search.trim()
+  const filtered = effectiveSearch.trim()
     ? coinNetworks.filter((cn) => {
         const sym = (cn.coin?.symbol || '').toLowerCase()
         const net = (cn.network?.symbol || '').toLowerCase()
         const name = (cn.coin?.name || '').toLowerCase()
-        const q = search.trim().toLowerCase()
+        const q = effectiveSearch.trim().toLowerCase()
         return sym.includes(q) || net.includes(q) || name.includes(q)
       })
     : coinNetworks
@@ -90,7 +94,7 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
 
           {/* Options */}
           <div className="overflow-y-auto flex-1">
-            {!search.trim() && (
+            {!effectiveSearch.trim() && (
               <>
                 <button
                   type="button"
