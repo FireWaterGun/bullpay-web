@@ -114,8 +114,8 @@ export default function MerchantWebhookLogList() {
   }
 
   function successText(val) {
-    if (val === true || val === 1) return t('admin.detail.success', { defaultValue: 'Success' })
-    if (val === false || val === 0) return t('status.failed', { defaultValue: 'Failed' })
+    if (val === true || val === 1) return <Badge color="success" label>{t('admin.detail.success', { defaultValue: 'Success' })}</Badge>
+    if (val === false || val === 0) return <Badge color="danger" label>{t('status.failed', { defaultValue: 'Failed' })}</Badge>
     return '-'
   }
 
@@ -247,7 +247,7 @@ export default function MerchantWebhookLogList() {
                   <th className="text-center">{t('admin.webhookLog.payment', { defaultValue: 'Payment' })}</th>
                   <th>{t('admin.detail.event', { defaultValue: 'Event' })}</th>
                   <SortableHeader field="http_status" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">{t('admin.webhookLog.http', { defaultValue: 'HTTP' })}</SortableHeader>
-                  <th className="text-center">{t('admin.detail.success', { defaultValue: 'Success' })}</th>
+                  <th className="text-center">{t('admin.detail.status', { defaultValue: 'Status' })}</th>
                   <SortableHeader field="duration_ms" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-right">{t('admin.webhookLog.duration', { defaultValue: 'Duration' })}</SortableHeader>
                   <SortableHeader field="attempt" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">{t('admin.webhookLog.attempt', { defaultValue: 'Attempt' })}</SortableHeader>
                   <th>{t('admin.detail.callbackUrl', { defaultValue: 'Callback URL' })}</th>

@@ -118,7 +118,7 @@ export default function MerchantWebhookLogDetail() {
     )
   }
 
-  const canRetry = hasPermission && hasPermission('admin.merchants.manage')
+  const canRetry = hasPermission && hasPermission('admin.merchants.manage') && !log.success
 
   return (
     <div className="grow pb-6">
