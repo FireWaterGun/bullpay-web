@@ -172,10 +172,10 @@ export default function GasSettingsPage() {
     const e1 = validateNumber(editForm.maxGasPriceGwei, { min: 0, max: 100000, fieldLabel: 'Max Gas Price' })
     if (e1) errors.maxGasPriceGwei = e1
     for (const op of OPERATIONS) {
-      const eBase = validateNumber(editForm[`${op}Base`], { min: 1, max: 100, fieldLabel: 'Base Multiplier' })
+      const eBase = validateNumber(editForm[`${op}Base`], { min: 0.01, max: 100, fieldLabel: 'Base Multiplier' })
       if (eBase) errors[`${op}Base`] = eBase
       if (isEip1559) {
-        const ePri = validateNumber(editForm[`${op}Priority`], { min: 1, max: 100, fieldLabel: 'Priority Multiplier' })
+        const ePri = validateNumber(editForm[`${op}Priority`], { min: 0.01, max: 100, fieldLabel: 'Priority Multiplier' })
         if (ePri) errors[`${op}Priority`] = ePri
       }
     }
@@ -229,7 +229,7 @@ export default function GasSettingsPage() {
     const val = editForm.multiplier
     if (val === '' || val === undefined) return
     const errors = {}
-    const e1 = validateNumber(val, { min: 1, max: 100, fieldLabel: 'Multiplier' })
+    const e1 = validateNumber(val, { min: 0.01, max: 100, fieldLabel: 'Multiplier' })
     if (e1) errors.multiplier = e1
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
