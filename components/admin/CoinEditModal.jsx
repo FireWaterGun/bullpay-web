@@ -130,7 +130,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
       onClick={saving ? undefined : onClose}
     >
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>

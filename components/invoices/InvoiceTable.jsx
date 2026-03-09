@@ -46,6 +46,7 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
         <thead>
           <tr className="whitespace-nowrap">
             <th>{t('invoices.invoice', { defaultValue: 'Invoice' })}</th>
+            <th>{t('invoices.source', { defaultValue: 'Source' })}</th>
             <th>{t('invoices.coin', { defaultValue: 'Coin' })}</th>
             <th className="min-w-[320px]">{t('invoices.paymentAddress', { defaultValue: 'Payment Address' })}</th>
             <SortableHeader field="amount" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} className="text-right">
@@ -61,7 +62,7 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
         <tbody>
           {items.length === 0 ? (
             <TableEmptyState
-              colSpan={7}
+              colSpan={8}
               icon="bx-file"
               message={t('invoices.none', { defaultValue: 'No invoices found' })}
               sub={t('invoices.noneSub', { defaultValue: 'Create your first invoice to get started' })}
@@ -76,10 +77,25 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                   <td className="whitespace-nowrap">
                     <div>
                       <span className="font-semibold text-primary-600">{it.invoiceNumber || it.id}</span>
-                      {it.publicCode && (
-                        <div className="text-xs text-surface-500 font-mono mt-0.5">{it.publicCode}</div>
+                      {(it.merchantPaymentPublicId || it.publicCode) && (
+                        <div className="text-xs text-surface-500 font-mono mt-0.5">
+                          {it.merchantPaymentPublicId || it.publicCode}
+                        </div>
                       )}
                     </div>
+                  </td>
+                  <td className="whitespace-nowrap">
+                    {it.merchantId != null ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
+                        <i className="bx bx-store text-[11px]" />
+                        {t('invoices.merchant', { defaultValue: 'Merchant' })}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-600 dark:bg-dark-elevated">
+                        <i className="bx bx-user text-[11px]" />
+                        {t('invoices.personal', { defaultValue: 'Personal' })}
+                      </span>
+                    )}
                   </td>
                   <td className="whitespace-nowrap">
                     <div className="flex items-center">
@@ -137,11 +153,11 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                       >
                         <i className="bx bx-show text-[1rem]" />
                       </Button>
-                      {it.publicCode && (
+                      {(it.merchantPaymentPublicId || it.publicCode) && (
                         <Button
                           variant="text-secondary"
                           size="icon-sm"
-                          href={`/invoice/${it.publicCode}`}
+                          href={`/pay/${it.merchantPaymentPublicId || it.publicCode}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}

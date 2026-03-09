@@ -20,7 +20,7 @@ export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={onClose}>
       <div
         className="bg-card rounded-xl shadow-xl mx-4 max-w-[min(600px,calc(100vw-2rem))]"
         onClick={(e) => e.stopPropagation()}

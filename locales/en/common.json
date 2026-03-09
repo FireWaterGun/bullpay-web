@@ -246,7 +246,10 @@
     "memoPlaceholder": "Memo",
     "noPaymentsData": "No payments data available",
     "paymentsNotArray": "Payments data format error",
-    "noPaymentTransactions": "No payment transactions yet"
+    "noPaymentTransactions": "No payment transactions yet",
+    "source": "Source",
+    "merchant": "Merchant",
+    "personal": "Personal"
   },
   "invoice": {
     "createTitle": "Create Invoice",
@@ -255,6 +258,7 @@
   },
   "payment": {
     "title": "Invoice Payment",
+    "paymentId": "Payment ID",
     "paidAt": "Paid At",
     "scanToPay": "Scan to Pay",
     "timeRemaining": "Time remaining",
@@ -947,7 +951,20 @@
     "transactionsDesc": "View all withdrawal transactions and their status",
     "txHash": "Tx Hash",
     "walletAddresses": "Wallet Addresses",
-    "walletAddressesDesc": "Manage user withdrawal wallet addresses"
+    "walletAddressesDesc": "Manage user withdrawal wallet addresses",
+    "detail": "Withdrawal",
+    "details": "Details",
+    "totalAmount": "Total Amount",
+    "netAmount": "Net Amount",
+    "memo": "Memo",
+    "failureReason": "Failure Reason",
+    "timeline": "Timeline",
+    "created": "Created",
+    "processed": "Processed",
+    "completed": "Completed",
+    "updated": "Updated",
+    "notFound": "Withdrawal not found",
+    "detailLoadError": "Failed to load withdrawal"
   },
   "maintenance": {
     "title": "Under Maintenance",

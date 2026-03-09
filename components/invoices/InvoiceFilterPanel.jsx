@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next'
 import CoinNetworkFilterDropdown from '@/components/ui/CoinNetworkFilterDropdown'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import Button from '@/components/ui/Button'
-import { Label, Select } from '@/components/ui/Input'
+import { Label, Select, Input } from '@/components/ui/Input'
 
 export default function InvoiceFilterPanel({
+  searchQuery,
+  setSearchQuery,
   statusFilter,
   setStatusFilter,
   coinNetworkIdFilter,
@@ -31,7 +33,16 @@ export default function InvoiceFilterPanel({
           onApply()
         }}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          <div>
+            <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
+            <Input
+              type="text"
+              placeholder={t('filter.searchInvoicePlaceholder', { defaultValue: 'pi_, in_, invoice number...' })}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <div>
             <Label>{t('invoices.status')}</Label>
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>

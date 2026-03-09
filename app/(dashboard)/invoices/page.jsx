@@ -21,11 +21,13 @@ export default function InvoiceList() {
   const [status, setStatus] = useState('')
   const [sortBy, setSortBy] = useState('created_at')
   const [sortOrder, setSortOrder] = useState('desc')
+  const [searchQuery, setSearchQuery] = useState('')
   const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState('')
   const [startDateFilter, setStartDateFilter] = useState('')
   const [endDateFilter, setEndDateFilter] = useState('')
   const { coins: coinNetworks } = useCoins()
   const [appliedFilters, setAppliedFilters] = useState({
+    q: '',
     status: '',
     sortBy: 'created_at',
     sortOrder: 'desc',
@@ -55,6 +57,7 @@ export default function InvoiceList() {
           limit,
           sortBy: appliedFilters.sortBy,
           sortOrder: appliedFilters.sortOrder,
+          q: appliedFilters.q || undefined,
           status: appliedFilters.status || undefined,
           coinNetworkId: appliedFilters.coinNetworkId || undefined,
           dateFrom: appliedFilters.dateFrom || undefined,
@@ -88,6 +91,7 @@ export default function InvoiceList() {
   function applyFilters() {
     setPage(1)
     setAppliedFilters({
+      q: searchQuery,
       status,
       sortBy,
       sortOrder,
@@ -97,6 +101,7 @@ export default function InvoiceList() {
     })
   }
   function resetFilters() {
+    setSearchQuery('')
     setStatus('')
     setSortBy('created_at')
     setSortOrder('desc')
@@ -105,6 +110,7 @@ export default function InvoiceList() {
     setEndDateFilter('')
     setPage(1)
     setAppliedFilters({
+      q: '',
       status: '',
       sortBy: 'created_at',
       sortOrder: 'desc',
@@ -142,6 +148,8 @@ export default function InvoiceList() {
         </div>
 
         <InvoiceFilterPanel
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
           statusFilter={status}
           setStatusFilter={setStatus}
           coinNetworkIdFilter={coinNetworkIdFilter}

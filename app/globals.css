@@ -766,8 +766,12 @@ li.bp-active-item::after {
   .bp-sidebar.bp-collapsed {
     width: 76px;
   }
+  /* Suppress hover-expand right after collapse click (pointer-events:none drops :hover) */
+  .bp-sidebar.bp-collapsed.bp-collapsing {
+    pointer-events: none;
+  }
   /* Hover expands back to full width */
-  .bp-sidebar.bp-collapsed:hover {
+  .bp-sidebar.bp-collapsed:hover:not(.bp-collapsing) {
     width: var(--spacing-sidebar);
     box-shadow: 0 0.25rem 1rem 0 rgba(34, 48, 62, 0.12);
   }

@@ -129,23 +129,6 @@ export async function getPublicInvoice(code: string): Promise<PublicInvoiceResul
 }
 
 // ---------------------------------------------
-// Public invoice QR (no auth required)
-// GET /api/v1/public/invoices/:code/qr
-// ---------------------------------------------
-export interface PublicInvoiceQrResult {
-  invoice: InvoiceRecord
-  qr: Record<string, any>
-}
-
-export async function getPublicInvoiceQr(code: string): Promise<PublicInvoiceQrResult> {
-  if (!code) throw new Error('Missing invoice code')
-  const res = await apiFetch<any>(`/api/v1/public/invoices/${encodeURIComponent(code)}/qr`)
-  const invoice = res?.invoice ?? res?.data?.invoice ?? res?.data ?? {}
-  const qr = res?.qr ?? res?.data?.qr ?? {}
-  return { invoice, qr }
-}
-
-// ---------------------------------------------
 // Public invoice status
 // GET /api/v1/public/invoices/:code/status
 // ---------------------------------------------

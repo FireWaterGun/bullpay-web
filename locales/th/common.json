@@ -220,7 +220,10 @@
     "memoPlaceholder": "บันทึกช่วยจำ",
     "noPaymentsData": "ไม่มีข้อมูลการชำระเงิน",
     "paymentsNotArray": "รูปแบบข้อมูลการชำระเงินไม่ถูกต้อง",
-    "noPaymentTransactions": "ยังไม่มีรายการชำระเงิน"
+    "noPaymentTransactions": "ยังไม่มีรายการชำระเงิน",
+    "source": "แหล่งที่มา",
+    "merchant": "ร้านค้า",
+    "personal": "ส่วนตัว"
   },
   "invoice": {
     "createTitle": "สร้างใบแจ้งหนี้",
@@ -229,6 +232,7 @@
   },
   "payment": {
     "title": "ชำระเงินใบแจ้งหนี้",
+    "paymentId": "รหัสการชำระเงิน",
     "paidAt": "ชำระเมื่อ",
     "scanToPay": "สแกนเพื่อชำระเงิน",
     "timeRemaining": "เวลาที่เหลือ",
@@ -955,7 +959,20 @@
     "transactionsDesc": "ดูรายการถอนเงินทั้งหมดและสถานะ",
     "txHash": "แฮชธุรกรรม",
     "walletAddresses": "ที่อยู่กระเป๋า",
-    "walletAddressesDesc": "จัดการที่อยู่กระเป๋าถอนเงินของผู้ใช้"
+    "walletAddressesDesc": "จัดการที่อยู่กระเป๋าถอนเงินของผู้ใช้",
+    "detail": "การถอนเงิน",
+    "details": "รายละเอียด",
+    "totalAmount": "จำนวนรวม",
+    "netAmount": "จำนวนสุทธิ",
+    "memo": "บันทึก",
+    "failureReason": "สาเหตุที่ล้มเหลว",
+    "timeline": "ไทม์ไลน์",
+    "created": "สร้างเมื่อ",
+    "processed": "ดำเนินการเมื่อ",
+    "completed": "เสร็จสิ้นเมื่อ",
+    "updated": "อัปเดตเมื่อ",
+    "notFound": "ไม่พบรายการถอนเงิน",
+    "detailLoadError": "ไม่สามารถโหลดรายการถอนเงินได้"
   },
   "maintenance": {
     "title": "ระบบกำลังปรับปรุง",

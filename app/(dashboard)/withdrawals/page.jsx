@@ -115,7 +115,7 @@ export default function WithdrawalsPage() {
               {t('wallet.addressDesc', { defaultValue: 'Manage your saved withdrawal addresses' })}
             </p>
           </div>
-          <Button href="/wallet/new-address">
+          <Button href="/withdrawals/new-address">
             <i className="bx bx-plus mr-1"></i>
             {t('balance.newAddress', { defaultValue: 'New Address' })}
           </Button>
@@ -137,7 +137,9 @@ export default function WithdrawalsPage() {
               sub={t('wallet.noneSub', { defaultValue: 'Add a withdrawal address to get started' })}
             />
           ) : (
-            <WalletAddressTable walletItems={walletItems} cnById={cnById} />
+            <div className="border-t border-surface-200">
+              <WalletAddressTable walletItems={walletItems} cnById={cnById} />
+            </div>
           )}
         </div>
       </Card>

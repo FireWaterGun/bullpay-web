@@ -20,7 +20,7 @@ export default function SettingModal({ title, onClose, onSave, saving, children,
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-40"></div>
+      <div className="fixed inset-0 bg-black/70 z-40"></div>
       <div
         className="fixed inset-0 z-50 flex items-center justify-center"
         tabIndex="-1"

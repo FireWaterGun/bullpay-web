@@ -117,7 +117,7 @@ export default function CoinNetworkSelector({
                   <button
                     type="button"
                     key={n.id}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${selected ? 'bg-primary-600 text-white border-primary-600' : 'bg-card text-surface-700 border-surface-200 hover:border-primary-400'}`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors cursor-pointer ${selected ? 'bg-primary-50 text-primary-700 border-primary-500 shadow-sm dark:bg-primary-500/15 dark:text-primary-300 dark:border-primary-400' : 'bg-card text-surface-700 border-surface-200 hover:border-primary-400 hover:bg-surface-50'}`}
                     onClick={() => setCoinNetworkId(String(n.id))}
                   >
                     <NetworkIcon networkSymbol={n.network?.symbol || ''} size={18} />

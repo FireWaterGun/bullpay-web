@@ -246,7 +246,10 @@
     "memoPlaceholder": "备注",
     "noPaymentsData": "没有付款数据",
     "paymentsNotArray": "付款数据格式错误",
-    "noPaymentTransactions": "暂无支付记录"
+    "noPaymentTransactions": "暂无支付记录",
+    "source": "来源",
+    "merchant": "商户",
+    "personal": "个人"
   },
   "invoice": {
     "createTitle": "创建发票",
@@ -255,6 +258,7 @@
   },
   "payment": {
     "title": "发票支付",
+    "paymentId": "付款编号",
     "paidAt": "支付时间",
     "scanToPay": "扫码支付",
     "timeRemaining": "剩余时间",
@@ -949,7 +953,20 @@
     "transactionsDesc": "查看所有提款交易及其状态",
     "txHash": "交易哈希",
     "walletAddresses": "钱包地址",
-    "walletAddressesDesc": "管理用户提款钱包地址"
+    "walletAddressesDesc": "管理用户提款钱包地址",
+    "detail": "提款",
+    "details": "详情",
+    "totalAmount": "总金额",
+    "netAmount": "净金额",
+    "memo": "备注",
+    "failureReason": "失败原因",
+    "timeline": "时间线",
+    "created": "创建时间",
+    "processed": "处理时间",
+    "completed": "完成时间",
+    "updated": "更新时间",
+    "notFound": "未找到提款记录",
+    "detailLoadError": "加载提款详情失败"
   },
   "maintenance": {
     "title": "系统维护中",

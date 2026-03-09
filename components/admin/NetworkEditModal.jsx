@@ -151,7 +151,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
       onClick={saving ? undefined : onClose}
     >
       <div className="w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>

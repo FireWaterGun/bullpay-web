@@ -6,10 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
 import { useCoins } from '@/hooks/useCoins'
 import { createWallet } from '@/lib/api/wallets'
-import CoinImg from '@/components/CoinImg'
-import { getNetworkLabel } from '@/components/balance/withdrawalHelpers'
+import CoinNetworkSelector from '@/components/crypto/CoinNetworkSelector'
 import Button from '@/components/ui/Button'
-import Card from '@/components/ui/Card'
 import { Input, Label } from '@/components/ui/Input'
 
 export default function WalletNewAddressPage() {
@@ -97,86 +95,16 @@ export default function WalletNewAddressPage() {
         </div>
       )}
 
-      {/* Step 1: Select Coin */}
-      <Card className="mb-6">
-        <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">
-            1
-          </span>
-          <h6 className="font-semibold text-surface-900 mb-0">{t('form.selectCoin')}</h6>
-        </div>
-        <div className="p-6">
-          {loadingCoins ? (
-            <p className="text-surface-500">{t('invoices.loading')}</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {Object.entries(grouped).map(([sym, group]) => {
-                const isActive = selectedCoin === sym
-                const networksCount = group.items.length
-                return (
-                  <button
-                    type="button"
-                    key={sym}
-                    className={`text-left rounded-xl border-2 p-3 transition-all cursor-pointer ${
-                      isActive
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/30 shadow-sm'
-                        : 'border-surface-200 hover:border-surface-300 bg-raised'
-                    }`}
-                    onClick={() => {
-                      setSelectedCoin(sym)
-                      if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) setCoinNetworkId('')
-                    }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <CoinImg coin={group.coin} symbol={sym} size={36} showFallback imgClassName="rounded" />
-                      <div>
-                        <div className="font-bold text-surface-900">{sym}</div>
-                        <div className="text-surface-500 text-xs">{group.coin?.name || ''}</div>
-                        {networksCount > 1 && (
-                          <div className="text-surface-400 text-xs">
-                            {t('wallet.networksCount', { count: networksCount, defaultValue: '{{count}} networks' })}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                )
-              })}
-              {coins.length === 0 && (
-                <p className="col-span-full text-surface-500">{t('common.noData') || 'No coins'}</p>
-              )}
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Step 2: Select Network */}
-      <Card className="mb-6">
-        <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold">
-            2
-          </span>
-          <h6 className="font-semibold text-surface-900 mb-0">{t('form.selectNetwork')}</h6>
-        </div>
-        <div className="p-6">
-          {selectedCoin ? (
-            <div className="flex flex-wrap gap-2">
-              {networks.map((n) => {
-                const selected = String(coinNetworkId) === String(n.id)
-                const networkLabel = getNetworkLabel(n, { symbol: selectedCoin })
-                return (
-                  <Button type="button" key={n.id} onClick={() => setCoinNetworkId(String(n.id))}>
-                    {networkLabel}
-                  </Button>
-                )
-              })}
-              {networks.length === 0 && <p className="text-surface-500 text-sm">{t('common.noData')}</p>}
-            </div>
-          ) : (
-            <p className="text-surface-500">{t('form.selectCoin')}</p>
-          )}
-        </div>
-      </Card>
+      <CoinNetworkSelector
+        grouped={grouped}
+        coins={coins}
+        loadingCoins={loadingCoins}
+        selectedCoin={selectedCoin}
+        setSelectedCoin={setSelectedCoin}
+        coinNetworkId={coinNetworkId}
+        setCoinNetworkId={setCoinNetworkId}
+        networks={networks}
+      />
 
       {/* Step 3: Address + Save */}
       <form

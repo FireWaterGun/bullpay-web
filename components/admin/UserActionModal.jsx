@@ -70,7 +70,7 @@ export default function UserActionModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
       onClick={() => !modalLoading && onClose()}
     >
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>

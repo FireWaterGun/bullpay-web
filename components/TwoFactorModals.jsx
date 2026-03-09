@@ -61,7 +61,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
   if (!show) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="bg-card rounded-xl shadow-xl mx-4 w-full max-w-[460px]">
         <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
           <h5 className="font-semibold">{t('settings.2fa.disableTitle', { defaultValue: 'Disable 2FA' })}</h5>

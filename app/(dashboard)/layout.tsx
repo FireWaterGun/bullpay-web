@@ -147,10 +147,19 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [])
 
   // ── Toggle sidebar ──
+  const sidebarRef = useRef<HTMLElement>(null)
   const toggleMenu = (e?: React.MouseEvent) => {
     e?.preventDefault?.()
     if (isXlUp()) {
-      setCollapsed((c) => !c)
+      setCollapsed((c) => {
+        if (!c && sidebarRef.current) {
+          // Suppress hover-expand while mouse is still over the sidebar
+          const el = sidebarRef.current
+          el.classList.add('bp-collapsing')
+          setTimeout(() => el.classList.remove('bp-collapsing'), 400)
+        }
+        return !c
+      })
     } else {
       setMobileOpen((v) => !v)
     }
@@ -282,6 +291,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     <SubItem
                       key={child.key}
                       to={childTo}
+                      end={child.path === item.path}
                       label={navLabel(child.key, child.label)}
                       badge={childBadgeMap[child.path]}
                       external={child.external}
@@ -299,7 +309,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <>
       {/* ── Sidebar ── */}
-      <aside className={`bp-sidebar ${collapsed ? 'bp-collapsed' : ''} ${mobileOpen ? 'bp-mobile-open' : ''}`}>
+      <aside ref={sidebarRef} className={`bp-sidebar ${collapsed ? 'bp-collapsed' : ''} ${mobileOpen ? 'bp-mobile-open' : ''}`}>
         {/* Brand */}
         <div className="relative flex items-center h-[64px] px-[calc(0.9375rem*2.1333)] shrink-0">
           <a href="/dashboard" className="flex items-center gap-2.5 no-underline">
@@ -315,10 +325,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={toggleMenu}
-            className="bp-collapse-btn absolute z-[3] hidden xl:flex items-center justify-center w-[38px] h-[38px] rounded-full bg-primary-600 border-[6px] cursor-pointer shadow-none hover:shadow-[0_4px_16px_rgba(99,91,255,0.3)] hover:scale-105 transition-all duration-200 left-[15.2rem]"
+            className="bp-collapse-btn absolute z-[3] hidden xl:flex items-center justify-center w-[30px] h-[30px] rounded-full bg-primary-600 border-[4px] cursor-pointer shadow-none hover:shadow-[0_4px_16px_rgba(99,91,255,0.3)] hover:scale-110 transition-all duration-200 left-[15.2rem]"
           >
             <i
-              className={`bx ${collapsed ? 'bx-chevron-right' : 'bx-chevron-left'} text-white text-[1.25rem] leading-none`}
+              className={`bx ${collapsed ? 'bx-chevron-right' : 'bx-chevron-left'} text-white text-[0.95rem] leading-none`}
             ></i>
           </button>
           <button

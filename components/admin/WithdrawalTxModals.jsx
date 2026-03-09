@@ -26,7 +26,7 @@ export default function WithdrawalTxModals({
     <>
       {showApproveModal && selectedWithdrawal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
           onClick={() => !approving && setShowApproveModal(false)}
         >
           <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
@@ -129,7 +129,7 @@ export default function WithdrawalTxModals({
 
       {showRejectModal && selectedWithdrawal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
           onClick={() => !rejecting && setShowRejectModal(false)}
         >
           <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>

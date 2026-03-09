@@ -107,6 +107,16 @@ function resolveSensitiveActionError(t, error, fallbackTranslation) {
     }
   }
 
+  if (code === 'VALIDATION_ERROR') {
+    const msgs = Array.isArray(details)
+      ? details.map((d) => d.message || d.reason).filter(Boolean)
+      : []
+    return {
+      requires2FA: false,
+      message: msgs.length > 0 ? msgs.join('. ') : apiMsg || t(fallbackTranslation.key, { defaultValue: fallbackTranslation.defaultValue }),
+    }
+  }
+
   return {
     requires2FA: false,
     message: apiMsg || t(fallbackTranslation.key, { defaultValue: fallbackTranslation.defaultValue }),

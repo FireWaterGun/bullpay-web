@@ -45,7 +45,7 @@ export default function PermissionActionModal({
 
   const cfg = MODAL_CONFIG[action]
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={onClose}>
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="bg-card rounded-xl shadow-xl">
           <div className="flex items-center justify-between p-5 border-b border-surface-200">

@@ -35,7 +35,7 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
       onClick={() => !loading && onClose()}
     >
       <div className="w-full max-w-lg mx-4" onClick={(e) => e.stopPropagation()}>

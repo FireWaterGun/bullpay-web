@@ -29,13 +29,17 @@ export default function usePaymentCheckout() {
       id: data.paymentId,
       invoiceId: data.paymentId,
       publicCode: data.paymentId,
+      source: data.source || 'merchant',
       status: (data.status || '').toLowerCase(),
       expiryAt: data.expiresAt,
       amount: data.amount,
       description: data.description,
       paymentAddress: data.paymentAddress || null,
       paidAt: data.paidAt,
-      paidAmount: data.paidAmount,
+      paidAmount: data.paidAmount || '0',
+      remainingAmount: data.remainingAmount,
+      invoiceNumber: data.invoiceNumber,
+      amountUsd: data.amountUsd,
       merchantName: data.merchantName,
       symbol: data.coinSymbol,
       coin: data.coinSymbol ? { symbol: data.coinSymbol, name: data.coinSymbol } : undefined,
@@ -44,6 +48,7 @@ export default function usePaymentCheckout() {
       successUrl: data.successUrl,
       fiatAmount: data.fiatAmount,
       fiatCurrency: data.fiatCurrency,
+      createdAt: data.createdAt,
     }
   }, [])
 

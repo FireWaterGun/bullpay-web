@@ -142,7 +142,7 @@ export default function AdminInvoiceDetail() {
                               <Button
                                 variant="text-secondary"
                                 size="icon-sm"
-                                href={`/invoice/${invoice.publicCode}`}
+                                href={`/pay/${invoice.publicCode}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title={t('admin.invoiceDetail.viewPaymentPage', { defaultValue: 'View payment page' })}

@@ -28,6 +28,7 @@ export default function NetworkSelector({ networks, formData, setFormData, isEdi
                 <Button
                   type="button"
                   key={network.id}
+                  variant={selected ? 'outline-primary' : 'outline-secondary'}
                   onClick={() => {
                     if (!isEdit) {
                       setFormData((prev) => ({

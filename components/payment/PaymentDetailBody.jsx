@@ -59,8 +59,8 @@ export default function PaymentDetailBody({
         </div>
       )}
 
-      {/* Step Progress Indicator (payment mode only) */}
-      {isPaymentMode && (
+      {/* Step Progress Indicator (payment mode only, hide when expired) */}
+      {isPaymentMode && !isExpiredUnpaid && (
         <>
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export default function PaymentDetailBody({
       <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
         <div>
           <div className="text-[0.6rem] mb-0.5 text-surface-400 uppercase tracking-[1px] font-semibold">
-            {isPaymentMode ? t('payment.payment', { defaultValue: 'Payment' }) : t('invoices.invoice')}
+            {isPaymentMode ? t('payment.paymentId', { defaultValue: 'Payment ID' }) : t('invoices.invoice')}
           </div>
           <div className="break-all text-[0.85rem] text-surface-600 font-medium">
             {isPaymentMode

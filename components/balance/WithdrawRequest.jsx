@@ -278,7 +278,7 @@ export default function WithdrawRequest() {
                     defaultValue: 'To withdraw, please add a withdrawal wallet address first.',
                   })}
                 </p>
-                <Button href="/wallet/new-address">{t('wallet.goCreate', { defaultValue: 'Withdraw wallet' })}</Button>
+                <Button href="/withdrawals/new-address">{t('wallet.goCreate', { defaultValue: 'Withdraw wallet' })}</Button>
               </div>
             ) : (
               <>

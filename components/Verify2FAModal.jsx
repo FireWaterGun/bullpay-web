@@ -96,7 +96,7 @@ export default function Verify2FAModal({ show, onClose, onSuccess, title, descri
   if (!show) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="bg-card rounded-xl shadow-xl mx-4 w-full max-w-[380px]">
         <div className="px-6 py-4 border-b border-surface-200 flex justify-between items-center">
           <h5 className="font-semibold">
