@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
@@ -126,10 +125,13 @@ export default function PlatformLedgerDetail() {
 
   return (
     <div className="grow pb-6">
-      <AdminBreadcrumb items={[
-        { label: t('admin.platformLedger.title', { defaultValue: 'Platform Ledger' }), href: '/admin/platform-ledger', icon: 'bx-book-open' },
-        { label: `#${entry.id}` },
-      ]} />
+      {/* Back button */}
+      <div className="mb-4">
+        <Button variant="outline-secondary" className="gap-1" href="/admin/platform-ledger">
+          <i className="bx bx-arrow-back"></i>
+          {t('admin.platformLedger.backToList', { defaultValue: 'Back to Platform Ledger' })}
+        </Button>
+      </div>
 
       {/* Header */}
       <Card className="mb-4">

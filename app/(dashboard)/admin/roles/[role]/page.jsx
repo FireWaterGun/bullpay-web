@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
 import {
@@ -278,10 +277,13 @@ export default function RolePermissions() {
 
   return (
     <div className="grow pb-6">
-      <AdminBreadcrumb items={[
-        { label: t('admin.roles.title', { defaultValue: 'Roles' }), href: '/admin/roles', icon: 'bx-shield-alt-2' },
-        { label: formatRoleLabel(role) },
-      ]} />
+      {/* Back button */}
+      <div className="mb-4">
+        <Button variant="outline-secondary" className="gap-1" href="/admin/roles">
+          <i className="bx bx-arrow-back"></i>
+          {t('admin.roles.backToRoles', { defaultValue: 'Back to Roles' })}
+        </Button>
+      </div>
 
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">

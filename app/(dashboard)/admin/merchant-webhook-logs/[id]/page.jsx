@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -125,10 +124,13 @@ export default function MerchantWebhookLogDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <AdminBreadcrumb items={[
-            { label: t('admin.webhookLogs.title', { defaultValue: 'Webhook Logs' }), href: '/admin/merchant-webhook-logs', icon: 'bx-link-external' },
-            { label: `#${log.id}` },
-          ]} />
+          {/* Back button */}
+          <div className="mb-4">
+            <Button variant="outline-secondary" className="gap-1" href="/admin/merchant-webhook-logs">
+              <i className="bx bx-arrow-back"></i>
+              {t('admin.webhookLog.backToList', { defaultValue: 'Back to Webhook Logs' })}
+            </Button>
+          </div>
 
           {/* Header */}
           <Card className="mb-4">

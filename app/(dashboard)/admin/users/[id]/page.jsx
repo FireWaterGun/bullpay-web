@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -180,10 +179,13 @@ export default function AdminUserDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <AdminBreadcrumb items={[
-            { label: t('admin.users.title', { defaultValue: 'Users' }), href: '/admin/users', icon: 'bx-user' },
-            { label: `#${user.id}` },
-          ]} />
+          {/* Back button */}
+          <div className="mb-4">
+            <Button variant="outline-secondary" className="gap-1" href="/admin/users">
+              <i className="bx bx-arrow-back"></i>
+              {t('admin.users.backToList', { defaultValue: 'Back to Users' })}
+            </Button>
+          </div>
 
           {/* User Header */}
           <Card className="mb-4">

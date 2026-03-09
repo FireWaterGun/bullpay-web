@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -31,6 +32,7 @@ const EVENT_VALUES = [
 export default function MerchantWebhookLogList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+  const router = useRouter()
 
   const { token } = useAuth()
   const toast = useToast()
@@ -266,7 +268,7 @@ export default function MerchantWebhookLogList() {
                   />
                 ) : (
                   logs.map((log) => (
-                    <tr className="whitespace-nowrap" key={log.id}>
+                    <tr className="whitespace-nowrap cursor-pointer hover:bg-surface-50 transition-colors" key={log.id} onClick={() => router.push(`/admin/merchant-webhook-logs/${log.id}`)}>
                       <td className="font-medium">{log.id}</td>
                       <td className="text-center">{log.merchantId || '-'}</td>
                       <td className="text-center">{log.merchantPaymentId || '-'}</td>

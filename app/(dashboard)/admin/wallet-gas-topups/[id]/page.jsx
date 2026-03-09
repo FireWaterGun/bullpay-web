@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
@@ -99,10 +98,13 @@ export default function GasTopupDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <AdminBreadcrumb items={[
-            { label: t('admin.gasTopup.title', { defaultValue: 'Gas Topups' }), href: '/admin/wallet-gas-topups', icon: 'bx-gas-pump' },
-            { label: `#${topup.id}` },
-          ]} />
+          {/* Back button */}
+          <div className="mb-4">
+            <Button variant="outline-secondary" className="gap-1" href="/admin/wallet-gas-topups">
+              <i className="bx bx-arrow-back"></i>
+              {t('admin.gasTopup.backToList', { defaultValue: 'Back to Gas Topups' })}
+            </Button>
+          </div>
 
           <Card className="mb-4">
             <div className="p-5">

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
@@ -98,10 +97,13 @@ export default function SweepDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <AdminBreadcrumb items={[
-            { label: t('admin.sweeps.title', { defaultValue: 'Sweeps' }), href: '/admin/sweeps', icon: 'bx-transfer' },
-            { label: `#${sweep.id}` },
-          ]} />
+          {/* Back button */}
+          <div className="mb-4">
+            <Button variant="outline-secondary" className="gap-1" href="/admin/sweeps">
+              <i className="bx bx-arrow-back"></i>
+              {t('admin.sweeps.backToList', { defaultValue: 'Back to Sweeps' })}
+            </Button>
+          </div>
 
           <Card className="mb-4">
             <div className="p-5">

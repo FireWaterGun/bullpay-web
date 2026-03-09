@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -86,6 +87,7 @@ const RESOURCE_TYPE_VALUES = [
 export default function AuditLogList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+  const router = useRouter()
 
   const { token } = useAuth()
   const toast = useToast()
@@ -313,7 +315,7 @@ export default function AuditLogList() {
                   />
                 ) : (
                   logs.map((log) => (
-                    <tr className="whitespace-nowrap" key={log.id}>
+                    <tr className="whitespace-nowrap cursor-pointer hover:bg-surface-50 transition-colors" key={log.id} onClick={() => router.push(`/admin/audit-logs/${log.id}`)}>
                       <td className="font-medium">{log.id}</td>
                       <td className="text-center">{log.userId || '-'}</td>
                       <td>{actionBadge(log.action)}</td>
