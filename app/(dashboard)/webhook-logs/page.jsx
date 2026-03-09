@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { getUserWebhookLogs } from '@/lib/api/userWebhookLogs'
@@ -19,6 +20,7 @@ import SortableHeader from '@/components/ui/SortableHeader'
 import { EVENT_OPTIONS, successBadge, eventBadge, httpStatusBadge } from '@/components/webhook/webhookHelpers'
 
 export default function WebhookLogsPage() {
+  const router = useRouter()
   const { fmtDate } = useDateFormat()
   const { t, i18n } = useTranslation()
   const { token } = useAuth()
@@ -221,7 +223,7 @@ export default function WebhookLogsPage() {
               />
             ) : (
               logs.map((log) => (
-                <tr key={log.id} className="whitespace-nowrap">
+                <tr key={log.id} className="whitespace-nowrap cursor-pointer" onClick={() => router.push(`/webhook-logs/${log.id}`)}>
                   <td className="font-medium">{log.merchantPaymentId || '-'}</td>
                   <td>{eventBadge(log.event)}</td>
                   <td className="text-center">{httpStatusBadge(log.httpStatus)}</td>
@@ -251,7 +253,7 @@ export default function WebhookLogsPage() {
                     )}
                   </td>
                   <td>{fmtDate(log.createdAt)}</td>
-                  <td>
+                  <td onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="text-secondary"
                       size="icon-sm"
