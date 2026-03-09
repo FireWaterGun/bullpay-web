@@ -7,6 +7,8 @@ export interface WebhookLogListParams {
   limit?: number
   merchantId?: number
   merchantPaymentId?: number
+  invoiceId?: number
+  q?: string
   event?: string
   success?: string
   fromDate?: string
@@ -22,6 +24,8 @@ export async function getWebhookLogs(token: string | null, params: WebhookLogLis
   if (params.limit) qp.append('limit', String(params.limit))
   if (params.merchantId) qp.append('merchantId', String(params.merchantId))
   if (params.merchantPaymentId) qp.append('merchantPaymentId', String(params.merchantPaymentId))
+  if (params.invoiceId) qp.append('invoiceId', String(params.invoiceId))
+  if (params.q) qp.append('q', params.q)
   if (params.event) qp.append('event', params.event)
   if (params.success) qp.append('success', params.success)
   if (params.fromDate) qp.append('fromDate', params.fromDate)

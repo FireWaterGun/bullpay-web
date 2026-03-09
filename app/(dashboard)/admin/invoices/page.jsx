@@ -161,10 +161,10 @@ export default function AdminInvoiceList() {
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.search', { defaultValue: 'Invoice No. / Payment ID' })}</Label>
+                  <Label>{t('filter.search', { defaultValue: 'Invoice No. / Payment ID / Address' })}</Label>
                   <Input
                     type="text"
-                    placeholder="INV-001, pi_xxx, in_xxx"
+                    placeholder="INV-001, pi_xxx, in_xxx, 0x..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
                   />
@@ -287,12 +287,32 @@ export default function AdminInvoiceList() {
                         </td>
                         <td className="whitespace-nowrap">
                           <div>
-                            <span className="font-medium">
-                              {invoice.invoiceNumber || invoice.publicCode || invoice.code || '-'}
-                            </span>
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium text-sm">
+                                {invoice.invoiceNumber || invoice.publicCode || invoice.code || '-'}
+                              </span>
+                              {(invoice.invoiceNumber || invoice.publicCode || invoice.code) && (
+                                <button
+                                  className="text-surface-400 hover:text-primary-500 transition-colors"
+                                  title="Copy"
+                                  onClick={(e) => { e.stopPropagation(); handleCopy(invoice.invoiceNumber || invoice.publicCode || invoice.code) }}
+                                >
+                                  <i className="bx bx-copy text-xs"></i>
+                                </button>
+                              )}
+                            </div>
                             {invoice.publicCode && (
-                              <div className="text-xs text-surface-500 font-mono mt-0.5">
-                                {invoice.publicCode}
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <span className="text-xs text-surface-500 font-mono">
+                                  {invoice.publicCode}
+                                </span>
+                                <button
+                                  className="text-surface-400 hover:text-primary-500 transition-colors"
+                                  title="Copy"
+                                  onClick={(e) => { e.stopPropagation(); handleCopy(invoice.publicCode) }}
+                                >
+                                  <i className="bx bx-copy text-xs"></i>
+                                </button>
                               </div>
                             )}
                           </div>

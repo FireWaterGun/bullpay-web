@@ -74,7 +74,7 @@ export default function BaseFeeTab({
                   </div>
                 </td>
                 <td>
-                  <code className="text-xl">{bufferMultiplier}x</code>
+                  <code className="font-semibold">{bufferMultiplier}x</code>
                 </td>
                 <td className="text-right">
                   <Button type="button" onClick={onEditBuffer} variant="text-secondary" size="icon-sm">
@@ -97,7 +97,7 @@ export default function BaseFeeTab({
                   </div>
                 </td>
                 <td>
-                  <code className="text-xl">{(parseFloat(alertThreshold) * 100).toFixed(0)}%</code>
+                  <code className="font-semibold">{(parseFloat(alertThreshold) * 100).toFixed(0)}%</code>
                 </td>
                 <td className="text-right">
                   <Button type="button" onClick={onEditAlert} variant="text-secondary" size="icon-sm">

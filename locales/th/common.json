@@ -156,6 +156,7 @@
     "create": "สร้าง"
   },
   "invoices": {
+    "create": "สร้างใบแจ้งหนี้",
     "title": "ประวัติใบแจ้งหนี้",
     "subtitle": "ดูและจัดการธุรกรรมใบแจ้งหนี้ทั้งหมด",
     "searchPlaceholder": "ค้นหาใบแจ้งหนี้ด้วย ID, อีเมล หรือคำอธิบาย...",
@@ -644,7 +645,8 @@
     "chartDeposit": "ฝาก: {{value}}",
     "chartWithdrawal": "ถอน: {{value}}",
     "chartNetFlow": "กระแสเงินสุทธิ: {{value}}",
-    "noDataAvailable": "ไม่มีข้อมูล"
+    "noDataAvailable": "ไม่มีข้อมูล",
+    "txns": "รายการ"
   },
   "crypto": {
     "coinsComingSoon": "การจัดการเหรียญจะเปิดให้บริการเร็วๆ นี้",

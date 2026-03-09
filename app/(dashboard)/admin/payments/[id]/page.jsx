@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -78,10 +77,13 @@ export default function AdminPaymentDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <AdminBreadcrumb items={[
-            { label: t('admin.payments.title', { defaultValue: 'Payments' }), href: '/admin/payments', icon: 'bx-credit-card' },
-            { label: `#${payment.id}` },
-          ]} />
+          {/* Back button */}
+          <div className="mb-4">
+            <Button variant="outline-secondary" className="gap-1" href="/admin/payments">
+              <i className="bx bx-arrow-back"></i>
+              {t('admin.payments.backToList', { defaultValue: 'Back to Payments' })}
+            </Button>
+          </div>
 
           {/* Payment Header */}
           <Card className="mb-4">

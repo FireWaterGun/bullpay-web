@@ -203,6 +203,23 @@ export default function MerchantWebhookLogDetail() {
                           <td className="font-medium">{log.merchantPaymentId || '-'}</td>
                         </tr>
                         <tr>
+                          <td className="text-surface-500">Invoice</td>
+                          <td className="font-medium">
+                            {log.invoiceId ? (
+                              <div>
+                                <a href={`/admin/invoices/${log.invoiceId}`} className="text-primary-500 hover:underline">
+                                  {log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`}
+                                </a>
+                                {log.invoicePublicCode && (
+                                  <div className="text-xs text-surface-500 font-mono mt-0.5">
+                                    {log.invoicePublicCode}
+                                  </div>
+                                )}
+                              </div>
+                            ) : '-'}
+                          </td>
+                        </tr>
+                        <tr>
                           <td className="text-surface-500">{t('admin.detail.event', { defaultValue: 'Event' })}</td>
                           <td>{eventBadge(log.event)}</td>
                         </tr>

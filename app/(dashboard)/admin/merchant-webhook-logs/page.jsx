@@ -10,6 +10,7 @@ import { useToast } from '@/app/providers'
 import { getWebhookLogs } from '@/lib/api/merchantWebhookLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
@@ -47,6 +48,8 @@ export default function MerchantWebhookLogList() {
   // Filter states (draft)
   const [merchantIdFilter, setMerchantIdFilter] = useState('')
   const [paymentIdFilter, setPaymentIdFilter] = useState('')
+  const [invoiceIdFilter, setInvoiceIdFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState('')
   const [eventFilter, setEventFilter] = useState('')
   const [successFilter, setSuccessFilter] = useState('')
   const [fromDateFilter, setFromDateFilter] = useState('')
@@ -56,6 +59,14 @@ export default function MerchantWebhookLogList() {
 
   // Applied filters (sent to API)
   const [appliedFilters, setAppliedFilters] = useState({})
+
+  async function handleCopy(e, text) {
+    e.stopPropagation()
+    e.preventDefault()
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+    else toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
+  }
 
   function handleSort(field, order) {
     setSortBy(field)
@@ -90,6 +101,8 @@ export default function MerchantWebhookLogList() {
     setAppliedFilters({
       merchantId: merchantIdFilter ? Number(merchantIdFilter) : undefined,
       merchantPaymentId: paymentIdFilter ? Number(paymentIdFilter) : undefined,
+      invoiceId: invoiceIdFilter ? Number(invoiceIdFilter) : undefined,
+      q: searchFilter || undefined,
       event: eventFilter || undefined,
       success: successFilter || undefined,
       fromDate: fromDateFilter || undefined,
@@ -103,6 +116,8 @@ export default function MerchantWebhookLogList() {
   function resetFilters() {
     setMerchantIdFilter('')
     setPaymentIdFilter('')
+    setInvoiceIdFilter('')
+    setSearchFilter('')
     setEventFilter('')
     setSuccessFilter('')
     setFromDateFilter('')
@@ -172,6 +187,15 @@ export default function MerchantWebhookLogList() {
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
+                  <Label>{t('filter.search', { defaultValue: 'Invoice No. / Public Code' })}</Label>
+                  <Input
+                    type="text"
+                    placeholder="INV-00001, in_xxx"
+                    value={searchFilter}
+                    onChange={(e) => setSearchFilter(e.target.value)}
+                  />
+                </div>
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
                   <Label>Merchant ID</Label>
                   <Input
                     type="number"
@@ -179,16 +203,6 @@ export default function MerchantWebhookLogList() {
                     placeholder={t('admin.webhookLog.merchantId', { defaultValue: 'Merchant ID' })}
                     value={merchantIdFilter}
                     onChange={(e) => setMerchantIdFilter(e.target.value)}
-                  />
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>Payment ID</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    placeholder={t('admin.webhookLog.paymentId', { defaultValue: 'Payment ID' })}
-                    value={paymentIdFilter}
-                    onChange={(e) => setPaymentIdFilter(e.target.value)}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
@@ -244,7 +258,7 @@ export default function MerchantWebhookLogList() {
                 <tr className="whitespace-nowrap">
                   <th>{t('admin.detail.id', { defaultValue: 'ID' })}</th>
                   <th className="text-center">{t('admin.webhookLog.merchant', { defaultValue: 'Merchant' })}</th>
-                  <th className="text-center">{t('admin.webhookLog.payment', { defaultValue: 'Payment' })}</th>
+                  <th>{t('table.invoiceNumber', { defaultValue: 'Invoice Number' })}</th>
                   <th>{t('admin.detail.event', { defaultValue: 'Event' })}</th>
                   <SortableHeader field="http_status" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">{t('admin.webhookLog.http', { defaultValue: 'HTTP' })}</SortableHeader>
                   <th className="text-center">{t('admin.detail.status', { defaultValue: 'Status' })}</th>
@@ -271,7 +285,42 @@ export default function MerchantWebhookLogList() {
                     <tr className="whitespace-nowrap cursor-pointer hover:bg-surface-50 transition-colors" key={log.id} onClick={() => router.push(`/admin/merchant-webhook-logs/${log.id}`)}>
                       <td className="font-medium">{log.id}</td>
                       <td className="text-center">{log.merchantId || '-'}</td>
-                      <td className="text-center">{log.merchantPaymentId || '-'}</td>
+                      <td className="whitespace-nowrap">
+                        {log.invoiceId ? (
+                          <div>
+                            <div className="flex items-center gap-1">
+                              <a
+                                href={`/admin/invoices/${log.invoiceId}`}
+                                className="text-primary-500 hover:underline font-medium text-sm"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`}
+                              </a>
+                              <button
+                                className="text-surface-400 hover:text-primary-500 transition-colors"
+                                title="Copy"
+                                onClick={(e) => handleCopy(e, log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`)}
+                              >
+                                <i className="bx bx-copy text-xs"></i>
+                              </button>
+                            </div>
+                            {log.invoicePublicCode && (
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <span className="text-xs text-surface-500 font-mono">
+                                  {log.invoicePublicCode}
+                                </span>
+                                <button
+                                  className="text-surface-400 hover:text-primary-500 transition-colors"
+                                  title="Copy"
+                                  onClick={(e) => handleCopy(e, log.invoicePublicCode)}
+                                >
+                                  <i className="bx bx-copy text-xs"></i>
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : '-'}
+                      </td>
                       <td>{eventText(log.event)}</td>
                       <td className="text-center">{httpStatusText(log.httpStatus)}</td>
                       <td className="text-center">{successText(log.success)}</td>

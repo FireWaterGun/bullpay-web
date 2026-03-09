@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -75,10 +74,13 @@ export default function TempWalletDetail() {
     <div className="grow pb-6">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12">
-          <AdminBreadcrumb items={[
-            { label: t('admin.tempWallet.listTitle', { defaultValue: 'Temp Wallets' }), href: '/admin/temp-wallets', icon: 'bx-wallet' },
-            { label: `#${wallet.id}` },
-          ]} />
+          {/* Back button */}
+          <div className="mb-4">
+            <Button variant="outline-secondary" className="gap-1" href="/admin/temp-wallets">
+              <i className="bx bx-arrow-back"></i>
+              {t('admin.tempWallet.backToList', { defaultValue: 'Back to Temp Wallets' })}
+            </Button>
+          </div>
 
           {/* Header Card */}
           <Card className="mb-4">

@@ -38,7 +38,7 @@ export default function InvoiceFilterPanel({
             <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
             <Input
               type="text"
-              placeholder={t('filter.searchInvoicePlaceholder', { defaultValue: 'pi_, in_, invoice number...' })}
+              placeholder={t('filter.searchInvoicePlaceholder', { defaultValue: 'Invoice number, address, pi_, in_...' })}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

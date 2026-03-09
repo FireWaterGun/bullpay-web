@@ -81,7 +81,7 @@ export default function MyLedgerTable({
                       <span className="text-surface-500">-</span>
                     )}
                   </td>
-                  <td>{userStateBadge(entry.state, t)}</td>
+                  <td className="whitespace-nowrap">{userStateBadge(entry.state, t)}</td>
                   <td className="text-right whitespace-nowrap">
                     <span className="font-medium">
                       {isCredit ? '+' : '-'}

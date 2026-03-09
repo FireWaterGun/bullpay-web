@@ -27,6 +27,16 @@ function trimNum(s: string): string {
  *   formatUsd(0.00123)  → "$0.00123"
  *   formatUsd(0)        → "$0"
  */
+/**
+ * Format a count into compact form: 150 → "150", 1200 → "1.2k", 5000 → "5k"
+ */
+export function formatCompactCount(n: number | null | undefined): string {
+  if (n === null || n === undefined || !Number.isFinite(n)) return '0'
+  if (n < 1000) return String(n)
+  const k = n / 1000
+  return k % 1 === 0 ? `${k}k` : `${trimNum(k.toFixed(1))}k`
+}
+
 export function formatUsd(value: string | number | null | undefined): string {
   if (value === null || value === undefined) return '$0'
   const num = typeof value === 'string' ? parseFloat(value) : value

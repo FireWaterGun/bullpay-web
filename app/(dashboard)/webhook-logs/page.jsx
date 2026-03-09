@@ -7,6 +7,7 @@ import { useAuth, useToast } from '@/app/providers'
 import { getUserWebhookLogs } from '@/lib/api/userWebhookLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
+import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
@@ -37,7 +38,7 @@ export default function WebhookLogsPage() {
   const [currentPage, setCurrentPage] = useState(1)
 
   // Filter states (draft)
-  const [paymentIdFilter, setPaymentIdFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState('')
   const [eventFilter, setEventFilter] = useState('')
   const [successFilter, setSuccessFilter] = useState('')
   const [fromDateFilter, setFromDateFilter] = useState('')
@@ -52,6 +53,14 @@ export default function WebhookLogsPage() {
     sortBy: 'created_at',
     sortOrder: 'desc',
   })
+
+  async function handleCopy(e, text) {
+    e.stopPropagation()
+    e.preventDefault()
+    const ok = await copyText(text)
+    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+    else toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
+  }
 
   const loadLogs = useCallback(async () => {
     try {
@@ -79,7 +88,7 @@ export default function WebhookLogsPage() {
   function applyFilters() {
     setAppliedFilters((prev) => ({
       ...prev,
-      merchantPaymentId: paymentIdFilter ? Number(paymentIdFilter) : undefined,
+      q: searchFilter || undefined,
       event: eventFilter || undefined,
       success: successFilter || undefined,
       fromDate: fromDateFilter || undefined,
@@ -89,7 +98,7 @@ export default function WebhookLogsPage() {
   }
 
   function resetFilters() {
-    setPaymentIdFilter('')
+    setSearchFilter('')
     setEventFilter('')
     setSuccessFilter('')
     setFromDateFilter('')
@@ -132,12 +141,12 @@ export default function WebhookLogsPage() {
         <div className="p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <Label>{t('webhookLog.paymentId', { defaultValue: 'Payment ID' })}</Label>
+              <Label>{t('filter.search', { defaultValue: 'Invoice No. / Public Code' })}</Label>
               <Input
-                type="number"
-                placeholder={t('webhookLog.paymentId', { defaultValue: 'Payment ID' })}
-                value={paymentIdFilter}
-                onChange={(e) => setPaymentIdFilter(e.target.value)}
+                type="text"
+                placeholder="INV-00001, in_xxx"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
               />
             </div>
             <div>
@@ -191,7 +200,7 @@ export default function WebhookLogsPage() {
         <Table>
           <thead>
             <tr className="whitespace-nowrap">
-              <th>{t('webhookLog.paymentId', { defaultValue: 'Payment' })}</th>
+              <th>{t('table.invoiceNumber', { defaultValue: 'Invoice Number' })}</th>
               <th>{t('webhookLog.event', { defaultValue: 'Event' })}</th>
               <SortableHeader field="http_status" sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort} className="text-center">
                 {t('webhookLog.httpStatus', { defaultValue: 'HTTP' })}
@@ -223,8 +232,43 @@ export default function WebhookLogsPage() {
               />
             ) : (
               logs.map((log) => (
-                <tr key={log.id} className="whitespace-nowrap cursor-pointer" onClick={() => router.push(`/webhook-logs/${log.id}`)}>
-                  <td className="font-medium">{log.merchantPaymentId || '-'}</td>
+                <tr key={log.id} className="whitespace-nowrap cursor-pointer hover:bg-surface-50 transition-colors" onClick={() => router.push(`/webhook-logs/${log.id}`)}>
+                  <td className="whitespace-nowrap">
+                    {log.invoiceId ? (
+                      <div>
+                        <div className="flex items-center gap-1">
+                          <a
+                            href={`/invoices/${log.invoiceId}`}
+                            className="text-primary-500 hover:underline font-medium text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`}
+                          </a>
+                          <button
+                            className="text-surface-400 hover:text-primary-500 transition-colors"
+                            title="Copy"
+                            onClick={(e) => handleCopy(e, log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`)}
+                          >
+                            <i className="bx bx-copy text-xs"></i>
+                          </button>
+                        </div>
+                        {log.invoicePublicCode && (
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <span className="text-xs text-surface-500 font-mono">
+                              {log.invoicePublicCode}
+                            </span>
+                            <button
+                              className="text-surface-400 hover:text-primary-500 transition-colors"
+                              title="Copy"
+                              onClick={(e) => handleCopy(e, log.invoicePublicCode)}
+                            >
+                              <i className="bx bx-copy text-xs"></i>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : '-'}
+                  </td>
                   <td>{eventBadge(log.event)}</td>
                   <td className="text-center">{httpStatusBadge(log.httpStatus)}</td>
                   <td className="text-center">{successBadge(log.success, t)}</td>

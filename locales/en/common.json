@@ -182,6 +182,7 @@
     "ok": "OK"
   },
   "invoices": {
+    "create": "Create Invoice",
     "title": "Invoice History",
     "subtitle": "View and manage all invoice transactions",
     "searchPlaceholder": "Search invoices by ID, email, or description...",
@@ -637,7 +638,8 @@
     "chartDeposit": "Deposit: {{value}}",
     "chartWithdrawal": "Withdrawal: {{value}}",
     "chartNetFlow": "Net Flow: {{value}}",
-    "noDataAvailable": "No data available"
+    "noDataAvailable": "No data available",
+    "txns": "orders"
   },
   "crypto": {
     "coinsComingSoon": "Coin management coming soon",

@@ -182,6 +182,7 @@
     "ok": "确定"
   },
   "invoices": {
+    "create": "创建发票",
     "title": "发票历史",
     "subtitle": "查看和管理所有发票交易",
     "searchPlaceholder": "按ID、邮箱或描述搜索发票...",
@@ -638,7 +639,8 @@
     "chartDeposit": "存款: {{value}}",
     "chartWithdrawal": "提款: {{value}}",
     "chartNetFlow": "净流量: {{value}}",
-    "noDataAvailable": "暂无数据"
+    "noDataAvailable": "暂无数据",
+    "txns": "笔订单"
   },
   "crypto": {
     "coinsComingSoon": "代币管理即将推出",

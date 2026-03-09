@@ -16,7 +16,7 @@ export function RevenueByCoinTable({ byCoinData, totals, loading, t }) {
       <div className="col-span-12">
         <Card>
           <div className="px-5 py-4 border-b border-surface-200">
-            <h5 className="text-lg font-semibold text-surface-800 mb-0">
+            <h5 className="text-base font-semibold text-surface-800 mb-0">
               {t('admin.revenueByCoin', { defaultValue: 'Revenue by Coin' })}
             </h5>
           </div>

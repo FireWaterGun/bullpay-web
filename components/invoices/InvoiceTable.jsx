@@ -85,10 +85,30 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                 <tr key={it.id} className="cursor-pointer" onClick={() => router.push(`/invoices/${it.id}`)}>
                   <td className="whitespace-nowrap">
                     <div>
-                      <span>{it.invoiceNumber || it.id}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium text-sm">{it.invoiceNumber || it.id}</span>
+                        {(it.invoiceNumber || it.id) && (
+                          <button
+                            type="button"
+                            className="text-surface-400 hover:text-primary-500 transition-colors"
+                            title="Copy"
+                            onClick={(e) => handleCopy(it.invoiceNumber || String(it.id), `inv-${it.id}`, e)}
+                          >
+                            <i className={`bx ${copiedId === `inv-${it.id}` ? 'bx-check text-success-500' : 'bx-copy'} text-xs`}></i>
+                          </button>
+                        )}
+                      </div>
                       {it.publicCode && (
-                        <div className="text-xs text-surface-500 font-mono mt-0.5">
-                          {it.publicCode}
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <span className="text-xs text-surface-500 font-mono">{it.publicCode}</span>
+                          <button
+                            type="button"
+                            className="text-surface-400 hover:text-primary-500 transition-colors"
+                            title="Copy"
+                            onClick={(e) => handleCopy(it.publicCode, `pc-${it.id}`, e)}
+                          >
+                            <i className={`bx ${copiedId === `pc-${it.id}` ? 'bx-check text-success-500' : 'bx-copy'} text-xs`}></i>
+                          </button>
                         </div>
                       )}
                     </div>
@@ -139,9 +159,9 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                       {formatAmount(it.amount)} {coinSym}
                     </span>
                   </td>
-                  <td>
+                  <td className="whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${
                         statusBadge[displayStatus?.toLowerCase()] || 'bg-surface-100 text-surface-600 dark:bg-dark-elevated'
                       }`}
                     >

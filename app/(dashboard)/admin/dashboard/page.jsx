@@ -193,7 +193,7 @@ export default function AdminDashboardPage() {
         <div className="col-span-12">
           <Card>
             <div className="px-5 py-4 border-b border-surface-200 flex justify-between items-center">
-              <h5 className="text-lg font-semibold text-surface-800 mb-0">
+              <h5 className="text-base font-semibold text-surface-800 mb-0">
                 {t('admin.revenueCostTrend', { defaultValue: 'Revenue & Cost Trend (Daily)' })}
               </h5>
             </div>
