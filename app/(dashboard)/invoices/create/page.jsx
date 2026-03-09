@@ -80,6 +80,18 @@ export default function InvoiceCreatePage() {
     }
   }, [networks]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Re-validate amount when network changes (different coins have different decimal limits)
+  useEffect(() => {
+    if (!amount || !selectedNetwork) return
+    const decimals = selectedNetwork.decimals ?? 8
+    const parts = amount.split('.')
+    if (parts.length === 2 && parts[1].length > decimals) {
+      const trimmed = `${parts[0]}.${parts[1].substring(0, decimals)}`
+      setAmount(trimmed)
+      setAmountError('')
+    }
+  }, [selectedNetwork]) // eslint-disable-line react-hooks/exhaustive-deps
+
   async function onSubmit(e) {
     e.preventDefault()
     setError('')
@@ -202,6 +214,7 @@ export default function InvoiceCreatePage() {
                 amountError={amountError}
                 setAmountError={setAmountError}
                 minDeposit={minDeposit}
+                maxDecimals={selectedNetwork?.decimals ?? 8}
               />
 
               <div>

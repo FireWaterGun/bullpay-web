@@ -226,8 +226,8 @@
     "description": "Description",
     "payments": "Payments",
     "expiryHoursRange": "Min: 1 | Max: 24 hours",
-    "amountRange": "Min: {{min}} | Max: {{max}} (Max 8 decimals)",
-    "maxAmountInfo": "Max: {{max}} (Max 8 decimals)",
+    "amountRange": "Min: {{min}} | Max: {{max}}",
+    "maxAmountInfo": "Max: {{max}}",
     "txHash": "Tx Hash",
     "notFound": "Invoice not found",
     "viewOnExplorer": "View on Explorer",
@@ -437,7 +437,8 @@
     "amountTooLarge": "Amount must not exceed {{max}}",
     "expiryHoursTooSmall": "Hours must be at least 1",
     "expiryHoursTooLarge": "Hours must not exceed 168",
-    "invalidNetworkSelection": "Invalid network selection"
+    "invalidNetworkSelection": "Invalid network selection",
+    "maxDecimals": "Max {{count}} decimals"
   },
   "update": "Update",
   "saving": "Saving...",

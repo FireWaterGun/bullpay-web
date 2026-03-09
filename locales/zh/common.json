@@ -226,8 +226,8 @@
     "description": "描述",
     "payments": "支付记录",
     "expiryHoursRange": "最小: 1 | 最大: 24 小时",
-    "amountRange": "最小: {{min}} | 最大: {{max}} (最多 8 位小数)",
-    "maxAmountInfo": "最大: {{max}} (最多 8 位小数)",
+    "amountRange": "最小: {{min}} | 最大: {{max}}",
+    "maxAmountInfo": "最大: {{max}}",
     "txHash": "交易哈希",
     "notFound": "未找到发票",
     "viewOnExplorer": "在区块浏览器查看",
@@ -437,7 +437,8 @@
     "amountTooLarge": "金额不得超过 {{max}}",
     "expiryHoursTooSmall": "小时数不得少于 1",
     "expiryHoursTooLarge": "小时数不得超过 168",
-    "invalidNetworkSelection": "网络选择无效"
+    "invalidNetworkSelection": "网络选择无效",
+    "maxDecimals": "最多 {{count}} 位小数"
   },
   "update": "更新",
   "saving": "保存中...",

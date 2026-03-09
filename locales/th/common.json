@@ -200,8 +200,8 @@
     "description": "คำอธิบาย",
     "payments": "การชำระเงิน",
     "expiryHoursRange": "ขั้นต่ำ: 1 | สูงสุด: 24 ชั่วโมง",
-    "amountRange": "ขั้นต่ำ: {{min}} | สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
-    "maxAmountInfo": "สูงสุด: {{max}} (ทศนิยมสูงสุด 8 ตำแหน่ง)",
+    "amountRange": "ขั้นต่ำ: {{min}} | สูงสุด: {{max}}",
+    "maxAmountInfo": "สูงสุด: {{max}}",
     "txHash": "Tx Hash",
     "notFound": "ไม่พบใบแจ้งหนี้",
     "viewOnExplorer": "ดูบน Explorer",
@@ -411,7 +411,8 @@
     "amountTooLarge": "จำนวนเงินต้องไม่เกิน {{max}}",
     "expiryHoursTooSmall": "ชั่วโมงต้องไม่น้อยกว่า 1",
     "expiryHoursTooLarge": "ชั่วโมงต้องไม่เกิน 168",
-    "invalidNetworkSelection": "เลือกเครือข่ายไม่ถูกต้อง"
+    "invalidNetworkSelection": "เลือกเครือข่ายไม่ถูกต้อง",
+    "maxDecimals": "ทศนิยมสูงสุด {{count}} ตำแหน่ง"
   },
   "status": {
     "all": "ทั้งหมด",

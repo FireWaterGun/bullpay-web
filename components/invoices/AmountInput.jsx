@@ -5,7 +5,7 @@ import { Input, Label } from '@/components/ui/Input'
 
 export const MAX_DEPOSIT = 1000000
 
-export default function AmountInput({ amount, setAmount, amountError, setAmountError, minDeposit }) {
+export default function AmountInput({ amount, setAmount, amountError, setAmountError, minDeposit, maxDecimals = 8 }) {
   const { t } = useTranslation()
 
   function onInput(e) {
@@ -18,8 +18,8 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
         parts[0] = parts[0].substring(0, parts[0].startsWith('-') ? 11 : 10)
       }
 
-      if (parts[1] && parts[1].length > 8) {
-        parts[1] = parts[1].substring(0, 8)
+      if (parts[1] && parts[1].length > maxDecimals) {
+        parts[1] = parts[1].substring(0, maxDecimals)
       }
 
       e.target.value = parts.join('.')
@@ -33,8 +33,8 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
 
     if (value !== '') {
       const parts = value.split('.')
-      if (parts.length === 2 && parts[1].length > 8) {
-        value = `${parts[0]}.${parts[1].substring(0, 8)}`
+      if (parts.length === 2 && parts[1].length > maxDecimals) {
+        value = `${parts[0]}.${parts[1].substring(0, maxDecimals)}`
       }
 
       const num = parseFloat(value)
@@ -71,19 +71,21 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
     let value = e.target.value
     if (value !== '') {
       const parts = value.split('.')
-      if (parts.length === 2 && parts[1].length > 8) {
-        value = `${parts[0]}.${parts[1].substring(0, 8)}`
+      if (parts.length === 2 && parts[1].length > maxDecimals) {
+        value = `${parts[0]}.${parts[1].substring(0, maxDecimals)}`
         setAmount(value)
       }
     }
   }
+
+  const stepValue = maxDecimals > 0 ? `0.${'0'.repeat(maxDecimals - 1)}1` : '1'
 
   return (
     <div className="col-span-12 sm:col-span-6 md:col-span-4">
       <Label>{t('invoices.amount')} *</Label>
       <Input
         type="number"
-        step="0.00000001"
+        step={stepValue}
         min={minDeposit || 0}
         max={MAX_DEPOSIT}
         placeholder={minDeposit > 0 ? String(minDeposit) : '0.001'}
@@ -98,9 +100,8 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
       {amountError && <div className="text-danger-500 text-xs mt-1">{amountError}</div>}
       {!amountError && (
         <small className="text-surface-500">
-          {minDeposit > 0
-            ? t('invoices.amountRange', { min: minDeposit, max: MAX_DEPOSIT.toLocaleString() })
-            : t('invoices.maxAmountInfo', { max: MAX_DEPOSIT.toLocaleString() })}
+          {t('invoices.maxAmountInfo', { max: MAX_DEPOSIT.toLocaleString() })}
+          {' '}({t('validation.maxDecimals', { count: maxDecimals, defaultValue: `Max ${maxDecimals} decimals` })})
         </small>
       )}
     </div>
