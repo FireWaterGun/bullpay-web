@@ -59,3 +59,34 @@ export async function getCoinNetworksBySymbol(symbol: string, token?: string): P
   if (Array.isArray(res?.items)) return res.items as CoinNetworkItem[]
   return []
 }
+
+export interface FiatEstimateResult {
+  cryptoAmount: string
+  exchangeRate: string
+  fiatAmount: string
+  fiatCurrency: string
+  coinNetworkId: number
+}
+
+/**
+ * Estimate fiat→crypto conversion using current exchange rates.
+ * Public endpoint — no auth required.
+ */
+export async function estimateFiatToCrypto(
+  coinNetworkId: number,
+  fiatAmount: string,
+  fiatCurrency: string,
+  token?: string,
+  decimals?: number
+): Promise<FiatEstimateResult> {
+  const qs = new URLSearchParams({
+    coinNetworkId: String(coinNetworkId),
+    fiatAmount,
+    fiatCurrency,
+  })
+  if (decimals !== undefined) {
+    qs.set('decimals', String(decimals))
+  }
+  const res = await apiFetch<any>(`/api/v1/coins/estimate?${qs.toString()}`, { token })
+  return res as FiatEstimateResult
+}

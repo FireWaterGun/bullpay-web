@@ -203,7 +203,7 @@ export default function InvoiceDetailPage() {
 
                 <div className="mt-5">
                   <Label>{t('invoices.description') || 'Description'}</Label>
-                  <div className="text-surface-500">{invoice.description || invoice.memo || '-'}</div>
+                  <div className="text-surface-500">{invoice.description || '-'}</div>
                 </div>
 
                 <div className="mt-5">

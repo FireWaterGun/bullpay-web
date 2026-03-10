@@ -81,7 +81,7 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
   const stepValue = maxDecimals > 0 ? `0.${'0'.repeat(maxDecimals - 1)}1` : '1'
 
   return (
-    <div className="col-span-12 sm:col-span-6 md:col-span-4">
+    <div>
       <Label>{t('invoices.amount')} *</Label>
       <Input
         type="number"

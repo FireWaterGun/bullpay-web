@@ -93,7 +93,9 @@ export async function getInvoice(id: number | string, token?: string): Promise<I
 export interface CreateInvoiceBody {
   coinSymbol: string
   networkSymbol: string
-  amount: string | number
+  amount?: string | number
+  fiatAmount?: string
+  fiatCurrency?: string
   description?: string
   memo?: string
   expiryHours?: number

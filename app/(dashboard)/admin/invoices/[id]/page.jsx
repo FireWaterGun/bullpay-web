@@ -295,12 +295,6 @@ export default function AdminInvoiceDetail() {
                           )}
                         </td>
                       </tr>
-                      {invoice.memo && (
-                        <tr>
-                          <td className="text-surface-500">{t('admin.detail.memo', { defaultValue: 'Memo' })}</td>
-                          <td>{invoice.memo}</td>
-                        </tr>
-                      )}
                       {invoice.description && (
                         <tr>
                           <td className="text-surface-500">

@@ -224,7 +224,15 @@
     "noPaymentTransactions": "ยังไม่มีรายการชำระเงิน",
     "source": "แหล่งที่มา",
     "merchant": "ร้านค้า",
-    "personal": "ส่วนตัว"
+    "personal": "ส่วนตัว",
+    "amountMode": "โหมดจำนวนเงิน",
+    "cryptoMode": "คริปโต",
+    "fiatMode": "เงินสด",
+    "fiatAmount": "จำนวนเงินสด",
+    "fiatMaxInfo": "สูงสุด: {{max}} (ทศนิยม 2 ตำแหน่ง)",
+    "estimating": "กำลังประมาณ...",
+    "estimateNote": "โดยประมาณ อัตราอาจเปลี่ยนแปลง",
+    "estimateUnavailable": "ไม่สามารถประมาณอัตราได้"
   },
   "invoice": {
     "createTitle": "สร้างใบแจ้งหนี้",
@@ -412,7 +420,8 @@
     "expiryHoursTooSmall": "ชั่วโมงต้องไม่น้อยกว่า 1",
     "expiryHoursTooLarge": "ชั่วโมงต้องไม่เกิน 168",
     "invalidNetworkSelection": "เลือกเครือข่ายไม่ถูกต้อง",
-    "maxDecimals": "ทศนิยมสูงสุด {{count}} ตำแหน่ง"
+    "maxDecimals": "ทศนิยมสูงสุด {{count}} ตำแหน่ง",
+    "selectCurrency": "กรุณาเลือกสกุลเงิน"
   },
   "status": {
     "all": "ทั้งหมด",

@@ -293,6 +293,7 @@ export default function AdminInvoiceList() {
                               </span>
                               {(invoice.invoiceNumber || invoice.publicCode || invoice.code) && (
                                 <button
+                                  type="button"
                                   className="text-surface-400 hover:text-primary-500 transition-colors"
                                   title="Copy"
                                   onClick={(e) => { e.stopPropagation(); handleCopy(invoice.invoiceNumber || invoice.publicCode || invoice.code) }}
@@ -307,6 +308,7 @@ export default function AdminInvoiceList() {
                                   {invoice.publicCode}
                                 </span>
                                 <button
+                                  type="button"
                                   className="text-surface-400 hover:text-primary-500 transition-colors"
                                   title="Copy"
                                   onClick={(e) => { e.stopPropagation(); handleCopy(invoice.publicCode) }}

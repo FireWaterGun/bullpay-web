@@ -297,6 +297,7 @@ export default function MerchantWebhookLogList() {
                                 {log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`}
                               </a>
                               <button
+                                type="button"
                                 className="text-surface-400 hover:text-primary-500 transition-colors"
                                 title="Copy"
                                 onClick={(e) => handleCopy(e, log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`)}
@@ -310,6 +311,7 @@ export default function MerchantWebhookLogList() {
                                   {log.invoicePublicCode}
                                 </span>
                                 <button
+                                  type="button"
                                   className="text-surface-400 hover:text-primary-500 transition-colors"
                                   title="Copy"
                                   onClick={(e) => handleCopy(e, log.invoicePublicCode)}

@@ -250,7 +250,15 @@
     "noPaymentTransactions": "No payment transactions yet",
     "source": "Source",
     "merchant": "Merchant",
-    "personal": "Personal"
+    "personal": "Personal",
+    "amountMode": "Amount mode",
+    "cryptoMode": "Crypto",
+    "fiatMode": "Fiat",
+    "fiatAmount": "Fiat Amount",
+    "fiatMaxInfo": "Max: {{max}} (2 decimal places)",
+    "estimating": "Estimating...",
+    "estimateNote": "approximate, rate may change",
+    "estimateUnavailable": "Rate estimate unavailable"
   },
   "invoice": {
     "createTitle": "Create Invoice",
@@ -438,7 +446,8 @@
     "expiryHoursTooSmall": "Hours must be at least 1",
     "expiryHoursTooLarge": "Hours must not exceed 168",
     "invalidNetworkSelection": "Invalid network selection",
-    "maxDecimals": "Max {{count}} decimals"
+    "maxDecimals": "Max {{count}} decimals",
+    "selectCurrency": "Please select a currency"
   },
   "update": "Update",
   "saving": "Saving...",
