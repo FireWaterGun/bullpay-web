@@ -3,16 +3,13 @@
 import { useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
-import { useDateFormat } from '@/hooks/useDateFormat'
 import { copyToClipboard } from '@/lib/utils/clipboard'
-import CountdownTimer from './CountdownTimer'
+import InvoiceStatusCard from './InvoiceStatusCard'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 
-export default function InvoiceDetailActions({ invoice, explorer }) {
+export default function InvoiceDetailActions({ invoice, explorer, effectiveStatus }) {
   const { t } = useTranslation()
-  const { fmtDateTime } = useDateFormat()
-  const [copiedPublic, setCopiedPublic] = useState(false)
   const [shareError, setShareError] = useState('')
 
   const buildPublicUrl = () => {
@@ -56,13 +53,7 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
 
   return (
     <div className="lg:col-span-3">
-      {invoice.status === 'pending' && invoice.expiryAt && (
-        <Card className="mb-4">
-          <div className="p-6">
-            <CountdownTimer expiryAt={invoice.expiryAt} />
-          </div>
-        </Card>
-      )}
+      <InvoiceStatusCard invoice={invoice} effectiveStatus={effectiveStatus} />
       <Card className="mb-4">
         <div className="p-6">
           <h6 className="mb-3 font-semibold">{t('invoices.actions') || 'Actions'}</h6>
@@ -101,44 +92,11 @@ export default function InvoiceDetailActions({ invoice, explorer }) {
               <i className="bx bx-link-external mr-1"></i>
               {t('invoices.viewOnExplorer') || 'View on Explorer'}
             </Button>
-            <Button variant="outline-secondary" href="/invoices">
-              <i className="bx bx-list-ul mr-1"></i>
-              {t('nav.history') || 'All invoices'}
-            </Button>
           </div>
           {shareError && (
             <div className="rounded-lg bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-400 mt-3 py-2 px-3 text-sm">
               {shareError}
             </div>
-          )}
-        </div>
-      </Card>
-      <Card>
-        <div className="p-6">
-          {invoice.publicCode && (
-            <>
-              <small className="text-surface-500 block mb-1">{t('invoices.paymentId', { defaultValue: 'Payment ID' })}</small>
-              <div className="flex items-center mb-3 gap-2">
-                <code>{invoice.publicCode}</code>
-                <Button
-                  type="button"
-                  onClick={handleOpenPublic}
-                  title={t('actions.openPaymentLink') || 'Open payment page'}
-                  variant="outline-secondary"
-                  size="sm"
-                >
-                  <i className="bx bx-link-alt"></i>
-                </Button>
-              </div>
-            </>
-          )}
-          <small className="text-surface-500 block mb-1">{t('invoices.createdAt') || 'Created'}</small>
-          <div>{fmtDateTime(invoice.createdAt || invoice.created_at)}</div>
-          {invoice.expiryAt && (
-            <>
-              <small className="text-surface-500 block mt-3 mb-1">{t('invoices.expiryAt') || 'Expires'}</small>
-              <div>{fmtDateTime(invoice.expiryAt)}</div>
-            </>
           )}
         </div>
       </Card>

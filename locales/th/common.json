@@ -232,7 +232,9 @@
     "fiatMaxInfo": "สูงสุด: {{max}} (ทศนิยม 2 ตำแหน่ง)",
     "estimating": "กำลังประมาณ...",
     "estimateNote": "โดยประมาณ อัตราอาจเปลี่ยนแปลง",
-    "estimateUnavailable": "ไม่สามารถประมาณอัตราได้"
+    "estimateUnavailable": "ไม่สามารถประมาณอัตราได้",
+    "paymentReceivedDesc": "ใบแจ้งหนี้นี้ได้รับการชำระเงินเรียบร้อยแล้ว",
+    "confirmingDesc": "กำลังรอการยืนยันจากบล็อกเชน"
   },
   "invoice": {
     "createTitle": "สร้างใบแจ้งหนี้",

@@ -215,7 +215,7 @@ export default function InvoiceDetailPage() {
           </div>
 
           {/* Right: Actions */}
-          <InvoiceDetailActions invoice={invoice} explorer={explorer} />
+          <InvoiceDetailActions invoice={invoice} explorer={explorer} effectiveStatus={effectiveStatus(invoice)} />
         </div>
       )}
     </>

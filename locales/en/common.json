@@ -258,7 +258,9 @@
     "fiatMaxInfo": "Max: {{max}} (2 decimal places)",
     "estimating": "Estimating...",
     "estimateNote": "approximate, rate may change",
-    "estimateUnavailable": "Rate estimate unavailable"
+    "estimateUnavailable": "Rate estimate unavailable",
+    "paymentReceivedDesc": "This invoice has been paid successfully",
+    "confirmingDesc": "Waiting for blockchain confirmations"
   },
   "invoice": {
     "createTitle": "Create Invoice",

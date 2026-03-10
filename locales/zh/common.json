@@ -258,7 +258,9 @@
     "fiatMaxInfo": "最大: {{max}}（2位小数）",
     "estimating": "估算中...",
     "estimateNote": "近似值，汇率可能变动",
-    "estimateUnavailable": "无法获取汇率估算"
+    "estimateUnavailable": "无法获取汇率估算",
+    "paymentReceivedDesc": "该发票已成功支付",
+    "confirmingDesc": "正在等待区块链确认"
   },
   "invoice": {
     "createTitle": "创建发票",
