@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from 'react'
 
-const IDLE_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
+const IDLE_TIMEOUT_MS = 60 * 60 * 1000 // 60 minutes
 const THROTTLE_MS = 30_000 // throttle activity events to every 30s
 
 /**
- * Auto-logout after 30 minutes of inactivity.
+ * Auto-logout after 60 minutes of inactivity.
  * Tracks mousemove, keydown, click, scroll, touchstart.
  */
 export default function useIdleLogout(logout, isAuthenticated) {
