@@ -1750,3 +1750,71 @@ export async function adjustSystemBalance(
     body: params,
   })
 }
+
+// ============================================
+// RBF Transactions
+// ============================================
+
+/**
+ * Get RBF transactions with pagination and filters (Admin only)
+ */
+export async function getRbfTxs(
+  token: string | null,
+  params: {
+    page?: number
+    limit?: number
+    status?: string
+    entityType?: string
+    chainType?: string
+    coinNetworkId?: number
+    txHash?: string
+    fromAddress?: string
+    startDate?: string
+    endDate?: string
+    sortBy?: string
+    sortOrder?: string
+  } = {}
+) {
+  const queryParams = new URLSearchParams()
+
+  if (params.page) queryParams.append('page', String(params.page))
+  if (params.limit) queryParams.append('limit', String(params.limit))
+  if (params.status) queryParams.append('status', params.status)
+  if (params.entityType) queryParams.append('entityType', params.entityType)
+  if (params.chainType) queryParams.append('chainType', params.chainType)
+  if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
+  if (params.txHash) queryParams.append('txHash', params.txHash)
+  if (params.fromAddress) queryParams.append('fromAddress', params.fromAddress)
+  if (params.startDate) queryParams.append('startDate', params.startDate)
+  if (params.endDate) queryParams.append('endDate', params.endDate)
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy)
+  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+  const queryString = queryParams.toString()
+  const url = `/api/v1/admin/rbf-txs${queryString ? `?${queryString}` : ''}`
+
+  const data = await apiFetch<any>(url, { token })
+
+  const items = data?.items || []
+  const meta = data?.meta || {}
+
+  return {
+    items,
+    pagination: {
+      page: meta.page || 1,
+      limit: meta.perPage || meta.limit || 20,
+      total: meta.total || 0,
+      totalPages: meta.lastPage || meta.totalPages || 1,
+      hasNext: meta.hasNextPage ?? (meta.page || 1) < (meta.lastPage || 1),
+      hasPrev: meta.hasPrevPage ?? (meta.page || 1) > 1,
+    },
+  }
+}
+
+/**
+ * Get a single RBF transaction by ID (Admin only)
+ */
+export async function getRbfTxById(token: string | null, rbfTxId: number) {
+  const data = await apiFetch<any>(`/api/v1/admin/rbf-txs/${rbfTxId}`, { token })
+  return data
+}

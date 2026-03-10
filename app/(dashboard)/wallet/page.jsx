@@ -62,6 +62,7 @@ export default function WalletBalancePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [fiat, setFiat] = useState({ amount: '0.0', currency: 'USD' })
+  const [pendingFiat, setPendingFiat] = useState('0')
   const [rates, setRates] = useState({})
 
   const loadData = useCallback(
@@ -75,7 +76,8 @@ export default function WalletBalancePage() {
         const filtered = list.filter((b) => {
           // Support new structure: availableBalance first, then totalBalance or confirmedBalance, fallback to balance
           const a = Number(b?.availableBalance || b?.totalBalance || b?.confirmedBalance || b?.balance || 0)
-          return Number.isFinite(a) && a > 0
+          const u = Number(b?.unconfirmedBalance || b?.pending || 0)
+          return (Number.isFinite(a) && a > 0) || (Number.isFinite(u) && u > 0)
         })
         setBalances(filtered)
         if (balanceRes?.fiat && typeof balanceRes.fiat.amount === 'string') {
@@ -83,9 +85,11 @@ export default function WalletBalancePage() {
             amount: balanceRes.fiat.amount,
             currency: balanceRes.fiat.currency || 'USD',
           })
+          setPendingFiat(balanceRes.fiat.pendingAmount || '0')
           setRates(balanceRes.fiat.rates || {})
         } else {
           setFiat({ amount: '0.0', currency: 'USD' })
+          setPendingFiat('0')
           setRates({})
         }
       } catch (e) {
@@ -132,6 +136,11 @@ export default function WalletBalancePage() {
           <div className="text-4xl font-bold text-surface-900 tracking-tight">
             {formatCoinAmount(fiat.amount)} {fiat.currency}
           </div>
+          {Number(pendingFiat) > 0 && (
+            <div className="text-info-500 text-sm mt-1">
+              +{formatCoinAmount(pendingFiat)} {fiat.currency} {t('balance.pending', { defaultValue: 'Pending' })}
+            </div>
+          )}
           <div className="flex gap-2 flex-wrap mt-4">
             <Button variant="outline-primary" href="/invoices/create">
               <i className="bx bx-receipt mr-1"></i>
@@ -178,6 +187,7 @@ export default function WalletBalancePage() {
                 const amount = formatCoinAmount(
                   b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0
                 )
+                const pending = Number(b.unconfirmedBalance || b.pending || 0)
                 const amtNum = Number(b.availableBalance || b.totalBalance || b.confirmedBalance || b.balance || 0) || 0
 
                 const rate = Number((rates && rates[coinSym]) || b.priceUsd || 0) || 0
@@ -208,6 +218,11 @@ export default function WalletBalancePage() {
                         <span className="font-medium text-surface-900">
                           {amount} {coinSym}
                         </span>
+                        {pending > 0 && (
+                          <div className="text-info-500 text-xs">
+                            +{formatCoinAmount(pending)} {t('balance.pending', { defaultValue: 'Pending' })}
+                          </div>
+                        )}
                       </div>
                       <ActionMenu coinNetworkId={b.coinNetworkId} t={t} />
                     </div>

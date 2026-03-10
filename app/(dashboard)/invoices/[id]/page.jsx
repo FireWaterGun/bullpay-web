@@ -19,11 +19,13 @@ function effectiveStatus(invoice) {
   }
   return invoice.status
 }
+import { copyToClipboard } from '@/lib/utils/clipboard'
 import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions'
 import RefreshButton from '@/components/RefreshButton'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { Label } from '@/components/ui/Input'
+import { useToast } from '@/app/providers'
 
 export default function InvoiceDetailPage() {
   const { fmtDateTime } = useDateFormat()
@@ -31,6 +33,7 @@ export default function InvoiceDetailPage() {
   const params = useParams()
   const id = params?.id
   const { token } = useAuth()
+  const toast = useToast()
   const [invoice, setInvoice] = useState(null)
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -156,7 +159,10 @@ export default function InvoiceDetailPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <Label>{t('invoices.chain') || 'Chain'}</Label>
-                    <div className="font-medium text-surface-500">{networkSym || 'N/A'}</div>
+                    <div className="flex items-center gap-2">
+                      <CoinImg symbol={networkSym} size={24} />
+                      <span className="font-medium text-surface-500">{networkSym || 'N/A'}</span>
+                    </div>
                   </div>
                   <div>
                     <Label>{t('invoices.coin') || 'Coin'}</Label>
@@ -187,6 +193,19 @@ export default function InvoiceDetailPage() {
                     <Label>{t('invoices.paymentAddress') || 'Payment Address'}</Label>
                     <div className="flex items-center">
                       <code className="mr-2 break-all flex-grow text-sm">{invoice.paymentAddress || '-'}</code>
+                      {invoice.paymentAddress && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const ok = await copyToClipboard(invoice.paymentAddress)
+                            if (ok) toast.success(t('common.copied', { defaultValue: 'Copied!' }))
+                          }}
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-200 text-surface-600 hover:bg-surface-50 dark:hover:bg-white/6 shrink-0 cursor-pointer"
+                          title={t('common.copy', { defaultValue: 'Copy' })}
+                        >
+                          <i className="bx bx-copy text-sm"></i>
+                        </button>
+                      )}
                       {explorer && invoice.paymentAddress && (
                         <a
                           className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-200 text-surface-600 hover:bg-surface-50 dark:hover:bg-white/6 shrink-0"

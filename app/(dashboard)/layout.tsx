@@ -204,6 +204,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       'admin-ops-payments': 'nav.payments',
       'admin-sweeps': 'nav.sweeps',
       'admin-gas-topups': 'nav.gasTopups',
+      'admin-rbf-txs': 'nav.rbfTransactions',
       'admin-user-management': 'nav.users',
       'admin-users': 'nav.users',
       'admin-merchants': 'nav.merchants',

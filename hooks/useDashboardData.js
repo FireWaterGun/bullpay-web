@@ -166,7 +166,7 @@ export default function useDashboardData() {
           body: data.message || 'Withdrawal has been completed successfully',
         })
         refreshNotifications()
-        loadPendingWithdrawalCount()
+        if (isAdmin && hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount()
       },
       onInvoiceExpired: (data) => {
         playNotificationSound('info')
@@ -183,7 +183,7 @@ export default function useDashboardData() {
           body: data.message || 'Your withdrawal has been approved',
         })
         refreshNotifications()
-        loadPendingWithdrawalCount()
+        if (isAdmin && hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount()
       },
       onWithdrawalRejected: (data) => {
         playNotificationSound('info')
@@ -192,7 +192,7 @@ export default function useDashboardData() {
           body: data.message || data.metadata?.rejectionReason || 'Your withdrawal has been rejected',
         })
         refreshNotifications()
-        loadPendingWithdrawalCount()
+        if (isAdmin && hasPermission('admin.withdrawals.view')) loadPendingWithdrawalCount()
       },
       onMerchantApproved: (data) => {
         playNotificationSound('success')
@@ -211,7 +211,7 @@ export default function useDashboardData() {
         refreshNotifications()
       },
     }),
-    [refreshNotifications, toast, loadPendingWithdrawalCount]
+    [refreshNotifications, toast, loadPendingWithdrawalCount, isAdmin, hasPermission]
   )
 
   // Subscribe to Pusher events for real-time updates (global for all dashboard pages)

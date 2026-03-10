@@ -133,8 +133,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((newToken: string, newUser: AuthUser) => {
     setToken(newToken)
     setUser(newUser)
+    setNavigation(null)
     setCookie(AUTH_COOKIE_NAME, newToken)
     setCookie('bullpay_user', JSON.stringify(newUser))
+    deleteCookie('bullpay_nav')
     navFetchedRef.current = false
   }, [])
 

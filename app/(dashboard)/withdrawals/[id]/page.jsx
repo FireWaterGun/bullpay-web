@@ -136,7 +136,7 @@ export default function WithdrawalDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Details */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-5">
           <div className="bg-card rounded-xl shadow-sm border border-surface-200">
             <div className="px-5 py-4 border-b border-surface-200">
               <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
@@ -157,11 +157,6 @@ export default function WithdrawalDetailPage() {
               <DetailRow label={t('withdrawal.totalAmount', { defaultValue: 'Total Amount' })}>
                 {formatCoinAmount(totalAmount || withdrawal.amount || 0)} {coinSymbol}
               </DetailRow>
-              {totalFee && (
-                <DetailRow label={t('withdrawal.fee')}>
-                  {formatCoinAmount(totalFee)} {coinSymbol}
-                </DetailRow>
-              )}
               <DetailRow label={t('withdrawal.netAmount', { defaultValue: 'Net Amount' })}>
                 <span className="text-success-600 dark:text-success-400 font-medium">
                   {formatCoinAmount(withdrawal.amount || 0)} {coinSymbol}
@@ -214,6 +209,50 @@ export default function WithdrawalDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Fee Breakdown */}
+          {totalFee && (
+            <div className="bg-card rounded-xl shadow-sm border border-surface-200">
+              <div className="px-5 py-4 border-b border-surface-200">
+                <h6 className="text-sm font-semibold text-surface-800 flex items-center gap-2 mb-0">
+                  <i className="bx bx-receipt text-primary-600"></i>
+                  {t('balance.feeBreakdown', { defaultValue: 'Fee Breakdown' })}
+                </h6>
+              </div>
+              <div className="p-5 space-y-2.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-surface-500">{t('balance.withdrawAmount', { defaultValue: 'Withdraw amount' })}</span>
+                  <span className="text-sm font-medium text-surface-800">{formatCoinAmount(totalAmount || 0)} {coinSymbol}</span>
+                </div>
+                {withdrawal.baseFee && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-surface-500">{t('balance.networkFee', { defaultValue: 'Network fee' })}</span>
+                    <span className="text-sm text-surface-800">{formatCoinAmount(withdrawal.baseFee)} {coinSymbol}</span>
+                  </div>
+                )}
+                {withdrawal.platformFee && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-surface-500">
+                      {t('balance.platformFee', { defaultValue: 'Platform fee' })}
+                      {withdrawal.platformFeePercentage != null && ` (${withdrawal.platformFeePercentage}%)`}
+                    </span>
+                    <span className="text-sm text-surface-800">{formatCoinAmount(withdrawal.platformFee)} {coinSymbol}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-2.5 border-t border-surface-200">
+                  <span className="text-sm text-surface-500">{t('balance.totalFee', { defaultValue: 'Total fee' })}</span>
+                  <span className="text-sm font-medium text-surface-800">{formatCoinAmount(totalFee)} {coinSymbol}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2.5 border-t border-surface-200">
+                  <span className="text-sm text-surface-500 flex items-center">
+                    {t('balance.total', { defaultValue: 'Total' })}
+                    <i className="bx bx-info-circle ml-1 text-surface-400" title={t('balance.totalTooltip', { defaultValue: 'Amount you will receive after fees' })}></i>
+                  </span>
+                  <span className="text-sm font-semibold text-surface-900">{formatCoinAmount(withdrawal.amount || 0)} {coinSymbol}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Timeline */}

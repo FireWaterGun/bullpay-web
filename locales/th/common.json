@@ -40,6 +40,7 @@
     "payments": "การชำระเงิน",
     "sweeps": "Sweeps",
     "gasTopups": "เติมค่าแก๊ส",
+    "rbfTransactions": "RBF Transactions",
     "userMerchant": "ผู้ใช้และร้านค้า",
     "users": "ผู้ใช้",
     "merchants": "ร้านค้า",
@@ -114,7 +115,10 @@
     "allEvents": "ทุกเหตุการณ์",
     "allTypes": "ทุกประเภท",
     "coinNetwork": "เหรียญ / เครือข่าย",
-    "invoiceNumber": "เลขที่ใบแจ้งหนี้"
+    "invoiceNumber": "เลขที่ใบแจ้งหนี้",
+    "entityType": "ประเภทเอนทิตี้",
+    "chainType": "ประเภทเชน",
+    "fromAddress": "ที่อยู่ต้นทาง"
   },
   "actions": {
     "filters": "ตัวกรอง",

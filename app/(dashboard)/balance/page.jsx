@@ -50,10 +50,12 @@ export default function BalancePage() {
     ? balances
     : balances.filter((b) => {
         const bal = parseFloat(b.confirmedBalance || b.availableBalance || b.balance || 0)
-        return bal > 0
+        const unconf = parseFloat(b.unconfirmedBalance || b.pending || 0)
+        return bal > 0 || unconf > 0
       })
 
   const totalValueUsd = fiat?.amount || totalBalance?.totalBalance || '0'
+  const pendingValueUsd = fiat?.pendingAmount || '0'
 
   return (
     <>
@@ -71,6 +73,11 @@ export default function BalancePage() {
                 {t('balance.totalValue', { defaultValue: 'Total Balance (USD)' })}
               </span>
               <h3 className="text-2xl font-bold text-surface-900">{loading ? '...' : formatUsd(totalValueUsd)}</h3>
+              {!loading && Number(pendingValueUsd) > 0 && (
+                <span className="text-info-500 text-sm">
+                  +{formatUsd(pendingValueUsd)} {t('balance.pending', { defaultValue: 'Pending' })}
+                </span>
+              )}
             </div>
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <Input

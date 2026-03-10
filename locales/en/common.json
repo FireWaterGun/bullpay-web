@@ -40,6 +40,7 @@
     "payments": "Payments",
     "sweeps": "Sweeps",
     "gasTopups": "Gas Topups",
+    "rbfTransactions": "RBF Transactions",
     "userMerchant": "User & Merchant",
     "users": "Users",
     "merchants": "Merchants",
@@ -114,7 +115,10 @@
     "allEvents": "All Events",
     "allTypes": "All Types",
     "coinNetwork": "Coin / Network",
-    "invoiceNumber": "Invoice Number"
+    "invoiceNumber": "Invoice Number",
+    "entityType": "Entity Type",
+    "chainType": "Chain Type",
+    "fromAddress": "From Address"
   },
   "status": {
     "pending": "Pending",

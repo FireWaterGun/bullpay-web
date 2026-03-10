@@ -47,6 +47,7 @@ export interface BalanceResponse {
     summary?: {
       totalAssets: number
       totalValueUsd: string
+      pendingValueUsd?: string
       currency: string
     }
     totalBalance?: {
@@ -78,7 +79,7 @@ export async function getBalances(token?: string) {
 export interface BalancesWithFiatResult {
   breakdown: BalanceBreakdownItem[]
   totalBalance?: BalanceResponse['data']['totalBalance']
-  fiat?: { currency: string; amount: string; rates?: Record<string, string> }
+  fiat?: { currency: string; amount: string; pendingAmount?: string; rates?: Record<string, string> }
 }
 
 export async function getBalancesWithFiat(
@@ -105,6 +106,7 @@ export async function getBalancesWithFiat(
       ? {
           currency: data.summary.currency || 'USD',
           amount: data.summary.totalValueUsd || '0',
+          pendingAmount: data.summary.pendingValueUsd || '0',
           rates: {},
         }
       : undefined)

@@ -40,6 +40,7 @@
     "payments": "付款",
     "sweeps": "归集",
     "gasTopups": "Gas充值",
+    "rbfTransactions": "RBF交易",
     "userMerchant": "用户与商户",
     "users": "用户",
     "merchants": "商户",
@@ -114,7 +115,10 @@
     "allEvents": "所有事件",
     "allTypes": "所有类型",
     "coinNetwork": "币种 / 网络",
-    "invoiceNumber": "发票号码"
+    "invoiceNumber": "发票号码",
+    "entityType": "实体类型",
+    "chainType": "链类型",
+    "fromAddress": "来源地址"
   },
   "status": {
     "pending": "待处理",
