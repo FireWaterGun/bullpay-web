@@ -10,7 +10,9 @@ import { loginApi, verify2FALoginApi } from '@/lib/api/auth'
 import { useAuth } from '@/app/providers'
 import { extractToken } from '@/lib/utils/authToken'
 import { ADMIN_ROLES } from '@/lib/constants'
-import { Alert, Button, Input, Label } from '../../../components/ui'
+import Alert from '@/components/ui/Alert'
+import Button from '@/components/ui/Button'
+import { Input, Label } from '@/components/ui/Input'
 
 export default function LoginPage() {
   const { login } = useAuth()

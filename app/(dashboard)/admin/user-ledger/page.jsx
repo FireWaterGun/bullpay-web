@@ -91,7 +91,9 @@ export default function UserLedgerList() {
   useEffect(() => {
     listCoins(token)
       .then(setCoinNetworks)
-      .catch(() => {})
+      .catch(() => {
+        // Non-critical: filter dropdown will be empty
+      })
   }, [token])
 
   function syncSearchParams(filters, page) {

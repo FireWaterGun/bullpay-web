@@ -9,207 +9,13 @@ import { getSystemStatus } from '@/lib/api/system'
 import { logger } from '@/lib/utils/logger'
 import ConfirmModal from '@/components/ConfirmModal'
 import Alert from '@/components/ui/Alert'
-import Badge from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
 import Card, { CardHeader, CardBody } from '@/components/ui/Card'
-import { Input, Label } from '@/components/ui/Input'
-import LocaleDateTimePicker from '@/components/LocaleDateTimePicker'
 import Spinner from '@/components/ui/Spinner'
-import Table from '@/components/ui/Table'
-
-/* ── Constants ── */
-
-const MAINTENANCE_KEYS = [
-  'maintenance.level',
-  'maintenance.message_en',
-  'maintenance.estimated_end',
-  'maintenance.allowed_ips',
-]
-
-const LEVEL_MATRIX = [
-  { label: 'User API', none: true, partial: false, full: false },
-  { label: 'Merchant (GET)', none: true, partial: true, full: false },
-  { label: 'Merchant (POST)', none: true, partial: false, full: false },
-  { label: 'Admin API', none: true, partial: true, full: true },
-  { label: 'Background Jobs', none: true, partial: true, full: true },
-  { label: 'Webhooks', none: true, partial: true, full: true },
-]
-
-const LEVEL_CARD_STYLES = {
-  success: {
-    selected: 'border-success-500 ring-1 ring-success-500/20 shadow-md',
-    icon: 'text-success-500',
-    heading: '!text-success-600 dark:!text-success-400',
-  },
-  warning: {
-    selected: 'border-warning-500 ring-1 ring-warning-500/20 shadow-md',
-    icon: 'text-warning-500',
-    heading: '!text-warning-600 dark:!text-warning-400',
-  },
-  danger: {
-    selected: 'border-danger-500 ring-1 ring-danger-500/20 shadow-md',
-    icon: 'text-danger-500',
-    heading: '!text-danger-600 dark:!text-danger-400',
-  },
-}
-
-function getLevelOptions(t) {
-  return [
-    {
-      value: 'none',
-      label: t('admin.maintenance.levelNone', { defaultValue: 'None' }),
-      description: t('admin.maintenance.levelNoneDesc', { defaultValue: 'System operating normally' }),
-      color: 'success',
-      icon: 'bx-check-circle',
-    },
-    {
-      value: 'partial',
-      label: t('admin.maintenance.levelPartial', { defaultValue: 'Partial' }),
-      description: t('admin.maintenance.levelPartialDesc', {
-        defaultValue: 'Block user API + merchant write, allow merchant read + background jobs',
-      }),
-      color: 'warning',
-      icon: 'bx-error',
-    },
-    {
-      value: 'full',
-      label: t('admin.maintenance.levelFull', { defaultValue: 'Full' }),
-      description: t('admin.maintenance.levelFullDesc', { defaultValue: 'Block all APIs except admin + health check' }),
-      color: 'danger',
-      icon: 'bx-x-circle',
-    },
-  ]
-}
-
-/* ── Helpers ── */
-
-function isValidIp(ip) {
-  if (!ip || typeof ip !== 'string') return false
-  const trimmed = ip.trim()
-  if (!trimmed) return false
-  const ipv4Re = /^(\d{1,3}\.){3}\d{1,3}$/
-  if (ipv4Re.test(trimmed)) {
-    return trimmed.split('.').every((o) => {
-      const n = Number(o)
-      return n >= 0 && n <= 255
-    })
-  }
-  if (trimmed === '::1') return true
-  return /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/.test(trimmed)
-}
-
-function StatusIcon({ ok }) {
-  return ok ? <i className="bx bx-check text-success-500" /> : <i className="bx bx-x text-danger-500" />
-}
-
-function HintText({ children }) {
-  return <p className="text-xs text-surface-500 mt-1 mb-0">{children}</p>
-}
-
-function ErrorText({ children }) {
-  if (!children) return null
-  return <p className="text-xs text-danger-600 dark:text-danger-400 mt-1 mb-0">{children}</p>
-}
-
-/* ── Sub-components ── */
-
-function LevelCard({ opt, isSelected, onClick }) {
-  const style = LEVEL_CARD_STYLES[opt.color] || LEVEL_CARD_STYLES.success
-
-  return (
-    <div className="col-span-12 md:col-span-4">
-      <div
-        className={[
-          'bg-card rounded-card border transition-all duration-200',
-          isSelected
-            ? style.selected
-            : 'border-surface-200 dark:border-surface-300 shadow-card dark:shadow-card-dark hover:shadow-md cursor-pointer',
-        ].join(' ')}
-        onClick={!isSelected ? onClick : undefined}
-      >
-        <div className="py-5 text-center">
-          <i className={`bx ${opt.icon} ${style.icon} mb-2 text-3xl`} />
-          <h6 className={`mb-1 text-surface-800 ${isSelected ? style.heading : ''}`}>
-            {opt.label}
-            {isSelected && <i className="bx bx-check ml-1" />}
-          </h6>
-          <small className="text-surface-500 text-xs">{opt.description}</small>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function LevelMatrix({ t }) {
-  return (
-    <Table responsive={false} className="text-sm mb-0">
-      <thead>
-        <tr>
-          <th>{t('admin.maintenance.component', { defaultValue: 'Component' })}</th>
-          <th className="text-center">None</th>
-          <th className="text-center">Partial</th>
-          <th className="text-center">Full</th>
-        </tr>
-      </thead>
-      <tbody>
-        {LEVEL_MATRIX.map((row) => (
-          <tr key={row.label}>
-            <td>
-              <small>{row.label}</small>
-            </td>
-            <td className="text-center">
-              <StatusIcon ok={row.none} />
-            </td>
-            <td className="text-center">
-              <StatusIcon ok={row.partial} />
-            </td>
-            <td className="text-center">
-              <StatusIcon ok={row.full} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  )
-}
-
-function TipsCard({ t }) {
-  const tips = [
-    t('admin.maintenance.tip1', {
-      defaultValue: 'Use Partial for UI/frontend updates \u2014 merchants can still check payment status.',
-    }),
-    t('admin.maintenance.tip2', {
-      defaultValue: 'Use Full only for database migrations or critical infrastructure changes.',
-    }),
-    t('admin.maintenance.tip3', {
-      defaultValue: 'Background jobs (watchers, sweeps, webhooks) continue running in both modes.',
-    }),
-    t('admin.maintenance.tip4', { defaultValue: 'Changes take effect immediately via Redis cache invalidation.' }),
-  ]
-
-  return (
-    <Card>
-      <CardHeader>
-        <h6 className="text-lg font-semibold text-surface-800 mb-0">
-          <i className="bx bx-bulb mr-1 text-warning-500" />
-          {t('admin.maintenance.tips', { defaultValue: 'Tips' })}
-        </h6>
-      </CardHeader>
-      <CardBody>
-        <ul className="list-none mb-0 text-sm text-surface-600 space-y-2">
-          {tips.map((tip, i) => (
-            <li key={i}>
-              <i className="bx bx-right-arrow-alt mr-1 text-primary-500" />
-              {tip}
-            </li>
-          ))}
-        </ul>
-      </CardBody>
-    </Card>
-  )
-}
-
-/* ── Main page ── */
+import { MAINTENANCE_KEYS, getLevelOptions, isValidIp } from '@/components/admin/maintenance/maintenanceHelpers'
+import LevelCard from '@/components/admin/maintenance/LevelCard'
+import LevelMatrix from '@/components/admin/maintenance/LevelMatrix'
+import TipsCard from '@/components/admin/maintenance/TipsCard'
+import MaintenanceConfigForm from '@/components/admin/maintenance/MaintenanceConfigForm'
 
 export default function AdminMaintenancePage() {
   const { t } = useAdminTranslation()
@@ -361,7 +167,7 @@ export default function AdminMaintenancePage() {
         { keyName: 'maintenance.estimated_end', value: estimatedEnd },
         { keyName: 'maintenance.allowed_ips', value: allowedIps.trim() || '[]' },
       ]
-      for (const u of updates) await upsertSetting(token, u)
+      await Promise.all(updates.map((u) => upsertSetting(token, u)))
       toastResult(level)
       notifyStatusChanged()
       await Promise.all([loadLiveStatus(), loadSettings(true)])
@@ -469,96 +275,24 @@ export default function AdminMaintenancePage() {
 
         {/* Configuration Form */}
         <div className="col-span-12 lg:col-span-8">
-          <Card>
-            <CardHeader className="flex items-center justify-between">
-              <h5 className="text-lg font-semibold text-surface-800 mb-0">
-                {t('admin.maintenance.configuration', { defaultValue: 'Configuration' })}
-              </h5>
-              <Badge color={currentLevelInfo.color} label>
-                {currentLevelInfo.label}
-              </Badge>
-            </CardHeader>
-            <CardBody>
-              {/* Message */}
-              <div className="mb-4">
-                <Label>
-                  {t('admin.maintenance.messageEn', { defaultValue: 'Message' })}
-                  {level !== 'none' && <span className="text-danger-500"> *</span>}
-                </Label>
-                <Input
-                  rows={2}
-                  value={messageEn}
-                  onChange={(e) => {
-                    setMessageEn(e.target.value)
-                    clearError('messageEn')
-                  }}
-                  placeholder="System is under maintenance. Please try again later."
-                  maxLength={500}
-                  error={errors.messageEn}
-                />
-                <ErrorText>{errors.messageEn}</ErrorText>
-              </div>
+          <MaintenanceConfigForm
+            t={t}
+            locale={locale}
+            timezone={user?.timezone}
+            level={level}
+            messageEn={messageEn}
+            setMessageEn={setMessageEn}
+            estimatedEnd={estimatedEnd}
+            setEstimatedEnd={setEstimatedEnd}
+            allowedIps={allowedIps}
+            setAllowedIps={setAllowedIps}
+            errors={errors}
+            clearError={clearError}
+            currentLevelInfo={currentLevelInfo}
+            saving={saving}
+            onSave={handleSave}
+          />
 
-              {/* Estimated End */}
-              <div className="mb-4">
-                <Label>{t('admin.maintenance.estimatedEnd', { defaultValue: 'Estimated End Time' })}</Label>
-                <LocaleDateTimePicker
-                  value={estimatedEnd}
-                  onChange={(v) => setEstimatedEnd(v)}
-                  locale={locale}
-                  timezone={user?.timezone}
-                  placeholder={t('admin.maintenance.selectDateTime', { defaultValue: 'Select date & time' })}
-                  t={t}
-                  className="w-full"
-                />
-                <HintText>
-                  {t('admin.maintenance.estimatedEndHelp', {
-                    defaultValue: 'Leave empty if unknown. Shown to users and in Retry-After header.',
-                  })}
-                </HintText>
-              </div>
-
-              {/* Allowed IPs */}
-              <div className="mb-5">
-                <Label>{t('admin.maintenance.allowedIps', { defaultValue: 'Allowed IPs (bypass maintenance)' })}</Label>
-                <Input
-                  type="text"
-                  value={allowedIps}
-                  onChange={(e) => {
-                    setAllowedIps(e.target.value)
-                    clearError('allowedIps')
-                  }}
-                  placeholder='["1.2.3.4", "5.6.7.8"]'
-                  maxLength={2000}
-                  error={errors.allowedIps}
-                />
-                {errors.allowedIps ? (
-                  <ErrorText>{errors.allowedIps}</ErrorText>
-                ) : (
-                  <HintText>
-                    {t('admin.maintenance.allowedIpsHelp', {
-                      defaultValue: 'JSON array of IPs that can access the system during maintenance.',
-                    })}
-                  </HintText>
-                )}
-              </div>
-
-              {/* Save */}
-              <Button onClick={handleSave} disabled={saving}>
-                {saving ? (
-                  <>
-                    <Spinner aria-hidden="true" className="w-4 h-4 mr-1" />
-                    {t('common.saving', { defaultValue: 'Saving...' })}
-                  </>
-                ) : (
-                  <>
-                    <i className="bx bx-save mr-1" />
-                    {t('admin.maintenance.saveAll', { defaultValue: 'Save Configuration' })}
-                  </>
-                )}
-              </Button>
-            </CardBody>
-          </Card>
         </div>
 
         {/* Sidebar */}

@@ -10,7 +10,9 @@ import { registerApi } from '@/lib/api/auth'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Alert, Button, Input, Label } from '../../../components/ui'
+import Alert from '@/components/ui/Alert'
+import Button from '@/components/ui/Button'
+import { Input, Label } from '@/components/ui/Input'
 
 const passwordSchema = z
   .string()

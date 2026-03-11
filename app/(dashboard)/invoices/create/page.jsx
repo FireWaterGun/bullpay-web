@@ -56,17 +56,23 @@ export default function InvoiceCreatePage() {
     return bySymbol
   }, [coins])
 
+  const handleCoinSelect = useCallback((coin) => {
+    setSelectedCoin(coin)
+    setEstimate(null)
+    const coinNetworks = grouped[coin]?.items ?? []
+    if (coinNetworks.length === 1) {
+      setCoinNetworkId(String(coinNetworks[0].id))
+    } else {
+      setCoinNetworkId('')
+    }
+  }, [grouped])
+
   useEffect(() => {
     const keys = Object.keys(grouped)
     if (keys.length && !selectedCoin) {
-      const first = keys[0]
-      setSelectedCoin(first)
-      const firstGroup = grouped[first]
-      if (firstGroup?.items?.length === 1) {
-        setCoinNetworkId(String(firstGroup.items[0].id))
-      }
+      handleCoinSelect(keys[0])
     }
-  }, [grouped, selectedCoin])
+  }, [grouped, selectedCoin, handleCoinSelect])
 
   // Derive networks from grouped[selectedCoin] — no state needed
   const networks = useMemo(() => {
@@ -83,33 +89,21 @@ export default function InvoiceCreatePage() {
     return min
   }, [selectedNetwork])
 
-  // Auto-select coinNetworkId when networks change
-  useEffect(() => {
-    if (networks.length === 1) {
-      setCoinNetworkId(String(networks[0].id))
-    } else if (networks.length > 1 && !networks.some((i) => String(i.id) === String(coinNetworkId))) {
-      setCoinNetworkId('')
-    } else if (networks.length === 0) {
-      setCoinNetworkId('')
-    }
-  }, [networks]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Re-validate amount when network changes (different coins have different decimal limits)
-  useEffect(() => {
-    if (!amount || !selectedNetwork || amountMode !== 'crypto') return
-    const decimals = selectedNetwork.decimals ?? 8
-    const parts = amount.split('.')
-    if (parts.length === 2 && parts[1].length > decimals) {
-      const trimmed = `${parts[0]}.${parts[1].substring(0, decimals)}`
-      setAmount(trimmed)
-      setAmountError('')
-    }
-  }, [selectedNetwork]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Clear estimate when switching modes or changing coin/network
-  useEffect(() => {
+  const handleNetworkSelect = useCallback((networkId) => {
+    setCoinNetworkId(networkId)
     setEstimate(null)
-  }, [amountMode, coinNetworkId, selectedCoin])
+    if (amount && amountMode === 'crypto') {
+      const network = networks.find((n) => String(n.id) === String(networkId))
+      if (network) {
+        const decimals = network.decimals ?? 8
+        const parts = amount.split('.')
+        if (parts.length === 2 && parts[1].length > decimals) {
+          setAmount(`${parts[0]}.${parts[1].substring(0, decimals)}`)
+          setAmountError('')
+        }
+      }
+    }
+  }, [amount, amountMode, networks])
 
   // Debounced fiat estimate
   const estimateTimerRef = useRef(null)
@@ -158,11 +152,10 @@ export default function InvoiceCreatePage() {
   function handleModeToggle(mode) {
     setAmountMode(mode)
     setError('')
-    // Clear opposite mode's values
+    setEstimate(null)
     if (mode === 'crypto') {
       setFiatAmount('')
       setFiatError('')
-      setEstimate(null)
     } else {
       setAmount('')
       setAmountError('')
@@ -306,9 +299,9 @@ export default function InvoiceCreatePage() {
         coins={coins}
         loadingCoins={loadingCoins}
         selectedCoin={selectedCoin}
-        setSelectedCoin={setSelectedCoin}
+        setSelectedCoin={handleCoinSelect}
         coinNetworkId={coinNetworkId}
-        setCoinNetworkId={setCoinNetworkId}
+        setCoinNetworkId={handleNetworkSelect}
         networks={networks}
       />
 

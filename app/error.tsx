@@ -1,5 +1,5 @@
 'use client'
-import { Button } from '../components/ui'
+import Button from '@/components/ui/Button'
 
 export default function RootError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (

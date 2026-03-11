@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
 
   // Allow images from coin asset paths
   images: {
-    unoptimized: true, // Use unoptimized for Sneat theme compatibility
+    remotePatterns: [],
   },
 
   // Rewrite API calls to backend

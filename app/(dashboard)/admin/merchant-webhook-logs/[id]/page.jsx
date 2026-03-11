@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -207,9 +208,9 @@ export default function MerchantWebhookLogDetail() {
                           <td className="font-medium">
                             {log.invoiceId ? (
                               <div>
-                                <a href={`/admin/invoices/${log.invoiceId}`} className="text-primary-500 hover:underline">
+                                <Link href={`/admin/invoices/${log.invoiceId}`} className="text-primary-500 hover:underline">
                                   {log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`}
-                                </a>
+                                </Link>
                                 {log.invoicePublicCode && (
                                   <div className="text-xs text-surface-500 font-mono mt-0.5">
                                     {log.invoicePublicCode}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Button } from '../../../components/ui'
+import Button from '@/components/ui/Button'
 
 export default function RegisterCompletePage() {
   const [email] = useState(() => {

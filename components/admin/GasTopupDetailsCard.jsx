@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import CoinImg from '@/components/CoinImg'
 import Card from '../ui/Card'
 import Table from '../ui/Table'
@@ -33,9 +34,9 @@ export default function GasTopupDetailsCard({
               <tr>
                 <td className="text-surface-500">{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</td>
                 <td>
-                  <a href={`/admin/sweeps/${topup.sweepId}`} className="font-medium">
+                  <Link href={`/admin/sweeps/${topup.sweepId}`} className="font-medium">
                     {topup.sweepId}
-                  </a>
+                  </Link>
                 </td>
               </tr>
             )}

@@ -3,6 +3,7 @@
 import { useAuth, usePusher } from '@/app/providers'
 import type { NavigationItem, NavigationSection } from '@/app/providers'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import React, { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { THEME_STORAGE_KEY, LANG_STORAGE_KEY, SIDEBAR_COLLAPSED_KEY, API_BASE_URL } from '@/lib/constants'
@@ -12,7 +13,12 @@ import NavbarContent from '@/components/dashboard/NavbarContent'
 import MaintenanceBanner from '@/components/admin/MaintenanceBanner'
 import { checkMaintenanceBlocked } from '@/lib/api/system'
 import useDashboardData from '@/hooks/useDashboardData'
-import { Spinner } from '../../components/ui'
+import Spinner from '@/components/ui/Spinner'
+
+interface PusherChannel {
+  bind: (event: string, callback: (data: Record<string, unknown>) => void) => void
+  unbind_all: () => void
+}
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { t, i18n } = useTranslation()
@@ -21,7 +27,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { fiatBalance, pendingWithdrawalCount, notificationRefreshRef } = useDashboardData()
   const { subscribe, unsubscribe, isConnected } = usePusher() || {}
 
-  const maintenanceChannelRef = useRef<any>(null)
+  const maintenanceChannelRef = useRef<PusherChannel | null>(null)
 
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false
@@ -46,10 +52,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!subscribe || !isConnected || isAdmin || !isReady) return
 
-    const channel = subscribe('system-maintenance') as any
+    const channel = subscribe('system-maintenance') as PusherChannel | null
     maintenanceChannelRef.current = channel
     if (channel) {
-      channel.bind('maintenance-status-changed', (data: any) => {
+      channel.bind('maintenance-status-changed', (data: Record<string, unknown>) => {
         if (data.maintenance) {
           checkMaintenanceBlocked(token || undefined).then((blocked) => {
             if (!blocked) return
@@ -312,7 +318,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <aside ref={sidebarRef} className={`bp-sidebar ${collapsed ? 'bp-collapsed' : ''} ${mobileOpen ? 'bp-mobile-open' : ''}`}>
         {/* Brand */}
         <div className="relative flex items-center h-[64px] px-[calc(0.9375rem*2.1333)] shrink-0">
-          <a href="/dashboard" className="flex items-center gap-2.5 no-underline">
+          <Link href="/dashboard" className="flex items-center gap-2.5 no-underline">
             <span className="flex items-center justify-center w-[25px] h-[34px] text-primary-600 shrink-0">
               <i className="bx bxs-wallet-alt text-[22px]"></i>
             </span>
@@ -320,7 +326,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <span className="text-surface-800">BULL</span>
               <span className="text-primary-600">PAY</span>
             </span>
-          </a>
+          </Link>
           {/* Collapse toggle — absolute positioned at sidebar edge */}
           <button
             type="button"

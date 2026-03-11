@@ -183,22 +183,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [navigation]
   )
 
+  const authValue = useMemo(
+    () => ({ user, token, navigation, isAdmin, isReady, login, logout, updateUser, hasPermission, hasMenu, setNavigation }),
+    [user, token, navigation, isAdmin, isReady, login, logout, updateUser, hasPermission, hasMenu, setNavigation]
+  )
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        navigation,
-        isAdmin,
-        isReady,
-        login,
-        logout,
-        updateUser,
-        hasPermission,
-        hasMenu,
-        setNavigation,
-      }}
-    >
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   )
@@ -408,7 +399,12 @@ export function PusherProvider({ children }: { children: ReactNode }) {
     ;(pusherRef.current as any).unsubscribe(channel)
   }, [])
 
-  return <PusherContext.Provider value={{ subscribe, unsubscribe, isConnected }}>{children}</PusherContext.Provider>
+  const pusherValue = useMemo(
+    () => ({ subscribe, unsubscribe, isConnected }),
+    [subscribe, unsubscribe, isConnected]
+  )
+
+  return <PusherContext.Provider value={pusherValue}>{children}</PusherContext.Provider>
 }
 
 // ═══════════════════════════════════════════

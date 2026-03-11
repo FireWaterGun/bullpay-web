@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
@@ -35,32 +35,28 @@ export default function WalletNewAddressPage() {
     return bySymbol
   }, [coins])
 
-  // Auto-select first coin when data loads
+  const handleCoinSelect = useCallback((coin) => {
+    setSelectedCoin(coin)
+    const coinNetworks = grouped[coin]?.items ?? []
+    if (coinNetworks.length === 1) {
+      setCoinNetworkId(String(coinNetworks[0].id))
+    } else {
+      setCoinNetworkId('')
+    }
+  }, [grouped])
+
   useEffect(() => {
     const keys = Object.keys(grouped)
     if (keys.length && !selectedCoin) {
-      const first = keys[0]
-      setSelectedCoin(first)
-      if (grouped[first]?.items?.length === 1) setCoinNetworkId(String(grouped[first].items[0].id))
+      handleCoinSelect(keys[0])
     }
-  }, [grouped, selectedCoin])
+  }, [grouped, selectedCoin, handleCoinSelect])
 
   // Derive networks from grouped[selectedCoin] — no state needed
   const networks = useMemo(() => {
     if (!selectedCoin) return []
     return grouped[selectedCoin]?.items ?? []
   }, [selectedCoin, grouped])
-
-  // Auto-select coinNetworkId when networks change
-  useEffect(() => {
-    if (networks.length === 1) {
-      setCoinNetworkId(String(networks[0].id))
-    } else if (networks.length > 1 && !networks.some((i) => String(i.id) === String(coinNetworkId))) {
-      setCoinNetworkId('')
-    } else if (networks.length === 0) {
-      setCoinNetworkId('')
-    }
-  }, [networks]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -100,7 +96,7 @@ export default function WalletNewAddressPage() {
         coins={coins}
         loadingCoins={loadingCoins}
         selectedCoin={selectedCoin}
-        setSelectedCoin={setSelectedCoin}
+        setSelectedCoin={handleCoinSelect}
         coinNetworkId={coinNetworkId}
         setCoinNetworkId={setCoinNetworkId}
         networks={networks}

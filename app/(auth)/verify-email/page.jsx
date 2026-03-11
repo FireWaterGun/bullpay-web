@@ -5,7 +5,8 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { useRouter, useSearchParams } from 'next/navigation'
 import { verifyEmailApi } from '@/lib/api/auth'
 import { useAuth } from '@/app/providers'
-import { Button, Spinner } from '../../../components/ui'
+import Button from '@/components/ui/Button'
+import Spinner from '@/components/ui/Spinner'
 
 export default function VerifyEmailPage() {
   return (

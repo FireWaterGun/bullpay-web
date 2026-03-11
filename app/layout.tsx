@@ -33,8 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={publicSans.className} dir="ltr" suppressHydrationWarning>
       <head>
-        {/* Icon font (Boxicons via CSS masks) */}
-        <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
+        {/* Icon font (Boxicons via CSS masks) — low priority to avoid render-blocking */}
+        <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" precedence="low" />
       </head>
       <body>
         <AppProviders>{children}</AppProviders>

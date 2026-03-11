@@ -1,10 +1,12 @@
 'use client'
 
 import { useTranslation } from 'react-i18next'
-import { QRCodeSVG as QRCode } from 'qrcode.react'
+import dynamic from 'next/dynamic'
 import CoinImg from '@/components/CoinImg'
 import { formatAmount } from '@/lib/utils/format'
 import Button from '../ui/Button'
+
+const QRCode = dynamic(() => import('qrcode.react').then((m) => m.QRCodeSVG), { ssr: false })
 
 export default function PaymentQRSection({
   invoice,

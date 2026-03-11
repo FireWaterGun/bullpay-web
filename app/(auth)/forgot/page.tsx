@@ -7,7 +7,9 @@ import dynamic from 'next/dynamic'
 
 const Turnstile = dynamic(() => import('react-turnstile').then((m) => m.Turnstile), { ssr: false })
 import { forgotPasswordApi } from '@/lib/api/auth'
-import { Alert, Button, Input, Label } from '../../../components/ui'
+import Alert from '@/components/ui/Alert'
+import Button from '@/components/ui/Button'
+import { Input, Label } from '@/components/ui/Input'
 
 export default function ForgotPage() {
   const router = useRouter()

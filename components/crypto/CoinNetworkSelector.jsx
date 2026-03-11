@@ -71,12 +71,7 @@ export default function CoinNetworkSelector({
                     <div
                       role="button"
                       className={`rounded-lg border-2 overflow-hidden h-full cursor-pointer transition-colors ${isActive ? 'border-primary-600 bg-primary-50 shadow-sm dark:bg-primary-600/10' : 'border-surface-200 hover:border-surface-300'}`}
-                      onClick={() => {
-                        setSelectedCoin(sym)
-                        if (!group.items.some((i) => String(i.id) === String(coinNetworkId))) {
-                          setCoinNetworkId('')
-                        }
-                      }}
+                      onClick={() => setSelectedCoin(sym)}
                     >
                       <div className="p-4 flex items-center gap-3">
                         <CoinImg coin={group.coin} symbol={sym} size={36} showFallback imgClassName="rounded" />
