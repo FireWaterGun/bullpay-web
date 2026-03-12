@@ -779,6 +779,14 @@
     "code_XO": "โอนออกภายใน"
   },
   "systemLedger": {
+    "codeWA": "WA - ยอดถอน",
+    "codeWF": "WF - ค่าธรรมเนียมถอน",
+    "codeWG": "WG - ค่าแก๊สถอน",
+    "codeSP": "SP - ยอดกวาด",
+    "codeSG": "SG - เติมแก๊สกวาด",
+    "codeSC": "SC - ต้นทุนแก๊สกวาด",
+    "codeXI": "XI - ปรับเข้า",
+    "codeXO": "XO - ปรับออก",
     "detailTitle": "รายการบัญชีระบบ #{{id}}",
     "code_SP": "ชำระเงินตัดยอด",
     "code_SC": "ต้นทุนกวาด",
@@ -1400,6 +1408,15 @@
     "withdrawalGas": "ค่าแก๊สถอน",
     "internalTransferIn": "โอนภายในเข้า",
     "internalTransferOut": "โอนภายในออก"
+  },
+  "userLedger": {
+    "codeDP": "DP - ฝากเงิน",
+    "codeWA": "WA - ยอดถอน",
+    "codeWF": "WF - ค่าธรรมเนียมถอน",
+    "codeWR": "WR - คืนเงินถอน",
+    "codeFR": "FR - คืนค่าธรรมเนียม",
+    "codeXI": "XI - ปรับเข้า",
+    "codeXO": "XO - ปรับออก"
   },
   "userLedgerDetail": {
     "settlementPayment": "การชำระหนี้",

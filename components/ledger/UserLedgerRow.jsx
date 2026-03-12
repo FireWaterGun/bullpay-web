@@ -7,6 +7,8 @@ import { formatAmount, stateBadge } from '@/components/ledger/ledgerUtils'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
+import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useToast } from '@/app/providers'
 
 function truncateHash(hash) {
   if (!hash) return '-'
@@ -17,6 +19,7 @@ function truncateHash(hash) {
 export default function UserLedgerRow({ entry, t }) {
   const router = useRouter()
   const { fmtDate } = useDateFormat()
+  const toast = useToast()
   const isCredit = entry.entryType === 'credit'
 
   return (
@@ -66,6 +69,19 @@ export default function UserLedgerRow({ entry, t }) {
         {entry.txHash ? (
           <div className="flex items-center">
             <span className="mr-2 font-mono text-xs" title={entry.txHash}>{truncateHash(entry.txHash)}</span>
+            <Button
+              variant="text-secondary"
+              size="icon-sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                copyToClipboard(entry.txHash).then((ok) => {
+                  if (ok) toast.success('Copied!')
+                })
+              }}
+              title="Copy Tx Hash"
+            >
+              <i className="bx bx-copy"></i>
+            </Button>
             {entry.explorerUrl && (
               <Button
                 variant="text-secondary"

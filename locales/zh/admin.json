@@ -769,6 +769,14 @@
     "code_XO": "内部转出"
   },
   "systemLedger": {
+    "codeWA": "WA - 提现金额",
+    "codeWF": "WF - 提现手续费",
+    "codeWG": "WG - 提现Gas",
+    "codeSP": "SP - 归集付款",
+    "codeSG": "SG - 归集Gas充值",
+    "codeSC": "SC - 归集Gas成本",
+    "codeXI": "XI - 调整转入",
+    "codeXO": "XO - 调整转出",
     "detailTitle": "系统账本条目 #{{id}}",
     "code_SP": "结算付款",
     "code_SC": "归集成本",
@@ -1387,6 +1395,15 @@
     "withdrawalGas": "提款Gas",
     "internalTransferIn": "内部转入",
     "internalTransferOut": "内部转出"
+  },
+  "userLedger": {
+    "codeDP": "DP - 充值付款",
+    "codeWA": "WA - 提现金额",
+    "codeWF": "WF - 提现手续费",
+    "codeWR": "WR - 提现退款",
+    "codeFR": "FR - 手续费退还",
+    "codeXI": "XI - 调整转入",
+    "codeXO": "XO - 调整转出"
   },
   "userLedgerDetail": {
     "settlementPayment": "结算付款",

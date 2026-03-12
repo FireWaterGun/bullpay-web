@@ -189,14 +189,14 @@ export default function WalletTransaction() {
                   <Label>{t('filter.entryCode', { defaultValue: 'Entry Code' })}</Label>
                   <Select value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
                     <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-                    <option value="WA">WA - Wallet Actual</option>
-                    <option value="WF">WF - Wallet Fee</option>
-                    <option value="WG">WG - Wallet Gas</option>
-                    <option value="SP">SP - Settlement Payment</option>
-                    <option value="SG">SG - Sweep Gas</option>
-                    <option value="SC">SC - Sweep Cost</option>
-                    <option value="XI">XI - Internal In</option>
-                    <option value="XO">XO - Internal Out</option>
+                    <option value="WA">{t('admin.systemLedger.codeWA', { defaultValue: 'WA - Withdrawal Amount' })}</option>
+                    <option value="WF">{t('admin.systemLedger.codeWF', { defaultValue: 'WF - Withdrawal Fee' })}</option>
+                    <option value="WG">{t('admin.systemLedger.codeWG', { defaultValue: 'WG - Withdrawal Gas' })}</option>
+                    <option value="SP">{t('admin.systemLedger.codeSP', { defaultValue: 'SP - Sweep Payment' })}</option>
+                    <option value="SG">{t('admin.systemLedger.codeSG', { defaultValue: 'SG - Sweep Gas Topup' })}</option>
+                    <option value="SC">{t('admin.systemLedger.codeSC', { defaultValue: 'SC - Sweep Gas Cost' })}</option>
+                    <option value="XI">{t('admin.systemLedger.codeXI', { defaultValue: 'XI - Adjustment IN' })}</option>
+                    <option value="XO">{t('admin.systemLedger.codeXO', { defaultValue: 'XO - Adjustment OUT' })}</option>
                   </Select>
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">

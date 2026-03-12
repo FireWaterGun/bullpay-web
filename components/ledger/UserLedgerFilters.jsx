@@ -44,13 +44,13 @@ export default function UserLedgerFilters({
           <Label>{t('filter.entryCode', { defaultValue: 'Entry Code' })}</Label>
           <Select value={entryCodeFilter} onChange={(e) => setEntryCodeFilter(e.target.value)}>
             <option value="">{t('filter.all', { defaultValue: 'All' })}</option>
-            <option value="DP">DP - Deposit</option>
-            <option value="WA">WA - Wallet Actual</option>
-            <option value="WF">WF - Wallet Fee</option>
-            <option value="WR">WR - Wallet Refund</option>
-            <option value="FR">FR - Fee Refund</option>
-            <option value="XI">XI - Internal In</option>
-            <option value="XO">XO - Internal Out</option>
+            <option value="DP">{t('admin.userLedger.codeDP', { defaultValue: 'DP - Deposit Payment' })}</option>
+            <option value="WA">{t('admin.userLedger.codeWA', { defaultValue: 'WA - Withdrawal Amount' })}</option>
+            <option value="WF">{t('admin.userLedger.codeWF', { defaultValue: 'WF - Withdrawal Fee' })}</option>
+            <option value="WR">{t('admin.userLedger.codeWR', { defaultValue: 'WR - Withdrawal Refund' })}</option>
+            <option value="FR">{t('admin.userLedger.codeFR', { defaultValue: 'FR - Fee Refund' })}</option>
+            <option value="XI">{t('admin.userLedger.codeXI', { defaultValue: 'XI - Adjustment IN' })}</option>
+            <option value="XO">{t('admin.userLedger.codeXO', { defaultValue: 'XO - Adjustment OUT' })}</option>
           </Select>
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">

@@ -737,6 +737,14 @@
     "code_XO": "Internal Transfer Out"
   },
   "systemLedger": {
+    "codeWA": "WA - Withdrawal Amount",
+    "codeWF": "WF - Withdrawal Fee",
+    "codeWG": "WG - Withdrawal Gas",
+    "codeSP": "SP - Sweep Payment",
+    "codeSG": "SG - Sweep Gas Topup",
+    "codeSC": "SC - Sweep Gas Cost",
+    "codeXI": "XI - Adjustment IN",
+    "codeXO": "XO - Adjustment OUT",
     "detailTitle": "System Ledger Entry #{{id}}",
     "code_SP": "Settlement Payment",
     "code_SC": "Sweep Cost",
@@ -1355,6 +1363,15 @@
     "withdrawalGas": "Withdrawal Gas",
     "internalTransferIn": "Internal Transfer In",
     "internalTransferOut": "Internal Transfer Out"
+  },
+  "userLedger": {
+    "codeDP": "DP - Deposit Payment",
+    "codeWA": "WA - Withdrawal Amount",
+    "codeWF": "WF - Withdrawal Fee",
+    "codeWR": "WR - Withdrawal Refund",
+    "codeFR": "FR - Fee Refund",
+    "codeXI": "XI - Adjustment IN",
+    "codeXO": "XO - Adjustment OUT"
   },
   "userLedgerDetail": {
     "settlementPayment": "Settlement Payment",
