@@ -152,6 +152,12 @@ export default function SystemBalance() {
                     <th>{t('admin.type', { defaultValue: 'Type' })}</th>
                     <th>{t('invoices.statusCol')}</th>
                     <th className="text-right min-w-[200px] whitespace-nowrap">
+                      {t('admin.totalBalance', { defaultValue: 'Total Balance' })}
+                    </th>
+                    <th className="text-right min-w-[140px] whitespace-nowrap">
+                      {t('admin.valueUSD', { defaultValue: 'Value (USD)' })}
+                    </th>
+                    <th className="text-right min-w-[200px] whitespace-nowrap">
                       {t('admin.confirmedBalance', { defaultValue: 'Confirmed' })}
                     </th>
                     <th className="text-right min-w-[200px] whitespace-nowrap">
@@ -159,12 +165,6 @@ export default function SystemBalance() {
                     </th>
                     <th className="text-right min-w-[200px] whitespace-nowrap">
                       {t('admin.lockedBalance', { defaultValue: 'Locked' })}
-                    </th>
-                    <th className="text-right min-w-[200px] whitespace-nowrap">
-                      {t('admin.totalBalance', { defaultValue: 'Total Balance' })}
-                    </th>
-                    <th className="text-right min-w-[140px] whitespace-nowrap">
-                      {t('admin.valueUSD', { defaultValue: 'Value (USD)' })}
                     </th>
                     <th className="text-center min-w-[120px]">{t('invoices.actions')}</th>
                   </tr>
@@ -207,7 +207,7 @@ export default function SystemBalance() {
                         </td>
                         <td>
                           <div className="flex items-center gap-2">
-                            <span className="truncate max-w-[400px]">{address || 'N/A'}</span>
+                            <span className="truncate max-w-[400px]" title={address}>{address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'N/A'}</span>
                             {address && (
                               <Button
                                 onClick={() => copyAddress(address, wallet.id)}
@@ -220,6 +220,18 @@ export default function SystemBalance() {
                                 ) : (
                                   <i className="bx bx-copy"></i>
                                 )}
+                              </Button>
+                            )}
+                            {address && wallet.systemWallet?.coinNetwork?.network?.explorerUrl && (
+                              <Button
+                                variant="text-secondary"
+                                size="icon-sm"
+                                href={`${wallet.systemWallet.coinNetwork.network.explorerUrl}/address/${address}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={t('invoices.viewOnExplorer')}
+                              >
+                                <i className="bx bx-link-external"></i>
                               </Button>
                             )}
                           </div>
@@ -248,6 +260,18 @@ export default function SystemBalance() {
                           ) : (
                             <Badge color="secondary">{wallet.systemWallet?.status}</Badge>
                           )}
+                        </td>
+                        <td className="text-right whitespace-nowrap">
+                          <span
+                            className="font-medium"
+                            title={`Raw: ${wallet.totalBalanceRaw || '0'}\nDecimals: ${decimals}`}
+                          >
+                            {formatCoinAmount(decimalBalance)}
+                          </span>
+                          <small className="text-surface-500 ml-1">{coinSymbol}</small>
+                        </td>
+                        <td className="text-right whitespace-nowrap">
+                          <span className="font-medium">{formatUsd(usdValue)}</span>
                         </td>
                         <td className="text-right whitespace-nowrap">
                           {(() => {
@@ -297,18 +321,6 @@ export default function SystemBalance() {
                             )
                           })()}
                         </td>
-                        <td className="text-right whitespace-nowrap">
-                          <span
-                            className="font-medium"
-                            title={`Raw: ${wallet.totalBalanceRaw || '0'}\nDecimals: ${decimals}`}
-                          >
-                            {formatCoinAmount(decimalBalance)}
-                          </span>
-                          <small className="text-surface-500 ml-1">{coinSymbol}</small>
-                        </td>
-                        <td className="text-right whitespace-nowrap">
-                          <span className="font-medium">{formatUsd(usdValue)}</span>
-                        </td>
                         <td className="text-center">
                           <Button
                             variant="text-secondary"
@@ -319,18 +331,6 @@ export default function SystemBalance() {
                           >
                             <i className="bx bx-receipt text-[1rem]"></i>
                           </Button>
-                          {wallet.systemWallet?.coinNetwork?.network?.explorerUrl && wallet.systemWallet?.address && (
-                            <Button
-                              variant="text-secondary"
-                              size="icon-sm"
-                              href={`${wallet.systemWallet.coinNetwork.network.explorerUrl}/address/${wallet.systemWallet.address}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title={t('invoices.viewOnExplorer')}
-                            >
-                              <i className="bx bx-link-external text-[1rem]"></i>
-                            </Button>
-                          )}
                         </td>
                       </tr>
                     )
