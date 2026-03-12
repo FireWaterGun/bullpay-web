@@ -75,27 +75,27 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                       <div className="flex items-center gap-1">
                         <span className="font-medium text-sm">{it.invoiceNumber || it.id}</span>
                         {(it.invoiceNumber || it.id) && (
-                          <button
-                            type="button"
-                            className="text-surface-400 hover:text-primary-500 transition-colors"
+                          <Button
+                            variant="text-secondary"
+                            size="icon-sm"
                             title="Copy"
                             onClick={(e) => { e.stopPropagation(); handleCopy(it.invoiceNumber || String(it.id), `inv-${it.id}`) }}
                           >
-                            <i className={`bx ${copiedId === `inv-${it.id}` ? 'bx-check text-success-500' : 'bx-copy'} text-xs`}></i>
-                          </button>
+                            <i className={`bx ${copiedId === `inv-${it.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
+                          </Button>
                         )}
                       </div>
                       {it.publicCode && (
                         <div className="flex items-center gap-1 mt-0.5">
                           <span className="text-xs text-surface-500 font-mono">{it.publicCode}</span>
-                          <button
-                            type="button"
-                            className="text-surface-400 hover:text-primary-500 transition-colors"
+                          <Button
+                            variant="text-secondary"
+                            size="icon-sm"
                             title="Copy"
                             onClick={(e) => { e.stopPropagation(); handleCopy(it.publicCode, `pc-${it.id}`) }}
                           >
-                            <i className={`bx ${copiedId === `pc-${it.id}` ? 'bx-check text-success-500' : 'bx-copy'} text-xs`}></i>
-                          </button>
+                            <i className={`bx ${copiedId === `pc-${it.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -126,27 +126,28 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                     {it.paymentAddress ? (
                       <div className="flex items-center gap-2">
                         <code className="text-surface-800 font-mono text-xs break-all">{it.paymentAddress}</code>
-                        <button
-                          type="button"
-                          className="shrink-0 p-1 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
+                        <Button
+                          variant="text-secondary"
+                          size="icon-sm"
                           title={t('actions.copy', { defaultValue: 'Copy' })}
                           onClick={(e) => { e.stopPropagation(); handleCopy(it.paymentAddress, it.id) }}
                         >
                           <i
-                            className={`bx ${copiedId === it.id ? 'bx-check text-success-500' : 'bx-copy'} text-base`}
+                            className={`bx ${copiedId === it.id ? 'bx-check text-success' : 'bx-copy'}`}
                           />
-                        </button>
+                        </Button>
                         {it.network?.explorerUrl && (
-                          <a
+                          <Button
+                            variant="text-secondary"
+                            size="icon-sm"
                             href={`${it.network.explorerUrl.replace(/\/$/, '')}/address/${it.paymentAddress}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="shrink-0 p-1 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
                             onClick={(e) => e.stopPropagation()}
                             title={t('invoices.viewExplorer', { defaultValue: 'View on Explorer' })}
                           >
-                            <i className="bx bx-link-external text-base" />
-                          </a>
+                            <i className="bx bx-link-external text-[1rem]" />
+                          </Button>
                         )}
                       </div>
                     ) : (

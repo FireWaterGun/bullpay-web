@@ -92,6 +92,18 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                           )}
                         </Button>
                       )}
+                      {it.txHash && network?.explorerUrl && (
+                        <Button
+                          variant="text-secondary"
+                          size="icon-sm"
+                          href={`${network.explorerUrl}/tx/${it.txHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
+                        >
+                          <i className="bx bx-link-external text-[1rem]"></i>
+                        </Button>
+                      )}
                     </div>
                   </td>
                   <td className="whitespace-nowrap">
