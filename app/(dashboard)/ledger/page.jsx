@@ -58,8 +58,8 @@ function MyLedgerListContent() {
     if (initTxHash) f.txHash = initTxHash
     f.datePreset = initDatePreset
     const range = getDateRange(initDatePreset)
-    if (range.startDate) f.startDate = range.startDate
-    if (range.endDate) f.endDate = range.endDate
+    if (range.from) f.startDate = range.from
+    if (range.to) f.endDate = range.to
     return f
   })
 
@@ -102,8 +102,8 @@ function MyLedgerListContent() {
       state: stateFilter || undefined,
       txHash: txHashFilter || undefined,
       datePreset: datePresetFilter || undefined,
-      startDate: range.startDate || undefined,
-      endDate: range.endDate || undefined,
+      startDate: range.from || undefined,
+      endDate: range.to || undefined,
     }
     setAppliedFilters(f)
     setCurrentPage(1)

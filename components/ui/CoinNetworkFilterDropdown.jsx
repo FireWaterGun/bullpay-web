@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { inputClass } from '@/components/ui/Input'
 
@@ -14,7 +15,9 @@ import { inputClass } from '@/components/ui/Input'
  * @param {(val: string) => void} props.onChange - Callback when a coin/network is selected
  * @param {string} [props.allLabel='All'] - Label for the "All" option
  */
-export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, onChange, allLabel = 'All' }) {
+export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, onChange, allLabel }) {
+  const { t } = useTranslation()
+  const effectiveAllLabel = allLabel || t('common.all', { defaultValue: 'All' })
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const ref = useRef(null)
@@ -71,7 +74,7 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
             <span className="text-surface-500 text-xs">{(selected.network?.symbol || '').toUpperCase()}</span>
           </span>
         ) : (
-          <span className="text-surface-500">{allLabel}</span>
+          <span className="text-surface-500">{effectiveAllLabel}</span>
         )}
       </button>
 
@@ -85,7 +88,7 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
                 ref={searchRef}
                 type="text"
                 className="w-full pl-8 pr-3 py-1.5 text-sm rounded-md border border-surface-200 bg-surface-50 dark:bg-white/5 focus:outline-none focus:ring-1 focus:ring-primary-400 placeholder:text-surface-400"
-                placeholder="Search coin or network..."
+                placeholder={t('common.searchCoinOrNetwork', { defaultValue: 'Search coin or network...' })}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -104,13 +107,13 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
                     setOpen(false)
                   }}
                 >
-                  {allLabel}
+                  {effectiveAllLabel}
                 </button>
                 <hr className="border-surface-200" />
               </>
             )}
             {filtered.length === 0 ? (
-              <div className="px-3 py-4 text-center text-sm text-surface-400">No results</div>
+              <div className="px-3 py-4 text-center text-sm text-surface-400">{t('common.noResults', { defaultValue: 'No results' })}</div>
             ) : (
               filtered.map((cn) => {
                 const sym = (cn.coin?.symbol || '').toUpperCase()
