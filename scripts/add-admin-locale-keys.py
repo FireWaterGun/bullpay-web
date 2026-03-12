@@ -968,7 +968,7 @@ NEW_KEYS = {
                 'settlementPayment': 'การชำระหนี้',
                 'sweepCost': 'ค่ากวาด',
                 'sweepGas': 'ค่าแก๊สกวาด',
-                'withdrawal': 'การถอน',
+                'withdrawal': 'การถอนเงิน',
                 'deposit': 'การฝาก',
                 'fee': 'ค่าธรรมเนียม',
                 'adjustment': 'การปรับปรุง',

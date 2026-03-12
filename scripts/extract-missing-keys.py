@@ -187,7 +187,7 @@ TH_MAP = {
     "Wallet ID": "รหัสกระเป๋า",
     "Webhook retry enqueued": "เพิ่มการส่ง Webhook ซ้ำในคิวแล้ว",
     "With Balance": "มียอดคงเหลือ",
-    "Withdrawal": "การถอน",
+    "Withdrawal": "การถอนเงิน",
 }
 
 # Chinese translations

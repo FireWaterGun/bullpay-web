@@ -1422,8 +1422,8 @@
     "settlementPayment": "การชำระหนี้",
     "sweepCost": "ค่ากวาด",
     "sweepGas": "ค่าแก๊สกวาด",
-    "withdrawal": "การถอน",
-    "deposit": "การฝาก",
+    "withdrawal": "การถอนเงิน",
+    "deposit": "การฝากเงิน",
     "fee": "ค่าธรรมเนียม",
     "adjustment": "การปรับปรุง"
   },
