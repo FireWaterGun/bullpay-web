@@ -53,6 +53,7 @@ export default function RbfTransactionTable({
             <th>{t('admin.rbf.txHash', { defaultValue: 'Tx Hash' })}</th>
             <th className="text-center">{t('admin.rbf.reason', { defaultValue: 'Reason' })}</th>
             <th className="text-center">{t('admin.rbf.replacementCount', { defaultValue: '#Replace' })}</th>
+            <th className="text-right">{t('admin.rbf.gasBumpPercent', { defaultValue: 'Gas Bump %' })}</th>
             <th>{t('admin.rbf.from', { defaultValue: 'From' })}</th>
             <SortableHeader field="created_at" sortBy={sortBy} sortOrder={sortOrder} onSort={onSort}>
               {t('admin.rbf.createdAt', { defaultValue: 'Created' })}
@@ -62,7 +63,7 @@ export default function RbfTransactionTable({
         <tbody>
           {transactions.length === 0 ? (
             <TableEmptyState
-              colSpan={11}
+              colSpan={12}
               icon="bx-revision"
               message={t('admin.rbf.noTransactions', { defaultValue: 'No RBF transactions found' })}
             />
@@ -133,6 +134,13 @@ export default function RbfTransactionTable({
                     </span>
                   ) : (
                     <span className="text-surface-500">0</span>
+                  )}
+                </td>
+                <td className="text-right">
+                  {tx.gasBumpPercent != null ? (
+                    <span className="font-medium">{tx.gasBumpPercent}%</span>
+                  ) : (
+                    <span className="text-surface-500">-</span>
                   )}
                 </td>
                 <td>
