@@ -152,17 +152,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     if (!isXlUp()) setMobileOpen(false)
   }, [])
 
-  // ── Toggle sidebar ──
+  // ── Toggle sidebar (Sneat-style: JS-controlled hover) ──
   const sidebarRef = useRef<HTMLElement>(null)
+  const hoverSuppressed = useRef(false)
+
   const toggleMenu = (e?: React.MouseEvent) => {
     e?.preventDefault?.()
     if (isXlUp()) {
       setCollapsed((c) => {
         if (!c && sidebarRef.current) {
-          // Suppress hover-expand while mouse is still over the sidebar
-          const el = sidebarRef.current
-          el.classList.add('bp-collapsing')
-          setTimeout(() => el.classList.remove('bp-collapsing'), 400)
+          // Collapsing: suppress hover-expand until mouse leaves and re-enters
+          hoverSuppressed.current = true
+          sidebarRef.current.classList.remove('bp-hover')
         }
         return !c
       })
@@ -170,6 +171,31 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       setMobileOpen((v) => !v)
     }
   }
+
+  // ── Sidebar mouseenter/mouseleave → toggle bp-hover class (Sneat pattern) ──
+  // Re-run when isReady/token change so listeners attach after the aside mounts
+  useEffect(() => {
+    const el = sidebarRef.current
+    if (!el) return
+
+    const onEnter = () => {
+      if (hoverSuppressed.current) return
+      if (el.classList.contains('bp-collapsed')) {
+        el.classList.add('bp-hover')
+      }
+    }
+    const onLeave = () => {
+      hoverSuppressed.current = false
+      el.classList.remove('bp-hover')
+    }
+
+    el.addEventListener('mouseenter', onEnter)
+    el.addEventListener('mouseleave', onLeave)
+    return () => {
+      el.removeEventListener('mouseenter', onEnter)
+      el.removeEventListener('mouseleave', onLeave)
+    }
+  }, [isReady, token])
 
   // ── Loading state ──
   if (!isReady || !token) {

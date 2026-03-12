@@ -766,30 +766,34 @@ li.bp-active-item::after {
   .bp-sidebar.bp-collapsed {
     width: 76px;
   }
-  /* Suppress hover-expand right after collapse click (pointer-events:none drops :hover) */
-  .bp-sidebar.bp-collapsed.bp-collapsing {
-    pointer-events: none;
-  }
-  /* Hover expands back to full width */
-  .bp-sidebar.bp-collapsed:hover:not(.bp-collapsing) {
+  /* Hover expands back to full width (JS-controlled via bp-hover class) */
+  .bp-sidebar.bp-collapsed.bp-hover {
     width: var(--spacing-sidebar);
     box-shadow: 0 0.25rem 1rem 0 rgba(34, 48, 62, 0.12);
   }
-  /* Labels & brand text hidden when not hovering (Sneat: overflow hidden + opacity 0) */
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-label,
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-brand-text {
+  /* Labels & brand text hidden when not hovering */
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-label,
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-brand-text {
     opacity: 0;
     overflow: hidden;
     white-space: nowrap;
     transition: opacity 0.3s ease-in-out;
   }
+  /* Collapse button: dual-ring covers both sidebar (card) and body backgrounds */
+  .bp-sidebar .bp-collapse-btn {
+    border-color: var(--color-card) !important;
+    box-shadow: 0 0 0 3px var(--color-body) !important;
+  }
+  .bp-sidebar .bp-collapse-btn:hover {
+    box-shadow: 0 0 0 3px var(--color-body), 0 4px 16px rgba(99, 91, 255, 0.3) !important;
+  }
   /* Collapse button centered when not hovering */
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-collapse-btn {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-collapse-btn {
     left: 50% !important;
     transform: translateX(-50%);
   }
   /* Section headers hidden when not hovering */
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-section-hdr {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-section-hdr {
     opacity: 0;
     height: 0;
     margin: 0;
@@ -799,11 +803,11 @@ li.bp-active-item::after {
   }
   /* ── Collapsed icon centering (follows Sneat pattern exactly) ── */
   /* 1. Constrain each top-level menu-item to collapsed width */
-  .bp-sidebar.bp-collapsed:not(:hover) > nav > ul > li {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) > nav > ul > li {
     width: 76px;
   }
   /* 2. Symmetric padding on menu-link (no margin, equal left-right) */
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-link {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-menu-link {
     justify-content: center !important;
     padding-inline: calc(0.9375rem - 1px) !important;
     margin-inline: 0 !important;
@@ -814,34 +818,34 @@ li.bp-active-item::after {
     gap: 0 !important;
   }
   /* 3. Icon: remove end-margin, center text */
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-link .bp-menu-icon {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-menu-link .bp-menu-icon {
     margin-right: 0 !important;
     margin-inline-end: 0 !important;
     text-align: center;
   }
   /* 4. Non-icon children: zero-size so they don't offset the icon */
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-link > :not(.bp-menu-icon) {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-menu-link > :not(.bp-menu-icon) {
     overflow: hidden;
     opacity: 0;
     flex: 0 0 0px;
     width: 0;
   }
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-link.bp-active {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-menu-link.bp-active {
     background: var(--color-primary-50);
   }
-  .bp-sidebar.bp-collapsed:not(:hover) li.bp-active-item::after {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) li.bp-active-item::after {
     display: none;
   }
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-submenu {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-submenu {
     display: none;
   }
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-toggle::after {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-menu-toggle::after {
     display: none;
   }
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-badge {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-badge {
     display: none;
   }
-  .bp-sidebar.bp-collapsed:not(:hover) .bp-sidebar-user-info {
+  .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-sidebar-user-info {
     opacity: 0;
     width: 0;
     overflow: hidden;
@@ -1022,10 +1026,10 @@ li.bp-active-item::after {
 
 /* Collapsed hover shadow in dark */
 @media (min-width: 1200px) {
-  [data-theme='dark'] .bp-sidebar.bp-collapsed:hover {
+  [data-theme='dark'] .bp-sidebar.bp-collapsed.bp-hover {
     box-shadow: 0 0.125rem 0.75rem 0 rgba(20, 20, 29, 0.3);
   }
-  [data-theme='dark'] .bp-sidebar.bp-collapsed:not(:hover) .bp-menu-link.bp-active {
+  [data-theme='dark'] .bp-sidebar.bp-collapsed:not(.bp-hover) .bp-menu-link.bp-active {
     background: var(--color-primary-600) !important;
   }
 }
