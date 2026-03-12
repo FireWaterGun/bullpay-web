@@ -8,7 +8,6 @@ import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import TableEmptyState from '@/components/TableEmptyState'
-import Link from 'next/link'
 import Badge from '../ui/Badge'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
@@ -211,14 +210,15 @@ export default function SystemLedgerTable({
                     <span className="whitespace-nowrap">{fmtDate(entry.createdAt)}</span>
                   </td>
                   <td>
-                    <Link
+                    <Button
+                      variant="text-secondary"
+                      size="icon-sm"
                       href={`/admin/system-ledger/${entry.id}`}
-                      className="btn-base btn-text-secondary btn-icon-sm"
                       onClick={(e) => e.stopPropagation()}
                       title={t('actions.view', { defaultValue: 'View' })}
                     >
                       <i className="bx bx-show text-[1rem]"></i>
-                    </Link>
+                    </Button>
                   </td>
                 </tr>
               )

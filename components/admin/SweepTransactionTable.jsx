@@ -146,15 +146,14 @@ export default function SweepTransactionTable({
                       <span className="mr-2 font-mono text-xs">{truncateHash(sweep.txHash)}</span>
                       <Button
                         variant="text-secondary"
-                        size="icon"
-                        className="rounded-full"
+                        size="icon-sm"
                         href={`${sweep.coinNetwork?.network?.explorerUrl}/tx/${sweep.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
                       >
-                        <i className="bx bx-link-external text-xl"></i>
+                        <i className="bx bx-link-external"></i>
                       </Button>
                     </div>
                   ) : (

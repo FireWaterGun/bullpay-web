@@ -85,15 +85,14 @@ export default function UserLedgerRow({ entry, t }) {
             {entry.explorerUrl && (
               <Button
                 variant="text-secondary"
-                size="icon"
-                className="rounded-full"
+                size="icon-sm"
                 href={`${entry.explorerUrl}/tx/${entry.txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 title="View on explorer"
               >
-                <i className="bx bx-link-external text-xl"></i>
+                <i className="bx bx-link-external"></i>
               </Button>
             )}
           </div>

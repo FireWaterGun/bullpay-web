@@ -94,14 +94,13 @@ export default function AdminPaymentRow({ payment, onCopy }) {
             {explorerUrl && (
               <Button
                 variant="text-secondary"
-                size="icon"
-                className="rounded-full"
+                size="icon-sm"
                 href={`${explorerUrl}/tx/${payment.txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={t('admin.detail.viewOnExplorer', { defaultValue: 'View on explorer' })}
               >
-                <i className="bx bx-link-external text-xl"></i>
+                <i className="bx bx-link-external"></i>
               </Button>
             )}
           </div>
