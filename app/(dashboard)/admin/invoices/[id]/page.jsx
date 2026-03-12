@@ -22,6 +22,15 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 
+/** Derive display status — show 'expired' if past expiryAt even when DB status is still 'pending'. */
+function effectiveStatus(invoice) {
+  if (invoice.status === 'pending' && (invoice.expiryAt || invoice.expiry_at)) {
+    const expiry = new Date(invoice.expiryAt || invoice.expiry_at)
+    if (expiry < new Date()) return 'expired'
+  }
+  return invoice.status
+}
+
 export default function AdminInvoiceDetail() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
@@ -93,8 +102,8 @@ export default function AdminInvoiceDetail() {
                       )}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={statusBadgeClass(invoice.status)}>
-                        {String(invoice.status || '').toUpperCase()}
+                      <span className={statusBadgeClass(effectiveStatus(invoice))}>
+                        {String(effectiveStatus(invoice) || '').toUpperCase()}
                       </span>
                       <span className="text-surface-500">•</span>
                       <span className="text-surface-500">
@@ -155,8 +164,8 @@ export default function AdminInvoiceDetail() {
                       <tr>
                         <td className="text-surface-500">{t('admin.detail.status', { defaultValue: 'Status' })}</td>
                         <td>
-                          <span className={statusBadgeClass(invoice.status)}>
-                            {String(invoice.status || '').toUpperCase()}
+                          <span className={statusBadgeClass(effectiveStatus(invoice))}>
+                            {String(effectiveStatus(invoice) || '').toUpperCase()}
                           </span>
                         </td>
                       </tr>
