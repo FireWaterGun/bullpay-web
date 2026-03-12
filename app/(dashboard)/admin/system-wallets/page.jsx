@@ -26,13 +26,13 @@ export default function SystemBalance() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [copiedAddress, setCopiedAddress] = useState(null)
+  const [copiedId, setCopiedId] = useState(null)
 
-  const copyAddress = async (address) => {
+  const copyAddress = async (address, id) => {
     try {
       await copyToClipboard(address)
-      setCopiedAddress(address)
-      setTimeout(() => setCopiedAddress(null), 2000)
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
       toast.success(t('actions.copied', { defaultValue: 'Address copied to clipboard' }))
     } catch (err) {
       logger.error('Failed to copy:', err)
@@ -222,12 +222,12 @@ export default function SystemBalance() {
                             <span className="truncate max-w-[400px]">{address || 'N/A'}</span>
                             {address && (
                               <Button
-                                onClick={() => copyAddress(address)}
+                                onClick={() => copyAddress(address, wallet.id)}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
                                 size="icon-sm"
                                 variant="text-secondary"
                               >
-                                {copiedAddress === address ? (
+                                {copiedId === wallet.id ? (
                                   <i className="bx bx-check text-success"></i>
                                 ) : (
                                   <i className="bx bx-copy"></i>
