@@ -185,7 +185,8 @@
     "action": "操作",
     "confirm": "确认",
     "create": "创建",
-    "ok": "确定"
+    "ok": "确定",
+    "backToWithdrawals": "返回提款列表"
   },
   "invoices": {
     "create": "创建发票",
@@ -266,7 +267,8 @@
     "estimateNote": "近似值，汇率可能变动",
     "estimateUnavailable": "无法获取汇率估算",
     "paymentReceivedDesc": "该发票已成功支付",
-    "confirmingDesc": "正在等待区块链确认"
+    "confirmingDesc": "正在等待区块链确认",
+    "backToList": "返回发票列表"
   },
   "invoice": {
     "createTitle": "创建发票",
@@ -933,7 +935,8 @@
     "code.XI": "内部转入",
     "code.XO": "内部转出",
     "id": "ID",
-    "usd": "USD"
+    "usd": "USD",
+    "backToList": "返回活动记录"
   },
   "gasTopup": {
     "loadError": "加载 Gas 充值记录失败"
@@ -987,7 +990,8 @@
     "updated": "更新时间",
     "notFound": "未找到提款记录",
     "detailLoadError": "加载提款详情失败",
-    "platformFee": "平台费用 (%)"
+    "platformFee": "平台费用 (%)",
+    "backToList": "返回提款列表"
   },
   "maintenance": {
     "title": "系统维护中",

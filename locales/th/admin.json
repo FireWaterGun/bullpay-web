@@ -32,14 +32,16 @@
     "title": "ใบแจ้งหนี้",
     "description": "ดูใบแจ้งหนี้ทั้งหมดและสถานะ",
     "noInvoices": "ไม่พบใบแจ้งหนี้",
-    "loadError": "ไม่สามารถโหลดใบแจ้งหนี้ได้"
+    "loadError": "ไม่สามารถโหลดใบแจ้งหนี้ได้",
+    "backToList": "กลับไปใบแจ้งหนี้"
   },
   "payments": {
     "menuTitle": "การชำระเงิน",
     "title": "การชำระเงิน",
     "description": "ดูรายการธุรกรรมการชำระเงินบนบล็อกเชนทั้งหมด",
     "noPayments": "ไม่พบรายการชำระเงิน",
-    "loadError": "ไม่สามารถโหลดรายการชำระเงินได้"
+    "loadError": "ไม่สามารถโหลดรายการชำระเงินได้",
+    "backToList": "กลับไปการชำระเงิน"
   },
   "paymentDashboard": "แดชบอร์ดการชำระเงิน",
   "dashboard": {
@@ -516,7 +518,8 @@
     "passwordPlaceholder": "อย่างน้อย 8 ตัวอักษร",
     "passwordMaxLength": "รหัสผ่านต้องไม่เกิน 128 ตัวอักษร",
     "emailExists": "อีเมลนี้ถูกใช้แล้ว",
-    "roleEscalation": "ไม่สามารถสร้างผู้ใช้ด้วยบทบาทนี้ได้"
+    "roleEscalation": "ไม่สามารถสร้างผู้ใช้ด้วยบทบาทนี้ได้",
+    "backToList": "กลับไปรายการผู้ใช้"
   },
   "merchants": {
     "title": "ร้านค้า",
@@ -617,7 +620,8 @@
     "viewOnExplorer": "ดูบน Explorer",
     "copyAddress": "คัดลอกที่อยู่",
     "copyTxHash": "คัดลอกแฮชธุรกรรม",
-    "detailTitle": "เติมค่าแก๊ส #{{id}}"
+    "detailTitle": "เติมค่าแก๊ส #{{id}}",
+    "backToList": "กลับไปรายการเติม Gas"
   },
   "evm": {
     "menuTitle": "EVM",
@@ -725,7 +729,8 @@
     "details": "รายละเอียด",
     "notFound": "ไม่พบรายการบัญชี",
     "referenceType": "ประเภทอ้างอิง",
-    "relatedId": "รหัสที่เกี่ยวข้อง"
+    "relatedId": "รหัสที่เกี่ยวข้อง",
+    "backToList": "กลับไปบัญชีผู้ใช้"
   },
   "pnl": {
     "menuTitle": "กำไรขาดทุน",
@@ -776,7 +781,8 @@
     "code_SC": "ต้นทุนแก๊สกวาด",
     "code_WG": "แก๊สถอน",
     "code_XI": "โอนเข้าภายใน",
-    "code_XO": "โอนออกภายใน"
+    "code_XO": "โอนออกภายใน",
+    "backToList": "กลับไปบัญชีแพลตฟอร์ม"
   },
   "systemLedger": {
     "codeWA": "WA - ยอดถอน",
@@ -799,7 +805,8 @@
     "purpose_merchant_credit": "เครดิตร้านค้า",
     "purpose_native_coin_sweep_cost": "ต้นทุนกวาด",
     "purpose_gas_topup_for_token_sweep": "เติมแก๊ส",
-    "purpose_token_sweep_cost": "ต้นทุนกวาดโทเค็น"
+    "purpose_token_sweep_cost": "ต้นทุนกวาดโทเค็น",
+    "backToList": "กลับไปบัญชีระบบ"
   },
   "adjustment": {
     "title": "ปรับยอดคงเหลือ (XI / XO)",
@@ -1134,6 +1141,9 @@
     "totalValueUsd": "มูลค่ารวม (USD)",
     "backToList": "กลับไปยอดคงเหลือผู้ใช้"
   },
+  "userDetail": {
+    "backToList": "กลับไปรายการผู้ใช้"
+  },
   "tempWallet": {
     "notFound": "ไม่พบกระเป๋าชั่วคราว",
     "loadError": "ไม่สามารถโหลดกระเป๋าชั่วคราว",
@@ -1182,7 +1192,8 @@
     "backToTempWallets": "กลับไปกระเป๋าชั่วคราว",
     "title": "กระเป๋าชั่วคราว",
     "expiresIn": "หมดอายุใน {{minutes}} นาที",
-    "wallet": "กระเป๋า"
+    "wallet": "กระเป๋า",
+    "backToList": "กลับไปกระเป๋าชั่วคราว"
   },
   "tempWalletHistories": {
     "title": "ประวัติกระเป๋าชั่วคราว",
@@ -1207,6 +1218,9 @@
     "sweptAt": "กวาดเมื่อ",
     "releasedAt": "ปล่อยเมื่อ",
     "failedAt": "ล้มเหลวเมื่อ"
+  },
+  "sweeps": {
+    "backToList": "กลับไปรายการ Sweep"
   },
   "sweepDetail": {
     "notFound": "ไม่พบธุรกรรมกวาด",
@@ -1283,6 +1297,7 @@
     "notFound": "ไม่พบที่อยู่",
     "loadError": "ไม่สามารถโหลดที่อยู่ถอนเงิน",
     "backToList": "กลับไปที่อยู่ถอนเงิน",
+    "backToAddresses": "กลับไปรายการที่อยู่ถอนเงิน",
     "detailTitle": "ที่อยู่ถอนเงิน #{{id}}",
     "addressDetails": "รายละเอียดที่อยู่",
     "addressId": "ID ที่อยู่",

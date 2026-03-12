@@ -30,14 +30,16 @@
     "title": "Invoices",
     "description": "View all invoices and their status",
     "noInvoices": "No invoices found",
-    "loadError": "Failed to load invoices"
+    "loadError": "Failed to load invoices",
+    "backToList": "Back to Invoices"
   },
   "payments": {
     "menuTitle": "Payments",
     "title": "Payments",
     "description": "View all blockchain payment transactions",
     "noPayments": "No payments found",
-    "loadError": "Failed to load payments"
+    "loadError": "Failed to load payments",
+    "backToList": "Back to Payments"
   },
   "sweep": {
     "menuTitle": "Sweep",
@@ -485,7 +487,8 @@
     "passwordPlaceholder": "Minimum 8 characters",
     "passwordMaxLength": "Password must not exceed 128 characters",
     "emailExists": "Email already registered",
-    "roleEscalation": "Cannot create user with this role"
+    "roleEscalation": "Cannot create user with this role",
+    "backToList": "Back to Users"
   },
   "merchants": {
     "title": "Merchants",
@@ -586,7 +589,8 @@
     "viewOnExplorer": "View on explorer",
     "copyAddress": "Copy address",
     "copyTxHash": "Copy tx hash",
-    "detailTitle": "Gas Topup #{{id}}"
+    "detailTitle": "Gas Topup #{{id}}",
+    "backToList": "Back to Gas Topups"
   },
   "evm": {
     "menuTitle": "EVM",
@@ -683,7 +687,8 @@
     "conversionOut": "Conversion Out",
     "filters": "Filters",
     "noEntriesDesc": "Try adjusting your filters to see more results",
-    "title": "Wallet Transactions"
+    "title": "Wallet Transactions",
+    "backToList": "Back to User Ledger"
   },
   "pnl": {
     "menuTitle": "Profit & Loss",
@@ -734,7 +739,8 @@
     "code_SC": "Sweep Gas Cost",
     "code_WG": "Withdrawal Gas",
     "code_XI": "Internal Transfer In",
-    "code_XO": "Internal Transfer Out"
+    "code_XO": "Internal Transfer Out",
+    "backToList": "Back to Platform Ledger"
   },
   "systemLedger": {
     "codeWA": "WA - Withdrawal Amount",
@@ -757,7 +763,8 @@
     "purpose_merchant_credit": "Merchant Credit",
     "purpose_native_coin_sweep_cost": "Sweep Cost",
     "purpose_gas_topup_for_token_sweep": "Gas Top-up",
-    "purpose_token_sweep_cost": "Token Sweep Cost"
+    "purpose_token_sweep_cost": "Token Sweep Cost",
+    "backToList": "Back to System Ledger"
   },
   "adjustment": {
     "title": "Balance Adjustment (XI / XO)",
@@ -1089,6 +1096,9 @@
     "totalValueUsd": "Total Value (USD)",
     "backToList": "Back to User Balances"
   },
+  "userDetail": {
+    "backToList": "Back to Users"
+  },
   "tempWallet": {
     "notFound": "Temp wallet not found",
     "loadError": "Failed to load temp wallet",
@@ -1137,7 +1147,8 @@
     "backToTempWallets": "Back to Temp Wallets",
     "title": "Temp Wallet",
     "expiresIn": "Expires in {{minutes}}m",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "backToList": "Back to Temp Wallets"
   },
   "tempWalletHistories": {
     "title": "Temp Wallet Histories",
@@ -1162,6 +1173,9 @@
     "sweptAt": "Swept At",
     "releasedAt": "Released At",
     "failedAt": "Failed At"
+  },
+  "sweeps": {
+    "backToList": "Back to Sweeps"
   },
   "sweepDetail": {
     "notFound": "Sweep transaction not found",
@@ -1238,6 +1252,7 @@
     "notFound": "Address not found",
     "loadError": "Failed to load withdrawal address",
     "backToList": "Back to Addresses",
+    "backToAddresses": "Back to Withdrawal Addresses",
     "detailTitle": "Withdrawal Address #{{id}}",
     "addressDetails": "Address Details",
     "addressId": "Address ID",

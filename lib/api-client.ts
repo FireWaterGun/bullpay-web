@@ -18,7 +18,12 @@ export class ApiError extends Error {
   data: unknown
 
   constructor(status: number, code: string, details: unknown, data?: unknown) {
-    const msg = typeof details === 'string' ? details : code || `API Error ${status}`
+    const dataMessage =
+      typeof data === 'object' && data !== null
+        ? (data as Record<string, unknown> & { error?: { message?: string }; message?: string })?.error?.message ||
+          (data as Record<string, unknown> & { message?: string })?.message
+        : undefined
+    const msg = typeof details === 'string' ? details : dataMessage || code || `API Error ${status}`
     super(msg)
     this.name = 'ApiError'
     this.status = status

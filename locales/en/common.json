@@ -185,7 +185,8 @@
     "action": "Action",
     "confirm": "Confirm",
     "create": "Create",
-    "ok": "OK"
+    "ok": "OK",
+    "backToWithdrawals": "Back to Withdrawals"
   },
   "invoices": {
     "create": "Create Invoice",
@@ -266,7 +267,8 @@
     "estimateNote": "approximate, rate may change",
     "estimateUnavailable": "Rate estimate unavailable",
     "paymentReceivedDesc": "This invoice has been paid successfully",
-    "confirmingDesc": "Waiting for blockchain confirmations"
+    "confirmingDesc": "Waiting for blockchain confirmations",
+    "backToList": "Back to Invoices"
   },
   "invoice": {
     "createTitle": "Create Invoice",
@@ -931,7 +933,8 @@
     "code.XI": "Internal Transfer In",
     "code.XO": "Internal Transfer Out",
     "id": "ID",
-    "usd": "USD"
+    "usd": "USD",
+    "backToList": "Back to Activity"
   },
   "gasTopup": {
     "loadError": "Failed to load gas topups"
@@ -985,7 +988,8 @@
     "updated": "Updated",
     "notFound": "Withdrawal not found",
     "detailLoadError": "Failed to load withdrawal",
-    "loadError": "Failed to load withdrawal transactions"
+    "loadError": "Failed to load withdrawal transactions",
+    "backToList": "Back to Withdrawals"
   },
   "maintenance": {
     "title": "Under Maintenance",

@@ -31,14 +31,16 @@
     "title": "发票",
     "description": "查看所有发票及其状态",
     "noInvoices": "未找到发票",
-    "loadError": "加载发票失败"
+    "loadError": "加载发票失败",
+    "backToList": "返回发票列表"
   },
   "payments": {
     "menuTitle": "支付",
     "title": "支付",
     "description": "查看所有区块链支付交易",
     "noPayments": "未找到支付记录",
-    "loadError": "加载支付记录失败"
+    "loadError": "加载支付记录失败",
+    "backToList": "返回支付列表"
   },
   "paymentDashboard": "支付仪表板",
   "user": "用户",
@@ -517,7 +519,8 @@
     "passwordPlaceholder": "至少8个字符",
     "passwordMaxLength": "密码不能超过128个字符",
     "emailExists": "邮箱已注册",
-    "roleEscalation": "无法创建此角色的用户"
+    "roleEscalation": "无法创建此角色的用户",
+    "backToList": "返回用户列表"
   },
   "merchants": {
     "title": "商户",
@@ -618,7 +621,8 @@
     "viewOnExplorer": "在浏览器查看",
     "copyAddress": "复制地址",
     "copyTxHash": "复制交易哈希",
-    "detailTitle": "Gas充值 #{{id}}"
+    "detailTitle": "Gas充值 #{{id}}",
+    "backToList": "返回 Gas 充值列表"
   },
   "evm": {
     "menuTitle": "EVM",
@@ -715,7 +719,8 @@
     "conversionOut": "转出兑换",
     "filters": "筛选",
     "noEntriesDesc": "尝试调整筛选条件以查看更多结果",
-    "title": "钱包交易"
+    "title": "钱包交易",
+    "backToList": "返回用户账本"
   },
   "pnl": {
     "menuTitle": "损益表",
@@ -766,7 +771,8 @@
     "code_SC": "归集Gas成本",
     "code_WG": "提现Gas",
     "code_XI": "内部转入",
-    "code_XO": "内部转出"
+    "code_XO": "内部转出",
+    "backToList": "返回平台账本"
   },
   "systemLedger": {
     "codeWA": "WA - 提现金额",
@@ -789,7 +795,8 @@
     "purpose_merchant_credit": "商户贷记",
     "purpose_native_coin_sweep_cost": "归集成本",
     "purpose_gas_topup_for_token_sweep": "Gas充值",
-    "purpose_token_sweep_cost": "代币归集成本"
+    "purpose_token_sweep_cost": "代币归集成本",
+    "backToList": "返回系统账本"
   },
   "adjustment": {
     "title": "余额调整 (XI / XO)",
@@ -1121,6 +1128,9 @@
     "totalValueUsd": "总价值 (USD)",
     "backToList": "返回用户余额"
   },
+  "userDetail": {
+    "backToList": "返回用户列表"
+  },
   "tempWallet": {
     "notFound": "未找到临时钱包",
     "loadError": "加载临时钱包失败",
@@ -1169,7 +1179,8 @@
     "backToTempWallets": "返回临时钱包",
     "title": "临时钱包",
     "expiresIn": "{{minutes}}分钟后过期",
-    "wallet": "钱包"
+    "wallet": "钱包",
+    "backToList": "返回临时钱包"
   },
   "tempWalletHistories": {
     "title": "临时钱包历史",
@@ -1194,6 +1205,9 @@
     "sweptAt": "归集时间",
     "releasedAt": "释放时间",
     "failedAt": "失败时间"
+  },
+  "sweeps": {
+    "backToList": "返回扫款列表"
   },
   "sweepDetail": {
     "notFound": "未找到归集交易",
@@ -1270,6 +1284,7 @@
     "notFound": "未找到地址",
     "loadError": "加载提款地址失败",
     "backToList": "返回提款地址",
+    "backToAddresses": "返回提款地址列表",
     "detailTitle": "提款地址 #{{id}}",
     "addressDetails": "地址详情",
     "addressId": "地址ID",

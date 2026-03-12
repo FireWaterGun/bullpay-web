@@ -159,7 +159,8 @@
     "actions": "การดำเนินการ",
     "copyFailed": "คัดลอกไม่สำเร็จ",
     "action": "จัดการ",
-    "create": "สร้าง"
+    "create": "สร้าง",
+    "backToWithdrawals": "กลับไปรายการถอน"
   },
   "invoices": {
     "create": "สร้างใบแจ้งหนี้",
@@ -240,7 +241,8 @@
     "estimateNote": "โดยประมาณ อัตราอาจเปลี่ยนแปลง",
     "estimateUnavailable": "ไม่สามารถประมาณอัตราได้",
     "paymentReceivedDesc": "ใบแจ้งหนี้นี้ได้รับการชำระเงินเรียบร้อยแล้ว",
-    "confirmingDesc": "กำลังรอการยืนยันจากบล็อกเชน"
+    "confirmingDesc": "กำลังรอการยืนยันจากบล็อกเชน",
+    "backToList": "กลับไปรายการใบแจ้งหนี้"
   },
   "invoice": {
     "createTitle": "สร้างใบแจ้งหนี้",
@@ -939,10 +941,11 @@
     "code.XI": "โอนเข้าภายใน",
     "code.XO": "โอนออกภายใน",
     "id": "ID",
-    "usd": "USD"
+    "usd": "USD",
+    "backToList": "กลับไปประวัติกิจกรรม"
   },
   "gasTopup": {
-    "loadError": "Failed to load gas topups"
+    "loadError": "โหลดรายการเติม Gas ไม่สำเร็จ"
   },
   "withdrawal": {
     "actions": "การดำเนินการ",
@@ -993,7 +996,8 @@
     "updated": "อัปเดตเมื่อ",
     "notFound": "ไม่พบรายการถอนเงิน",
     "detailLoadError": "ไม่สามารถโหลดรายการถอนเงินได้",
-    "loadError": "ไม่สามารถโหลดรายการถอนเงินได้"
+    "loadError": "ไม่สามารถโหลดรายการถอนเงินได้",
+    "backToList": "กลับไปรายการถอนเงิน"
   },
   "maintenance": {
     "title": "ระบบกำลังปรับปรุง",
