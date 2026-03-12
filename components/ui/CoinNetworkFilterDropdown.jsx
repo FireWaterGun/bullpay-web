@@ -15,7 +15,7 @@ import { inputClass } from '@/components/ui/Input'
  * @param {(val: string) => void} props.onChange - Callback when a coin/network is selected
  * @param {string} [props.allLabel='All'] - Label for the "All" option
  */
-export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, onChange, allLabel }) {
+export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, onChange, allLabel, className: extraClass }) {
   const { t } = useTranslation()
   const effectiveAllLabel = allLabel || t('common.all', { defaultValue: 'All' })
   const [open, setOpen] = useState(false)
@@ -59,7 +59,7 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
   return (
     <div className="relative" ref={ref}>
       <button
-        className={`${inputClass()} select-base w-full flex items-center text-left`}
+        className={`${inputClass()} select-base w-full flex items-center text-left${extraClass ? ` ${extraClass}` : ''}`}
         type="button"
         onClick={() => setOpen(!open)}
       >

@@ -692,8 +692,26 @@
   },
   "pnl": {
     "menuTitle": "Profit & Loss",
+    "dailyPnl": "Daily P&L",
     "incomeStatement": "Income Statement",
     "platformLedger": "Revenue & Expenses"
+  },
+  "dailyPnl": {
+    "title": "Daily P&L",
+    "description": "Daily profit and loss breakdown",
+    "loadError": "Failed to load daily P&L data",
+    "noData": "No daily data found",
+    "noDataDesc": "There are no revenue records for the selected period.",
+    "date": "Date",
+    "deposits": "Deposits",
+    "withdrawals": "Withdrawals",
+    "revenue": "Revenue",
+    "gasCosts": "Gas Costs",
+    "netPnl": "Net P&L",
+    "margin": "Margin",
+    "avgMargin": "Avg. Margin",
+    "total": "TOTAL",
+    "exportCsv": "Export CSV"
   },
   "platformLedger": {
     "title": "Revenue & Expenses",

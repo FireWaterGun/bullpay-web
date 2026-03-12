@@ -724,8 +724,26 @@
   },
   "pnl": {
     "menuTitle": "损益表",
+    "dailyPnl": "每日损益",
     "incomeStatement": "收入报表",
     "platformLedger": "平台账本"
+  },
+  "dailyPnl": {
+    "title": "每日损益",
+    "description": "每日利润和损失明细",
+    "loadError": "加载每日损益数据失败",
+    "noData": "未找到每日数据",
+    "noDataDesc": "所选期间没有收入记录。",
+    "date": "日期",
+    "deposits": "存入",
+    "withdrawals": "提取",
+    "revenue": "收入",
+    "gasCosts": "Gas 费用",
+    "netPnl": "净损益",
+    "margin": "利润率",
+    "avgMargin": "平均利润率",
+    "total": "合计",
+    "exportCsv": "导出 CSV"
   },
   "platformLedger": {
     "title": "平台账本",

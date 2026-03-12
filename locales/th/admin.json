@@ -734,8 +734,26 @@
   },
   "pnl": {
     "menuTitle": "กำไรขาดทุน",
+    "dailyPnl": "กำไรขาดทุนรายวัน",
     "incomeStatement": "งบกำไรขาดทุน",
     "platformLedger": "บัญชีแยกประเภทแพลตฟอร์ม"
+  },
+  "dailyPnl": {
+    "title": "กำไรขาดทุนรายวัน",
+    "description": "รายละเอียดกำไรขาดทุนรายวัน",
+    "loadError": "โหลดข้อมูลกำไรขาดทุนรายวันไม่สำเร็จ",
+    "noData": "ไม่พบข้อมูลรายวัน",
+    "noDataDesc": "ไม่มีรายการรายได้ในช่วงเวลาที่เลือก",
+    "date": "วันที่",
+    "deposits": "ฝากเข้า",
+    "withdrawals": "ถอนออก",
+    "revenue": "รายได้",
+    "gasCosts": "ค่า Gas",
+    "netPnl": "กำไรสุทธิ",
+    "margin": "อัตรากำไร",
+    "avgMargin": "อัตรากำไรเฉลี่ย",
+    "total": "รวม",
+    "exportCsv": "ส่งออก CSV"
   },
   "platformLedger": {
     "title": "บัญชีแยกประเภทแพลตฟอร์ม",

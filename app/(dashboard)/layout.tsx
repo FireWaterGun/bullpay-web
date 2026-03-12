@@ -223,6 +223,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       'webhook-logs': 'nav.webhookLogs',
       'api-docs': 'nav.apiDocs',
       'admin-dashboard': 'nav.revenueDashboard',
+      'admin-daily-pnl': 'nav.dailyPnl',
       'income-statement': 'nav.incomeStatement',
       'admin-platform-ledger': 'nav.revenueExpense',
       'admin-system-ledger': 'nav.systemLedger',
