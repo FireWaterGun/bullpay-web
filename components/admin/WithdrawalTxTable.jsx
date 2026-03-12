@@ -53,6 +53,7 @@ export default function WithdrawalTxTable({
             <th className="text-right">{t('table.usd', { defaultValue: 'USD' })}</th>
             <th className="text-right">{t('withdrawal.fee', { defaultValue: 'Fee' })}</th>
             <th className="text-right">{t('withdrawal.feeUsd', { defaultValue: 'Fee USD' })}</th>
+            <th className="text-right">{t('withdrawal.platformFee', { defaultValue: 'Platform Fee (%)' })}</th>
             <th className="text-center">{t('withdrawal.status', { defaultValue: 'Status' })}</th>
             <th className="text-center">{t('withdrawal.actions', { defaultValue: 'Actions' })}</th>
             <th>{t('withdrawal.txHash', { defaultValue: 'Tx Hash' })}</th>
@@ -64,7 +65,7 @@ export default function WithdrawalTxTable({
         <tbody className="divide-y divide-surface-100">
           {withdrawals.length === 0 ? (
             <TableEmptyState
-              colSpan={14}
+              colSpan={15}
               icon="bx-transfer"
               message={t('withdrawal.noTransactions', { defaultValue: 'No withdrawal transactions found' })}
             />
@@ -145,6 +146,13 @@ export default function WithdrawalTxTable({
                 <td className="text-right whitespace-nowrap">
                   {withdrawal.totalFeeUsd ? (
                     <span className="text-surface-500">${withdrawal.totalFeeUsd}</span>
+                  ) : (
+                    <span className="text-surface-500">-</span>
+                  )}
+                </td>
+                <td className="text-right whitespace-nowrap">
+                  {withdrawal.platformFeePercentage != null ? (
+                    <span className="text-surface-500">{Number(withdrawal.platformFeePercentage).toFixed(2)}%</span>
                   ) : (
                     <span className="text-surface-500">-</span>
                   )}

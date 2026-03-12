@@ -119,7 +119,8 @@
     "invoiceNumber": "Invoice Number",
     "entityType": "Entity Type",
     "chainType": "Chain Type",
-    "fromAddress": "From Address"
+    "fromAddress": "From Address",
+    "entryType": "Entry Type"
   },
   "status": {
     "pending": "Pending",
@@ -950,8 +951,8 @@
     "createdAt": "Created Date",
     "fee": "Fee",
     "feeUsd": "Fee USD",
+    "platformFee": "Platform Fee (%)",
     "fromAddress": "From Address",
-    "loadError": "Failed to load withdrawal transactions",
     "noTransactions": "No withdrawal transactions found",
     "reject": "Reject",
     "rejectConfirm": "Reject Withdrawal",
@@ -983,7 +984,8 @@
     "completed": "Completed",
     "updated": "Updated",
     "notFound": "Withdrawal not found",
-    "detailLoadError": "Failed to load withdrawal"
+    "detailLoadError": "Failed to load withdrawal",
+    "loadError": "Failed to load withdrawal transactions"
   },
   "maintenance": {
     "title": "Under Maintenance",

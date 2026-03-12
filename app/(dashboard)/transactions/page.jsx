@@ -13,40 +13,10 @@ import { formatUsd, formatChange } from '@/lib/utils/format'
 import DailyTrendChart from '@/components/dashboard/DailyTrendChart'
 import TransactionByCoinTable from '@/components/dashboard/TransactionByCoinTable'
 import RefreshButton from '@/components/RefreshButton'
+import { getDateRange } from '@/lib/utils/dateRange'
 import { logger } from '@/lib/utils/logger'
 
 const formatCurrencyPlain = formatUsd
-
-function getDateRange(preset) {
-  const now = new Date()
-  const to = now.toISOString().split('T')[0]
-  let from = to
-
-  switch (preset) {
-    case 'today':
-      from = to
-      break
-    case 'last7days': {
-      const d = new Date(now)
-      d.setDate(d.getDate() - 6)
-      from = d.toISOString().split('T')[0]
-      break
-    }
-    case 'last30days': {
-      const d = new Date(now)
-      d.setDate(d.getDate() - 29)
-      from = d.toISOString().split('T')[0]
-      break
-    }
-    case 'thisMonth': {
-      from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
-      break
-    }
-    default:
-      from = to
-  }
-  return { from, to }
-}
 
 const kpiColors = {
   primary: { bg: 'bg-primary-50 dark:bg-primary-500/10', icon: 'text-primary-600 dark:text-primary-400' },

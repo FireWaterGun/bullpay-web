@@ -118,7 +118,9 @@
     "invoiceNumber": "发票号码",
     "entityType": "实体类型",
     "chainType": "链类型",
-    "fromAddress": "来源地址"
+    "fromAddress": "来源地址",
+    "noResults": "无结果",
+    "searchCoinOrNetwork": "搜索币种或网络..."
   },
   "status": {
     "pending": "待处理",
@@ -789,8 +791,8 @@
     "networkCreateSuccess": "网络创建成功",
     "updateSuccess": "代币网络更新成功",
     "createSuccess": "代币网络创建成功",
-    "contractAddressTooLong": "Contract address must be 255 characters or less",
-    "invalidDailyLimit": "Daily withdraw limit must be a number with max 2 decimal places"
+    "contractAddressTooLong": "合约地址不能超过255个字符",
+    "invalidDailyLimit": "每日提现限额必须为数字，最多保留2位小数"
   },
   "merchant": {
     "registerTitle": "成为商户",
@@ -934,7 +936,7 @@
     "usd": "USD"
   },
   "gasTopup": {
-    "loadError": "Failed to load gas topups"
+    "loadError": "加载 Gas 充值记录失败"
   },
   "withdrawal": {
     "actions": "操作",
@@ -984,7 +986,8 @@
     "completed": "完成时间",
     "updated": "更新时间",
     "notFound": "未找到提款记录",
-    "detailLoadError": "加载提款详情失败"
+    "detailLoadError": "加载提款详情失败",
+    "platformFee": "平台费用 (%)"
   },
   "maintenance": {
     "title": "系统维护中",

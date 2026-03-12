@@ -20,7 +20,7 @@ const labelMap = {
   info: 'bg-info-50 text-info-700 dark:bg-info-500/15 dark:text-info-300',
 }
 
-const base = 'inline-flex items-center font-medium px-[0.65em] py-[0.25em] text-2xs rounded-badge leading-none'
+const base = 'inline-flex items-center font-medium px-[0.65em] py-[0.25em] text-2xs rounded-badge leading-none whitespace-nowrap'
 
 /**
  * Base badge Tailwind classes — use in helper functions that return className strings.

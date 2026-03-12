@@ -302,7 +302,7 @@ export default function AdminWithdrawalDetailPage() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-surface-500">
                       {t('balance.platformFee', { defaultValue: 'Platform fee' })}
-                      {withdrawal.platformFeePercentage != null && ` (${withdrawal.platformFeePercentage}%)`}
+                      {withdrawal.platformFeePercentage != null && ` (${Number(withdrawal.platformFeePercentage).toFixed(2)}%)`}
                     </span>
                     <span className="text-sm text-surface-800">{formatCoinAmount(withdrawal.platformFee)} {coinSymbol}</span>
                   </div>
