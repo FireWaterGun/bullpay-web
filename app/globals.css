@@ -667,8 +667,7 @@ li.bp-active-item::after {
   content: '';
   position: absolute;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0.3125rem; /* align with menu-link py offset */
   width: 0.25rem;
   height: 2.6845rem;
   border-radius: 0.375rem 0 0 0.375rem;

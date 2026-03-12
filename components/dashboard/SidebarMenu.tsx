@@ -193,7 +193,7 @@ export function MenuGroup({
   }, [isMatched, getIsCollapsed])
 
   return (
-    <li ref={liRef} className={isMatched && !open ? 'bp-active-item' : ''}>
+    <li ref={liRef} className={isMatched ? 'bp-active-item' : ''}>
       <a
         href="#"
         onClick={toggle}
