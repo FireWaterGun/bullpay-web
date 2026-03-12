@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
@@ -28,6 +30,13 @@ export default function WithdrawalTxTable({
 }) {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+  const router = useRouter()
+
+  function truncateHash(hash) {
+    if (!hash) return '-'
+    if (hash.length <= 16) return hash
+    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+  }
 
   return (
     <Card>
@@ -59,9 +68,11 @@ export default function WithdrawalTxTable({
             />
           ) : (
             withdrawals.map((withdrawal) => (
-              <tr key={withdrawal.id}>
+              <tr key={withdrawal.id} onClick={() => router.push(`/admin/withdrawals/${withdrawal.id}`)} className="cursor-pointer hover:bg-surface-50 dark:hover:bg-white/[0.02] transition-colors">
                 <td>
-                  <span className="font-semibold text-primary">{withdrawal.id}</span>
+                  <Link href={`/admin/withdrawals/${withdrawal.id}`} className="font-semibold text-primary hover:underline">
+                    {withdrawal.id}
+                  </Link>
                 </td>
                 <td className="text-center">
                   <span className="font-medium">{withdrawal.userId || withdrawal.user?.id || '-'}</span>
@@ -143,7 +154,7 @@ export default function WithdrawalTxTable({
                     })}
                   </span>
                 </td>
-                <td className="text-center">
+                <td className="text-center" onClick={e => e.stopPropagation()}>
                   {withdrawal.status?.toLowerCase() === 'pending' ? (
                     <div className="flex gap-1 justify-center">
                       <Button onClick={() => onApproveClick(withdrawal)} disabled={approving || rejecting} size="sm">
@@ -164,10 +175,10 @@ export default function WithdrawalTxTable({
                     <span className="text-surface-500">-</span>
                   )}
                 </td>
-                <td>
+                <td onClick={e => e.stopPropagation()}>
                   {withdrawal.txHash ? (
                     <div className="flex items-center">
-                      <span className="mr-2 whitespace-nowrap">{withdrawal.txHash}</span>
+                      <span className="mr-2 font-mono text-xs">{truncateHash(withdrawal.txHash)}</span>
                       {(withdrawal.network?.explorerUrl || withdrawal.coinNetwork?.network?.explorerUrl) && (
                         <Button
                           variant="text-secondary"
@@ -185,9 +196,9 @@ export default function WithdrawalTxTable({
                     <span className="text-surface-500">-</span>
                   )}
                 </td>
-                <td>
+                <td onClick={e => e.stopPropagation()}>
                   <div className="flex items-center">
-                    <span className="mr-2 whitespace-nowrap">{withdrawal.fromAddress || '-'}</span>
+                    <span className="mr-2 font-mono text-xs">{truncateHash(withdrawal.fromAddress)}</span>
                     {withdrawal.fromAddress && (
                       <Button
                         onClick={() => onCopy(withdrawal.fromAddress)}
@@ -200,9 +211,9 @@ export default function WithdrawalTxTable({
                     )}
                   </div>
                 </td>
-                <td>
+                <td onClick={e => e.stopPropagation()}>
                   <div className="flex items-center">
-                    <span className="mr-2 whitespace-nowrap">{withdrawal.toAddress || '-'}</span>
+                    <span className="mr-2 font-mono text-xs">{truncateHash(withdrawal.toAddress)}</span>
                     {withdrawal.toAddress && (
                       <Button
                         onClick={() => onCopy(withdrawal.toAddress)}

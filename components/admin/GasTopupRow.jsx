@@ -7,6 +7,12 @@ import Button from '../ui/Button'
 
 export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
   const { fmtDate } = useDateFormat()
+
+  function truncateHash(hash) {
+    if (!hash || hash.length <= 16) return hash || ''
+    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+  }
+
   const coinSymbol = (topup.coinNetwork?.coin?.symbol || topup.coinSymbol || '').toUpperCase()
   const networkSymbol = (topup.coinNetwork?.network?.symbol || topup.networkSymbol || '').toUpperCase()
   const networkName = topup.coinNetwork?.network?.name || topup.networkName || ''
@@ -52,10 +58,10 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           }).toUpperCase()}
         </span>
       </td>
-      <td>
+      <td onClick={e => e.stopPropagation()}>
         {topup.txHash ? (
           <div className="flex items-center">
-            <span className="mr-2">{topup.txHash}</span>
+            <span className="mr-2 font-mono text-xs">{truncateHash(topup.txHash)}</span>
             <Button
               onClick={() => onCopy(topup.txHash)}
               title={t('admin.gasTopup.copyTxHash', { defaultValue: 'Copy tx hash' })}
@@ -69,10 +75,10 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           <span className="text-surface-500">-</span>
         )}
       </td>
-      <td>
+      <td onClick={e => e.stopPropagation()}>
         {topup.fromAddress ? (
           <div className="flex items-center">
-            <span className="mr-2">{topup.fromAddress}</span>
+            <span className="mr-2 font-mono text-xs">{truncateHash(topup.fromAddress)}</span>
             <Button
               onClick={() => onCopy(topup.fromAddress)}
               title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })}
@@ -86,10 +92,10 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           <span className="text-surface-500">-</span>
         )}
       </td>
-      <td>
+      <td onClick={e => e.stopPropagation()}>
         {topup.toAddress ? (
           <div className="flex items-center">
-            <span className="mr-2">{topup.toAddress}</span>
+            <span className="mr-2 font-mono text-xs">{truncateHash(topup.toAddress)}</span>
             <Button
               onClick={() => onCopy(topup.toAddress)}
               title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })}

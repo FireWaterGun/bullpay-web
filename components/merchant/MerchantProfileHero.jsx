@@ -1,7 +1,6 @@
 import { statusMeta } from '@/components/merchant/merchantHelpers'
 import StatTile from '@/components/merchant/StatTile'
 import RefreshButton from '@/components/RefreshButton'
-import { formatCommission } from '@/lib/utils/format'
 
 export default function MerchantProfileHero({ merchant, loading, onRefresh, fmtDate, t }) {
   const status = String(merchant?.status || '').toLowerCase()
@@ -77,18 +76,12 @@ export default function MerchantProfileHero({ merchant, loading, onRefresh, fmtD
       </div>
       {/* Stats strip */}
       <div className="border-t border-surface-200 px-5 py-3">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <StatTile
             icon={sMeta.icon}
             label={t('common.status', { defaultValue: 'Status' })}
             value={sMeta.label}
             color={status === 'active' ? 'success' : status === 'suspended' ? 'danger' : 'warning'}
-          />
-          <StatTile
-            icon="bx-trending-up"
-            label={t('merchant.commissionRate', { defaultValue: 'Commission' })}
-            value={merchant?.commissionRate != null ? formatCommission(merchant.commissionRate) : '-'}
-            color="primary"
           />
           <StatTile
             icon="bx-calendar-check"

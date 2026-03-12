@@ -124,6 +124,12 @@ export default function AdminInvoiceList() {
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
+  function truncateHash(hash) {
+    if (!hash) return '-'
+    if (hash.length <= 16) return hash
+    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+  }
+
   if (loading && invoices.length === 0) {
     return <PageSpinner />
   }
@@ -150,6 +156,15 @@ export default function AdminInvoiceList() {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-12 gap-x-6 gap-3">
+                <div className="col-span-12 sm:col-span-6 md:col-span-3">
+                  <Label>{t('filter.search', { defaultValue: 'Invoice No. / Payment ID / Address' })}</Label>
+                  <Input
+                    type="text"
+                    placeholder="INV-001, pi_xxx, in_xxx, 0x..."
+                    value={searchFilter}
+                    onChange={(e) => setSearchFilter(e.target.value)}
+                  />
+                </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">
                   <Label>{t('filter.invoiceId', { defaultValue: 'Invoice ID' })}</Label>
                   <Input
@@ -158,15 +173,6 @@ export default function AdminInvoiceList() {
                     placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })}
                     value={invoiceIdFilter}
                     onChange={(e) => setInvoiceIdFilter(e.target.value)}
-                  />
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.search', { defaultValue: 'Invoice No. / Payment ID / Address' })}</Label>
-                  <Input
-                    type="text"
-                    placeholder="INV-001, pi_xxx, in_xxx, 0x..."
-                    value={searchFilter}
-                    onChange={(e) => setSearchFilter(e.target.value)}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">
@@ -263,7 +269,7 @@ export default function AdminInvoiceList() {
                     return (
                       <tr
                         key={invoice.id}
-                        className="cursor-pointer"
+                        className="cursor-pointer hover:bg-surface-50 dark:hover:bg-white/[0.02] transition-colors"
                         onClick={() => router.push(`/admin/invoices/${invoice.id}`)}
                       >
                         <td>
@@ -349,7 +355,7 @@ export default function AdminInvoiceList() {
                         <td>
                           {invoice.paymentAddress ? (
                             <div className="flex items-center">
-                              <span className="mr-2 whitespace-nowrap text-[0.85rem]">{invoice.paymentAddress}</span>
+                              <span className="mr-2 font-mono text-xs">{truncateHash(invoice.paymentAddress)}</span>
                               <Button
                                 onClick={(e) => { e.stopPropagation(); handleCopy(invoice.paymentAddress) }}
                                 title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}

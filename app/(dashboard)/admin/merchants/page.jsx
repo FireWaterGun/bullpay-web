@@ -5,7 +5,6 @@ import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getMerchants, activateMerchant, suspendMerchant } from '@/lib/api/admin'
-import { formatCommission } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { STATUS_OPTIONS, statusBadgeClass } from '@/components/admin/merchantListHelpers'
 import MerchantConfirmModal from '@/components/admin/MerchantConfirmModal'
@@ -200,7 +199,6 @@ export default function AdminMerchantsPage() {
                   <th>{t('admin.merchants.name', { defaultValue: 'Name' })}</th>
                   <th>{t('admin.merchants.email', { defaultValue: 'Email' })}</th>
                   <th className="text-center">{t('table.status', { defaultValue: 'Status' })}</th>
-                  <th className="text-right">{t('admin.merchants.commission', { defaultValue: 'Commission' })}</th>
                   <th className="text-center">{t('admin.merchants.webhook', { defaultValue: 'Webhook' })}</th>
                   <th>{t('table.created', { defaultValue: 'Created' })}</th>
                   <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
@@ -258,9 +256,6 @@ export default function AdminMerchantsPage() {
                           <span className={statusBadgeClass(merchant.status)}>
                             {String(merchant.status || '').toUpperCase()}
                           </span>
-                        </td>
-                        <td className="text-right whitespace-nowrap">
-                          {merchant.commissionRate != null ? formatCommission(merchant.commissionRate) : '-'}
                         </td>
                         <td className="text-center">
                           {merchant.hasWebhook ? (

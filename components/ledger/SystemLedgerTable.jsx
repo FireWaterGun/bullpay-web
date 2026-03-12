@@ -14,6 +14,12 @@ import Card from '../ui/Card'
 import Pagination from '../ui/Pagination'
 import Table from '../ui/Table'
 
+function truncateHash(hash) {
+  if (!hash) return '-'
+  if (hash.length <= 16) return hash
+  return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+}
+
 function parseMetadata(entry) {
   try {
     return typeof entry.metadata === 'string' ? JSON.parse(entry.metadata) : entry.metadata || {}
@@ -164,7 +170,7 @@ export default function SystemLedgerTable({
                   <td>
                     {entry.txHash ? (
                       <div className="flex items-center">
-                        <span className="mr-2">{entry.txHash}</span>
+                        <span className="mr-2 font-mono text-xs" title={entry.txHash}>{truncateHash(entry.txHash)}</span>
                         {entry.explorerUrl && (
                           <Button
                             variant="text-secondary"

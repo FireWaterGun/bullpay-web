@@ -27,6 +27,12 @@ import SortableHeader from '@/components/ui/SortableHeader'
 
 const WALLET_STATUS_OPTIONS = ['active', 'used', 'expired', 'pooled', 'assigned', 'sweeped', 'disabled']
 
+function truncateHash(hash) {
+  if (!hash) return '-'
+  if (hash.length <= 16) return hash
+  return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+}
+
 export default function TempWalletList() {
   const router = useRouter()
   const { fmtDate } = useDateFormat()
@@ -297,7 +303,7 @@ export default function TempWalletList() {
                       <td onClick={(e) => e.stopPropagation()}>
                         {w.address ? (
                           <div className="flex items-center">
-                            <span className="mr-2 whitespace-nowrap text-[0.85rem]">{w.address}</span>
+                            <span className="mr-2 font-mono text-xs" title={w.address}>{truncateHash(w.address)}</span>
                             <Button
                               onClick={() => handleCopy(w.address)}
                               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}

@@ -30,6 +30,12 @@ export default function SweepTransactionTable({
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
+  function truncateHash(hash) {
+    if (!hash) return '-'
+    if (hash.length <= 16) return hash
+    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+  }
+
   return (
     <Card>
       <Table className="min-w-max">
@@ -137,7 +143,7 @@ export default function SweepTransactionTable({
                 <td>
                   {sweep.txHash ? (
                     <div className="flex items-center">
-                      <span className="mr-2">{sweep.txHash}</span>
+                      <span className="mr-2 font-mono text-xs">{truncateHash(sweep.txHash)}</span>
                       <Button
                         variant="text-secondary"
                         size="icon"
@@ -157,7 +163,7 @@ export default function SweepTransactionTable({
                 </td>
                 <td>
                   <div className="flex items-center">
-                    <span className="mr-2">{sweep.fromAddress || 'N/A'}</span>
+                    <span className="mr-2 font-mono text-xs">{truncateHash(sweep.fromAddress)}</span>
                     {sweep.fromAddress && (
                       <Button
                         onClick={(e) => { e.stopPropagation(); handleCopy(sweep.fromAddress) }}
@@ -172,7 +178,7 @@ export default function SweepTransactionTable({
                 </td>
                 <td>
                   <div className="flex items-center">
-                    <span className="mr-2">{sweep.toAddress || 'N/A'}</span>
+                    <span className="mr-2 font-mono text-xs">{truncateHash(sweep.toAddress)}</span>
                     {sweep.toAddress && (
                       <Button
                         onClick={(e) => { e.stopPropagation(); handleCopy(sweep.toAddress) }}

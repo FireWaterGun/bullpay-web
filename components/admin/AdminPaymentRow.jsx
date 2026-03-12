@@ -13,6 +13,12 @@ export default function AdminPaymentRow({ payment, onCopy }) {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
+  function truncateHash(hash) {
+    if (!hash) return '-'
+    if (hash.length <= 16) return hash
+    return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+  }
+
   const coinSymbol = (payment.coin?.symbol || payment.coinSymbol || payment.invoice?.coin?.symbol || '').toUpperCase()
   const networkSymbol = (
     payment.network?.symbol ||
@@ -84,7 +90,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       <td onClick={(e) => e.stopPropagation()}>
         {payment.txHash ? (
           <div className="flex items-center">
-            <span className="mr-2 whitespace-nowrap">{payment.txHash}</span>
+            <span className="mr-2 font-mono text-xs">{truncateHash(payment.txHash)}</span>
             {explorerUrl && (
               <Button
                 variant="text-secondary"
@@ -106,7 +112,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       <td onClick={(e) => e.stopPropagation()}>
         {payment.fromAddress ? (
           <div className="flex items-center">
-            <span className="mr-2 whitespace-nowrap">{payment.fromAddress}</span>
+            <span className="mr-2 font-mono text-xs">{truncateHash(payment.fromAddress)}</span>
             <Button
               onClick={() => onCopy(payment.fromAddress)}
               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
@@ -123,7 +129,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
       <td onClick={(e) => e.stopPropagation()}>
         {payment.toAddress ? (
           <div className="flex items-center">
-            <span className="mr-2 whitespace-nowrap">{payment.toAddress}</span>
+            <span className="mr-2 font-mono text-xs">{truncateHash(payment.toAddress)}</span>
             <Button
               onClick={() => onCopy(payment.toAddress)}
               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}

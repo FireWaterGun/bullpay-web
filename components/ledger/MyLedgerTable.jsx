@@ -12,6 +12,12 @@ import Card from '@/components/ui/Card'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 
+function truncateHash(hash) {
+  if (!hash) return '-'
+  if (hash.length <= 16) return hash
+  return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+}
+
 export default function MyLedgerTable({
   entries,
   pagination,
@@ -94,7 +100,7 @@ export default function MyLedgerTable({
                   <td>
                     {entry.txHash ? (
                       <div className="flex items-center">
-                        <span className="mr-2">{entry.txHash}</span>
+                        <span className="mr-2 font-mono text-xs" title={entry.txHash}>{truncateHash(entry.txHash)}</span>
                         {entry.explorerUrl && (
                           <a
                             href={`${entry.explorerUrl}/tx/${entry.txHash}`}

@@ -37,7 +37,7 @@ export default function TimezoneCard({ token, user, selectedTimezone, setSelecte
   }
 
   return (
-    <Card>
+    <Card className="h-full">
       <div className="px-5 py-4 border-b border-surface-200 flex items-center">
         <span className="inline-flex items-center justify-center rounded bg-info-50 dark:bg-info-500/10 text-info-700 dark:text-info-300 mr-3 shrink-0 w-9 h-9">
           <i className="bx bx-time-five text-[1.1rem]" />

@@ -49,6 +49,15 @@ export default function WithdrawalTxFilters({
       <div className="p-5">
         <div className="grid grid-cols-12 gap-x-6 gap-3">
           <div className="col-span-12 sm:col-span-6 md:col-span-3">
+            <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
+            <Input
+              type="text"
+              placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })}
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+            />
+          </div>
+          <div className="col-span-12 sm:col-span-6 md:col-span-3">
             <Label>{t('filter.status', { defaultValue: 'Status' })}</Label>
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">{t('filter.allStatus', { defaultValue: 'All Status' })}</option>
@@ -77,15 +86,6 @@ export default function WithdrawalTxFilters({
               coinNetworks={coinNetworks}
               value={coinNetworkIdFilter}
               onChange={setCoinNetworkIdFilter}
-            />
-          </div>
-          <div className="col-span-12 sm:col-span-6 md:col-span-3">
-            <Label>{t('filter.search', { defaultValue: 'Search' })}</Label>
-            <Input
-              type="text"
-              placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })}
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
             />
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-3">

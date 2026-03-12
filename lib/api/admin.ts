@@ -640,6 +640,14 @@ export async function rejectWithdrawal(token: string | null, withdrawalId: numbe
 }
 
 /**
+ * Get a single withdrawal by ID (Admin only)
+ */
+export async function getWithdrawalById(token: string | null, withdrawalId: number | string) {
+  const res = await apiFetch<any>(`/api/v1/admin/withdrawals/${withdrawalId}`, { token })
+  return res?.withdrawal ?? res
+}
+
+/**
  * Get revenue summary (Admin only)
  */
 export async function getRevenueSummary(token: string | null, from: string, to: string) {
@@ -986,6 +994,7 @@ export async function getGasTopups(
     status?: string
     coinNetworkId?: number
     sweepId?: number
+    txHash?: string
     fromAddress?: string
     dateFrom?: string
     dateTo?: string
@@ -1000,6 +1009,7 @@ export async function getGasTopups(
   if (params.status) queryParams.append('status', params.status)
   if (params.coinNetworkId) queryParams.append('coinNetworkId', String(params.coinNetworkId))
   if (params.sweepId) queryParams.append('sweepId', String(params.sweepId))
+  if (params.txHash) queryParams.append('txHash', params.txHash)
   if (params.fromAddress) queryParams.append('fromAddress', params.fromAddress)
   if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom)
   if (params.dateTo) queryParams.append('dateTo', params.dateTo)

@@ -10,7 +10,7 @@ import Spinner from '@/components/ui/Spinner'
  */
 export default function SecurityCard({ is2FAEnabled, twoFALoading, twoFAStatus, fmtDate, onSetup, onDisable, t }) {
   return (
-    <Card>
+    <Card className="h-full">
       <div className="px-5 py-4 border-b border-surface-200 flex items-center">
         <span className="inline-flex items-center justify-center rounded bg-warning-50 dark:bg-warning-500/10 text-warning-700 dark:text-warning-300 mr-3 shrink-0 w-9 h-9">
           <i className="bx bx-shield-quarter text-[1.1rem]" />
