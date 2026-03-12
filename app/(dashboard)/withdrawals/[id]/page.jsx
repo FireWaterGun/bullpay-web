@@ -91,11 +91,11 @@ export default function WithdrawalDetailPage() {
       {/* Back button */}
       <button
         type="button"
-        onClick={() => router.back()}
+        onClick={() => router.push('/withdrawals')}
         className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-surface-600 border border-surface-200 rounded-lg hover:bg-surface-50 dark:hover:bg-white/6 transition-colors mb-4 cursor-pointer"
       >
         <i className="bx bx-arrow-back"></i>
-        {t('actions.back', { defaultValue: 'Back' })}
+        {t('actions.backToWithdrawals', { defaultValue: 'Back to Withdrawals' })}
       </button>
 
       {/* Hero card */}

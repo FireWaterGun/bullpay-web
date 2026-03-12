@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
@@ -10,11 +11,27 @@ import Button from '@/components/ui/Button'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 import { getNetworkLabel, statusBadgeClass, formatStatusLabel } from '@/components/balance/withdrawalHelpers'
+import { copyToClipboard } from '@/lib/utils/clipboard'
+
+function truncateHash(hash) {
+  if (!hash) return '-'
+  if (hash.length <= 16) return hash
+  return `${hash.slice(0, 8)}...${hash.slice(-6)}`
+}
 
 export default function WithdrawalTable({ items, pagination, loading, cnById, onPageChange }) {
   const router = useRouter()
   const { t } = useTranslation()
   const { fmtDate } = useDateFormat()
+  const [copiedId, setCopiedId] = useState(null)
+
+  const handleCopy = async (address, id) => {
+    try {
+      await copyToClipboard(address)
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch (_) {}
+  }
 
   return (
     <>
@@ -67,8 +84,24 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
                   <td className="whitespace-nowrap text-right text-surface-500">
                     {formatCoinAmount(it.totalFee || it.fee)} {sym}
                   </td>
-                  <td className="whitespace-nowrap">
-                    <span className="font-mono text-surface-700 text-[13px]">{it.toAddress || '-'}</span>
+                  <td className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-1">
+                      <span className="font-mono text-xs" title={it.toAddress}>{truncateHash(it.toAddress)}</span>
+                      {it.toAddress && (
+                        <Button
+                          onClick={() => handleCopy(it.toAddress, it.id)}
+                          title={t('actions.copy', { defaultValue: 'Copy' })}
+                          size="icon-sm"
+                          variant="text-secondary"
+                        >
+                          {copiedId === it.id ? (
+                            <i className="bx bx-check text-success"></i>
+                          ) : (
+                            <i className="bx bx-copy"></i>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </td>
                   <td className="whitespace-nowrap">
                     <span className={statusBadgeClass(it.status)}>
