@@ -823,6 +823,7 @@
     "secretMasked": "Secret 已隐藏以确保安全",
     "copied": "已复制！",
     "rotateSecret": "更换 Secret",
+    "autoHideCountdown": "{{seconds}}秒后自动隐藏",
     "regenerateKey": "重新生成 Key 和 Secret",
     "rotateSecretTitle": "更换 API Secret",
     "regenerateKeyTitle": "重新生成 API Key 和 Secret",

@@ -9,12 +9,23 @@ import { Input, InputGroup, InputIcon, Label } from '../ui/Input'
 export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, onRegenerate, toast, t }) {
   const { copiedId, handleCopy } = useCopyFeedback()
   const [showApiKey, setShowApiKey] = useState(false)
-  const apiKeyTimerRef = useRef(null)
+  const [countdown, setCountdown] = useState(30)
+  const intervalRef = useRef(null)
 
   useEffect(() => {
     if (showApiKey) {
-      apiKeyTimerRef.current = setTimeout(() => setShowApiKey(false), 30_000)
-      return () => clearTimeout(apiKeyTimerRef.current)
+      setCountdown(30)
+      intervalRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(intervalRef.current)
+            setShowApiKey(false)
+            return 30
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(intervalRef.current)
     }
   }, [showApiKey])
 
@@ -83,7 +94,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
           {showApiKey && (
             <small className="text-warning-600 dark:text-warning-400 block mt-1">
               <i className="bx bx-info-circle mr-1"></i>
-              {t('merchant.autoHide', { defaultValue: 'Auto-hides after 30 seconds' })}
+              {t('merchant.autoHideCountdown', { defaultValue: 'Auto-hides in {{seconds}}s', seconds: countdown })}
             </small>
           )}
         </div>

@@ -829,6 +829,7 @@
     "secretMasked": "Secret ถูกซ่อนเพื่อความปลอดภัย",
     "copied": "คัดลอกแล้ว!",
     "rotateSecret": "เปลี่ยน Secret",
+    "autoHideCountdown": "ซ่อนอัตโนมัติใน {{seconds}} วินาที",
     "regenerateKey": "สร้าง Key & Secret ใหม่",
     "rotateSecretTitle": "เปลี่ยน API Secret",
     "regenerateKeyTitle": "สร้าง API Key & Secret ใหม่",

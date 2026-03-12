@@ -821,6 +821,7 @@
     "secretMasked": "Secret is masked for security",
     "copied": "Copied!",
     "rotateSecret": "Rotate Secret",
+    "autoHideCountdown": "Auto-hides in {{seconds}}s",
     "regenerateKey": "Regenerate Key & Secret",
     "rotateSecretTitle": "Rotate API Secret",
     "regenerateKeyTitle": "Regenerate API Key & Secret",
