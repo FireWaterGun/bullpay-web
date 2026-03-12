@@ -19,13 +19,12 @@ function effectiveStatus(invoice) {
   }
   return invoice.status
 }
-import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import InvoiceDetailActions from '@/components/invoices/InvoiceDetailActions'
 import RefreshButton from '@/components/RefreshButton'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { Label } from '@/components/ui/Input'
-import { useToast } from '@/app/providers'
 
 export default function InvoiceDetailPage() {
   const { fmtDateTime } = useDateFormat()
@@ -33,7 +32,7 @@ export default function InvoiceDetailPage() {
   const params = useParams()
   const id = params?.id
   const { token } = useAuth()
-  const toast = useToast()
+  const { copiedId, handleCopy } = useCopyFeedback()
   const [invoice, setInvoice] = useState(null)
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -196,14 +195,11 @@ export default function InvoiceDetailPage() {
                       {invoice.paymentAddress && (
                         <button
                           type="button"
-                          onClick={async () => {
-                            const ok = await copyToClipboard(invoice.paymentAddress)
-                            if (ok) toast.success(t('common.copied', { defaultValue: 'Copied!' }))
-                          }}
+                          onClick={() => handleCopy(invoice.paymentAddress, 'addr-inv')}
                           className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-200 text-surface-600 hover:bg-surface-50 dark:hover:bg-white/6 shrink-0 cursor-pointer"
                           title={t('common.copy', { defaultValue: 'Copy' })}
                         >
-                          <i className="bx bx-copy text-sm"></i>
+                          <i className={`bx ${copiedId === 'addr-inv' ? 'bx-check text-success' : 'bx-copy'} text-sm`}></i>
                         </button>
                       )}
                       {explorer && invoice.paymentAddress && (

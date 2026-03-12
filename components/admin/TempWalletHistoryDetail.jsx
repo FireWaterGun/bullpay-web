@@ -8,7 +8,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWalletHistory } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
@@ -45,10 +45,7 @@ export default function TempWalletHistoryDetail() {
     loadHistory()
   }, [loadHistory])
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   if (loading) {
     return <PageSpinner />
@@ -172,13 +169,13 @@ export default function TempWalletHistoryDetail() {
                             <div className="flex items-center">
                               <code className="text-surface-800 mr-2 text-[0.8rem] break-all">{history.address}</code>
                               <Button
-                                onClick={() => handleCopy(history.address)}
+                                onClick={() => handleCopy(history.address, 'addr-twh')}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
                                 size="icon-sm"
                                 variant="text-secondary"
                                 className="shrink-0"
                               >
-                                <i className="bx bx-copy"></i>
+                                <i className={`bx ${copiedId === 'addr-twh' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                               </Button>
                             </div>
                           </td>
@@ -199,13 +196,13 @@ export default function TempWalletHistoryDetail() {
                             <div className="flex items-center">
                               <code className="text-surface-800 mr-2 text-xs break-all">{history.sweepTxHash}</code>
                               <Button
-                                onClick={() => handleCopy(history.sweepTxHash)}
+                                onClick={() => handleCopy(history.sweepTxHash, 'sweep-twh')}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
                                 size="icon-sm"
                                 variant="text-secondary"
                                 className="shrink-0"
                               >
-                                <i className="bx bx-copy"></i>
+                                <i className={`bx ${copiedId === 'sweep-twh' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                               </Button>
                             </div>
                           </td>

@@ -2,6 +2,7 @@
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import SortableHeader from '../ui/SortableHeader'
 import Button from '../ui/Button'
@@ -23,6 +24,7 @@ export default function RbfTransactionTable({
 }) {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+  const { copiedId, handleCopy: doCopy } = useCopyFeedback()
 
   function truncateHash(hash) {
     if (!hash) return '-'
@@ -109,15 +111,12 @@ export default function RbfTransactionTable({
                     <div className="flex items-center">
                       <span className="mr-2 font-mono text-xs">{truncateHash(tx.txHash)}</span>
                       <Button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleCopy(tx.txHash)
-                        }}
+                        onClick={(e) => { e.stopPropagation(); doCopy(tx.txHash, `tx-${tx.id}`) }}
                         title={t('admin.detail.copyTxHash', { defaultValue: 'Copy hash' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `tx-${tx.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     </div>
                   ) : (
@@ -141,15 +140,12 @@ export default function RbfTransactionTable({
                     <div className="flex items-center">
                       <span className="mr-2 font-mono text-xs">{truncateHash(tx.fromAddress)}</span>
                       <Button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleCopy(tx.fromAddress)
-                        }}
+                        onClick={(e) => { e.stopPropagation(); doCopy(tx.fromAddress, `from-${tx.id}`) }}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `from-${tx.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     </div>
                   ) : (

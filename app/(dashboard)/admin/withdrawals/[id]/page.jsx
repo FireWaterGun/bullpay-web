@@ -7,7 +7,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getWithdrawalById as getAdminWithdrawalById, approveWithdrawal, rejectWithdrawal } from '@/lib/api/admin'
 import { formatCoinAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CoinImg from '@/components/CoinImg'
 import { statusBadgeClass, formatStatusLabel, formatAmount as formatAmountHelper } from '@/components/balance/withdrawalHelpers'
 import RefreshButton from '@/components/RefreshButton'
@@ -15,14 +15,14 @@ import PageSpinner from '@/components/PageSpinner'
 import Button from '@/components/ui/Button'
 import WithdrawalTxModals from '@/components/admin/WithdrawalTxModals'
 
-function CopyBtn({ text, onCopy }) {
+function CopyBtn({ text, onCopy, copyId, copiedId }) {
   return (
     <button
       type="button"
-      onClick={() => onCopy(text)}
+      onClick={() => onCopy(text, copyId)}
       className="inline-flex items-center justify-center w-7 h-7 rounded text-surface-400 hover:bg-surface-100 hover:text-surface-600 dark:hover:bg-white/6 transition-colors shrink-0 cursor-pointer"
     >
-      <i className="bx bx-copy text-sm"></i>
+      <i className={`bx ${copiedId === copyId ? 'bx-check text-success' : 'bx-copy'} text-sm`}></i>
     </button>
   )
 }
@@ -76,10 +76,7 @@ export default function AdminWithdrawalDetailPage() {
     loadWithdrawal()
   }, [loadWithdrawal])
 
-  async function handleCopy(text) {
-    const ok = await copyToClipboard(text)
-    if (ok) toast.success(t('common.copied', { defaultValue: 'Copied!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   async function handleApprove() {
     if (!withdrawal) return
@@ -242,21 +239,21 @@ export default function AdminWithdrawalDetailPage() {
                 <DetailRow label={t('withdrawal.fromAddress')}>
                   <div className="flex items-center gap-1">
                     <span className="font-mono text-xs break-all">{fromAddress}</span>
-                    <CopyBtn text={fromAddress} onCopy={handleCopy} />
+                    <CopyBtn text={fromAddress} onCopy={handleCopy} copyId="from-wd" copiedId={copiedId} />
                   </div>
                 </DetailRow>
               )}
               <DetailRow label={t('withdrawal.toAddress')}>
                 <div className="flex items-center gap-1">
                   <span className="font-mono text-xs break-all">{toAddress || '-'}</span>
-                  {toAddress && <CopyBtn text={toAddress} onCopy={handleCopy} />}
+                  {toAddress && <CopyBtn text={toAddress} onCopy={handleCopy} copyId="to-wd" copiedId={copiedId} />}
                 </div>
               </DetailRow>
               {withdrawal.txHash && (
                 <DetailRow label={t('withdrawal.txHash')}>
                   <div className="flex items-center gap-1">
                     <span className="font-mono text-xs break-all">{withdrawal.txHash}</span>
-                    <CopyBtn text={withdrawal.txHash} onCopy={handleCopy} />
+                    <CopyBtn text={withdrawal.txHash} onCopy={handleCopy} copyId="tx-wd" copiedId={copiedId} />
                     {explorerUrl && (
                       <a
                         href={`${explorerUrl}/tx/${withdrawal.txHash}`}

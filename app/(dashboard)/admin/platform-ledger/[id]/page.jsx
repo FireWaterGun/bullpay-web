@@ -9,7 +9,7 @@ import { getPlatformLedgerEntry } from '@/lib/api/admin'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import Badge from '@/components/ui/Badge'
@@ -73,14 +73,7 @@ export default function PlatformLedgerDetail() {
     return <span className="text-surface-500">{state || 'N/A'}</span>
   }
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-    } else {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    }
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   const entryCodeLabels = {
     WF: t('admin.platformLedger.code_WF', { defaultValue: 'Withdrawal Fee' }),
@@ -294,12 +287,12 @@ export default function PlatformLedgerDetail() {
                         <div className="flex items-center">
                           <code className="mr-2 break-all">{entry.txHash}</code>
                           <Button
-                            onClick={() => handleCopy(entry.txHash)}
+                            onClick={() => handleCopy(entry.txHash, 'tx-pledger')}
                             title={t('actions.copy', { defaultValue: 'Copy' })}
                             size="icon-sm"
                             variant="text-secondary"
                           >
-                            <i className="bx bx-copy"></i>
+                            <i className={`bx ${copiedId === 'tx-pledger' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                           </Button>
                           {explorerUrl && (
                             <Button

@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
-export default function TempWalletDetailsCard({ wallet, t, onCopy }) {
+export default function TempWalletDetailsCard({ wallet, t, onCopy, copiedId }) {
   return (
     <Card className="mb-4">
       <div className="px-5 py-4 border-b border-surface-200">
@@ -78,13 +78,13 @@ export default function TempWalletDetailsCard({ wallet, t, onCopy }) {
                   <div className="flex items-center">
                     <code className="text-surface-800 mr-2 text-[0.8rem] break-all">{wallet.address}</code>
                     <Button
-                      onClick={() => onCopy(wallet.address)}
+                      onClick={() => onCopy(wallet.address, 'addr-tw')}
                       title={t('actions.copy', { defaultValue: 'Copy' })}
                       size="icon-sm"
                       variant="text-secondary"
                       className="shrink-0"
                     >
-                      <i className="bx bx-copy"></i>
+                      <i className={`bx ${copiedId === 'addr-tw' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                     </Button>
                     {wallet.explorerUrl && (
                       <Button

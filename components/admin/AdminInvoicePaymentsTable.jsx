@@ -4,6 +4,7 @@ import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { paymentStatusBadge } from '@/components/admin/adminInvoiceHelpers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CardEmptyState from '@/components/CardEmptyState'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
@@ -16,6 +17,7 @@ import Table from '../ui/Table'
 export default function AdminInvoicePaymentsTable({ payments, coinSymbol, network, onCopy }) {
   const { t } = useAdminTranslation()
   const { fmtDate } = useDateFormat()
+  const { copiedId, handleCopy } = useCopyFeedback()
   return (
     <Card>
       <div className="px-5 py-4 border-b border-surface-200">
@@ -103,12 +105,12 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     <div className="flex items-center">
                       <span className="mr-2 whitespace-nowrap">{payment.fromAddress}</span>
                       <Button
-                        onClick={() => onCopy(payment.fromAddress)}
+                        onClick={() => handleCopy(payment.fromAddress, `from-${payment.id}`)}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `from-${payment.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     </div>
                   ) : (
@@ -120,12 +122,12 @@ export default function AdminInvoicePaymentsTable({ payments, coinSymbol, networ
                     <div className="flex items-center">
                       <span className="mr-2 whitespace-nowrap">{payment.toAddress}</span>
                       <Button
-                        onClick={() => onCopy(payment.toAddress)}
+                        onClick={() => handleCopy(payment.toAddress, `to-${payment.id}`)}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `to-${payment.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     </div>
                   ) : (

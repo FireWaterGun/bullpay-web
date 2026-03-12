@@ -4,6 +4,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import SortableHeader from '../ui/SortableHeader'
 import Button from '../ui/Button'
@@ -29,6 +30,7 @@ export default function SweepTransactionTable({
 }) {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+  const { copiedId, handleCopy: doCopy } = useCopyFeedback()
 
   function truncateHash(hash) {
     if (!hash) return '-'
@@ -165,12 +167,12 @@ export default function SweepTransactionTable({
                     <span className="mr-2 font-mono text-xs">{truncateHash(sweep.fromAddress)}</span>
                     {sweep.fromAddress && (
                       <Button
-                        onClick={(e) => { e.stopPropagation(); handleCopy(sweep.fromAddress) }}
+                        onClick={(e) => { e.stopPropagation(); doCopy(sweep.fromAddress, `from-${sweep.id}`) }}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `from-${sweep.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     )}
                   </div>
@@ -180,12 +182,12 @@ export default function SweepTransactionTable({
                     <span className="mr-2 font-mono text-xs">{truncateHash(sweep.toAddress)}</span>
                     {sweep.toAddress && (
                       <Button
-                        onClick={(e) => { e.stopPropagation(); handleCopy(sweep.toAddress) }}
+                        onClick={(e) => { e.stopPropagation(); doCopy(sweep.toAddress, `to-${sweep.id}`) }}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `to-${sweep.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     )}
                   </div>

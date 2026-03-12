@@ -12,7 +12,7 @@ import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import CoinImg from '@/components/CoinImg'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
@@ -119,10 +119,7 @@ export default function AdminInvoiceList() {
     setCurrentPage(1)
   }
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function truncateHash(hash) {
     if (!hash) return '-'
@@ -302,9 +299,9 @@ export default function AdminInvoiceList() {
                                   type="button"
                                   className="text-surface-400 hover:text-primary-500 transition-colors"
                                   title="Copy"
-                                  onClick={(e) => { e.stopPropagation(); handleCopy(invoice.invoiceNumber || invoice.publicCode || invoice.code) }}
+                                  onClick={(e) => { e.stopPropagation(); handleCopy(invoice.invoiceNumber || invoice.publicCode || invoice.code, `inv-${invoice.id}`) }}
                                 >
-                                  <i className="bx bx-copy text-xs"></i>
+                                  <i className={`bx ${copiedId === `inv-${invoice.id}` ? 'bx-check text-success' : 'bx-copy'} text-xs`}></i>
                                 </button>
                               )}
                             </div>
@@ -317,9 +314,9 @@ export default function AdminInvoiceList() {
                                   type="button"
                                   className="text-surface-400 hover:text-primary-500 transition-colors"
                                   title="Copy"
-                                  onClick={(e) => { e.stopPropagation(); handleCopy(invoice.publicCode) }}
+                                  onClick={(e) => { e.stopPropagation(); handleCopy(invoice.publicCode, `pc-${invoice.id}`) }}
                                 >
-                                  <i className="bx bx-copy text-xs"></i>
+                                  <i className={`bx ${copiedId === `pc-${invoice.id}` ? 'bx-check text-success' : 'bx-copy'} text-xs`}></i>
                                 </button>
                               </div>
                             )}
@@ -357,12 +354,12 @@ export default function AdminInvoiceList() {
                             <div className="flex items-center">
                               <span className="mr-2 font-mono text-xs">{truncateHash(invoice.paymentAddress)}</span>
                               <Button
-                                onClick={(e) => { e.stopPropagation(); handleCopy(invoice.paymentAddress) }}
+                                onClick={(e) => { e.stopPropagation(); handleCopy(invoice.paymentAddress, `addr-${invoice.id}`) }}
                                 title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                                 size="icon-sm"
                                 variant="text-secondary"
                               >
-                                <i className="bx bx-copy"></i>
+                                <i className={`bx ${copiedId === `addr-${invoice.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                               </Button>
                             </div>
                           ) : (

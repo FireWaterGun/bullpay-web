@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth, useToast } from '@/app/providers'
 import { getWithdrawalAddressById, approveWithdrawalAddress, suspendWithdrawalAddress } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CoinImg from '@/components/CoinImg'
 import { addressStatusBadgeClass, formatAddressStatus } from '@/components/balance/withdrawalHelpers'
 import AddressActionModal from '@/components/balance/AddressActionModal'
@@ -47,10 +47,7 @@ export default function WithdrawalAddressDetailPage() {
     loadAddress()
   }, [loadAddress])
 
-  async function handleCopy(text) {
-    const ok = await copyToClipboard(text)
-    if (ok) toast.success(t('common.copied', { defaultValue: 'Copied!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   async function handleConfirmAction(reason) {
     if (!address) return
@@ -151,9 +148,9 @@ export default function WithdrawalAddressDetailPage() {
                             <button
                               type="button"
                               className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 shrink-0"
-                              onClick={() => handleCopy(address.address)}
+                              onClick={() => handleCopy(address.address, 'addr-wd')}
                             >
-                              <i className="bx bx-copy"></i>
+                              <i className={`bx ${copiedId === 'addr-wd' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                             </button>
                           )}
                         </div>

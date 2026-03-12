@@ -3,10 +3,12 @@
 import CoinImg from '@/components/CoinImg'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { formatGasAmount, statusBadgeClass } from '@/components/admin/gasTopupHelpers'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import Button from '../ui/Button'
 
 export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
   const { fmtDate } = useDateFormat()
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function truncateHash(hash) {
     if (!hash || hash.length <= 16) return hash || ''
@@ -63,12 +65,12 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           <div className="flex items-center">
             <span className="mr-2 font-mono text-xs">{truncateHash(topup.txHash)}</span>
             <Button
-              onClick={() => onCopy(topup.txHash)}
+              onClick={() => handleCopy(topup.txHash, `tx-${topup.id}`)}
               title={t('admin.gasTopup.copyTxHash', { defaultValue: 'Copy tx hash' })}
               size="icon-sm"
               variant="text-secondary"
             >
-              <i className="bx bx-copy"></i>
+              <i className={`bx ${copiedId === `tx-${topup.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
             </Button>
           </div>
         ) : (
@@ -80,12 +82,12 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           <div className="flex items-center">
             <span className="mr-2 font-mono text-xs">{truncateHash(topup.fromAddress)}</span>
             <Button
-              onClick={() => onCopy(topup.fromAddress)}
+              onClick={() => handleCopy(topup.fromAddress, `from-${topup.id}`)}
               title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })}
               size="icon-sm"
               variant="text-secondary"
             >
-              <i className="bx bx-copy"></i>
+              <i className={`bx ${copiedId === `from-${topup.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
             </Button>
           </div>
         ) : (
@@ -97,12 +99,12 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           <div className="flex items-center">
             <span className="mr-2 font-mono text-xs">{truncateHash(topup.toAddress)}</span>
             <Button
-              onClick={() => onCopy(topup.toAddress)}
+              onClick={() => handleCopy(topup.toAddress, `to-${topup.id}`)}
               title={t('admin.gasTopup.copyAddress', { defaultValue: 'Copy address' })}
               size="icon-sm"
               variant="text-secondary"
             >
-              <i className="bx bx-copy"></i>
+              <i className={`bx ${copiedId === `to-${topup.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
             </Button>
           </div>
         ) : (

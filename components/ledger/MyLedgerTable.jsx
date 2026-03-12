@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { formatAmount, getEntryCodeLabel, userStateBadge } from '@/components/ledger/ledgerUtils'
 import TableEmptyState from '@/components/TableEmptyState'
 import Button from '@/components/ui/Button'
@@ -30,6 +31,7 @@ export default function MyLedgerTable({
   const { t } = useTranslation()
   const router = useRouter()
   const { fmtDate } = useDateFormat()
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   return (
     <Card>
@@ -101,17 +103,26 @@ export default function MyLedgerTable({
                     {entry.txHash ? (
                       <div className="flex items-center">
                         <span className="mr-2 font-mono text-xs" title={entry.txHash}>{truncateHash(entry.txHash)}</span>
+                        <Button
+                          variant="text-secondary"
+                          size="icon-sm"
+                          onClick={(e) => { e.stopPropagation(); handleCopy(entry.txHash, `tx-${entry.id}`) }}
+                          title={t('userLedger.copyTxHash', { defaultValue: 'Copy Tx Hash' })}
+                        >
+                          <i className={`bx ${copiedId === `tx-${entry.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
+                        </Button>
                         {entry.explorerUrl && (
-                          <a
+                          <Button
+                            variant="text-secondary"
+                            size="icon-sm"
                             href={`${entry.explorerUrl}/tx/${entry.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-surface-400 hover:text-primary-600 dark:hover:text-primary-400"
                             onClick={(e) => e.stopPropagation()}
                             title={t('userLedger.viewExplorer', { defaultValue: 'View on Explorer' })}
                           >
-                            <i className="bx bx-link-external text-xl"></i>
-                          </a>
+                            <i className="bx bx-link-external"></i>
+                          </Button>
                         )}
                       </div>
                     ) : (

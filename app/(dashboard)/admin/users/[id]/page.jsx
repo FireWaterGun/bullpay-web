@@ -14,7 +14,7 @@ import {
   forceVerifyEmail,
   getUserActivities,
 } from '@/lib/api/admin'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { formatRoleLabel } from '@/lib/utils/roles'
 import { statusBadgeClass, roleBadgeClass } from '@/components/admin/userListHelpers'
 import UserActionModal from '@/components/admin/UserActionModal'
@@ -84,10 +84,7 @@ export default function AdminUserDetail() {
     loadActivities()
   }, [loadUser, loadActivities])
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function openModal(type) {
     setModalType(type)
@@ -204,22 +201,22 @@ export default function AdminUserDetail() {
                     <div className="flex items-center gap-2 mt-1 text-surface-500 text-sm">
                       <span>{user.email}</span>
                       <Button
-                        onClick={() => handleCopy(user.email)}
+                        onClick={() => handleCopy(user.email, 'email-hdr')}
                         size="icon-sm"
                         variant="text-secondary"
                         title="Copy email"
                       >
-                        <i className="bx bx-copy text-xs"></i>
+                        <i className={`bx ${copiedId === 'email-hdr' ? 'bx-check text-success' : 'bx-copy'} text-xs`}></i>
                       </Button>
                       <span className="text-surface-300">|</span>
                       <span>ID: {user.id}</span>
                       <Button
-                        onClick={() => handleCopy(String(user.id))}
+                        onClick={() => handleCopy(String(user.id), 'id-hdr')}
                         size="icon-sm"
                         variant="text-secondary"
                         title="Copy ID"
                       >
-                        <i className="bx bx-copy text-xs"></i>
+                        <i className={`bx ${copiedId === 'id-hdr' ? 'bx-check text-success' : 'bx-copy'} text-xs`}></i>
                       </Button>
                     </div>
                   </div>
@@ -254,8 +251,8 @@ export default function AdminUserDetail() {
                         <td>
                           <div className="flex items-center gap-2">
                             <span>{user.email}</span>
-                            <Button onClick={() => handleCopy(user.email)} size="icon-sm" variant="text-secondary">
-                              <i className="bx bx-copy"></i>
+                            <Button onClick={() => handleCopy(user.email, 'email-tbl')} size="icon-sm" variant="text-secondary">
+                              <i className={`bx ${copiedId === 'email-tbl' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                             </Button>
                           </div>
                         </td>

@@ -12,8 +12,7 @@ import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Pagination from '../ui/Pagination'
 import Table from '../ui/Table'
-import { copyToClipboard } from '@/lib/utils/clipboard'
-import { useToast } from '@/app/providers'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 
 function truncateHash(hash) {
   if (!hash) return '-'
@@ -54,7 +53,7 @@ export default function PlatformLedgerTable({
   const { t } = useAdminTranslation()
   const router = useRouter()
   const { fmtDate } = useDateFormat()
-  const toast = useToast()
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function handlePageChange(page) {
     setCurrentPage(page)
@@ -171,15 +170,10 @@ export default function PlatformLedgerTable({
                         <Button
                           variant="text-secondary"
                           size="icon-sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            copyToClipboard(entry.txHash).then((ok) => {
-                              if (ok) toast.success('Copied!')
-                            })
-                          }}
+                          onClick={(e) => { e.stopPropagation(); handleCopy(entry.txHash, `tx-${entry.id}`) }}
                           title="Copy Tx Hash"
                         >
-                          <i className="bx bx-copy"></i>
+                          <i className={`bx ${copiedId === `tx-${entry.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                         </Button>
                         {entry.explorerUrl && (
                           <Button

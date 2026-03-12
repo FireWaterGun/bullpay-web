@@ -7,8 +7,7 @@ import { formatAmount, stateBadge } from '@/components/ledger/ledgerUtils'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
-import { copyToClipboard } from '@/lib/utils/clipboard'
-import { useToast } from '@/app/providers'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 
 function truncateHash(hash) {
   if (!hash) return '-'
@@ -19,7 +18,7 @@ function truncateHash(hash) {
 export default function UserLedgerRow({ entry, t }) {
   const router = useRouter()
   const { fmtDate } = useDateFormat()
-  const toast = useToast()
+  const { copiedId, handleCopy } = useCopyFeedback()
   const isCredit = entry.entryType === 'credit'
 
   return (
@@ -74,13 +73,11 @@ export default function UserLedgerRow({ entry, t }) {
               size="icon-sm"
               onClick={(e) => {
                 e.stopPropagation()
-                copyToClipboard(entry.txHash).then((ok) => {
-                  if (ok) toast.success('Copied!')
-                })
+                handleCopy(entry.txHash, `tx-${entry.id}`)
               }}
               title="Copy Tx Hash"
             >
-              <i className="bx bx-copy"></i>
+              <i className={`bx ${copiedId === `tx-${entry.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
             </Button>
             {entry.explorerUrl && (
               <Button

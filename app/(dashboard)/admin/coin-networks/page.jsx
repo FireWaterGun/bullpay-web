@@ -7,7 +7,7 @@ import { useAuth, useToast } from '@/app/providers'
 import { getCoinNetworks } from '@/lib/api/admin'
 import CoinImg from '@/components/CoinImg'
 import CoinNetworkEditModal from '@/components/admin/CoinNetworkEditModal'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import Alert from '@/components/ui/Alert'
 import Badge from '@/components/ui/Badge'
@@ -58,7 +58,7 @@ function getStatusBadge(status, t) {
   }
 }
 
-function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit }) {
+function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit, copiedId }) {
   const statusBadge = getStatusBadge(coinNetwork.status, t)
 
   return (
@@ -95,11 +95,11 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit }) {
             <code className="text-surface-900 text-sm text-xs">{coinNetwork.contractAddress}</code>
             <button
               type="button"
-              onClick={() => onCopyContract(coinNetwork.contractAddress)}
+              onClick={() => onCopyContract(coinNetwork.contractAddress, `contract-${coinNetwork.id}`)}
               title={t('actions.copy', { defaultValue: 'Copy' })}
               className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-100 dark:hover:bg-white/6 text-surface-500 hover:text-surface-700 transition-colors cursor-pointer"
             >
-              <i className="bx bx-copy"></i>
+              <i className={`bx ${copiedId === `contract-${coinNetwork.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
             </button>
           </div>
         ) : (
@@ -195,10 +195,7 @@ export default function SupportedCrypto() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  async function handleCopyContract(contractAddress) {
-    const ok = await copyText(contractAddress)
-    if (ok) toast.success(t('actions.copied', { defaultValue: 'Copied' }))
-  }
+  const { copiedId, handleCopy: handleCopyContract } = useCopyFeedback()
 
   return (
     <div className="grow pb-6">
@@ -284,6 +281,7 @@ export default function SupportedCrypto() {
                   t={t}
                   onCopyContract={handleCopyContract}
                   onEdit={setEditCoinNetworkId}
+                  copiedId={copiedId}
                 />
               ))
             )}

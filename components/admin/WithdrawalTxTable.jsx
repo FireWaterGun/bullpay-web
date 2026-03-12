@@ -6,6 +6,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import CoinImg from '@/components/CoinImg'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -31,6 +32,7 @@ export default function WithdrawalTxTable({
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const router = useRouter()
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function truncateHash(hash) {
     if (!hash) return '-'
@@ -201,12 +203,12 @@ export default function WithdrawalTxTable({
                     <span className="mr-2 font-mono text-xs">{truncateHash(withdrawal.fromAddress)}</span>
                     {withdrawal.fromAddress && (
                       <Button
-                        onClick={() => onCopy(withdrawal.fromAddress)}
+                        onClick={() => handleCopy(withdrawal.fromAddress, `from-${withdrawal.id}`)}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `from-${withdrawal.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     )}
                   </div>
@@ -216,12 +218,12 @@ export default function WithdrawalTxTable({
                     <span className="mr-2 font-mono text-xs">{truncateHash(withdrawal.toAddress)}</span>
                     {withdrawal.toAddress && (
                       <Button
-                        onClick={() => onCopy(withdrawal.toAddress)}
+                        onClick={() => handleCopy(withdrawal.toAddress, `to-${withdrawal.id}`)}
                         title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                         size="icon-sm"
                         variant="text-secondary"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === `to-${withdrawal.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     )}
                   </div>

@@ -6,7 +6,7 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getRbfTxById } from '@/lib/api/admin'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
@@ -41,10 +41,7 @@ export default function RbfTxDetail() {
     loadTransaction()
   }, [loadTransaction])
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function formatReplacementReason(reason) {
     if (!reason) return '-'
@@ -129,12 +126,12 @@ export default function RbfTxDetail() {
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="font-mono text-xs break-all">{tx.txHash}</span>
                       <Button
-                        onClick={() => handleCopy(tx.txHash)}
+                        onClick={() => handleCopy(tx.txHash, 'tx-rbf')}
                         size="icon-sm"
                         variant="text-secondary"
                         title="Copy"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === 'tx-rbf' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     </div>
                   </div>
@@ -145,12 +142,12 @@ export default function RbfTxDetail() {
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="font-mono text-xs break-all">{tx.fromAddress}</span>
                       <Button
-                        onClick={() => handleCopy(tx.fromAddress)}
+                        onClick={() => handleCopy(tx.fromAddress, 'from-rbf')}
                         size="icon-sm"
                         variant="text-secondary"
                         title="Copy"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === 'from-rbf' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     </div>
                   </div>
@@ -161,12 +158,12 @@ export default function RbfTxDetail() {
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="font-mono text-xs break-all">{tx.toAddress}</span>
                       <Button
-                        onClick={() => handleCopy(tx.toAddress)}
+                        onClick={() => handleCopy(tx.toAddress, 'to-rbf')}
                         size="icon-sm"
                         variant="text-secondary"
                         title="Copy"
                       >
-                        <i className="bx bx-copy"></i>
+                        <i className={`bx ${copiedId === 'to-rbf' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                       </Button>
                     </div>
                   </div>

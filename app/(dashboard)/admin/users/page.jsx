@@ -14,7 +14,7 @@ import {
   forceVerifyEmail,
   createUser,
 } from '@/lib/api/admin'
-import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { formatRoleLabel } from '@/lib/utils/roles'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import UserListTable from '@/components/admin/UserListTable'
@@ -152,10 +152,7 @@ export default function AdminUsersPage() {
     syncSearchParams({}, 1)
   }
 
-  async function handleCopy(text) {
-    const ok = await copyToClipboard(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function openModal(type, user) {
     setModalType(type)
@@ -354,6 +351,7 @@ export default function AdminUsersPage() {
             currentPage={currentPage}
             appliedFilters={appliedFilters}
             onCopy={handleCopy}
+            copiedId={copiedId}
             onOpenModal={openModal}
             onPageChange={setCurrentPage}
             onSyncSearchParams={syncSearchParams}

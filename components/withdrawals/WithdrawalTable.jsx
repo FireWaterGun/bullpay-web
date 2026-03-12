@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
@@ -11,7 +10,7 @@ import Button from '@/components/ui/Button'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 import { getNetworkLabel, statusBadgeClass, formatStatusLabel } from '@/components/balance/withdrawalHelpers'
-import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 
 function truncateHash(hash) {
   if (!hash) return '-'
@@ -23,15 +22,7 @@ export default function WithdrawalTable({ items, pagination, loading, cnById, on
   const router = useRouter()
   const { t } = useTranslation()
   const { fmtDate } = useDateFormat()
-  const [copiedId, setCopiedId] = useState(null)
-
-  const handleCopy = async (address, id) => {
-    try {
-      await copyToClipboard(address)
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 2000)
-    } catch (_) {}
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   return (
     <>

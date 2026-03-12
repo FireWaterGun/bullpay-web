@@ -10,7 +10,7 @@ import { formatUsd } from '@/lib/utils/format'
 import { formatAmount, getEntryCodeLabel, userStateBadge } from '@/components/ledger/ledgerUtils'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
@@ -42,14 +42,7 @@ export default function MyLedgerDetail() {
     loadEntry()
   }, [loadEntry])
 
-  async function copyToClipboard(text) {
-    const ok = await copyText(text)
-    if (ok) {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-    } else {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    }
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   if (loading) {
     return <PageSpinner />
@@ -221,9 +214,9 @@ export default function MyLedgerDetail() {
                           <button
                             type="button"
                             className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded border border-surface-200 text-surface-600 hover:bg-surface-50 dark:hover:bg-white/6"
-                            onClick={() => copyToClipboard(entry.txHash)}
+                            onClick={() => handleCopy(entry.txHash, 'tx-ledger')}
                           >
-                            <i className="bx bx-copy"></i>
+                            <i className={`bx ${copiedId === 'tx-ledger' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                             {t('actions.copy', { defaultValue: 'Copy' })}
                           </button>
                         </div>

@@ -10,7 +10,7 @@ import { getAdminInvoice } from '@/lib/api/admin'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { statusBadgeClass } from '@/components/admin/adminInvoiceHelpers'
 import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTable'
 import { logger } from '@/lib/utils/logger'
@@ -48,10 +48,7 @@ export default function AdminInvoiceDetail() {
     loadInvoice()
   }, [loadInvoice])
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   if (loading && !invoice) {
     return <PageSpinner />
@@ -281,13 +278,13 @@ export default function AdminInvoiceDetail() {
                             <div className="flex items-center">
                               <code className="mr-2 text-[0.8rem] break-all">{invoice.paymentAddress}</code>
                               <Button
-                                onClick={() => handleCopy(invoice.paymentAddress)}
+                                onClick={() => handleCopy(invoice.paymentAddress, 'addr-inv')}
                                 title={t('actions.copy', { defaultValue: 'Copy' })}
                                 size="icon-sm"
                                 variant="text-secondary"
                                 className="shrink-0"
                               >
-                                <i className="bx bx-copy"></i>
+                                <i className={`bx ${copiedId === 'addr-inv' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                               </Button>
                             </div>
                           ) : (

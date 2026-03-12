@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
 import { Input, InputGroup, InputIcon, Label } from '../ui/Input'
 
 export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, onRegenerate, toast, t }) {
+  const { copiedId, handleCopy } = useCopyFeedback()
   const [showApiKey, setShowApiKey] = useState(false)
   const apiKeyTimerRef = useRef(null)
 
@@ -68,16 +69,13 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
                   <i className={`bx ${showApiKey ? 'bx-hide' : 'bx-show'}`}></i>
                 </Button>
                 <Button
-                  onClick={async () => {
-                    const ok = await copyText(apiKey)
-                    if (ok) toast.success(t('merchant.copied', { defaultValue: 'Copied!' }))
-                  }}
+                  onClick={() => handleCopy(apiKey, 'api-key')}
                   title={t('actions.copy', { defaultValue: 'Copy' })}
                   aria-label={t('actions.copy', { defaultValue: 'Copy' })}
                   variant="text-secondary"
                   size="icon"
                 >
-                  <i className="bx bx-copy"></i>
+                  <i className={`bx ${copiedId === 'api-key' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                 </Button>
               </>
             )}

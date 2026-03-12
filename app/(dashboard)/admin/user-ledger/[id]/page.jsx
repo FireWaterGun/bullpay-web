@@ -9,7 +9,7 @@ import { getUserLedgerEntry } from '@/lib/api/admin'
 import { formatUsd } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import Badge from '@/components/ui/Badge'
@@ -78,14 +78,7 @@ export default function UserLedgerDetail() {
     return <span className="text-surface-500">{state || 'N/A'}</span>
   }
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) {
-      toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-    } else {
-      toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
-    }
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   if (loading) {
     return <PageSpinner />
@@ -337,12 +330,12 @@ export default function UserLedgerDetail() {
                                 </Button>
                               )}
                               <Button
-                                onClick={() => handleCopy(entry.txHash)}
+                                onClick={() => handleCopy(entry.txHash, 'tx-uledger')}
                                 variant="outline-secondary"
                                 size="sm"
                                 className="py-[0.2rem] px-[0.5rem] text-xs"
                               >
-                                <i className="bx bx-copy mr-1"></i>Copy
+                                <i className={`bx ${copiedId === 'tx-uledger' ? 'bx-check text-success' : 'bx-copy'} mr-1`}></i>Copy
                               </Button>
                             </div>
                           </td>

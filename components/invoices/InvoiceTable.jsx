@@ -5,14 +5,13 @@ import { useTranslation } from 'react-i18next'
 import CoinImg from '@/components/CoinImg'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 import SortableHeader from '@/components/ui/SortableHeader'
-import { useState } from 'react'
 
 const statusBadge = {
   paid: 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400',
@@ -34,19 +33,7 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
   const { t } = useTranslation()
   const router = useRouter()
   const { fmtDateTime } = useDateFormat()
-  const [copiedId, setCopiedId] = useState(null)
-
-  async function handleCopy(addr, id, e) {
-    e.stopPropagation()
-    if (!addr) return
-    try {
-      await copyToClipboard(addr)
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 1500)
-    } catch {
-      // ignore
-    }
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   return (
     <Card>
@@ -92,7 +79,7 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                             type="button"
                             className="text-surface-400 hover:text-primary-500 transition-colors"
                             title="Copy"
-                            onClick={(e) => handleCopy(it.invoiceNumber || String(it.id), `inv-${it.id}`, e)}
+                            onClick={(e) => { e.stopPropagation(); handleCopy(it.invoiceNumber || String(it.id), `inv-${it.id}`) }}
                           >
                             <i className={`bx ${copiedId === `inv-${it.id}` ? 'bx-check text-success-500' : 'bx-copy'} text-xs`}></i>
                           </button>
@@ -105,7 +92,7 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                             type="button"
                             className="text-surface-400 hover:text-primary-500 transition-colors"
                             title="Copy"
-                            onClick={(e) => handleCopy(it.publicCode, `pc-${it.id}`, e)}
+                            onClick={(e) => { e.stopPropagation(); handleCopy(it.publicCode, `pc-${it.id}`) }}
                           >
                             <i className={`bx ${copiedId === `pc-${it.id}` ? 'bx-check text-success-500' : 'bx-copy'} text-xs`}></i>
                           </button>
@@ -143,12 +130,24 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                           type="button"
                           className="shrink-0 p-1 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
                           title={t('actions.copy', { defaultValue: 'Copy' })}
-                          onClick={(e) => handleCopy(it.paymentAddress, it.id, e)}
+                          onClick={(e) => { e.stopPropagation(); handleCopy(it.paymentAddress, it.id) }}
                         >
                           <i
                             className={`bx ${copiedId === it.id ? 'bx-check text-success-500' : 'bx-copy'} text-base`}
                           />
                         </button>
+                        {it.network?.explorerUrl && (
+                          <a
+                            href={`${it.network.explorerUrl.replace(/\/$/, '')}/address/${it.paymentAddress}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 p-1 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
+                            onClick={(e) => e.stopPropagation()}
+                            title={t('invoices.viewExplorer', { defaultValue: 'View on Explorer' })}
+                          >
+                            <i className="bx bx-link-external text-base" />
+                          </a>
+                        )}
                       </div>
                     ) : (
                       <span className="text-surface-500">-</span>

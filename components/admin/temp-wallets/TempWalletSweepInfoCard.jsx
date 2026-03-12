@@ -2,7 +2,7 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 
-export default function TempWalletSweepInfoCard({ wallet, t, onCopy }) {
+export default function TempWalletSweepInfoCard({ wallet, t, onCopy, copiedId }) {
   const hasSweepInfo =
     wallet.lastSweepTxHash || wallet.lastSweepAmountRaw || wallet.lastTxHash || wallet.lastBlockNumber
 
@@ -30,13 +30,13 @@ export default function TempWalletSweepInfoCard({ wallet, t, onCopy }) {
                       {wallet.lastSweepTxHash}
                     </code>
                     <Button
-                      onClick={() => onCopy(wallet.lastSweepTxHash)}
+                      onClick={() => onCopy(wallet.lastSweepTxHash, 'sweep-tx')}
                       title={t('actions.copy', { defaultValue: 'Copy' })}
                       size="icon-sm"
                       variant="text-secondary"
                       className="shrink-0"
                     >
-                      <i className="bx bx-copy"></i>
+                      <i className={`bx ${copiedId === 'sweep-tx' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                     </Button>
                   </div>
                 </td>
@@ -62,13 +62,13 @@ export default function TempWalletSweepInfoCard({ wallet, t, onCopy }) {
                   <div className="flex items-center">
                     <code className="text-surface-800 mr-2 text-xs break-all">{wallet.lastTxHash}</code>
                     <Button
-                      onClick={() => onCopy(wallet.lastTxHash)}
+                      onClick={() => onCopy(wallet.lastTxHash, 'last-tx')}
                       title={t('actions.copy', { defaultValue: 'Copy' })}
                       size="icon-sm"
                       variant="text-secondary"
                       className="shrink-0"
                     >
-                      <i className="bx bx-copy"></i>
+                      <i className={`bx ${copiedId === 'last-tx' ? 'bx-check text-success' : 'bx-copy'}`}></i>
                     </Button>
                   </div>
                 </td>

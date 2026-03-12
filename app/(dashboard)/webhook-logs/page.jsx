@@ -7,7 +7,7 @@ import { useAuth, useToast } from '@/app/providers'
 import { getUserWebhookLogs } from '@/lib/api/userWebhookLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
@@ -54,12 +54,12 @@ export default function WebhookLogsPage() {
     sortOrder: 'desc',
   })
 
-  async function handleCopy(e, text) {
+  const { copiedId, handleCopy: doCopy } = useCopyFeedback()
+
+  function handleCopy(e, text, id) {
     e.stopPropagation()
     e.preventDefault()
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-    else toast.error(t('common.copyFailed', { defaultValue: 'Failed to copy' }))
+    doCopy(text, id)
   }
 
   const loadLogs = useCallback(async () => {
@@ -248,9 +248,9 @@ export default function WebhookLogsPage() {
                             type="button"
                             className="text-surface-400 hover:text-primary-500 transition-colors"
                             title="Copy"
-                            onClick={(e) => handleCopy(e, log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`)}
+                            onClick={(e) => handleCopy(e, log.invoiceNumber || log.invoicePublicCode || `#${log.invoiceId}`, `inv-${log.id}`)}
                           >
-                            <i className="bx bx-copy text-xs"></i>
+                            <i className={`bx ${copiedId === `inv-${log.id}` ? 'bx-check text-success' : 'bx-copy'} text-xs`}></i>
                           </button>
                         </div>
                         {log.invoicePublicCode && (
@@ -262,9 +262,9 @@ export default function WebhookLogsPage() {
                               type="button"
                               className="text-surface-400 hover:text-primary-500 transition-colors"
                               title="Copy"
-                              onClick={(e) => handleCopy(e, log.invoicePublicCode)}
-                            >
-                              <i className="bx bx-copy text-xs"></i>
+                            onClick={(e) => handleCopy(e, log.invoicePublicCode, `pc-${log.id}`)}
+                          >
+                            <i className={`bx ${copiedId === `pc-${log.id}` ? 'bx-check text-success' : 'bx-copy'} text-xs`}></i>
                             </button>
                           </div>
                         )}

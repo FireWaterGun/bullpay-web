@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CoinImg from '@/components/CoinImg'
 import Button from '../ui/Button'
 import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
@@ -12,6 +13,7 @@ export default function AdminPaymentRow({ payment, onCopy }) {
   const router = useRouter()
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   function truncateHash(hash) {
     if (!hash) return '-'
@@ -113,12 +115,12 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           <div className="flex items-center">
             <span className="mr-2 font-mono text-xs">{truncateHash(payment.fromAddress)}</span>
             <Button
-              onClick={() => onCopy(payment.fromAddress)}
+              onClick={() => handleCopy(payment.fromAddress, `from-${payment.id}`)}
               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
               size="icon-sm"
               variant="text-secondary"
             >
-              <i className="bx bx-copy"></i>
+              <i className={`bx ${copiedId === `from-${payment.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
             </Button>
           </div>
         ) : (
@@ -130,12 +132,12 @@ export default function AdminPaymentRow({ payment, onCopy }) {
           <div className="flex items-center">
             <span className="mr-2 font-mono text-xs">{truncateHash(payment.toAddress)}</span>
             <Button
-              onClick={() => onCopy(payment.toAddress)}
+              onClick={() => handleCopy(payment.toAddress, `to-${payment.id}`)}
               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
               size="icon-sm"
               variant="text-secondary"
             >
-              <i className="bx bx-copy"></i>
+              <i className={`bx ${copiedId === `to-${payment.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
             </Button>
           </div>
         ) : (

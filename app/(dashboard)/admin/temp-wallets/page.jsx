@@ -9,7 +9,7 @@ import { useToast } from '@/app/providers'
 import { getTempWallets } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
@@ -153,10 +153,7 @@ export default function TempWalletList() {
     syncSearchParams({}, 1)
   }
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   if (loading && wallets.length === 0) {
     return <PageSpinner />
@@ -305,12 +302,12 @@ export default function TempWalletList() {
                           <div className="flex items-center">
                             <span className="mr-2 font-mono text-xs" title={w.address}>{truncateHash(w.address)}</span>
                             <Button
-                              onClick={() => handleCopy(w.address)}
+                              onClick={() => handleCopy(w.address, `addr-${w.id}`)}
                               title={t('admin.detail.copyAddress', { defaultValue: 'Copy address' })}
                               size="icon-sm"
                               variant="text-secondary"
                             >
-                              <i className="bx bx-copy"></i>
+                              <i className={`bx ${copiedId === `addr-${w.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                             </Button>
                           </div>
                         ) : (

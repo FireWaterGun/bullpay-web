@@ -6,7 +6,7 @@ import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import { getTempWallet } from '@/lib/api/admin'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CoinImg from '@/components/CoinImg'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
@@ -45,10 +45,7 @@ export default function TempWalletDetail() {
     loadWallet()
   }, [loadWallet])
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   if (loading) {
     return <PageSpinner />
@@ -125,14 +122,14 @@ export default function TempWalletDetail() {
           <div className="grid grid-cols-12 gap-x-6">
             {/* Wallet Info */}
             <div className="col-span-12 md:col-span-6">
-              <TempWalletDetailsCard wallet={wallet} t={t} onCopy={handleCopy} />
+              <TempWalletDetailsCard wallet={wallet} t={t} onCopy={handleCopy} copiedId={copiedId} />
             </div>
 
             {/* Right Column */}
             <div className="col-span-12 md:col-span-6">
               <TempWalletFlagsCard wallet={wallet} t={t} />
               <TempWalletTimestampsCard wallet={wallet} t={t} />
-              <TempWalletSweepInfoCard wallet={wallet} t={t} onCopy={handleCopy} />
+              <TempWalletSweepInfoCard wallet={wallet} t={t} onCopy={handleCopy} copiedId={copiedId} />
 
               {/* Metadata */}
               {wallet.metadata && Object.keys(wallet.metadata).length > 0 && (

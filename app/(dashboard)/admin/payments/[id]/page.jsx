@@ -10,7 +10,7 @@ import { getAdminPayment } from '@/lib/api/admin'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
@@ -46,10 +46,7 @@ export default function AdminPaymentDetail() {
     loadPayment()
   }, [loadPayment])
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
+  const { copiedId, handleCopy } = useCopyFeedback()
 
   if (loading && !payment) {
     return <PageSpinner />
@@ -314,13 +311,13 @@ export default function AdminPaymentDetail() {
                                   {payment.fromAddress}
                                 </code>
                                 <Button
-                                  onClick={() => handleCopy(payment.fromAddress)}
+                                  onClick={() => handleCopy(payment.fromAddress, `from-${payment.id}`)}
                                   title={t('actions.copy', { defaultValue: 'Copy' })}
                                   size="icon-sm"
                                   variant="text-secondary"
                                   className="shrink-0"
                                 >
-                                  <i className="bx bx-copy"></i>
+                                  <i className={`bx ${copiedId === `from-${payment.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                                 </Button>
                               </div>
                             ) : (
@@ -339,13 +336,13 @@ export default function AdminPaymentDetail() {
                                   {payment.toAddress}
                                 </code>
                                 <Button
-                                  onClick={() => handleCopy(payment.toAddress)}
+                                  onClick={() => handleCopy(payment.toAddress, `to-${payment.id}`)}
                                   title={t('actions.copy', { defaultValue: 'Copy' })}
                                   size="icon-sm"
                                   variant="text-secondary"
                                   className="shrink-0"
                                 >
-                                  <i className="bx bx-copy"></i>
+                                  <i className={`bx ${copiedId === `to-${payment.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                                 </Button>
                               </div>
                             ) : (

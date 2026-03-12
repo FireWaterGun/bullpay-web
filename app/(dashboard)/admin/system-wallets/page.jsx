@@ -9,7 +9,7 @@ import { getSystemWalletStats } from '@/lib/api/admin'
 import { formatAmount, formatUsd, formatCoinAmount } from '@/lib/utils/format'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import CoinImg from '@/components/CoinImg'
-import { copyToClipboard } from '@/lib/utils/clipboard'
+import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { logger } from '@/lib/utils/logger'
 import CardEmptyState from '@/components/CardEmptyState'
 import Alert from '@/components/ui/Alert'
@@ -26,19 +26,7 @@ export default function SystemBalance() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [copiedId, setCopiedId] = useState(null)
-
-  const copyAddress = async (address, id) => {
-    try {
-      await copyToClipboard(address)
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 2000)
-      toast.success(t('actions.copied', { defaultValue: 'Address copied to clipboard' }))
-    } catch (err) {
-      logger.error('Failed to copy:', err)
-      toast.error(t('actions.copyFailed', { defaultValue: 'Failed to copy address' }))
-    }
-  }
+  const { copiedId, handleCopy: copyAddress } = useCopyFeedback()
 
   const loadStats = useCallback(async () => {
     setLoading(true)

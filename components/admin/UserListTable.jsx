@@ -22,6 +22,7 @@ export default function UserListTable({
   currentPage,
   appliedFilters,
   onCopy,
+  copiedId,
   onOpenModal,
   onPageChange,
   onSyncSearchParams,
@@ -65,12 +66,12 @@ export default function UserListTable({
                   <div className="flex items-center">
                     <span className="mr-2">{user.email}</span>
                     <Button
-                      onClick={() => onCopy(user.email)}
+                      onClick={() => onCopy(user.email, `email-${user.id}`)}
                       title={t('admin.detail.copyEmail', { defaultValue: 'Copy email' })}
                       size="icon-sm"
                       variant="text-secondary"
                     >
-                      <i className="bx bx-copy"></i>
+                      <i className={`bx ${copiedId === `email-${user.id}` ? 'bx-check text-success' : 'bx-copy'}`}></i>
                     </Button>
                   </div>
                 </td>
