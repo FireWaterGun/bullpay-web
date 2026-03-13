@@ -4,7 +4,7 @@ import '@/lib/i18n'
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, type ReactNode } from 'react'
 import { apiFetch } from '@/lib/api-client'
-import { ADMIN_ROLES_SET, AUTH_COOKIE_NAME } from '@/lib/constants'
+import { ADMIN_ROLES_SET, AUTH_COOKIE_NAME, AUTH_COOKIE_TTL_DAYS } from '@/lib/constants'
 import { ToastContainer } from '@/components/Toast'
 import NavigationProgress from '@/components/NavigationProgress'
 import { SWRConfig } from 'swr'
@@ -68,7 +68,7 @@ export function useAuth() {
   return ctx
 }
 
-function setCookie(name: string, value: string, days = 30) {
+function setCookie(name: string, value: string, days = AUTH_COOKIE_TTL_DAYS) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString()
   const secure = window.location.protocol === 'https:' ? '; Secure' : ''
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax${secure}`

@@ -2,6 +2,7 @@
 export const AUTH_COOKIE_NAME = process.env.AUTH_COOKIE_NAME || 'bullpay_token'
 export const AUTH_USER_COOKIE = 'bullpay_user'
 export const AUTH_NAV_COOKIE = 'bullpay_nav'
+export const AUTH_COOKIE_TTL_DAYS = Number(process.env.NEXT_PUBLIC_AUTH_COOKIE_TTL_DAYS) || 7
 
 export const ADMIN_ROLES = ['super_admin', 'admin', 'support_agent'] as const
 export const ADMIN_ROLES_SET = new Set<string>(ADMIN_ROLES)
