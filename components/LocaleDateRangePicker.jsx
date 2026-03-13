@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { inputClass } from './ui'
 
 /**
@@ -44,19 +45,11 @@ export default function LocaleDateRangePicker({
 
   const wrapperRef = useRef(null)
 
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return
-    function handleClick(e) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setOpen(false)
-        setPickPhase(null)
-        setHoverDate(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [open])
+  useClickOutside(wrapperRef, () => {
+    setOpen(false)
+    setPickPhase(null)
+    setHoverDate(null)
+  }, open)
 
   // Sync view when props change externally
   useEffect(() => {

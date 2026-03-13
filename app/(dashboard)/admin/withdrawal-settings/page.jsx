@@ -545,7 +545,7 @@ function StatusCard({ icon, color, label, value, sub, active }) {
                   </Badge>
                 )}
               </div>
-              {sub && <small className="text-surface-500 text-xs">{sub}</small>}
+              {sub ? <small className="text-surface-500 text-xs">{sub}</small> : null}
             </div>
           </div>
         </div>

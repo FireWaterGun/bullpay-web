@@ -97,7 +97,7 @@ export default function AmountInput({ amount, setAmount, amountError, setAmountE
         error={amountError}
       />
 
-      {amountError && <div className="text-danger-500 text-xs mt-1">{amountError}</div>}
+      {amountError ? <div className="text-danger-500 text-xs mt-1">{amountError}</div> : null}
       {!amountError && (
         <small className="text-surface-500">
           {t('invoices.maxAmountInfo', { max: MAX_DEPOSIT.toLocaleString() })}

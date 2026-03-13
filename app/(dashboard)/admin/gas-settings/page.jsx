@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useToast } from '@/app/providers'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getSettings, upsertSetting } from '@/lib/api/admin'
@@ -55,15 +56,7 @@ export default function GasSettingsPage() {
   const [formErrors, setFormErrors] = useState({})
   const [saving, setSaving] = useState(false)
 
-  // Escape key to close modal
-  useEffect(() => {
-    if (!editModal) return
-    const handler = (e) => {
-      if (e.key === 'Escape' && !saving) setEditModal(null)
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [editModal, saving])
+  useEscapeKey(() => { if (!saving) setEditModal(null) }, !!editModal)
 
   // ─── Data Loading ────────────────────────────────────────
 
@@ -316,9 +309,9 @@ export default function GasSettingsPage() {
         </ul>
       </div>
 
-      {activeTab === 'gasPrice' && <GasPriceTab t={t} getVal={getVal} onEdit={openGasPriceEdit} />}
-      {activeTab === 'gasLimit' && <GasLimitTab t={t} getVal={getVal} onEdit={openGasLimitEdit} />}
-      {activeTab === 'gasTopup' && <GasTopupTab t={t} getVal={getVal} onEdit={openGasTopupEdit} />}
+      {activeTab === 'gasPrice' ? <GasPriceTab t={t} getVal={getVal} onEdit={openGasPriceEdit} /> : null}
+      {activeTab === 'gasLimit' ? <GasLimitTab t={t} getVal={getVal} onEdit={openGasLimitEdit} /> : null}
+      {activeTab === 'gasTopup' ? <GasTopupTab t={t} getVal={getVal} onEdit={openGasTopupEdit} /> : null}
 
       {/* Edit Modal */}
       {editModal && (

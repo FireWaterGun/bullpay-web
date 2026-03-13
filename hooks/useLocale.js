@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const LOCALE_MAP = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
@@ -11,5 +10,5 @@ const LOCALE_MAP = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
  */
 export function useLocale() {
   const { i18n } = useTranslation()
-  return useMemo(() => LOCALE_MAP[i18n.language] || 'en-US', [i18n.language])
+  return LOCALE_MAP[i18n.language] || 'en-US'
 }

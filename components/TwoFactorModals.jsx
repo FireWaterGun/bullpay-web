@@ -118,7 +118,7 @@ export function Disable2FAModal({ show, onClose, onSuccess, token }) {
               className="text-lg"
             />
 
-            {error && <div className="text-danger-500 dark:text-danger-400 mt-2">{error}</div>}
+            {error ? <div className="text-danger-500 dark:text-danger-400 mt-2">{error}</div> : null}
           </div>
         </div>
         <div className="px-6 py-4 border-t border-surface-200 flex justify-end gap-2">

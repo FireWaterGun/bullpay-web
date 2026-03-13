@@ -309,7 +309,7 @@ export default function AdminInvoiceList() {
 
                             <div>
                               <div className="font-medium leading-[1.2]">{coinSymbol || '-'}</div>
-                              {networkName && <small className="text-surface-500 text-xs">{networkName}</small>}
+                              {networkName ? <small className="text-surface-500 text-xs">{networkName}</small> : null}
                             </div>
                           </div>
                         </td>

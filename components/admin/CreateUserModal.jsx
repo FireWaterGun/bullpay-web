@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { formatRoleLabel } from '@/lib/utils/roles'
 import Alert from '../ui/Alert'
 import Button from '../ui/Button'
@@ -21,7 +21,7 @@ export default function CreateUserModal({ t, loading, onClose, onSubmit, callerR
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
   const [password, setPassword] = useState('')
-  const creatableRoles = useMemo(() => CREATABLE_ROLES_BY_ROLE[callerRole] || [], [callerRole])
+  const creatableRoles = CREATABLE_ROLES_BY_ROLE[callerRole] || []
   const [role, setRole] = useState('regular_user')
   const [showPassword, setShowPassword] = useState(false)
 

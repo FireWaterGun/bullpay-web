@@ -9,6 +9,13 @@ import { formatAmount } from '@/lib/utils/format'
 
 const QRCodeSVG = dynamic(() => import('qrcode.react').then((m) => m.QRCodeSVG), { ssr: false })
 
+const PAID_STATUSES = new Set(['paid', 'completed', 'confirmed'])
+
+// Static style constants
+const STYLE_PRIMARY_SUBTLE_BG = {
+  background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
+}
+
 /** Coin + Network + Amount row — reused across all status states */
 function CoinAmountRow({ invoice }) {
   const coinSym = (invoice?.coin?.symbol || invoice?.coinSymbol || '').toUpperCase()
@@ -22,11 +29,8 @@ function CoinAmountRow({ invoice }) {
 
   return (
     <div
-      className="flex items-center justify-between p-2.5 rounded-xl"
-      style={{
-        background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
-        border: '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
-      }}
+      className="flex items-center justify-between p-2.5 rounded-xl border border-primary-600/10"
+      style={STYLE_PRIMARY_SUBTLE_BG}
     >
       <div className="flex items-center gap-2">
         <CoinImg
@@ -75,19 +79,14 @@ export default function InvoiceStatusCard({ invoice, effectiveStatus: status }) 
   const s = status.toLowerCase()
 
   // ─── Paid / Completed / Confirmed ───
-  if (['paid', 'completed', 'confirmed'].includes(s)) {
+  if (PAID_STATUSES.has(s)) {
     return (
       <Card className="mb-4">
         <div
-          className="p-5 text-center rounded-xl"
-          style={{
-            background: 'color-mix(in srgb, #22c55e 6%, var(--color-surface-0, #fff))',
-            border: '1px solid color-mix(in srgb, #22c55e 18%, transparent)',
-          }}
+          className="p-5 text-center rounded-xl bg-green-500/6 border border-green-500/18"
         >
           <div
-            className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-2.5"
-            style={{ background: 'color-mix(in srgb, #22c55e 12%, transparent)' }}
+            className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-2.5 bg-green-500/12"
           >
             <i className="bx bx-check-circle text-2xl text-success-500"></i>
           </div>
@@ -108,15 +107,10 @@ export default function InvoiceStatusCard({ invoice, effectiveStatus: status }) 
     return (
       <Card className="mb-4">
         <div
-          className="p-5 text-center rounded-xl"
-          style={{
-            background: 'var(--color-surface-50, #f8f9fa)',
-            border: '1px solid var(--color-surface-200)',
-          }}
+          className="p-5 text-center rounded-xl bg-surface-50 border border-surface-200"
         >
           <div
-            className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-2.5"
-            style={{ background: 'color-mix(in srgb, var(--color-surface-400) 15%, transparent)' }}
+            className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-2.5 bg-surface-400/15"
           >
             <i className="bx bx-time-five text-2xl text-surface-400"></i>
           </div>
@@ -137,15 +131,13 @@ export default function InvoiceStatusCard({ invoice, effectiveStatus: status }) 
     return (
       <Card className="mb-4">
         <div
-          className="p-5 text-center rounded-xl"
+          className="p-5 text-center rounded-xl border border-primary-600/15"
           style={{
             background: 'color-mix(in srgb, var(--color-primary-600) 4%, var(--color-surface-0, #fff))',
-            border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
           }}
         >
           <div
-            className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-2.5"
-            style={{ background: 'color-mix(in srgb, var(--color-primary-600) 10%, transparent)' }}
+            className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-2.5 bg-primary-600/10"
           >
             <i className="bx bx-loader-alt bx-spin text-2xl text-primary-600"></i>
           </div>
@@ -169,20 +161,13 @@ export default function InvoiceStatusCard({ invoice, effectiveStatus: status }) 
         {publicUrl && (
           <>
             <div
-              className="inline-block p-2.5 rounded-xl"
-              style={{
-                background: '#fff',
-                border: '1px solid color-mix(in srgb, var(--color-primary-600) 12%, transparent)',
-              }}
+              className="inline-block p-2.5 rounded-xl bg-white border border-primary-600/12"
             >
               <QRCodeSVG value={publicUrl} size={148} includeMargin={false} level="H" />
             </div>
             <div
-              className="mt-3 mx-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg"
-              style={{
-                background: 'color-mix(in srgb, var(--color-primary-600) 4%, var(--color-surface-0, #fff))',
-                border: '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
-              }}
+              className="mt-3 mx-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-primary-600/10"
+              style={STYLE_PRIMARY_SUBTLE_BG}
             >
               <i className="bx bx-scan text-primary-600 text-sm"></i>
               <span className="text-xs font-semibold text-primary-600 tracking-[0.3px]">
@@ -201,11 +186,8 @@ export default function InvoiceStatusCard({ invoice, effectiveStatus: status }) 
       {/* Countdown timer */}
       {invoice.expiryAt && (
         <div
-          className="mx-4 mb-4 p-3 rounded-xl"
-          style={{
-            background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
-            border: '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
-          }}
+          className="mx-4 mb-4 p-3 rounded-xl border border-primary-600/10"
+          style={STYLE_PRIMARY_SUBTLE_BG}
         >
           <Countdown expiryAt={invoice.expiryAt} />
         </div>

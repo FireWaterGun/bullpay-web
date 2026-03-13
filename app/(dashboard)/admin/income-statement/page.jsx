@@ -95,7 +95,7 @@ export default function IncomeStatement() {
           </Card>
 
           {/* Report with data */}
-          {report && hasData && <IncomeStatementReport report={report} t={t} />}
+          {report && hasData ? <IncomeStatementReport report={report} t={t} /> : null}
 
           {/* Empty state - no data for this period */}
           {report && !hasData && !isLoading && (

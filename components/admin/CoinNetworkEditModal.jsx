@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getCoinNetworkById, updateCoinNetwork } from '@/lib/api/admin'
@@ -52,14 +53,7 @@ export default function CoinNetworkEditModal({ coinNetworkId, onClose, onSaved }
     if (coinNetworkId) loadCoinNetwork()
   }, [coinNetworkId, loadCoinNetwork])
 
-  // Close on Escape
-  useEffect(() => {
-    function onKey(e) {
-      if (e.key === 'Escape' && !saving) onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [onClose, saving])
+  useEscapeKey(() => { if (!saving) onClose() })
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target

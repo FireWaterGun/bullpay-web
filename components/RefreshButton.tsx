@@ -184,7 +184,7 @@ export default function RefreshButton({
               }}
             >
               {/* Glowing tip like YouTube */}
-              {progress < 100 && <div style={topBarTipStyle} />}
+              {progress < 100 ? <div style={topBarTipStyle} /> : null}
             </div>
           </div>,
           document.body

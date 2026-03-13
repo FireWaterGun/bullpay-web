@@ -237,7 +237,7 @@ export default function AdjustmentModal({ t, onClose, onSuccess }) {
                   autoFocus
                 />
 
-                {selectedWallet && <InputAddon>{selectedWallet.coinSymbol}</InputAddon>}
+                {selectedWallet ? <InputAddon>{selectedWallet.coinSymbol}</InputAddon> : null}
               </InputGroup>
               {amountTrimmed && !isValidAmount && (
                 <small className="text-danger">

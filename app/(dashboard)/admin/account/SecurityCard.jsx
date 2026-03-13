@@ -26,10 +26,7 @@ export default function SecurityCard({ is2FAEnabled, twoFALoading, twoFAStatus, 
       <div className="p-5">
         {/* 2FA Status indicator */}
         <div
-          className="flex items-center mb-3 p-3 rounded-lg"
-          style={{
-            background: is2FAEnabled ? 'rgba(34, 197, 94, 0.08)' : 'rgba(245, 158, 11, 0.08)',
-          }}
+          className={`flex items-center mb-3 p-3 rounded-lg ${is2FAEnabled ? 'bg-green-500/8' : 'bg-amber-500/8'}`}
         >
           <div
             className={`rounded-full flex items-center justify-center mr-3 shrink-0 w-11 h-11 ${

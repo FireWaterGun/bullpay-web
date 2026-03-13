@@ -102,7 +102,7 @@ export default function RegisterPage() {
         <h4 className="text-xl font-semibold mb-1">Create your account</h4>
         <p className="text-sm text-surface-500 mb-6">Start accepting crypto payments in minutes</p>
 
-        {error && <Alert className="mb-4">{error}</Alert>}
+        {error ? <Alert className="mb-4">{error}</Alert> : null}
 
         <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
           {/* Full name */}
@@ -117,7 +117,7 @@ export default function RegisterPage() {
               error={errors.fullName}
             />
 
-            {errors.fullName && <p className="mt-1 text-sm text-danger-500">{errors.fullName.message}</p>}
+            {errors.fullName ? <p className="mt-1 text-sm text-danger-500">{errors.fullName.message}</p> : null}
           </div>
 
           {/* Email */}
@@ -132,7 +132,7 @@ export default function RegisterPage() {
               error={errors.email}
             />
 
-            {errors.email && <p className="mt-1 text-sm text-danger-500">{errors.email.message}</p>}
+            {errors.email ? <p className="mt-1 text-sm text-danger-500">{errors.email.message}</p> : null}
           </div>
 
           {/* Password */}
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                 <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
               </button>
             </div>
-            {errors.password && <p className="mt-1 text-sm text-danger-500">{errors.password.message}</p>}
+            {errors.password ? <p className="mt-1 text-sm text-danger-500">{errors.password.message}</p> : null}
           </div>
 
           {/* Confirm Password */}
@@ -184,7 +184,7 @@ export default function RegisterPage() {
                 <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
               </button>
             </div>
-            {errors.confirmPassword && <p className="mt-1 text-sm text-danger-500">{errors.confirmPassword.message}</p>}
+            {errors.confirmPassword ? <p className="mt-1 text-sm text-danger-500">{errors.confirmPassword.message}</p> : null}
           </div>
 
           {/* Captcha */}

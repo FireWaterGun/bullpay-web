@@ -142,7 +142,7 @@ function GasLimitForm({ t, network, editForm, updateField, formErrors }) {
           />
           <InputAddon>×</InputAddon>
         </InputGroup>
-        {formErrors.multiplier && <div className="text-xs text-danger-500 mt-1 block">{formErrors.multiplier}</div>}
+        {formErrors.multiplier ? <div className="text-xs text-danger-500 mt-1 block">{formErrors.multiplier}</div> : null}
         <div className="text-xs text-surface-500 mt-1">
           {t('admin.gasSettings.gasLimitMultiplierDesc', {
             defaultValue:
@@ -291,7 +291,7 @@ export default function GasEditModal({
               {t('admin.gasSettings.cancel', { defaultValue: 'Cancel' })}
             </Button>
             <Button onClick={onSave} disabled={saving}>
-              {saving && <Spinner role="status" className="w-4 h-4 mr-1" />}
+              {saving ? <Spinner role="status" className="w-4 h-4 mr-1" /> : null}
               {t('admin.gasSettings.save', { defaultValue: 'Save Changes' })}
             </Button>
           </div>

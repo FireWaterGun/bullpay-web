@@ -101,7 +101,7 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }) {
               <i className="bx bx-x text-lg"></i>
             </button>
           </div>
-          {body && <div className={`text-[0.8125rem] leading-snug ${s.body}`}>{body}</div>}
+          {body ? <div className={`text-[0.8125rem] leading-snug ${s.body}`}>{body}</div> : null}
         </div>
       </div>
       {/* Progress bar */}

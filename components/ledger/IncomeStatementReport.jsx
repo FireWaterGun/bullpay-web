@@ -65,7 +65,7 @@ function RevenueCard({ revenueItems, deductionItems, netRevenue, t }) {
                 </>
               )}
 
-              <tr style={{ borderTop: '2px solid var(--color-surface-200)' }}>
+              <tr className="border-t-2 border-surface-200">
                 <td className="font-bold">
                   {t?.('admin.incomeStatement.netRevenue', { defaultValue: 'Net Revenue' }) || 'Net Revenue'}
                 </td>
@@ -103,7 +103,7 @@ function ExpensesCard({ expenseItems, totalExpenses, t }) {
                   <td className="text-right font-medium whitespace-nowrap">{formatUsd(item.amountUsd)}</td>
                 </tr>
               ))}
-              <tr style={{ borderTop: '2px solid var(--color-surface-200)' }}>
+              <tr className="border-t-2 border-surface-200">
                 <td className="font-bold">
                   {t?.('admin.incomeStatement.totalExpenses', { defaultValue: 'Total Expenses' }) || 'Total Expenses'}
                 </td>
@@ -225,7 +225,7 @@ function AdjustmentsCard({ adjustIncrease, adjustDecrease, netAdjustment, t }) {
                 ))}
               </>
             )}
-            <tr style={{ borderTop: '2px solid var(--color-surface-200)' }}>
+            <tr className="border-t-2 border-surface-200">
               <td className="font-bold">
                 {t?.('admin.incomeStatement.netAdjustment', { defaultValue: 'Net Adjustment' }) || 'Net Adjustment'}
               </td>

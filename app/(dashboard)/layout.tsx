@@ -426,7 +426,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <i className="bx bx-menu text-xl"></i>
           </button>
 
-          {isAdmin && <MaintenanceBanner />}
+          {isAdmin ? <MaintenanceBanner /> : null}
 
           <NavbarContent
             fiatBalance={fiatBalance}

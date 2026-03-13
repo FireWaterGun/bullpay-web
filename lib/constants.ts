@@ -19,6 +19,9 @@ export const THEME_STORAGE_KEY = 'ui_theme'
 export const LANG_STORAGE_KEY = 'ui_lang'
 export const SIDEBAR_COLLAPSED_KEY = 'ui_sidebar_collapsed'
 
+// ── Sort ──
+export const VALID_SORT_ORDERS = new Set(['asc', 'desc'])
+
 // ── Timezones ──
 export const COMMON_TIMEZONES = [
   { value: 'Pacific/Midway', label: '(UTC-11:00) Midway Island' },

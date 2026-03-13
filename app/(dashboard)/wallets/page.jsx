@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
@@ -25,14 +26,7 @@ function ActionMenu({ wallet, onEdit, onDelete }) {
 
   const close = useCallback(() => setOpen(false), [])
 
-  useEffect(() => {
-    if (!open) return
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) close()
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [open, close])
+  useClickOutside(ref, close, open)
 
   return (
     <div className="relative" ref={ref}>

@@ -14,8 +14,8 @@ export default function CardEmptyState({ icon = 'bx-data', message, sub, childre
           <i className={`bx ${icon} text-3xl text-surface-500`}></i>
         </div>
         <span className="font-medium text-surface-900">{message}</span>
-        {sub && <span className="text-surface-500 text-sm">{sub}</span>}
-        {children && <div className="mt-2">{children}</div>}
+        {sub ? <span className="text-surface-500 text-sm">{sub}</span> : null}
+        {children ? <div className="mt-2">{children}</div> : null}
       </div>
     </div>
   )

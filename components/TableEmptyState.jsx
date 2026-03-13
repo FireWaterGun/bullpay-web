@@ -18,7 +18,7 @@ export default function TableEmptyState({ colSpan, icon = 'bx-data', message, su
             <i className={`bx ${icon} text-3xl text-surface-500`}></i>
           </div>
           <span className="font-medium text-surface-900">{message}</span>
-          {sub && <span className="text-surface-500 text-sm">{sub}</span>}
+          {sub ? <span className="text-surface-500 text-sm">{sub}</span> : null}
         </div>
       </td>
     </tr>

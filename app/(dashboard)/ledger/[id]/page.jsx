@@ -59,7 +59,7 @@ export default function MyLedgerDetail() {
         <div className="p-6">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              {entry.coinSymbol && <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />}
+              {entry.coinSymbol ? <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} /> : null}
               <div>
                 <h4 className="font-semibold text-surface-900 mb-1">
                   {t('userLedger.entryDetail', { defaultValue: 'Ledger Entry' })} #{entry.id}
@@ -82,7 +82,7 @@ export default function MyLedgerDetail() {
                 {formatAmount(entry.amount)} <span className="text-sm font-normal">{entry.coinSymbol}</span>
               </div>
               <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
-              {entry.networkName && <small className="text-surface-500">{entry.networkName}</small>}
+              {entry.networkName ? <small className="text-surface-500">{entry.networkName}</small> : null}
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function MyLedgerDetail() {
                       />
                       <div>
                         <span className="font-medium">{entry.coinSymbol || 'N/A'}</span>
-                        {entry.networkName && <small className="text-surface-500 ml-1">/ {entry.networkName}</small>}
+                        {entry.networkName ? <small className="text-surface-500 ml-1">/ {entry.networkName}</small> : null}
                       </div>
                     </div>
                   </td>
@@ -157,7 +157,7 @@ export default function MyLedgerDetail() {
                   </td>
                   <td className="py-2">
                     {entry.usdRate ? formatUsd(entry.usdRate) : 'N/A'}
-                    {entry.rateSource && <small className="text-surface-500 ml-1">({entry.rateSource})</small>}
+                    {entry.rateSource ? <small className="text-surface-500 ml-1">({entry.rateSource})</small> : null}
                   </td>
                 </tr>
               </tbody>

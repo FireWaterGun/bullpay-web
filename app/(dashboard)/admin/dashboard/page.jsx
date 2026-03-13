@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {error && <Alert className="mb-4">{error}</Alert>}
+      {error ? <Alert className="mb-4">{error}</Alert> : null}
 
       <div className="grid grid-cols-12 gap-x-6 gap-4 mb-4">
         <SummaryCard
@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
 
       <RevenueByCoinTable byCoinData={byCoinData} totals={totals} loading={loadingByCoin} t={t} />
 
-      {summary && <RevenueVolumeSummary summary={summary} t={t} />}
+      {summary ? <RevenueVolumeSummary summary={summary} t={t} /> : null}
     </div>
   )
 }

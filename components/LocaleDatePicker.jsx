@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { inputClass } from './ui'
 
 /** Get today's YYYY-MM-DD in a given IANA timezone */
@@ -57,15 +58,7 @@ export default function LocaleDatePicker({
   const wrapperRef = useRef(null)
   const [alignRight, setAlignRight] = useState(false)
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    if (!open) return
-    function handleClick(e) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [open])
+  useClickOutside(wrapperRef, () => setOpen(false), open)
 
   // Check if dropdown would overflow viewport and flip alignment
   useEffect(() => {

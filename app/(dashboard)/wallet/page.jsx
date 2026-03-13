@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import useApi from '@/hooks/useApi'
@@ -20,13 +21,7 @@ function ActionMenu({ coinNetworkId, t }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
-  useEffect(() => {
-    function close(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
-    if (open) document.addEventListener('mousedown', close)
-    return () => document.removeEventListener('mousedown', close)
-  }, [open])
+  useClickOutside(ref, () => setOpen(false), open)
 
   return (
     <div className="relative" ref={ref}>

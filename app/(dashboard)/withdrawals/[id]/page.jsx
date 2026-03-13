@@ -156,7 +156,7 @@ export default function WithdrawalDetailPage() {
               <DetailRow label={t('withdrawal.toAddress')}>
                 <div className="flex items-center gap-1">
                   <span className="font-mono text-xs break-all">{toAddress || '-'}</span>
-                  {toAddress && <CopyBtn text={toAddress} onCopy={handleCopy} copyId="to-uwd" copiedId={copiedId} />}
+                  {toAddress ? <CopyBtn text={toAddress} onCopy={handleCopy} copyId="to-uwd" copiedId={copiedId} /> : null}
                 </div>
               </DetailRow>
               {withdrawal.txHash && (

@@ -6,6 +6,7 @@ import { useAuth, useToast } from '@/app/providers'
 import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
+import { VALID_SORT_ORDERS } from '@/lib/constants'
 import {
   getUsers,
   changeUserStatus,
@@ -44,7 +45,7 @@ export default function AdminUsersPage() {
   const initDateTo = searchParams.get('dateTo') || ''
   const initSortBy = searchParams.get('sortBy') || ''
   const rawSortOrder = searchParams.get('sortOrder') || ''
-  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
+  const initSortOrder = VALID_SORT_ORDERS.has(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [currentPage, setCurrentPage] = useState(initPage)

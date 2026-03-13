@@ -127,7 +127,7 @@ export default function FiatAmountInput({
         </div>
       </div>
 
-      {fiatError && <div className="text-danger-500 text-xs mt-1">{fiatError}</div>}
+      {fiatError ? <div className="text-danger-500 text-xs mt-1">{fiatError}</div> : null}
       {!fiatError && (
         <small className="text-surface-500">
           {t('invoices.fiatMaxInfo', {

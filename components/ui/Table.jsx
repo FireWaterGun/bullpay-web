@@ -19,6 +19,8 @@ export default function Table({ responsive = true, className = '', children, ...
     '[&>:not(caption)>*>*]:border-b [&>:not(caption)>*>*]:border-surface-200/40',
     // hover
     '[&_tbody_tr:hover>*]:bg-[rgba(34,48,62,0.04)]',
+    // content-visibility for scroll perf on long tables
+    '[&_tbody_tr]:[content-visibility:auto] [&_tbody_tr]:[contain-intrinsic-size:auto_48px]',
     // dark
     'dark:[&_thead_th]:border-surface-300',
     'dark:[&>:not(caption)>*>*]:border-surface-200',

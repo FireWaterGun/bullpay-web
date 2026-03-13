@@ -14,6 +14,16 @@ import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Table from '../ui/Table'
 
+const STYLE_CHART_CARD = {
+  borderRadius: '0.75rem',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+}
+const STYLE_CHART_ICON_BG = {
+  borderRadius: '0.5rem',
+  backgroundColor: 'rgba(6, 182, 212, 0.08)',
+  marginRight: '0.75rem',
+}
+
 export default function Dashboard() {
   const { t } = useAdminTranslation()
   const toast = useToast()
@@ -164,17 +174,13 @@ export default function Dashboard() {
           <div className="grid grid-cols-12 gap-x-6 gap-4 mt-2">
             <div className="col-span-12">
               <Card
-                style={{ borderRadius: '0.75rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}
+                style={STYLE_CHART_CARD}
                 className="border-none"
               >
                 <div className="px-5 py-4 border-b border-surface-200 flex items-center border-none">
                   <div
                     className="w-9 h-9 flex items-center justify-center"
-                    style={{
-                      borderRadius: '0.5rem',
-                      backgroundColor: 'rgba(6, 182, 212, 0.08)',
-                      marginRight: '0.75rem',
-                    }}
+                    style={STYLE_CHART_ICON_BG}
                   >
                     <i className="bx bx-trending-up text-xl text-info-500"></i>
                   </div>

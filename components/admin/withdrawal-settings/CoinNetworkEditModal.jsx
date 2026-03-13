@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import CoinImg from '@/components/CoinImg'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import { Input, Label } from '@/components/ui/Input'
@@ -11,18 +11,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
   const coinSymbol = cn.coin?.symbol || '?'
   const networkSymbol = cn.network?.symbol || cn.network?.name || '?'
 
-  const onCloseRef = useRef(onClose)
-  useEffect(() => {
-    onCloseRef.current = onClose
-  })
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'Escape' && !saving) onCloseRef.current()
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [saving])
+  useEscapeKey(() => { if (!saving) onClose() })
 
   function handleAmountChange(field, value) {
     if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {

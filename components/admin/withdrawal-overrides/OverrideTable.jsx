@@ -101,7 +101,7 @@ export default function OverrideTable({ type, data, onEdit, loading }) {
             <tr>
               <th>{t(cfg.firstColKey, { defaultValue: cfg.firstColDefault })}</th>
               <th>{t('admin.withdrawal.minimum', { defaultValue: 'Minimum' })}</th>
-              {cfg.showMaximum && <th>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</th>}
+              {cfg.showMaximum ? <th>{t('admin.withdrawal.maximum', { defaultValue: 'Maximum' })}</th> : null}
               <th>{t('admin.withdrawal.feeType', { defaultValue: 'Fee Type' })}</th>
               <th>{t('admin.withdrawal.feeConfig', { defaultValue: 'Fee Config' })}</th>
               <th className="text-right">{t('admin.detail.actions', { defaultValue: 'Actions' })}</th>

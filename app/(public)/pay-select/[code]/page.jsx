@@ -304,7 +304,7 @@ export default function PaySelect() {
                               </div>
                             </div>
                           )}
-                          {invoiceDesc && <div className="text-sm text-surface-500">{invoiceDesc}</div>}
+                          {invoiceDesc ? <div className="text-sm text-surface-500">{invoiceDesc}</div> : null}
                         </div>
                       )}
 

@@ -54,7 +54,7 @@ export default function GasTopupDetailsCard({
                     <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-3" />
                     <div>
                       <span className="font-medium">{coinSymbol}</span>
-                      {networkName && <small className="text-surface-500 ml-1">/ {networkName}</small>}
+                      {networkName ? <small className="text-surface-500 ml-1">/ {networkName}</small> : null}
                     </div>
                   </div>
                 </td>

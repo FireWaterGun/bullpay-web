@@ -8,6 +8,8 @@ import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import SortableHeader from '../ui/SortableHeader'
 import Button from '../ui/Button'
+
+const FAILED_STATUSES = new Set(['failed', 'error'])
 import Card from '../ui/Card'
 import Spinner from '../ui/Spinner'
 import Pagination from '@/components/ui/Pagination'
@@ -200,7 +202,7 @@ export default function SweepTransactionTable({
                   </span>
                 </td>
                 <td className="text-center">
-                  {['failed', 'error'].includes(String(sweep.status || '').toLowerCase()) ? (
+                  {FAILED_STATUSES.has(String(sweep.status || '').toLowerCase()) ? (
                     <Button
                       disabled={retryingId === sweep.id}
                       onClick={(e) => {

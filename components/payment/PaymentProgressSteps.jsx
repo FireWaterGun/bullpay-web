@@ -83,7 +83,7 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
             paddingRight: `calc(100% / ${steps.length * 2})`,
           }}
         >
-          <div className="h-[2px] rounded-full" style={{ background: 'var(--color-surface-200)' }}>
+          <div className="h-[2px] rounded-full bg-surface-200">
             <div
               className="h-full rounded-full"
               style={{
@@ -111,9 +111,9 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
                   className="flex items-center justify-center rounded-full"
                   style={CIRCLE_STYLES[circleKey]}
                 >
-                  {isDone && <i className="bx bx-check text-success-500 text-[15px]" />}
-                  {state === 'error' && <i className="bx bx-x text-danger-500 text-[15px]" />}
-                  {state === 'active' && <i className={`bx ${step.icon} text-white text-[13px]`} />}
+                  {isDone ? <i className="bx bx-check text-success-500 text-[15px]" /> : null}
+                  {state === 'error' ? <i className="bx bx-x text-danger-500 text-[15px]" /> : null}
+                  {state === 'active' ? <i className={`bx ${step.icon} text-white text-[13px]`} /> : null}
                 </div>
               </div>
               <div

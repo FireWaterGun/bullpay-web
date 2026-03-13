@@ -43,7 +43,7 @@ export default function UserLedgerRow({ entry, t }) {
 
           <div>
             <div className="font-medium leading-[1.2]">{entry.coinSymbol || '-'}</div>
-            {entry.networkName && <small className="text-surface-500 text-xs">{entry.networkName}</small>}
+            {entry.networkName ? <small className="text-surface-500 text-xs">{entry.networkName}</small> : null}
           </div>
         </div>
       </td>

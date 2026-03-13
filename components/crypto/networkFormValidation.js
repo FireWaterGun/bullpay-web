@@ -1,3 +1,5 @@
+const VALID_STATUSES = new Set(['active', 'inactive', 'maintenance', 'deprecated'])
+
 /**
  * Validates the network form data and returns the cleaned payload.
  * Throws an Error with a descriptive message if validation fails.
@@ -72,7 +74,7 @@ export function validateAndBuildPayload(formData, isEdit) {
   }
 
   // Status validation
-  if (formData.status && !['active', 'inactive', 'maintenance', 'deprecated'].includes(formData.status)) {
+  if (formData.status && !VALID_STATUSES.has(formData.status)) {
     throw new Error('Status must be active, inactive, maintenance, or deprecated')
   }
 

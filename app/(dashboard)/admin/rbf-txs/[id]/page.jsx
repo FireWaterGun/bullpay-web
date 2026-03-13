@@ -171,7 +171,7 @@ export default function RbfTxDetail() {
                   <div>
                     <span className="text-surface-500">{t('admin.rbfDetail.error', { defaultValue: 'Error' })}</span>
                     <div className="mt-1 p-2 bg-red-50 dark:bg-red-950/30 rounded text-red-700 dark:text-red-400 text-xs break-all">
-                      {tx.errorCode && <span className="font-semibold mr-1">[{tx.errorCode}]</span>}
+                      {tx.errorCode ? <span className="font-semibold mr-1">[{tx.errorCode}]</span> : null}
                       {tx.errorMessage}
                     </div>
                   </div>

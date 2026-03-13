@@ -18,7 +18,7 @@ export default function LevelCard({ opt, isSelected, onClick }) {
           <i className={`bx ${opt.icon} ${style.icon} mb-2 text-3xl`} />
           <h6 className={`mb-1 text-surface-800 ${isSelected ? style.heading : ''}`}>
             {opt.label}
-            {isSelected && <i className="bx bx-check ml-1" />}
+            {isSelected ? <i className="bx bx-check ml-1" /> : null}
           </h6>
           <small className="text-surface-500 text-xs">{opt.description}</small>
         </div>

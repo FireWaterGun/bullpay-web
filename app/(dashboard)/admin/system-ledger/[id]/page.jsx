@@ -114,7 +114,7 @@ export default function SystemLedgerDetail() {
                     {formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
                   </div>
                   <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
-                  {entry.networkName && <small className="text-surface-500">{entry.networkName}</small>}
+                  {entry.networkName ? <small className="text-surface-500">{entry.networkName}</small> : null}
                 </div>
               </div>
             </div>
@@ -221,7 +221,7 @@ export default function SystemLedgerDetail() {
                         <td className="text-surface-500">{t('admin.detail.usdRate', { defaultValue: 'USD Rate' })}</td>
                         <td>
                           {entry.usdRate ? formatUsd(entry.usdRate) : 'N/A'}
-                          {entry.rateSource && <small className="text-surface-500 ml-1">({entry.rateSource})</small>}
+                          {entry.rateSource ? <small className="text-surface-500 ml-1">({entry.rateSource})</small> : null}
                         </td>
                       </tr>
                       <tr>

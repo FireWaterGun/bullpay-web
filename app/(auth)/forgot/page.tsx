@@ -70,7 +70,7 @@ export default function ForgotPage() {
           Enter your email and we&apos;ll send you instructions to reset your password
         </p>
 
-        {error && <Alert className="mb-4">{error}</Alert>}
+        {error ? <Alert className="mb-4">{error}</Alert> : null}
 
         <form className="space-y-5" onSubmit={onSubmit}>
           {/* Email */}
@@ -89,7 +89,7 @@ export default function ForgotPage() {
               error={emailInvalid}
             />
 
-            {emailInvalid && <p className="mt-1 text-sm text-danger-500">{fieldErrors.email[0]}</p>}
+            {emailInvalid ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.email[0]}</p> : null}
           </div>
 
           {/* Captcha */}
@@ -108,7 +108,7 @@ export default function ForgotPage() {
                 />
               </div>
             )}
-            {captchaInvalid && <p className="mt-2 text-sm text-danger-500">CAPTCHA: {fieldErrors.cfToken[0]}</p>}
+            {captchaInvalid ? <p className="mt-2 text-sm text-danger-500">CAPTCHA: {fieldErrors.cfToken[0]}</p> : null}
           </div>
 
           {/* Submit */}

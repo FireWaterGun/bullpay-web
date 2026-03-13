@@ -18,7 +18,19 @@ const STYLES = {
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
     transform: 'scale(1)',
   },
+  hover: {
+    transition: 'all 0.2s ease',
+    background: 'color-mix(in srgb, var(--color-primary-600) 4%, transparent)',
+    border: '1px solid color-mix(in srgb, var(--color-primary-600) 25%, transparent)',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+    transform: 'scale(1)',
+  },
   networkBadge: { bottom: -2, right: -2, padding: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
+}
+
+const STYLE_SELECTED_CIRCLE = {
+  background: 'linear-gradient(135deg, var(--color-primary-600), color-mix(in srgb, var(--color-primary-600), #000 25%))',
+  boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary-600) 40%, transparent)',
 }
 
 function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
@@ -27,20 +39,14 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
 
   return (
     <div
-      className="flex items-center gap-3 p-3 rounded-lg mb-2 cursor-pointer"
+      className="flex items-center gap-3 p-3 rounded-lg mb-2 cursor-pointer coin-network-item"
       style={isSelected ? STYLES.selected : STYLES.unselected}
       onClick={() => onSelect(cn.id)}
       onMouseEnter={(e) => {
-        if (!isSelected) {
-          e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary-600) 4%, transparent)'
-          e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary-600) 25%, transparent)'
-        }
+        if (!isSelected) Object.assign(e.currentTarget.style, STYLES.hover)
       }}
       onMouseLeave={(e) => {
-        if (!isSelected) {
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.6)'
-          e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary-600) 10%, transparent)'
-        }
+        if (!isSelected) Object.assign(e.currentTarget.style, STYLES.unselected)
       }}
     >
       <div className="relative shrink-0">
@@ -79,16 +85,12 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
         {isSelected ? (
           <div
             className="flex items-center justify-center rounded-full w-7 h-7"
-            style={{
-              background:
-                'linear-gradient(135deg, var(--color-primary-600), color-mix(in srgb, var(--color-primary-600), #000 25%))',
-              boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary-600) 40%, transparent)',
-            }}
+            style={STYLE_SELECTED_CIRCLE}
           >
             <i className="bx bx-check text-white text-[18px]"></i>
           </div>
         ) : (
-          <div className="rounded-full w-7 h-7" style={{ border: '2px solid var(--color-surface-200)' }}></div>
+          <div className="rounded-full w-7 h-7 border-2 border-surface-200"></div>
         )}
       </div>
     </div>

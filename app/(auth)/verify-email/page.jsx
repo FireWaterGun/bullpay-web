@@ -8,6 +8,8 @@ import { useAuth } from '@/app/providers'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
 
+const INVALID_TOKEN_CODES = new Set(['INVALID_TOKEN', 'BIZ_1202', 'TOKEN_INVALID'])
+
 export default function VerifyEmailPage() {
   return (
     <Suspense
@@ -72,7 +74,7 @@ function VerifyEmailContent() {
   const isInvalidToken = useMemo(() => {
     if (status !== 'error') return false
     const m = (message || '').toLowerCase()
-    if (errorCode && ['INVALID_TOKEN', 'BIZ_1202', 'TOKEN_INVALID'].includes(String(errorCode).toUpperCase())) {
+    if (errorCode && INVALID_TOKEN_CODES.has(String(errorCode).toUpperCase())) {
       return true
     }
     return (
@@ -125,10 +127,10 @@ function VerifyEmailContent() {
                 ? 'Your verification link is invalid or expired. Please request a new verification email and try again.'
                 : message || 'Verification failed. Please try again later.'}
           </p>
-          {!!email && <p className="text-xs text-surface-400 mb-4">{email}</p>}
+          {!!email ? <p className="text-xs text-surface-400 mb-4">{email}</p> : null}
 
           <div className="flex flex-wrap gap-2 justify-center mt-4">
-            {status === 'success' && <Button href="/login">Proceed to Login</Button>}
+            {status === 'success' ? <Button href="/login">Proceed to Login</Button> : null}
             {status === 'error' && !isInvalidToken && (
               <>
                 <Button

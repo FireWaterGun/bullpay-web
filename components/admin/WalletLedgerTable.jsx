@@ -149,8 +149,8 @@ export default function WalletLedgerTable({ entries, loading, t }) {
               </td>
               <td>
                 <div>
-                  {purposeLabel && <div className="font-medium text-[0.85rem]">{purposeLabel}</div>}
-                  {metadata?.invoiceNumber && <Badge>{metadata.invoiceNumber}</Badge>}
+                  {purposeLabel ? <div className="font-medium text-[0.85rem]">{purposeLabel}</div> : null}
+                  {metadata?.invoiceNumber ? <Badge>{metadata.invoiceNumber}</Badge> : null}
                   {metadata?.sweepId && !metadata?.invoiceNumber && (
                     <small className="text-surface-500">Sweep #{metadata.sweepId}</small>
                   )}

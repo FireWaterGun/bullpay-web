@@ -23,11 +23,11 @@ export default function AdminBreadcrumb({ items = [] }) {
           const isLast = i === items.length - 1
           return (
             <li key={item.label} className="flex items-center gap-1">
-              {i > 0 && <span className="text-surface-400 mr-0.5">/</span>}
+              {i > 0 ? <span className="text-surface-400 mr-0.5">/</span> : null}
 
               {isLast ? (
                 <span className="text-surface-800 font-medium">
-                  {item.icon && <i className={`bx ${item.icon} mr-1`}></i>}
+                  {item.icon ? <i className={`bx ${item.icon} mr-1`}></i> : null}
                   {item.label}
                 </span>
               ) : (
@@ -35,7 +35,7 @@ export default function AdminBreadcrumb({ items = [] }) {
                   href={item.href || '#'}
                   className="text-surface-500 hover:text-primary transition-colors"
                 >
-                  {item.icon && <i className={`bx ${item.icon} mr-1`}></i>}
+                  {item.icon ? <i className={`bx ${item.icon} mr-1`}></i> : null}
                   {item.label}
                 </Link>
               )}

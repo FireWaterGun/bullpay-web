@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react'
 import Badge from '@/components/ui/Badge'
 import Card from '@/components/ui/Card'
 
+const STYLE_AVATAR_BG = {
+  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0.04) 100%)',
+}
+
 /**
  * Profile sidebar card — vertical layout with avatar, info, and quick stats.
  */
@@ -37,10 +41,7 @@ export default function ProfileCard({ user, selectedTimezone, is2FAEnabled, twoF
       <div className="px-5 pt-6 pb-5 text-center">
         <div
           className="mx-auto mb-4 w-[5.5rem] h-[5.5rem] rounded-2xl flex items-center justify-center"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0.04) 100%)',
-          }}
+          style={STYLE_AVATAR_BG}
         >
           <i className="bx bx-user-circle text-[3rem] text-primary-500" />
         </div>

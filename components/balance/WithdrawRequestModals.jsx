@@ -28,8 +28,7 @@ export function SuccessModalWrapper({ open, onClose, receiveAmount, sym, address
         <div className="text-center px-6 py-8">
           <div className="my-4">
             <div
-              className="rounded-full inline-flex items-center justify-center w-[80px] bg-success-500"
-              style={{ height: '80px' }}
+              className="rounded-full inline-flex items-center justify-center w-[80px] h-20 bg-success-500"
             >
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                 <path

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useToast } from '@/app/providers'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getSettings, upsertSetting } from '@/lib/api/admin'
@@ -44,15 +45,7 @@ export default function RbfSettingsPage() {
   const [formErrors, setFormErrors] = useState({})
   const [saving, setSaving] = useState(false)
 
-  // Escape key to close modal (blocked during save)
-  useEffect(() => {
-    if (!editModal) return
-    const handler = (e) => {
-      if (e.key === 'Escape' && !saving) setEditModal(null)
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [editModal, saving])
+  useEscapeKey(() => { if (!saving) setEditModal(null) }, !!editModal)
 
   // ─── Data Loading ────────────────────────────────────────
 
@@ -357,8 +350,8 @@ export default function RbfSettingsPage() {
         </ul>
       </div>
 
-      {activeTab === 'global' && <RbfGlobalTab t={t} getVal={getVal} openGlobalEdit={openGlobalEdit} />}
-      {activeTab === 'network' && <RbfNetworkTab t={t} getVal={getVal} openNetworkEdit={openNetworkEdit} />}
+      {activeTab === 'global' ? <RbfGlobalTab t={t} getVal={getVal} openGlobalEdit={openGlobalEdit} /> : null}
+      {activeTab === 'network' ? <RbfNetworkTab t={t} getVal={getVal} openNetworkEdit={openNetworkEdit} /> : null}
 
       {/* Edit Modal */}
       {editModal && (

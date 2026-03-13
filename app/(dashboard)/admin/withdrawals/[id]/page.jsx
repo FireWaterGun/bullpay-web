@@ -233,7 +233,7 @@ export default function AdminWithdrawalDetailPage() {
               <DetailRow label={t('withdrawal.toAddress')}>
                 <div className="flex items-center gap-1">
                   <span className="font-mono text-xs break-all">{toAddress || '-'}</span>
-                  {toAddress && <CopyBtn text={toAddress} onCopy={handleCopy} copyId="to-wd" copiedId={copiedId} />}
+                  {toAddress ? <CopyBtn text={toAddress} onCopy={handleCopy} copyId="to-wd" copiedId={copiedId} /> : null}
                 </div>
               </DetailRow>
               {withdrawal.txHash && (

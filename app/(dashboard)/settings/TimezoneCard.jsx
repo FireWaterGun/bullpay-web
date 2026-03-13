@@ -55,8 +55,7 @@ export default function TimezoneCard({ token, user, selectedTimezone, setSelecte
       <div className="px-5 py-3">
         {/* Live clock — compact inline */}
         <div
-          className="flex items-center justify-between mb-3 py-2 px-3 rounded-lg"
-          style={{ background: 'rgba(59, 130, 246, 0.06)' }}
+          className="flex items-center justify-between mb-3 py-2 px-3 rounded-lg bg-blue-500/[0.06]"
         >
           <span className="font-bold text-xl text-primary tabular-nums tracking-wider">
             {now.toLocaleString(undefined, {

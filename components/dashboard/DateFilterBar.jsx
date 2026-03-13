@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo, useRef } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import LocaleDatePicker from '@/components/LocaleDatePicker'
 import { getDateRange } from '@/lib/utils/dateRange'
 
@@ -53,16 +54,7 @@ export default function DateFilterBar({
 
   const activePreset = presets.find((p) => p.key === datePreset)
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false)
-      }
-    }
-    if (dropdownOpen) document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [dropdownOpen])
+  useClickOutside(dropdownRef, () => setDropdownOpen(false), dropdownOpen)
 
   const dateRange = useMemo(() => {
     if (showCustom && customFrom && customTo) {
@@ -144,7 +136,7 @@ export default function DateFilterBar({
                         : 'text-surface-600 hover:bg-surface-50 dark:text-surface-700 dark:hover:bg-white/6'
                     }`}
                   >
-                    {datePreset === p.key && <i className="bx bx-check mr-1.5"></i>}
+                    {datePreset === p.key ? <i className="bx bx-check mr-1.5"></i> : null}
                     {p.label}
                   </button>
                 ))}

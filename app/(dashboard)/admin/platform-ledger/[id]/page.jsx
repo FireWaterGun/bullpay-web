@@ -115,7 +115,7 @@ export default function PlatformLedgerDetail() {
         <div className="p-5">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              {entry.coinSymbol && <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} />}
+              {entry.coinSymbol ? <CoinImg symbol={entry.coinSymbol} networkSymbol={entry.networkSymbol} size={48} /> : null}
               <div>
                 <h4 className="mb-1">
                   {t('admin.platformLedger.detailTitle', {
@@ -148,7 +148,7 @@ export default function PlatformLedgerDetail() {
                 {formatAmount(entry.amount)} <span className="text-[0.75em] font-normal">{entry.coinSymbol}</span>
               </div>
               <div className="text-surface-500">{formatUsd(entry.amountUsd)}</div>
-              {entry.networkName && <small className="text-surface-500">{entry.networkName}</small>}
+              {entry.networkName ? <small className="text-surface-500">{entry.networkName}</small> : null}
             </div>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function PlatformLedgerDetail() {
                           className="mr-3"
                         />
                         <span className="font-medium">{entry.coinSymbol || '-'}</span>
-                        {entry.networkName && <span className="text-surface-500 ml-1">({entry.networkName})</span>}
+                        {entry.networkName ? <span className="text-surface-500 ml-1">({entry.networkName})</span> : null}
                       </div>
                     </td>
                   </tr>

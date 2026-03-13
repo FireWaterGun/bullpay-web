@@ -94,7 +94,7 @@ export default function SweepDetail() {
             <div className="p-5">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
-                  {coinSymbol && <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} />}
+                  {coinSymbol ? <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} /> : null}
                   <div>
                     <h4 className="mb-1">
                       {t('admin.sweepDetail.detailTitle', { defaultValue: 'Sweep Transaction #{{id}}', id: sweep.id })}
@@ -108,8 +108,8 @@ export default function SweepDetail() {
                           {metadata.type}
                         </Badge>
                       )}
-                      {coinSymbol && <Badge color="secondary">{coinSymbol}</Badge>}
-                      {networkName && <Badge color="secondary">{networkName}</Badge>}
+                      {coinSymbol ? <Badge color="secondary">{coinSymbol}</Badge> : null}
+                      {networkName ? <Badge color="secondary">{networkName}</Badge> : null}
                     </div>
                   </div>
                 </div>
@@ -118,7 +118,7 @@ export default function SweepDetail() {
                     {sweep.amount || formatAmount(sweep.amountRaw, sweep.decimals, coinSymbol, networkSymbol)}{' '}
                     <span className="text-[0.75em] font-normal">{coinSymbol}</span>
                   </div>
-                  {sweep.amountUsd && <div className="text-surface-500">{formatUsd(sweep.amountUsd)}</div>}
+                  {sweep.amountUsd ? <div className="text-surface-500">{formatUsd(sweep.amountUsd)}</div> : null}
                 </div>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function SweepDetail() {
                               <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={24} className="mr-3" />
                               <div>
                                 <span className="font-medium">{coinSymbol}</span>
-                                {networkName && <small className="text-surface-500 ml-1">/ {networkName}</small>}
+                                {networkName ? <small className="text-surface-500 ml-1">/ {networkName}</small> : null}
                               </div>
                             </div>
                           </td>
@@ -213,7 +213,7 @@ export default function SweepDetail() {
                           </td>
                           <td>
                             {formatUsd(sweep.usdRate)}
-                            {sweep.rateSource && <small className="text-surface-500 ml-1">({sweep.rateSource})</small>}
+                            {sweep.rateSource ? <small className="text-surface-500 ml-1">({sweep.rateSource})</small> : null}
                           </td>
                         </tr>
                       )}

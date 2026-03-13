@@ -7,6 +7,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
 import useApi from '@/hooks/useApi'
+import { VALID_SORT_ORDERS } from '@/lib/constants'
 import { getRbfTxs } from '@/lib/api/admin'
 import RbfTransactionFilters from '@/components/admin/RbfTransactionFilters'
 import RbfTransactionTable from '@/components/admin/RbfTransactionTable'
@@ -31,7 +32,7 @@ export default function RbfTransactions() {
   const initEndDate = searchParams.get('endDate') || ''
   const initSortBy = searchParams.get('sortBy') || ''
   const rawSortOrder = searchParams.get('sortOrder') || ''
-  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
+  const initSortOrder = VALID_SORT_ORDERS.has(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [currentPage, setCurrentPage] = useState(initPage)

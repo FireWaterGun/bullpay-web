@@ -8,6 +8,13 @@ import Card from '../ui/Card'
 import { Input, InputGroup, InputIcon, Label } from '../ui/Input'
 import Spinner from '../ui/Spinner'
 
+const STYLE_GRADIENT_BAR = {
+  background: 'linear-gradient(90deg, var(--color-primary-600) 0%, #a855f7 50%, #06b6d4 100%)',
+}
+const STYLE_ICON_BG = {
+  background: 'linear-gradient(135deg, rgba(99,102,241,0.16) 0%, rgba(99,102,241,0.04) 100%)',
+}
+
 export default function RegisterForm({ onRegistered, token, t }) {
   const toast = useToast()
   const [loading, setLoading] = useState(false)
@@ -106,14 +113,14 @@ export default function RegisterForm({ onRegistered, token, t }) {
           {/* Gradient bar */}
           <div
             className="h-1"
-            style={{ background: 'linear-gradient(90deg, var(--color-primary-600) 0%, #a855f7 50%, #06b6d4 100%)' }}
+            style={STYLE_GRADIENT_BAR}
           />
 
           <div className="p-6 text-center py-10 px-4">
             {/* Icon */}
             <div
               className="mx-auto mb-4 inline-flex items-center justify-center rounded-full w-20 h-20"
-              style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.16) 0%, rgba(99,102,241,0.04) 100%)' }}
+              style={STYLE_ICON_BG}
             >
               <i className="bx bx-store text-primary-600 dark:text-primary-400 text-[2.75rem]"></i>
             </div>
@@ -184,7 +191,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
         {/* Gradient bar */}
         <div
           className="h-1"
-          style={{ background: 'linear-gradient(90deg, var(--color-primary-600) 0%, #a855f7 50%, #06b6d4 100%)' }}
+          style={STYLE_GRADIENT_BAR}
         />
 
         <div className="px-6 py-4 border-b border-surface-200 flex items-center gap-3">
@@ -230,7 +237,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                 >
                   {s.label}
                 </span>
-                {s.num < 3 && <i className="bx bx-chevron-right text-surface-400 dark:text-surface-500 ml-1"></i>}
+                {s.num < 3 ? <i className="bx bx-chevron-right text-surface-400 dark:text-surface-500 ml-1"></i> : null}
               </div>
             ))}
           </div>

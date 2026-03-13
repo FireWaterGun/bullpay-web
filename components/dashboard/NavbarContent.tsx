@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { formatUsd } from '@/lib/utils/format'
 import NotificationDropdown from './NotificationDropdown'
 
@@ -32,14 +33,7 @@ function useDropdown(): [
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (!open) return
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [open])
+  useClickOutside(containerRef, () => setOpen(false), open)
 
   return [containerRef, open, setOpen]
 }

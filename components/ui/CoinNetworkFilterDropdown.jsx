@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import CoinImg from '@/components/CoinImg'
 import { inputClass } from '@/components/ui/Input'
 
@@ -23,13 +24,7 @@ export default function CoinNetworkFilterDropdown({ coinNetworks = [], value, on
   const ref = useRef(null)
   const searchRef = useRef(null)
 
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  useClickOutside(ref, () => setOpen(false))
 
   // Reset search & focus when dropdown opens
   const prevOpenRef = useRef(false)

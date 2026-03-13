@@ -6,6 +6,7 @@ import { useRouter, useSearchParams as useNextSearchParams } from 'next/navigati
 import { useToast } from '@/app/providers'
 import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { VALID_SORT_ORDERS } from '@/lib/constants'
 import { getUserBalances, getUserBalancesSummary } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
@@ -39,7 +40,7 @@ export default function UserBalanceListPage() {
 
   const initSortBy = searchParams.get('sortBy') || ''
   const rawSortOrder = searchParams.get('sortOrder') || ''
-  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
+  const initSortOrder = VALID_SORT_ORDERS.has(rawSortOrder) ? rawSortOrder : ''
   const initMinValue = searchParams.get('minValueUsd') || ''
   const initSearch = searchParams.get('search') || ''
   const initPage = parseInt(searchParams.get('page')) || 1

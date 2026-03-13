@@ -198,7 +198,7 @@ export default function NetworkForm() {
           </Card>
         </div>
         {/* Read-only info panel (edit mode only) */}
-        {isEdit && networkMeta && <NetworkInfoPanel networkMeta={networkMeta} />}
+        {isEdit && networkMeta ? <NetworkInfoPanel networkMeta={networkMeta} /> : null}
       </div>
 
       <DeleteConfirmModal

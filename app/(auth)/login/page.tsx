@@ -113,7 +113,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {error && <Alert className="mb-4">{error}</Alert>}
+        {error ? <Alert className="mb-4">{error}</Alert> : null}
         {backupCodeWarning && (
           <Alert variant="warning" className="mb-4">
             {backupCodeWarning}

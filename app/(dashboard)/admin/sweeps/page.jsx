@@ -7,6 +7,7 @@ import { useToast } from '@/app/providers'
 import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
+import { VALID_SORT_ORDERS } from '@/lib/constants'
 import { getSweeps, forceSweep } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { useCoins } from '@/hooks/useCoins'
@@ -34,7 +35,7 @@ export default function SweepTransactions() {
   const initEndDate = searchParams.get('endDate') || ''
   const initSortBy = searchParams.get('sortBy') || ''
   const rawSortOrder = searchParams.get('sortOrder') || ''
-  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
+  const initSortOrder = VALID_SORT_ORDERS.has(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [currentPage, setCurrentPage] = useState(initPage)

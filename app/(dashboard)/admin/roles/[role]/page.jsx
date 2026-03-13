@@ -286,7 +286,7 @@ export default function RolePermissions() {
                 </Badge>
               )}
             </div>
-            {description && <p className="text-surface-500 mb-0 text-[0.85rem]">{description}</p>}
+            {description ? <p className="text-surface-500 mb-0 text-[0.85rem]">{description}</p> : null}
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">

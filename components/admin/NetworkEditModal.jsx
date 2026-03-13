@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { useAuth, useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getNetworkById, updateNetwork } from '@/lib/api/admin'
@@ -66,13 +67,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
     if (networkId) loadNetwork()
   }, [networkId, loadNetwork])
 
-  useEffect(() => {
-    function onKey(e) {
-      if (e.key === 'Escape' && !saving) onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [onClose, saving])
+  useEscapeKey(() => { if (!saving) onClose() })
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target
@@ -160,7 +155,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
           <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200 shrink-0">
             <h5 className="text-lg font-semibold">
               {t('crypto.editNetwork', { defaultValue: 'Edit Network' })}
-              {formData.symbol && <span className="text-primary ml-2">{formData.symbol}</span>}
+              {formData.symbol ? <span className="text-primary ml-2">{formData.symbol}</span> : null}
             </h5>
             <button
               type="button"
@@ -225,7 +220,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.name}
                         error={!!fieldErrors.name}
                       />
-                      {fieldErrors.name && <p className="mt-1 text-sm text-danger-500">{fieldErrors.name}</p>}
+                      {fieldErrors.name ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.name}</p> : null}
                     </div>
 
                     {/* Status */}
@@ -253,7 +248,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.chainId}
                         error={!!fieldErrors.chainId}
                       />
-                      {fieldErrors.chainId && <p className="mt-1 text-sm text-danger-500">{fieldErrors.chainId}</p>}
+                      {fieldErrors.chainId ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.chainId}</p> : null}
                     </div>
 
                     {/* Confirmation Blocks */}
@@ -292,7 +287,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.rpcUrl}
                         error={!!fieldErrors.rpcUrl}
                       />
-                      {fieldErrors.rpcUrl && <p className="mt-1 text-sm text-danger-500">{fieldErrors.rpcUrl}</p>}
+                      {fieldErrors.rpcUrl ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.rpcUrl}</p> : null}
                     </div>
 
                     {/* Explorer URL */}
@@ -330,7 +325,7 @@ export default function NetworkEditModal({ networkId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.apiUrl}
                         error={!!fieldErrors.apiUrl}
                       />
-                      {fieldErrors.apiUrl && <p className="mt-1 text-sm text-danger-500">{fieldErrors.apiUrl}</p>}
+                      {fieldErrors.apiUrl ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.apiUrl}</p> : null}
                     </div>
 
                     {/* Is Testnet */}

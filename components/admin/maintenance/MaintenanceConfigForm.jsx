@@ -46,7 +46,7 @@ export default function MaintenanceConfigForm({
         <div className="mb-4">
           <Label>
             {t('admin.maintenance.messageEn', { defaultValue: 'Message' })}
-            {level !== 'none' && <span className="text-danger-500"> *</span>}
+            {level !== 'none' ? <span className="text-danger-500"> *</span> : null}
           </Label>
           <Input
             rows={2}

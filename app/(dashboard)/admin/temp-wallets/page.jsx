@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useToast } from '@/app/providers'
 import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { VALID_SORT_ORDERS } from '@/lib/constants'
 import { getTempWallets } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -45,7 +46,7 @@ export default function TempWalletList() {
   const initAddress = searchParams.get('address') || ''
   const initSortBy = searchParams.get('sortBy') || ''
   const rawSortOrder = searchParams.get('sortOrder') || ''
-  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
+  const initSortOrder = VALID_SORT_ORDERS.has(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [currentPage, setCurrentPage] = useState(initPage)

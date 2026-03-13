@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
@@ -58,14 +59,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
     if (coinId) loadCoin()
   }, [coinId, loadCoin])
 
-  // Close on Escape
-  useEffect(() => {
-    function onKey(e) {
-      if (e.key === 'Escape' && !saving) onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [onClose, saving])
+  useEscapeKey(() => { if (!saving) onClose() })
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -139,7 +133,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
           <div className="flex items-center justify-between px-5 py-4 border-b border-surface-200">
             <h5 className="text-lg font-semibold">
               {t('crypto.editCoin', { defaultValue: 'Edit Coin' })}
-              {formData.symbol && <span className="text-primary ml-2">{formData.symbol}</span>}
+              {formData.symbol ? <span className="text-primary ml-2">{formData.symbol}</span> : null}
             </h5>
             <button
               type="button"
@@ -195,7 +189,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.name}
                         error={!!fieldErrors.name}
                       />
-                      {fieldErrors.name && <p className="mt-1 text-sm text-danger-500">{fieldErrors.name}</p>}
+                      {fieldErrors.name ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.name}</p> : null}
                     </div>
                     <div>
                       <Label htmlFor="modal-status">{t('invoices.statusCol', { defaultValue: 'Status' })}</Label>
@@ -216,7 +210,7 @@ export default function CoinEditModal({ coinId, onClose, onSaved }) {
                         aria-invalid={!!fieldErrors.logoUrl}
                         error={!!fieldErrors.logoUrl}
                       />
-                      {fieldErrors.logoUrl && <p className="mt-1 text-sm text-danger-500">{fieldErrors.logoUrl}</p>}
+                      {fieldErrors.logoUrl ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.logoUrl}</p> : null}
                     </div>
                   </div>
                 </form>

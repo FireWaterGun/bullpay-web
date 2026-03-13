@@ -134,7 +134,7 @@ export default function SystemLedgerTable({
 
                       <div>
                         <div className="font-medium leading-[1.2]">{entry.coinSymbol || '-'}</div>
-                        {entry.networkName && <small className="text-surface-500 text-xs">{entry.networkName}</small>}
+                        {entry.networkName ? <small className="text-surface-500 text-xs">{entry.networkName}</small> : null}
                       </div>
                     </div>
                   </td>
@@ -159,8 +159,8 @@ export default function SystemLedgerTable({
                   </td>
                   <td>
                     <div>
-                      {purposeLabel && <div className="font-medium text-[0.85rem]">{purposeLabel}</div>}
-                      {metadata?.invoiceNumber && <Badge>{metadata.invoiceNumber}</Badge>}
+                      {purposeLabel ? <div className="font-medium text-[0.85rem]">{purposeLabel}</div> : null}
+                      {metadata?.invoiceNumber ? <Badge>{metadata.invoiceNumber}</Badge> : null}
                       {metadata?.sweepId && !metadata?.invoiceNumber && (
                         <small className="text-surface-500">Sweep #{metadata.sweepId}</small>
                       )}

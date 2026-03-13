@@ -93,7 +93,7 @@ export default function GasTopupDetail() {
             <div className="p-5">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
-                  {coinSymbol && <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} />}
+                  {coinSymbol ? <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={48} /> : null}
                   <div>
                     <h4 className="mb-1">
                       {t('admin.gasTopup.detailTitle', { id: topup.id, defaultValue: 'Gas Topup #{{id}}' })}
@@ -102,8 +102,8 @@ export default function GasTopupDetail() {
                       <span className={getStatusBadgeClass(topup.status, 'gasTopup')}>
                         {String(topup.status || '').toUpperCase()}
                       </span>
-                      {coinSymbol && <Badge color="secondary">{coinSymbol}</Badge>}
-                      {networkName && <Badge color="secondary">{networkName}</Badge>}
+                      {coinSymbol ? <Badge color="secondary">{coinSymbol}</Badge> : null}
+                      {networkName ? <Badge color="secondary">{networkName}</Badge> : null}
                     </div>
                   </div>
                 </div>

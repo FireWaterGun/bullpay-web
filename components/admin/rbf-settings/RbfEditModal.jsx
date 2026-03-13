@@ -94,7 +94,7 @@ export default function RbfEditModal({
               {t('admin.rbfSettings.cancel', { defaultValue: 'Cancel' })}
             </Button>
             <Button onClick={onSave} disabled={saving}>
-              {saving && <Spinner role="status" className="w-4 h-4 mr-1" />}
+              {saving ? <Spinner role="status" className="w-4 h-4 mr-1" /> : null}
               {t('admin.rbfSettings.save', { defaultValue: 'Save Changes' })}
             </Button>
           </div>
@@ -176,7 +176,7 @@ function GlobalForm({ t, editModal, editForm, updateField, formErrors }) {
             onChange={(e) => updateField('maxRbfPerHour', e.target.value)}
             error={formErrors.maxRbfPerHour}
           />
-          {formErrors.maxRbfPerHour && <div className="text-xs text-danger-500 mt-1">{formErrors.maxRbfPerHour}</div>}
+          {formErrors.maxRbfPerHour ? <div className="text-xs text-danger-500 mt-1">{formErrors.maxRbfPerHour}</div> : null}
           <div className="text-xs text-surface-500 mt-1">
             {t('admin.rbfSettings.maxRbfPerHourDesc', {
               defaultValue: 'Maximum number of RBF replacement transactions the system can submit per hour (global).',
@@ -412,7 +412,7 @@ function NetworkForm({ t, editModal, editForm, setEditForm, updateField, formErr
                 onChange={(e) => updateField('maxCostRatio', e.target.value)}
                 error={formErrors.maxCostRatio}
               />
-              {formErrors.maxCostRatio && <div className="text-xs text-danger-500 mt-1">{formErrors.maxCostRatio}</div>}
+              {formErrors.maxCostRatio ? <div className="text-xs text-danger-500 mt-1">{formErrors.maxCostRatio}</div> : null}
               <div className="text-xs text-surface-500 mt-1">
                 {t('admin.rbfSettings.maxCostRatioDesc', {
                   defaultValue: 'Max gas cost as fraction of tx value (0.05 = 5%).',

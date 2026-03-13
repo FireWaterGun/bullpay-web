@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useEffect, useCallback, useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { Button, Spinner } from './ui'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 
 /**
  * ConfirmModal – confirmation dialog.
@@ -26,24 +27,7 @@ export default function ConfirmModal({
 }) {
   const overlayRef = useRef(null)
 
-  // ESC key handler
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.key === 'Escape' && keyboard && !busy && onCancel) onCancel()
-    },
-    [keyboard, busy, onCancel]
-  )
-
-  useEffect(() => {
-    if (show) {
-      document.addEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = 'hidden'
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
-    }
-  }, [show, handleKeyDown])
+  useEscapeKey(() => { if (keyboard && !busy && onCancel) onCancel() }, show)
 
   if (!show) return null
 

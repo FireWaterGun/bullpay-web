@@ -201,8 +201,8 @@ function PasswordField({ id, label, show, onToggle, autoComplete, error, registe
           <i className={`bx ${show ? 'bx-show' : 'bx-hide'}`} />
         </InputIcon>
       </InputGroup>
-      {error && <div className="text-xs text-danger-500 mt-1 block">{error.message}</div>}
-      {hint && <div className="text-xs text-surface-500 mt-1">{hint}</div>}
+      {error ? <div className="text-xs text-danger-500 mt-1 block">{error.message}</div> : null}
+      {hint ? <div className="text-xs text-surface-500 mt-1">{hint}</div> : null}
     </div>
   )
 }

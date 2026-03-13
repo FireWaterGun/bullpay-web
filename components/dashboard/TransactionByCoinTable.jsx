@@ -69,7 +69,7 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
                           <div className="flex items-center">
                             <CoinImg symbol={item.coinSymbol} size={24} className="mr-2" />
                             <span className="font-medium">{item.coinSymbol}</span>
-                            {item.networkName && <small className="text-surface-500 ml-1">/ {item.networkName}</small>}
+                            {item.networkName ? <small className="text-surface-500 ml-1">/ {item.networkName}</small> : null}
                           </div>
                         </td>
                         <td className="text-right">{formatUsd(deposit)}</td>

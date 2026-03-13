@@ -163,7 +163,7 @@ export default function WalletCreate() {
                   </button>
                 )
               })}
-              {networks.length === 0 && <div className="text-surface-500 text-sm">{t('common.noData')}</div>}
+              {networks.length === 0 ? <div className="text-surface-500 text-sm">{t('common.noData')}</div> : null}
             </div>
           ) : (
             <div className="text-surface-500">{t('form.selectCoin')}</div>

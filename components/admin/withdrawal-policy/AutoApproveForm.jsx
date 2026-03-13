@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { useAuth } from '@/app/providers'
 import { upsertSetting } from '@/lib/api/admin'
 import { useToast } from '@/app/providers'
@@ -142,20 +143,7 @@ export default function AutoApproveForm({ autoApprove, setAutoApprove }) {
 }
 
 function AutoApproveModal({ formData, setFormData, onClose, onSave, loading, t }) {
-  // Stable ref for onClose to avoid listener churn
-  const onCloseRef = useRef(onClose)
-  useEffect(() => {
-    onCloseRef.current = onClose
-  })
-
-  // Escape key handler
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'Escape' && !loading) onCloseRef.current()
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [loading])
+  useEscapeKey(() => { if (!loading) onClose() })
 
   return (
     <div

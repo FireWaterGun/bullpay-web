@@ -21,8 +21,8 @@ export default function AddressAuditLog({ logs = EMPTY_LOGS, t }) {
           <i className="bx bx-time-five text-surface-400 mt-1"></i>
           <div>
             <div className="text-sm">{log.action || log.event || '-'}</div>
-            {log.user?.email && <div className="text-surface-500 text-sm">by {log.user.email}</div>}
-            {log.reason && <div className="text-surface-500 text-sm">Reason: {log.reason}</div>}
+            {log.user?.email ? <div className="text-surface-500 text-sm">by {log.user.email}</div> : null}
+            {log.reason ? <div className="text-surface-500 text-sm">Reason: {log.reason}</div> : null}
             <div className="text-surface-500 text-sm">{fmtDate(log.createdAt)}</div>
           </div>
         </li>

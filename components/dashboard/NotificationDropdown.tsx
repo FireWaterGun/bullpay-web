@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import {
@@ -39,14 +40,7 @@ export default function NotificationDropdown({ refreshRef }: NotificationDropdow
   const ref = useRef<HTMLDivElement>(null)
 
   // Click outside to close
-  useEffect(() => {
-    if (!open) return
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [open])
+  useClickOutside(ref, () => setOpen(false), open)
 
   const loadNotifications = useCallback(async () => {
     if (!token) return

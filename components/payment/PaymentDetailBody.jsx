@@ -9,6 +9,16 @@ import dynamic from 'next/dynamic'
 import PaymentProgressSteps from '@/components/payment/PaymentProgressSteps'
 const PaymentQRSection = dynamic(() => import('@/components/payment/PaymentQRSection'), { ssr: false })
 
+// Static style constants (prevent object recreation per render)
+const STYLE_PRIMARY_SUBTLE_BG = {
+  background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
+}
+const STYLE_SUCCESS_REDIRECT = {
+  background: 'linear-gradient(135deg, #22c55e 0%, color-mix(in srgb, #22c55e, #000 20%) 100%)',
+  boxShadow: '0 8px 24px color-mix(in srgb, #22c55e 40%, transparent)',
+  transition: 'all 0.3s ease',
+}
+
 /**
  * Shared payment detail card body — used by both /pay and /invoice pages
  * after network is already selected (Step 2 / direct invoice).
@@ -41,12 +51,10 @@ export default function PaymentDetailBody({
       {/* Merchant Name */}
       {invoice.merchantName && (
         <div
-          className="flex items-center gap-2 mb-3 pb-3"
-          style={{ borderBottom: '1px solid var(--color-surface-200)' }}
+          className="flex items-center gap-2 mb-3 pb-3 border-b border-surface-200"
         >
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: 'color-mix(in srgb, var(--color-primary-600) 10%, transparent)' }}
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-primary-600/10"
           >
             <i className="bx bx-store text-primary-600 text-[16px]"></i>
           </div>
@@ -65,8 +73,7 @@ export default function PaymentDetailBody({
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
               <div
-                className="flex items-center justify-center rounded-full text-white text-[0.7rem] font-bold"
-                style={{ width: 26, height: 26, background: '#22c55e' }}
+                className="flex items-center justify-center rounded-full text-white text-[0.7rem] font-bold w-[26px] h-[26px] bg-green-500"
               >
                 <i className="bx bx-check text-[16px]"></i>
               </div>
@@ -75,13 +82,11 @@ export default function PaymentDetailBody({
               </span>
             </div>
             <div
-              className="flex-1 mx-[16px]"
-              style={{ height: 1, background: 'var(--color-primary-600)' }}
+              className="flex-1 mx-[16px] h-px bg-primary-600"
             ></div>
             <div className="flex items-center gap-2">
               <div
-                className="flex items-center justify-center rounded-full bg-primary-600 text-white text-[0.7rem] font-bold"
-                style={{ width: 26, height: 26 }}
+                className="flex items-center justify-center rounded-full bg-primary-600 text-white text-[0.7rem] font-bold w-[26px] h-[26px]"
               >
                 2
               </div>
@@ -114,11 +119,7 @@ export default function PaymentDetailBody({
           </div>
         </div>
         <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-          style={{
-            background: 'color-mix(in srgb, var(--color-primary-600) 6%, transparent)',
-            border: '1px solid color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
-          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-600/6 border border-primary-600/15"
         >
           <NetworkIcon networkSymbol={networkSym} size={18} />
           <span className="font-semibold text-[0.7rem] text-primary-600 uppercase tracking-[0.5px]">
@@ -131,11 +132,8 @@ export default function PaymentDetailBody({
       {!isPaid && remainingMs !== undefined && (
         <div className="mb-2">
           <div
-            className="flex items-center justify-between p-3 rounded-xl"
-            style={{
-              background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
-              border: '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
-            }}
+            className="flex items-center justify-between p-3 rounded-xl border border-primary-600/10"
+            style={STYLE_PRIMARY_SUBTLE_BG}
           >
             <div className="flex items-center gap-2">
               <i
@@ -165,8 +163,7 @@ export default function PaymentDetailBody({
           {/* Progress bar */}
           {timerPercent !== undefined && (
             <div
-              className="mt-1.5 h-[3px] rounded-full overflow-hidden"
-              style={{ background: 'color-mix(in srgb, var(--color-surface-200) 60%, transparent)' }}
+              className="mt-1.5 h-[3px] rounded-full overflow-hidden bg-surface-200/60"
             >
               <div
                 className="h-full rounded-full"
@@ -213,11 +210,7 @@ export default function PaymentDetailBody({
             {t('invoices.paymentAddress')}
           </div>
           <div
-            className="flex items-center gap-2 p-3 rounded-xl"
-            style={{
-              background: 'var(--color-surface-50, #f8f9fa)',
-              border: '1px solid var(--color-surface-200)',
-            }}
+            className="flex items-center gap-2 p-3 rounded-xl bg-surface-50 border border-surface-200"
           >
             <code className="grow break-all mb-0 text-[0.78rem] text-surface-900 bg-transparent font-medium">
               {invoice.paymentAddress || '-'}
@@ -246,11 +239,7 @@ export default function PaymentDetailBody({
       {/* Description */}
       {invoice.description && (
         <div
-          className="mb-2 p-2.5 rounded-xl"
-          style={{
-            background: 'var(--color-surface-50, #f8f9fa)',
-            border: '1px solid var(--color-surface-200)',
-          }}
+          className="mb-2 p-2.5 rounded-xl bg-surface-50 border border-surface-200"
         >
           <div className="text-sm mb-2 text-surface-500 uppercase tracking-[1px] text-[0.65rem] font-semibold">
             {t('invoices.description')}
@@ -262,11 +251,7 @@ export default function PaymentDetailBody({
       {/* Paid At Info */}
       {isPaid && invoice.paidAt && (
         <div
-          className="mb-2 flex items-center gap-2 py-2.5 px-3 rounded-xl"
-          style={{
-            background: 'color-mix(in srgb, #22c55e 5%, transparent)',
-            border: '1px solid color-mix(in srgb, #22c55e 15%, transparent)',
-          }}
+          className="mb-2 flex items-center gap-2 py-2.5 px-3 rounded-xl bg-green-500/5 border border-green-500/15"
         >
           <i className="bx bx-calendar-check text-success-500 text-[22px] shrink-0"></i>
           <div className="grow">
@@ -293,11 +278,8 @@ export default function PaymentDetailBody({
       {/* Partial Payment Progress */}
       {hasPartial && (
         <div
-          className="mb-2 p-2.5 rounded-xl"
-          style={{
-            background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
-            border: '1px solid color-mix(in srgb, var(--color-primary-600) 12%, transparent)',
-          }}
+          className="mb-2 p-2.5 rounded-xl border border-primary-600/12"
+          style={STYLE_PRIMARY_SUBTLE_BG}
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-[0.65rem] font-semibold uppercase tracking-[1px] text-surface-500">
@@ -307,7 +289,7 @@ export default function PaymentDetailBody({
               {formatAmount(invoice.paidAmount || '0')} / {formatAmount(invoice.amount)} {coinSym}
             </span>
           </div>
-          <div className="h-[4px] rounded-full overflow-hidden" style={{ background: 'var(--color-surface-200)' }}>
+          <div className="h-[4px] rounded-full overflow-hidden bg-surface-200">
             <div
               className="h-full rounded-full"
               style={{
@@ -331,11 +313,7 @@ export default function PaymentDetailBody({
       {/* Network Warning */}
       {!isPaid && !isExpiredUnpaid && coinSym && networkName && (
         <div
-          className="flex items-start gap-2 p-2.5 rounded-xl mt-2"
-          style={{
-            background: 'color-mix(in srgb, #f59e0b 8%, transparent)',
-            border: '1px solid color-mix(in srgb, #f59e0b 25%, transparent)',
-          }}
+          className="flex items-start gap-2 p-2.5 rounded-xl mt-2 bg-amber-500/8 border border-amber-500/25"
         >
           <i className="bx bx-error shrink-0 text-[20px] text-warning-500 mt-[1px]"></i>
           <div className="text-[0.8rem] text-surface-900 leading-[1.5]">
@@ -365,11 +343,7 @@ export default function PaymentDetailBody({
           <a
             href={invoice.successUrl}
             className="w-full py-3 font-bold flex items-center justify-center gap-2 text-white border-none rounded-xl text-[1rem] tracking-[0.5px] no-underline"
-            style={{
-              background: 'linear-gradient(135deg, #22c55e 0%, color-mix(in srgb, #22c55e, #000 20%) 100%)',
-              boxShadow: '0 8px 24px color-mix(in srgb, #22c55e 40%, transparent)',
-              transition: 'all 0.3s ease',
-            }}
+            style={STYLE_SUCCESS_REDIRECT}
           >
             <i className="bx bx-check-circle text-[20px]"></i>
             {redirectCountdown != null

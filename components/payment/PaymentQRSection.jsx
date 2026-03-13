@@ -8,6 +8,11 @@ import Button from '../ui/Button'
 
 const QRCode = dynamic(() => import('qrcode.react').then((m) => m.QRCodeSVG), { ssr: false })
 
+// Static style constant
+const STYLE_PRIMARY_SUBTLE_BG = {
+  background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
+}
+
 export default function PaymentQRSection({
   invoice,
   coinSym,
@@ -29,17 +34,16 @@ export default function PaymentQRSection({
     <div className="mb-2">
       {/* QR + Amount Card */}
       <div
-        className="rounded-xl"
+        className="rounded-xl border border-primary-600/12"
         style={{
-          background: 'color-mix(in srgb, var(--color-primary-600) 3%, var(--color-surface-0, #fff))',
-          border: '1px solid color-mix(in srgb, var(--color-primary-600) 12%, transparent)',
+          ...STYLE_PRIMARY_SUBTLE_BG,
           padding: isPaid ? '10px 14px' : '12px',
         }}
       >
         {/* QR Code - Centered */}
         {!isPaid && (
           <div className="text-center mb-2">
-            <div className="inline-block relative p-2.5 rounded-xl" style={{ background: '#fff' }}>
+            <div className="inline-block relative p-2.5 rounded-xl bg-white">
               <QRCode value={paymentValue} size={160} includeMargin={false} level="H" />
             </div>
           </div>

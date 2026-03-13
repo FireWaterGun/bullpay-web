@@ -16,17 +16,6 @@ const cardStyle = {
   borderRadius: '0.75rem',
   border: 'none',
   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-  transition: 'transform 0.2s, box-shadow 0.2s',
-}
-
-function handleMouseEnter(e) {
-  e.currentTarget.style.transform = 'translateY(-4px)'
-  e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.12)'
-}
-
-function handleMouseLeave(e) {
-  e.currentTarget.style.transform = 'translateY(0)'
-  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)'
 }
 
 const TREND_STYLES = {
@@ -53,7 +42,7 @@ const TREND_STYLES = {
 export function StatCard({ icon, color, value, label }) {
   return (
     <div className="col-span-12 md:col-span-6 lg:col-span-3">
-      <Card style={cardStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="h-full">
+      <Card style={cardStyle} className="h-full transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[0_8px_16px_rgba(0,0,0,0.12)]">
         <div className="p-5">
           <div className="flex items-center mb-3">
             <div

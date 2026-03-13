@@ -1,22 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 
 export default function SettingModal({ title, onClose, onSave, saving, children, t }) {
-  const onCloseRef = useRef(onClose)
-  useEffect(() => {
-    onCloseRef.current = onClose
-  })
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'Escape' && !saving) onCloseRef.current()
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [saving])
+  useEscapeKey(() => { if (!saving) onClose() })
 
   return (
     <>

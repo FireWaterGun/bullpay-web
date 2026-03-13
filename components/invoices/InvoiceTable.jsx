@@ -118,7 +118,7 @@ export default function InvoiceTable({ items, pagination, loading, onPageChange,
                       <CoinImg coin={it.coin} symbol={coinSym} networkSymbol={netSym} size={24} className="mr-2" />
                       <div>
                         <div className="font-medium leading-[1.2]">{coinSym || '-'}</div>
-                        {it.network?.name && <small className="text-surface-500 text-xs">{it.network.name}</small>}
+                        {it.network?.name ? <small className="text-surface-500 text-xs">{it.network.name}</small> : null}
                       </div>
                     </div>
                   </td>

@@ -81,7 +81,7 @@ export default function CredentialsForm({ loading, error, onSubmit }: Credential
             suppressHydrationWarning
             error={emailInvalid}
           />
-          {emailInvalid && <p className="mt-1 text-sm text-danger-500">{fieldErrors.email[0]}</p>}
+          {emailInvalid ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.email[0]}</p> : null}
         </div>
 
         {/* Password */}
@@ -110,7 +110,7 @@ export default function CredentialsForm({ loading, error, onSubmit }: Credential
               <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
             </button>
           </div>
-          {passwordInvalid && <p className="mt-1 text-sm text-danger-500">{fieldErrors.password[0]}</p>}
+          {passwordInvalid ? <p className="mt-1 text-sm text-danger-500">{fieldErrors.password[0]}</p> : null}
         </div>
 
         {/* Captcha */}
@@ -129,7 +129,7 @@ export default function CredentialsForm({ loading, error, onSubmit }: Credential
               />
             </div>
           )}
-          {captchaInvalid && <p className="mt-2 text-sm text-danger-500">CAPTCHA: {fieldErrors.cfToken[0]}</p>}
+          {captchaInvalid ? <p className="mt-2 text-sm text-danger-500">CAPTCHA: {fieldErrors.cfToken[0]}</p> : null}
         </div>
 
         {/* Remember / Forgot */}

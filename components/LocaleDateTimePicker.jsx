@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { inputClass } from './ui'
 
 /* ── Timezone helpers ── */
@@ -119,15 +120,7 @@ export default function LocaleDateTimePicker({
   const hourRef = useRef(null)
   const minuteRef = useRef(null)
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    if (!open) return
-    function handleClick(e) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [open])
+  useClickOutside(wrapperRef, () => setOpen(false), open)
 
   // Sync internal state when value prop changes externally
   useEffect(() => {

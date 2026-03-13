@@ -6,6 +6,7 @@ import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import { VALID_SORT_ORDERS } from '@/lib/constants'
 import { getTempWalletHistories } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -37,7 +38,7 @@ export default function TempWalletHistoryList() {
   const initStatus = searchParams.get('status') || ''
   const initSortBy = searchParams.get('sortBy') || ''
   const rawSortOrder = searchParams.get('sortOrder') || ''
-  const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
+  const initSortOrder = VALID_SORT_ORDERS.has(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [loading, setLoading] = useState(false)
@@ -291,7 +292,7 @@ export default function TempWalletHistoryList() {
                               />
                               <div>
                                 <div className="font-medium leading-[1.2]">{sym}</div>
-                                {net && <small className="text-surface-500 text-xs">{net}</small>}
+                                {net ? <small className="text-surface-500 text-xs">{net}</small> : null}
                               </div>
                             </div>
                           )

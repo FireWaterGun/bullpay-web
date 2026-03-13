@@ -176,8 +176,7 @@ export function MetadataCard({ metadata }) {
       </div>
       <div className="p-5">
         <pre
-          className="mb-0 p-3 rounded text-[0.8rem] max-h-[300px] overflow-auto bg-surface-100 whitespace-pre-wrap break-all"
-          style={{ border: '1px solid var(--color-surface-200)' }}
+          className="mb-0 p-3 rounded text-[0.8rem] max-h-[300px] overflow-auto bg-surface-100 whitespace-pre-wrap break-all border border-surface-200"
         >
           {JSON.stringify(metadata, null, 2)}
         </pre>
