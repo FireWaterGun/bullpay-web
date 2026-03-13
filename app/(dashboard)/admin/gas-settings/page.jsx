@@ -12,6 +12,7 @@ import GasLimitTab from '@/components/admin/gas-settings/GasLimitTab'
 import GasTopupTab from '@/components/admin/gas-settings/GasTopupTab'
 import dynamic from 'next/dynamic'
 const GasEditModal = dynamic(() => import('@/components/admin/gas-settings/GasEditModal'), { ssr: false })
+const preloadGasEdit = () => import('@/components/admin/gas-settings/GasEditModal')
 
 // ─── Constants ───────────────────────────────────────────────
 
@@ -309,9 +310,11 @@ export default function GasSettingsPage() {
         </ul>
       </div>
 
-      {activeTab === 'gasPrice' ? <GasPriceTab t={t} getVal={getVal} onEdit={openGasPriceEdit} /> : null}
-      {activeTab === 'gasLimit' ? <GasLimitTab t={t} getVal={getVal} onEdit={openGasLimitEdit} /> : null}
-      {activeTab === 'gasTopup' ? <GasTopupTab t={t} getVal={getVal} onEdit={openGasTopupEdit} /> : null}
+      <div onMouseEnter={preloadGasEdit}>
+        {activeTab === 'gasPrice' ? <GasPriceTab t={t} getVal={getVal} onEdit={openGasPriceEdit} /> : null}
+        {activeTab === 'gasLimit' ? <GasLimitTab t={t} getVal={getVal} onEdit={openGasLimitEdit} /> : null}
+        {activeTab === 'gasTopup' ? <GasTopupTab t={t} getVal={getVal} onEdit={openGasTopupEdit} /> : null}
+      </div>
 
       {/* Edit Modal */}
       {editModal && (

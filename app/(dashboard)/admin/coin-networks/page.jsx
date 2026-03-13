@@ -8,6 +8,7 @@ import { getCoinNetworks } from '@/lib/api/admin'
 import CoinImg from '@/components/CoinImg'
 import dynamic from 'next/dynamic'
 const CoinNetworkEditModal = dynamic(() => import('@/components/admin/CoinNetworkEditModal'), { ssr: false })
+const preloadCoinNetworkEdit = () => import('@/components/admin/CoinNetworkEditModal')
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import Alert from '@/components/ui/Alert'
@@ -217,7 +218,7 @@ export default function SupportedCrypto() {
         </div>
       </Card>
 
-      <Card>
+      <Card onMouseEnter={preloadCoinNetworkEdit}>
         {/* Error Alert */}
         {error && (
           <div className="p-5">

@@ -12,6 +12,7 @@ import PlatformLedgerFilterPanel from '@/components/ledger/PlatformLedgerFilterP
 import PlatformLedgerTable from '@/components/ledger/PlatformLedgerTable'
 import dynamic from 'next/dynamic'
 const AdjustmentModal = dynamic(() => import('@/components/ledger/AdjustmentModal'), { ssr: false })
+const preloadAdjustment = () => import('@/components/ledger/AdjustmentModal')
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Button from '@/components/ui/Button'
@@ -156,7 +157,7 @@ export default function PlatformLedgerList() {
         </div>
         <div className="flex items-center gap-2">
           {isSuperAdmin && (
-            <Button onClick={() => setShowAdjustModal(true)}>
+            <Button onMouseEnter={preloadAdjustment} onClick={() => setShowAdjustModal(true)}>
               <i className="bx bx-transfer-alt mr-1"></i>
               {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
             </Button>

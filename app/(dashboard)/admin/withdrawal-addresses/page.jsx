@@ -18,6 +18,7 @@ import AddressFilters from '@/components/balance/AddressFilters'
 import AddressTable from '@/components/balance/AddressTable'
 import dynamic from 'next/dynamic'
 const AddressActionModal = dynamic(() => import('@/components/balance/AddressActionModal'), { ssr: false })
+const preloadAddressAction = () => import('@/components/balance/AddressActionModal')
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
@@ -236,6 +237,7 @@ export default function WithdrawalAddresses() {
             t={t}
           />
 
+          <div onMouseEnter={preloadAddressAction}>
           <AddressTable
             addresses={addresses}
             loading={isValidating}
@@ -248,6 +250,7 @@ export default function WithdrawalAddresses() {
             onOpenActionModal={openActionModal}
             t={t}
           />
+          </div>
         </div>
       </div>
 

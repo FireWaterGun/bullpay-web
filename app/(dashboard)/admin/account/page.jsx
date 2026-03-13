@@ -16,6 +16,7 @@ const Setup2FAModal = dynamic(() => import('@/components/TwoFactorModals').then(
 const Disable2FAModal = dynamic(() => import('@/components/TwoFactorModals').then((m) => m.Disable2FAModal), {
   ssr: false,
 })
+const preload2FA = () => import('@/components/TwoFactorModals')
 
 export default function AdminAccountPage() {
   const { t } = useAdminTranslation()
@@ -60,7 +61,7 @@ export default function AdminAccountPage() {
 
           {/* Security + Timezone side-by-side */}
           <div className="grid grid-cols-12 gap-6">
-            <div className="lg:col-span-6 col-span-12">
+            <div className="lg:col-span-6 col-span-12" onMouseEnter={preload2FA}>
               <SecurityCard
                 is2FAEnabled={is2FAEnabled}
                 twoFALoading={twoFALoading}

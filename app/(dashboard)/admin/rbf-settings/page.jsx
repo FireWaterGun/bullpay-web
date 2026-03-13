@@ -11,6 +11,7 @@ import RbfGlobalTab from '@/components/admin/rbf-settings/RbfGlobalTab'
 import RbfNetworkTab from '@/components/admin/rbf-settings/RbfNetworkTab'
 import dynamic from 'next/dynamic'
 const RbfEditModal = dynamic(() => import('@/components/admin/rbf-settings/RbfEditModal'), { ssr: false })
+const preloadRbfEdit = () => import('@/components/admin/rbf-settings/RbfEditModal')
 
 // ─── Constants ───────────────────────────────────────────────
 
@@ -350,8 +351,10 @@ export default function RbfSettingsPage() {
         </ul>
       </div>
 
-      {activeTab === 'global' ? <RbfGlobalTab t={t} getVal={getVal} openGlobalEdit={openGlobalEdit} /> : null}
-      {activeTab === 'network' ? <RbfNetworkTab t={t} getVal={getVal} openNetworkEdit={openNetworkEdit} /> : null}
+      <div onMouseEnter={preloadRbfEdit}>
+        {activeTab === 'global' ? <RbfGlobalTab t={t} getVal={getVal} openGlobalEdit={openGlobalEdit} /> : null}
+        {activeTab === 'network' ? <RbfNetworkTab t={t} getVal={getVal} openNetworkEdit={openNetworkEdit} /> : null}
+      </div>
 
       {/* Edit Modal */}
       {editModal && (
