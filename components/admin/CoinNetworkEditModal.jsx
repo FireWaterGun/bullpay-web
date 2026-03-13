@@ -135,7 +135,7 @@ export default function CoinNetworkEditModal({ coinNetworkId, onClose, onSaved }
                       </div>
                       <div className="text-sm text-surface-500">
                         {network?.name || 'N/A'}
-                        {network?.chainId && <span className="ml-1">(Chain ID: {network.chainId})</span>}
+                        {network?.chainId ? <span className="ml-1">(Chain ID: {network.chainId})</span> : null}
                       </div>
                       {coinNetwork.contractAddress && (
                         <div className="text-xs text-surface-400 font-mono truncate mt-0.5">

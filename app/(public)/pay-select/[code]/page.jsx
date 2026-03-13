@@ -75,7 +75,7 @@ export default function PaySelect() {
       map.get(sym).networks.push(cn)
     })
     // Sort: stablecoins first, then alphabetical
-    return Array.from(map.values()).sort((a, b) => {
+    return Array.from(map.values()).toSorted((a, b) => {
       if (a.isStableCoin && !b.isStableCoin) return -1
       if (!a.isStableCoin && b.isStableCoin) return 1
       return a.symbol.localeCompare(b.symbol)

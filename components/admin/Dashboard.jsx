@@ -45,7 +45,7 @@ export default function Dashboard() {
   const byCurrency = stats?.byCurrency || {}
   const topUsers = stats?.topUsers || []
   const trends = stats.trends.daily
-  const sortedTrendDates = Object.entries(trends).sort((a, b) => b[0].localeCompare(a[0]))
+  const sortedTrendDates = Object.entries(trends).toSorted((a, b) => b[0].localeCompare(a[0]))
   const visibleTrends = showAllTrends ? sortedTrendDates.slice(0, 30) : sortedTrendDates.slice(0, 7)
   const hasMoreTrends = sortedTrendDates.length > 7
 

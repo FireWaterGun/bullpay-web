@@ -428,7 +428,7 @@ export default function RolePermissions() {
         </Card>
       ) : (
         Object.entries(groupedPermissions)
-          .sort(([a], [b]) => a.localeCompare(b))
+          .toSorted(([a], [b]) => a.localeCompare(b))
           .map(([group, perms]) => (
             <PermissionGroupCard
               key={group}

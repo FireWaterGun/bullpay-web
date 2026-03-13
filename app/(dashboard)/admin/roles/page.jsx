@@ -80,7 +80,7 @@ export default function AdminRoles() {
       const canAssign = typeof role === 'object' ? role.canAssign : undefined
       return canAssign !== false && (ROLE_LEVEL[getRoleKey(role)] || 0) <= myLevel
     })
-    .sort((a, b) => (ROLE_LEVEL[getRoleKey(b)] || 0) - (ROLE_LEVEL[getRoleKey(a)] || 0))
+    .toSorted((a, b) => (ROLE_LEVEL[getRoleKey(b)] || 0) - (ROLE_LEVEL[getRoleKey(a)] || 0))
 
   if (isLoading && roles.length === 0) {
     return <PageSpinner />
