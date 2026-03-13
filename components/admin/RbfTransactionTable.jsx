@@ -14,7 +14,6 @@ export default function RbfTransactionTable({
   transactions,
   loading,
   pagination,
-  handleCopy,
   statusBadgeClass,
   onNavigate,
   onPageChange,

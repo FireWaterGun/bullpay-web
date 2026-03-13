@@ -12,21 +12,25 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
   const [countdown, setCountdown] = useState(30)
   const intervalRef = useRef(null)
 
+  const toggleShowApiKey = () => {
+    setCountdown(30)
+    setShowApiKey((v) => !v)
+  }
+
   useEffect(() => {
-    if (showApiKey) {
-      setCountdown(30)
-      intervalRef.current = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(intervalRef.current)
-            setShowApiKey(false)
-            return 30
-          }
-          return prev - 1
-        })
-      }, 1000)
-      return () => clearInterval(intervalRef.current)
-    }
+    if (!showApiKey) return
+    let count = 30
+    intervalRef.current = setInterval(() => {
+      count -= 1
+      if (count <= 0) {
+        clearInterval(intervalRef.current)
+        setShowApiKey(false)
+        setCountdown(30)
+      } else {
+        setCountdown(count)
+      }
+    }, 1000)
+    return () => clearInterval(intervalRef.current)
   }, [showApiKey])
 
   const displayKey = apiKey
@@ -63,7 +67,7 @@ export default function ApiCredentialsCard({ apiKey, apiSecretMasked, onRotate, 
             {apiKey && (
               <>
                 <Button
-                  onClick={() => setShowApiKey((v) => !v)}
+                  onClick={toggleShowApiKey}
                   title={
                     showApiKey
                       ? t('merchant.hide', { defaultValue: 'Hide' })

@@ -1,11 +1,78 @@
 'use client'
 
+import { useMemo } from 'react'
 import { formatUsdAuto } from '@/lib/utils/format'
 
 const formatCurrency = formatUsdAuto
 
+function niceScale(min, max, ticks = 5) {
+  const range = max - min || 1
+  const roughStep = range / ticks
+  const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
+  const nice = roughStep / mag
+  let step
+  if (nice <= 1.5) {
+    step = Number(mag)
+  } else if (nice <= 3) {
+    step = 2 * mag
+  } else if (nice <= 7) {
+    step = 5 * mag
+  } else {
+    step = 10 * mag
+  }
+  const niceMin = Math.floor(min / step) * step
+  const niceMax = Math.ceil(max / step) * step
+  const labels = []
+  for (let v = niceMax; v >= niceMin; v -= step) {
+    labels.push(parseFloat(v.toFixed(10)))
+  }
+  return { min: niceMin, max: niceMax, labels, step }
+}
+
 export default function RevenueBarChart({ data, height = 300, locale = 'en-US', t }) {
-  if (!data || data.length === 0) {
+  const chartLayout = useMemo(() => {
+    if (!data || data.length === 0) return null
+
+    const allValues = data.flatMap((d) => [d.revenue || 0, d.cost || 0, d.profit || 0])
+    const rawMax = Math.max(...allValues, 0)
+    const rawMin = Math.min(...allValues, 0)
+
+    const yScale = niceScale(rawMin, rawMax, 5)
+    const yRange = yScale.max - yScale.min || 1
+
+    const padTop = 16
+    const chartH = height - 60
+    const yAxisW = 60
+    const barAreaW = Math.max(data.length * 90, 400)
+    const barGroupW = barAreaW / data.length
+    const barW = Math.min(24, barGroupW * 0.3)
+
+    const yPos = (val) => padTop + (chartH - padTop) - ((val - yScale.min) / yRange) * (chartH - padTop)
+    const zeroY = yPos(0)
+
+    const profitPath = (() => {
+      const points = data.map((item, i) => ({
+        x: i * barGroupW + barGroupW / 2,
+        y: yPos(item.profit || 0),
+      }))
+      if (points.length < 2) return ''
+      let d = `M ${points[0].x},${points[0].y}`
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1]
+        const curr = points[i]
+        const tension = 0.3
+        const dx = curr.x - prev.x
+        const cp1x = prev.x + dx * tension
+        const cp2x = curr.x - dx * tension
+        d += ` C ${cp1x},${prev.y} ${cp2x},${curr.y} ${curr.x},${curr.y}`
+      }
+      return d
+    })()
+
+    return { yScale, chartH, yAxisW, barAreaW, barGroupW, barW, yPos, zeroY, profitPath }
+  }, [data, height])
+
+  if (!chartLayout) {
     return (
       <div className="flex flex-col items-center justify-center" style={{ height }}>
         <div className="rounded-full bg-surface-100 text-surface-600 dark:bg-dark-elevated flex items-center justify-center mb-3 w-16 h-16">
@@ -23,66 +90,7 @@ export default function RevenueBarChart({ data, height = 300, locale = 'en-US', 
     )
   }
 
-  const allValues = data.flatMap((d) => [d.revenue || 0, d.cost || 0, d.profit || 0])
-  const rawMax = Math.max(...allValues, 0)
-  const rawMin = Math.min(...allValues, 0)
-
-  function niceScale(min, max, ticks = 5) {
-    const range = max - min || 1
-    const roughStep = range / ticks
-    const mag = Math.pow(10, Math.floor(Math.log10(roughStep)))
-    const nice = roughStep / mag
-    let step
-    if (nice <= 1.5) {
-      step = Number(mag)
-    } else if (nice <= 3) {
-      step = 2 * mag
-    } else if (nice <= 7) {
-      step = 5 * mag
-    } else {
-      step = 10 * mag
-    }
-    const niceMin = Math.floor(min / step) * step
-    const niceMax = Math.ceil(max / step) * step
-    const labels = []
-    for (let v = niceMax; v >= niceMin; v -= step) {
-      labels.push(parseFloat(v.toFixed(10)))
-    }
-    return { min: niceMin, max: niceMax, labels, step }
-  }
-
-  const yScale = niceScale(rawMin, rawMax, 5)
-  const yRange = yScale.max - yScale.min || 1
-
-  const padTop = 16
-  const chartH = height - 60
-  const yAxisW = 60
-  const barAreaW = Math.max(data.length * 90, 400)
-  const barGroupW = barAreaW / data.length
-  const barW = Math.min(24, barGroupW * 0.3)
-
-  const yPos = (val) => padTop + (chartH - padTop) - ((val - yScale.min) / yRange) * (chartH - padTop)
-  const zeroY = yPos(0)
-
-  const profitPath = (() => {
-    const points = data.map((item, i) => ({
-      x: i * barGroupW + barGroupW / 2,
-      y: yPos(item.profit || 0),
-    }))
-    if (points.length < 2) return ''
-    let d = `M ${points[0].x},${points[0].y}`
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1]
-      const curr = points[i]
-      const tension = 0.3
-      const dx = curr.x - prev.x
-      const cp1x = prev.x + dx * tension
-      const cp2x = curr.x - dx * tension
-      d += ` C ${cp1x},${prev.y} ${cp2x},${curr.y} ${curr.x},${curr.y}`
-    }
-    return d
-  })()
-
+  const { yScale, chartH, yAxisW, barAreaW, barGroupW, barW, yPos, zeroY, profitPath } = chartLayout
   return (
     <div>
       <div className="overflow-x-auto">

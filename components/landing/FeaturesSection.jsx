@@ -5,29 +5,25 @@ const FEATURES = [
     icon: 'bx-bolt-circle',
     title: 'Instant settlement',
     desc: 'Funds swept and credited the moment confirmations complete.',
-    color: '#2563eb',
-    bg: 'rgba(37, 99, 235, 0.1)',
+    iconStyle: { background: 'rgba(37, 99, 235, 0.1)', color: '#2563eb' },
   },
   {
     icon: 'bx-shield-quarter',
     title: 'Zero chargebacks',
     desc: 'Crypto is irreversible. Eliminate fraud and disputes entirely.',
-    color: '#1e40af',
-    bg: 'rgba(30, 64, 175, 0.1)',
+    iconStyle: { background: 'rgba(30, 64, 175, 0.1)', color: '#1e40af' },
   },
   {
     icon: 'bx-code-alt',
     title: 'Developer-friendly API',
     desc: 'RESTful API with webhooks and sandbox. Integrate in minutes.',
-    color: '#3b82f6',
-    bg: 'rgba(59, 130, 246, 0.1)',
+    iconStyle: { background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' },
   },
   {
     icon: 'bx-line-chart',
     title: 'Real-time dashboard',
     desc: 'Monitor payments, balances, and analytics with live status.',
-    color: '#0ea5e9',
-    bg: 'rgba(14, 165, 233, 0.1)',
+    iconStyle: { background: 'rgba(14, 165, 233, 0.1)', color: '#0ea5e9' },
   },
 ]
 
@@ -51,7 +47,7 @@ export default function FeaturesSection() {
                 <div className="bg-card rounded-[20px] p-7 sm:rounded-2xl sm:p-9 h-full transition-transform duration-200 hover:-translate-y-0.5">
                   <div
                     className="w-12 h-12 rounded-[14px] flex items-center justify-center text-[1.3rem] mb-5"
-                    style={{ background: f.bg, color: f.color }}
+                    style={f.iconStyle}
                   >
                     <i className={`bx ${f.icon}`}></i>
                   </div>

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import {
   getRolePermissions,
   getRolePermissionOverrides,
@@ -29,15 +30,46 @@ import Card from '@/components/ui/Card'
 import { Input, InputGroup, InputAddon, InputIcon, Select } from '@/components/ui/Input'
 
 export default function RolePermissions() {
-  const { token, user } = useAuth()
+  const { user } = useAuth()
   const toast = useToast()
   const router = useRouter()
   const { role } = useParams()
   const { t } = useAdminTranslation()
 
-  const [loading, setLoading] = useState(true)
-  const [permissions, setPermissions] = useState([])
-  const [overrides, setOverrides] = useState([])
+  const color = ROLE_COLOR[role] || 'secondary'
+  const icon = ROLE_ICON[role] || 'bx-user'
+  const level = ROLE_LEVEL[role] || 0
+  const description = ROLE_DESCRIPTION[role] || ''
+  const myLevel = ROLE_LEVEL[user?.role] || 0
+  const accessDenied = level > myLevel
+
+  const { data: roleData, isLoading, isValidating, mutate, token } = useApi(
+    !accessDenied && role ? `admin-role-perms-${role}` : null,
+    async (token) => {
+      const [permsData, overridesData] = await Promise.all([
+        getRolePermissions(token, role),
+        getRolePermissionOverrides(token, role).catch(() => null),
+      ])
+      const resolved = Array.isArray(permsData) ? permsData : permsData?.resolved || permsData?.permissions || []
+      const permissions = resolved.map((p) => {
+        if (typeof p === 'string') return { permission: p, source: 'default', active: true }
+        return {
+          permission: p.permission || p.name || '',
+          source: p.source || 'default',
+          active: p.active !== undefined ? p.active : (p.granted ?? true),
+        }
+      })
+      const overList = overridesData
+        ? Array.isArray(overridesData)
+          ? overridesData
+          : overridesData?.overrides || []
+        : []
+      return { permissions, overrides: overList }
+    },
+    { onError: () => toast.error(t('admin.roles.loadPermError', { defaultValue: 'Failed to load permissions' })) }
+  )
+  const permissions = useMemo(() => roleData?.permissions || [], [roleData])
+  const overrides = useMemo(() => roleData?.overrides || [], [roleData])
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [actionLoading, setActionLoading] = useState(null)
@@ -48,54 +80,6 @@ export default function RolePermissions() {
   const [showResetModal, setShowResetModal] = useState(false)
   const [modalPermission, setModalPermission] = useState('')
   const [modalReason, setModalReason] = useState('')
-
-  const color = ROLE_COLOR[role] || 'secondary'
-  const icon = ROLE_ICON[role] || 'bx-user'
-  const level = ROLE_LEVEL[role] || 0
-  const description = ROLE_DESCRIPTION[role] || ''
-
-  // Block access if requester's level is lower than the target role
-  const myLevel = ROLE_LEVEL[user?.role] || 0
-  const accessDenied = level > myLevel
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const [permsData, overridesData] = await Promise.all([
-        getRolePermissions(token, role),
-        getRolePermissionOverrides(token, role).catch(() => null),
-      ])
-
-      // API: { role, permissions: [...], resolved: [{ permission, source, active }] }
-      const resolved = Array.isArray(permsData) ? permsData : permsData?.resolved || permsData?.permissions || []
-      setPermissions(
-        resolved.map((p) => {
-          if (typeof p === 'string') return { permission: p, source: 'default', active: true }
-          return {
-            permission: p.permission || p.name || '',
-            source: p.source || 'default',
-            active: p.active !== undefined ? p.active : (p.granted ?? true),
-          }
-        })
-      )
-
-      const overList = overridesData
-        ? Array.isArray(overridesData)
-          ? overridesData
-          : overridesData?.overrides || []
-        : []
-      setOverrides(overList)
-    } catch (error) {
-      logger.error('Failed to load role permissions:', error)
-      toast.error(t('admin.roles.loadPermError', { defaultValue: 'Failed to load permissions' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, role, toast, t])
-
-  useEffect(() => {
-    if (!accessDenied) loadData()
-  }, [accessDenied, loadData])
 
   const overrideMap = useMemo(() => {
     const map = {}
@@ -170,7 +154,7 @@ export default function RolePermissions() {
       setActionLoading(permission)
       await grantRolePermission(token, role, permission, reason || undefined)
       toast.success(t('admin.roles.grantedToast', { defaultValue: 'Granted: {{permission}}', permission }))
-      await loadData()
+      await mutate()
     } catch (error) {
       logger.error('Grant failed:', error)
       toast.error(error?.message || t('admin.roles.failedGrant', { defaultValue: 'Failed to grant permission' }))
@@ -184,7 +168,7 @@ export default function RolePermissions() {
       setActionLoading(permission)
       await denyRolePermission(token, role, permission, reason || undefined)
       toast.success(t('admin.roles.deniedToast', { defaultValue: 'Denied: {{permission}}', permission }))
-      await loadData()
+      await mutate()
     } catch (error) {
       logger.error('Deny failed:', error)
       toast.error(error?.message || t('admin.roles.failedDeny', { defaultValue: 'Failed to deny permission' }))
@@ -200,7 +184,7 @@ export default function RolePermissions() {
       toast.success(
         t('admin.roles.revertedToast', { defaultValue: 'Reverted override: {{permission}}', permission: permName })
       )
-      await loadData()
+      await mutate()
     } catch (error) {
       logger.error('Revert failed:', error)
       toast.error(error?.message || t('admin.roles.failedRevert', { defaultValue: 'Failed to revert override' }))
@@ -215,7 +199,7 @@ export default function RolePermissions() {
       await resetRolePermissionOverrides(token, role)
       toast.success(t('admin.roles.allOverridesReset', { defaultValue: 'All overrides have been reset' }))
       setShowResetModal(false)
-      await loadData()
+      await mutate()
     } catch (error) {
       logger.error('Reset failed:', error)
       toast.error(error?.message || t('admin.roles.failedReset', { defaultValue: 'Failed to reset overrides' }))
@@ -252,7 +236,7 @@ export default function RolePermissions() {
     setShowDenyModal(true)
   }
 
-  if (loading) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -324,7 +308,7 @@ export default function RolePermissions() {
               {t('admin.roles.resetAll', { defaultValue: 'Reset All' })}
             </Button>
           )}
-          <RefreshButton onClick={loadData} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
       </div>
 

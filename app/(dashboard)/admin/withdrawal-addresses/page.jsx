@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import {
@@ -16,13 +16,13 @@ import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { useCoins } from '@/hooks/useCoins'
 import AddressFilters from '@/components/balance/AddressFilters'
 import AddressTable from '@/components/balance/AddressTable'
-import AddressActionModal from '@/components/balance/AddressActionModal'
+import dynamic from 'next/dynamic'
+const AddressActionModal = dynamic(() => import('@/components/balance/AddressActionModal'), { ssr: false })
 import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function WithdrawalAddresses() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -33,9 +33,6 @@ export default function WithdrawalAddresses() {
   const initIsVerified = searchParams.get('isVerified') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [addresses, setAddresses] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
   const { coins: coinNetworks } = useCoins()
 
@@ -65,27 +62,18 @@ export default function WithdrawalAddresses() {
   const [skipLockPeriod, setSkipLockPeriod] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
 
-  const loadAddresses = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getWithdrawalAddresses(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setAddresses(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load withdrawal addresses:', error)
-      toast.error(t('withdrawal.addressLoadError', { defaultValue: 'Failed to load withdrawal addresses' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
+  const { data, isLoading, isValidating, mutate, token } = useApi(
+    ['admin-withdrawal-addresses', currentPage, appliedFilters],
+    (token) => getWithdrawalAddresses(token, {
+      page: currentPage,
+      limit: 20,
+      ...appliedFilters,
+    }),
+    { keepPreviousData: true, onError: () => toast.error(t('withdrawal.addressLoadError', { defaultValue: 'Failed to load withdrawal addresses' })) }
+  )
 
-  useEffect(() => {
-    loadAddresses()
-  }, [loadAddresses])
+  const addresses = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -210,7 +198,7 @@ export default function WithdrawalAddresses() {
       setShowActionModal(false)
       setSelectedAddress(null)
       setActionReason('')
-      loadAddresses()
+      mutate()
     } catch (error) {
       logger.error(`Failed to ${actionType} address:`, error)
       toast.error(t('admin.withdrawalAddress.actionFailed', { defaultValue: `Failed to ${actionType} address` }))
@@ -219,7 +207,7 @@ export default function WithdrawalAddresses() {
     }
   }
 
-  if (loading && addresses.length === 0) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -241,19 +229,19 @@ export default function WithdrawalAddresses() {
             isVerifiedFilter={isVerifiedFilter}
             setIsVerifiedFilter={setIsVerifiedFilter}
             coinNetworks={coinNetworks}
-            loading={loading}
+            loading={isValidating}
             onApply={applyFilters}
             onReset={resetFilters}
-            onRefresh={loadAddresses}
+            onRefresh={() => mutate()}
             t={t}
           />
 
           <AddressTable
             addresses={addresses}
-            loading={loading}
+            loading={isValidating}
             pagination={pagination}
             currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
+            setCurrentPage={(p) => startTransition(() => setCurrentPage(p))}
             syncSearchParams={syncSearchParams}
             appliedFilters={appliedFilters}
             onCopy={handleCopy}

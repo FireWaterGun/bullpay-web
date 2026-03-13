@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getSweepById } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { formatUsd } from '@/lib/utils/format'
@@ -22,28 +21,14 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function SweepDetail() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { id } = useParams()
-  const [loading, setLoading] = useState(true)
-  const [sweep, setSweep] = useState(null)
 
-  const loadSweep = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getSweepById(token, parseInt(id))
-      setSweep(data)
-    } catch (error) {
-      logger.error('Failed to load sweep transaction:', error)
-      toast.error(t('admin.sweepDetail.loadError', { defaultValue: 'Failed to load sweep transaction' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadSweep()
-  }, [loadSweep])
+  const { data: sweep, isLoading } = useApi(
+    id ? `admin-sweep-${id}` : null,
+    (token) => getSweepById(token, parseInt(id)),
+    { onError: () => toast.error(t('admin.sweepDetail.loadError', { defaultValue: 'Failed to load sweep transaction' })) }
+  )
 
   function formatAmount(amountRaw, decimals, coinSymbol, networkSymbol) {
     if (!amountRaw || !decimals) return '0'
@@ -61,7 +46,7 @@ export default function SweepDetail() {
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied!' }))
   }
 
-  if (loading) {
+  if (isLoading) {
     return <PageSpinner />
   }
 

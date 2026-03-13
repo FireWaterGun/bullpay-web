@@ -4,6 +4,7 @@ export const AUTH_USER_COOKIE = 'bullpay_user'
 export const AUTH_NAV_COOKIE = 'bullpay_nav'
 
 export const ADMIN_ROLES = ['super_admin', 'admin', 'support_agent'] as const
+export const ADMIN_ROLES_SET = new Set<string>(ADMIN_ROLES)
 export const USER_ROLES = ['regular_user', 'business_user'] as const
 
 // ── API ──

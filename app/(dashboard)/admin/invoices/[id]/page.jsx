@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getAdminInvoice } from '@/lib/api/admin'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -13,7 +12,6 @@ import CoinImg from '@/components/CoinImg'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { statusBadgeClass } from '@/components/admin/adminInvoiceHelpers'
 import AdminInvoicePaymentsTable from '@/components/admin/AdminInvoicePaymentsTable'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Alert from '@/components/ui/Alert'
@@ -35,31 +33,17 @@ export default function AdminInvoiceDetail() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
-  const { token } = useAuth()
   const toast = useToast()
-  const [loading, setLoading] = useState(false)
-  const [invoice, setInvoice] = useState(null)
 
-  const loadInvoice = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getAdminInvoice(token, id)
-      setInvoice(data)
-    } catch (error) {
-      logger.error('Failed to load invoice:', error)
-      toast.error(t('admin.invoices.loadError', { defaultValue: 'Failed to load invoice' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadInvoice()
-  }, [loadInvoice])
+  const { data: invoice, isLoading, isValidating, mutate } = useApi(
+    id ? `admin-invoice-${id}` : null,
+    (token) => getAdminInvoice(token, id),
+    { onError: () => toast.error(t('admin.invoices.loadError', { defaultValue: 'Failed to load invoice' })) }
+  )
 
   const { copiedId, handleCopy } = useCopyFeedback()
 
-  if (loading && !invoice) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -112,7 +96,7 @@ export default function AdminInvoiceDetail() {
                     </div>
                   </div>
                 </div>
-                <RefreshButton onClick={loadInvoice} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
           </Card>

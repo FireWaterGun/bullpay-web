@@ -1,14 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getAuditLog } from '@/lib/api/auditLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Alert from '@/components/ui/Alert'
@@ -21,28 +19,13 @@ export default function AuditLogDetail() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
-  const { token } = useAuth()
   const toast = useToast()
 
-  const [loading, setLoading] = useState(false)
-  const [log, setLog] = useState(null)
-
-  const loadLog = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getAuditLog(token, id)
-      setLog(data)
-    } catch (error) {
-      logger.error('Failed to load audit log:', error)
-      toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit log' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadLog()
-  }, [loadLog])
+  const { data: log, isLoading, isValidating, mutate } = useApi(
+    id ? `audit-log-${id}` : null,
+    (token) => getAuditLog(token, id),
+    { onError: () => toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit log' })) }
+  )
 
   function actionBadge(action) {
     if (!action) return '-'
@@ -88,7 +71,7 @@ export default function AuditLogDetail() {
     }
   }
 
-  if (loading && !log) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -129,7 +112,7 @@ export default function AuditLogDetail() {
                     </div>
                   </div>
                 </div>
-                <RefreshButton onClick={loadLog} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
           </Card>

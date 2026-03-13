@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getAdminRoles, getAdminRoleStats } from '@/lib/api/admin'
 import { ROLE_ICON, ROLE_COLOR, ROLE_LEVEL, ROLE_DESCRIPTION, formatRoleLabel } from '@/lib/utils/roles'
@@ -27,42 +28,30 @@ const progressBgMap = {
 }
 
 export default function AdminRoles() {
-  const { token, user } = useAuth()
+  const { user } = useAuth()
   const toast = useToast()
   const router = useRouter()
   const { t } = useAdminTranslation()
 
   const myLevel = ROLE_LEVEL[user?.role] || 0
 
-  const [loading, setLoading] = useState(true)
-  const [roles, setRoles] = useState([])
-  const [stats, setStats] = useState(null)
   const [animating, setAnimating] = useState(true)
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      setAnimating(true)
+  const { data: roleData, isLoading, isValidating, mutate } = useApi(
+    'admin-roles',
+    async (token) => {
       const [rolesData, statsData] = await Promise.all([
         getAdminRoles(token),
         getAdminRoleStats(token).catch(() => null),
       ])
       const roleList = Array.isArray(rolesData) ? rolesData : rolesData?.roles || []
-      setRoles(roleList)
-      setStats(statsData)
-    } catch (error) {
-      logger.error('Failed to load roles:', error)
-      toast.error(t('admin.roles.loadError', { defaultValue: 'Failed to load roles' }))
-    } finally {
-      setLoading(false)
-      // Delay 1 frame so bars render at 0% first, then animate to target
       requestAnimationFrame(() => setAnimating(false))
-    }
-  }, [token, toast, t])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
+      return { roles: roleList, stats: statsData }
+    },
+    { onError: () => toast.error(t('admin.roles.loadError', { defaultValue: 'Failed to load roles' })) }
+  )
+  const roles = roleData?.roles || []
+  const stats = roleData?.stats || null
 
   function getRoleStats(roleKey) {
     if (!stats?.roleDistribution) return { count: 0, percentage: 0 }
@@ -93,7 +82,7 @@ export default function AdminRoles() {
     })
     .sort((a, b) => (ROLE_LEVEL[getRoleKey(b)] || 0) - (ROLE_LEVEL[getRoleKey(a)] || 0))
 
-  if (loading && roles.length === 0) {
+  if (isLoading && roles.length === 0) {
     return <PageSpinner />
   }
 
@@ -117,7 +106,7 @@ export default function AdminRoles() {
                 : t('admin.roles.description', { defaultValue: 'Manage role-based access control (RBAC)' })}
             </p>
           </div>
-          <RefreshButton onClick={loadData} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
 
         {/* Table */}
@@ -134,7 +123,7 @@ export default function AdminRoles() {
               <th className="text-center">{t('invoices.actions', { defaultValue: 'Actions' })}</th>
             </tr>
           </thead>
-          <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+          <tbody className={isValidating ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
             {visibleRoles.length === 0 ? (
               <TableEmptyState
                 colSpan={6}

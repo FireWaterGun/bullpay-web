@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getMerchantProfile, rotateSecret, regenerateKey } from '@/lib/api/merchant'
 import { get2FAStatus } from '@/lib/api/twoFactor'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -15,20 +16,27 @@ import MerchantProfileHero from '@/components/merchant/MerchantProfileHero'
 import WebhookConfigCard from '@/components/merchant/WebhookConfigCard'
 import QuickStartCard from '@/components/merchant/QuickStartCard'
 import SecurityTipsCard from '@/components/merchant/SecurityTipsCard'
-import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 
 export default function MerchantPage() {
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { fmtDate } = useDateFormat()
 
-  const [loading, setLoading] = useState(true)
-  const [merchant, setMerchant] = useState(null)
-  const [apiKey, setApiKey] = useState('')
-  const [apiSecretMasked, setApiSecretMasked] = useState('')
-  const [hasMerchant, setHasMerchant] = useState(false)
+  const { data: profileData, isLoading, isValidating: profileValidating, mutate: mutateProfile, token } = useApi(
+    'merchant-profile',
+    (token) => getMerchantProfile(token)
+  )
+
+  const { data: twoFAData, mutate: mutate2FA } = useApi(
+    'merchant-2fa-status',
+    (token) => get2FAStatus(token).catch(() => ({ enabled: false }))
+  )
+
+  const merchant = profileData?.merchant || profileData || null
+  const apiKey = profileData?.apiKey || ''
+  const apiSecretMasked = profileData?.apiSecretMasked || ''
+  const is2FAEnabled = !!twoFAData?.enabled
 
   const [newCredentials, setNewCredentials] = useState(null)
   const [credentialWarning, setCredentialWarning] = useState('')
@@ -38,49 +46,12 @@ export default function MerchantPage() {
   const [modalLoading, setModalLoading] = useState(false)
   const [modalError, setModalError] = useState('')
 
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false)
-
-  const load2FAStatus = useCallback(async () => {
-    if (!token) return
-    try {
-      const res = await get2FAStatus(token)
-      setIs2FAEnabled(!!res?.enabled)
-    } catch {
-      // Non-critical — if we can't fetch status, 2FA fields won't show
-      setIs2FAEnabled(false)
-    }
-  }, [token])
-
-  const loadProfile = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getMerchantProfile(token)
-      setMerchant(data.merchant || data)
-      setApiKey(data.apiKey || '')
-      setApiSecretMasked(data.apiSecretMasked || '')
-      setHasMerchant(true)
-    } catch (error) {
-      if (error?.status === 404 || error?.status === 400) {
-        setHasMerchant(false)
-      } else {
-        logger.error('Failed to load merchant profile:', error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }, [token])
-
-  useEffect(() => {
-    loadProfile()
-    load2FAStatus()
-  }, [loadProfile, load2FAStatus])
-
   function handleRegistered(result) {
-    setMerchant(result.merchant || result)
-    setApiKey(result.credentials?.apiKey || result.apiKey || '')
-    setApiSecretMasked('')
-    setHasMerchant(true)
+    mutateProfile({
+      merchant: result.merchant || result,
+      apiKey: result.credentials?.apiKey || result.apiKey || '',
+      apiSecretMasked: '',
+    }, false)
     if (result.credentials) {
       setNewCredentials(result.credentials)
       setCredentialWarning(result.warning || '')
@@ -91,7 +62,7 @@ export default function MerchantPage() {
     setModalAction(action)
     setModalError('')
     setShowModal(true)
-    load2FAStatus()
+    mutate2FA()
   }
 
   function closeModal() {
@@ -113,10 +84,10 @@ export default function MerchantPage() {
       } else if (modalAction === 'regenerate-key') {
         const result = await regenerateKey(token, { password, totpCode })
         setNewCredentials({ apiKey: result.apiKey, apiSecret: result.apiSecret })
-        setApiKey(result.apiKey || '')
         setCredentialWarning(result.warning || '')
         toast.success(t('merchant.regenerateSuccess', { defaultValue: 'API key & secret regenerated successfully' }))
       }
+      mutateProfile()
       closeModal()
     } catch (error) {
       const resolved = resolveSensitiveActionError(t, error, {
@@ -124,7 +95,7 @@ export default function MerchantPage() {
         defaultValue: 'Action failed. Please try again.',
       })
       if (resolved.requires2FA) {
-        setIs2FAEnabled(true)
+        mutate2FA({ enabled: true }, false)
       }
       setModalError(resolved.message)
     } finally {
@@ -188,11 +159,11 @@ export default function MerchantPage() {
     [t]
   )
 
-  if (loading && !merchant) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
-  if (!hasMerchant) {
+  if (!merchant) {
     return <RegisterForm onRegistered={handleRegistered} token={token} t={t} />
   }
 
@@ -210,7 +181,7 @@ export default function MerchantPage() {
           }
           onDismiss={() => {
             setNewCredentials(null)
-            loadProfile()
+            mutateProfile()
           }}
           t={t}
         />
@@ -219,8 +190,8 @@ export default function MerchantPage() {
       {/* §1 PROFILE HERO */}
       <MerchantProfileHero
         merchant={merchant}
-        loading={loading}
-        onRefresh={loadProfile}
+        loading={profileValidating}
+        onRefresh={() => mutateProfile()}
         fmtDate={fmtDate}
         t={t}
       />
@@ -240,7 +211,7 @@ export default function MerchantPage() {
           />
 
           {/* Webhook Configuration */}
-          <WebhookConfigCard merchant={merchant} onSaved={loadProfile} t={t} />
+          <WebhookConfigCard merchant={merchant} onSaved={() => mutateProfile()} t={t} />
         </div>
 
         {/* Right Column (1/3) */}

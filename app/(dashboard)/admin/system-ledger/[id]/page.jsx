@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getSystemLedgerEntry } from '@/lib/api/admin'
 import { formatUsd } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
@@ -18,7 +17,6 @@ import {
   parseMetadata,
 } from '@/components/ledger/ledgerUtils'
 import { TransactionCard, TimestampsCard, MetadataCard } from '@/components/ledger/SystemLedgerDetailCards'
-import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
@@ -27,28 +25,14 @@ import Table from '@/components/ui/Table'
 
 export default function SystemLedgerDetail() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { id } = useParams()
-  const [loading, setLoading] = useState(true)
-  const [entry, setEntry] = useState(null)
 
-  const loadEntry = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getSystemLedgerEntry(token, parseInt(id))
-      setEntry(data)
-    } catch (error) {
-      logger.error('Failed to load system ledger entry:', error)
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entry' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadEntry()
-  }, [loadEntry])
+  const { data: entry, isLoading: loading } = useApi(
+    id ? `system-ledger-${id}` : null,
+    (token) => getSystemLedgerEntry(token, parseInt(id)),
+    { onError: () => toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entry' })) }
+  )
 
   async function handleCopy(text) {
     const ok = await copyText(text)

@@ -317,8 +317,8 @@ export default function LocaleDateTimePicker({
 
             {/* Weekday headers */}
             <div className="grid grid-cols-7 text-center mb-1">
-              {weekDayHeaders.map((h, i) => (
-                <div key={i} className="text-xs font-semibold text-surface-500 py-0.5">
+              {weekDayHeaders.map((h) => (
+                <div key={h} className="text-xs font-semibold text-surface-500 py-0.5">
                   {h}
                 </div>
               ))}

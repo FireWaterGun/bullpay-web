@@ -29,6 +29,27 @@ function handleMouseLeave(e) {
   e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)'
 }
 
+const TREND_STYLES = {
+  today: {
+    borderRadius: '0.75rem',
+    backgroundColor: 'var(--color-primary-600)',
+    color: 'white',
+  },
+  normal: {
+    borderRadius: '0.75rem',
+    backgroundColor: 'var(--color-surface-200)',
+    color: 'inherit',
+  },
+  dateToday: { color: 'rgba(255,255,255,0.9)' },
+  dateNormal: { color: 'var(--color-surface-900)' },
+  badgeToday: { borderRadius: '1rem', backgroundColor: 'rgba(255,255,255,0.2)' },
+  badgeNormal: { borderRadius: '1rem', backgroundColor: 'var(--color-surface-300)' },
+  currencyToday: { color: 'rgba(255,255,255,0.95)' },
+  currencyNormal: { color: 'var(--color-surface-900)' },
+  countToday: { color: 'rgba(255,255,255,0.8)' },
+  countNormal: { color: 'var(--color-surface-500)' },
+}
+
 export function StatCard({ icon, color, value, label }) {
   return (
     <div className="col-span-12 md:col-span-6 lg:col-span-3">
@@ -59,25 +80,18 @@ export function DailyTrendCard({ date, currencies, isToday }) {
   return (
     <div
       className="min-w-[280px] p-[1.25rem] shrink-0"
-      style={{
-        borderRadius: '0.75rem',
-        backgroundColor: isToday ? 'var(--color-primary-600)' : 'var(--color-surface-200)',
-        color: isToday ? 'white' : 'inherit',
-      }}
+      style={isToday ? TREND_STYLES.today : TREND_STYLES.normal}
     >
       <div className="flex justify-between items-center mb-2">
         <span
           className="text-sm font-medium"
-          style={{ color: isToday ? 'rgba(255,255,255,0.9)' : 'var(--color-surface-900)' }}
+          style={isToday ? TREND_STYLES.dateToday : TREND_STYLES.dateNormal}
         >
           {date}
         </span>
         <span
           className="text-2xs py-[0.125rem] px-[0.5rem]"
-          style={{
-            borderRadius: '1rem',
-            backgroundColor: isToday ? 'rgba(255,255,255,0.2)' : 'var(--color-surface-300)',
-          }}
+          style={isToday ? TREND_STYLES.badgeToday : TREND_STYLES.badgeNormal}
         >
           {totalTxn}
         </span>
@@ -90,12 +104,12 @@ export function DailyTrendCard({ date, currencies, isToday }) {
         </div>
         {Object.entries(currencies).map(([currency, data]) => (
           <div key={currency} className="flex justify-between items-center py-[0.25rem] px-[0] text-sm">
-            <span className="w-2/5" style={{ color: isToday ? 'rgba(255,255,255,0.95)' : 'var(--color-surface-900)' }}>
+            <span className="w-2/5" style={isToday ? TREND_STYLES.currencyToday : TREND_STYLES.currencyNormal}>
               {currency}
             </span>
             <span
               className="w-1/4 text-center"
-              style={{ color: isToday ? 'rgba(255,255,255,0.8)' : 'var(--color-surface-500)' }}
+              style={isToday ? TREND_STYLES.countToday : TREND_STYLES.countNormal}
             >
               {data.count}
             </span>

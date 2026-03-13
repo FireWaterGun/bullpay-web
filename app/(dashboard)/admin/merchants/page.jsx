@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getMerchants, activateMerchant, suspendMerchant } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -23,7 +24,6 @@ import Table from '@/components/ui/Table'
 export default function AdminMerchantsPage() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -31,9 +31,6 @@ export default function AdminMerchantsPage() {
   const initSearch = searchParams.get('search') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [merchants, setMerchants] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
 
   const [statusFilter, setStatusFilter] = useState(initStatus)
@@ -46,24 +43,13 @@ export default function AdminMerchantsPage() {
   const [selectedMerchant, setSelectedMerchant] = useState(null)
   const [modalLoading, setModalLoading] = useState(false)
 
-  const loadMerchants = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getMerchants(token, { page: currentPage, limit: 20, status: appliedStatus || undefined, search: appliedSearch || undefined })
-      setMerchants(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load merchants:', error)
-      toast.error(t('admin.merchants.loadError', { defaultValue: 'Failed to load merchants' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedStatus, appliedSearch, toast, t])
-
-  useEffect(() => {
-    loadMerchants()
-  }, [loadMerchants])
+  const { data, isLoading, isValidating, mutate, token } = useApi(
+    ['admin-merchants', currentPage, appliedStatus, appliedSearch],
+    (token) => getMerchants(token, { page: currentPage, limit: 20, status: appliedStatus || undefined, search: appliedSearch || undefined }),
+    { onError: () => toast.error(t('admin.merchants.loadError', { defaultValue: 'Failed to load merchants' })), keepPreviousData: true }
+  )
+  const merchants = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(status, page, search) {
     const params = new URLSearchParams()
@@ -113,7 +99,7 @@ export default function AdminMerchantsPage() {
         toast.success(t('admin.merchants.suspendSuccess', { defaultValue: 'Merchant suspended successfully' }))
       }
       closeModal()
-      loadMerchants()
+      mutate()
     } catch (error) {
       logger.error(`Failed to ${modalAction} merchant:`, error)
       toast.error(
@@ -124,7 +110,7 @@ export default function AdminMerchantsPage() {
     }
   }
 
-  if (loading && merchants.length === 0) {
+  if (isLoading && merchants.length === 0) {
     return (
       <div className="grow pb-6">
         <div className="text-center py-5">
@@ -151,7 +137,7 @@ export default function AdminMerchantsPage() {
                     {t('admin.merchants.description', { defaultValue: 'Manage merchant accounts and status' })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadMerchants} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
             <div className="p-5">
@@ -179,11 +165,11 @@ export default function AdminMerchantsPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <Button onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={isValidating}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </Button>
-                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
+                <Button onClick={resetFilters} disabled={isValidating} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </Button>
@@ -296,7 +282,7 @@ export default function AdminMerchantsPage() {
             </Table>
 
             <div className="px-5 py-1.5">
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              <Pagination pagination={pagination} onPageChange={(p) => startTransition(() => setCurrentPage(p))} loading={isValidating} />
             </div>
           </Card>
         </div>

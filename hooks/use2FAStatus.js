@@ -1,9 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useAuth } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { get2FAStatus } from '@/lib/api/twoFactor'
-import { logger } from '@/lib/utils/logger'
 
 /**
  * Custom hook to get and manage 2FA status
@@ -21,38 +19,17 @@ import { logger } from '@/lib/utils/logger'
  * ```
  */
 export default function use2FAStatus() {
-  const { token } = useAuth()
-  const [status, setStatus] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const fetchStatus = useCallback(async () => {
-    if (!token) {
-      setIsLoading(false)
-      return
-    }
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
+  const { data: status, isLoading, error, mutate } = useApi(
+    '2fa-status',
+    async (token) => {
       const res = await get2FAStatus(token)
-      setStatus(res.data || res)
-    } catch (err) {
-      logger.error('Failed to fetch 2FA status:', err)
-      setError(err?.message || 'Failed to fetch 2FA status')
-    } finally {
-      setIsLoading(false)
+      return res.data || res
     }
-  }, [token])
-
-  useEffect(() => {
-    fetchStatus()
-  }, [fetchStatus])
+  )
 
   return {
     // Status data
-    status,
+    status: status ?? null,
 
     // Computed properties
     isEnabled: Boolean(status?.enabled && status?.verified),
@@ -67,6 +44,6 @@ export default function use2FAStatus() {
     error,
 
     // Actions
-    refetch: fetchStatus,
+    refetch: mutate,
   }
 }

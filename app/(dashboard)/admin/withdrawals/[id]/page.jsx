@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getWithdrawalById as getAdminWithdrawalById, approveWithdrawal, rejectWithdrawal } from '@/lib/api/admin'
 import { formatCoinAmount } from '@/lib/utils/format'
@@ -40,13 +41,16 @@ export default function AdminWithdrawalDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { fmtDate } = useDateFormat()
 
   const withdrawalId = params?.id
-  const [withdrawal, setWithdrawal] = useState(null)
-  const [loading, setLoading] = useState(true)
+
+  const { data: withdrawal, isLoading, isValidating, mutate, token } = useApi(
+    withdrawalId ? `admin-withdrawal-${withdrawalId}` : null,
+    (token) => getAdminWithdrawalById(token, withdrawalId),
+    { onError: (err) => toast.error(err?.message || t('withdrawal.detailLoadError', { defaultValue: 'Failed to load withdrawal' })) }
+  )
 
   // Modal state
   const [approving, setApproving] = useState(false)
@@ -59,23 +63,6 @@ export default function AdminWithdrawalDetailPage() {
     return formatAmountHelper(amountRaw, decimals)
   }
 
-  const loadWithdrawal = useCallback(async () => {
-    if (!token || !withdrawalId) return
-    try {
-      setLoading(true)
-      const data = await getAdminWithdrawalById(token, withdrawalId)
-      setWithdrawal(data)
-    } catch (err) {
-      toast.error(err?.message || t('withdrawal.detailLoadError', { defaultValue: 'Failed to load withdrawal' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, withdrawalId, toast, t])
-
-  useEffect(() => {
-    loadWithdrawal()
-  }, [loadWithdrawal])
-
   const { copiedId, handleCopy } = useCopyFeedback()
 
   async function handleApprove() {
@@ -85,7 +72,7 @@ export default function AdminWithdrawalDetailPage() {
       await approveWithdrawal(token, Number(withdrawal.id), 'Withdrawal approved after verification')
       toast.success(t('withdrawal.approveSuccess', { defaultValue: 'Withdrawal approved' }))
       setShowApproveModal(false)
-      loadWithdrawal()
+      mutate()
     } catch (err) {
       toast.error(err?.message || t('withdrawal.approveError', { defaultValue: 'Failed to approve' }))
     } finally {
@@ -101,7 +88,7 @@ export default function AdminWithdrawalDetailPage() {
       toast.success(t('withdrawal.rejectSuccess', { defaultValue: 'Withdrawal rejected' }))
       setShowRejectModal(false)
       setRejectReason('')
-      loadWithdrawal()
+      mutate()
     } catch (err) {
       toast.error(err?.message || t('withdrawal.rejectError', { defaultValue: 'Failed to reject' }))
     } finally {
@@ -109,7 +96,7 @@ export default function AdminWithdrawalDetailPage() {
     }
   }
 
-  if (loading && !withdrawal) return <PageSpinner />
+  if (isLoading) return <PageSpinner />
 
   if (!withdrawal) {
     return (
@@ -148,7 +135,7 @@ export default function AdminWithdrawalDetailPage() {
             <div>
               <h4 className="text-lg font-semibold text-surface-900 flex items-center gap-2 mb-1">
                 {t('withdrawal.detail', { defaultValue: 'Withdrawal' })} #{withdrawal.id}
-                <RefreshButton onClick={loadWithdrawal} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </h4>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={statusBadgeClass(withdrawal.status)}>{formatStatusLabel(withdrawal.status)}</span>

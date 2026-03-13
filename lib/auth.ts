@@ -6,7 +6,7 @@
  */
 
 import { cookies } from 'next/headers'
-import { ADMIN_ROLES, AUTH_COOKIE_NAME } from './constants'
+import { ADMIN_ROLES_SET, AUTH_COOKIE_NAME } from './constants'
 import { apiFetch } from './api-client'
 
 export interface AuthUser {
@@ -56,7 +56,7 @@ export async function getUser(): Promise<AuthUser | null> {
 export async function isAdmin(): Promise<boolean> {
   const user = await getUser()
   if (!user) return false
-  return ADMIN_ROLES.includes(user.role as (typeof ADMIN_ROLES)[number])
+  return ADMIN_ROLES_SET.has(user.role)
 }
 
 /**

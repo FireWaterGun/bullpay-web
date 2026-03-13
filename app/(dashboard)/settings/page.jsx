@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dynamic from 'next/dynamic'
 import { useAuth, useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { get2FAStatus } from '@/lib/api/twoFactor'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { logger } from '@/lib/utils/logger'
 import ProfileCard from './ProfileCard'
 import ChangePasswordCard from './ChangePasswordCard'
 import TimezoneCard from './TimezoneCard'
@@ -29,27 +29,12 @@ export default function SettingsPage() {
   )
 
   // ── 2FA state ──
-  const [twoFAStatus, setTwoFAStatus] = useState(null)
-  const [twoFALoading, setTwoFALoading] = useState(true)
+  const { data: twoFAStatus, isLoading: twoFALoading, mutate: refetch2FA } = useApi(
+    '2fa-status',
+    (token) => get2FAStatus(token)
+  )
   const [showSetupModal, setShowSetupModal] = useState(false)
   const [showDisableModal, setShowDisableModal] = useState(false)
-
-  const fetch2FAStatus = useCallback(async () => {
-    if (!token) return
-    setTwoFALoading(true)
-    try {
-      const res = await get2FAStatus(token)
-      setTwoFAStatus(res)
-    } catch (err) {
-      logger.error('Failed to fetch 2FA status:', err)
-    } finally {
-      setTwoFALoading(false)
-    }
-  }, [token])
-
-  useEffect(() => {
-    fetch2FAStatus()
-  }, [fetch2FAStatus])
 
   const is2FAEnabled = twoFAStatus?.enabled && twoFAStatus?.verified
 
@@ -106,7 +91,7 @@ export default function SettingsPage() {
         onClose={() => setShowSetupModal(false)}
         onSuccess={() => {
           toast.success(t('settings.2fa.enableSuccess', { defaultValue: '2FA enabled successfully!' }))
-          fetch2FAStatus()
+          refetch2FA()
         }}
         token={token}
       />
@@ -115,7 +100,7 @@ export default function SettingsPage() {
         onClose={() => setShowDisableModal(false)}
         onSuccess={() => {
           toast.success(t('settings.2fa.disableSuccess', { defaultValue: '2FA disabled successfully.' }))
-          fetch2FAStatus()
+          refetch2FA()
         }}
         token={token}
       />

@@ -12,7 +12,7 @@ import Button from '@/components/ui/Button'
 
 export default function WalletVerify() {
   return (
-    <Suspense>
+    <Suspense fallback={<Spinner />}>
       <WalletVerifyContent />
     </Suspense>
   )

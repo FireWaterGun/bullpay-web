@@ -7,14 +7,37 @@ import { formatDuration } from '@/components/payment/usePaymentBase'
 import Button from '../ui/Button'
 import Spinner from '../ui/Spinner'
 
+const NETWORK_STYLES = {
+  selected: {
+    transition: 'all 0.2s ease',
+    background: 'color-mix(in srgb, var(--color-primary-600) 6%, transparent)',
+    border: '2px solid color-mix(in srgb, var(--color-primary-600) 40%, transparent)',
+    boxShadow: '0 2px 12px color-mix(in srgb, var(--color-primary-600) 12%, transparent)',
+  },
+  unselected: {
+    transition: 'all 0.2s ease',
+    background: 'var(--color-surface-0, #fff)',
+    border: '1.5px solid var(--color-surface-200)',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+  },
+  radioSelected: {
+    width: 26,
+    height: 26,
+    boxShadow: '0 2px 8px color-mix(in srgb, var(--color-primary-600) 30%, transparent)',
+  },
+  radioUnselected: {
+    width: 26,
+    height: 26,
+    border: '2px solid var(--color-surface-200)',
+  },
+}
+
 export default function NetworkSelectionPanel({
   paymentData,
   selectedNetwork,
   setSelectedNetwork,
   selectingNetwork,
   handleConfirmNetwork,
-  isPaid,
-  remainingMs,
   error,
 }) {
   const { t } = useTranslation()
@@ -25,22 +48,12 @@ export default function NetworkSelectionPanel({
       <div className="flex flex-col gap-2.5">
         {(paymentData?.availableNetworks || []).map((net) => {
           const isSelected = selectedNetwork === net.networkSymbol
+          const itemStyle = isSelected ? NETWORK_STYLES.selected : NETWORK_STYLES.unselected
           return (
             <div
               key={net.networkSymbol}
               className="flex items-center rounded-xl cursor-pointer py-[14px] px-[16px] gap-[14px]"
-              style={{
-                transition: 'all 0.2s ease',
-                background: isSelected
-                  ? 'color-mix(in srgb, var(--color-primary-600) 6%, transparent)'
-                  : 'var(--color-surface-0, #fff)',
-                border: isSelected
-                  ? '2px solid color-mix(in srgb, var(--color-primary-600) 40%, transparent)'
-                  : '1.5px solid var(--color-surface-200)',
-                boxShadow: isSelected
-                  ? '0 2px 12px color-mix(in srgb, var(--color-primary-600) 12%, transparent)'
-                  : '0 1px 3px rgba(0,0,0,0.04)',
-              }}
+              style={itemStyle}
               onClick={() => setSelectedNetwork(net.networkSymbol)}
             >
               {/* Icon in colored circle */}
@@ -65,22 +78,14 @@ export default function NetworkSelectionPanel({
                 {isSelected ? (
                   <div
                     className="flex items-center justify-center rounded-full bg-primary-600"
-                    style={{
-                      width: 26,
-                      height: 26,
-                      boxShadow: '0 2px 8px color-mix(in srgb, var(--color-primary-600) 30%, transparent)',
-                    }}
+                    style={NETWORK_STYLES.radioSelected}
                   >
                     <i className="bx bx-check text-white text-[18px]"></i>
                   </div>
                 ) : (
                   <div
                     className="rounded-full"
-                    style={{
-                      width: 26,
-                      height: 26,
-                      border: '2px solid var(--color-surface-200)',
-                    }}
+                    style={NETWORK_STYLES.radioUnselected}
                   ></div>
                 )}
               </div>

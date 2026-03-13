@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useState, startTransition } from 'react'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
-import { useAuth, useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getCoinNetworks } from '@/lib/api/admin'
 import CoinImg from '@/components/CoinImg'
-import CoinNetworkEditModal from '@/components/admin/CoinNetworkEditModal'
+import dynamic from 'next/dynamic'
+const CoinNetworkEditModal = dynamic(() => import('@/components/admin/CoinNetworkEditModal'), { ssr: false })
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import TableEmptyState from '@/components/TableEmptyState'
 import Alert from '@/components/ui/Alert'
@@ -129,69 +130,45 @@ function CoinNetworkRow({ coinNetwork, t, onCopyContract, onEdit, copiedId }) {
 
 export default function SupportedCrypto() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const toast = useToast()
-  const [coinNetworks, setCoinNetworks] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
-  const [pagination, setPagination] = useState(DEFAULT_PAGINATION)
+  const [currentPage, setCurrentPage] = useState(1)
   const [editCoinNetworkId, setEditCoinNetworkId] = useState(null)
 
-  const loadCoinNetworks = useCallback(
-    async ({ page = 1, limit = DEFAULT_PAGINATION.limit, search = '' } = {}) => {
-      if (!token) return
-
-      setLoading(true)
-      setError('')
-
-      try {
-        const response = await getCoinNetworks(token, page, limit, search, '', '')
-        const items = response?.items || []
-        const paginationData = response?.pagination || {}
-
-        setCoinNetworks(items)
-        setPagination(getPaginationState(paginationData, page, limit))
-      } catch (e) {
-        setError(e?.message || 'Failed to load supported crypto')
-      } finally {
-        setLoading(false)
-      }
-    },
-    [token]
+  const { data, error, isLoading, isValidating, mutate } = useApi(
+    ['admin-coin-networks', currentPage, searchQuery],
+    (token) => getCoinNetworks(token, currentPage, DEFAULT_PAGINATION.limit, searchQuery, '', ''),
+    { keepPreviousData: true }
   )
 
-  useEffect(() => {
-    loadCoinNetworks({ page: 1, limit: DEFAULT_PAGINATION.limit, search: searchQuery })
-  }, [loadCoinNetworks, searchQuery])
+  const coinNetworks = data?.items || []
+  const pagination = data?.pagination
+    ? getPaginationState(data.pagination, currentPage, DEFAULT_PAGINATION.limit)
+    : DEFAULT_PAGINATION
 
   function handleApplyFilter() {
     const nextSearch = draftSearch.trim()
-
+    setCurrentPage(1)
     if (nextSearch === searchQuery) {
-      loadCoinNetworks({ page: 1, limit: pagination.limit, search: nextSearch })
-      return
+      mutate()
+    } else {
+      setSearchQuery(nextSearch)
     }
-
-    setSearchQuery(nextSearch)
   }
 
   function handleResetFilter() {
     if (!draftSearch && !searchQuery) return
-
     setDraftSearch('')
-
+    setCurrentPage(1)
     if (!searchQuery) {
-      loadCoinNetworks({ page: 1, limit: pagination.limit, search: '' })
-      return
+      mutate()
+    } else {
+      setSearchQuery('')
     }
-
-    setSearchQuery('')
   }
 
   function handlePageChange(newPage) {
-    loadCoinNetworks({ page: newPage, limit: pagination.limit, search: searchQuery })
+    startTransition(() => setCurrentPage(newPage))
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -227,11 +204,11 @@ export default function SupportedCrypto() {
               />
             </div>
             <div className="flex gap-2 shrink-0">
-              <Button onClick={handleApplyFilter} disabled={loading}>
+              <Button onClick={handleApplyFilter} disabled={isValidating}>
                 <i className="bx bx-filter-alt mr-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
               </Button>
-              <Button onClick={handleResetFilter} disabled={loading} variant="outline-secondary">
+              <Button onClick={handleResetFilter} disabled={isValidating} variant="outline-secondary">
                 <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </Button>
@@ -246,7 +223,7 @@ export default function SupportedCrypto() {
           <div className="p-5">
             <Alert role="alert" className="mb-0">
               <i className="bx bx-error-circle mr-2"></i>
-              {error}
+              {error?.message || 'Failed to load supported crypto'}
             </Alert>
           </div>
         )}
@@ -262,7 +239,7 @@ export default function SupportedCrypto() {
               <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
             </tr>
           </thead>
-          <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+          <tbody className={isValidating ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
             {coinNetworks.length === 0 ? (
               <TableEmptyState
                 colSpan={5}
@@ -291,7 +268,7 @@ export default function SupportedCrypto() {
         {/* Pagination */}
         {pagination.totalPages > 1 && (
           <div className="px-5 py-3 border-t border-surface-200">
-            <Pagination pagination={pagination} onPageChange={handlePageChange} loading={loading} className="mt-0" />
+            <Pagination pagination={pagination} onPageChange={handlePageChange} loading={isValidating} className="mt-0" />
           </div>
         )}
       </Card>
@@ -300,7 +277,7 @@ export default function SupportedCrypto() {
         <CoinNetworkEditModal
           coinNetworkId={editCoinNetworkId}
           onClose={() => setEditCoinNetworkId(null)}
-          onSaved={() => loadCoinNetworks({ page: pagination.page, limit: pagination.limit, search: searchQuery })}
+          onSaved={() => mutate()}
         />
       )}
     </div>

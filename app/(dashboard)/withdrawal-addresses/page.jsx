@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, Suspense, useCallback } from 'react'
+import { useState, Suspense, startTransition } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import {
   getWithdrawalAddresses,
   flagWithdrawalAddress,
@@ -15,10 +16,11 @@ import AddressFilters from '@/components/balance/AddressFilters'
 import AddressTable from '@/components/balance/AddressTable'
 import AddressActionModal from '@/components/balance/AddressActionModal'
 import RefreshButton from '@/components/RefreshButton'
+import PageSpinner from '@/components/PageSpinner'
 
 export default function WithdrawalAddressesPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<PageSpinner />}>
       <WithdrawalAddressesContent />
     </Suspense>
   )
@@ -27,12 +29,15 @@ export default function WithdrawalAddressesPage() {
 function WithdrawalAddressesContent() {
   const searchParams = useSearchParams()
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
 
-  const [addresses, setAddresses] = useState([])
-  const [pagination, setPagination] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { data, isLoading, isValidating, mutate, token } = useApi(
+    ['withdrawal-addresses', page, filters.status, filters.q],
+    (token) => getWithdrawalAddresses(token, { page, limit: 20, status: filters.status || undefined, search: filters.q || undefined }),
+    { onError: () => toast.error(t('withdrawalAddresses.loadError', { defaultValue: 'Failed to load addresses' })), keepPreviousData: true }
+  )
+  const addresses = data?.items || []
+  const pagination = data?.pagination || null
   const [page, setPage] = useState(Number(searchParams?.get('page')) || 1)
   const [filters, setFilters] = useState({
     status: searchParams?.get('status') || '',
@@ -42,29 +47,6 @@ function WithdrawalAddressesContent() {
   const [actionAddress, setActionAddress] = useState(null)
   const [actionType, setActionType] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
-
-  const loadAddresses = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getWithdrawalAddresses(token, {
-        page,
-        limit: 20,
-        status: filters.status || undefined,
-        search: filters.q || undefined,
-      })
-      setAddresses(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (err) {
-      toast.error(t('withdrawalAddresses.loadError', { defaultValue: 'Failed to load addresses' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, page, filters.status, filters.q, toast, t])
-
-  useEffect(() => {
-    loadAddresses()
-  }, [loadAddresses])
 
   function handleAction(addr, action) {
     setActionAddress(addr)
@@ -84,7 +66,7 @@ function WithdrawalAddressesContent() {
       }
       setActionAddress(null)
       setActionType('')
-      loadAddresses()
+      mutate()
     } catch (err) {
       toast.error(err?.message || t('withdrawalAddresses.actionError', { defaultValue: 'Action failed' }))
     } finally {
@@ -100,25 +82,25 @@ function WithdrawalAddressesContent() {
         <h4 className="text-xl font-semibold text-surface-900">
           {t('withdrawalAddresses.title', { defaultValue: 'Withdrawal Addresses' })}
         </h4>
-        <RefreshButton onClick={loadAddresses} loading={loading} />
+        <RefreshButton onClick={() => mutate()} loading={isValidating} />
       </div>
 
       <AddressFilters
         filters={filters}
         onFilterChange={(f) => {
           setFilters(f)
-          setPage(1)
+          startTransition(() => setPage(1))
         }}
         onReset={() => {
           setFilters({ status: '', q: '' })
-          setPage(1)
+          startTransition(() => setPage(1))
         }}
         t={t}
       />
 
       <div className="bg-card rounded-xl shadow-sm border border-surface-100">
         <div className="py-4 sm:py-5">
-          {loading && addresses.length === 0 ? (
+          {isLoading && addresses.length === 0 ? (
             <div className="flex justify-center py-10">
               <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
             </div>
@@ -136,7 +118,7 @@ function WithdrawalAddressesContent() {
                   type="button"
                   className="inline-flex items-center justify-center w-8 h-8 border border-surface-200 rounded-l-lg text-surface-500 hover:bg-surface-50 disabled:opacity-40 transition-colors cursor-pointer"
                   disabled={page <= 1}
-                  onClick={() => setPage(page - 1)}
+                  onClick={() => startTransition(() => setPage(page - 1))}
                 >
                   <i className="bx bx-chevron-left"></i>
                 </button>
@@ -144,7 +126,7 @@ function WithdrawalAddressesContent() {
                   type="button"
                   className="inline-flex items-center justify-center w-8 h-8 border border-l-0 border-surface-200 rounded-r-lg text-surface-500 hover:bg-surface-50 disabled:opacity-40 transition-colors cursor-pointer"
                   disabled={page >= totalPages}
-                  onClick={() => setPage(page + 1)}
+                  onClick={() => startTransition(() => setPage(page + 1))}
                 >
                   <i className="bx bx-chevron-right"></i>
                 </button>

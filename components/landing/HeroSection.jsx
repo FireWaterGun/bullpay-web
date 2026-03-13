@@ -86,6 +86,23 @@ const FLOAT_COINS = [
   },
 ]
 
+const FLOAT_ANIM_BASE = {
+  animationDuration: '6s',
+  animationTimingFunction: 'ease-in-out',
+  animationIterationCount: 'infinite',
+}
+
+const CONNECTOR_BG = {
+  active: { background: '#2563eb' },
+  inactive: { background: '#e2e8f0' },
+}
+
+const STEP_TEXT_STYLES = {
+  done: { color: '#2563eb', fontWeight: 600 },
+  active: { color: '#0f172a', fontWeight: 600 },
+  inactive: { color: '#cbd5e1', fontWeight: 400 },
+}
+
 export default function HeroSection() {
   const mockupRef = useRef(null)
   const [visible, setVisible] = useState(false)
@@ -206,16 +223,11 @@ export default function HeroSection() {
           {/* ── Right column — Mockup with floating coins ── */}
           <div className="relative" ref={mockupRef}>
             {/* Floating coins */}
-            {FLOAT_COINS.map((c, i) => (
+            {FLOAT_COINS.map((c) => (
               <div
-                key={i}
+                key={c.img}
                 className="absolute z-20 w-11 h-11 bg-card rounded-full hidden lg:flex items-center justify-center shadow-[0_8px_24px_rgba(15,23,42,0.1),0_2px_6px_rgba(15,23,42,0.05)]"
-                style={{
-                  animationDuration: '6s',
-                  animationTimingFunction: 'ease-in-out',
-                  animationIterationCount: 'infinite',
-                  ...c.style,
-                }}
+                style={{ ...FLOAT_ANIM_BASE, ...c.style }}
               >
                 <Image
                   src={c.img}
@@ -301,7 +313,7 @@ export default function HeroSection() {
                           {i > 0 && (
                             <div
                               className="absolute left-[17px] -top-3 w-0.5 h-3.5 rounded-[1px] transition-[background] duration-[400ms] ease-out"
-                              style={{ background: done || active ? '#2563eb' : '#e2e8f0' }}
+                              style={done || active ? CONNECTOR_BG.active : CONNECTOR_BG.inactive}
                             />
                           )}
                           {/* Circle */}
@@ -319,10 +331,7 @@ export default function HeroSection() {
                           {/* Text */}
                           <div
                             className="text-[0.84rem] transition-all duration-300 ease-out"
-                            style={{
-                              color: done ? '#2563eb' : active ? '#0f172a' : '#cbd5e1',
-                              fontWeight: done || active ? 600 : 400,
-                            }}
+                            style={done ? STEP_TEXT_STYLES.done : active ? STEP_TEXT_STYLES.active : STEP_TEXT_STYLES.inactive}
                           >
                             {step.label}
                             {active && (

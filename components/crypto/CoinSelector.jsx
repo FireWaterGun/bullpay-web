@@ -21,7 +21,7 @@ export default function CoinSelector({ coins, formData, setFormData, isEdit }) {
       </div>
       <div className="p-5">
         <div className="grid grid-cols-12 gap-x-6 gap-3">
-          {(isEdit ? coins.filter((c) => c.id === parseInt(formData.coinId)) : coins).map((coin) => {
+          {(isEdit ? [coins.find((c) => c.id === parseInt(formData.coinId))].filter(Boolean) : coins).map((coin) => {
             const isActive = formData.coinId === String(coin.id)
             return (
               <div className="col-span-6 sm:col-span-4 md:col-span-3" key={coin.id}>

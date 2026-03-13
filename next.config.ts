@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
       'react-hook-form',
       '@hookform/resolvers',
       'react-turnstile',
+      '@/components/ui',
     ],
   },
 

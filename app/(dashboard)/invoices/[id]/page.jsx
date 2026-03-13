@@ -1,10 +1,9 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { getInvoice } from '@/lib/api/invoices'
-import { useAuth } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { useInvoiceEvents } from '@/hooks/useInvoiceEvents'
@@ -31,44 +30,20 @@ export default function InvoiceDetailPage() {
   const { t } = useTranslation()
   const params = useParams()
   const id = params?.id
-  const { token } = useAuth()
   const { copiedId, handleCopy } = useCopyFeedback()
-  const [invoice, setInvoice] = useState(null)
-  const [initialLoading, setInitialLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState('')
-  const hasLoadedRef = useRef(false)
 
-  const loadInvoice = useCallback(async () => {
-    if (hasLoadedRef.current) {
-      setRefreshing(true)
-    } else {
-      setInitialLoading(true)
-    }
-    setError('')
-    try {
-      const res = await getInvoice(id, token)
-      setInvoice(res)
-      hasLoadedRef.current = true
-    } catch (e) {
-      setError(typeof e?.message === 'string' ? e.message : 'Failed to load invoice')
-    } finally {
-      setInitialLoading(false)
-      setRefreshing(false)
-    }
-  }, [id, token])
+  const { data: invoice, error, isLoading, isValidating, mutate } = useApi(
+    id ? `invoice-${id}` : null,
+    (token) => getInvoice(id, token)
+  )
 
   // Subscribe to invoice events
   useInvoiceEvents(id, {
-    onPaymentReceived: () => loadInvoice(),
-    onStatusChanged: () => loadInvoice(),
-    onUpdated: () => loadInvoice(),
-    onPaymentCompleted: () => loadInvoice(),
+    onPaymentReceived: () => mutate(),
+    onStatusChanged: () => mutate(),
+    onUpdated: () => mutate(),
+    onPaymentCompleted: () => mutate(),
   })
-
-  useEffect(() => {
-    if (id && token) loadInvoice()
-  }, [id, token, loadInvoice])
 
   // Extract coin and network info from invoice response
   const coinSym = (invoice?.coin?.symbol || invoice?.coinSymbol || '').toUpperCase()
@@ -95,10 +70,10 @@ export default function InvoiceDetailPage() {
 
       {error && (
         <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm mb-4">
-          {error}
+          {error?.message || 'Failed to load invoice'}
         </div>
       )}
-      {initialLoading && !invoice ? (
+      {isLoading && !invoice ? (
         <Card>
           <div className="p-6">
             <div className="animate-pulse space-y-3">
@@ -126,7 +101,7 @@ export default function InvoiceDetailPage() {
                         ? t(`invoices.${effectiveStatus(invoice).toLowerCase()}`, { defaultValue: effectiveStatus(invoice) })
                         : '-'}
                     </span>
-                    <RefreshButton onClick={loadInvoice} loading={refreshing} />
+                    <RefreshButton onClick={() => mutate()} loading={isValidating} />
                   </h5>
                   {invoice.publicCode && (
                     <div className="text-surface-500 text-xs font-mono mt-0.5 flex items-center gap-1">

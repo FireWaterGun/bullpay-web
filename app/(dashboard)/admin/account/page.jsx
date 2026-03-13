@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useAuth, useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { get2FAStatus } from '@/lib/api/twoFactor'
-import { logger } from '@/lib/utils/logger'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import ProfileCard from './ProfileHeroCard'
 import ChangePasswordCard from './ChangePasswordCard'
@@ -29,27 +29,13 @@ export default function AdminAccountPage() {
   )
 
   // ── 2FA State ──
-  const [twoFAStatus, setTwoFAStatus] = useState(null)
-  const [twoFALoading, setTwoFALoading] = useState(true)
   const [showSetupModal, setShowSetupModal] = useState(false)
   const [showDisableModal, setShowDisableModal] = useState(false)
 
-  const fetch2FAStatus = useCallback(async () => {
-    if (!token) return
-    setTwoFALoading(true)
-    try {
-      const res = await get2FAStatus(token)
-      setTwoFAStatus(res)
-    } catch (err) {
-      logger.error('Failed to fetch 2FA status:', err)
-    } finally {
-      setTwoFALoading(false)
-    }
-  }, [token])
-
-  useEffect(() => {
-    fetch2FAStatus()
-  }, [fetch2FAStatus])
+  const { data: twoFAStatus, isLoading: twoFALoading, mutate: mutate2FA } = useApi(
+    'admin-2fa-status',
+    (token) => get2FAStatus(token)
+  )
 
   const is2FAEnabled = twoFAStatus?.enabled && twoFAStatus?.verified
 
@@ -106,7 +92,7 @@ export default function AdminAccountPage() {
         onClose={() => setShowSetupModal(false)}
         onSuccess={() => {
           toast.success(t('admin.account.twoFactorEnableSuccess', { defaultValue: '2FA enabled successfully!' }))
-          fetch2FAStatus()
+          mutate2FA()
         }}
         token={token}
       />
@@ -115,7 +101,7 @@ export default function AdminAccountPage() {
         onClose={() => setShowDisableModal(false)}
         onSuccess={() => {
           toast.success(t('admin.account.twoFactorDisableSuccess', { defaultValue: '2FA disabled successfully.' }))
-          fetch2FAStatus()
+          mutate2FA()
         }}
         token={token}
       />

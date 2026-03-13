@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getWithdrawalAddressById, approveWithdrawalAddress, suspendWithdrawalAddress } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
@@ -20,32 +21,19 @@ export default function WithdrawalAddressDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { fmtDate } = useDateFormat()
 
   const addressId = params?.id
-  const [address, setAddress] = useState(null)
-  const [loading, setLoading] = useState(true)
+
+  const { data: address, isLoading, isValidating, mutate, token } = useApi(
+    addressId ? `withdrawal-address-${addressId}` : null,
+    (token) => getWithdrawalAddressById(token, addressId),
+    { onError: (err) => toast.error(err?.message || t('withdrawalAddresses.loadError', { defaultValue: 'Failed to load address' })) }
+  )
+
   const [actionType, setActionType] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
-
-  const loadAddress = useCallback(async () => {
-    if (!token || !addressId) return
-    try {
-      setLoading(true)
-      const data = await getWithdrawalAddressById(token, addressId)
-      setAddress(data)
-    } catch (err) {
-      toast.error(err?.message || t('withdrawalAddresses.loadError', { defaultValue: 'Failed to load address' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, addressId, toast, t])
-
-  useEffect(() => {
-    loadAddress()
-  }, [loadAddress])
 
   const { copiedId, handleCopy } = useCopyFeedback()
 
@@ -61,7 +49,7 @@ export default function WithdrawalAddressDetailPage() {
         toast.success(t('withdrawalAddresses.suspended', { defaultValue: 'Address suspended' }))
       }
       setActionType('')
-      loadAddress()
+      mutate()
     } catch (err) {
       toast.error(err?.message || t('withdrawalAddresses.actionError', { defaultValue: 'Action failed' }))
     } finally {
@@ -69,7 +57,7 @@ export default function WithdrawalAddressDetailPage() {
     }
   }
 
-  if (loading && !address) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -97,7 +85,7 @@ export default function WithdrawalAddressDetailPage() {
           </h4>
           <span className={addressStatusBadgeClass(address.status)}>{formatAddressStatus(address.status)}</span>
         </div>
-        <RefreshButton onClick={loadAddress} loading={loading} />
+        <RefreshButton onClick={() => mutate()} loading={isValidating} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

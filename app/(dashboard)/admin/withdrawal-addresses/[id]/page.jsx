@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import {
   getWithdrawalAddressById,
@@ -27,37 +28,22 @@ import AddressActionsCard from '@/components/admin/withdrawal-addresses/AddressA
 
 export default function WithdrawalAddressDetail() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()
   const { id } = useParams()
 
-  const [loading, setLoading] = useState(true)
-  const [address, setAddress] = useState(null)
+  const { data: addressRaw, isLoading, isValidating, mutate, token } = useApi(
+    id ? `admin-withdrawal-address-${id}` : null,
+    (token) => getWithdrawalAddressById(token, parseInt(id)),
+    { onError: () => toast.error(t('admin.withdrawalAddress.loadDetailError', { defaultValue: 'Failed to load withdrawal address' })) }
+  )
+  const address = addressRaw?.address && typeof addressRaw.address === 'object' ? addressRaw.address : addressRaw
 
   const [showActionModal, setShowActionModal] = useState(false)
   const [actionType, setActionType] = useState('')
   const [actionReason, setActionReason] = useState('')
   const [skipLockPeriod, setSkipLockPeriod] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
-
-  const loadAddress = useCallback(async () => {
-    try {
-      setLoading(true)
-      const res = await getWithdrawalAddressById(token, parseInt(id))
-      const addr = res?.address && typeof res.address === 'object' ? res.address : res
-      setAddress(addr)
-    } catch (error) {
-      logger.error('Failed to load withdrawal address:', error)
-      toast.error(t('admin.withdrawalAddress.loadDetailError', { defaultValue: 'Failed to load withdrawal address' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadAddress()
-  }, [loadAddress])
 
   async function handleCopy(text) {
     const ok = await copyText(text)
@@ -157,7 +143,7 @@ export default function WithdrawalAddressDetail() {
 
       setShowActionModal(false)
       setActionReason('')
-      loadAddress()
+      mutate()
     } catch (error) {
       logger.error(`Failed to ${actionType} address:`, error)
       toast.error(t('admin.withdrawalAddress.actionFailed', { defaultValue: `Failed to ${actionType} address` }))
@@ -166,7 +152,7 @@ export default function WithdrawalAddressDetail() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -216,7 +202,7 @@ export default function WithdrawalAddressDetail() {
                   </div>
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  <RefreshButton onClick={loadAddress} loading={loading} />
+                  <RefreshButton onClick={() => mutate()} loading={isValidating} />
                 </div>
               </div>
             </div>

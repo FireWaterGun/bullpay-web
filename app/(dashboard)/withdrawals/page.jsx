@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useMemo, startTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useAuth } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents'
 import { listWithdrawals } from '@/lib/api/withdrawals'
 import { useCoins } from '@/hooks/useCoins'
@@ -19,67 +20,36 @@ import Button from '@/components/ui/Button'
 
 export default function WithdrawalsPage() {
   const { t } = useTranslation()
-  const { token, user } = useAuth()
-  const toast = useToast()
+  const { user } = useAuth()
 
-  // Wallets state
-  const [walletItems, setWalletItems] = useState([])
-  const [walletLoading, setWalletLoading] = useState(false)
-  const [walletError, setWalletError] = useState('')
-
-  // Withdrawals state
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const { coins } = useCoins()
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
   const [status, setStatus] = useState('ALL')
-  const [pagination, setPagination] = useState(null)
 
-  // Load wallets
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        setWalletLoading(true)
-        const walletsData = await listWallets(token)
-        if (!mounted) return
-        setWalletItems(Array.isArray(walletsData) ? walletsData : [])
-      } catch (e) {
-        if (!mounted) return
-        setWalletError(typeof e?.message === 'string' ? e.message : 'Failed to load')
-      } finally {
-        setWalletLoading(false)
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [token])
+  // Wallets fetch (static key)
+  const { data: walletItems, error: walletError, isLoading: walletLoading } = useApi(
+    'my-wallets',
+    (token) => listWallets(token)
+  )
 
-  const loadWithdrawals = useCallback(async () => {
-    try {
-      setLoading(true)
+  // Withdrawals fetch (reactive key)
+  const { data: withdrawalData, error, isLoading, isValidating, mutate } = useApi(
+    ['my-withdrawals', page, status],
+    (token) => {
       const queryStatus = status === 'ALL' ? undefined : status.toLowerCase()
-      const result = await listWithdrawals({ page, limit, status: queryStatus }, token)
-      setItems(Array.isArray(result.items) ? result.items : [])
-      setPagination(result.pagination || null)
-    } catch (e) {
-      setError(typeof e?.message === 'string' ? e.message : 'Failed to load')
-    } finally {
-      setLoading(false)
-    }
-  }, [token, page, limit, status])
+      return listWithdrawals({ page, limit, status: queryStatus }, token)
+    },
+    { keepPreviousData: true }
+  )
 
-  useEffect(() => {
-    loadWithdrawals()
-  }, [loadWithdrawals])
+  const items = withdrawalData?.items || []
+  const pagination = withdrawalData?.pagination || null
 
   // Subscribe to Pusher events for real-time withdrawal updates
   const userIdentifier = user?.id || user?.userId || user?.email
   useUserInvoiceEvents(userIdentifier, {
-    onWithdrawalCompleted: () => loadWithdrawals(),
+    onWithdrawalCompleted: () => mutate(),
   })
 
   const cnById = useMemo(() => {
@@ -91,13 +61,15 @@ export default function WithdrawalsPage() {
   }, [coins])
 
   function changeStatus(s) {
-    setStatus(s)
-    setPage(1)
+    startTransition(() => {
+      setStatus(s)
+      setPage(1)
+    })
   }
 
   const totalPages = pagination ? Number(pagination.totalPages || 1) : 1
 
-  if (loading && items.length === 0 && walletLoading) {
+  if (isLoading && walletLoading) {
     return <PageSpinner />
   }
 
@@ -123,14 +95,14 @@ export default function WithdrawalsPage() {
         <div className="py-4 sm:py-6">
           {walletError && (
             <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm">
-              {walletError}
+              {walletError?.message || 'Failed to load wallets'}
             </div>
           )}
           {walletLoading ? (
             <div className="flex justify-center py-8">
               <Spinner size="lg" />
             </div>
-          ) : walletItems.length === 0 ? (
+          ) : (walletItems || []).length === 0 ? (
             <CardEmptyState
               icon="bx-wallet"
               message={t('wallet.none', { defaultValue: 'No wallets' })}
@@ -138,7 +110,7 @@ export default function WithdrawalsPage() {
             />
           ) : (
             <div className="border-t border-surface-200">
-              <WalletAddressTable walletItems={walletItems} cnById={cnById} />
+              <WalletAddressTable walletItems={walletItems || []} cnById={cnById} />
             </div>
           )}
         </div>
@@ -156,7 +128,7 @@ export default function WithdrawalsPage() {
               {t('balance.withdrawalsDesc', { defaultValue: 'Track your withdrawal transactions' })}
             </p>
           </div>
-          <RefreshButton onClick={loadWithdrawals} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
         <div className="px-6 py-3 border-b border-surface-200">
           <div className="flex flex-wrap gap-1">
@@ -179,7 +151,7 @@ export default function WithdrawalsPage() {
 
         {error && (
           <div className="mx-6 mt-4 rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm">
-            {error}
+            {error?.message || 'Failed to load withdrawals'}
           </div>
         )}
 
@@ -193,9 +165,9 @@ export default function WithdrawalsPage() {
             hasPrev: page > 1,
             hasNext: page < totalPages,
           }}
-          loading={loading}
+          loading={isValidating}
           cnById={cnById}
-          onPageChange={setPage}
+          onPageChange={(p) => startTransition(() => setPage(p))}
         />
       </Card>
     </>

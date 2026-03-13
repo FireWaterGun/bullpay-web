@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useMemo, startTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getUserWebhookLogs } from '@/lib/api/userWebhookLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
@@ -24,7 +24,6 @@ export default function WebhookLogsPage() {
   const router = useRouter()
   const { fmtDate } = useDateFormat()
   const { t, i18n } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
 
   const locale = useMemo(() => {
@@ -32,9 +31,6 @@ export default function WebhookLogsPage() {
     return map[i18n.language] || 'en-US'
   }, [i18n.language])
 
-  const [loading, setLoading] = useState(false)
-  const [logs, setLogs] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Filter states (draft)
@@ -62,39 +58,26 @@ export default function WebhookLogsPage() {
     doCopy(text, id)
   }
 
-  const loadLogs = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getUserWebhookLogs(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setLogs(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      if (error?.status !== 404) {
-        logger.error('Failed to load webhook logs:', error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters])
-
-  useEffect(() => {
-    loadLogs()
-  }, [loadLogs])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['webhook-logs', currentPage, appliedFilters],
+    (token) => getUserWebhookLogs(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { keepPreviousData: true }
+  )
+  const logs = data?.items || []
+  const pagination = data?.pagination || null
 
   function applyFilters() {
-    setAppliedFilters((prev) => ({
-      ...prev,
-      q: searchFilter || undefined,
-      event: eventFilter || undefined,
-      success: successFilter || undefined,
-      fromDate: fromDateFilter || undefined,
-      toDate: toDateFilter || undefined,
-    }))
-    setCurrentPage(1)
+    startTransition(() => {
+      setAppliedFilters((prev) => ({
+        ...prev,
+        q: searchFilter || undefined,
+        event: eventFilter || undefined,
+        success: successFilter || undefined,
+        fromDate: fromDateFilter || undefined,
+        toDate: toDateFilter || undefined,
+      }))
+      setCurrentPage(1)
+    })
   }
 
   function resetFilters() {
@@ -105,18 +88,22 @@ export default function WebhookLogsPage() {
     setToDateFilter('')
     setSortBy('created_at')
     setSortOrder('desc')
-    setAppliedFilters({ sortBy: 'created_at', sortOrder: 'desc' })
-    setCurrentPage(1)
+    startTransition(() => {
+      setAppliedFilters({ sortBy: 'created_at', sortOrder: 'desc' })
+      setCurrentPage(1)
+    })
   }
 
   function handleSort(field, order) {
     setSortBy(field)
     setSortOrder(order)
-    setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
-    setCurrentPage(1)
+    startTransition(() => {
+      setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
+      setCurrentPage(1)
+    })
   }
 
-  if (loading && logs.length === 0) {
+  if (isLoading && logs.length === 0) {
     return <PageSpinner />
   }
 
@@ -134,7 +121,7 @@ export default function WebhookLogsPage() {
               {t('webhookLog.description', { defaultValue: 'Monitor webhook delivery attempts for your payments' })}
             </p>
           </div>
-          <RefreshButton onClick={loadLogs} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
 
         {/* Filters */}
@@ -183,11 +170,11 @@ export default function WebhookLogsPage() {
             </div>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button onClick={applyFilters} disabled={loading}>
+            <Button onClick={applyFilters} disabled={isValidating}>
               <i className="bx bx-filter-alt mr-1"></i>
               {t('webhookLog.applyFilters', { defaultValue: 'Apply Filters' })}
             </Button>
-            <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
+            <Button onClick={resetFilters} disabled={isValidating} variant="outline-secondary">
               <i className="bx bx-reset mr-1"></i>
               {t('webhookLog.resetFilters', { defaultValue: 'Reset' })}
             </Button>
@@ -316,7 +303,7 @@ export default function WebhookLogsPage() {
         </Table>
 
         <div className="px-5 py-1.5">
-          <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+          <Pagination pagination={pagination} onPageChange={(p) => startTransition(() => setCurrentPage(p))} loading={isValidating} />
         </div>
       </Card>
     </>

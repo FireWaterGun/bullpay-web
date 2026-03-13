@@ -77,10 +77,10 @@ export default function ActionMenu({
   useEffect(() => {
     if (!open) return
     updatePosition()
-    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('scroll', updatePosition, { passive: true, capture: true })
     window.addEventListener('resize', updatePosition)
     return () => {
-      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('scroll', updatePosition, { capture: true })
       window.removeEventListener('resize', updatePosition)
     }
   }, [open, updatePosition])

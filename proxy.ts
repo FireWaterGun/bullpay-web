@@ -23,11 +23,13 @@ function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p))
 }
 
+const ADMIN_ROLES = new Set(['super_admin', 'admin', 'support_agent'])
+
 function isAdminRole(userCookie: string | undefined): boolean {
   if (!userCookie) return false
   try {
     const user = JSON.parse(decodeURIComponent(userCookie))
-    return ['super_admin', 'admin', 'support_agent'].includes(user.role)
+    return ADMIN_ROLES.has(user.role)
   } catch {
     return false
   }

@@ -2,6 +2,48 @@
 
 import { useTranslation } from 'react-i18next'
 
+const CIRCLE_STYLES = {
+  done: {
+    width: 28, height: 28,
+    background: '#dcfce7',
+    border: '1.5px solid var(--color-success-400)',
+    transition: 'all 0.3s ease',
+  },
+  error: {
+    width: 28, height: 28,
+    background: '#fef2f2',
+    border: '1.5px solid var(--color-danger-400)',
+    transition: 'all 0.3s ease',
+  },
+  active: {
+    width: 28, height: 28,
+    background: 'var(--color-primary-600)',
+    border: '1.5px solid var(--color-primary-600)',
+    boxShadow: '0 0 0 4px color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
+    transition: 'all 0.3s ease',
+  },
+  inactive: {
+    width: 10, height: 10,
+    background: 'var(--color-surface-200)',
+    border: '1.5px solid var(--color-surface-300)',
+    transition: 'all 0.3s ease',
+  },
+  donePop: {
+    width: 28, height: 28,
+    background: '#dcfce7',
+    border: '1.5px solid var(--color-success-400)',
+    transition: 'all 0.3s ease',
+    animation: 'progressPop 0.5s ease',
+  },
+}
+
+const LABEL_COLORS = {
+  done: { color: 'var(--color-success-600)' },
+  error: { color: 'var(--color-danger-500)' },
+  active: { color: 'var(--color-primary-600)' },
+  inactive: { color: 'var(--color-surface-400)' },
+}
+
 export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentStep }) {
   const { t } = useTranslation()
 
@@ -59,66 +101,24 @@ export default function PaymentProgressSteps({ isPaid, isExpiredUnpaid, currentS
 
         {steps.map((step) => {
           const state = getStepState(step.key)
-          const isActive = state === 'active'
           const isDone = state === 'done'
-          const isError = state === 'error'
-
-          const circleStyle = isDone
-            ? {
-                width: size,
-                height: size,
-                background: '#dcfce7',
-                border: '1.5px solid var(--color-success-400)',
-              }
-            : isError
-              ? {
-                  width: size,
-                  height: size,
-                  background: '#fef2f2',
-                  border: '1.5px solid var(--color-danger-400)',
-                }
-              : isActive
-                ? {
-                    width: size,
-                    height: size,
-                    background: 'var(--color-primary-600)',
-                    border: '1.5px solid var(--color-primary-600)',
-                    boxShadow: '0 0 0 4px color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
-                  }
-                : {
-                    width: 10,
-                    height: 10,
-                    background: 'var(--color-surface-200)',
-                    border: '1.5px solid var(--color-surface-300)',
-                  }
+          const circleKey = isDone && step.key === 3 ? 'donePop' : state
 
           return (
             <div key={step.key} className="text-center flex-1 relative z-[1]">
               <div className="flex justify-center items-center" style={{ height: size }}>
                 <div
                   className="flex items-center justify-center rounded-full"
-                  style={{
-                    ...circleStyle,
-                    transition: 'all 0.3s ease',
-                    animation: isDone && step.key === 3 ? 'progressPop 0.5s ease' : 'none',
-                  }}
+                  style={CIRCLE_STYLES[circleKey]}
                 >
                   {isDone && <i className="bx bx-check text-success-500 text-[15px]" />}
-                  {isError && <i className="bx bx-x text-danger-500 text-[15px]" />}
-                  {isActive && <i className={`bx ${step.icon} text-white text-[13px]`} />}
+                  {state === 'error' && <i className="bx bx-x text-danger-500 text-[15px]" />}
+                  {state === 'active' && <i className={`bx ${step.icon} text-white text-[13px]`} />}
                 </div>
               </div>
               <div
                 className="mt-2 text-[0.64rem] font-medium leading-tight"
-                style={{
-                  color: isDone
-                    ? 'var(--color-success-600)'
-                    : isError
-                      ? 'var(--color-danger-500)'
-                      : isActive
-                        ? 'var(--color-primary-600)'
-                        : 'var(--color-surface-400)',
-                }}
+                style={LABEL_COLORS[state]}
               >
                 {step.label}
               </div>

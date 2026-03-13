@@ -66,24 +66,25 @@ export default function useDashboardData() {
   // Load payment stats for admin users
   useEffect(() => {
     if (!token) return
-    if (isAdmin) {
-      if (navigation) {
-        if (hasPermission('admin.system_stats.view')) {
-          queueMicrotask(() => {
-            void loadPaymentStats()
-          })
+    let cancelled = false
+    async function fetchData() {
+      if (isAdmin) {
+        if (navigation) {
+          const promises = []
+          if (hasPermission('admin.system_stats.view')) {
+            promises.push(loadPaymentStats())
+          }
+          if (hasPermission('admin.withdrawals.view')) {
+            promises.push(loadPendingWithdrawalCount())
+          }
+          if (promises.length > 0) await Promise.allSettled(promises)
         }
-        if (hasPermission('admin.withdrawals.view')) {
-          queueMicrotask(() => {
-            void loadPendingWithdrawalCount()
-          })
-        }
+      } else {
+        await loadUserBalance()
       }
-    } else {
-      queueMicrotask(() => {
-        void loadUserBalance()
-      })
     }
+    if (!cancelled) fetchData()
+    return () => { cancelled = true }
   }, [isAdmin, token, navigation, hasPermission, loadPaymentStats, loadPendingWithdrawalCount, loadUserBalance])
 
   const refreshNotifications = useCallback(() => {

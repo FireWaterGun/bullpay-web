@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import NextImage from 'next/image'
 
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth } from '@/app/providers'
 import { getNetworks } from '@/lib/api/admin'
 import TableEmptyState from '@/components/TableEmptyState'
 import NetworkEditModal from '@/components/admin/NetworkEditModal'
@@ -171,76 +171,66 @@ function NetworkRow({ network, imageInfo, t, onEdit }) {
 
 export default function NetworkList() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const [networks, setNetworks] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [networkImages, setNetworkImages] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
-  const [pagination, setPagination] = useState(DEFAULT_PAGINATION)
+  const [currentPage, setCurrentPage] = useState(1)
   const [editNetworkId, setEditNetworkId] = useState(null)
 
-  const loadNetworks = useCallback(
-    async ({ page = 1, search = '' } = {}) => {
-      setLoading(true)
-      setError('')
-      try {
-        const response = await getNetworks(token, page, 10)
-        const networkList = response?.items || []
-        const pd = response?.pagination || {}
+  const { data, error, isLoading, isValidating, mutate } = useApi(
+    ['admin-networks', currentPage],
+    async (token) => {
+      const response = await getNetworks(token, currentPage, 10)
+      const networkList = response?.items || []
+      const pd = response?.pagination || {}
 
-        // Client-side search filtering if search query exists
-        const filtered = search
-          ? networkList.filter(
-              (n) => n.name?.toLowerCase().includes(search.toLowerCase()) || n.chainId?.toString().includes(search)
-            )
-          : networkList
+      // Find icons for all networks
+      const results = await Promise.all(networkList.map((n) => findNetworkImage(n)))
+      const imgMap = {}
+      results.forEach((r) => {
+        imgMap[r.id] = { url: r.url, type: r.type }
+      })
 
-        setNetworks(filtered)
-        setPagination({
-          page: pd.page || page,
+      return {
+        networks: networkList,
+        pagination: {
+          page: pd.page || currentPage,
           limit: pd.limit || 10,
-          total: pd.total || filtered.length,
+          total: pd.total || networkList.length,
           totalPages: pd.totalPages || 1,
           hasNext: pd.hasNext || false,
           hasPrev: pd.hasPrev || false,
-        })
-
-        // Find icons for all networks
-        const results = await Promise.all(filtered.map((n) => findNetworkImage(n)))
-        const imgMap = {}
-        results.forEach((r) => {
-          imgMap[r.id] = { url: r.url, type: r.type }
-        })
-        setNetworkImages(imgMap)
-      } catch (e) {
-        setError(e?.message || 'Failed to load networks')
-      } finally {
-        setLoading(false)
+        },
+        networkImages: imgMap,
       }
     },
-    [token]
+    { keepPreviousData: true }
   )
 
-  useEffect(() => {
-    loadNetworks()
-  }, [loadNetworks])
+  const allNetworks = data?.networks || []
+  const pagination = data?.pagination || DEFAULT_PAGINATION
+  const networkImages = data?.networkImages || {}
+
+  // Client-side search filtering
+  const networks = searchQuery
+    ? allNetworks.filter(
+        (n) => n.name?.toLowerCase().includes(searchQuery.toLowerCase()) || n.chainId?.toString().includes(searchQuery)
+      )
+    : allNetworks
 
   function handleApplyFilter() {
     setSearchQuery(draftSearch)
-    loadNetworks({ page: 1, search: draftSearch })
+    setCurrentPage(1)
   }
 
   function handleResetFilter() {
     setDraftSearch('')
     setSearchQuery('')
-    loadNetworks({ page: 1, search: '' })
+    setCurrentPage(1)
   }
 
   function handlePageChange(newPage) {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      loadNetworks({ page: newPage, search: searchQuery })
+      startTransition(() => setCurrentPage(newPage))
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
@@ -275,11 +265,11 @@ export default function NetworkList() {
               />
             </div>
             <div className="flex gap-2 shrink-0">
-              <Button onClick={handleApplyFilter} disabled={loading}>
+              <Button onClick={handleApplyFilter} disabled={isValidating}>
                 <i className="bx bx-filter-alt mr-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
               </Button>
-              <Button onClick={handleResetFilter} disabled={loading} variant="outline-secondary">
+              <Button onClick={handleResetFilter} disabled={isValidating} variant="outline-secondary">
                 <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </Button>
@@ -294,7 +284,7 @@ export default function NetworkList() {
           <div className="p-5">
             <Alert role="alert" className="mb-0">
               <i className="bx bx-error-circle mr-2"></i>
-              {error}
+              {error?.message || 'Failed to load networks'}
             </Alert>
           </div>
         )}
@@ -310,7 +300,7 @@ export default function NetworkList() {
               <th className="text-center">{t('actions.actions', { defaultValue: 'Actions' })}</th>
             </tr>
           </thead>
-          <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+          <tbody className={isValidating ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
             {networks.length === 0 ? (
               <TableEmptyState
                 colSpan={5}
@@ -336,7 +326,7 @@ export default function NetworkList() {
         </Table>
 
         {/* Search results info */}
-        {!loading && searchQuery && networks.length > 0 && (
+        {!isLoading && searchQuery && networks.length > 0 && (
           <div className="px-5 py-3 border-t border-surface-200">
             <div className="text-surface-500 text-sm">
               {t('crypto.searchResults', {
@@ -348,11 +338,11 @@ export default function NetworkList() {
         )}
 
         {/* Pagination - hide when searching */}
-        {!loading && networks.length > 0 && !searchQuery && (
+        {!isLoading && networks.length > 0 && !searchQuery && (
           <Pagination
             pagination={pagination}
             onPageChange={handlePageChange}
-            loading={loading}
+            loading={isValidating}
             className="px-5 py-3 border-t border-surface-200 mt-0"
           />
         )}
@@ -362,7 +352,7 @@ export default function NetworkList() {
         <NetworkEditModal
           networkId={editNetworkId}
           onClose={() => setEditNetworkId(null)}
-          onSaved={() => loadNetworks({ page: pagination.page, search: searchQuery })}
+          onSaved={() => mutate()}
         />
       )}
     </div>

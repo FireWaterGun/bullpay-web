@@ -1,17 +1,15 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getAdminPayment } from '@/lib/api/admin'
 import { formatAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Alert from '@/components/ui/Alert'
@@ -24,31 +22,17 @@ export default function AdminPaymentDetail() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
-  const { token } = useAuth()
   const toast = useToast()
-  const [loading, setLoading] = useState(false)
-  const [payment, setPayment] = useState(null)
 
-  const loadPayment = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getAdminPayment(token, id)
-      setPayment(data)
-    } catch (error) {
-      logger.error('Failed to load payment:', error)
-      toast.error(t('admin.payments.loadError', { defaultValue: 'Failed to load payment' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadPayment()
-  }, [loadPayment])
+  const { data: payment, isLoading, isValidating, mutate } = useApi(
+    id ? `admin-payment-${id}` : null,
+    (token) => getAdminPayment(token, id),
+    { onError: () => toast.error(t('admin.payments.loadError', { defaultValue: 'Failed to load payment' })) }
+  )
 
   const { copiedId, handleCopy } = useCopyFeedback()
 
-  if (loading && !payment) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -103,7 +87,7 @@ export default function AdminPaymentDetail() {
                     </div>
                   </div>
                 </div>
-                <RefreshButton onClick={loadPayment} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
           </Card>

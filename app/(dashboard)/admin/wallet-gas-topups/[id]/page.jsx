@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getGasTopupById } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import { formatCoinAmount } from '@/lib/utils/format'
@@ -12,7 +11,6 @@ import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import GasTopupDetailsCard from '@/components/admin/GasTopupDetailsCard'
 import GasTopupTransactionCard from '@/components/admin/GasTopupTransactionCard'
-import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
@@ -22,29 +20,14 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function GasTopupDetail() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { id } = useParams()
 
-  const [loading, setLoading] = useState(true)
-  const [topup, setTopup] = useState(null)
-
-  const loadTopup = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getGasTopupById(token, Number(id))
-      setTopup(data)
-    } catch (error) {
-      logger.error('Failed to load gas topup:', error)
-      toast.error(t('admin.gasTopup.loadDetailError', { defaultValue: 'Failed to load gas topup details' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadTopup()
-  }, [loadTopup])
+  const { data: topup, isLoading: loading } = useApi(
+    id ? `gas-topup-${id}` : null,
+    (token) => getGasTopupById(token, Number(id)),
+    { onError: () => toast.error(t('admin.gasTopup.loadDetailError', { defaultValue: 'Failed to load gas topup details' })) }
+  )
 
   function formatAmount(amountRaw, decimals = 18) {
     if (!amountRaw) return '0'

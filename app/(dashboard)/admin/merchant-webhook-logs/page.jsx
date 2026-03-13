@@ -1,17 +1,16 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getWebhookLogs } from '@/lib/api/merchantWebhookLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
@@ -35,14 +34,10 @@ export default function MerchantWebhookLogList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
-  const { token } = useAuth()
   const toast = useToast()
 
   const locale = useLocale()
 
-  const [loading, setLoading] = useState(false)
-  const [logs, setLogs] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Filter states (draft)
@@ -75,27 +70,13 @@ export default function MerchantWebhookLogList() {
     setCurrentPage(1)
   }
 
-  const loadLogs = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getWebhookLogs(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setLogs(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load webhook logs:', error)
-      toast.error(t('admin.webhookLog.loadError', { defaultValue: 'Failed to load webhook logs' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadLogs()
-  }, [loadLogs])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-webhook-logs', currentPage, appliedFilters],
+    (token) => getWebhookLogs(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('admin.webhookLog.loadError', { defaultValue: 'Failed to load webhook logs' })), keepPreviousData: true }
+  )
+  const logs = data?.items || []
+  const pagination = data?.pagination || null
 
   function applyFilters() {
     setAppliedFilters({
@@ -156,7 +137,7 @@ export default function MerchantWebhookLogList() {
     return String(Number(status))
   }
 
-  if (loading && logs.length === 0) {
+  if (isLoading && logs.length === 0) {
     return <PageSpinner />
   }
 
@@ -179,7 +160,7 @@ export default function MerchantWebhookLogList() {
                     })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadLogs} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
 
@@ -239,11 +220,11 @@ export default function MerchantWebhookLogList() {
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <Button onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={isValidating}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </Button>
-                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
+                <Button onClick={resetFilters} disabled={isValidating} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </Button>
@@ -364,7 +345,7 @@ export default function MerchantWebhookLogList() {
             </Table>
 
             <div className="px-5 py-1.5">
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              <Pagination pagination={pagination} onPageChange={(p) => startTransition(() => setCurrentPage(p))} loading={isValidating} />
             </div>
           </Card>
         </div>

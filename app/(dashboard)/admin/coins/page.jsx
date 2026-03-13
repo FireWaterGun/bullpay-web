@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getCoins } from '@/lib/api/admin'
 import CoinImg from '@/components/CoinImg'
 import CoinEditModal from '@/components/admin/CoinEditModal'
@@ -63,58 +63,32 @@ function CoinRow({ coin, t, onEdit }) {
 
 export default function CoinList() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
-  const [coins, setCoins] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
-  const [pagination, setPagination] = useState(DEFAULT_PAGINATION)
   const [editCoinId, setEditCoinId] = useState(null)
 
-  const loadCoins = useCallback(
-    async ({ page = 1, limit = 10, search = '' } = {}) => {
-      setLoading(true)
-      setError('')
-      try {
-        const response = await getCoins(token, page, limit, search)
-        const coinList = response?.items || []
-        const pd = response?.pagination || {}
-        setCoins(coinList)
-        setPagination({
-          page: pd.page || page,
-          limit: pd.limit || limit,
-          total: pd.total || 0,
-          totalPages: pd.totalPages || 0,
-          hasNext: pd.hasNext || false,
-          hasPrev: pd.hasPrev || false,
-        })
-      } catch (e) {
-        setError(e?.message || 'Failed to load coins')
-      } finally {
-        setLoading(false)
-      }
-    },
-    [token]
+  const { data, error, isLoading, isValidating, mutate } = useApi(
+    ['admin-coins', currentPage, searchQuery],
+    (token) => getCoins(token, currentPage, 10, searchQuery),
+    { keepPreviousData: true }
   )
-
-  useEffect(() => {
-    loadCoins()
-  }, [loadCoins])
+  const coins = data?.items || []
+  const pagination = data?.pagination || DEFAULT_PAGINATION
 
   function handleApplyFilter() {
     setSearchQuery(draftSearch)
-    loadCoins({ page: 1, limit: pagination.limit, search: draftSearch })
+    setCurrentPage(1)
   }
 
   function handleResetFilter() {
     setDraftSearch('')
     setSearchQuery('')
-    loadCoins({ page: 1, limit: pagination.limit, search: '' })
+    setCurrentPage(1)
   }
 
   function handlePageChange(newPage) {
-    loadCoins({ page: newPage, limit: pagination.limit, search: searchQuery })
+    startTransition(() => setCurrentPage(newPage))
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -148,11 +122,11 @@ export default function CoinList() {
               />
             </div>
             <div className="flex gap-2 shrink-0">
-              <Button onClick={handleApplyFilter} disabled={loading}>
+              <Button onClick={handleApplyFilter} disabled={isValidating}>
                 <i className="bx bx-filter-alt mr-1"></i>
                 {t('filter.apply', { defaultValue: 'Apply Filters' })}
               </Button>
-              <Button onClick={handleResetFilter} disabled={loading} variant="outline-secondary">
+              <Button onClick={handleResetFilter} disabled={isValidating} variant="outline-secondary">
                 <i className="bx bx-reset mr-1"></i>
                 {t('filter.reset', { defaultValue: 'Reset' })}
               </Button>
@@ -184,7 +158,7 @@ export default function CoinList() {
               <th className="text-center">{t('invoices.actions')}</th>
             </tr>
           </thead>
-          <tbody className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+          <tbody className={isValidating ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
             {coins.length === 0 ? (
               <TableEmptyState
                 colSpan={6}
@@ -206,7 +180,7 @@ export default function CoinList() {
           <Pagination
             pagination={pagination}
             onPageChange={handlePageChange}
-            loading={loading}
+            loading={isValidating}
             className="px-5 py-3 border-t border-surface-200 mt-0"
           />
         )}
@@ -216,7 +190,7 @@ export default function CoinList() {
         <CoinEditModal
           coinId={editCoinId}
           onClose={() => setEditCoinId(null)}
-          onSaved={() => loadCoins({ page: pagination.page, limit: pagination.limit, search: searchQuery })}
+          onSaved={() => mutate()}
         />
       )}
     </div>

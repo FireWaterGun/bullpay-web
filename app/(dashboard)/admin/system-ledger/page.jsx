@@ -1,23 +1,21 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getSystemLedgerEntries } from '@/lib/api/admin'
 import { useCoins } from '@/hooks/useCoins'
 import SystemLedgerFilters from '@/components/ledger/SystemLedgerFilters'
 import SystemLedgerTable from '@/components/ledger/SystemLedgerTable'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
 
 export default function SystemLedgerList() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -33,9 +31,6 @@ export default function SystemLedgerList() {
   const initEndDate = searchParams.get('endDate') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [entries, setEntries] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
   const { coins: coinNetworks } = useCoins()
 
@@ -61,27 +56,13 @@ export default function SystemLedgerList() {
     return f
   })
 
-  const loadEntries = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getSystemLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setEntries(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load system ledger entries:', error)
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadEntries()
-  }, [loadEntries])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-system-ledger', currentPage, appliedFilters],
+    (token) => getSystemLedgerEntries(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' })), keepPreviousData: true }
+  )
+  const entries = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -103,8 +84,10 @@ export default function SystemLedgerList() {
       startDate: startDateFilter || undefined,
       endDate: endDateFilter || undefined,
     }
-    setAppliedFilters(f)
-    setCurrentPage(1)
+    startTransition(() => {
+      setAppliedFilters(f)
+      setCurrentPage(1)
+    })
     syncSearchParams(f, 1)
   }
 
@@ -117,12 +100,14 @@ export default function SystemLedgerList() {
     setTxHashFilter('')
     setStartDateFilter('')
     setEndDateFilter('')
-    setAppliedFilters({})
-    setCurrentPage(1)
+    startTransition(() => {
+      setAppliedFilters({})
+      setCurrentPage(1)
+    })
     window.history.replaceState(null, '', window.location.pathname)
   }
 
-  if (loading && entries.length === 0) {
+  if (isLoading && entries.length === 0) {
     return <PageSpinner />
   }
 
@@ -142,13 +127,13 @@ export default function SystemLedgerList() {
                     {t('admin.ledger.systemLedgerDesc', { defaultValue: 'View all system ledger entries' })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadEntries} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
             <div className="p-5">
               <SystemLedgerFilters
                 locale={locale}
-                loading={loading}
+                loading={isValidating}
                 coinNetworks={coinNetworks}
                 typeFilter={typeFilter}
                 setTypeFilter={setTypeFilter}
@@ -174,10 +159,10 @@ export default function SystemLedgerList() {
 
           <SystemLedgerTable
             entries={entries}
-            loading={loading}
+            loading={isValidating}
             pagination={pagination}
             currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
+            setCurrentPage={(p) => startTransition(() => setCurrentPage(p))}
             syncSearchParams={syncSearchParams}
             appliedFilters={appliedFilters}
           />

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import {
@@ -28,17 +29,24 @@ import Table from '@/components/ui/Table'
 
 export default function AdminUserDetail() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { id } = useParams()
   const { fmtDate } = useDateFormat()
 
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState(null)
-  const [activities, setActivities] = useState([])
-  const [activityLoading, setActivityLoading] = useState(false)
+  const { data: user, isLoading, isValidating: isValidatingUser, mutate: mutateUser, token } = useApi(
+    id ? `admin-user-${id}` : null,
+    (token) => getUserById(token, parseInt(id)),
+    { onError: () => toast.error(t('admin.userDetail.loadError', { defaultValue: 'Failed to load user' })) }
+  )
 
-  // Modal state
+  const { data: activitiesData, isValidating: isValidatingActivities, mutate: mutateActivities } = useApi(
+    id ? ['admin-user-activities', id] : null,
+    (token) => getUserActivities(token, { userId: parseInt(id), limit: 10, sortBy: 'created_at', sortOrder: 'desc' })
+  )
+  const activities = activitiesData?.items || []
+
+  const { copiedId, handleCopy } = useCopyFeedback()
+
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('')
   const [modalLoading, setModalLoading] = useState(false)
@@ -46,45 +54,6 @@ export default function AdminUserDetail() {
   const [statusReason, setStatusReason] = useState('')
   const [newRole, setNewRole] = useState('')
   const [newPassword, setNewPassword] = useState('')
-
-  const loadUser = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getUserById(token, parseInt(id))
-      setUser(data)
-    } catch (error) {
-      logger.error('Failed to load user:', error)
-      toast.error(t('admin.userDetail.loadError', { defaultValue: 'Failed to load user' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  const loadActivities = useCallback(async () => {
-    if (!token) return
-    try {
-      setActivityLoading(true)
-      const data = await getUserActivities(token, {
-        userId: parseInt(id),
-        limit: 10,
-        sortBy: 'created_at',
-        sortOrder: 'desc',
-      })
-      setActivities(data?.items || [])
-    } catch (error) {
-      logger.error('Failed to load activities:', error)
-    } finally {
-      setActivityLoading(false)
-    }
-  }, [token, id])
-
-  useEffect(() => {
-    loadUser()
-    loadActivities()
-  }, [loadUser, loadActivities])
-
-  const { copiedId, handleCopy } = useCopyFeedback()
 
   function openModal(type) {
     setModalType(type)
@@ -140,8 +109,8 @@ export default function AdminUserDetail() {
           break
       }
       closeModal()
-      loadUser()
-      loadActivities()
+      mutateUser()
+      mutateActivities()
     } catch (error) {
       logger.error(`Failed to ${modalType}:`, error)
       toast.error(t('admin.users.actionError', { defaultValue: 'Action failed. Please try again.' }))
@@ -150,7 +119,7 @@ export default function AdminUserDetail() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -222,7 +191,7 @@ export default function AdminUserDetail() {
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
-                  <RefreshButton onClick={() => { loadUser(); loadActivities() }} loading={loading || activityLoading} />
+                  <RefreshButton onClick={() => { mutateUser(); mutateActivities() }} loading={isValidatingUser || isValidatingActivities} />
                 </div>
               </div>
             </div>

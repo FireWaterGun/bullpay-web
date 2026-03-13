@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
-import { useAuth } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useCoins } from '@/hooks/useCoins'
 import { getBalancesWithFiat } from '@/lib/api/balance'
 import { formatCoinAmount } from '@/lib/utils/format'
@@ -56,58 +56,28 @@ function ActionMenu({ coinNetworkId, t }) {
 
 export default function WalletBalancePage() {
   const { t } = useTranslation()
-  const { token } = useAuth()
   const { coins } = useCoins()
-  const [balances, setBalances] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [fiat, setFiat] = useState({ amount: '0.0', currency: 'USD' })
-  const [pendingFiat, setPendingFiat] = useState('0')
-  const [rates, setRates] = useState({})
 
-  const loadData = useCallback(
-    async (mounted = true) => {
-      try {
-        setLoading(true)
-        const balanceRes = await getBalancesWithFiat(token, 'USD')
-        if (!mounted) return
-        // filter only coins that have value > 0
-        const list = Array.isArray(balanceRes?.breakdown) ? balanceRes.breakdown : []
-        const filtered = list.filter((b) => {
-          // Support new structure: availableBalance first, then totalBalance or confirmedBalance, fallback to balance
-          const a = Number(b?.availableBalance || b?.totalBalance || b?.confirmedBalance || b?.balance || 0)
-          const u = Number(b?.unconfirmedBalance || b?.pending || 0)
-          return (Number.isFinite(a) && a > 0) || (Number.isFinite(u) && u > 0)
-        })
-        setBalances(filtered)
-        if (balanceRes?.fiat && typeof balanceRes.fiat.amount === 'string') {
-          setFiat({
-            amount: balanceRes.fiat.amount,
-            currency: balanceRes.fiat.currency || 'USD',
-          })
-          setPendingFiat(balanceRes.fiat.pendingAmount || '0')
-          setRates(balanceRes.fiat.rates || {})
-        } else {
-          setFiat({ amount: '0.0', currency: 'USD' })
-          setPendingFiat('0')
-          setRates({})
-        }
-      } catch (e) {
-        setError(e?.message || 'Failed to load balances')
-      } finally {
-        setLoading(false)
-      }
-    },
-    [token]
+  const { data, error, isLoading, isValidating, mutate } = useApi(
+    'my-balances',
+    (token) => getBalancesWithFiat(token, 'USD'),
+    { onError: () => {} }
   )
 
-  useEffect(() => {
-    let mounted = true
-    loadData(mounted)
-    return () => {
-      mounted = false
-    }
-  }, [loadData])
+  const balances = useMemo(() => {
+    const list = Array.isArray(data?.breakdown) ? data.breakdown : []
+    return list.filter((b) => {
+      const a = Number(b?.availableBalance || b?.totalBalance || b?.confirmedBalance || b?.balance || 0)
+      const u = Number(b?.unconfirmedBalance || b?.pending || 0)
+      return (Number.isFinite(a) && a > 0) || (Number.isFinite(u) && u > 0)
+    })
+  }, [data])
+
+  const fiat = data?.fiat && typeof data.fiat.amount === 'string'
+    ? { amount: data.fiat.amount, currency: data.fiat.currency || 'USD' }
+    : { amount: '0.0', currency: 'USD' }
+  const pendingFiat = data?.fiat?.pendingAmount || '0'
+  const rates = data?.fiat?.rates || {}
 
   // Map by coinNetworkId
   const coinNetById = useMemo(() => {
@@ -127,7 +97,7 @@ export default function WalletBalancePage() {
           <h4 className="font-semibold text-surface-900 mb-0">
             {t('balance.accountsTitle', { defaultValue: 'Balance accounts' })}
           </h4>
-          <RefreshButton onClick={() => loadData()} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
         <div className="p-6">
           <p className="text-surface-500 text-sm mb-2">
@@ -156,13 +126,13 @@ export default function WalletBalancePage() {
           <h6 className="font-semibold text-surface-900 mb-0">{t('balance.account', { defaultValue: 'Accounts' })}</h6>
         </div>
         <div className="p-6">
-          {loading ? (
+          {isLoading ? (
             <div className="flex justify-center py-10">
               <Spinner size="lg" />
             </div>
           ) : error ? (
             <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm">
-              {error}
+              {error?.message || 'Failed to load balances'}
             </div>
           ) : balances.length === 0 ? (
             <CardEmptyState

@@ -1,16 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getUserLedgerEntries } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
 import UserLedgerFilters from '@/components/ledger/UserLedgerFilters'
 import UserLedgerRow from '@/components/ledger/UserLedgerRow'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
@@ -20,7 +19,6 @@ import Table from '@/components/ui/Table'
 
 export default function UserLedgerList() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -36,11 +34,10 @@ export default function UserLedgerList() {
   const initEndDate = searchParams.get('endDate') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [entries, setEntries] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
-  const [coinNetworks, setCoinNetworks] = useState([])
+
+  const { data: coinNetworksData } = useApi('admin-coin-networks-list', (token) => listCoins(token))
+  const coinNetworks = coinNetworksData || []
 
   // Filter states (draft — applied on "Apply")
   const [typeFilter, setTypeFilter] = useState(initType)
@@ -66,35 +63,13 @@ export default function UserLedgerList() {
     return f
   })
 
-  const loadEntries = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getUserLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setEntries(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load user ledger entries:', error)
-      toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadEntries()
-  }, [loadEntries])
-
-  useEffect(() => {
-    listCoins(token)
-      .then(setCoinNetworks)
-      .catch(() => {
-        // Non-critical: filter dropdown will be empty
-      })
-  }, [token])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-user-ledger', currentPage, appliedFilters],
+    (token) => getUserLedgerEntries(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('admin.ledger.loadError', { defaultValue: 'Failed to load ledger entries' })), keepPreviousData: true }
+  )
+  const entries = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -135,7 +110,7 @@ export default function UserLedgerList() {
     window.history.replaceState(null, '', window.location.pathname)
   }
 
-  if (loading && entries.length === 0) {
+  if (isLoading && entries.length === 0) {
     return <PageSpinner />
   }
 
@@ -156,13 +131,13 @@ export default function UserLedgerList() {
                     {t('admin.ledger.userLedgerDesc', { defaultValue: 'View all user ledger entries' })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadEntries} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
             <UserLedgerFilters
               t={t}
               locale={locale}
-              loading={loading}
+              loading={isValidating}
               typeFilter={typeFilter}
               setTypeFilter={setTypeFilter}
               entryCodeFilter={entryCodeFilter}
@@ -221,10 +196,10 @@ export default function UserLedgerList() {
               <Pagination
                 pagination={pagination}
                 onPageChange={(p) => {
-                  setCurrentPage(p)
+                  startTransition(() => setCurrentPage(p))
                   syncSearchParams(appliedFilters, p)
                 }}
-                loading={loading}
+                loading={isValidating}
               />
             </div>
           </Card>

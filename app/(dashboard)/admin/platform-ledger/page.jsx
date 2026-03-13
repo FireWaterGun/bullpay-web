@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, startTransition } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { getPlatformLedgerEntries } from '@/lib/api/admin'
 import { useCoins } from '@/hooks/useCoins'
 import PlatformLedgerFilterPanel from '@/components/ledger/PlatformLedgerFilterPanel'
 import PlatformLedgerTable from '@/components/ledger/PlatformLedgerTable'
-import AdjustmentModal from '@/components/ledger/AdjustmentModal'
-import { logger } from '@/lib/utils/logger'
+import dynamic from 'next/dynamic'
+const AdjustmentModal = dynamic(() => import('@/components/ledger/AdjustmentModal'), { ssr: false })
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Button from '@/components/ui/Button'
@@ -18,10 +19,8 @@ import Card from '@/components/ui/Card'
 
 export default function PlatformLedgerList() {
   const { t } = useAdminTranslation()
-  const { token, navigation } = useAuth()
+  const { navigation } = useAuth()
   const toast = useToast()
-  const toastRef = useRef(toast)
-  toastRef.current = toast
   const searchParams = useNextSearchParams()
 
   const isSuperAdmin = navigation?.role === 'super_admin'
@@ -39,9 +38,6 @@ export default function PlatformLedgerList() {
   const initEndDate = searchParams.get('endDate') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [entries, setEntries] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
   const { coins: coinNetworks } = useCoins()
 
@@ -67,29 +63,18 @@ export default function PlatformLedgerList() {
     return f
   })
 
-  const loadEntries = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getPlatformLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setEntries(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load platform ledger entries:', error)
-      toastRef.current.error(
-        t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entries' })
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, t])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-platform-ledger', currentPage, appliedFilters],
+    (token) => getPlatformLedgerEntries(token, {
+      page: currentPage,
+      limit: 20,
+      ...appliedFilters,
+    }),
+    { keepPreviousData: true, onError: () => toast.error(t('admin.platformLedger.loadError', { defaultValue: 'Failed to load platform ledger entries' })) }
+  )
 
-  useEffect(() => {
-    loadEntries()
-  }, [loadEntries])
+  const entries = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -130,29 +115,29 @@ export default function PlatformLedgerList() {
     window.history.replaceState(null, '', window.location.pathname)
   }
 
-  if (loading && entries.length === 0) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
   function handleAdjustmentResult(result) {
     if (result === 'in') {
-      toastRef.current.success(
+      toast.success(
         t('admin.adjustment.successIncrease', { defaultValue: 'Balance increased (XI) successfully' })
       )
-      loadEntries()
+      mutate()
     } else if (result === 'out') {
-      toastRef.current.success(
+      toast.success(
         t('admin.adjustment.successDecrease', { defaultValue: 'Balance decreased (XO) successfully' })
       )
-      loadEntries()
+      mutate()
     } else if (result === 'error:insufficient') {
-      toastRef.current.error(
+      toast.error(
         t('admin.adjustment.insufficientBalance', {
           defaultValue: 'Insufficient confirmed balance for this adjustment',
         })
       )
     } else if (result === 'error') {
-      toastRef.current.error(t('admin.adjustment.error', { defaultValue: 'Failed to apply adjustment' }))
+      toast.error(t('admin.adjustment.error', { defaultValue: 'Failed to apply adjustment' }))
     }
   }
 
@@ -176,7 +161,7 @@ export default function PlatformLedgerList() {
               {t('admin.adjustment.button', { defaultValue: 'Adjustment (XI/XO)' })}
             </Button>
           )}
-          <RefreshButton onClick={loadEntries} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
       </div>
 
@@ -201,7 +186,7 @@ export default function PlatformLedgerList() {
           setEndDateFilter={setEndDateFilter}
           coinNetworks={coinNetworks}
           locale={locale}
-          loading={loading}
+          loading={isValidating}
           onApply={applyFilters}
           onReset={resetFilters}
         />
@@ -210,9 +195,9 @@ export default function PlatformLedgerList() {
       <PlatformLedgerTable
         entries={entries}
         pagination={pagination}
-        loading={loading}
+        loading={isValidating}
         currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
+        setCurrentPage={(p) => startTransition(() => setCurrentPage(p))}
         syncSearchParams={syncSearchParams}
         appliedFilters={appliedFilters}
       />

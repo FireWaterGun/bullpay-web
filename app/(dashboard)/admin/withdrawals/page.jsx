@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, Suspense, useCallback } from 'react'
+import { useState, Suspense, startTransition } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { getWithdrawals, approveWithdrawal, rejectWithdrawal } from '@/lib/api/admin'
@@ -18,7 +19,7 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function WithdrawalTransactions() {
   return (
-    <Suspense>
+    <Suspense fallback={<PageSpinner />}>
       <WithdrawalTransactionsContent />
     </Suspense>
   )
@@ -26,7 +27,6 @@ export default function WithdrawalTransactions() {
 
 function WithdrawalTransactionsContent() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useSearchParams()
 
@@ -40,9 +40,6 @@ function WithdrawalTransactionsContent() {
   const initEndDate = searchParams.get('endDate') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [withdrawals, setWithdrawals] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
   const { coins: coinNetworks } = useCoins()
 
@@ -71,27 +68,13 @@ function WithdrawalTransactionsContent() {
   const [rejecting, setRejecting] = useState(false)
   const [rejectReason, setRejectReason] = useState('')
 
-  const loadWithdrawals = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getWithdrawals(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setWithdrawals(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load withdrawal transactions:', error)
-      toast.error(t('withdrawal.loadError', { defaultValue: 'Failed to load withdrawal transactions' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadWithdrawals()
-  }, [loadWithdrawals])
+  const { data, isLoading, isValidating, mutate, token } = useApi(
+    ['admin-withdrawals', currentPage, appliedFilters],
+    (token) => getWithdrawals(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('withdrawal.loadError', { defaultValue: 'Failed to load withdrawal transactions' })), keepPreviousData: true }
+  )
+  const withdrawals = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -159,7 +142,7 @@ function WithdrawalTransactionsContent() {
       toast.success(t('withdrawal.approveSuccess', { defaultValue: 'Withdrawal approved successfully' }))
       setShowApproveModal(false)
       setSelectedWithdrawal(null)
-      loadWithdrawals()
+      mutate()
       window.dispatchEvent(new Event('withdrawal-status-changed'))
     } catch (error) {
       logger.error('Failed to approve withdrawal:', error)
@@ -190,7 +173,7 @@ function WithdrawalTransactionsContent() {
       setShowRejectModal(false)
       setSelectedWithdrawal(null)
       setRejectReason('')
-      loadWithdrawals()
+      mutate()
       window.dispatchEvent(new Event('withdrawal-status-changed'))
     } catch (error) {
       logger.error('Failed to reject withdrawal:', error)
@@ -200,7 +183,7 @@ function WithdrawalTransactionsContent() {
     }
   }
 
-  if (loading && withdrawals.length === 0) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -210,7 +193,7 @@ function WithdrawalTransactionsContent() {
         <div className="col-span-12">
           <WithdrawalTxFilters
             locale={locale}
-            loading={loading}
+            loading={isValidating}
             coinNetworks={coinNetworks}
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}
@@ -226,13 +209,13 @@ function WithdrawalTransactionsContent() {
             setEndDateFilter={setEndDateFilter}
             onApply={applyFilters}
             onReset={resetFilters}
-            onRefresh={loadWithdrawals}
+            onRefresh={() => mutate()}
           />
 
           <WithdrawalTxTable
             withdrawals={withdrawals}
             pagination={pagination}
-            loading={loading}
+            loading={isValidating}
             currentPage={currentPage}
             approving={approving}
             rejecting={rejecting}
@@ -242,7 +225,7 @@ function WithdrawalTransactionsContent() {
             onCopy={handleCopy}
             onApproveClick={handleApproveClick}
             onRejectClick={handleRejectClick}
-            onPageChange={setCurrentPage}
+            onPageChange={(p) => startTransition(() => setCurrentPage(p))}
             syncSearchParams={syncSearchParams}
           />
         </div>

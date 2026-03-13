@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getUserBalanceDetail } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import CardEmptyState from '@/components/CardEmptyState'
@@ -21,30 +20,15 @@ export default function UserBalanceDetailPage() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id: userId } = useParams()
-  const { token } = useAuth()
   const toast = useToast()
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState(null)
 
-  const loadDetail = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const result = await getUserBalanceDetail(token, userId)
-      setData(result)
-    } catch (error) {
-      logger.error('Failed to load user balance detail:', error)
-      toast.error(t('admin.userBalance.loadDetailError', { defaultValue: 'Failed to load user balance detail' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, userId, toast, t])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    userId ? `admin-user-balance-${userId}` : null,
+    (token) => getUserBalanceDetail(token, userId),
+    { onError: () => toast.error(t('admin.userBalance.loadDetailError', { defaultValue: 'Failed to load user balance detail' })) }
+  )
 
-  useEffect(() => {
-    loadDetail()
-  }, [loadDetail])
-
-  if (loading) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -92,7 +76,7 @@ export default function UserBalanceDetailPage() {
                     </span>
                   )}
                 </div>
-                <RefreshButton onClick={loadDetail} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
           </Card>

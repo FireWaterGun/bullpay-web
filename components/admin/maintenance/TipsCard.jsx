@@ -25,7 +25,7 @@ export default function TipsCard({ t }) {
       <CardBody>
         <ul className="list-none mb-0 text-sm text-surface-600 space-y-2">
           {tips.map((tip, i) => (
-            <li key={i}>
+            <li key={`tip-${i}`}>
               <i className="bx bx-right-arrow-alt mr-1 text-primary-500" />
               {tip}
             </li>

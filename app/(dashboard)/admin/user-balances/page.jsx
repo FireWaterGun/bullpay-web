@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useRouter, useSearchParams as useNextSearchParams } from 'next/navigation'
 
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getUserBalances, getUserBalancesSummary } from '@/lib/api/admin'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import SummaryCard from '@/components/admin/RevenueSummaryCard'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
@@ -34,7 +34,6 @@ export default function UserBalanceListPage() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -45,12 +44,7 @@ export default function UserBalanceListPage() {
   const initSearch = searchParams.get('search') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
-  const [summary, setSummary] = useState(null)
-  const [summaryLoading, setSummaryLoading] = useState(false)
 
   const [sortBy, setSortBy] = useState(initSortBy)
   const [sortOrder, setSortOrder] = useState(initSortOrder)
@@ -75,41 +69,19 @@ export default function UserBalanceListPage() {
     syncSearchParams(f, 1)
   }
 
-  const loadSummary = useCallback(async () => {
-    if (!token) return
-    try {
-      setSummaryLoading(true)
-      const data = await getUserBalancesSummary(token)
-      setSummary(data)
-    } catch (error) {
-      logger.error('Failed to load balance summary:', error)
-    } finally {
-      setSummaryLoading(false)
-    }
-  }, [token])
+  const { data: summaryData, isValidating: isValidatingSummary, mutate: mutateSummary } = useApi(
+    'admin-user-balances-summary',
+    (token) => getUserBalancesSummary(token)
+  )
+  const summary = summaryData || null
 
-  const loadUsers = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getUserBalances(token, { page: currentPage, limit: 20, ...appliedFilters })
-      setUsers(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load user balances:', error)
-      toast.error(t('admin.userBalance.loadError', { defaultValue: 'Failed to load user balances' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadUsers()
-  }, [loadUsers])
-  // Load summary once on mount (parallel with first loadUsers via React batching)
-  useEffect(() => {
-    loadSummary()
-  }, [loadSummary])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-user-balances', currentPage, appliedFilters],
+    (token) => getUserBalances(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('admin.userBalance.loadError', { defaultValue: 'Failed to load user balances' })), keepPreviousData: true }
+  )
+  const users = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -142,7 +114,7 @@ export default function UserBalanceListPage() {
     syncSearchParams({}, 1)
   }
 
-  if (loading && users.length === 0 && !summary) {
+  if (isLoading && users.length === 0 && !summary) {
     return <PageSpinner />
   }
 
@@ -166,10 +138,10 @@ export default function UserBalanceListPage() {
                 </div>
                 <RefreshButton
                   onClick={() => {
-                    loadUsers()
-                    loadSummary()
+                    mutate()
+                    mutateSummary()
                   }}
-                  loading={loading}
+                  loading={isValidating}
                 />
               </div>
             </div>
@@ -229,11 +201,11 @@ export default function UserBalanceListPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <Button onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={isValidating}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </Button>
-                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
+                <Button onClick={resetFilters} disabled={isValidating} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </Button>
@@ -310,7 +282,7 @@ export default function UserBalanceListPage() {
             </Table>
 
             <div className="px-5 py-1.5">
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              <Pagination pagination={pagination} onPageChange={(p) => startTransition(() => setCurrentPage(p))} loading={isValidating} />
             </div>
           </Card>
         </div>

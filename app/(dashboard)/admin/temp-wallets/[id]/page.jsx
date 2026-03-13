@@ -1,14 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getTempWallet } from '@/lib/api/admin'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CoinImg from '@/components/CoinImg'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Badge from '@/components/ui/Badge'
@@ -23,31 +21,17 @@ import TempWalletSweepInfoCard from '@/components/admin/temp-wallets/TempWalletS
 export default function TempWalletDetail() {
   const { t } = useAdminTranslation()
   const { id } = useParams()
-  const { token } = useAuth()
   const toast = useToast()
-  const [loading, setLoading] = useState(true)
-  const [wallet, setWallet] = useState(null)
 
-  const loadWallet = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getTempWallet(token, id)
-      setWallet(data)
-    } catch (error) {
-      logger.error('Failed to load temp wallet:', error)
-      toast.error(t('admin.tempWallet.loadDetailError', { defaultValue: 'Failed to load temp wallet' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadWallet()
-  }, [loadWallet])
+  const { data: wallet, isLoading, isValidating, mutate } = useApi(
+    id ? `temp-wallet-${id}` : null,
+    (token) => getTempWallet(token, id),
+    { onError: () => toast.error(t('admin.tempWallet.loadDetailError', { defaultValue: 'Failed to load temp wallet' })) }
+  )
 
   const { copiedId, handleCopy } = useCopyFeedback()
 
-  if (loading) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -113,7 +97,7 @@ export default function TempWalletDetail() {
                     <i className="bx bx-history mr-1"></i>
                     {t('admin.tempWallet.viewHistories', { defaultValue: 'View Histories' })}
                   </Button>
-                  <RefreshButton onClick={loadWallet} loading={loading} />
+                  <RefreshButton onClick={() => mutate()} loading={isValidating} />
                 </div>
               </div>
             </div>

@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getPaymentStats } from '@/lib/api/admin'
 import { formatUsd, formatCoinAmount, formatPercent } from '@/lib/utils/format'
 import { StatCard, DailyTrendCard } from '@/components/admin/DashboardCards'
-import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import CardEmptyState from '@/components/CardEmptyState'
 import Badge from '../ui/Badge'
@@ -16,29 +16,15 @@ import Table from '../ui/Table'
 
 export default function Dashboard() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
 
-  const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState(null)
+  const { data: stats, isLoading: loading } = useApi(
+    'admin-payment-stats',
+    (token) => getPaymentStats(token),
+    { onError: () => toast.error(t('admin.dashboard.loadError', { defaultValue: 'Failed to load dashboard data' })) }
+  )
+
   const [showAllTrends, setShowAllTrends] = useState(false)
-
-  const loadStats = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getPaymentStats(token)
-      setStats(data)
-    } catch (error) {
-      logger.error('Failed to load payment stats:', error)
-      toast.error(t('admin.dashboard.loadError', { defaultValue: 'Failed to load dashboard data' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, toast, t])
-
-  useEffect(() => {
-    loadStats()
-  }, [loadStats])
 
   if (loading) {
     return <PageSpinner />

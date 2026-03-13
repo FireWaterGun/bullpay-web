@@ -22,7 +22,7 @@ export default function NetworkSelector({ networks, formData, setFormData, isEdi
       <div className="p-5">
         {formData.coinId ? (
           <div className="flex flex-wrap gap-2">
-            {(isEdit ? networks.filter((n) => n.id === parseInt(formData.networkId)) : networks).map((network) => {
+            {(isEdit ? [networks.find((n) => n.id === parseInt(formData.networkId))].filter(Boolean) : networks).map((network) => {
               const selected = formData.networkId === String(network.id)
               return (
                 <Button

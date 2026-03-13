@@ -3,6 +3,24 @@
 import { useTranslation } from 'react-i18next'
 import CoinImg, { NetworkIcon } from '@/components/CoinImg'
 
+const STYLES = {
+  selected: {
+    transition: 'all 0.2s ease',
+    background: 'color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
+    border: '2px solid color-mix(in srgb, var(--color-primary-600) 40%, transparent)',
+    boxShadow: '0 4px 16px color-mix(in srgb, var(--color-primary-600) 15%, transparent)',
+    transform: 'scale(1.01)',
+  },
+  unselected: {
+    transition: 'all 0.2s ease',
+    background: 'rgba(255, 255, 255, 0.6)',
+    border: '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+    transform: 'scale(1)',
+  },
+  networkBadge: { bottom: -2, right: -2, padding: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
+}
+
 function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
   const netName = cn.network?.name || ''
   const netSymbol = (cn.network?.symbol || '').toUpperCase()
@@ -10,19 +28,7 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
   return (
     <div
       className="flex items-center gap-3 p-3 rounded-lg mb-2 cursor-pointer"
-      style={{
-        transition: 'all 0.2s ease',
-        background: isSelected
-          ? 'color-mix(in srgb, var(--color-primary-600) 15%, transparent)'
-          : 'rgba(255, 255, 255, 0.6)',
-        border: isSelected
-          ? '2px solid color-mix(in srgb, var(--color-primary-600) 40%, transparent)'
-          : '1px solid color-mix(in srgb, var(--color-primary-600) 10%, transparent)',
-        boxShadow: isSelected
-          ? '0 4px 16px color-mix(in srgb, var(--color-primary-600) 15%, transparent)'
-          : '0 1px 3px rgba(0, 0, 0, 0.04)',
-        transform: isSelected ? 'scale(1.01)' : 'scale(1)',
-      }}
+      style={isSelected ? STYLES.selected : STYLES.unselected}
       onClick={() => onSelect(cn.id)}
       onMouseEnter={(e) => {
         if (!isSelected) {
@@ -42,7 +48,7 @@ function CoinNetworkItem({ group, cn, isSelected, onSelect }) {
         {netSymbol && (
           <div
             className="absolute bg-card rounded-full flex items-center justify-center"
-            style={{ bottom: -2, right: -2, padding: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+            style={STYLES.networkBadge}
           >
             <NetworkIcon networkSymbol={netSymbol} size={16} />
           </div>

@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
-import { useToast } from '@/app/providers'
 import { getSweeps, forceSweep } from '@/lib/api/admin'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { useCoins } from '@/hooks/useCoins'
 import SweepTransactionFilters from '@/components/admin/SweepTransactionFilters'
 import SweepTransactionTable from '@/components/admin/SweepTransactionTable'
@@ -21,7 +20,6 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function SweepTransactions() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
   const router = useRouter()
@@ -39,9 +37,6 @@ export default function SweepTransactions() {
   const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [sweeps, setSweeps] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
   const [retryingId, setRetryingId] = useState(null)
   const { coins: coinNetworks } = useCoins()
@@ -77,41 +72,27 @@ export default function SweepTransactions() {
     syncSearchParams(f, 1)
   }
 
-  const loadSweeps = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getSweeps(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setSweeps(data.sweeps || data.items || [])
-
+  const { data, isLoading, isValidating, mutate, token } = useApi(
+    ['admin-sweeps', currentPage, appliedFilters],
+    (token) => getSweeps(token, { page: currentPage, limit: 20, ...appliedFilters }).then((data) => {
+      const items = data.sweeps || data.items || []
       const meta = data.meta || data.pagination
-      if (meta) {
-        setPagination({
+      return {
+        items,
+        pagination: meta ? {
           page: meta.currentPage || meta.page || currentPage,
           limit: meta.perPage || meta.limit || 20,
           total: meta.total || 0,
           totalPages: meta.lastPage || meta.totalPages || 1,
           hasPrev: meta.previousPageUrl !== null || (meta.currentPage || meta.page || 1) > 1,
-          hasNext:
-            meta.nextPageUrl !== null || (meta.currentPage || meta.page || 1) < (meta.lastPage || meta.totalPages || 1),
-        })
-      } else {
-        setPagination(null)
+          hasNext: meta.nextPageUrl !== null || (meta.currentPage || meta.page || 1) < (meta.lastPage || meta.totalPages || 1),
+        } : null,
       }
-    } catch (error) {
-      logger.error('Failed to load sweep transactions:', error)
-      toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadSweeps()
-  }, [loadSweeps])
+    }),
+    { onError: () => toast.error(t('admin.sweep.loadError', { defaultValue: 'Failed to load sweep transactions' })), keepPreviousData: true }
+  )
+  const sweeps = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -157,7 +138,7 @@ export default function SweepTransactions() {
       setRetryingId(sweepId)
       await forceSweep(token, sweepId)
       toast.success(t('admin.sweep.retrySuccess', { defaultValue: 'Sweep retry initiated successfully' }))
-      loadSweeps()
+      mutate()
     } catch (error) {
       logger.error('Failed to retry sweep:', error)
       toast.error(t('admin.sweep.retryError', { defaultValue: 'Failed to retry sweep' }))
@@ -179,17 +160,12 @@ export default function SweepTransactions() {
     }
   }
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
-
   function handlePageChange(page) {
-    setCurrentPage(page)
+    startTransition(() => setCurrentPage(page))
     syncSearchParams(appliedFilters, page)
   }
 
-  if (loading && sweeps.length === 0) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -211,7 +187,7 @@ export default function SweepTransactions() {
                     })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadSweeps} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
             <SweepTransactionFilters
@@ -229,7 +205,7 @@ export default function SweepTransactions() {
               setEndDateFilter={setEndDateFilter}
               coinNetworks={coinNetworks}
               locale={locale}
-              loading={loading}
+              loading={isValidating}
               onApply={applyFilters}
               onReset={resetFilters}
             />
@@ -237,11 +213,10 @@ export default function SweepTransactions() {
 
           <SweepTransactionTable
             sweeps={sweeps}
-            loading={loading}
+            loading={isValidating}
             pagination={pagination}
             retryingId={retryingId}
             formatAmount={formatAmount}
-            handleCopy={handleCopy}
             statusBadgeClass={(s) => getStatusBadgeClass(s, 'sweep')}
             onNavigate={(id) => router.push(`/admin/sweeps/${id}`)}
             onRetry={handleRetry}

@@ -1,16 +1,14 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 
-import { useAuth } from '@/app/providers'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getSystemWalletStats } from '@/lib/api/admin'
 import { formatAmount, formatUsd, formatCoinAmount } from '@/lib/utils/format'
 import { AmountNormalizer } from '@/lib/utils/amount_normalizer'
 import CoinImg from '@/components/CoinImg'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
-import { logger } from '@/lib/utils/logger'
 import CardEmptyState from '@/components/CardEmptyState'
 import Alert from '@/components/ui/Alert'
 import Badge from '@/components/ui/Badge'
@@ -21,30 +19,15 @@ import Table from '@/components/ui/Table'
 
 export default function SystemBalance() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
-  const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+
+  const { data: stats, isLoading: loading, error: fetchError } = useApi(
+    'system-wallet-stats',
+    (token) => getSystemWalletStats(token, 'USD'),
+    { onError: () => toast.error(t('admin.systemWallets.loadError', { defaultValue: 'Failed to load system wallet stats' })) }
+  )
+
   const { copiedId, handleCopy: copyAddress } = useCopyFeedback()
-
-  const loadStats = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      // Send USD currency for total balance
-      const res = await getSystemWalletStats(token, 'USD')
-      setStats(res)
-    } catch (e) {
-      setError(typeof e?.message === 'string' ? e.message : 'Failed to load system wallet stats')
-    } finally {
-      setLoading(false)
-    }
-  }, [token])
-
-  useEffect(() => {
-    loadStats()
-  }, [loadStats])
 
   if (loading) {
     return (
@@ -56,12 +39,12 @@ export default function SystemBalance() {
     )
   }
 
-  if (error) {
+  if (fetchError) {
     return (
       <div className="grow pb-6">
         <Alert role="alert">
           <i className="bx bx-error-circle mr-2"></i>
-          {error}
+          {fetchError?.message || 'Failed to load system wallet stats'}
         </Alert>
       </div>
     )

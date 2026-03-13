@@ -1,17 +1,16 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, startTransition } from 'react'
 import { useRouter, useSearchParams as useNextSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { useAuth } from '@/app/providers'
-import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
+import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getTempWallets } from '@/lib/api/admin'
 import { listCoins } from '@/lib/api/coins'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import CoinImg from '@/components/CoinImg'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
@@ -38,7 +37,6 @@ export default function TempWalletList() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
 
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -50,9 +48,6 @@ export default function TempWalletList() {
   const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [wallets, setWallets] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
   const [coinNetworks, setCoinNetworks] = useState([])
 
@@ -81,43 +76,32 @@ export default function TempWalletList() {
     syncSearchParams(f, 1)
   }
 
-  const loadWallets = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getTempWallets(token, { page: currentPage, limit: 20, ...appliedFilters })
-      setWallets(data.items || [])
+  const { data, isLoading, isValidating, mutate, token } = useApi(
+    ['admin-temp-wallets', currentPage, appliedFilters],
+    (token) => getTempWallets(token, { page: currentPage, limit: 20, ...appliedFilters }).then((data) => {
       const m = data.meta || data.pagination || null
-      setPagination(
-        m
-          ? {
-              total: m.total,
-              page: m.page,
-              limit: m.perPage || m.limit || 20,
-              totalPages: m.lastPage || m.totalPages || 1,
-              hasNext: m.hasNextPage ?? m.hasNext ?? false,
-              hasPrev: m.hasPrevPage ?? m.hasPrev ?? false,
-            }
-          : null
-      )
-    } catch (error) {
-      logger.error('Failed to load temp wallets:', error)
-      toast.error(t('admin.tempWallet.loadError', { defaultValue: 'Failed to load temp wallets' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
+      return {
+        items: data.items || [],
+        pagination: m ? {
+          total: m.total,
+          page: m.page,
+          limit: m.perPage || m.limit || 20,
+          totalPages: m.lastPage || m.totalPages || 1,
+          hasNext: m.hasNextPage ?? m.hasNext ?? false,
+          hasPrev: m.hasPrevPage ?? m.hasPrev ?? false,
+        } : null,
+      }
+    }),
+    { onError: () => toast.error(t('admin.tempWallet.loadError', { defaultValue: 'Failed to load temp wallets' })), keepPreviousData: true }
+  )
+  const wallets = data?.items || []
+  const pagination = data?.pagination || null
 
   useEffect(() => {
-    loadWallets()
-  }, [loadWallets])
-
-  useEffect(() => {
+    if (!token) return
     listCoins(token)
       .then(setCoinNetworks)
-      .catch(() => {
-        // Non-critical: filter dropdown will be empty
-      })
+      .catch(() => {})
   }, [token])
 
   function syncSearchParams(filters, page) {
@@ -155,7 +139,7 @@ export default function TempWalletList() {
 
   const { copiedId, handleCopy } = useCopyFeedback()
 
-  if (loading && wallets.length === 0) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -181,7 +165,7 @@ export default function TempWalletList() {
                     <i className="bx bx-history mr-1"></i>
                     {t('admin.tempWallets.usageHistories', { defaultValue: 'Usage Histories' })}
                   </Button>
-                  <RefreshButton onClick={loadWallets} loading={loading} />
+                  <RefreshButton onClick={() => mutate()} loading={isValidating} />
                 </div>
               </div>
             </div>
@@ -219,11 +203,11 @@ export default function TempWalletList() {
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <Button onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={isValidating}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </Button>
-                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
+                <Button onClick={resetFilters} disabled={isValidating} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </Button>
@@ -371,10 +355,10 @@ export default function TempWalletList() {
               <Pagination
                 pagination={pagination}
                 onPageChange={(p) => {
-                  setCurrentPage(p)
+                  startTransition(() => setCurrentPage(p))
                   syncSearchParams(appliedFilters, p)
                 }}
-                loading={loading}
+                loading={isValidating}
               />
             </div>
           </Card>

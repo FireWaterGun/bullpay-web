@@ -19,7 +19,6 @@ export default function SweepTransactionTable({
   pagination,
   retryingId,
   formatAmount,
-  handleCopy,
   statusBadgeClass,
   onNavigate,
   onRetry,

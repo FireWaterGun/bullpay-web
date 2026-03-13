@@ -1,101 +1,66 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
-import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getGasTopups } from '@/lib/api/admin'
-import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
-import CoinImg from '@/components/CoinImg'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { listCoins } from '@/lib/api/coins'
 import GasTopupRow from '@/components/admin/GasTopupRow'
-import { logger } from '@/lib/utils/logger'
+import GasTopupFilters from './GasTopupFilters'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
-import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import CoinNetworkFilterDropdown from '@/components/ui/CoinNetworkFilterDropdown'
-import { Input, Label, Select } from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
 
 export default function GasTopups() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
   const router = useRouter()
 
-  const locale = useLocale()
-
-  const initStatus = searchParams.get('status') || ''
-  const initCoinNetworkId = searchParams.get('coinNetworkId') || ''
-  const initSweepId = searchParams.get('sweepId') || ''
-  const initTxHash = searchParams.get('txHash') || ''
-  const initDateFrom = searchParams.get('dateFrom') || ''
-  const initDateTo = searchParams.get('dateTo') || ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [topups, setTopups] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
-  const [coinNetworks, setCoinNetworks] = useState([])
 
-  // Filter states
-  const [statusFilter, setStatusFilter] = useState(initStatus)
-  const [coinNetworkIdFilter, setCoinNetworkIdFilter] = useState(initCoinNetworkId)
-  const [sweepIdFilter, setSweepIdFilter] = useState(initSweepId)
-  const [txHashFilter, setTxHashFilter] = useState(initTxHash)
-  const [dateFromFilter, setDateFromFilter] = useState(initDateFrom)
-  const [dateToFilter, setDateToFilter] = useState(initDateTo)
+  const { data: coinNetworksData } = useApi(
+    'admin-coin-networks-list',
+    (token) => listCoins(token)
+  )
+  const coinNetworks = coinNetworksData || []
 
-  // Applied filters
+  const [filters, setFilters] = useState({
+    status: searchParams.get('status') || '',
+    coinNetworkId: searchParams.get('coinNetworkId') || '',
+    sweepId: searchParams.get('sweepId') || '',
+    txHash: searchParams.get('txHash') || '',
+    dateFrom: searchParams.get('dateFrom') || '',
+    dateTo: searchParams.get('dateTo') || '',
+  })
+
   const [appliedFilters, setAppliedFilters] = useState(() => {
     const f = {}
-    if (initStatus) f.status = initStatus
-    if (initCoinNetworkId) f.coinNetworkId = Number(initCoinNetworkId)
-    if (initSweepId) f.sweepId = Number(initSweepId)
-    if (initTxHash) f.txHash = initTxHash
-    if (initDateFrom) f.dateFrom = initDateFrom
-    if (initDateTo) f.dateTo = initDateTo
+    if (filters.status) f.status = filters.status
+    if (filters.coinNetworkId) f.coinNetworkId = Number(filters.coinNetworkId)
+    if (filters.sweepId) f.sweepId = Number(filters.sweepId)
+    if (filters.txHash) f.txHash = filters.txHash
+    if (filters.dateFrom) f.dateFrom = filters.dateFrom
+    if (filters.dateTo) f.dateTo = filters.dateTo
     return f
   })
 
-  const loadTopups = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getGasTopups(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setTopups(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load gas topups:', error)
-      toast.error(t('gasTopup.loadError', { defaultValue: 'Failed to load gas topups' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadTopups()
-  }, [loadTopups])
-
-  useEffect(() => {
-    listCoins(token)
-      .then(setCoinNetworks)
-      .catch(() => {
-        // Non-critical: filter dropdown will be empty
-      })
-  }, [token])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-gas-topups', currentPage, appliedFilters],
+    (token) => getGasTopups(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('gasTopup.loadError', { defaultValue: 'Failed to load gas topups' })), keepPreviousData: true }
+  )
+  const topups = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -108,12 +73,12 @@ export default function GasTopups() {
 
   function applyFilters() {
     const f = {
-      status: statusFilter || undefined,
-      coinNetworkId: coinNetworkIdFilter ? Number(coinNetworkIdFilter) : undefined,
-      sweepId: sweepIdFilter ? Number(sweepIdFilter) : undefined,
-      txHash: txHashFilter || undefined,
-      dateFrom: dateFromFilter || undefined,
-      dateTo: dateToFilter || undefined,
+      status: filters.status || undefined,
+      coinNetworkId: filters.coinNetworkId ? Number(filters.coinNetworkId) : undefined,
+      sweepId: filters.sweepId ? Number(filters.sweepId) : undefined,
+      txHash: filters.txHash || undefined,
+      dateFrom: filters.dateFrom || undefined,
+      dateTo: filters.dateTo || undefined,
     }
     setAppliedFilters(f)
     setCurrentPage(1)
@@ -121,12 +86,7 @@ export default function GasTopups() {
   }
 
   function resetFilters() {
-    setStatusFilter('')
-    setCoinNetworkIdFilter('')
-    setSweepIdFilter('')
-    setTxHashFilter('')
-    setDateFromFilter('')
-    setDateToFilter('')
+    setFilters({ status: '', coinNetworkId: '', sweepId: '', txHash: '', dateFrom: '', dateTo: '' })
     setAppliedFilters({})
     setCurrentPage(1)
     window.history.replaceState(null, '', window.location.pathname)
@@ -137,7 +97,7 @@ export default function GasTopups() {
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
-  if (loading && topups.length === 0) {
+  if (isLoading && topups.length === 0) {
     return <PageSpinner />
   }
 
@@ -160,75 +120,17 @@ export default function GasTopups() {
                     })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadTopups} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
-            <div className="p-5">
-              <div className="grid grid-cols-12 gap-x-6 gap-3">
-                <div className="col-span-12 sm:col-span-6 md:col-span-2">
-                  <Label>{t('common.status', { defaultValue: 'Status' })}</Label>
-                  <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                    <option value="">{t('common.all', { defaultValue: 'All' })}</option>
-                    <option value="pending">{t('status.pending', { defaultValue: 'Pending' })}</option>
-                    <option value="processing">{t('status.processing', { defaultValue: 'Processing' })}</option>
-                    <option value="completed">{t('status.completed', { defaultValue: 'Completed' })}</option>
-                    <option value="failed">{t('status.failed', { defaultValue: 'Failed' })}</option>
-                    <option value="skipped">{t('admin.gasTopup.skipped', { defaultValue: 'Skipped' })}</option>
-                  </Select>
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-2">
-                  <Label>{t('admin.gasTopup.coinNetwork', { defaultValue: 'Coin / Network' })}</Label>
-                  <CoinNetworkFilterDropdown
-                    coinNetworks={coinNetworks}
-                    value={coinNetworkIdFilter}
-                    onChange={setCoinNetworkIdFilter}
-                    allLabel={t('common.all', { defaultValue: 'All' })}
-                  />
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-2">
-                  <Label>{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    placeholder={t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}
-                    value={sweepIdFilter}
-                    onChange={(e) => setSweepIdFilter(e.target.value)}
-                  />
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-2">
-                  <Label>{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</Label>
-                  <Input
-                    type="text"
-                    placeholder="0x..."
-                    value={txHashFilter}
-                    onChange={(e) => setTxHashFilter(e.target.value)}
-                  />
-                </div>
-                <div className="col-span-12 sm:col-span-6 md:col-span-3">
-                  <Label>{t('filter.dateRange', { defaultValue: 'Date Range' })}</Label>
-                  <LocaleDateRangePicker
-                    className="w-full"
-                    startDate={dateFromFilter}
-                    endDate={dateToFilter}
-                    onChangeStart={setDateFromFilter}
-                    onChangeEnd={setDateToFilter}
-                    locale={locale}
-                    placeholder={t('admin.detail.selectDateRange', { defaultValue: 'Select date range' })}
-                    t={t}
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2 mt-3">
-                <Button onClick={applyFilters} disabled={loading}>
-                  <i className="bx bx-filter-alt mr-1"></i>
-                  {t('filter.apply', { defaultValue: 'Apply Filters' })}
-                </Button>
-                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
-                  <i className="bx bx-reset mr-1"></i>
-                  {t('filter.reset', { defaultValue: 'Reset' })}
-                </Button>
-              </div>
-            </div>
+            <GasTopupFilters
+              coinNetworks={coinNetworks}
+              filters={filters}
+              onFiltersChange={setFilters}
+              onApply={applyFilters}
+              onReset={resetFilters}
+              loading={isValidating}
+            />
           </Card>
 
           {/* Table */}
@@ -276,10 +178,10 @@ export default function GasTopups() {
               <Pagination
                 pagination={pagination}
                 onPageChange={(p) => {
-                  setCurrentPage(p)
+                  startTransition(() => setCurrentPage(p))
                   syncSearchParams(appliedFilters, p)
                 }}
-                loading={loading}
+                loading={isValidating}
               />
             </div>
           </Card>

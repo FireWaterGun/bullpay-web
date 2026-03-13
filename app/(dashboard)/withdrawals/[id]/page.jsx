@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getWithdrawalById } from '@/lib/api/withdrawals'
 import { formatCoinAmount } from '@/lib/utils/format'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -38,34 +38,20 @@ export default function WithdrawalDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { fmtDate } = useDateFormat()
 
   const withdrawalId = params?.id
-  const [withdrawal, setWithdrawal] = useState(null)
-  const [loading, setLoading] = useState(true)
 
-  const loadWithdrawal = useCallback(async () => {
-    if (!token || !withdrawalId) return
-    try {
-      setLoading(true)
-      const data = await getWithdrawalById(withdrawalId, token)
-      setWithdrawal(data)
-    } catch (err) {
-      toast.error(err?.message || t('withdrawal.detailLoadError', { defaultValue: 'Failed to load withdrawal' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, withdrawalId, toast, t])
-
-  useEffect(() => {
-    loadWithdrawal()
-  }, [loadWithdrawal])
+  const { data: withdrawal, isLoading, isValidating, mutate } = useApi(
+    withdrawalId ? `withdrawal-${withdrawalId}` : null,
+    (token) => getWithdrawalById(withdrawalId, token),
+    { onError: (err) => toast.error(err?.message || t('withdrawal.detailLoadError', { defaultValue: 'Failed to load withdrawal' })) }
+  )
 
   const { copiedId, handleCopy } = useCopyFeedback()
 
-  if (loading && !withdrawal) return <PageSpinner />
+  if (isLoading) return <PageSpinner />
 
   if (!withdrawal) {
     return (
@@ -103,7 +89,7 @@ export default function WithdrawalDetailPage() {
             <div>
               <h4 className="text-lg font-semibold text-surface-900 flex items-center gap-2 mb-1">
                 {t('withdrawal.detail', { defaultValue: 'Withdrawal' })} #{withdrawal.id}
-                <RefreshButton onClick={loadWithdrawal} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </h4>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={statusBadgeClass(withdrawal.status)}>{formatStatusLabel(withdrawal.status)}</span>

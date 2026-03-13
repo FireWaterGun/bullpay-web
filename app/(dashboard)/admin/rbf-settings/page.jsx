@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useAuth, useToast } from '@/app/providers'
+import { useState, useEffect } from 'react'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getSettings, upsertSetting } from '@/lib/api/admin'
-import { logger } from '@/lib/utils/logger'
 import Spinner from '@/components/ui/Spinner'
 import RbfGlobalTab from '@/components/admin/rbf-settings/RbfGlobalTab'
 import RbfNetworkTab from '@/components/admin/rbf-settings/RbfNetworkTab'
-import RbfEditModal from '@/components/admin/rbf-settings/RbfEditModal'
+import dynamic from 'next/dynamic'
+const RbfEditModal = dynamic(() => import('@/components/admin/rbf-settings/RbfEditModal'), { ssr: false })
 
 // ─── Constants ───────────────────────────────────────────────
 
@@ -21,12 +22,23 @@ const TABS = [
 
 export default function RbfSettingsPage() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
 
   const [activeTab, setActiveTab] = useState('global')
-  const [loading, setLoading] = useState(true)
-  const [settingsMap, setSettingsMap] = useState({})
+
+  const { data: settingsMap, isLoading: loading, mutate, token } = useApi(
+    'admin-rbf-settings',
+    async (token) => {
+      const rbfRes = await getSettings(token, { category: 'rbf', limit: 100 })
+      const map = {}
+      for (const item of rbfRes?.items || []) {
+        const key = item.keyName || item.key_name
+        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? ''
+      }
+      return map
+    },
+    { onError: () => toast.error(t('admin.rbfSettings.loadError', { defaultValue: 'Failed to load RBF settings' })) }
+  )
   const [editModal, setEditModal] = useState(null)
   const [editForm, setEditForm] = useState({})
   const [formErrors, setFormErrors] = useState({})
@@ -44,35 +56,10 @@ export default function RbfSettingsPage() {
 
   // ─── Data Loading ────────────────────────────────────────
 
-  const loadSettings = useCallback(async () => {
-    if (!token) return
-    try {
-      const rbfRes = await getSettings(token, { category: 'rbf', limit: 100 })
-      const map = {}
-      for (const item of rbfRes?.items || []) {
-        const key = item.keyName || item.key_name
-        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? ''
-      }
-      setSettingsMap(map)
-    } catch (error) {
-      logger.error('Failed to load RBF settings:', error)
-      toast.error(t('admin.rbfSettings.loadError', { defaultValue: 'Failed to load RBF settings' }))
-    }
-  }, [token, t, toast])
-
-  useEffect(() => {
-    async function init() {
-      setLoading(true)
-      await loadSettings()
-      setLoading(false)
-    }
-    init()
-  }, [loadSettings])
-
   // ─── Helpers ─────────────────────────────────────────────
 
   function getVal(key, fallback = '—') {
-    const v = settingsMap[key]
+    const v = (settingsMap || {})[key]
     return v !== undefined && v !== '' ? v : fallback
   }
 
@@ -240,7 +227,7 @@ export default function RbfSettingsPage() {
 
       if (updates.length === 0) return
       await Promise.all(updates)
-      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }))
+      mutate((prev) => ({ ...prev, ...mapUpdates }), false)
       setEditModal(null)
       toast.success(t('admin.rbfSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {
@@ -304,7 +291,7 @@ export default function RbfSettingsPage() {
 
       if (updates.length === 0) return
       await Promise.all(updates)
-      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }))
+      mutate((prev) => ({ ...prev, ...mapUpdates }), false)
       setEditModal(null)
       toast.success(t('admin.rbfSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {

@@ -1,14 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getRbfTxById } from '@/lib/api/admin'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -16,30 +14,15 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function RbfTxDetail() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { id } = useParams()
   const { fmtDate } = useDateFormat()
 
-  const [loading, setLoading] = useState(true)
-  const [tx, setTx] = useState(null)
-
-  const loadTransaction = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getRbfTxById(token, parseInt(id))
-      setTx(data)
-    } catch (error) {
-      logger.error('Failed to load RBF transaction:', error)
-      toast.error(t('admin.rbfDetail.loadError', { defaultValue: 'Failed to load RBF transaction' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadTransaction()
-  }, [loadTransaction])
+  const { data: tx, isLoading: loading } = useApi(
+    id ? `rbf-tx-${id}` : null,
+    (token) => getRbfTxById(token, parseInt(id)),
+    { onError: () => toast.error(t('admin.rbfDetail.loadError', { defaultValue: 'Failed to load RBF transaction' })) }
+  )
 
   const { copiedId, handleCopy } = useCopyFeedback()
 

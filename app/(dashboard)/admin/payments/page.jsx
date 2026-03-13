@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useAuth } from '@/app/providers'
+import { useState, startTransition } from 'react'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getAdminPayments } from '@/lib/api/admin'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import AdminPaymentFilters from '@/components/admin/AdminPaymentFilters'
 import AdminPaymentRow from '@/components/admin/AdminPaymentRow'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
@@ -20,13 +19,9 @@ import SortableHeader from '@/components/ui/SortableHeader'
 
 export default function AdminPaymentList() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
 
   const locale = useLocale()
-  const [loading, setLoading] = useState(false)
-  const [payments, setPayments] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Filter states (draft — applied on "Apply")
@@ -49,27 +44,13 @@ export default function AdminPaymentList() {
     setCurrentPage(1)
   }
 
-  const loadPayments = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getAdminPayments(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setPayments(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load payments:', error)
-      toast.error(t('admin.payments.loadError', { defaultValue: 'Failed to load payments' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadPayments()
-  }, [loadPayments])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-payments', currentPage, appliedFilters],
+    (token) => getAdminPayments(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('admin.payments.loadError', { defaultValue: 'Failed to load payments' })), keepPreviousData: true }
+  )
+  const payments = data?.items || []
+  const pagination = data?.pagination || null
 
   function applyFilters() {
     setAppliedFilters({
@@ -103,7 +84,7 @@ export default function AdminPaymentList() {
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
   }
 
-  if (loading && payments.length === 0) {
+  if (isLoading && payments.length === 0) {
     return <PageSpinner />
   }
 
@@ -124,12 +105,12 @@ export default function AdminPaymentList() {
                     {t('admin.payments.description', { defaultValue: 'View all blockchain payment transactions' })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadPayments} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
             <AdminPaymentFilters
               locale={locale}
-              loading={loading}
+              loading={isValidating}
               statusFilter={statusFilter}
               setStatusFilter={setStatusFilter}
               userIdFilter={userIdFilter}
@@ -183,7 +164,7 @@ export default function AdminPaymentList() {
             </Table>
 
             <div className="px-5 py-1.5">
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              <Pagination pagination={pagination} onPageChange={(p) => startTransition(() => setCurrentPage(p))} loading={isValidating} />
             </div>
           </Card>
         </div>

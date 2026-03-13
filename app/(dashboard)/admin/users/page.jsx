@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAuth, useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import {
@@ -30,7 +31,7 @@ import Spinner from '@/components/ui/Spinner'
 
 export default function AdminUsersPage() {
   const { t } = useAdminTranslation()
-  const { token, navigation } = useAuth()
+  const { navigation } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
 
@@ -46,9 +47,6 @@ export default function AdminUsersPage() {
   const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
 
   const [statusFilter, setStatusFilter] = useState(initStatus)
@@ -92,28 +90,13 @@ export default function AdminUsersPage() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [createLoading, setCreateLoading] = useState(false)
 
-  const loadUsers = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getUsers(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setUsers(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load users:', error)
-      toast.error(t('admin.users.loadError', { defaultValue: 'Failed to load users' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadUsers()
-  }, [loadUsers])
+  const { data, isLoading, isValidating, mutate, token } = useApi(
+    ['admin-users', currentPage, appliedFilters],
+    (token) => getUsers(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('admin.users.loadError', { defaultValue: 'Failed to load users' })), keepPreviousData: true }
+  )
+  const users = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -177,7 +160,7 @@ export default function AdminUsersPage() {
       await createUser(token, data)
       toast.success(t('admin.users.createSuccess', { defaultValue: 'User created successfully' }))
       setShowCreateModal(false)
-      loadUsers()
+      mutate()
     } catch (error) {
       logger.error('Failed to create user:', error)
       const code = error?.code || ''
@@ -236,7 +219,7 @@ export default function AdminUsersPage() {
       }
 
       closeModal()
-      loadUsers()
+      mutate()
     } catch (error) {
       logger.error(`Failed to ${modalType}:`, error)
       toast.error(t('admin.users.actionError', { defaultValue: 'Action failed. Please try again.' }))
@@ -245,7 +228,7 @@ export default function AdminUsersPage() {
     }
   }
 
-  if (loading && users.length === 0) {
+  if (isLoading) {
     return (
       <div className="grow pb-6">
         <div className="text-center py-5">
@@ -278,7 +261,7 @@ export default function AdminUsersPage() {
                     <i className="bx bx-user-plus mr-1"></i>
                     {t('admin.users.createUser', { defaultValue: 'Create User' })}
                   </Button>
-                  <RefreshButton onClick={loadUsers} loading={loading} />
+                  <RefreshButton onClick={() => mutate()} loading={isValidating} />
                 </div>
               </div>
             </div>
@@ -331,11 +314,11 @@ export default function AdminUsersPage() {
 
               </div>
               <div className="flex gap-2 mt-3">
-                <Button onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={isValidating}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </Button>
-                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
+                <Button onClick={resetFilters} disabled={isValidating} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </Button>
@@ -346,14 +329,14 @@ export default function AdminUsersPage() {
           <UserListTable
             t={t}
             users={users}
-            loading={loading}
+            loading={isValidating}
             pagination={pagination}
             currentPage={currentPage}
             appliedFilters={appliedFilters}
             onCopy={handleCopy}
             copiedId={copiedId}
             onOpenModal={openModal}
-            onPageChange={setCurrentPage}
+            onPageChange={(p) => startTransition(() => setCurrentPage(p))}
             onSyncSearchParams={syncSearchParams}
             sortBy={sortBy}
             sortOrder={sortOrder}

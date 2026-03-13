@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getBalancesWithFiat } from '@/lib/api/balance'
 import { formatCoinAmount, formatUsd } from '@/lib/utils/format'
 import CoinImg from '@/components/CoinImg'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import CardEmptyState from '@/components/CardEmptyState'
 import Card from '@/components/ui/Card'
@@ -17,34 +17,18 @@ import Button from '@/components/ui/Button'
 
 export default function BalancePage() {
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
 
-  const [balances, setBalances] = useState([])
-  const [totalBalance, setTotalBalance] = useState(null)
-  const [fiat, setFiat] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { data, isLoading: loading, isValidating, mutate } = useApi(
+    'user-balances',
+    (token) => getBalancesWithFiat(token),
+    { onError: () => toast.error(t('balance.loadError', { defaultValue: 'Failed to load balances' })) }
+  )
+
+  const balances = data?.breakdown || []
+  const totalBalance = data?.totalBalance || null
+  const fiat = data?.fiat || null
   const [showZero, setShowZero] = useState(false)
-
-  const loadBalances = useCallback(async () => {
-    if (!token) return
-    try {
-      setLoading(true)
-      const data = await getBalancesWithFiat(token)
-      setBalances(data.breakdown || [])
-      setTotalBalance(data.totalBalance || null)
-      setFiat(data.fiat || null)
-    } catch (err) {
-      logger.error('Failed to load balances:', err)
-      toast.error(t('balance.loadError', { defaultValue: 'Failed to load balances' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, toast, t])
-
-  useEffect(() => {
-    loadBalances()
-  }, [loadBalances])
 
   const filteredBalances = showZero
     ? balances
@@ -61,7 +45,7 @@ export default function BalancePage() {
     <>
       <div className="flex justify-between items-center mb-6">
         <h4 className="text-xl font-semibold text-surface-900">{t('balance.title', { defaultValue: 'Balance' })}</h4>
-        <RefreshButton onClick={loadBalances} loading={loading} />
+        <RefreshButton onClick={() => mutate()} loading={isValidating} />
       </div>
 
       {/* Total Value Card */}

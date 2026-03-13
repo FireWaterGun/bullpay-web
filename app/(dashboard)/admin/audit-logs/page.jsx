@@ -1,16 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getAuditLogs } from '@/lib/api/auditLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import LocaleDateRangePicker from '@/components/LocaleDateRangePicker'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import TableEmptyState from '@/components/TableEmptyState'
@@ -89,14 +88,10 @@ export default function AuditLogList() {
   const { t } = useAdminTranslation()
   const router = useRouter()
 
-  const { token } = useAuth()
   const toast = useToast()
 
   const locale = useLocale()
 
-  const [loading, setLoading] = useState(false)
-  const [logs, setLogs] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Filter states (draft)
@@ -119,27 +114,13 @@ export default function AuditLogList() {
     setCurrentPage(1)
   }
 
-  const loadLogs = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getAuditLogs(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setLogs(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load audit logs:', error)
-      toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit logs' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadLogs()
-  }, [loadLogs])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-audit-logs', currentPage, appliedFilters],
+    (token) => getAuditLogs(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('admin.auditLog.loadError', { defaultValue: 'Failed to load audit logs' })), keepPreviousData: true }
+  )
+  const logs = data?.items || []
+  const pagination = data?.pagination || null
 
   function applyFilters() {
     setAppliedFilters({
@@ -194,7 +175,7 @@ export default function AuditLogList() {
     return match ? t(`admin.auditLog.${match.key}`, { defaultValue: match.defaultLabel }) : type
   }
 
-  if (loading && logs.length === 0) {
+  if (isLoading && logs.length === 0) {
     return <PageSpinner />
   }
 
@@ -215,7 +196,7 @@ export default function AuditLogList() {
                     {t('admin.auditLog.description', { defaultValue: 'Track admin actions and system events' })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadLogs} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
 
@@ -278,11 +259,11 @@ export default function AuditLogList() {
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <Button onClick={applyFilters} disabled={loading}>
+                <Button onClick={applyFilters} disabled={isValidating}>
                   <i className="bx bx-filter-alt mr-1"></i>
                   {t('filter.apply', { defaultValue: 'Apply Filters' })}
                 </Button>
-                <Button onClick={resetFilters} disabled={loading} variant="outline-secondary">
+                <Button onClick={resetFilters} disabled={isValidating} variant="outline-secondary">
                   <i className="bx bx-reset mr-1"></i>
                   {t('filter.reset', { defaultValue: 'Reset' })}
                 </Button>
@@ -342,7 +323,7 @@ export default function AuditLogList() {
             </Table>
 
             <div className="px-5 py-1.5">
-              <Pagination pagination={pagination} onPageChange={setCurrentPage} loading={loading} />
+              <Pagination pagination={pagination} onPageChange={(p) => startTransition(() => setCurrentPage(p))} loading={isValidating} />
             </div>
           </Card>
         </div>

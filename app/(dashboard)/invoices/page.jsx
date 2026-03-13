@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useMemo, useState, startTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { listInvoices } from '@/lib/api/invoices'
 import { useCoins } from '@/hooks/useCoins'
 import { useUserInvoiceEvents } from '@/hooks/useInvoiceEvents'
@@ -15,9 +16,6 @@ import Button from '@/components/ui/Button'
 
 export default function InvoiceList() {
   const { t, i18n } = useTranslation()
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const [status, setStatus] = useState('')
   const [sortBy, setSortBy] = useState('created_at')
   const [sortOrder, setSortOrder] = useState('desc')
@@ -37,67 +35,58 @@ export default function InvoiceList() {
   })
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
-  const [total, setTotal] = useState(0)
-  const { token, user } = useAuth()
+  const { user } = useAuth()
 
   const locale = useMemo(() => {
     const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
     return map[i18n.language] || 'en-US'
   }, [i18n.language])
 
-  const totalPages = useMemo(() => (limit ? Math.ceil((total || 0) / limit) : 1), [total, limit])
+  const { data, error, isLoading, isValidating, mutate } = useApi(
+    ['my-invoices', page, appliedFilters],
+    (token) => listInvoices(
+      {
+        page,
+        limit,
+        sortBy: appliedFilters.sortBy,
+        sortOrder: appliedFilters.sortOrder,
+        q: appliedFilters.q || undefined,
+        status: appliedFilters.status || undefined,
+        coinNetworkId: appliedFilters.coinNetworkId || undefined,
+        dateFrom: appliedFilters.dateFrom || undefined,
+        dateTo: appliedFilters.dateTo || undefined,
+      },
+      token
+    ),
+    { keepPreviousData: true }
+  )
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const res = await listInvoices(
-        {
-          page,
-          limit,
-          sortBy: appliedFilters.sortBy,
-          sortOrder: appliedFilters.sortOrder,
-          q: appliedFilters.q || undefined,
-          status: appliedFilters.status || undefined,
-          coinNetworkId: appliedFilters.coinNetworkId || undefined,
-          dateFrom: appliedFilters.dateFrom || undefined,
-          dateTo: appliedFilters.dateTo || undefined,
-        },
-        token
-      )
-      setItems(res.items)
-      setTotal(res.total || 0)
-    } catch (e) {
-      setError(typeof e?.message === 'string' ? e.message : 'Failed to load invoices')
-    } finally {
-      setLoading(false)
-    }
-  }, [page, limit, appliedFilters, token])
-
-  useEffect(() => {
-    load()
-  }, [load])
+  const items = data?.items || []
+  const total = data?.total || 0
+  const totalPages = limit ? Math.ceil(total / limit) : 1
 
   const userIdentifier = user?.id || user?.userId || user?.email
   useUserInvoiceEvents(userIdentifier, {
-    onInvoiceCreated: () => load(),
-    onInvoiceUpdated: () => load(),
-    onStatusChanged: () => load(),
-    onPaymentReceived: () => load(),
-    onPaymentCompleted: () => load(),
-    onWithdrawalCompleted: () => load(),
+    onInvoiceCreated: () => mutate(),
+    onInvoiceUpdated: () => mutate(),
+    onStatusChanged: () => mutate(),
+    onPaymentReceived: () => mutate(),
+    onPaymentCompleted: () => mutate(),
+    onWithdrawalCompleted: () => mutate(),
   })
 
   function applyFilters() {
-    setPage(1)
-    setAppliedFilters({
-      q: searchQuery,
-      status,
-      sortBy,
-      sortOrder,
-      coinNetworkId: coinNetworkIdFilter,
-      dateFrom: startDateFilter,
-      dateTo: endDateFilter,
+    startTransition(() => {
+      setPage(1)
+      setAppliedFilters({
+        q: searchQuery,
+        status,
+        sortBy,
+        sortOrder,
+        coinNetworkId: coinNetworkIdFilter,
+        dateFrom: startDateFilter,
+        dateTo: endDateFilter,
+      })
     })
   }
   function resetFilters() {
@@ -108,19 +97,21 @@ export default function InvoiceList() {
     setCoinNetworkIdFilter('')
     setStartDateFilter('')
     setEndDateFilter('')
-    setPage(1)
-    setAppliedFilters({
-      q: '',
-      status: '',
-      sortBy: 'created_at',
-      sortOrder: 'desc',
-      coinNetworkId: '',
-      dateFrom: '',
-      dateTo: '',
+    startTransition(() => {
+      setPage(1)
+      setAppliedFilters({
+        q: '',
+        status: '',
+        sortBy: 'created_at',
+        sortOrder: 'desc',
+        coinNetworkId: '',
+        dateFrom: '',
+        dateTo: '',
+      })
     })
   }
 
-  if (loading && items.length === 0) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -139,7 +130,7 @@ export default function InvoiceList() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <RefreshButton onClick={load} loading={loading} />
+            <RefreshButton onClick={() => mutate()} loading={isValidating} />
             <Button href="/invoices/create">
               <i className="bx bx-plus mr-1"></i>
               {t('invoices.create', { defaultValue: 'Create Invoice' })}
@@ -160,7 +151,7 @@ export default function InvoiceList() {
           endDateFilter={endDateFilter}
           setEndDateFilter={setEndDateFilter}
           locale={locale}
-          loading={loading}
+          loading={isValidating}
           onApply={applyFilters}
           onReset={resetFilters}
         />
@@ -169,7 +160,7 @@ export default function InvoiceList() {
       {/* Error */}
       {error && (
         <div className="rounded-lg bg-danger-50 dark:bg-danger-950/30 text-danger-700 dark:text-danger-400 px-4 py-3 text-sm mb-4">
-          {error}
+          {error?.message || 'Failed to load invoices'}
         </div>
       )}
 
@@ -184,15 +175,17 @@ export default function InvoiceList() {
           hasPrev: page > 1,
           hasNext: page < totalPages,
         }}
-        loading={loading}
-        onPageChange={setPage}
+        loading={isValidating}
+        onPageChange={(p) => startTransition(() => setPage(p))}
         sortBy={appliedFilters.sortBy}
         sortOrder={appliedFilters.sortOrder}
         onSort={(field, order) => {
           setSortBy(field)
           setSortOrder(order)
-          setPage(1)
-          setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
+          startTransition(() => {
+            setPage(1)
+            setAppliedFilters((prev) => ({ ...prev, sortBy: field, sortOrder: order }))
+          })
         }}
       />
     </>

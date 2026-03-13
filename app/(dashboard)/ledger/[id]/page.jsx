@@ -1,46 +1,31 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getMyLedgerEntry } from '@/lib/api/userLedger'
 import { formatUsd } from '@/lib/utils/format'
 import { formatAmount, getEntryCodeLabel, userStateBadge } from '@/components/ledger/ledgerUtils'
 import { useDateFormat } from '@/hooks/useDateFormat'
 import CoinImg from '@/components/CoinImg'
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
-import { logger } from '@/lib/utils/logger'
 import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 
 export default function MyLedgerDetail() {
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const { id } = useParams()
   const { fmtDateTime } = useDateFormat()
-  const [loading, setLoading] = useState(true)
-  const [entry, setEntry] = useState(null)
 
-  const loadEntry = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getMyLedgerEntry(token, id)
-      setEntry(data)
-    } catch (error) {
-      logger.error('Failed to load ledger entry:', error)
-      toast.error(t('userLedger.loadError', { defaultValue: 'Failed to load ledger entry' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadEntry()
-  }, [loadEntry])
+  const { data: entry, isLoading: loading } = useApi(
+    id ? `ledger-${id}` : null,
+    (token) => getMyLedgerEntry(token, id),
+    { onError: () => toast.error(t('userLedger.loadError', { defaultValue: 'Failed to load ledger entry' })) }
+  )
 
   const { copiedId, handleCopy } = useCopyFeedback()
 

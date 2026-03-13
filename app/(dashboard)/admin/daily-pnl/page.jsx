@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import useApi from '@/hooks/useApi'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
 import { getRevenueDaily } from '@/lib/api/admin'
@@ -16,7 +17,6 @@ import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 import SortableHeader from '@/components/ui/SortableHeader'
 import Spinner from '@/components/ui/Spinner'
-import { logger } from '@/lib/utils/logger'
 import { useCoins } from '@/hooks/useCoins'
 
 function computeTotals(rows) {
@@ -87,13 +87,10 @@ function exportCsv(rows, totals, t) {
 
 export default function DailyPnlPage() {
   const { t } = useAdminTranslation()
-  const { token, user } = useAuth()
+  const { user } = useAuth()
   const toast = useToast()
   const locale = useLocale()
   const { coins: coinNetworks } = useCoins()
-
-  const [loading, setLoading] = useState(false)
-  const [rows, setRows] = useState([])
 
   // Date filters
   const [datePreset, setDatePreset] = useState('last30days')
@@ -116,26 +113,13 @@ export default function DailyPnlPage() {
   const fromDate = dateRange.from
   const toDate = dateRange.to
 
-  const loadData = useCallback(async () => {
-    if (!fromDate || !toDate) return
-    try {
-      setLoading(true)
-      const res = await getRevenueDaily(token, fromDate, toDate, coinNetworkId ? Number(coinNetworkId) : undefined)
-      const items = res?.items || []
-      setRows(Array.isArray(items) ? items : [])
-    } catch (error) {
-      logger.error('Failed to load daily P&L:', error)
-      toast.error(t('admin.dailyPnl.loadError', { defaultValue: 'Failed to load daily P&L data' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, fromDate, toDate, coinNetworkId, t, toast])
+  const { data, isLoading, isValidating } = useApi(
+    fromDate && toDate ? ['admin-daily-pnl', fromDate, toDate, coinNetworkId] : null,
+    (token) => getRevenueDaily(token, fromDate, toDate, coinNetworkId ? Number(coinNetworkId) : undefined),
+    { onError: () => toast.error(t('admin.dailyPnl.loadError', { defaultValue: 'Failed to load daily P&L data' })) }
+  )
 
-  useEffect(() => {
-    if (token && fromDate && toDate) {
-      loadData()
-    }
-  }, [token, fromDate, toDate, coinNetworkId, loadData])
+  const rows = useMemo(() => data?.items || (Array.isArray(data) ? data : []), [data])
 
   const totals = useMemo(() => computeTotals(rows), [rows])
 
@@ -216,7 +200,7 @@ export default function DailyPnlPage() {
           </Card>
 
           {/* Summary Cards */}
-          {hasData && !loading && (
+          {hasData && !isValidating && (
             <div className="grid grid-cols-12 gap-x-6 gap-y-4 mb-4">
               <SummaryCard
                 title={t('admin.dailyPnl.deposits', { defaultValue: 'Deposits' })}
@@ -248,7 +232,7 @@ export default function DailyPnlPage() {
           )}
 
           {/* Loading */}
-          {loading && (
+          {isLoading && (
             <Card>
               <div className="p-10 text-center">
                 <Spinner />
@@ -257,7 +241,7 @@ export default function DailyPnlPage() {
           )}
 
           {/* Daily Table */}
-          {hasData && !loading && (
+          {hasData && !isValidating && (
             <Card>
               <Table>
                 <thead>
@@ -324,7 +308,7 @@ export default function DailyPnlPage() {
           )}
 
           {/* Empty state */}
-          {!hasData && !loading && (
+          {!hasData && !isLoading && (
             <Card>
               <div className="p-5">
                 <CardEmptyState

@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button'
 
 export default function ForgotCompletePage() {
   const [email] = useState(() => {
+    if (typeof window === 'undefined') return ''
     try {
       return sessionStorage.getItem('forgot_email') || ''
     } catch {

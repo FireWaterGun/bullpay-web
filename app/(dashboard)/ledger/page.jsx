@@ -1,22 +1,22 @@
 'use client'
 
-import { useState, useEffect, Suspense, useCallback } from 'react'
+import { useState, Suspense, startTransition } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getMyLedgerEntries } from '@/lib/api/userLedger'
 import { useCoins } from '@/hooks/useCoins'
 import { getDateRange } from '@/lib/utils/dateRange'
 import MyLedgerFilterPanel from '@/components/ledger/MyLedgerFilterPanel'
 import MyLedgerTable from '@/components/ledger/MyLedgerTable'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
 
 export default function MyLedgerList() {
   return (
-    <Suspense>
+    <Suspense fallback={<PageSpinner />}>
       <MyLedgerListContent />
     </Suspense>
   )
@@ -24,7 +24,6 @@ export default function MyLedgerList() {
 
 function MyLedgerListContent() {
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -36,9 +35,6 @@ function MyLedgerListContent() {
   const initDatePreset = searchParams.get('datePreset') || 'last7'
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [entries, setEntries] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
   const { coins: coinNetworks } = useCoins()
 
@@ -63,27 +59,13 @@ function MyLedgerListContent() {
     return f
   })
 
-  const loadEntries = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getMyLedgerEntries(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setEntries(data.items || [])
-      setPagination(data.pagination || null)
-    } catch (error) {
-      logger.error('Failed to load ledger entries:', error)
-      toast.error(t('userLedger.loadError', { defaultValue: 'Failed to load ledger entries' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast, t])
-
-  useEffect(() => {
-    loadEntries()
-  }, [loadEntries])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['my-ledger', currentPage, appliedFilters],
+    (token) => getMyLedgerEntries(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error(t('userLedger.loadError', { defaultValue: 'Failed to load ledger entries' })), keepPreviousData: true }
+  )
+  const entries = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -105,8 +87,10 @@ function MyLedgerListContent() {
       startDate: range.from || undefined,
       endDate: range.to || undefined,
     }
-    setAppliedFilters(f)
-    setCurrentPage(1)
+    startTransition(() => {
+      setAppliedFilters(f)
+      setCurrentPage(1)
+    })
     syncSearchParams(f, 1)
   }
 
@@ -116,12 +100,14 @@ function MyLedgerListContent() {
     setStateFilter('')
     setTxHashFilter('')
     setDatePresetFilter('')
-    setAppliedFilters({})
-    setCurrentPage(1)
+    startTransition(() => {
+      setAppliedFilters({})
+      setCurrentPage(1)
+    })
     router.replace('?', { scroll: false })
   }
 
-  if (loading && entries.length === 0) {
+  if (isLoading && entries.length === 0) {
     return <PageSpinner />
   }
 
@@ -139,7 +125,7 @@ function MyLedgerListContent() {
               {t('userLedger.description', { defaultValue: 'View your ledger entries and transaction history' })}
             </p>
           </div>
-          <RefreshButton onClick={loadEntries} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
         <MyLedgerFilterPanel
           entryCodeFilter={entryCodeFilter}
@@ -153,7 +139,7 @@ function MyLedgerListContent() {
           txHashFilter={txHashFilter}
           setTxHashFilter={setTxHashFilter}
           coinNetworks={coinNetworks}
-          loading={loading}
+          loading={isValidating}
           onApply={applyFilters}
           onReset={resetFilters}
         />
@@ -163,9 +149,9 @@ function MyLedgerListContent() {
       <MyLedgerTable
         entries={entries}
         pagination={pagination}
-        loading={loading}
+        loading={isValidating}
         currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
+        setCurrentPage={(p) => startTransition(() => setCurrentPage(p))}
         syncSearchParams={syncSearchParams}
         appliedFilters={appliedFilters}
       />

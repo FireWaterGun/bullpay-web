@@ -1,20 +1,14 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
-import {
-  getUserTransactionSummary,
-  getUserTransactionDaily,
-  getUserTransactionByCoin,
-} from '@/lib/api/userTransactions'
 import LocaleDatePicker from '@/components/LocaleDatePicker'
 import { formatUsd, formatChange } from '@/lib/utils/format'
 import DailyTrendChart from '@/components/dashboard/DailyTrendChart'
 import TransactionByCoinTable from '@/components/dashboard/TransactionByCoinTable'
 import RefreshButton from '@/components/RefreshButton'
-import { getDateRange } from '@/lib/utils/dateRange'
-import { logger } from '@/lib/utils/logger'
+import useTransactionData from '@/hooks/useTransactionData'
 
 const formatCurrencyPlain = formatUsd
 
@@ -23,6 +17,14 @@ const kpiColors = {
   danger: { bg: 'bg-danger-50 dark:bg-danger-500/10', icon: 'text-danger-600 dark:text-danger-400' },
   warning: { bg: 'bg-warning-50 dark:bg-warning-500/10', icon: 'text-warning-600 dark:text-warning-400' },
   info: { bg: 'bg-info-50 dark:bg-info-500/10', icon: 'text-info-600 dark:text-info-400' },
+}
+
+const valueColorClasses = {
+  success: 'text-success-600',
+  danger: 'text-danger-600',
+  warning: 'text-warning-600',
+  info: 'text-info-600',
+  primary: 'text-primary-600',
 }
 
 function SummaryCard({ title, value, change, icon, color = 'primary', valueColor, t }) {
@@ -36,7 +38,7 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
         <div className="min-w-0">
           <p className="text-sm text-surface-500 mb-1">{title}</p>
           <p
-            className={`text-2xl font-bold mb-0 ${{ success: 'text-success-600', danger: 'text-danger-600', warning: 'text-warning-600', info: 'text-info-600', primary: 'text-primary-600' }[valueColor] || 'text-surface-900'}`}
+            className={`text-2xl font-bold mb-0 ${valueColorClasses[valueColor] || 'text-surface-900'}`}
           >
             {value}
           </p>
@@ -58,35 +60,22 @@ function SummaryCard({ title, value, change, icon, color = 'primary', valueColor
 }
 
 export default function TransactionsPage() {
-  const { t, i18n } = useTranslation()
-  const { token, user } = useAuth()
-
-  const locale = useMemo(() => {
-    const map = { en: 'en-US', th: 'th-TH', zh: 'zh-CN' }
-    return map[i18n.language] || 'en-US'
-  }, [i18n.language])
-
-  const [datePreset, setDatePreset] = useState('thisMonth')
-  const [customFrom, setCustomFrom] = useState('')
-  const [customTo, setCustomTo] = useState('')
-  const [showCustom, setShowCustom] = useState(false)
-
-  const [summary, setSummary] = useState(null)
-  const [dailyData, setDailyData] = useState([])
-  const [dailyMeta, setDailyMeta] = useState(null)
-
-  const [loadingSummary, setLoadingSummary] = useState(false)
-  const [loadingDaily, setLoadingDaily] = useState(false)
-  const [byCoinData, setByCoinData] = useState([])
-  const [loadingByCoin, setLoadingByCoin] = useState(false)
-  const [error, setError] = useState('')
-
-  const dateRange = useMemo(() => {
-    if (showCustom && customFrom && customTo) {
-      return { from: customFrom, to: customTo }
-    }
-    return getDateRange(datePreset)
-  }, [datePreset, showCustom, customFrom, customTo])
+  const { t } = useTranslation()
+  const { user } = useAuth()
+  const {
+    locale,
+    dateRange,
+    dateFilter,
+    summary,
+    dailyData,
+    dailyMeta,
+    byCoinData,
+    loadingSummary,
+    loadingDaily,
+    loadingByCoin,
+    error,
+    loadData,
+  } = useTransactionData()
 
   const dateRangeLabel = useMemo(() => {
     const { from, to } = dateRange
@@ -96,59 +85,6 @@ export default function TransactionsPage() {
     const fmtDate = (d) => d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
     return `${fmtDate(fromDate)} - ${fmtDate(toDate)}`
   }, [dateRange, locale])
-
-  const loadData = useCallback(async () => {
-    if (!token || !dateRange.from || !dateRange.to) return
-    setError('')
-    setLoadingSummary(true)
-    setLoadingDaily(true)
-    setLoadingByCoin(true)
-
-    const [summaryResult, dailyResult, byCoinResult] = await Promise.allSettled([
-      getUserTransactionSummary(token, dateRange.from, dateRange.to),
-      getUserTransactionDaily(token, dateRange.from, dateRange.to),
-      getUserTransactionByCoin(token, dateRange.from, dateRange.to),
-    ])
-
-    if (summaryResult.status === 'fulfilled') {
-      setSummary(summaryResult.value)
-    } else {
-      logger.error('Failed to load transaction summary:', summaryResult.reason)
-      setError(summaryResult.reason?.message || 'Failed to load summary')
-    }
-    setLoadingSummary(false)
-
-    if (dailyResult.status === 'fulfilled') {
-      const res = dailyResult.value
-      const items = res?.items || res || []
-      setDailyData(
-        items.map((item) => ({
-          date: item.date,
-          deposit: parseFloat(item.depositUsd || 0),
-          withdrawal: parseFloat(item.withdrawalUsd || 0),
-          netFlow: parseFloat(item.netFlowUsd || 0),
-        }))
-      )
-      setDailyMeta(res?.meta || null)
-    } else {
-      logger.error('Failed to load daily data:', dailyResult.reason)
-    }
-    setLoadingDaily(false)
-
-    if (byCoinResult.status === 'fulfilled') {
-      const res = byCoinResult.value
-      setByCoinData(res?.items || res || [])
-    } else {
-      logger.error('Failed to load by-coin data:', byCoinResult.reason)
-    }
-    setLoadingByCoin(false)
-  }, [token, dateRange])
-
-  useEffect(() => {
-    queueMicrotask(() => {
-      void loadData()
-    })
-  }, [loadData])
 
   const current = summary?.current || {}
   const changes = summary?.changes || {}
@@ -167,12 +103,12 @@ export default function TransactionsPage() {
           <span className="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-surface-100 text-surface-600 rounded-lg">
             {dateRangeLabel}
           </span>
-          {!showCustom ? (
+          {!dateFilter.showCustom ? (
             <>
               <select
                 className="px-3 py-1.5 text-sm border border-surface-200 rounded-lg bg-card text-surface-700 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none"
-                value={datePreset}
-                onChange={(e) => setDatePreset(e.target.value)}
+                value={dateFilter.datePreset}
+                onChange={(e) => dateFilter.setDatePreset(e.target.value)}
               >
                 <option value="today">{t('filter.today', { defaultValue: 'Today' })}</option>
                 <option value="yesterday">{t('filter.yesterday', { defaultValue: 'Yesterday' })}</option>
@@ -184,7 +120,7 @@ export default function TransactionsPage() {
               <button
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-surface-200 rounded-lg text-surface-600 hover:bg-surface-50 transition-colors cursor-pointer"
-                onClick={() => setShowCustom(true)}
+                onClick={() => dateFilter.setShowCustom(true)}
               >
                 <i className="bx bx-calendar"></i>
                 {t('filter.custom', { defaultValue: 'Custom' })}
@@ -193,17 +129,17 @@ export default function TransactionsPage() {
           ) : (
             <>
               <LocaleDatePicker
-                value={customFrom}
-                onChange={setCustomFrom}
+                value={dateFilter.customFrom}
+                onChange={dateFilter.setCustomFrom}
                 locale={locale}
                 timezone={user?.timezone}
                 placeholder={t('filter.from', { defaultValue: 'From' })}
                 t={t}
-                maxDate={customTo ? customTo : undefined}
+                maxDate={dateFilter.customTo ? dateFilter.customTo : undefined}
                 minDate={
-                  customTo
+                  dateFilter.customTo
                     ? (() => {
-                        const d = new Date(`${customTo}T00:00:00`)
+                        const d = new Date(`${dateFilter.customTo}T00:00:00`)
                         d.setMonth(d.getMonth() - 2)
                         return d.toISOString().split('T')[0]
                       })()
@@ -212,17 +148,17 @@ export default function TransactionsPage() {
               />
               <span className="self-center text-surface-400">&ndash;</span>
               <LocaleDatePicker
-                value={customTo}
-                onChange={setCustomTo}
+                value={dateFilter.customTo}
+                onChange={dateFilter.setCustomTo}
                 locale={locale}
                 timezone={user?.timezone}
                 placeholder={t('filter.to', { defaultValue: 'To' })}
                 t={t}
-                minDate={customFrom ? customFrom : undefined}
+                minDate={dateFilter.customFrom ? dateFilter.customFrom : undefined}
                 maxDate={
-                  customFrom
+                  dateFilter.customFrom
                     ? (() => {
-                        const d = new Date(`${customFrom}T00:00:00`)
+                        const d = new Date(`${dateFilter.customFrom}T00:00:00`)
                         d.setMonth(d.getMonth() + 2)
                         return d.toISOString().split('T')[0]
                       })()
@@ -233,9 +169,9 @@ export default function TransactionsPage() {
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-surface-200 rounded-lg text-surface-600 hover:bg-surface-50 transition-colors cursor-pointer"
                 onClick={() => {
-                  setShowCustom(false)
-                  setCustomFrom('')
-                  setCustomTo('')
+                  dateFilter.setShowCustom(false)
+                  dateFilter.setCustomFrom('')
+                  dateFilter.setCustomTo('')
                 }}
               >
                 <i className="bx bx-reset"></i>

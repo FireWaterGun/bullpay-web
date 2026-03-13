@@ -1,17 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, startTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams as useNextSearchParams } from 'next/navigation'
-import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getRbfTxs } from '@/lib/api/admin'
-import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import RbfTransactionFilters from '@/components/admin/RbfTransactionFilters'
 import RbfTransactionTable from '@/components/admin/RbfTransactionTable'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Card from '@/components/ui/Card'
@@ -19,7 +17,6 @@ import { getStatusBadgeClass } from '@/lib/utils/statusBadge'
 
 export default function RbfTransactions() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const searchParams = useNextSearchParams()
   const router = useRouter()
@@ -37,9 +34,6 @@ export default function RbfTransactions() {
   const initSortOrder = ['asc', 'desc'].includes(rawSortOrder) ? rawSortOrder : ''
   const initPage = parseInt(searchParams.get('page')) || 1
 
-  const [loading, setLoading] = useState(false)
-  const [transactions, setTransactions] = useState([])
-  const [pagination, setPagination] = useState(null)
   const [currentPage, setCurrentPage] = useState(initPage)
 
   const [statusFilter, setStatusFilter] = useState(initStatus)
@@ -75,40 +69,13 @@ export default function RbfTransactions() {
     syncSearchParams(f, 1)
   }
 
-  const loadTransactions = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getRbfTxs(token, {
-        page: currentPage,
-        limit: 20,
-        ...appliedFilters,
-      })
-      setTransactions(data.items || [])
-
-      const meta = data.pagination
-      if (meta) {
-        setPagination({
-          page: meta.page || currentPage,
-          limit: meta.limit || 20,
-          total: meta.total || 0,
-          totalPages: meta.totalPages || 1,
-          hasPrev: meta.hasPrev ?? (meta.page || 1) > 1,
-          hasNext: meta.hasNext ?? (meta.page || 1) < (meta.totalPages || 1),
-        })
-      } else {
-        setPagination(null)
-      }
-    } catch (error) {
-      logger.error('Failed to load RBF transactions:', error)
-      toast.error('Failed to load RBF transactions')
-    } finally {
-      setLoading(false)
-    }
-  }, [token, currentPage, appliedFilters, toast])
-
-  useEffect(() => {
-    loadTransactions()
-  }, [loadTransactions])
+  const { data, isLoading, isValidating, mutate } = useApi(
+    ['admin-rbf-txs', currentPage, appliedFilters],
+    (token) => getRbfTxs(token, { page: currentPage, limit: 20, ...appliedFilters }),
+    { onError: () => toast.error('Failed to load RBF transactions'), keepPreviousData: true }
+  )
+  const transactions = data?.items || []
+  const pagination = data?.pagination || null
 
   function syncSearchParams(filters, page) {
     const params = new URLSearchParams()
@@ -151,17 +118,12 @@ export default function RbfTransactions() {
     window.history.replaceState(null, '', window.location.pathname)
   }
 
-  async function handleCopy(text) {
-    const ok = await copyText(text)
-    if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
-  }
-
   function handlePageChange(page) {
-    setCurrentPage(page)
+    startTransition(() => setCurrentPage(page))
     syncSearchParams(appliedFilters, page)
   }
 
-  if (loading && transactions.length === 0) {
+  if (isLoading && transactions.length === 0) {
     return <PageSpinner />
   }
 
@@ -183,7 +145,7 @@ export default function RbfTransactions() {
                     })}
                   </p>
                 </div>
-                <RefreshButton onClick={loadTransactions} loading={loading} />
+                <RefreshButton onClick={() => mutate()} loading={isValidating} />
               </div>
             </div>
             <RbfTransactionFilters
@@ -202,7 +164,7 @@ export default function RbfTransactions() {
               endDateFilter={endDateFilter}
               setEndDateFilter={setEndDateFilter}
               locale={locale}
-              loading={loading}
+              loading={isValidating}
               onApply={applyFilters}
               onReset={resetFilters}
             />
@@ -210,9 +172,8 @@ export default function RbfTransactions() {
 
           <RbfTransactionTable
             transactions={transactions}
-            loading={loading}
+            loading={isValidating}
             pagination={pagination}
-            handleCopy={handleCopy}
             statusBadgeClass={(s) => getStatusBadgeClass(s, 'rbf')}
             onNavigate={(id) => router.push(`/admin/rbf-txs/${id}`)}
             onPageChange={handlePageChange}

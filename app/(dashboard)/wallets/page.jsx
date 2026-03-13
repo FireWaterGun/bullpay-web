@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { useAuth, useToast } from '@/app/providers'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { listWallets, deleteWallet } from '@/lib/api/wallets'
 import { useCoins } from '@/hooks/useCoins'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -72,32 +73,20 @@ function ActionMenu({ wallet, onEdit, onDelete }) {
 
 export default function WalletsPage() {
   const { t } = useTranslation()
-  const { token } = useAuth()
   const toast = useToast()
   const router = useRouter()
   const { fmtDate } = useDateFormat()
 
-  const [wallets, setWallets] = useState([])
+  const { data, isLoading: loading, isValidating, mutate, token } = useApi(
+    'user-wallets',
+    (token) => listWallets(token),
+    { onError: () => toast.error(t('wallets.loadError', { defaultValue: 'Failed to load wallets' })) }
+  )
+
+  const wallets = data || []
   const { coins } = useCoins()
-  const [loading, setLoading] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true)
-      const walletList = await listWallets(token)
-      setWallets(walletList || [])
-    } catch (err) {
-      toast.error(t('wallets.loadError', { defaultValue: 'Failed to load wallets' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, toast, t])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
 
   async function handleDelete() {
     if (!deleteTarget) return
@@ -106,7 +95,7 @@ export default function WalletsPage() {
       await deleteWallet(deleteTarget.id, token)
       toast.success(t('wallets.deleteSuccess', { defaultValue: 'Wallet deleted successfully' }))
       setDeleteTarget(null)
-      loadData()
+      mutate()
     } catch (err) {
       toast.error(err?.message || t('wallets.deleteError', { defaultValue: 'Failed to delete wallet' }))
     } finally {
@@ -121,7 +110,7 @@ export default function WalletsPage() {
           <h4 className="text-xl font-semibold text-surface-900">
             {t('wallets.title', { defaultValue: 'Withdrawal Addresses' })}
           </h4>
-          <RefreshButton onClick={loadData} loading={loading} />
+          <RefreshButton onClick={() => mutate()} loading={isValidating} />
         </div>
         <Link
           href="/wallets/create"

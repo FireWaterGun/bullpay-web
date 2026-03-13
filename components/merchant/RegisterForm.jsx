@@ -137,8 +137,8 @@ export default function RegisterForm({ onRegistered, token, t }) {
 
         {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full mb-4">
-          {stats.map((s, i) => (
-            <Card key={i} className="h-full">
+          {stats.map((s) => (
+            <Card key={s.label} className="h-full">
               <div className="p-4 text-center py-3">
                 <h4 className="mb-1 text-primary-600 dark:text-primary-400 font-bold">{s.value}</h4>
                 <small className="text-surface-500 dark:text-surface-400">{s.label}</small>
@@ -149,8 +149,8 @@ export default function RegisterForm({ onRegistered, token, t }) {
 
         {/* Features grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-          {features.map((f, i) => (
-            <Card key={i} className="h-full">
+          {features.map((f) => (
+            <Card key={f.icon} className="h-full">
               <div className="p-3 flex gap-3">
                 <span
                   className={`inline-flex items-center justify-center rounded-lg shrink-0 ${featureColors[f.color] || 'bg-surface-100 text-surface-700'} w-11 h-11`}
@@ -218,8 +218,8 @@ export default function RegisterForm({ onRegistered, token, t }) {
                 active: false,
               },
               { num: 3, label: t('merchant.stepIntegrate', { defaultValue: 'Integrate' }), done: false, active: false },
-            ].map((s, i) => (
-              <div key={i} className="flex items-center gap-2">
+            ].map((s) => (
+              <div key={s.num} className="flex items-center gap-2">
                 <span
                   className={`inline-flex items-center justify-center rounded-full shrink-0 ${s.active ? 'bg-primary-600 text-white' : s.done ? 'bg-success-100 dark:bg-success-950/30 text-success-700 dark:text-success-400' : 'bg-surface-100 dark:bg-dark-elevated text-surface-500'} w-7 h-7 text-xs font-semibold`}
                 >
@@ -230,7 +230,7 @@ export default function RegisterForm({ onRegistered, token, t }) {
                 >
                   {s.label}
                 </span>
-                {i < 2 && <i className="bx bx-chevron-right text-surface-400 dark:text-surface-500 ml-1"></i>}
+                {s.num < 3 && <i className="bx bx-chevron-right text-surface-400 dark:text-surface-500 ml-1"></i>}
               </div>
             ))}
           </div>

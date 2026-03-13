@@ -1,15 +1,16 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useAuth, useToast } from '@/app/providers'
+import { useState, useEffect } from 'react'
+import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { getSettings, upsertSetting } from '@/lib/api/admin'
-import { logger } from '@/lib/utils/logger'
 import Spinner from '@/components/ui/Spinner'
 import GasPriceTab from '@/components/admin/gas-settings/GasPriceTab'
 import GasLimitTab from '@/components/admin/gas-settings/GasLimitTab'
 import GasTopupTab from '@/components/admin/gas-settings/GasTopupTab'
-import GasEditModal from '@/components/admin/gas-settings/GasEditModal'
+import dynamic from 'next/dynamic'
+const GasEditModal = dynamic(() => import('@/components/admin/gas-settings/GasEditModal'), { ssr: false })
 
 // ─── Constants ───────────────────────────────────────────────
 
@@ -25,12 +26,28 @@ const OPERATIONS = ['withdrawal', 'sweep', 'topup']
 
 export default function GasSettingsPage() {
   const { t } = useAdminTranslation()
-  const { token } = useAuth()
   const toast = useToast()
 
   const [activeTab, setActiveTab] = useState('gasPrice')
-  const [loading, setLoading] = useState(true)
-  const [settingsMap, setSettingsMap] = useState({})
+
+  const { data: settingsMap, isLoading: loading, mutate, token } = useApi(
+    'admin-gas-settings',
+    async (token) => {
+      const [gasPriceRes, gasLimitRes, gasTopupRes] = await Promise.all([
+        getSettings(token, { category: 'gas_price', limit: 100 }),
+        getSettings(token, { category: 'gas_limit', limit: 100 }),
+        getSettings(token, { category: 'gas_topup', limit: 100 }),
+      ])
+      const map = {}
+      const allItems = [...(gasPriceRes?.items || []), ...(gasLimitRes?.items || []), ...(gasTopupRes?.items || [])]
+      for (const item of allItems) {
+        const key = item.keyName || item.key_name
+        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? ''
+      }
+      return map
+    },
+    { onError: () => toast.error(t('admin.gasSettings.loadError', { defaultValue: 'Failed to load gas settings' })) }
+  )
 
   // Edit modal state
   const [editModal, setEditModal] = useState(null)
@@ -50,41 +67,10 @@ export default function GasSettingsPage() {
 
   // ─── Data Loading ────────────────────────────────────────
 
-  const loadSettings = useCallback(async () => {
-    if (!token) return
-    try {
-      const [gasPriceRes, gasLimitRes, gasTopupRes] = await Promise.all([
-        getSettings(token, { category: 'gas_price', limit: 100 }),
-        getSettings(token, { category: 'gas_limit', limit: 100 }),
-        getSettings(token, { category: 'gas_topup', limit: 100 }),
-      ])
-
-      const map = {}
-      const allItems = [...(gasPriceRes?.items || []), ...(gasLimitRes?.items || []), ...(gasTopupRes?.items || [])]
-      for (const item of allItems) {
-        const key = item.keyName || item.key_name
-        map[key] = item.value ?? item.defaultValue ?? item.default_value ?? ''
-      }
-      setSettingsMap(map)
-    } catch (error) {
-      logger.error('Failed to load gas settings:', error)
-      toast.error(t('admin.gasSettings.loadError', { defaultValue: 'Failed to load gas settings' }))
-    }
-  }, [token, t, toast])
-
-  useEffect(() => {
-    async function init() {
-      setLoading(true)
-      await loadSettings()
-      setLoading(false)
-    }
-    init()
-  }, [loadSettings])
-
   // ─── Helpers ─────────────────────────────────────────────
 
   function getVal(key, fallback = '—') {
-    const v = settingsMap[key]
+    const v = (settingsMap || {})[key]
     return v !== undefined && v !== '' ? v : fallback
   }
 
@@ -215,7 +201,7 @@ export default function GasSettingsPage() {
 
       if (updates.length === 0) return
       await Promise.all(updates)
-      setSettingsMap((prev) => ({ ...prev, ...mapUpdates }))
+      mutate((prev) => ({ ...prev, ...mapUpdates }), false)
       setEditModal(null)
       toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {
@@ -240,7 +226,7 @@ export default function GasSettingsPage() {
     try {
       setSaving(true)
       await saveSetting(key, val)
-      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }))
+      mutate((prev) => ({ ...prev, [key]: String(val) }), false)
       setEditModal(null)
       toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {
@@ -265,7 +251,7 @@ export default function GasSettingsPage() {
     try {
       setSaving(true)
       await saveSetting(key, val)
-      setSettingsMap((prev) => ({ ...prev, [key]: String(val) }))
+      mutate((prev) => ({ ...prev, [key]: String(val) }), false)
       setEditModal(null)
       toast.success(t('admin.gasSettings.saveSuccess', { defaultValue: 'Settings saved successfully' }))
     } catch (error) {

@@ -22,7 +22,7 @@ export default function AdminBreadcrumb({ items = [] }) {
         {items.map((item, i) => {
           const isLast = i === items.length - 1
           return (
-            <li key={i} className="flex items-center gap-1">
+            <li key={item.label} className="flex items-center gap-1">
               {i > 0 && <span className="text-surface-400 mr-0.5">/</span>}
 
               {isLast ? (

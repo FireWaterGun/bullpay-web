@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
+import useApi from '@/hooks/useApi'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/app/providers'
 import { getIncomeStatement } from '@/lib/api/admin'
 import { getDateRange } from '@/lib/utils/dateRange'
 import DateFilterBar from '@/components/dashboard/DateFilterBar'
 import IncomeStatementReport from '@/components/ledger/IncomeStatementReport'
-import { logger } from '@/lib/utils/logger'
 import CardEmptyState from '@/components/CardEmptyState'
 import Card from '@/components/ui/Card'
 
@@ -29,13 +29,10 @@ function hasReportData(report) {
 
 export default function IncomeStatement() {
   const { t } = useAdminTranslation()
-  const { token, user } = useAuth()
+  const { user } = useAuth()
   const toast = useToast()
 
   const locale = useLocale()
-
-  const [loading, setLoading] = useState(false)
-  const [report, setReport] = useState(null)
 
   // Date filters
   const [datePreset, setDatePreset] = useState('thisMonth')
@@ -54,33 +51,17 @@ export default function IncomeStatement() {
   const fromDate = dateRange.from
   const toDate = dateRange.to
 
-  const loadReport = useCallback(async () => {
-    if (!fromDate || !toDate) {
-      toast.error(t('admin.incomeStatement.datesRequired', { defaultValue: 'From and To dates are required' }))
-      return
-    }
-    try {
-      setLoading(true)
+  const { data: report, isLoading, isValidating } = useApi(
+    fromDate && toDate ? ['admin-income-statement', fromDate, toDate, coinNetworkId] : null,
+    (token) => {
       const params = { from: fromDate, to: toDate }
       if (coinNetworkId) params.coinNetworkId = Number(coinNetworkId)
-      const data = await getIncomeStatement(token, params)
-      setReport(data)
-    } catch (error) {
-      logger.error('Failed to load income statement:', error)
-      toast.error(t('admin.incomeStatement.loadError', { defaultValue: 'Failed to load income statement' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, fromDate, toDate, coinNetworkId, t, toast])
+      return getIncomeStatement(token, params)
+    },
+    { onError: () => toast.error(t('admin.incomeStatement.loadError', { defaultValue: 'Failed to load income statement' })) }
+  )
 
   const hasData = hasReportData(report)
-
-  // Auto-load report when date range changes
-  useEffect(() => {
-    if (token && fromDate && toDate) {
-      loadReport()
-    }
-  }, [token, fromDate, toDate, coinNetworkId, loadReport])
 
   return (
     <div className="grow pb-6">
@@ -117,7 +98,7 @@ export default function IncomeStatement() {
           {report && hasData && <IncomeStatementReport report={report} t={t} />}
 
           {/* Empty state - no data for this period */}
-          {report && !hasData && !loading && (
+          {report && !hasData && !isLoading && (
             <Card>
               <div className="p-5">
                 <CardEmptyState
@@ -130,7 +111,7 @@ export default function IncomeStatement() {
           )}
 
           {/* Empty state - no report loaded */}
-          {!report && !loading && (
+          {!report && !isLoading && (
             <Card>
               <div className="p-5">
                 <CardEmptyState

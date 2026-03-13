@@ -10,7 +10,7 @@ import CoinNetworkList from '@/components/payment/CoinNetworkList'
 import { Input } from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
 
-const STABLECOINS = ['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FDUSD']
+const STABLECOINS = new Set(['USDT', 'USDC', 'DAI', 'BUSD', 'TUSD', 'FDUSD'])
 
 export default function PaySelect() {
   const { t } = useTranslation()
@@ -68,7 +68,7 @@ export default function PaySelect() {
           name: cn.coin?.name || sym,
           logoUrl: cn.coin?.logoUrl,
           type: cn.coin?.type || 'token',
-          isStableCoin: STABLECOINS.includes(sym.toUpperCase()),
+          isStableCoin: STABLECOINS.has(sym.toUpperCase()),
           networks: [],
         })
       }

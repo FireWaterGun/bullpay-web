@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
 import { useAuth } from '@/app/providers'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
+import useApi from '@/hooks/useApi'
 import { getWebhookLog, retryWebhook } from '@/lib/api/merchantWebhookLogs'
 import { useDateFormat } from '@/hooks/useDateFormat'
-import { logger } from '@/lib/utils/logger'
 import RefreshButton from '@/components/RefreshButton'
 import PageSpinner from '@/components/PageSpinner'
 import Alert from '@/components/ui/Alert'
@@ -30,29 +30,16 @@ export default function MerchantWebhookLogDetail() {
   const { fmtDate } = useDateFormat()
   const { t } = useAdminTranslation()
   const { id } = useParams()
-  const { token, hasPermission } = useAuth()
+  const { hasPermission } = useAuth()
   const toast = useToast()
 
-  const [loading, setLoading] = useState(false)
-  const [log, setLog] = useState(null)
+  const { data: log, isLoading, isValidating, mutate, token } = useApi(
+    id ? `webhook-log-${id}` : null,
+    (token) => getWebhookLog(token, id),
+    { onError: () => toast.error(t('admin.webhookLog.loadError', { defaultValue: 'Failed to load webhook log' })) }
+  )
+
   const [retrying, setRetrying] = useState(false)
-
-  const loadLog = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await getWebhookLog(token, id)
-      setLog(data)
-    } catch (error) {
-      logger.error('Failed to load webhook log:', error)
-      toast.error(t('admin.webhookLog.loadError', { defaultValue: 'Failed to load webhook log' }))
-    } finally {
-      setLoading(false)
-    }
-  }, [token, id, toast, t])
-
-  useEffect(() => {
-    loadLog()
-  }, [loadLog])
 
   async function handleRetry() {
     if (!log?.merchantPaymentId) return
@@ -60,9 +47,8 @@ export default function MerchantWebhookLogDetail() {
       setRetrying(true)
       const res = await retryWebhook(token, log.merchantPaymentId)
       toast.success(res.message || t('admin.webhookLog.retryEnqueued', { defaultValue: 'Webhook retry enqueued' }))
-      loadLog()
+      mutate()
     } catch (error) {
-      logger.error('Retry failed:', error)
       toast.error(error?.message || t('admin.webhookLog.retryFailed', { defaultValue: 'Failed to retry webhook' }))
     } finally {
       setRetrying(false)
@@ -107,7 +93,7 @@ export default function MerchantWebhookLogDetail() {
     }
   }
 
-  if (loading && !log) {
+  if (isLoading) {
     return <PageSpinner />
   }
 
@@ -174,7 +160,7 @@ export default function MerchantWebhookLogDetail() {
                       )}
                     </Button>
                   )}
-                  <RefreshButton onClick={loadLog} loading={loading} />
+                  <RefreshButton onClick={() => mutate()} loading={isValidating} />
                 </div>
               </div>
             </div>

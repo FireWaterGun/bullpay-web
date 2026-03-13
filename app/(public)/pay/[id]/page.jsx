@@ -303,8 +303,6 @@ export default function PaymentCheckoutPage() {
                             setSelectedNetwork={setSelectedNetwork}
                             selectingNetwork={selectingNetwork}
                             handleConfirmNetwork={handleConfirmNetwork}
-                            isPaid={isPaid}
-                            remainingMs={remainingMs}
                             error={error}
                           />
                         </div>

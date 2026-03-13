@@ -4,9 +4,11 @@ import '@/lib/i18n'
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, type ReactNode } from 'react'
 import { apiFetch } from '@/lib/api-client'
-import { ADMIN_ROLES, AUTH_COOKIE_NAME } from '@/lib/constants'
+import { ADMIN_ROLES_SET, AUTH_COOKIE_NAME } from '@/lib/constants'
 import { ToastContainer } from '@/components/Toast'
 import NavigationProgress from '@/components/NavigationProgress'
+import { SWRConfig } from 'swr'
+import { swrDefaults } from '@/lib/swr-config'
 import useIdleLogout from '@/hooks/useIdleLogout'
 
 // ═══════════════════════════════════════════
@@ -73,8 +75,12 @@ function setCookie(name: string, value: string, days = 30) {
 }
 
 function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
-  return match ? decodeURIComponent(match[1]) : null
+  const prefix = `; ${name}=`
+  const cookie = `; ${document.cookie}`
+  const parts = cookie.split(prefix)
+  if (parts.length < 2) return null
+  const value = parts.pop()?.split(';')[0]
+  return value ? decodeURIComponent(value) : null
 }
 
 function deleteCookie(name: string) {
@@ -128,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
   }, [token, isReady])
 
-  const isAdmin = !!navigation && ADMIN_ROLES.includes(navigation.role as (typeof ADMIN_ROLES)[number])
+  const isAdmin = !!navigation && ADMIN_ROLES_SET.has(navigation.role)
 
   const login = useCallback((newToken: string, newUser: AuthUser) => {
     setToken(newToken)
@@ -413,13 +419,15 @@ export function PusherProvider({ children }: { children: ReactNode }) {
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <PusherProvider>
-          <NavigationProgress />
-          {children}
-        </PusherProvider>
-      </ToastProvider>
-    </AuthProvider>
+    <SWRConfig value={swrDefaults}>
+      <AuthProvider>
+        <ToastProvider>
+          <PusherProvider>
+            <NavigationProgress />
+            {children}
+          </PusherProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </SWRConfig>
   )
 }
