@@ -12,6 +12,10 @@ import Button from '@/components/ui/Button'
 
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
 const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false })
+const preloadCoinNetworkModals = () => Promise.all([
+  import('@/components/modals/DeleteConfirmModal'),
+  import('@/components/modals/ErrorModal'),
+])
 
 export default function SupportedCryptoForm() {
   const {
@@ -61,7 +65,7 @@ export default function SupportedCryptoForm() {
         </Alert>
       )}
 
-      <div className="grid grid-cols-12 gap-x-6">
+      <div className="grid grid-cols-12 gap-x-6" onMouseEnter={preloadCoinNetworkModals}>
         <div className="col-span-12">
           <CoinSelector coins={coins} formData={formData} setFormData={setFormData} isEdit={isEdit} />
 

@@ -10,6 +10,10 @@ import { useAuth } from '@/app/providers'
 import { getCoinById, createCoin, updateCoin, deleteCoin } from '@/lib/api/admin'
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
 const ErrorModal = dynamic(() => import('@/components/modals/ErrorModal'), { ssr: false })
+const preloadCoinModals = () => Promise.all([
+  import('@/components/modals/DeleteConfirmModal'),
+  import('@/components/modals/ErrorModal'),
+])
 import { useToast } from '@/app/providers'
 import Alert from '@/components/ui/Alert'
 import Button from '@/components/ui/Button'
@@ -192,7 +196,7 @@ export default function CoinForm() {
 
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 xl:col-span-8">
-          <Card className="mb-4">
+          <Card className="mb-4" onMouseEnter={preloadCoinModals}>
             <h5 className="px-5 py-4 border-b border-surface-200">
               {t('crypto.coinInformation', { defaultValue: 'Coin Information' })}
             </h5>

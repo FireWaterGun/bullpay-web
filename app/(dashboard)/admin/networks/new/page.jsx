@@ -9,6 +9,7 @@ import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useAuth } from '@/app/providers'
 import { getNetworkById, createNetwork, updateNetwork, deleteNetwork } from '@/lib/api/admin'
 const DeleteConfirmModal = dynamic(() => import('@/components/modals/DeleteConfirmModal'), { ssr: false })
+const preloadNetworkDeleteModal = () => import('@/components/modals/DeleteConfirmModal')
 import { useToast } from '@/app/providers'
 import NetworkFormFields from '@/components/crypto/NetworkFormFields'
 import NetworkInfoPanel from '@/components/crypto/NetworkInfoPanel'
@@ -173,7 +174,7 @@ export default function NetworkForm() {
 
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 xl:col-span-8">
-          <Card className="mb-4">
+          <Card className="mb-4" onMouseEnter={preloadNetworkDeleteModal}>
             <h5 className="px-5 py-4 border-b border-surface-200">
               {t('crypto.networkInformation', { defaultValue: 'Network Information' })}
             </h5>
