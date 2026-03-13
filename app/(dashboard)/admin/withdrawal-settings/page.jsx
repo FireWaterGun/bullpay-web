@@ -153,7 +153,7 @@ export default function WithdrawalSettingsPage() {
     if (activeTab === 'feeLimits' && !cnLoaded) {
       loadCoinNetworks(1, '', cnStatus)
     }
-  }, [activeTab, cnLoaded, loadCoinNetworks])
+  }, [activeTab, cnLoaded, loadCoinNetworks, cnStatus])
 
   // Save helpers
   async function saveSetting(keyName, value) {
