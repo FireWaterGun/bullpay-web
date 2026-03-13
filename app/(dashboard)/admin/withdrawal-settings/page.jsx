@@ -54,6 +54,7 @@ export default function WithdrawalSettingsPage() {
   const [cnLoading, setCnLoading] = useState(false)
   const [cnLoaded, setCnLoaded] = useState(false)
   const [cnSearch, setCnSearch] = useState('')
+  const [cnStatus, setCnStatus] = useState('active')
   const [cnPagination, setCnPagination] = useState({
     page: 1,
     limit: 20,
@@ -113,11 +114,11 @@ export default function WithdrawalSettingsPage() {
   }, [token])
 
   const loadCoinNetworks = useCallback(
-    async (page = 1, search = '') => {
+    async (page = 1, search = '', status = 'active') => {
       if (!token) return
       setCnLoading(true)
       try {
-        const response = await getCoinNetworks(token, page, 20, search)
+        const response = await getCoinNetworks(token, page, 20, search, undefined, undefined, status || undefined)
         setCoinNetworks(response?.items || [])
         setCnLoaded(true)
         const pag = response?.pagination || {}
@@ -150,7 +151,7 @@ export default function WithdrawalSettingsPage() {
   // Load coin-networks when switching to fee tab
   useEffect(() => {
     if (activeTab === 'feeLimits' && !cnLoaded) {
-      loadCoinNetworks(1, '')
+      loadCoinNetworks(1, '', cnStatus)
     }
   }, [activeTab, cnLoaded, loadCoinNetworks])
 
@@ -420,6 +421,8 @@ export default function WithdrawalSettingsPage() {
           t={t}
           cnSearch={cnSearch}
           setCnSearch={setCnSearch}
+          cnStatus={cnStatus}
+          setCnStatus={setCnStatus}
           loadCoinNetworks={loadCoinNetworks}
           cnLoading={cnLoading}
           coinNetworks={coinNetworks}

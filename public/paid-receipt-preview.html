@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Paid Receipt UI Preview</title>
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #eef2ff;
+    --success: #22c55e;
+    --success-light: #f0fdf4;
+    --surface-50: #f8fafc;
+    --surface-100: #f1f5f9;
+    --surface-200: #e2e8f0;
+    --surface-400: #94a3b8;
+    --surface-500: #64748b;
+    --surface-600: #475569;
+    --surface-900: #0f172a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #fff 0%, var(--surface-100) 100%);
+    padding: 20px;
+  }
+
+  h2.section-title {
+    text-align: center;
+    color: var(--surface-500);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .preview-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .label-tag {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--surface-400);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Card shell */
+  .card {
+    width: 400px;
+    max-width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    border: 1px solid rgba(79,70,229,0.1);
+  }
+
+  /* PAID banner */
+  .banner {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    padding: 12px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  .banner span {
+    position: relative;
+    z-index: 1;
+    color: rgba(255,255,255,0.95);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .banner i {
+    position: relative;
+    z-index: 1;
+    color: rgba(255,255,255,0.9);
+    font-size: 18px;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  .body { padding: 24px 20px 20px; }
+
+  /* Success hero */
+  .hero {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .hero-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--success-light);
+    border: 2px solid rgba(34,197,94,0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    animation: pop 0.5s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .hero-icon i { font-size: 28px; color: var(--success); }
+  .hero h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--surface-900);
+    margin-bottom: 6px;
+  }
+  .hero .amount {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .hero .network-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: rgba(79,70,229,0.06);
+    border: 1px solid rgba(79,70,229,0.12);
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+  }
+  .hero .coin-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+  .hero .coin-icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #2775ca;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--surface-200);
+    margin: 0 0 16px;
+  }
+
+  /* Receipt rows */
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(226,232,240,0.7);
+  }
+  .receipt-row:last-child { border-bottom: none; }
+  .receipt-row .label {
+    font-size: 0.7rem;
+    color: var(--surface-400);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .receipt-row .value {
+    font-size: 0.85rem;
+    color: var(--surface-900);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-all;
+    max-width: 65%;
+  }
+  .receipt-row .value.success {
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  /* Paid at highlight */
+  .paid-at-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--success-light);
+    border: 1px solid rgba(34,197,94,0.15);
+    border-radius: 12px;
+    margin-top: 16px;
+    margin-bottom: 4px;
+  }
+  .paid-at-card i {
+    font-size: 22px;
+    color: var(--success);
+    flex-shrink: 0;
+  }
+  .paid-at-card .paid-label {
+    font-size: 0.6rem;
+    color: #16a34a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+  .paid-at-card .paid-value {
+    font-size: 0.88rem;
+    color: #16a34a;
+    font-weight: 600;
+  }
+
+  /* CTA button */
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+    box-shadow: 0 8px 24px rgba(34,197,94,0.35);
+    cursor: pointer;
+    margin-top: 20px;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+  }
+  .cta:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(34,197,94,0.4); }
+  .cta i { font-size: 20px; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 16px 0 4px;
+    color: var(--surface-400);
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+  }
+  .footer .brand {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .footer .brand .bull { color: var(--surface-900); }
+  .footer .brand .pay { color: var(--primary); }
+
+  /* --- CURRENT (before) --- */
+  .card-before .body { padding: 16px 20px; }
+  .stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .stepper .step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stepper .step .num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .stepper .step .num.done { background: #22c55e; }
+  .stepper .step .num.active { background: var(--primary); }
+  .stepper .step span { font-size: 0.85rem; font-weight: 500; color: var(--surface-500); }
+  .stepper .line { flex: 1; height: 1px; background: var(--primary); margin: 0 16px; }
+  .section-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .section-header .title { font-size: 0.85rem; font-weight: 600; color: var(--surface-900); }
+  .section-header .step-label { font-size: 0.75rem; color: var(--surface-500); }
+
+  /* Existing coin row */
+  .coin-amount-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(79,70,229,0.1);
+    background: rgba(79,70,229,0.02);
+    margin-bottom: 8px;
+  }
+  .coin-info { display: flex; align-items: center; gap: 8px; }
+  .coin-info .icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #2775ca;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .coin-info .name { font-size: 0.9rem; font-weight: 700; color: var(--surface-900); }
+  .coin-info .sub { font-size: 0.62rem; color: var(--surface-500); }
+  .coin-amount-row .amt { font-size: 1.7rem; font-weight: 800; color: var(--primary); }
+
+  .desc-box, .paid-at-box-old {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--surface-200);
+    background: var(--surface-50);
+    margin-bottom: 8px;
+  }
+  .desc-box .lbl, .paid-at-box-old .lbl {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: var(--surface-500);
+    margin-bottom: 4px;
+  }
+  .desc-box .val { font-size: 0.875rem; color: var(--surface-900); }
+
+  .paid-at-box-old {
+    background: rgba(34,197,94,0.05);
+    border-color: rgba(34,197,94,0.15);
+  }
+  .paid-at-box-old .lbl { color: #16a34a; }
+  .paid-at-box-old .val { color: #16a34a; font-weight: 600; font-size: 0.88rem; }
+  .paid-at-box-old .icon-row { display: flex; align-items: center; gap: 8px; }
+  .paid-at-box-old i { font-size: 22px; color: #22c55e; }
+
+  /* Old progress */
+  .progress-old {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+  .progress-old .dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid #22c55e;
+    background: rgba(34,197,94,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .progress-old .dot i { font-size: 14px; color: #22c55e; }
+  .progress-old .connector { width: 60px; height: 2px; background: #22c55e; }
+  .progress-old .step-group { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .progress-old .step-label { font-size: 0.65rem; color: #22c55e; font-weight: 500; }
+
+  .id-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .id-row .id-label { font-size: 0.6rem; color: var(--surface-400); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .id-row .id-value { font-size: 0.85rem; color: var(--surface-600); word-break: break-all; }
+  .id-row .badge {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 12px; border-radius: 20px;
+    background: rgba(79,70,229,0.06);
+    border: 1px solid rgba(79,70,229,0.12);
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--primary); text-transform: uppercase;
+  }
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    .preview-row { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COMPARISON -->
+<div style="margin-bottom: 32px;">
+  <h2 class="section-title">Before (current) vs After (proposed)</h2>
+</div>
+
+<div class="preview-row">
+
+<!-- ======================== BEFORE ======================== -->
+<div>
+  <div class="label-tag">❌ Current — PAID</div>
+  <div class="card card-before">
+    <div class="banner">
+      <i class="bx bx-check-circle"></i>
+      <span>Paid</span>
+    </div>
+    <div class="body">
+      <!-- Stepper (unnecessary) -->
+      <div class="stepper">
+        <div class="step">
+          <div class="num done"><i class="bx bx-check" style="font-size:14px;"></i></div>
+          <span>Network</span>
+        </div>
+        <div class="line"></div>
+        <div class="step">
+          <div class="num active">2</div>
+          <span style="font-weight:600; color:var(--surface-900);">Payment</span>
+        </div>
+      </div>
+      <div class="section-header">
+        <span class="title">Payment Details</span>
+        <span class="step-label">Step 2/2</span>
+      </div>
+
+      <!-- Payment ID + Badge -->
+      <div class="id-row">
+        <div>
+          <div class="id-label">Payment ID</div>
+          <div class="id-value">in_z478v118twjmqvg307yb</div>
+        </div>
+        <div class="badge">
+          <span>⟠</span> POL
+        </div>
+      </div>
+
+      <!-- Coin + Amount -->
+      <div class="coin-amount-row">
+        <div class="coin-info">
+          <div class="icon">$</div>
+          <div>
+            <div class="name">USDC</div>
+            <div class="sub">on POL</div>
+          </div>
+        </div>
+        <div class="amt">1.6</div>
+      </div>
+
+      <!-- Description -->
+      <div class="desc-box">
+        <div class="lbl">Description</div>
+        <div class="val">Payment invoice</div>
+      </div>
+
+      <!-- Paid At -->
+      <div class="paid-at-box-old">
+        <div class="icon-row">
+          <i class="bx bx-calendar-check"></i>
+          <div>
+            <div class="lbl">Paid At</div>
+            <div class="val">Mar 11, 2026, 01:25</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress (redundant) -->
+      <div class="progress-old">
+        <div class="step-group">
+          <div class="dot"><i class="bx bx-check"></i></div>
+          <div class="step-label">Waiting payment</div>
+        </div>
+        <div class="connector"></div>
+        <div class="step-group">
+          <div class="dot"><i class="bx bx-check"></i></div>
+          <div class="step-label">Processing payment</div>
+        </div>
+        <div class="connector"></div>
+        <div class="step-group">
+          <div class="dot"><i class="bx bx-check"></i></div>
+          <div class="step-label">Complete</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== AFTER ======================== -->
+<div>
+  <div class="label-tag">✅ Proposed — Receipt Mode</div>
+  <div class="card">
+    <div class="banner">
+      <i class="bx bx-check-circle"></i>
+      <span>Paid</span>
+    </div>
+    <div class="body">
+
+      <!-- Success Hero -->
+      <div class="hero">
+        <div class="hero-icon">
+          <i class="bx bx-check"></i>
+        </div>
+        <h3>Payment Successful</h3>
+        <div class="coin-row">
+          <div class="coin-icon">$</div>
+          <div class="amount">1.6</div>
+          <span style="font-size:0.95rem; font-weight:600; color:var(--surface-500); align-self:flex-end; padding-bottom:3px;">USDC</span>
+        </div>
+        <div class="network-badge">
+          <span>⟠</span> Polygon (POL)
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Receipt Details -->
+      <div class="receipt-row">
+        <span class="label">Payment ID</span>
+        <span class="value">in_z478v118twjmqvg307yb</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Description</span>
+        <span class="value">Payment invoice</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Network</span>
+        <span class="value">Polygon (POL)</span>
+      </div>
+
+      <!-- Paid At (highlighted) -->
+      <div class="paid-at-card">
+        <i class="bx bx-calendar-check"></i>
+        <div>
+          <div class="paid-label">Paid At</div>
+          <div class="paid-value">Mar 11, 2026, 01:25</div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <a href="#" class="cta">
+        <i class="bx bx-check-circle"></i>
+        Continue
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

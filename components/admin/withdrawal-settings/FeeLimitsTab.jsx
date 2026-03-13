@@ -13,6 +13,8 @@ export default function FeeLimitsTab({
   t,
   cnSearch,
   setCnSearch,
+  cnStatus,
+  setCnStatus,
   loadCoinNetworks,
   cnLoading,
   coinNetworks,
@@ -36,6 +38,19 @@ export default function FeeLimitsTab({
             </p>
           </div>
           <div className="flex gap-2">
+            <select
+              value={cnStatus}
+              onChange={(e) => {
+                setCnStatus(e.target.value)
+                loadCoinNetworks(1, cnSearch, e.target.value)
+              }}
+              className="rounded-md border border-surface-200 dark:border-surface-300 bg-white dark:bg-surface-100 text-surface-800 text-sm px-2.5 py-[7px] focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="">{t('admin.withdrawalSettings.statusAll', { defaultValue: 'All Status' })}</option>
+              <option value="active">{t('admin.withdrawalSettings.statusActive', { defaultValue: 'Active' })}</option>
+              <option value="inactive">{t('admin.withdrawalSettings.statusInactive', { defaultValue: 'Inactive' })}</option>
+              <option value="maintenance">{t('admin.withdrawalSettings.statusMaintenance', { defaultValue: 'Maintenance' })}</option>
+            </select>
             <div className="flex items-stretch text-sm w-[220px]">
               <Input
                 type="text"
@@ -44,12 +59,12 @@ export default function FeeLimitsTab({
                 })}
                 value={cnSearch}
                 onChange={(e) => setCnSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && loadCoinNetworks(1, cnSearch)}
+                onKeyDown={(e) => e.key === 'Enter' && loadCoinNetworks(1, cnSearch, cnStatus)}
                 className="rounded-r-none border-r-0"
               />
               <Button
                 type="button"
-                onClick={() => loadCoinNetworks(1, cnSearch)}
+                onClick={() => loadCoinNetworks(1, cnSearch, cnStatus)}
                 variant="outline-primary"
                 className="rounded-l-none"
               >
@@ -149,7 +164,7 @@ export default function FeeLimitsTab({
 
       {/* Pagination */}
       <div className="px-5 py-1.5">
-        <Pagination pagination={cnPagination} onPageChange={(p) => loadCoinNetworks(p, cnSearch)} loading={cnLoading} />
+        <Pagination pagination={cnPagination} onPageChange={(p) => loadCoinNetworks(p, cnSearch, cnStatus)} loading={cnLoading} />
       </div>
     </Card>
   )

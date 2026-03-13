@@ -101,7 +101,7 @@ export default function DateFilterBar({
     'dark:bg-dark-elevated dark:text-surface-700 dark:border-surface-200 dark:hover:bg-white/6 dark:hover:border-surface-300'
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
       {/* Date range badge */}
       <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-surface-500 bg-surface-50 dark:bg-dark-elevated border border-surface-200 px-3 py-1.5 rounded-lg select-none">
         <i className="bx bx-calendar-check text-sm text-surface-400"></i>
@@ -111,11 +111,11 @@ export default function DateFilterBar({
       {!showCustom && (
         <>
           {/* Preset dropdown */}
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative w-full sm:w-auto" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className={`${btnBase} ${btnStyle} min-w-[130px] justify-between`}
+              className={`${btnBase} ${btnStyle} w-full sm:w-auto sm:min-w-[130px] justify-between`}
             >
               <span>{activePreset?.label || datePreset}</span>
               <i
@@ -124,7 +124,7 @@ export default function DateFilterBar({
             </button>
 
             {dropdownOpen && (
-              <div className="absolute left-0 top-full mt-1 z-50 min-w-[160px] bg-card dark:bg-dark-elevated border border-surface-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-1 duration-100">
+              <div className="absolute left-0 top-full mt-1 z-50 w-full sm:w-auto sm:min-w-[160px] bg-card dark:bg-dark-elevated border border-surface-200 rounded-lg shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-1 duration-100">
                 {presets.map((p) => (
                   <button
                     key={p.key}
@@ -145,7 +145,7 @@ export default function DateFilterBar({
           </div>
 
           {/* Custom button */}
-          <button type="button" onClick={handleCustomToggle} className={`${btnBase} ${btnStyle}`}>
+          <button type="button" onClick={handleCustomToggle} className={`${btnBase} ${btnStyle} w-full sm:w-auto`}>
             <i className="bx bx-calendar text-sm"></i>
             {t('filter.custom', { defaultValue: 'Custom' })}
           </button>
@@ -153,7 +153,7 @@ export default function DateFilterBar({
       )}
 
       {showCustom && (
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <LocaleDatePicker
             value={customFrom}
             onChange={onCustomFromChange}
@@ -193,7 +193,7 @@ export default function DateFilterBar({
                 : undefined
             }
           />
-          <button type="button" onClick={handleReset} className={`${btnBase} ${btnStyle}`}>
+          <button type="button" onClick={handleReset} className={`${btnBase} ${btnStyle} w-full sm:w-auto`}>
             <i className="bx bx-reset text-sm"></i>
             {t('filter.reset', { defaultValue: 'Reset' })}
           </button>

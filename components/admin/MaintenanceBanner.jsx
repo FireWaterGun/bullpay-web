@@ -102,7 +102,7 @@ export default function MaintenanceBanner() {
       className={`flex items-center gap-2 no-underline mr-auto text-sm whitespace-nowrap py-[0.3rem] px-3 rounded-md transition-colors ${config.cls}`}
     >
       <span className={`w-2 h-2 rounded-full bg-current shrink-0 ${config.pulse ? 'animate-pulse' : ''}`} />
-      <span className="font-semibold">{config.label}</span>
+      <span className="font-semibold hidden sm:inline">{config.label}</span>
     </Link>
   )
 }

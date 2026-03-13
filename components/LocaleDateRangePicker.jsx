@@ -221,10 +221,10 @@ export default function LocaleDateRangePicker({
         : 'Select start date'
 
   return (
-    <div ref={wrapperRef} className={`relative inline-block ${className}`}>
+    <div ref={wrapperRef} className={`relative inline-block w-full sm:w-auto ${className}`}>
       {/* Trigger */}
       <div
-        className={`${inputClass()} flex items-center gap-1 cursor-pointer min-w-[220px] select-none`}
+        className={`${inputClass()} flex items-center gap-1 cursor-pointer w-full sm:w-auto sm:min-w-[220px] select-none`}
         onClick={() => setOpen(!open)}
       >
         <span className={`flex-1 truncate ${displayValue ? '' : 'text-surface-400'}`}>
@@ -260,8 +260,8 @@ export default function LocaleDateRangePicker({
 
           {/* Weekday headers */}
           <div className="grid grid-cols-7 text-center mb-1">
-            {weekDayHeaders.map((h) => (
-              <div key={h} className="text-xs font-semibold text-surface-500 py-0.5">
+            {weekDayHeaders.map((h, i) => (
+              <div key={i} className="text-xs font-semibold text-surface-500 py-0.5">
                 {h}
               </div>
             ))}

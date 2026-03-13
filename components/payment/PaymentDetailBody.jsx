@@ -2,6 +2,7 @@
 
 import { useTranslation } from 'react-i18next'
 import { NetworkIcon } from '@/components/CoinImg'
+import CoinImg from '@/components/CoinImg'
 import { formatAmount } from '@/lib/utils/format'
 import { isSafeRedirectUrl } from '@/lib/utils/url'
 import { formatDuration } from '@/components/payment/usePaymentBase'
@@ -46,16 +47,154 @@ export default function PaymentDetailBody({
 }) {
   const { t } = useTranslation()
 
+  // ── Receipt Mode (paid) ──
+  if (isPaid) {
+    const amtStr = formatAmount(invoice.amount)
+    const len = amtStr.length
+    const fontSize = len > 14 ? '1rem' : len > 11 ? '1.2rem' : len > 8 ? '1.5rem' : '1.8rem'
+
+    return (
+      <div>
+        {/* Merchant Name */}
+        {invoice.merchantName && (
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-surface-200">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-primary-600/10">
+              <i className="bx bx-store text-primary-600 text-[16px]"></i>
+            </div>
+            <div>
+              <div className="text-[0.58rem] text-surface-400 uppercase tracking-[1px] font-semibold">
+                {t('payment.payingTo', { defaultValue: 'Paying to' })}
+              </div>
+              <div className="text-[0.9rem] font-bold text-surface-900">{invoice.merchantName}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Hero */}
+        <div className="text-center mb-5">
+          <div
+            className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-3 border-2 border-green-200 bg-green-50"
+            style={{ animation: 'receiptPop 0.5s ease' }}
+          >
+            <i className="bx bx-check text-[28px] text-green-500"></i>
+          </div>
+          <h3 className="text-[1.1rem] font-bold text-surface-900 mb-2">
+            {t('payment.paymentSuccessful', { defaultValue: 'Payment Successful' })}
+          </h3>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <CoinImg
+              symbol={coinSym}
+              logoUrl={invoice?.coin?.logoUrl}
+              size={32}
+              imgClassName="rounded-full"
+            />
+            <span
+              className="font-extrabold tracking-[-0.5px] text-primary-600 leading-[1]"
+              style={{ fontSize }}
+            >
+              {amtStr}
+            </span>
+            <span className="text-[0.95rem] font-semibold text-surface-500 self-end pb-[2px]">{coinSym}</span>
+          </div>
+          <div className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full bg-primary-600/6 border border-primary-600/12 text-[0.7rem] font-semibold text-primary-600 uppercase tracking-[0.5px]">
+            <NetworkIcon networkSymbol={networkSym} size={14} />
+            {networkName || networkSym || 'Network'}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-surface-200 mb-3"></div>
+
+        {/* Receipt Rows */}
+        <div className="space-y-0">
+          <div className="flex justify-between items-start py-2.5 border-b border-dashed border-surface-200/70">
+            <span className="text-[0.7rem] text-surface-400 uppercase tracking-[1px] font-semibold shrink-0">
+              {isPaymentMode ? t('payment.paymentId', { defaultValue: 'Payment ID' }) : t('invoices.invoice')}
+            </span>
+            <span className="text-[0.85rem] text-surface-900 font-medium text-right break-all max-w-[65%]">
+              {isPaymentMode
+                ? invoice.publicCode || invoice.id
+                : `#${invoice.invoiceNumber || invoice.publicCode || invoice.id}`}
+            </span>
+          </div>
+
+          {invoice.description && (
+            <div className="flex justify-between items-start py-2.5 border-b border-dashed border-surface-200/70">
+              <span className="text-[0.7rem] text-surface-400 uppercase tracking-[1px] font-semibold shrink-0">
+                {t('invoices.description')}
+              </span>
+              <span className="text-[0.85rem] text-surface-900 font-medium text-right max-w-[65%]">
+                {invoice.description}
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-between items-start py-2.5">
+            <span className="text-[0.7rem] text-surface-400 uppercase tracking-[1px] font-semibold shrink-0">
+              {t('payment.network', { defaultValue: 'Network' })}
+            </span>
+            <span className="text-[0.85rem] text-surface-900 font-medium text-right">
+              {networkName || networkSym || '-'}
+            </span>
+          </div>
+        </div>
+
+        {/* Paid At */}
+        {invoice.paidAt && (
+          <div className="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-green-500/5 border border-green-500/15 mt-2">
+            <i className="bx bx-calendar-check text-success-500 text-[22px] shrink-0"></i>
+            <div className="grow">
+              <div className="text-[0.6rem] text-success-600 uppercase tracking-[1px] font-semibold mb-0.5">
+                {t('payment.paidAt', { defaultValue: 'Paid At' })}
+              </div>
+              <div className="font-semibold text-success-600 text-[0.88rem]">
+                {new Intl.DateTimeFormat(undefined, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                }).format(new Date(invoice.paidAt))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Redirect */}
+        {invoice?.successUrl && isSafeRedirectUrl(invoice.successUrl) && (
+          <div className="mt-4">
+            <a
+              href={invoice.successUrl}
+              className="w-full py-3 font-bold flex items-center justify-center gap-2 text-white border-none rounded-xl text-[1rem] tracking-[0.5px] no-underline"
+              style={STYLE_SUCCESS_REDIRECT}
+            >
+              <i className="bx bx-check-circle text-[20px]"></i>
+              {redirectCountdown != null
+                ? `${t('payment.backToMerchant', { defaultValue: 'Redirecting' })} (${redirectCountdown}s)`
+                : t('payment.backToMerchant', { defaultValue: 'Continue' })}
+            </a>
+          </div>
+        )}
+
+        <style>{`
+          @keyframes receiptPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    )
+  }
+
+  // ── Payment Mode (pending / expired) ──
   return (
     <div>
       {/* Merchant Name */}
       {invoice.merchantName && (
-        <div
-          className="flex items-center gap-2 mb-3 pb-3 border-b border-surface-200"
-        >
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-primary-600/10"
-          >
+        <div className="flex items-center gap-2 mb-3 pb-3 border-b border-surface-200">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-primary-600/10">
             <i className="bx bx-store text-primary-600 text-[16px]"></i>
           </div>
           <div>
@@ -128,8 +267,8 @@ export default function PaymentDetailBody({
         </div>
       </div>
 
-      {/* Timer - horizontal row */}
-      {!isPaid && remainingMs !== undefined && (
+      {/* Timer - horizontal row (hide when expired) */}
+      {!isExpiredUnpaid && remainingMs !== undefined && (
         <div className="mb-2">
           <div
             className="flex items-center justify-between p-3 rounded-xl border border-primary-600/10"
@@ -186,7 +325,7 @@ export default function PaymentDetailBody({
           coinSym={coinSym}
           networkName={networkName}
           paymentValue={paymentValue}
-          isPaid={isPaid}
+          isPaid={false}
           copiedAmt={copiedAmt}
           handleCopyAmount={handleCopyAmount}
         />
@@ -204,7 +343,7 @@ export default function PaymentDetailBody({
       )}
 
       {/* Payment Address */}
-      {!isExpiredUnpaid && !isPaid && (
+      {!isExpiredUnpaid && (
         <div className="mb-2">
           <div className="text-sm mb-2 text-surface-500 uppercase tracking-[1.5px] text-[0.65rem] font-semibold">
             {t('invoices.paymentAddress')}
@@ -248,32 +387,10 @@ export default function PaymentDetailBody({
         </div>
       )}
 
-      {/* Paid At Info */}
-      {isPaid && invoice.paidAt && (
-        <div
-          className="mb-2 flex items-center gap-2 py-2.5 px-3 rounded-xl bg-green-500/5 border border-green-500/15"
-        >
-          <i className="bx bx-calendar-check text-success-500 text-[22px] shrink-0"></i>
-          <div className="grow">
-            <div className="text-[0.6rem] text-success-600 uppercase tracking-[1px] font-semibold mb-0.5">
-              {t('payment.paidAt', { defaultValue: 'Paid At' })}
-            </div>
-            <div className="font-semibold text-success-600 text-[0.88rem]">
-              {new Intl.DateTimeFormat(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              }).format(new Date(invoice.paidAt))}
-            </div>
-          </div>
-        </div>
+      {/* Progress Steps (hide when expired — redundant with banner + alert) */}
+      {!isExpiredUnpaid && (
+        <PaymentProgressSteps isPaid={false} isExpiredUnpaid={isExpiredUnpaid} currentStep={currentStep} />
       )}
-
-      {/* Progress Steps */}
-      <PaymentProgressSteps isPaid={isPaid} isExpiredUnpaid={isExpiredUnpaid} currentStep={currentStep} />
 
       {/* Partial Payment Progress */}
       {hasPartial && (
@@ -311,7 +428,7 @@ export default function PaymentDetailBody({
       )}
 
       {/* Network Warning */}
-      {!isPaid && !isExpiredUnpaid && coinSym && networkName && (
+      {!isExpiredUnpaid && coinSym && networkName && (
         <div
           className="flex items-start gap-2 p-2.5 rounded-xl mt-2 bg-amber-500/8 border border-amber-500/25"
         >
@@ -334,22 +451,6 @@ export default function PaymentDetailBody({
               </div>
             )}
           </div>
-        </div>
-      )}
-
-      {/* Success Redirect */}
-      {isPaid && invoice?.successUrl && isSafeRedirectUrl(invoice.successUrl) && (
-        <div className="mt-3">
-          <a
-            href={invoice.successUrl}
-            className="w-full py-3 font-bold flex items-center justify-center gap-2 text-white border-none rounded-xl text-[1rem] tracking-[0.5px] no-underline"
-            style={STYLE_SUCCESS_REDIRECT}
-          >
-            <i className="bx bx-check-circle text-[20px]"></i>
-            {redirectCountdown != null
-              ? `${t('payment.backToMerchant', { defaultValue: 'Redirecting' })} (${redirectCountdown}s)`
-              : t('payment.backToMerchant', { defaultValue: 'Continue' })}
-          </a>
         </div>
       )}
     </div>

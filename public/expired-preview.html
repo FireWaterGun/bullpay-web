@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Expired UI — Before vs After</title>
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #4f46e5;
+    --danger: #ef4444;
+    --danger-light: #fef2f2;
+    --surface-50: #f8fafc;
+    --surface-100: #f1f5f9;
+    --surface-200: #e2e8f0;
+    --surface-400: #94a3b8;
+    --surface-500: #64748b;
+    --surface-600: #475569;
+    --surface-900: #0f172a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(180deg, #fff 0%, var(--surface-100) 100%);
+    padding: 24px 16px;
+  }
+
+  h2.section-title {
+    text-align: center;
+    color: var(--surface-500);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .preview-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .label-tag {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--surface-400);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Card */
+  .card {
+    width: 400px;
+    max-width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    border: 1px solid rgba(239,68,68,0.12);
+  }
+
+  /* EXPIRED banner */
+  .banner {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    padding: 12px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner::after {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  .banner span {
+    position: relative; z-index: 1;
+    color: rgba(255,255,255,0.95);
+    font-weight: 700; font-size: 0.8rem;
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .banner i {
+    position: relative; z-index: 1;
+    color: rgba(255,255,255,0.9);
+    font-size: 18px; vertical-align: middle; margin-right: 6px;
+  }
+
+  .body { padding: 20px; }
+
+  /* ID + Badge row */
+  .id-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .id-row .id-label {
+    font-size: 0.6rem; color: var(--surface-400);
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+  }
+  .id-row .id-value {
+    font-size: 0.85rem; color: var(--surface-600);
+    word-break: break-all; font-weight: 500;
+  }
+  .id-row .badge {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 12px; border-radius: 20px;
+    background: rgba(79,70,229,0.06);
+    border: 1px solid rgba(79,70,229,0.12);
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--primary); text-transform: uppercase;
+  }
+
+  /* Timer */
+  .timer-box {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px; border-radius: 12px;
+    border: 1px solid rgba(79,70,229,0.08);
+    background: rgba(79,70,229,0.02);
+    margin-bottom: 10px;
+  }
+  .timer-box .left { display: flex; align-items: center; gap: 8px; }
+  .timer-box .left i { font-size: 20px; color: #ef4444; }
+  .timer-box .left span {
+    font-size: 0.75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px; color: var(--surface-500);
+  }
+  .timer-box .time {
+    font-size: 1.25rem; font-weight: 800;
+    letter-spacing: 2px; color: #ef4444;
+  }
+
+  /* Expired Alert */
+  .expired-alert {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 14px; border-radius: 12px;
+    background: #fef2f2;
+    border: 1px solid rgba(239,68,68,0.15);
+    margin-bottom: 10px;
+  }
+  .expired-alert i { font-size: 20px; color: #ef4444; margin-top: 1px; flex-shrink: 0; }
+  .expired-alert .text { font-size: 0.85rem; color: #dc2626; line-height: 1.5; }
+
+  /* Description box */
+  .desc-box {
+    padding: 10px 14px; border-radius: 12px;
+    border: 1px solid var(--surface-200);
+    background: var(--surface-50);
+    margin-bottom: 10px;
+  }
+  .desc-box .lbl {
+    font-size: 0.65rem; text-transform: uppercase;
+    letter-spacing: 1px; font-weight: 600;
+    color: var(--surface-500); margin-bottom: 4px;
+  }
+  .desc-box .val { font-size: 0.875rem; color: var(--surface-900); }
+
+  /* Old Progress steps */
+  .progress-old {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; padding: 16px 24px; margin-top: 8px;
+  }
+  .progress-old .dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .progress-old .dot.active { background: var(--primary); }
+  .progress-old .dot.active i { color: #fff; font-size: 13px; }
+  .progress-old .dot.error { background: #fef2f2; border: 1.5px solid #fca5a5; }
+  .progress-old .dot.error i { color: #ef4444; font-size: 15px; }
+  .progress-old .connector { width: 60px; height: 2px; background: var(--surface-200); }
+  .progress-old .step-group { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .progress-old .step-label { font-size: 0.64rem; font-weight: 500; }
+  .progress-old .step-label.active-l { color: var(--primary); }
+  .progress-old .step-label.error-l { color: #ef4444; }
+
+  /* Strikethrough for removed items */
+  .removed { position: relative; opacity: 0.35; }
+  .removed::after {
+    content: ''; position: absolute;
+    top: 50%; left: -4px; right: -4px;
+    height: 2px; background: #ef4444;
+    transform: rotate(-1deg);
+  }
+
+  /* Annotation */
+  .annotation {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; color: #ef4444;
+    margin: 4px 0 8px 0;
+    font-style: italic;
+  }
+  .annotation.green { color: #16a34a; }
+
+  @media (max-width: 860px) {
+    .preview-row { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<h2 class="section-title">Expired UI — Before vs After</h2>
+
+<div class="preview-row">
+
+<!-- ======================== BEFORE ======================== -->
+<div>
+  <div class="label-tag">❌ Current — Expired</div>
+  <div class="card">
+    <div class="banner">
+      <i class="bx bx-x-circle"></i>
+      <span>Expired</span>
+    </div>
+    <div class="body">
+      <!-- Payment ID -->
+      <div class="id-row">
+        <div>
+          <div class="id-label">Payment ID</div>
+          <div class="id-value">in_egnsmf9jm6x37by1dr2f</div>
+        </div>
+        <div class="badge"><span>◆</span> ETH</div>
+      </div>
+
+      <!-- Timer (problem) -->
+      <div class="removed">
+        <div class="timer-box">
+          <div class="left">
+            <i class="bx bx-time"></i>
+            <span>Time Remaining</span>
+          </div>
+          <div class="time">00:00</div>
+        </div>
+      </div>
+      <div class="annotation">
+        <i class="bx bx-x-circle"></i> ไม่จำเป็น — หมดเวลาแล้วยังแสดง 00:00
+      </div>
+
+      <!-- Expired Alert -->
+      <div class="expired-alert">
+        <i class="bx bx-error-circle"></i>
+        <div class="text">This invoice has expired. Please request a new payment link.</div>
+      </div>
+
+      <!-- Description -->
+      <div class="desc-box">
+        <div class="lbl">Description</div>
+        <div class="val">Payment invoice</div>
+      </div>
+
+      <!-- Progress Steps (problem) -->
+      <div class="removed">
+        <div class="progress-old">
+          <div class="step-group">
+            <div class="dot active"><i class="bx bx-time-five"></i></div>
+            <div class="step-label active-l">Waiting payment</div>
+          </div>
+          <div class="connector"></div>
+          <div class="step-group">
+            <div class="dot error"><i class="bx bx-x"></i></div>
+            <div class="step-label error-l">Expired</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotation">
+        <i class="bx bx-x-circle"></i> ซ้ำกับ banner + alert ด้านบน
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== AFTER ======================== -->
+<div>
+  <div class="label-tag">✅ Proposed — Clean Expired</div>
+  <div class="card">
+    <div class="banner">
+      <i class="bx bx-x-circle"></i>
+      <span>Expired</span>
+    </div>
+    <div class="body">
+      <!-- Payment ID -->
+      <div class="id-row">
+        <div>
+          <div class="id-label">Payment ID</div>
+          <div class="id-value">in_egnsmf9jm6x37by1dr2f</div>
+        </div>
+        <div class="badge"><span>◆</span> ETH</div>
+      </div>
+
+      <!-- Expired Alert (kept) -->
+      <div class="expired-alert">
+        <i class="bx bx-error-circle"></i>
+        <div class="text">This invoice has expired. Please request a new payment link.</div>
+      </div>
+      <div class="annotation green">
+        <i class="bx bx-check-circle"></i> เก็บไว้ — feedback หลัก
+      </div>
+
+      <!-- Description (kept) -->
+      <div class="desc-box">
+        <div class="lbl">Description</div>
+        <div class="val">Payment invoice</div>
+      </div>
+      <div class="annotation green">
+        <i class="bx bx-check-circle"></i> เก็บไว้ — ข้อมูลอ้างอิง
+      </div>
+
+      <!-- No timer, no progress steps -->
+      <div style="text-align:center; padding: 12px 0 4px; color: var(--surface-400); font-size: 0.72rem; letter-spacing: 0.5px;">
+        <i class="bx bx-check" style="color:#16a34a;"></i> Timer ถูกซ่อน &nbsp;·&nbsp;
+        <i class="bx bx-check" style="color:#16a34a;"></i> Progress steps ถูกซ่อน
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

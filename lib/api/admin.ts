@@ -155,7 +155,8 @@ export async function getCoinNetworks(
   limit = 10,
   search = '',
   coin?: string,
-  network?: string
+  network?: string,
+  status?: string
 ) {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -172,6 +173,10 @@ export async function getCoinNetworks(
 
   if (network) {
     params.append('network', network)
+  }
+
+  if (status) {
+    params.append('status', status)
   }
 
   const data = await apiFetch<any>(`/api/v1/admin/coin-networks?${params}`, { token })
