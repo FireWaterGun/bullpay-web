@@ -59,7 +59,7 @@ export default function RbfGlobalTab({ t, getVal, openGlobalEdit }) {
                 return (
                   <>
                     <div className="font-semibold text-xl mt-1">{formatted}</div>
-                    {formatted !== '—' && <div className="text-surface-500 text-xs">{raw} ms</div>}
+                    {formatted !== '—' ? <div className="text-surface-500 text-xs">{raw} ms</div> : null}
                   </>
                 )
               })()}

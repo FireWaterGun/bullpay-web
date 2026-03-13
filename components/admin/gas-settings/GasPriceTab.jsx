@@ -101,7 +101,7 @@ export default function GasPriceTab({ t, getVal, onEdit }) {
                 </td>
                 <td className="text-center">
                   <span className="font-semibold">{maxGwei}</span>
-                  {maxGwei !== '—' && <div className="text-surface-500 text-xs">gwei</div>}
+                  {maxGwei !== '—' ? <div className="text-surface-500 text-xs">gwei</div> : null}
                 </td>
                 {OPERATIONS.map((op) => {
                   const baseVal = getVal(`gas_price.${net.key}.${op}.base_multiplier`)

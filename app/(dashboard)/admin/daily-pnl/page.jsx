@@ -124,14 +124,13 @@ export default function DailyPnlPage() {
   const totals = useMemo(() => computeTotals(rows), [rows])
 
   const sortedRows = useMemo(() => {
-    const sorted = [...rows].sort((a, b) => {
+    return rows.toSorted((a, b) => {
       const aVal = sortField === 'date' ? a.date : Number(a[sortField]) || 0
       const bVal = sortField === 'date' ? b.date : Number(b[sortField]) || 0
       if (aVal < bVal) return sortDir === 'asc' ? -1 : 1
       if (aVal > bVal) return sortDir === 'asc' ? 1 : -1
       return 0
     })
-    return sorted
   }, [rows, sortField, sortDir])
 
   function handleSort(field, order) {
