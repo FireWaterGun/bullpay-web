@@ -152,13 +152,18 @@ export default function InvoiceCreatePage() {
   function handleModeToggle(mode) {
     setAmountMode(mode)
     setError('')
-    setEstimate(null)
     if (mode === 'crypto') {
+      // Carry over the estimated crypto amount from fiat mode
+      if (estimate?.cryptoAmount) {
+        setAmount(estimate.cryptoAmount)
+      }
       setFiatAmount('')
       setFiatError('')
+      setEstimate(null)
     } else {
       setAmount('')
       setAmountError('')
+      setEstimate(null)
     }
   }
 
