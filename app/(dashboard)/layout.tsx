@@ -324,7 +324,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     <SubItem
                       key={child.key}
                       to={childTo}
-                      end={child.path === item.path}
                       label={navLabel(child.key, child.label)}
                       badge={childBadgeMap[child.path]}
                       external={child.external}

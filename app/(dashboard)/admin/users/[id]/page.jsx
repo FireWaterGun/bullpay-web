@@ -367,7 +367,7 @@ export default function AdminUserDetail() {
                 </h6>
               </div>
             </div>
-            {activityLoading ? (
+            {isValidatingActivities && activities.length === 0 ? (
               <div className="p-5 text-center text-surface-500">
                 <i className="bx bx-loader-alt bx-spin mr-1"></i>
                 {t('invoices.loading', { defaultValue: 'Loading...' })}

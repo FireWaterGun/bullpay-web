@@ -164,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  // Idle auto-logout (30 min inactivity)
+  // Idle auto-logout (60 min inactivity)
   useIdleLogout(logout, !!token)
 
   const hasPermission = useCallback(
