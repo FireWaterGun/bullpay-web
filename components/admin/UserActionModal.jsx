@@ -8,6 +8,12 @@ import Button from '../ui/Button'
 import { Input, Label, Select } from '../ui/Input'
 import Spinner from '../ui/Spinner'
 
+const ASSIGNABLE_ROLES = {
+  super_admin: ['regular_user', 'business_user', 'support_agent', 'admin'],
+  admin: ['regular_user', 'business_user', 'support_agent'],
+  support_agent: ['regular_user', 'business_user'],
+}
+
 export default function UserActionModal({
   t,
   modalType,
@@ -23,6 +29,7 @@ export default function UserActionModal({
   setNewPassword,
   onClose,
   onSubmit,
+  currentUserRole,
 }) {
   function getModalConfig() {
     switch (modalType) {
@@ -151,7 +158,7 @@ export default function UserActionModal({
                   {t('admin.users.newRole', { defaultValue: 'New Role' })} <span className="text-danger">*</span>
                 </Label>
                 <Select value={newRole} onChange={(e) => setNewRole(e.target.value)} disabled={modalLoading}>
-                  {ROLE_OPTIONS.map((r) => (
+                  {(ASSIGNABLE_ROLES[currentUserRole] || []).map((r) => (
                     <option key={r} value={r}>
                       {formatRoleLabel(r)}
                     </option>

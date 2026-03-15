@@ -73,21 +73,11 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
 
   // Handle 401 — on client, redirect to login
   if (res.status === 401 && !skipAuthRedirect) {
-    const body = await res.clone().json().catch(() => null)
-    console.error('[AUTH 401]', {
-      url,
-      method: fetchOptions.method || 'GET',
-      hasToken: !!token,
-      tokenPrefix: token ? token.substring(0, 20) + '...' : null,
-      responseBody: body,
-      timestamp: new Date().toISOString(),
-    })
-    // TODO: TEMP — ปิด redirect ชั่วคราวเพื่อ debug 401
-    // if (typeof window !== 'undefined') {
-    //   document.cookie = 'bullpay_token=; Max-Age=0; path=/'
-    //   document.cookie = 'bullpay_user=; Max-Age=0; path=/'
-    //   window.location.href = '/login'
-    // }
+    if (typeof window !== 'undefined') {
+      document.cookie = 'bullpay_token=; Max-Age=0; path=/'
+      document.cookie = 'bullpay_user=; Max-Age=0; path=/'
+      window.location.href = '/login'
+    }
     throw new ApiError(401, 'UNAUTHORIZED', 'Session expired')
   }
 

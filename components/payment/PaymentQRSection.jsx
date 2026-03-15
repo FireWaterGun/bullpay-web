@@ -17,6 +17,7 @@ export default function PaymentQRSection({
   invoice,
   coinSym,
   networkName,
+  networkSym,
   paymentValue,
   isPaid,
   copiedAmt,
@@ -56,6 +57,8 @@ export default function PaymentQRSection({
             <CoinImg
               symbol={coinSym}
               logoUrl={invoice?.coin?.logoUrl}
+              networkSymbol={networkSym}
+              networkName={networkName}
               size={isPaid ? 28 : 30}
               imgClassName="rounded-full"
             />

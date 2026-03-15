@@ -85,6 +85,8 @@ export default function PaymentDetailBody({
             <CoinImg
               symbol={coinSym}
               logoUrl={invoice?.coin?.logoUrl}
+              networkSymbol={networkSym}
+              networkName={networkName}
               size={32}
               imgClassName="rounded-full"
             />
@@ -324,6 +326,7 @@ export default function PaymentDetailBody({
           invoice={invoice}
           coinSym={coinSym}
           networkName={networkName}
+          networkSym={networkSym}
           paymentValue={paymentValue}
           isPaid={false}
           copiedAmt={copiedAmt}

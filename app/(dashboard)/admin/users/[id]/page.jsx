@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { useToast } from '@/app/providers'
+import { useToast, useAuth } from '@/app/providers'
 import useApi from '@/hooks/useApi'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useDateFormat } from '@/hooks/useDateFormat'
@@ -30,6 +30,7 @@ import Table from '@/components/ui/Table'
 export default function AdminUserDetail() {
   const { t } = useAdminTranslation()
   const toast = useToast()
+  const { navigation } = useAuth()
   const { id } = useParams()
   const { fmtDate } = useDateFormat()
 
@@ -422,6 +423,7 @@ export default function AdminUserDetail() {
           setNewPassword={setNewPassword}
           onClose={closeModal}
           onSubmit={handleModalSubmit}
+          currentUserRole={navigation?.role}
         />
       )}
     </div>

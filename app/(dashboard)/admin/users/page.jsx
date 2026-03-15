@@ -362,6 +362,7 @@ export default function AdminUsersPage() {
           setNewPassword={setNewPassword}
           onClose={closeModal}
           onSubmit={handleModalSubmit}
+          currentUserRole={navigation?.role}
         />
       )}
 
