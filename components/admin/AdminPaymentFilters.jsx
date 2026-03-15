@@ -50,6 +50,7 @@ export default function AdminPaymentFilters({
             placeholder={t('filter.userId', { defaultValue: 'User ID' })}
             value={userIdFilter}
             onChange={(e) => setUserIdFilter(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">
@@ -59,6 +60,7 @@ export default function AdminPaymentFilters({
             placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })}
             value={invoiceIdFilter}
             onChange={(e) => setInvoiceIdFilter(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">
@@ -68,6 +70,7 @@ export default function AdminPaymentFilters({
             placeholder="0x..."
             value={txHashFilter}
             onChange={(e) => setTxHashFilter(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">

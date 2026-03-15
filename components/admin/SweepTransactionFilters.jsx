@@ -48,6 +48,7 @@ export default function SweepTransactionFilters({
             placeholder={t('filter.userId', { defaultValue: 'User ID' })}
             value={userIdFilter}
             onChange={(e) => setUserIdFilter(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">

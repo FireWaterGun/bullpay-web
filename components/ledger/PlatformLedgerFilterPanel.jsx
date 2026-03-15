@@ -92,6 +92,7 @@ export default function PlatformLedgerFilterPanel({
             placeholder={t('admin.platformLedger.txHash', { defaultValue: 'Tx Hash' })}
             value={txHashFilter}
             onChange={(e) => setTxHashFilter(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
             maxLength={100}
           />
         </div>

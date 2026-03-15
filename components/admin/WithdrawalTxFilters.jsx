@@ -55,6 +55,7 @@ export default function WithdrawalTxFilters({
               placeholder={t('filter.searchPlaceholder', { defaultValue: 'tx_hash, address, email...' })}
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && onApply()}
             />
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-3">
@@ -78,6 +79,7 @@ export default function WithdrawalTxFilters({
               placeholder={t('filter.userId', { defaultValue: 'User ID' })}
               value={userIdFilter}
               onChange={(e) => setUserIdFilter(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && onApply()}
             />
           </div>
           <div className="col-span-12 sm:col-span-6 md:col-span-3">

@@ -71,6 +71,7 @@ export default function SystemLedgerFilters({
           placeholder={t('filter.walletId', { defaultValue: 'Wallet ID' })}
           value={walletIdFilter}
           onChange={(e) => setWalletIdFilter(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && onApply()}
         />
       </div>
       <div className="col-span-12 sm:col-span-6 md:col-span-3">
@@ -88,6 +89,7 @@ export default function SystemLedgerFilters({
           placeholder={t('filter.txHash', { defaultValue: 'Tx Hash' })}
           value={txHashFilter}
           onChange={(e) => setTxHashFilter(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && onApply()}
         />
       </div>
       <div className="col-span-12 sm:col-span-6 md:col-span-3">

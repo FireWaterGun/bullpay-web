@@ -51,6 +51,7 @@ export default function GasTopupFilters({
             placeholder={t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}
             value={filters.sweepId}
             onChange={(e) => set('sweepId', e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-2">
@@ -60,6 +61,7 @@ export default function GasTopupFilters({
             placeholder="0x..."
             value={filters.txHash}
             onChange={(e) => set('txHash', e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onApply()}
           />
         </div>
         <div className="col-span-12 sm:col-span-6 md:col-span-3">
