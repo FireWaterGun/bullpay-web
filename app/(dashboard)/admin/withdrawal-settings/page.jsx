@@ -222,14 +222,21 @@ export default function WithdrawalSettingsPage() {
     }
   }
 
+  function stripTrailingZeros(val) {
+    if (val == null || val === '') return ''
+    const s = String(val)
+    if (!s.includes('.')) return s
+    return s.replace(/\.?0+$/, '')
+  }
+
   function openCnEditModal(cn) {
     setEditCn(cn)
     setCnForm({
       withdrawEnabled: cn.withdrawEnabled ?? false,
-      minWithdrawAmount: cn.minWithdrawAmount ?? '',
-      maxWithdrawAmount: cn.maxWithdrawAmount ?? '',
-      withdrawFeePercent: cn.withdrawFeePercent ?? '',
-      dailyWithdrawLimitUsd: cn.dailyWithdrawLimitUsd ?? '',
+      minWithdrawAmount: stripTrailingZeros(cn.minWithdrawAmount),
+      maxWithdrawAmount: stripTrailingZeros(cn.maxWithdrawAmount),
+      withdrawFeePercent: stripTrailingZeros(cn.withdrawFeePercent),
+      dailyWithdrawLimitUsd: stripTrailingZeros(cn.dailyWithdrawLimitUsd),
     })
   }
 

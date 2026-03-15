@@ -109,7 +109,7 @@ export default function FeeLimitsTab({
                   <tr key={cn.id}>
                     <td>
                       <div className="flex items-center gap-2">
-                        <CoinImg symbol={coinSymbol} size={28} />
+                        <CoinImg symbol={coinSymbol} networkSymbol={networkSymbol} size={28} />
                         <div>
                           <span className="font-semibold">{coinSymbol}</span>
                           <small className="text-surface-500 ml-1">/ {networkSymbol}</small>

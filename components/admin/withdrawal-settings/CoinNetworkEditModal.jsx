@@ -7,6 +7,8 @@ import Button from '@/components/ui/Button'
 import { Input, Label } from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
 
+import { formatAmount } from '@/lib/utils/settingsFormatters'
+
 export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSave, saving, t }) {
   const coinSymbol = cn.coin?.symbol || '?'
   const networkSymbol = cn.network?.symbol || cn.network?.name || '?'
@@ -112,7 +114,7 @@ export default function CoinNetworkEditModal({ cn, form, setForm, onClose, onSav
                       {t('admin.withdrawalSettings.autoCalculated', { defaultValue: 'Auto-calculated' })}
                     </Badge>
                   </Label>
-                  <Input type="text" value={cn.withdrawFeeBase || '-'} disabled readOnly />
+                  <Input type="text" value={formatAmount(cn.withdrawFeeBase)} disabled readOnly />
                   <small className="text-surface-500">
                     {t('admin.withdrawalSettings.feeBaseHint', { defaultValue: 'Managed by Base Fee Auto-Update' })}
                   </small>
