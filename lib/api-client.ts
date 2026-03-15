@@ -63,22 +63,31 @@ async function tryRefreshToken(): Promise<string | null> {
       const isClient = typeof window !== 'undefined'
       const url = isClient ? '/api/v1/auth/refresh' : `${API_BASE_URL}/api/v1/auth/refresh`
 
+      console.warn('[AUTH] tryRefreshToken: calling', url)
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         credentials: 'include',
       })
 
-      if (!res.ok) return null
+      console.warn('[AUTH] tryRefreshToken: response status', res.status)
+      if (!res.ok) {
+        const errorBody = await res.text().catch(() => 'N/A')
+        console.warn('[AUTH] tryRefreshToken: FAILED', res.status, errorBody)
+        return null
+      }
 
       const json = await res.json().catch(() => null)
       const newToken = json?.data?.token?.value
       if (newToken && typeof newToken === 'string') {
+        console.warn('[AUTH] tryRefreshToken: SUCCESS, got new token')
         onTokenRefreshed?.(newToken)
         return newToken
       }
+      console.warn('[AUTH] tryRefreshToken: no token in response', json)
       return null
-    } catch {
+    } catch (err) {
+      console.warn('[AUTH] tryRefreshToken: EXCEPTION', err)
       return null
     } finally {
       refreshPromise = null
@@ -129,8 +138,10 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
   // Handle 401 — try refresh token first, then redirect to login
   if (res.status === 401 && !skipAuthRedirect) {
     if (typeof window !== 'undefined') {
+      console.warn('[AUTH] 401 on', url, '— attempting refresh')
       const newToken = await tryRefreshToken()
       if (newToken) {
+        console.warn('[AUTH] Refresh succeeded, retrying', url)
         // Retry the original request with new token
         headers['Authorization'] = `Bearer ${newToken}`
         const retryRes = await fetch(url, {
@@ -153,6 +164,7 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
       }
 
       // Refresh failed — clear cookies and redirect
+      console.warn('[AUTH] Refresh FAILED — redirecting to /login')
       document.cookie = 'bullpay_token=; Max-Age=0; path=/'
       document.cookie = 'bullpay_user=; Max-Age=0; path=/'
       window.location.href = '/login'
