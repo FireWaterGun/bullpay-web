@@ -67,7 +67,7 @@ function TransactionByCoinTable({ byCoinData, loading, t }) {
                       <tr key={`${item.coinSymbol}-${item.networkName || 'all'}`}>
                         <td>
                           <div className="flex items-center">
-                            <CoinImg symbol={item.coinSymbol} size={24} className="mr-2" />
+                            <CoinImg symbol={item.coinSymbol} networkName={item.networkName} size={24} className="mr-2" />
                             <span className="font-medium">{item.coinSymbol}</span>
                             {item.networkName ? <small className="text-surface-500 ml-1">/ {item.networkName}</small> : null}
                           </div>
