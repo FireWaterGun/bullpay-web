@@ -6,7 +6,7 @@ import { formatGasAmount, statusBadgeClass } from '@/components/admin/gasTopupHe
 import { useCopyFeedback } from '@/hooks/useCopyFeedback'
 import Button from '../ui/Button'
 
-export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
+export default function GasTopupRow({ topup, onCopy, onNavigate, onRetry, retryingId, t }) {
   const { fmtDate } = useDateFormat()
   const { copiedId, handleCopy } = useCopyFeedback()
 
@@ -111,10 +111,27 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, t }) {
           <span className="text-surface-500">-</span>
         )}
       </td>
-      <td className="text-center">
-        <span className={topup.retryCount > 0 ? 'text-warning font-semibold' : 'text-surface-500'}>
-          {topup.retryCount || 0}
-        </span>
+      <td className="text-center" onClick={e => e.stopPropagation()}>
+        {topup.status === 'failed' ? (
+          <Button
+            onClick={() => onRetry(topup.id)}
+            disabled={retryingId === topup.id}
+            size="sm"
+            variant="outline-warning"
+            title={t('admin.gasTopup.retryTopup', { defaultValue: 'Retry this gas topup' })}
+          >
+            {retryingId === topup.id ? (
+              <i className="bx bx-loader-alt bx-spin mr-1"></i>
+            ) : (
+              <i className="bx bx-revision mr-1"></i>
+            )}
+            {t('admin.gasTopup.retry', { defaultValue: 'Retry' })}
+          </Button>
+        ) : (
+          <span className={topup.retryCount > 0 ? 'text-warning font-semibold' : 'text-surface-500'}>
+            {topup.retryCount || 0}
+          </span>
+        )}
       </td>
       <td className="whitespace-nowrap text-[0.85rem]">{fmtDate(topup.createdAt)}</td>
       <td className="whitespace-nowrap text-[0.85rem]">

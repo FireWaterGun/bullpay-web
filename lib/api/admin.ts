@@ -1043,6 +1043,16 @@ export async function getGasTopups(
 }
 
 /**
+ * Retry a failed gas topup (Admin only)
+ */
+export async function retryGasTopup(token: string | null, id: number) {
+  return apiFetch(`/api/v1/admin/wallet-gas-topups/${id}/retry`, {
+    method: 'POST',
+    token,
+  })
+}
+
+/**
  * Get gas topup by ID (Admin only)
  */
 export async function getGasTopupById(token: string | null, id: number) {

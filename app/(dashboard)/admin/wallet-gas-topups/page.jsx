@@ -6,7 +6,7 @@ import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import { useAdminTranslation } from '@/hooks/useAdminTranslation'
 import { useToast } from '@/app/providers'
 import useApi from '@/hooks/useApi'
-import { getGasTopups } from '@/lib/api/admin'
+import { getGasTopups, retryGasTopup } from '@/lib/api/admin'
 import { copyToClipboard as copyText } from '@/lib/utils/clipboard'
 import { listCoins } from '@/lib/api/coins'
 import GasTopupRow from '@/components/admin/GasTopupRow'
@@ -17,6 +17,7 @@ import TableEmptyState from '@/components/TableEmptyState'
 import Card from '@/components/ui/Card'
 import Pagination from '@/components/ui/Pagination'
 import Table from '@/components/ui/Table'
+import ConfirmModal from '@/components/ConfirmModal'
 
 export default function GasTopups() {
   const { t } = useAdminTranslation()
@@ -27,6 +28,8 @@ export default function GasTopups() {
   const initPage = parseInt(searchParams.get('page')) || 1
 
   const [currentPage, setCurrentPage] = useState(initPage)
+  const [retryingId, setRetryingId] = useState(null)
+  const [confirmRetryId, setConfirmRetryId] = useState(null)
 
   const { data: coinNetworksData } = useApi(
     'admin-coin-networks-list',
@@ -54,7 +57,7 @@ export default function GasTopups() {
     return f
   })
 
-  const { data, isLoading, isValidating, mutate } = useApi(
+  const { data, isLoading, isValidating, mutate, token } = useApi(
     ['admin-gas-topups', currentPage, appliedFilters],
     (token) => getGasTopups(token, { page: currentPage, limit: 20, ...appliedFilters }),
     { onError: () => toast.error(t('gasTopup.loadError', { defaultValue: 'Failed to load gas topups' })), keepPreviousData: true }
@@ -95,6 +98,25 @@ export default function GasTopups() {
   async function handleCopy(text) {
     const ok = await copyText(text)
     if (ok) toast.success(t('common.copiedToClipboard', { defaultValue: 'Copied to clipboard!' }))
+  }
+
+  async function handleRetry(topupId) {
+    setConfirmRetryId(topupId)
+  }
+
+  async function confirmRetry() {
+    const topupId = confirmRetryId
+    setConfirmRetryId(null)
+    try {
+      setRetryingId(topupId)
+      await retryGasTopup(token, topupId)
+      toast.success(t('admin.gasTopup.retrySuccess', { defaultValue: 'Gas topup retry initiated successfully' }))
+      mutate()
+    } catch (error) {
+      toast.error(error?.message || t('admin.gasTopup.retryError', { defaultValue: 'Failed to retry gas topup' }))
+    } finally {
+      setRetryingId(null)
+    }
   }
 
   if (isLoading && topups.length === 0) {
@@ -167,6 +189,8 @@ export default function GasTopups() {
                       topup={topup}
                       onCopy={handleCopy}
                       onNavigate={(id) => router.push(`/admin/wallet-gas-topups/${id}`)}
+                      onRetry={handleRetry}
+                      retryingId={retryingId}
                       t={t}
                     />
                   ))
@@ -187,6 +211,18 @@ export default function GasTopups() {
           </Card>
         </div>
       </div>
+
+      <ConfirmModal
+        show={confirmRetryId !== null}
+        title={t('admin.gasTopup.retryConfirmTitle', { defaultValue: 'Retry Gas Topup' })}
+        message={t('admin.gasTopup.retryConfirmMessage', { defaultValue: `Are you sure you want to retry gas topup #${confirmRetryId}? This will reset and re-process it.` })}
+        confirmText={t('admin.gasTopup.retryConfirm', { defaultValue: 'Retry' })}
+        cancelText={t('common.cancel', { defaultValue: 'Cancel' })}
+        confirmVariant="warning"
+        onConfirm={confirmRetry}
+        onCancel={() => setConfirmRetryId(null)}
+      />
     </div>
   )
 }
+

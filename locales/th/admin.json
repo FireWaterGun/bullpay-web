@@ -608,6 +608,12 @@
     "listTitle": "เติมค่าแก๊ส",
     "coinNetwork": "เหรียญ / เครือข่าย",
     "retry": "ลอง",
+    "retryTopup": "ลองเติม Gas อีกครั้ง",
+    "retrySuccess": "เริ่มลองเติม Gas ใหม่เรียบร้อยแล้ว",
+    "retryError": "ไม่สามารถลองเติม Gas ใหม่ได้",
+    "retryConfirmTitle": "ลองเติม Gas ใหม่",
+    "retryConfirmMessage": "คุณแน่ใจหรือไม่ที่จะลองเติม Gas ใหม่? ระบบจะรีเซ็ตธุรกรรมและดำเนินการใหม่",
+    "retryConfirm": "ลองใหม่",
     "notFound": "ไม่พบรายการเติมค่าแก๊ส",
     "loadDetailError": "ไม่สามารถโหลดรายละเอียดเติมค่าแก๊ส",
     "topupGasRaw": "แก๊สที่เติม (Raw)",
@@ -619,7 +625,8 @@
     "viewOnExplorer": "ดูบน Explorer",
     "copyAddress": "คัดลอกที่อยู่",
     "copyTxHash": "คัดลอกแฮชธุรกรรม",
-    "detailTitle": "เติมค่าแก๊ส #{{id}}"
+    "detailTitle": "เติมค่าแก๊ส #{{id}}",
+    "backToList": "กลับไปรายการเติม Gas"
   },
   "evm": {
     "menuTitle": "EVM",
