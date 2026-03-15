@@ -50,9 +50,6 @@ export default function GasTopupRow({ topup, onCopy, onNavigate, onRetry, retryi
       <td className="text-right whitespace-nowrap">
         <span className="font-semibold">{formatGasAmount(topup.topupGasRaw, decimals)}</span>
       </td>
-      <td className="text-right whitespace-nowrap">
-        <span className="text-surface-500">{formatGasAmount(topup.requiredGasRaw, decimals)}</span>
-      </td>
       <td className="text-center whitespace-nowrap">
         <span className={statusBadgeClass(topup.status)}>
           {t(`admin.gasTopup.${topup.status}`, {

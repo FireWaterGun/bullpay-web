@@ -164,7 +164,6 @@ export default function GasTopups() {
                   <th>{t('admin.gasTopup.coin', { defaultValue: 'Coin' })}</th>
                   <th className="text-center">{t('admin.gasTopup.sweepId', { defaultValue: 'Sweep ID' })}</th>
                   <th className="text-right">{t('admin.gasTopup.topupGas', { defaultValue: 'Topup Gas' })}</th>
-                  <th className="text-right">{t('admin.gasTopup.requiredGas', { defaultValue: 'Required Gas' })}</th>
                   <th className="text-center">{t('admin.gasTopup.status', { defaultValue: 'Status' })}</th>
                   <th>{t('admin.gasTopup.txHash', { defaultValue: 'Tx Hash' })}</th>
                   <th>{t('admin.gasTopup.fromAddress', { defaultValue: 'From Address' })}</th>
@@ -177,7 +176,7 @@ export default function GasTopups() {
               <tbody>
                 {topups.length === 0 ? (
                   <TableEmptyState
-                    colSpan={12}
+                    colSpan={11}
                     icon="bx-gas-pump"
                     message={t('admin.gasTopup.noTopups', { defaultValue: 'No gas topups found' })}
                     sub={t('admin.gasTopup.noTopupsSub', { defaultValue: 'No gas topups match the current filters' })}

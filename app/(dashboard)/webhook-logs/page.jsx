@@ -134,6 +134,7 @@ export default function WebhookLogsPage() {
                 placeholder="INV-00001, in_xxx"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
               />
             </div>
             <div>
