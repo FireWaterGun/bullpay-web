@@ -3,7 +3,7 @@
 import '@/lib/i18n'
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, type ReactNode } from 'react'
-import { apiFetch } from '@/lib/api-client'
+import { apiFetch, setTokenRefreshCallback } from '@/lib/api-client'
 import { ADMIN_ROLES_SET, AUTH_COOKIE_NAME, AUTH_COOKIE_TTL_DAYS } from '@/lib/constants'
 import { ToastContainer } from '@/components/Toast'
 import NavigationProgress from '@/components/NavigationProgress'
@@ -119,6 +119,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queueMicrotask(() => setIsReady(true))
   }, [])
 
+  // Register token refresh callback so api-client can update auth state
+  useEffect(() => {
+    setTokenRefreshCallback((newToken: string) => {
+      setToken(newToken)
+      setCookie(AUTH_COOKIE_NAME, newToken)
+    })
+    return () => setTokenRefreshCallback(null)
+  }, [])
+
   // Fetch navigation when token is available
   useEffect(() => {
     if (!token || !isReady || navFetchedRef.current) return
@@ -164,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  // Idle auto-logout (60 min inactivity)
+  // Idle auto-logout (8 hours inactivity — matches server-side refresh token idle timeout)
   useIdleLogout(logout, !!token)
 
   const hasPermission = useCallback(

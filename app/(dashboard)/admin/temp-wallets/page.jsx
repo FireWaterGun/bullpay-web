@@ -200,6 +200,7 @@ export default function TempWalletList() {
                     placeholder="0x..."
                     value={addressFilter}
                     onChange={(e) => setAddressFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
               </div>

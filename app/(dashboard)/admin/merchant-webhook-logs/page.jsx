@@ -174,6 +174,7 @@ export default function MerchantWebhookLogList() {
                     placeholder="INV-00001, in_xxx"
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
@@ -184,6 +185,7 @@ export default function MerchantWebhookLogList() {
                     placeholder={t('admin.webhookLog.merchantId', { defaultValue: 'Merchant ID' })}
                     value={merchantIdFilter}
                     onChange={(e) => setMerchantIdFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">

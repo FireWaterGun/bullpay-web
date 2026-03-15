@@ -275,6 +275,7 @@ export default function AdminUsersPage() {
                     placeholder={t('admin.users.searchPlaceholder', { defaultValue: 'Email, name...' })}
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">

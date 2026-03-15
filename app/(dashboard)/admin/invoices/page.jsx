@@ -141,6 +141,7 @@ export default function AdminInvoiceList() {
                     placeholder="INV-001, pi_xxx, in_xxx, 0x..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">
@@ -151,6 +152,7 @@ export default function AdminInvoiceList() {
                     placeholder={t('filter.invoiceId', { defaultValue: 'Invoice ID' })}
                     value={invoiceIdFilter}
                     onChange={(e) => setInvoiceIdFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">
@@ -171,6 +173,7 @@ export default function AdminInvoiceList() {
                     placeholder={t('filter.userId', { defaultValue: 'User ID' })}
                     value={userIdFilter}
                     onChange={(e) => setUserIdFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">
@@ -181,6 +184,7 @@ export default function AdminInvoiceList() {
                     placeholder={t('filter.merchantId', { defaultValue: 'Merchant ID' })}
                     value={merchantIdFilter}
                     onChange={(e) => setMerchantIdFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-2">

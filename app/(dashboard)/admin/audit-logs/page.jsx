@@ -211,6 +211,7 @@ export default function AuditLogList() {
                     placeholder={t('admin.detail.userId', { defaultValue: 'User ID' })}
                     value={userIdFilter}
                     onChange={(e) => setUserIdFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">
@@ -242,6 +243,7 @@ export default function AuditLogList() {
                     placeholder={t('admin.auditLog.resourceId', { defaultValue: 'Resource ID' })}
                     value={resourceIdFilter}
                     onChange={(e) => setResourceIdFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                   />
                 </div>
                 <div className="col-span-12 sm:col-span-6 md:col-span-3">

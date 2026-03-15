@@ -196,6 +196,7 @@ export default function UserBalanceListPage() {
                     placeholder="0.00"
                     value={minValueFilter}
                     onChange={(e) => setMinValueFilter(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                     min="0"
                     step="0.01"
                   />

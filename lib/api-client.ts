@@ -33,6 +33,61 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Token refresh state — prevents multiple concurrent refresh attempts.
+ */
+let refreshPromise: Promise<string | null> | null = null
+
+/**
+ * Callback to update the access token in AuthContext.
+ * Set by AuthProvider on mount.
+ */
+let onTokenRefreshed: ((newToken: string) => void) | null = null
+
+export function setTokenRefreshCallback(callback: ((newToken: string) => void) | null) {
+  onTokenRefreshed = callback
+}
+
+/**
+ * Attempt to refresh the access token using the httpOnly refresh token cookie.
+ * Returns the new access token on success, or null on failure.
+ * Deduplicates concurrent calls.
+ */
+async function tryRefreshToken(): Promise<string | null> {
+  if (typeof window === 'undefined') return null
+
+  if (refreshPromise) return refreshPromise
+
+  refreshPromise = (async () => {
+    try {
+      const isClient = typeof window !== 'undefined'
+      const url = isClient ? '/api/v1/auth/refresh' : `${API_BASE_URL}/api/v1/auth/refresh`
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        credentials: 'include',
+      })
+
+      if (!res.ok) return null
+
+      const json = await res.json().catch(() => null)
+      const newToken = json?.data?.token?.value
+      if (newToken && typeof newToken === 'string') {
+        onTokenRefreshed?.(newToken)
+        return newToken
+      }
+      return null
+    } catch {
+      return null
+    } finally {
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
 interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
   token?: string | null
   body?: unknown
@@ -71,9 +126,33 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
     throw new ApiError(0, 'NETWORK_ERROR', 'Cannot connect to server. Please check your connection.')
   }
 
-  // Handle 401 — on client, redirect to login
+  // Handle 401 — try refresh token first, then redirect to login
   if (res.status === 401 && !skipAuthRedirect) {
     if (typeof window !== 'undefined') {
+      const newToken = await tryRefreshToken()
+      if (newToken) {
+        // Retry the original request with new token
+        headers['Authorization'] = `Bearer ${newToken}`
+        const retryRes = await fetch(url, {
+          ...fetchOptions,
+          headers,
+          credentials: 'include',
+          body: body ? JSON.stringify(body) : undefined,
+        })
+
+        if (retryRes.ok) {
+          const retryJson = await retryRes.json().catch(() => null)
+          if (retryRes.status === 204) return undefined as T
+          if (retryJson && retryJson.success === false) {
+            const errPayload = retryJson.error || retryJson
+            throw new ApiError(200, errPayload?.code || 'ERROR', errPayload?.details || errPayload?.message, retryJson)
+          }
+          return retryJson?.data !== undefined ? retryJson.data : retryJson
+        }
+        // Retry also failed — fall through to logout
+      }
+
+      // Refresh failed — clear cookies and redirect
       document.cookie = 'bullpay_token=; Max-Age=0; path=/'
       document.cookie = 'bullpay_user=; Max-Age=0; path=/'
       window.location.href = '/login'
