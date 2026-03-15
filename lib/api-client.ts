@@ -72,8 +72,18 @@ async function tryRefreshToken(): Promise<string | null> {
 
       console.warn('[AUTH] tryRefreshToken: response status', res.status)
       if (!res.ok) {
-        const errorBody = await res.text().catch(() => 'N/A')
+        const errorBody = await res.json().catch(() => null)
         console.warn('[AUTH] tryRefreshToken: FAILED', res.status, errorBody)
+
+        // Detect SESSION_REPLACED — user logged in on another device
+        if (errorBody?.error?.code === 'SESSION_REPLACED') {
+          try {
+            sessionStorage.setItem('session_replaced', '1')
+          } catch {
+            // sessionStorage may not be available
+          }
+        }
+
         return null
       }
 

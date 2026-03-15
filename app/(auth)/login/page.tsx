@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { loginApi, verify2FALoginApi } from '@/lib/api/auth'
@@ -27,12 +27,26 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [backupCodeWarning, setBackupCodeWarning] = useState('')
+  const [sessionReplacedWarning, setSessionReplacedWarning] = useState(false)
+
+  // Detect if user was kicked due to login on another device
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('session_replaced') === '1') {
+        setSessionReplacedWarning(true)
+        sessionStorage.removeItem('session_replaced')
+      }
+    } catch {
+      // sessionStorage may not be available
+    }
+  }, [])
 
   const completeLogin = useCallback(
     (res: any) => {
       const token = extractToken(res)
       const user = res?.user || {}
-      login(token!, user)
+      const sessionId = res?.security?.sessionId as string | undefined
+      login(token!, user, sessionId)
       const role = user?.role || ''
       const isAdminUser = ADMIN_ROLES_SET.has(role)
       router.replace(isAdminUser ? '/admin/dashboard' : '/dashboard')
@@ -114,6 +128,11 @@ export default function LoginPage() {
         </div>
 
         {error ? <Alert className="mb-4">{error}</Alert> : null}
+        {sessionReplacedWarning && (
+          <Alert variant="warning" className="mb-4">
+            Your session was ended because your account was signed in on another device.
+          </Alert>
+        )}
         {backupCodeWarning && (
           <Alert variant="warning" className="mb-4">
             {backupCodeWarning}

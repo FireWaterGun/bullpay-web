@@ -49,10 +49,11 @@ interface Navigation {
 interface AuthContextValue {
   user: AuthUser | null
   token: string | null
+  sessionId: string | null
   navigation: Navigation | null
   isAdmin: boolean
   isReady: boolean
-  login: (token: string, user: AuthUser) => void
+  login: (token: string, user: AuthUser, sessionId?: string) => void
   logout: () => void
   updateUser: (updates: Partial<AuthUser>) => void
   hasPermission: (perm: string) => boolean
@@ -90,6 +91,7 @@ function deleteCookie(name: string) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [token, setToken] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(null)
   const [navigation, setNavigation] = useState<Navigation | null>(null)
   const [isReady, setIsReady] = useState(false)
   const navFetchedRef = useRef(false)
@@ -107,6 +109,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         /* ignore */
       }
     }
+    const savedSessionId = getCookie('bullpay_session_id')
+    if (savedSessionId) queueMicrotask(() => setSessionId(savedSessionId))
     const savedNav = getCookie('bullpay_nav')
     if (savedNav) {
       try {
@@ -145,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdmin = !!navigation && ADMIN_ROLES_SET.has(navigation.role)
 
-  const login = useCallback((newToken: string, newUser: AuthUser) => {
+  const login = useCallback((newToken: string, newUser: AuthUser, newSessionId?: string) => {
     setToken(newToken)
     setUser(newUser)
     setNavigation(null)
@@ -153,15 +157,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCookie('bullpay_user', JSON.stringify(newUser))
     deleteCookie('bullpay_nav')
     navFetchedRef.current = false
+    if (newSessionId) {
+      setSessionId(newSessionId)
+      setCookie('bullpay_session_id', newSessionId)
+    }
   }, [])
 
   const logout = useCallback(() => {
     setToken(null)
     setUser(null)
     setNavigation(null)
+    setSessionId(null)
     deleteCookie(AUTH_COOKIE_NAME)
     deleteCookie('bullpay_user')
     deleteCookie('bullpay_nav')
+    deleteCookie('bullpay_session_id')
   }, [])
 
   const updateUser = useCallback((updates: Partial<AuthUser>) => {
@@ -199,8 +209,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const authValue = useMemo(
-    () => ({ user, token, navigation, isAdmin, isReady, login, logout, updateUser, hasPermission, hasMenu, setNavigation }),
-    [user, token, navigation, isAdmin, isReady, login, logout, updateUser, hasPermission, hasMenu, setNavigation]
+    () => ({ user, token, sessionId, navigation, isAdmin, isReady, login, logout, updateUser, hasPermission, hasMenu, setNavigation }),
+    [user, token, sessionId, navigation, isAdmin, isReady, login, logout, updateUser, hasPermission, hasMenu, setNavigation]
   )
 
   return (

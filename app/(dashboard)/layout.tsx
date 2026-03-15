@@ -13,6 +13,7 @@ import NavbarContent from '@/components/dashboard/NavbarContent'
 import MaintenanceBanner from '@/components/admin/MaintenanceBanner'
 import { checkMaintenanceBlocked } from '@/lib/api/system'
 import useDashboardData from '@/hooks/useDashboardData'
+import useSessionKick from '@/hooks/useSessionKick'
 import Spinner from '@/components/ui/Spinner'
 
 interface PusherChannel {
@@ -26,6 +27,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const { fiatBalance, pendingWithdrawalCount, notificationRefreshRef } = useDashboardData()
   const { subscribe, unsubscribe, isConnected } = usePusher() || {}
+
+  // Real-time session kick: logout if another device logs in as this user
+  useSessionKick()
 
   const maintenanceChannelRef = useRef<PusherChannel | null>(null)
 
